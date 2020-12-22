@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.type;
 
@@ -34,19 +34,19 @@ public abstract class AbstractComplexProperty extends AbstractField
 
     private final Map<String, String> namespaceToPrefix;
 
-    public AbstractComplexProperty(XMPMetadata metadata, String propertyName)
+    public AbstractComplexProperty(final XMPMetadata metadata, final String propertyName)
     {
         super(metadata, propertyName);
         container = new ComplexPropertyContainer();
         this.namespaceToPrefix = new HashMap<>();
     }
 
-    public void addNamespace(String namespace, String prefix)
+    public void addNamespace(final String namespace, final String prefix)
     {
         this.namespaceToPrefix.put(namespace, prefix);
     }
 
-    public String getNamespacePrefix(String namespace)
+    public String getNamespacePrefix(final String namespace)
     {
         return this.namespaceToPrefix.get(namespace);
     }
@@ -62,7 +62,7 @@ public abstract class AbstractComplexProperty extends AbstractField
      * @param obj
      *            the property to add
      */
-    public final void addProperty(AbstractField obj)
+    public final void addProperty(final AbstractField obj)
     {
         // https://www.adobe.com/content/dam/Adobe/en/devnet/xmp/pdfs/cs6/XMPSpecificationPart1.pdf
         // "Each property name in an XMP packet shall be unique within that packet"
@@ -83,7 +83,7 @@ public abstract class AbstractComplexProperty extends AbstractField
      * @param property
      *            The property to remove
      */
-    public final void removeProperty(AbstractField property)
+    public final void removeProperty(final AbstractField property)
     {
         container.removeProperty(property);
     }
@@ -104,9 +104,9 @@ public abstract class AbstractComplexProperty extends AbstractField
         return container.getAllProperties();
     }
 
-    public final AbstractField getProperty(String fieldName)
+    public final AbstractField getProperty(final String fieldName)
     {
-        List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
+        final List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
         // return null if no property
         if (list == null)
         {
@@ -116,9 +116,9 @@ public abstract class AbstractComplexProperty extends AbstractField
         return list.get(0);
     }
 
-    public final ArrayProperty getArrayProperty(String fieldName)
+    public final ArrayProperty getArrayProperty(final String fieldName)
     {
-        List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
+        final List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
         // return null if no property
         if (list == null)
         {
@@ -128,7 +128,7 @@ public abstract class AbstractComplexProperty extends AbstractField
         return (ArrayProperty) list.get(0);
     }
 
-    protected final AbstractField getFirstEquivalentProperty(String localName, Class<? extends AbstractField> type)
+    protected final AbstractField getFirstEquivalentProperty(final String localName, final Class<? extends AbstractField> type)
     {
         return container.getFirstEquivalentProperty(localName, type);
     }

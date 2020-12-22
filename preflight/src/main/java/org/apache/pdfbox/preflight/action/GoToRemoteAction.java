@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.action;
 
@@ -51,7 +51,7 @@ public class GoToRemoteAction extends GoToAction
      * @param ctx the preflight context.
      * @param aaKey the name of the key which identify the action in a additional action dictionary.
      */
-    public GoToRemoteAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
+    public GoToRemoteAction(final ActionManagerFactory amFact, final COSDictionary adict, final PreflightContext ctx, final String aaKey)
     {
         super(amFact, adict, ctx, aaKey);
     }
@@ -64,7 +64,7 @@ public class GoToRemoteAction extends GoToAction
     @Override
     protected boolean innerValid() throws ValidationException
     {
-        COSBase dest = this.actionDictionary.getItem(COSName.D);
+        final COSBase dest = this.actionDictionary.getItem(COSName.D);
 
         // ---- D entry is mandatory
         if (dest == null)
@@ -81,7 +81,7 @@ public class GoToRemoteAction extends GoToAction
             return false;
         }
 
-        COSBase f = this.actionDictionary.getItem(COSName.F);
+        final COSBase f = this.actionDictionary.getItem(COSName.F);
         if (f == null)
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
@@ -91,7 +91,7 @@ public class GoToRemoteAction extends GoToAction
         
         if (dest instanceof COSArray)
         {
-            COSArray ar = (COSArray) dest;
+            final COSArray ar = (COSArray) dest;
             if (ar.size() < 2)
             {
                 context.addValidationError(new ValidationResult.ValidationError(ERROR_SYNTAX_DICT_INVALID,
@@ -110,7 +110,7 @@ public class GoToRemoteAction extends GoToAction
         {
             PDDestination.create(dest);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             context.addValidationError(new ValidationResult.ValidationError(PreflightConstants.ERROR_SYNTAX_DICT_INVALID,
                     e.getMessage(), e));
@@ -120,7 +120,7 @@ public class GoToRemoteAction extends GoToAction
         return true;
     }
 
-    private boolean validateExplicitDestination(COSArray ar)
+    private boolean validateExplicitDestination(final COSArray ar)
     {
         if (!(ar.get(0) instanceof COSNumber))
         {

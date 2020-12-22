@@ -47,7 +47,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      * 
      * @param dictionary the dictionary
      */
-    public PDAttributeObject(COSDictionary dictionary)
+    public PDAttributeObject(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -58,9 +58,9 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      * @param dictionary the dictionary
      * @return the attribute object
      */
-    public static PDAttributeObject create(COSDictionary dictionary)
+    public static PDAttributeObject create(final COSDictionary dictionary)
     {
-        String owner = dictionary.getNameAsString(COSName.O);
+        final String owner = dictionary.getNameAsString(COSName.O);
         if (owner != null)
         {
             switch (owner)
@@ -107,7 +107,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      * 
      * @param structureElement the structure element
      */
-    protected void setStructureElement(PDStructureElement structureElement)
+    protected void setStructureElement(final PDStructureElement structureElement)
     {
         this.structureElement = structureElement;
     }
@@ -127,7 +127,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      * 
      * @param owner the owner of the attributes
      */
-    protected void setOwner(String owner)
+    protected void setOwner(final String owner)
     {
         this.getCOSObject().setName(COSName.O, owner);
     }
@@ -151,7 +151,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      * @param oldBase old value
      * @param newBase new value
      */
-    protected void potentiallyNotifyChanged(COSBase oldBase, COSBase newBase)
+    protected void potentiallyNotifyChanged(final COSBase oldBase, final COSBase newBase)
     {
         if (this.isValueChanged(oldBase, newBase))
         {
@@ -167,7 +167,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      * @return <code>true</code> if the value is changed, <code>false</code>
      * otherwise
      */
-    private boolean isValueChanged(COSBase oldValue, COSBase newValue)
+    private boolean isValueChanged(final COSBase oldValue, final COSBase newValue)
     {
         if (oldValue == null)
         {
@@ -200,9 +200,9 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      * @param array the Object array
      * @return the String representation
      */
-    protected static String arrayToString(Object[] array)
+    protected static String arrayToString(final Object[] array)
     {
-        StringBuilder sb = new StringBuilder("[");
+        final StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < array.length; i++)
         {
             if (i > 0)
@@ -220,9 +220,9 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      * @param array the float array
      * @return the String representation
      */
-    protected static String arrayToString(float[] array)
+    protected static String arrayToString(final float[] array)
     {
-        StringBuilder sb = new StringBuilder("[");
+        final StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < array.length; i++)
         {
             if (i > 0)

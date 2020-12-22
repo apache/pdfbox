@@ -45,9 +45,9 @@ public final class PDFieldFactory
      * @param parent the parent node of the node to be created 
      * @return the corresponding PDField instance
      */
-    public static PDField createField(PDAcroForm form, COSDictionary field, PDNonTerminalField parent)
+    public static PDField createField(final PDAcroForm form, final COSDictionary field, final PDNonTerminalField parent)
     {
-        String fieldType = findFieldType(field);
+        final String fieldType = findFieldType(field);
         
         // Test if we have a non terminal field first as it might have
         // properties which do apply to other fields
@@ -55,12 +55,12 @@ public final class PDFieldFactory
         // a field name (other than annotations)
         if (field.containsKey(COSName.KIDS))
         {
-            COSArray kids = (COSArray) field.getDictionaryObject(COSName.KIDS);
+            final COSArray kids = (COSArray) field.getDictionaryObject(COSName.KIDS);
             if (kids != null && kids.size() > 0)
             {
                 for (int i = 0; i < kids.size(); i++)
                 {
-                    COSBase kid = kids.getObject(i);
+                    final COSBase kid = kids.getObject(i);
                     if (kid instanceof COSDictionary && ((COSDictionary) kid).getString(COSName.T) != null)
                     {
                         return new PDNonTerminalField(form, field, parent);
@@ -92,10 +92,10 @@ public final class PDFieldFactory
         }
     }
 
-    private static PDField createChoiceSubType(PDAcroForm form, COSDictionary field,
-                                               PDNonTerminalField parent)
+    private static PDField createChoiceSubType(final PDAcroForm form, final COSDictionary field,
+                                               final PDNonTerminalField parent)
     {
-        int flags = field.getInt(COSName.FF, 0);
+        final int flags = field.getInt(COSName.FF, 0);
         if ((flags & PDChoice.FLAG_COMBO) != 0)
         {
             return new PDComboBox(form, field, parent);
@@ -106,10 +106,10 @@ public final class PDFieldFactory
         }
     }
 
-    private static PDField createButtonSubType(PDAcroForm form, COSDictionary field,
-                                               PDNonTerminalField parent)
+    private static PDField createButtonSubType(final PDAcroForm form, final COSDictionary field,
+                                               final PDNonTerminalField parent)
     {
-        int flags = field.getInt(COSName.FF, 0);
+        final int flags = field.getInt(COSName.FF, 0);
         // BJL: I have found that the radio flag bit is not always set
         // and that sometimes there is just a kids dictionary.
         // so, if there is a kids dictionary then it must be a radio button group.
@@ -127,12 +127,12 @@ public final class PDFieldFactory
         }
     }
 
-    private static String findFieldType(COSDictionary dic)
+    private static String findFieldType(final COSDictionary dic)
     {
         String retval = dic.getNameAsString(COSName.FT);
         if (retval == null)
         {
-            COSBase base = dic.getDictionaryObject(COSName.PARENT, COSName.P);
+            final COSBase base = dic.getDictionaryObject(COSName.PARENT, COSName.P);
             if (base instanceof COSDictionary)
             {
                 retval = findFieldType((COSDictionary) base);

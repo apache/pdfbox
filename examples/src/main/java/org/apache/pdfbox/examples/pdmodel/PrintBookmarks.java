@@ -43,7 +43,7 @@ public class PrintBookmarks
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
         if( args.length != 1 )
         {
@@ -53,8 +53,8 @@ public class PrintBookmarks
         {
             try (PDDocument document = Loader.loadPDF(new File(args[0])))
             {
-                PrintBookmarks meta = new PrintBookmarks();
-                PDDocumentOutline outline =  document.getDocumentCatalog().getDocumentOutline();
+                final PrintBookmarks meta = new PrintBookmarks();
+                final PDDocumentOutline outline =  document.getDocumentCatalog().getDocumentOutline();
                 if( outline != null )
                 {
                     meta.printBookmark(document, outline, "");
@@ -84,7 +84,7 @@ public class PrintBookmarks
      *
      * @throws IOException If there is an error getting the page count.
      */
-    public void printBookmark(PDDocument document, PDOutlineNode bookmark, String indentation) throws IOException
+    public void printBookmark(final PDDocument document, final PDOutlineNode bookmark, final String indentation) throws IOException
     {
         PDOutlineItem current = bookmark.getFirstChild();
         while( current != null )
@@ -96,12 +96,12 @@ public class PrintBookmarks
 
             if (current.getDestination() instanceof PDPageDestination)
             {
-                PDPageDestination pd = (PDPageDestination) current.getDestination();
+                final PDPageDestination pd = (PDPageDestination) current.getDestination();
                 System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
             }
             else if (current.getDestination() instanceof PDNamedDestination)
             {
-                PDPageDestination pd = document.getDocumentCatalog().findNamedDestinationPage((PDNamedDestination) current.getDestination());
+                final PDPageDestination pd = document.getDocumentCatalog().findNamedDestinationPage((PDNamedDestination) current.getDestination());
                 if (pd != null)
                 {
                     System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
@@ -114,15 +114,15 @@ public class PrintBookmarks
 
             if (current.getAction() instanceof PDActionGoTo)
             {
-                PDActionGoTo gta = (PDActionGoTo) current.getAction();
+                final PDActionGoTo gta = (PDActionGoTo) current.getAction();
                 if (gta.getDestination() instanceof PDPageDestination)
                 {
-                    PDPageDestination pd = (PDPageDestination) gta.getDestination();
+                    final PDPageDestination pd = (PDPageDestination) gta.getDestination();
                     System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
                 }
                 else if (gta.getDestination() instanceof PDNamedDestination)
                 {
-                    PDPageDestination pd = document.getDocumentCatalog().findNamedDestinationPage((PDNamedDestination) gta.getDestination());
+                    final PDPageDestination pd = document.getDocumentCatalog().findNamedDestinationPage((PDNamedDestination) gta.getDestination());
                     if (pd != null)
                     {
                         System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));

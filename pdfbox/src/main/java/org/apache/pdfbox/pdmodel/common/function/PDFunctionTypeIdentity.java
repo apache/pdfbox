@@ -26,7 +26,7 @@ import org.apache.pdfbox.cos.COSBase;
 public class PDFunctionTypeIdentity extends PDFunction
 {
 
-    public PDFunctionTypeIdentity(COSBase function)
+    public PDFunctionTypeIdentity(final COSBase function)
     {
         super(null);
     }
@@ -40,7 +40,7 @@ public class PDFunctionTypeIdentity extends PDFunction
     }
 
     @Override
-    public float[] eval(float[] input) throws IOException
+    public float[] eval(final float[] input) throws IOException
     {
         return input;
     }

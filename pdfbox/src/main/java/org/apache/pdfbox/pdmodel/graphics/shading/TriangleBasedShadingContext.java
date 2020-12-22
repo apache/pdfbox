@@ -58,11 +58,11 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @throws IOException if there is an error getting the color space or doing background color conversion.
      */
-    TriangleBasedShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
-                                       Matrix matrix) throws IOException
+    TriangleBasedShadingContext(final PDShading shading, final ColorModel cm, final AffineTransform xform,
+                                final Matrix matrix) throws IOException
     {
         super(shading, cm, xform, matrix);
-        PDTriangleBasedShadingType triangleBasedShadingType = (PDTriangleBasedShadingType) shading;
+        final PDTriangleBasedShadingType triangleBasedShadingType = (PDTriangleBasedShadingType) shading;
         hasFunction = shading.getFunction() != null;
         bitsPerCoordinate = triangleBasedShadingType.getBitsPerCoordinate();
         LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
@@ -75,7 +75,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     /**
      * Creates the pixel table.
      */
-    protected final void createPixelTable(Rectangle deviceBounds) throws IOException
+    protected final void createPixelTable(final Rectangle deviceBounds) throws IOException
     {
         pixelTable = calcPixelTable(deviceBounds);
     }
@@ -90,23 +90,23 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     /**
      * Get the points from the triangles, calculate their color and add point-color mappings.
      */
-    protected void calcPixelTable(List<ShadedTriangle> triangleList, Map<Point, Integer> map,
-            Rectangle deviceBounds) throws IOException
+    protected void calcPixelTable(final List<ShadedTriangle> triangleList, final Map<Point, Integer> map,
+                                  final Rectangle deviceBounds) throws IOException
     {
-        for (ShadedTriangle tri : triangleList)
+        for (final ShadedTriangle tri : triangleList)
         {
-            int degree = tri.getDeg();
+            final int degree = tri.getDeg();
             if (degree == 2)
             {
-                Line line = tri.getLine();
-                for (Point p : line.linePoints)
+                final Line line = tri.getLine();
+                for (final Point p : line.linePoints)
                 {
                     map.put(p, evalFunctionAndConvertToRGB(line.calcColor(p)));
                 }
             }
             else
             {
-                int[] boundary = tri.getBoundary();
+                final int[] boundary = tri.getBoundary();
                 boundary[0] = Math.max(boundary[0], deviceBounds.x);
                 boundary[1] = Math.min(boundary[1], deviceBounds.x + deviceBounds.width);
                 boundary[2] = Math.max(boundary[2], deviceBounds.y);
@@ -115,7 +115,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                 {
                     for (int y = boundary[2]; y <= boundary[3]; y++)
                     {
-                        Point p = new IntPoint(x, y);
+                        final Point p = new IntPoint(x, y);
                         if (tri.contains(p))
                         {
                             map.put(p, evalFunctionAndConvertToRGB(tri.calcColor(p)));
@@ -125,24 +125,24 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
 
                 // "fatten" triangle by drawing the borders with Bresenham's line algorithm
                 // Inspiration: Raph Levien in http://bugs.ghostscript.com/show_bug.cgi?id=219588
-                Point p0 = new IntPoint((int) Math.round(tri.corner[0].getX()),
+                final Point p0 = new IntPoint((int) Math.round(tri.corner[0].getX()),
                                      (int) Math.round(tri.corner[0].getY()));
-                Point p1 = new IntPoint((int) Math.round(tri.corner[1].getX()),
+                final Point p1 = new IntPoint((int) Math.round(tri.corner[1].getX()),
                                      (int) Math.round(tri.corner[1].getY()));
-                Point p2 = new IntPoint((int) Math.round(tri.corner[2].getX()),
+                final Point p2 = new IntPoint((int) Math.round(tri.corner[2].getX()),
                                      (int) Math.round(tri.corner[2].getY()));
-                Line l1 = new Line(p0, p1, tri.color[0], tri.color[1]);
-                Line l2 = new Line(p1, p2, tri.color[1], tri.color[2]);
-                Line l3 = new Line(p2, p0, tri.color[2], tri.color[0]);
-                for (Point p : l1.linePoints)
+                final Line l1 = new Line(p0, p1, tri.color[0], tri.color[1]);
+                final Line l2 = new Line(p1, p2, tri.color[1], tri.color[2]);
+                final Line l3 = new Line(p2, p0, tri.color[2], tri.color[0]);
+                for (final Point p : l1.linePoints)
                 {
                     map.put(p, evalFunctionAndConvertToRGB(l1.calcColor(p)));
                 }
-                for (Point p : l2.linePoints)
+                for (final Point p : l2.linePoints)
                 {
                     map.put(p, evalFunctionAndConvertToRGB(l2.calcColor(p)));
                 }
-                for (Point p : l3.linePoints)
+                for (final Point p : l3.linePoints)
                 {
                     map.put(p, evalFunctionAndConvertToRGB(l3.calcColor(p)));
                 }
@@ -181,19 +181,19 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     }
 
     @Override
-    public final Raster getRaster(int x, int y, int w, int h)
+    public final Raster getRaster(final int x, final int y, final int w, final int h)
     {
-        WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
-        int[] data = new int[w * h * 4];
+        final WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
+        final int[] data = new int[w * h * 4];
         if (!isDataEmpty() || getBackground() != null)
         {
             for (int row = 0; row < h; row++)
             {
                 for (int col = 0; col < w; col++)
                 {
-                    Point p = new IntPoint(x + col, y + row);
+                    final Point p = new IntPoint(x + col, y + row);
                     int value;
-                    Integer v = pixelTable.get(p);
+                    final Integer v = pixelTable.get(p);
                     if (v != null)
                     {
                         value = v;
@@ -206,7 +206,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                         }
                         value = getRgbBackground();
                     }
-                    int index = (row * w + col) * 4;
+                    final int index = (row * w + col) * 4;
                     data[index] = value & 255;
                     value >>= 8;
                     data[index + 1] = value & 255;

@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.schema;
 
@@ -53,7 +53,7 @@ public class XMPSchemaFactory
      * @param propDef
      *            Properties Types list associated
      */
-    public XMPSchemaFactory(String namespace, Class<? extends XMPSchema> schemaClass, PropertiesDescription propDef)
+    public XMPSchemaFactory(final String namespace, final Class<? extends XMPSchema> schemaClass, final PropertiesDescription propDef)
     {
         this.namespace = namespace;
         this.schemaClass = schemaClass;
@@ -77,7 +77,7 @@ public class XMPSchemaFactory
      *            The property name
      * @return null if property name is unknown
      */
-    public PropertyType getPropertyType(String name)
+    public PropertyType getPropertyType(final String name)
     {
         return propDef.getPropertyType(name);
     }
@@ -93,11 +93,11 @@ public class XMPSchemaFactory
      * @throws XmpSchemaException
      *             When Instancing specified Object Schema failed
      */
-    public XMPSchema createXMPSchema(XMPMetadata metadata, String prefix) throws XmpSchemaException
+    public XMPSchema createXMPSchema(final XMPMetadata metadata, final String prefix) throws XmpSchemaException
     {
-        XMPSchema schema;
-        Class<?>[] argsClass;
-        Object[] schemaArgs;
+        final XMPSchema schema;
+        final Class<?>[] argsClass;
+        final Object[] schemaArgs;
 
         if (schemaClass == XMPSchema.class)
         {
@@ -124,7 +124,7 @@ public class XMPSchemaFactory
             }
             return schema;
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             throw new XmpSchemaException("Cannot instanciate specified object schema", e);
         }

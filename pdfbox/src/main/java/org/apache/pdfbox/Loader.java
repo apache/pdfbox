@@ -55,7 +55,7 @@ public class Loader
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static FDFDocument loadFDF(String filename) throws IOException
+    public static FDFDocument loadFDF(final String filename) throws IOException
     {
         return Loader.loadFDF(new File(filename));
     }
@@ -69,9 +69,9 @@ public class Loader
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static FDFDocument loadFDF(File file) throws IOException
+    public static FDFDocument loadFDF(final File file) throws IOException
     {
-        FDFParser parser = new FDFParser(new RandomAccessReadBufferedFile(file));
+        final FDFParser parser = new FDFParser(new RandomAccessReadBufferedFile(file));
         return parser.parse();
     }
 
@@ -84,9 +84,9 @@ public class Loader
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static FDFDocument loadFDF(InputStream input) throws IOException
+    public static FDFDocument loadFDF(final InputStream input) throws IOException
     {
-        FDFParser parser = new FDFParser(new RandomAccessReadBuffer(input));
+        final FDFParser parser = new FDFParser(new RandomAccessReadBuffer(input));
         return parser.parse();
     }
 
@@ -99,7 +99,7 @@ public class Loader
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static FDFDocument loadXFDF(String filename) throws IOException
+    public static FDFDocument loadXFDF(final String filename) throws IOException
     {
         return Loader.loadXFDF(new BufferedInputStream(new FileInputStream(filename)));
     }
@@ -113,7 +113,7 @@ public class Loader
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static FDFDocument loadXFDF(File file) throws IOException
+    public static FDFDocument loadXFDF(final File file) throws IOException
     {
         return Loader.loadXFDF(new BufferedInputStream(new FileInputStream(file)));
     }
@@ -127,7 +127,7 @@ public class Loader
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static FDFDocument loadXFDF(InputStream input) throws IOException
+    public static FDFDocument loadXFDF(final InputStream input) throws IOException
     {
         return new FDFDocument(XMLUtil.parse(input));
     }
@@ -141,7 +141,7 @@ public class Loader
      * @throws InvalidPasswordException If the PDF required a non-empty password.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(byte[] input) throws IOException
+    public static PDDocument loadPDF(final byte[] input) throws IOException
     {
         return Loader.loadPDF(input, "");
     }
@@ -156,7 +156,7 @@ public class Loader
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(byte[] input, String password) throws IOException
+    public static PDDocument loadPDF(final byte[] input, final String password) throws IOException
     {
         return Loader.loadPDF(input, password, null, null);
     }
@@ -173,7 +173,7 @@ public class Loader
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(byte[] input, String password, InputStream keyStore, String alias)
+    public static PDDocument loadPDF(final byte[] input, final String password, final InputStream keyStore, final String alias)
             throws IOException
     {
         return Loader.loadPDF(input, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
@@ -192,18 +192,18 @@ public class Loader
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(byte[] input, String password, InputStream keyStore, String alias,
-            MemoryUsageSetting memUsageSetting) throws IOException
+    public static PDDocument loadPDF(final byte[] input, final String password, final InputStream keyStore, final String alias,
+                                     final MemoryUsageSetting memUsageSetting) throws IOException
     {
         RandomAccessRead source = null;
         try
         {
             // RandomAccessRead is not closed here, may be needed for signing
             source = new RandomAccessReadBuffer(input);
-            PDFParser parser = new PDFParser(source, password, keyStore, alias, memUsageSetting);
+            final PDFParser parser = new PDFParser(source, password, keyStore, alias, memUsageSetting);
             return parser.parse();
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             IOUtils.closeQuietly(source);
             throw ioe;
@@ -219,7 +219,7 @@ public class Loader
      * @throws InvalidPasswordException If the file required a non-empty password.
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadPDF(File file) throws IOException
+    public static PDDocument loadPDF(final File file) throws IOException
     {
         return Loader.loadPDF(file, "", MemoryUsageSetting.setupMainMemoryOnly());
     }
@@ -234,7 +234,7 @@ public class Loader
      * @throws InvalidPasswordException If the file required a non-empty password.
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadPDF(File file, MemoryUsageSetting memUsageSetting) throws IOException
+    public static PDDocument loadPDF(final File file, final MemoryUsageSetting memUsageSetting) throws IOException
     {
         return Loader.loadPDF(file, "", null, null, memUsageSetting);
     }
@@ -249,7 +249,7 @@ public class Loader
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadPDF(File file, String password) throws IOException
+    public static PDDocument loadPDF(final File file, final String password) throws IOException
     {
         return Loader.loadPDF(file, password, null, null, MemoryUsageSetting.setupMainMemoryOnly());
     }
@@ -265,7 +265,7 @@ public class Loader
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadPDF(File file, String password, MemoryUsageSetting memUsageSetting)
+    public static PDDocument loadPDF(final File file, final String password, final MemoryUsageSetting memUsageSetting)
             throws IOException
     {
         return Loader.loadPDF(file, password, null, null, memUsageSetting);
@@ -282,7 +282,7 @@ public class Loader
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadPDF(File file, String password, InputStream keyStore, String alias)
+    public static PDDocument loadPDF(final File file, final String password, final InputStream keyStore, final String alias)
             throws IOException
     {
         return Loader.loadPDF(file, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
@@ -300,8 +300,8 @@ public class Loader
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadPDF(File file, String password, InputStream keyStore, String alias,
-            MemoryUsageSetting memUsageSetting) throws IOException
+    public static PDDocument loadPDF(final File file, final String password, final InputStream keyStore, final String alias,
+                                     final MemoryUsageSetting memUsageSetting) throws IOException
     {
         RandomAccessRead raFile = null;
         try
@@ -310,7 +310,7 @@ public class Loader
             raFile = new RandomAccessReadBufferedFile(file);
             return Loader.loadPDF(raFile, password, keyStore, alias, memUsageSetting);
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             IOUtils.closeQuietly(raFile);
             throw ioe;
@@ -330,11 +330,11 @@ public class Loader
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadPDF(RandomAccessRead raFile, String password,
-            InputStream keyStore, String alias, MemoryUsageSetting memUsageSetting)
+    public static PDDocument loadPDF(final RandomAccessRead raFile, final String password,
+                                     final InputStream keyStore, final String alias, final MemoryUsageSetting memUsageSetting)
             throws IOException
     {
-        PDFParser parser = new PDFParser(raFile, password, keyStore, alias, memUsageSetting);
+        final PDFParser parser = new PDFParser(raFile, password, keyStore, alias, memUsageSetting);
         return parser.parse();
     }
     /**
@@ -348,7 +348,7 @@ public class Loader
      * @throws InvalidPasswordException If the PDF required a non-empty password.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(InputStream input) throws IOException
+    public static PDDocument loadPDF(final InputStream input) throws IOException
     {
         return Loader.loadPDF(input, "", null, null, MemoryUsageSetting.setupMainMemoryOnly());
     }
@@ -365,7 +365,7 @@ public class Loader
      * @throws InvalidPasswordException If the PDF required a non-empty password.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(InputStream input, MemoryUsageSetting memUsageSetting)
+    public static PDDocument loadPDF(final InputStream input, final MemoryUsageSetting memUsageSetting)
             throws IOException
     {
         return Loader.loadPDF(input, "", null, null, memUsageSetting);
@@ -382,7 +382,7 @@ public class Loader
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(InputStream input, String password) throws IOException
+    public static PDDocument loadPDF(final InputStream input, final String password) throws IOException
     {
         return Loader.loadPDF(input, password, null, null, MemoryUsageSetting.setupMainMemoryOnly());
     }
@@ -399,8 +399,8 @@ public class Loader
      * 
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(InputStream input, String password, InputStream keyStore,
-            String alias) throws IOException
+    public static PDDocument loadPDF(final InputStream input, final String password, final InputStream keyStore,
+                                     final String alias) throws IOException
     {
         return Loader.loadPDF(input, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
     }
@@ -418,8 +418,8 @@ public class Loader
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(InputStream input, String password,
-            MemoryUsageSetting memUsageSetting) throws IOException
+    public static PDDocument loadPDF(final InputStream input, final String password,
+                                     final MemoryUsageSetting memUsageSetting) throws IOException
     {
         return Loader.loadPDF(input, password, null, null, memUsageSetting);
     }
@@ -438,18 +438,18 @@ public class Loader
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(InputStream input, String password, InputStream keyStore,
-            String alias, MemoryUsageSetting memUsageSetting) throws IOException
+    public static PDDocument loadPDF(final InputStream input, final String password, final InputStream keyStore,
+                                     final String alias, final MemoryUsageSetting memUsageSetting) throws IOException
     {
         RandomAccessRead source = null;
         try
         {
             // RandomAccessRead is not closed here, may be needed for signing
             source = new RandomAccessReadBuffer(input);
-            PDFParser parser = new PDFParser(source, password, keyStore, alias, memUsageSetting);
+            final PDFParser parser = new PDFParser(source, password, keyStore, alias, memUsageSetting);
             return parser.parse();
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             IOUtils.closeQuietly(source);
             throw ioe;

@@ -1,20 +1,20 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+/*
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements. See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership. The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License. You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
  */
 
 package org.apache.pdfbox.examples.signature.cert;
@@ -100,8 +100,8 @@ public final class CertificateVerifier
      * in the chain is expired or CRL checks are failed)
      */
     public static PKIXCertPathBuilderResult verifyCertificate(
-            X509Certificate cert, Set<X509Certificate> additionalCerts,
-            boolean verifySelfSignedCert, Date signDate)
+            final X509Certificate cert, final Set<X509Certificate> additionalCerts,
+            final boolean verifySelfSignedCert, final Date signDate)
             throws CertificateVerificationException
     {
         try
@@ -112,7 +112,7 @@ public final class CertificateVerifier
                 throw new CertificateVerificationException("The certificate is self-signed.");
             }
 
-            Set<X509Certificate> certSet = new HashSet<>();
+            final Set<X509Certificate> certSet = new HashSet<>();
             certSet.addAll(additionalCerts);
 
             // Download extra certificates. However, each downloaded certificate can lead to
@@ -125,12 +125,12 @@ public final class CertificateVerifier
             int downloadSize = 0;
             while (!certsToTrySet.isEmpty())
             {
-                Set<X509Certificate> nextCertsToTrySet = new HashSet<>();
-                for (X509Certificate tryCert : certsToTrySet)
+                final Set<X509Certificate> nextCertsToTrySet = new HashSet<>();
+                for (final X509Certificate tryCert : certsToTrySet)
                 {
-                    Set<X509Certificate> downloadedExtraCertificatesSet =
+                    final Set<X509Certificate> downloadedExtraCertificatesSet =
                             CertificateVerifier.downloadExtraCertificates(tryCert);
-                    for (X509Certificate downloadedCertificate : downloadedExtraCertificatesSet)
+                    for (final X509Certificate downloadedCertificate : downloadedExtraCertificatesSet)
                     {
                         if (!certSet.contains(downloadedCertificate))
                         {
@@ -149,9 +149,9 @@ public final class CertificateVerifier
 
             // Prepare a set of trust anchors (set of root CA certificates)
             // and a set of intermediate certificates
-            Set<X509Certificate> intermediateCerts = new HashSet<>();
-            Set<TrustAnchor> trustAnchors = new HashSet<>();
-            for (X509Certificate additionalCert : certSet)
+            final Set<X509Certificate> intermediateCerts = new HashSet<>();
+            final Set<TrustAnchor> trustAnchors = new HashSet<>();
+            for (final X509Certificate additionalCert : certSet)
             {
                 if (isSelfSigned(additionalCert))
                 {
@@ -169,7 +169,7 @@ public final class CertificateVerifier
             }
 
             // Attempt to build the certification chain and verify it
-            PKIXCertPathBuilderResult verifiedCertChain = verifyCertificate(
+            final PKIXCertPathBuilderResult verifiedCertChain = verifyCertificate(
                     cert, trustAnchors, intermediateCerts, signDate);
 
             LOG.info("Certification chain verified successfully up to this root: " +
@@ -179,17 +179,17 @@ public final class CertificateVerifier
 
             return verifiedCertChain;
         }
-        catch (CertPathBuilderException certPathEx)
+        catch (final CertPathBuilderException certPathEx)
         {
             throw new CertificateVerificationException(
                     "Error building certification path: "
                     + cert.getSubjectX500Principal(), certPathEx);
         }
-        catch (CertificateVerificationException cvex)
+        catch (final CertificateVerificationException cvex)
         {
             throw cvex;
         }
-        catch (IOException | GeneralSecurityException | RevokedCertificateException | OCSPException ex)
+        catch (final IOException | GeneralSecurityException | RevokedCertificateException | OCSPException ex)
         {
             throw new CertificateVerificationException(
                     "Error verifying the certificate: "
@@ -197,9 +197,9 @@ public final class CertificateVerifier
         }
     }
 
-    private static void checkRevocations(X509Certificate cert,
-                                         Set<X509Certificate> additionalCerts,
-                                         Date signDate)
+    private static void checkRevocations(final X509Certificate cert,
+                                         final Set<X509Certificate> additionalCerts,
+                                         final Date signDate)
             throws IOException, CertificateVerificationException, OCSPException,
                    RevokedCertificateException, GeneralSecurityException
     {
@@ -209,7 +209,7 @@ public final class CertificateVerifier
             return;
         }
         X509Certificate issuerCert = null;
-        for (X509Certificate additionalCert : additionalCerts)
+        for (final X509Certificate additionalCert : additionalCerts)
         {
             try
             {
@@ -217,7 +217,7 @@ public final class CertificateVerifier
                 issuerCert = additionalCert;
                 break;
             }
-            catch (GeneralSecurityException ex)
+            catch (final GeneralSecurityException ex)
             {
                 // not the issuer
             }
@@ -226,15 +226,15 @@ public final class CertificateVerifier
         // verifiedCertChain earlier.
 
         // Try checking the certificate through OCSP (faster than CRL)
-        String ocspURL = extractOCSPURL(cert);
+        final String ocspURL = extractOCSPURL(cert);
         if (ocspURL != null)
         {
-            OcspHelper ocspHelper = new OcspHelper(cert, signDate, issuerCert, additionalCerts, ocspURL);
+            final OcspHelper ocspHelper = new OcspHelper(cert, signDate, issuerCert, additionalCerts, ocspURL);
             try
             {
                 verifyOCSP(ocspHelper, additionalCerts);
             }
-            catch (IOException | OCSPException ex)
+            catch (final IOException | OCSPException ex)
             {
                 // IOException happens with 021496.pdf because OCSP responder no longer exists
                 // OCSPException happens with QV_RCA1_RCA3_CPCPS_V4_11.pdf
@@ -262,16 +262,16 @@ public final class CertificateVerifier
      * @return true if the certificate is self-signed, false if not.
      * @throws java.security.GeneralSecurityException 
      */
-    public static boolean isSelfSigned(X509Certificate cert) throws GeneralSecurityException
+    public static boolean isSelfSigned(final X509Certificate cert) throws GeneralSecurityException
     {
         try
         {
             // Try to verify certificate signature with its own public key
-            PublicKey key = cert.getPublicKey();
+            final PublicKey key = cert.getPublicKey();
             cert.verify(key, SecurityProvider.getProvider());
             return true;
         }
-        catch (SignatureException | InvalidKeyException | IOException ex)
+        catch (final SignatureException | InvalidKeyException | IOException ex)
         {
             // Invalid signature --> not self-signed
             LOG.debug("Couldn't get signature information - returning false", ex);
@@ -287,23 +287,23 @@ public final class CertificateVerifier
      *
      * @return a certificate set, never null.
      */
-    public static Set<X509Certificate> downloadExtraCertificates(X509Extension ext)
+    public static Set<X509Certificate> downloadExtraCertificates(final X509Extension ext)
     {
         // https://tools.ietf.org/html/rfc2459#section-4.2.2.1
         // https://tools.ietf.org/html/rfc3280#section-4.2.2.1
         // https://tools.ietf.org/html/rfc4325
-        Set<X509Certificate> resultSet = new HashSet<>();
-        byte[] authorityExtensionValue = ext.getExtensionValue(Extension.authorityInfoAccess.getId());
+        final Set<X509Certificate> resultSet = new HashSet<>();
+        final byte[] authorityExtensionValue = ext.getExtensionValue(Extension.authorityInfoAccess.getId());
         if (authorityExtensionValue == null)
         {
             return resultSet;
         }
-        ASN1Primitive asn1Prim;
+        final ASN1Primitive asn1Prim;
         try
         {
             asn1Prim = JcaX509ExtensionUtils.parseExtensionValue(authorityExtensionValue);
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             LOG.warn(ex.getMessage(), ex);
             return resultSet;
@@ -313,33 +313,33 @@ public final class CertificateVerifier
             LOG.warn("ASN1Sequence expected, got " + asn1Prim.getClass().getSimpleName());
             return resultSet;
         }
-        ASN1Sequence asn1Seq = (ASN1Sequence) asn1Prim;
-        Enumeration<?> objects = asn1Seq.getObjects();
+        final ASN1Sequence asn1Seq = (ASN1Sequence) asn1Prim;
+        final Enumeration<?> objects = asn1Seq.getObjects();
         while (objects.hasMoreElements())
         {
             // AccessDescription
-            ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
-            ASN1Encodable oid = obj.getObjectAt(0);
+            final ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
+            final ASN1Encodable oid = obj.getObjectAt(0);
             if (!X509ObjectIdentifiers.id_ad_caIssuers.equals(oid))
             {
                 continue;
             }
-            ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
-            ASN1OctetString uri = (ASN1OctetString) location.getObject();
-            String urlString = new String(uri.getOctets());
+            final ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
+            final ASN1OctetString uri = (ASN1OctetString) location.getObject();
+            final String urlString = new String(uri.getOctets());
             LOG.info("CA issuers URL: " + urlString);
             try (InputStream in = new URL(urlString).openStream())
             {
-                CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-                Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
+                final CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+                final Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
                 altCerts.forEach(altCert -> resultSet.add((X509Certificate) altCert));
                 LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) downloaded");
             }
-            catch (IOException ex)
+            catch (final IOException ex)
             {
                 LOG.warn(urlString + " failure: " + ex.getMessage(), ex);
             }
-            catch (CertificateException ex)
+            catch (final CertificateException ex)
             {
                 LOG.warn(ex.getMessage(), ex);
             }
@@ -363,16 +363,16 @@ public final class CertificateVerifier
      * is expired)
      */
     private static PKIXCertPathBuilderResult verifyCertificate(
-            X509Certificate cert, Set<TrustAnchor> trustAnchors,
-            Set<X509Certificate> intermediateCerts, Date signDate)
+            final X509Certificate cert, final Set<TrustAnchor> trustAnchors,
+            final Set<X509Certificate> intermediateCerts, final Date signDate)
             throws GeneralSecurityException
     {
         // Create the selector that specifies the starting certificate
-        X509CertSelector selector = new X509CertSelector();
+        final X509CertSelector selector = new X509CertSelector();
         selector.setCertificate(cert);
 
         // Configure the PKIX certificate builder algorithm parameters
-        PKIXBuilderParameters pkixParams = new PKIXBuilderParameters(trustAnchors, selector);
+        final PKIXBuilderParameters pkixParams = new PKIXBuilderParameters(trustAnchors, selector);
 
         // Disable CRL checks (this is done manually as additional step)
         pkixParams.setRevocationEnabled(false);
@@ -391,7 +391,7 @@ public final class CertificateVerifier
         pkixParams.setDate(signDate);
 
         // Specify a list of intermediate certificates
-        CertStore intermediateCertStore = CertStore.getInstance("Collection",
+        final CertStore intermediateCertStore = CertStore.getInstance("Collection",
                 new CollectionCertStoreParameters(intermediateCerts));
         pkixParams.addCertStore(intermediateCertStore);
 
@@ -400,7 +400,7 @@ public final class CertificateVerifier
         // by starting java with -Djava.security.debug=certpath
         // see also
         // https://docs.oracle.com/javase/8/docs/technotes/guides/security/troubleshooting-security.html
-        CertPathBuilder builder = CertPathBuilder.getInstance("PKIX");
+        final CertPathBuilder builder = CertPathBuilder.getInstance("PKIX");
         return (PKIXCertPathBuilderResult) builder.build(pkixParams);
     }
 
@@ -411,27 +411,27 @@ public final class CertificateVerifier
      * @return the URL of the OCSP validation service
      * @throws IOException 
      */
-    private static String extractOCSPURL(X509Certificate cert) throws IOException
+    private static String extractOCSPURL(final X509Certificate cert) throws IOException
     {
-        byte[] authorityExtensionValue = cert.getExtensionValue(Extension.authorityInfoAccess.getId());
+        final byte[] authorityExtensionValue = cert.getExtensionValue(Extension.authorityInfoAccess.getId());
         if (authorityExtensionValue != null)
         {
             // copied from CertInformationHelper.getAuthorityInfoExtensionValue()
             // DRY refactor should be done some day
-            ASN1Sequence asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(authorityExtensionValue);
-            Enumeration<?> objects = asn1Seq.getObjects();
+            final ASN1Sequence asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(authorityExtensionValue);
+            final Enumeration<?> objects = asn1Seq.getObjects();
             while (objects.hasMoreElements())
             {
                 // AccessDescription
-                ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
-                ASN1Encodable oid = obj.getObjectAt(0);
+                final ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
+                final ASN1Encodable oid = obj.getObjectAt(0);
                 // accessLocation
-                ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
+                final ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
                 if (X509ObjectIdentifiers.id_ad_ocsp.equals(oid)
                         && location.getTagNo() == GeneralName.uniformResourceIdentifier)
                 {
-                    ASN1OctetString url = (ASN1OctetString) location.getObject();
-                    String ocspURL = new String(url.getOctets());
+                    final ASN1OctetString url = (ASN1OctetString) location.getObject();
+                    final String ocspURL = new String(url.getOctets());
                     LOG.info("OCSP URL: " + ocspURL);
                     return ocspURL;
                 }
@@ -451,11 +451,11 @@ public final class CertificateVerifier
      * @throws OCSPException
      * @throws CertificateVerificationException
      */
-    private static void verifyOCSP(OcspHelper ocspHelper, Set<X509Certificate> additionalCerts)
+    private static void verifyOCSP(final OcspHelper ocspHelper, final Set<X509Certificate> additionalCerts)
             throws RevokedCertificateException, IOException, OCSPException, CertificateVerificationException
     {
-        Date now = Calendar.getInstance().getTime();
-        OCSPResp ocspResponse;
+        final Date now = Calendar.getInstance().getTime();
+        final OCSPResp ocspResponse;
         ocspResponse = ocspHelper.getResponseOcsp();
         if (ocspResponse.getStatus() != OCSPResp.SUCCESSFUL)
         {
@@ -464,8 +464,8 @@ public final class CertificateVerifier
         }
         LOG.info("OCSP check successful");
 
-        BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
-        X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
+        final BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
+        final X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
         if (ocspResponderCertificate.getExtensionValue(OCSPObjectIdentifiers.id_pkix_ocsp_nocheck.getId()) != null)
         {
             // https://tools.ietf.org/html/rfc6960#section-4.2.2.2.1
@@ -483,19 +483,19 @@ public final class CertificateVerifier
         }
 
         LOG.info("Check of OCSP responder certificate");
-        Set<X509Certificate> additionalCerts2 = new HashSet<>(additionalCerts);
-        JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
-        for (X509CertificateHolder certHolder : basicResponse.getCerts())
+        final Set<X509Certificate> additionalCerts2 = new HashSet<>(additionalCerts);
+        final JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
+        for (final X509CertificateHolder certHolder : basicResponse.getCerts())
         {
             try
             {
-                X509Certificate cert = certificateConverter.getCertificate(certHolder);
+                final X509Certificate cert = certificateConverter.getCertificate(certHolder);
                 if (!ocspResponderCertificate.equals(cert))
                 {
                     additionalCerts2.add(cert);
                 }
             }
-            catch (CertificateException ex)
+            catch (final CertificateException ex)
             {
                 // unlikely to happen because the certificate existed as an object
                 LOG.error(ex, ex);

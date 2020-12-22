@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.font.descriptor;
 
@@ -38,13 +38,13 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_TYPE1_D
 
 public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
 {
-    public Type1DescriptorHelper(PreflightContext context, PDSimpleFont font, Type1Container fontContainer)
+    public Type1DescriptorHelper(final PreflightContext context, final PDSimpleFont font, final Type1Container fontContainer)
     {
         super(context, font, fontContainer);
     }
 
     @Override
-    protected boolean checkMandatoryFields(COSDictionary fDescriptor)
+    protected boolean checkMandatoryFields(final COSDictionary fDescriptor)
     {
         boolean result = super.checkMandatoryFields(fDescriptor);
         /*
@@ -52,7 +52,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
          */
         if (isSubSet(fontDescriptor.getFontName()))
         {
-            String charsetStr = fontDescriptor.getCharSet();
+            final String charsetStr = fontDescriptor.getCharSet();
             if (charsetStr == null || charsetStr.isEmpty())
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_CHARSET_MISSING_FOR_SUBSET,
@@ -65,14 +65,14 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
     }
 
     @Override
-    public PDStream extractFontFile(PDFontDescriptor fontDescriptor)
+    public PDStream extractFontFile(final PDFontDescriptor fontDescriptor)
     {
-        PDStream ff1 = fontDescriptor.getFontFile();
-        PDStream ff3 = fontDescriptor.getFontFile3();
+        final PDStream ff1 = fontDescriptor.getFontFile();
+        final PDStream ff3 = fontDescriptor.getFontFile3();
 
         if (ff1 != null)
         {
-            COSStream stream = ff1.getCOSObject();
+            final COSStream stream = ff1.getCOSObject();
             if (stream == null)
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
@@ -81,9 +81,9 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
                 return null;
             }
 
-            boolean hasLength1 = stream.getInt(COSName.LENGTH1) > 0;
-            boolean hasLength2 = stream.getInt(COSName.LENGTH2) > 0;
-            boolean hasLength3 = stream.getInt(COSName.LENGTH3) >= 0;
+            final boolean hasLength1 = stream.getInt(COSName.LENGTH1) > 0;
+            final boolean hasLength2 = stream.getInt(COSName.LENGTH2) > 0;
+            final boolean hasLength3 = stream.getInt(COSName.LENGTH3) >= 0;
             if (!(hasLength1 && hasLength2 && hasLength3))
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
@@ -100,7 +100,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
     }
 
     @Override
-    protected void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile)
+    protected void processFontFile(final PDFontDescriptor fontDescriptor, final PDStream fontFile)
     {
         if (font.isDamaged())
         {

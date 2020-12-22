@@ -26,7 +26,7 @@ class KernPairTest
     @Test
     void testKernPair()
     {
-        KernPair kernPair = new KernPair("firstKernCharacter", "secondKernCharacter", 10f, 20f);
+        final KernPair kernPair = new KernPair("firstKernCharacter", "secondKernCharacter", 10f, 20f);
         assertEquals("firstKernCharacter", kernPair.getFirstKernCharacter());
         assertEquals("secondKernCharacter", kernPair.getSecondKernCharacter());
         assertEquals(10f, kernPair.getX(), 0.0f);

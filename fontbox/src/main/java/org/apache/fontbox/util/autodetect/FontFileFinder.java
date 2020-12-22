@@ -74,8 +74,8 @@ public class FontFileFinder
         {
             fontDirFinder = determineDirFinder();
         }
-        List<File> fontDirs = fontDirFinder.find();
-        List<URI> results = new ArrayList<>();
+        final List<File> fontDirs = fontDirFinder.find();
+        final List<URI> results = new ArrayList<>();
         fontDirs.forEach(dir -> walk(dir, results));
         return results;
     }
@@ -86,10 +86,10 @@ public class FontFileFinder
      * @param dir directory to search
      * @return list&lt;URI&gt; of font files
      */
-    public List<URI> find(String dir)
+    public List<URI> find(final String dir)
     {
-        List<URI> results = new ArrayList<>();
-        File directory = new File(dir);
+        final List<URI> results = new ArrayList<>();
+        final File directory = new File(dir);
         if (directory.isDirectory())
         {
             walk(directory, results);
@@ -103,19 +103,19 @@ public class FontFileFinder
      * @param directory the directory to start at
      * @param results names of all found font files
      */
-    private void walk(File directory, List<URI> results)
+    private void walk(final File directory, final List<URI> results)
     {
         // search for font files recursively in the given directory
         if (!directory.isDirectory())
         {
             return;
         }
-        File[] filelist = directory.listFiles();
+        final File[] filelist = directory.listFiles();
         if (filelist == null)
         {
             return;
         }
-        for (File file : filelist)
+        for (final File file : filelist)
         {
             if (file.isDirectory())
             {
@@ -150,9 +150,9 @@ public class FontFileFinder
      * @param file the given file
      * @return true if the given filename has a typical font file ending
      */
-    private boolean checkFontfile(File file)
+    private boolean checkFontfile(final File file)
     {
-        String name = file.getName().toLowerCase(Locale.US);
+        final String name = file.getName().toLowerCase(Locale.US);
         return (name.endsWith(".ttf") || name.endsWith(".otf") || name.endsWith(".pfb") || name.endsWith(".ttc")) 
                 // PDFBOX-3377 exclude weird files in AIX
                 && !name.startsWith("fonts.");

@@ -53,7 +53,7 @@ public class BengaliPdfGenerationHelloWorld
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 1)
         {
@@ -62,27 +62,27 @@ public class BengaliPdfGenerationHelloWorld
             System.exit(1);
         }
 
-        String filename = args[0];
+        final String filename = args[0];
 
         System.out.println("The generated pdf filename is: " + filename);
 
         try (PDDocument doc = new PDDocument())
         {
-            PDFont font = PDType0Font.load(doc,
+            final PDFont font = PDType0Font.load(doc,
                     BengaliPdfGenerationHelloWorld.class.getResourceAsStream(LOHIT_BENGALI_TTF),
                     true);
-            PDRectangle rectangle = getPageSize();
-            float workablePageWidth = rectangle.getWidth() - 2 * MARGIN;
-            float workablePageHeight = rectangle.getHeight() - 2 * MARGIN;
+            final PDRectangle rectangle = getPageSize();
+            final float workablePageWidth = rectangle.getWidth() - 2 * MARGIN;
+            final float workablePageHeight = rectangle.getHeight() - 2 * MARGIN;
 
-            List<List<String>> pagedTexts = getReAlignedTextBasedOnPageHeight(
+            final List<List<String>> pagedTexts = getReAlignedTextBasedOnPageHeight(
                     getReAlignedTextBasedOnPageWidth(getBengaliTextFromFile(), font,
                             workablePageWidth),
                     font, workablePageHeight);
 
-            for (List<String> linesForPage : pagedTexts)
+            for (final List<String> linesForPage : pagedTexts)
             {
-                PDPage page = new PDPage(getPageSize());
+                final PDPage page = new PDPage(getPageSize());
                 doc.addPage(page);
 
                 try (PDPageContentStream contents = new PDPageContentStream(doc, page))
@@ -92,7 +92,7 @@ public class BengaliPdfGenerationHelloWorld
                     contents.newLineAtOffset(rectangle.getLowerLeftX() + MARGIN,
                             rectangle.getUpperRightY() - MARGIN);
 
-                    for (String line : linesForPage)
+                    for (final String line : linesForPage)
                     {
                         contents.showText(line);
                         contents.newLineAtOffset(0, -(FONT_SIZE + LINE_GAP));
@@ -107,15 +107,15 @@ public class BengaliPdfGenerationHelloWorld
         }
     }
 
-    private static List<List<String>> getReAlignedTextBasedOnPageHeight(List<String> originalLines,
-            PDFont font, float workablePageHeight)
+    private static List<List<String>> getReAlignedTextBasedOnPageHeight(final List<String> originalLines,
+                                                                        final PDFont font, final float workablePageHeight)
     {
         final float newLineHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000
                 * FONT_SIZE + LINE_GAP;
-        List<List<String>> realignedTexts = new ArrayList<>();
+        final List<List<String>> realignedTexts = new ArrayList<>();
         float consumedHeight = 0;
         List<String> linesInAPage = new ArrayList<>();
-        for (String line : originalLines)
+        for (final String line : originalLines)
         {
             if (newLineHeight + consumedHeight < workablePageHeight)
             {
@@ -134,19 +134,19 @@ public class BengaliPdfGenerationHelloWorld
         return realignedTexts;
     }
 
-    private static List<String> getReAlignedTextBasedOnPageWidth(List<String> originalLines,
-            PDFont font, float workablePageWidth) throws IOException
+    private static List<String> getReAlignedTextBasedOnPageWidth(final List<String> originalLines,
+                                                                 final PDFont font, final float workablePageWidth) throws IOException
     {
-        List<String> uniformlyWideTexts = new ArrayList<>();
+        final List<String> uniformlyWideTexts = new ArrayList<>();
         float consumedWidth = 0;
         StringBuilder sb = new StringBuilder();
-        for (String line : originalLines)
+        for (final String line : originalLines)
         {
             float newTokenWidth = 0;
-            StringTokenizer st = new StringTokenizer(line, " ", true);
+            final StringTokenizer st = new StringTokenizer(line, " ", true);
             while (st.hasMoreElements())
             {
-                String token = st.nextToken();
+                final String token = st.nextToken();
                 newTokenWidth = font.getStringWidth(token) / 1000 * FONT_SIZE;
                 if (newTokenWidth + consumedWidth < workablePageWidth)
                 {
@@ -179,14 +179,14 @@ public class BengaliPdfGenerationHelloWorld
 
     private static List<String> getBengaliTextFromFile() throws IOException
     {
-        List<String> lines = new ArrayList<>();
+        final List<String> lines = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
-                BengaliPdfGenerationHelloWorld.class.getResourceAsStream(TEXT_SOURCE_FILE), StandardCharsets.UTF_8));)
+                BengaliPdfGenerationHelloWorld.class.getResourceAsStream(TEXT_SOURCE_FILE), StandardCharsets.UTF_8)))
         {
             while (true)
             {
-                String line = br.readLine();
+                final String line = br.readLine();
 
                 if (line == null)
                 {

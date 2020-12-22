@@ -62,7 +62,7 @@ public final class PrintPDF implements Callable<Integer>
     private String printerName;
 
     @Option(names = "-orientation", description = "print using orientation [${COMPLETION-CANDIDATES}] (default: ${DEFAULT-VALUE}).")    
-    private Orientation orientation = Orientation.AUTO;
+    private final Orientation orientation = Orientation.AUTO;
 
     @Option(names = "-border", description = "print with border.")    
     private boolean border;
@@ -81,11 +81,11 @@ public final class PrintPDF implements Callable<Integer>
      * 
      * @param args Command line arguments, should be one and a reference to a file.
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
-        int exitCode = new CommandLine(new PrintPDF()).execute(args);
+        final int exitCode = new CommandLine(new PrintPDF()).execute(args);
         System.exit(exitCode);
     }
 
@@ -103,18 +103,18 @@ public final class PrintPDF implements Callable<Integer>
 
         try (PDDocument document = Loader.loadPDF(infile, password))
         {
-            AccessPermission ap = document.getCurrentAccessPermission();
+            final AccessPermission ap = document.getCurrentAccessPermission();
             if (!ap.canPrint())
             {
                 throw new IOException("You do not have permission to print");
             }
 
-            PrinterJob printJob = PrinterJob.getPrinterJob();
+            final PrinterJob printJob = PrinterJob.getPrinterJob();
             printJob.setJobName(infile.getName());
 
             if (printerName != null)
             {
-                PrintService[] printServices = PrinterJob.lookupPrintServices();
+                final PrintService[] printServices = PrinterJob.lookupPrintServices();
                 boolean printerFound = false;
                 for (int i = 0; !printerFound && i < printServices.length; i++)
                 {
@@ -130,7 +130,7 @@ public final class PrintPDF implements Callable<Integer>
                     showAvailablePrinters();
                 }
             }
-            PDFPageable pageable = new PDFPageable(document, orientation, border, dpi);
+            final PDFPageable pageable = new PDFPageable(document, orientation, border, dpi);
             pageable.setRenderingHints(renderingHints);
             printJob.setPageable(pageable);
 
@@ -144,7 +144,7 @@ public final class PrintPDF implements Callable<Integer>
                 printJob.print();
             }
         }
-        catch (IOException | PrinterException ex)
+        catch (final IOException | PrinterException ex)
         {
             SYSERR.println("Error printing document: " + ex.getMessage());
             return 4;
@@ -155,8 +155,8 @@ public final class PrintPDF implements Callable<Integer>
     private static void showAvailablePrinters()
     {
         SYSERR.println("Available printer names:");
-        PrintService[] printServices = PrinterJob.lookupPrintServices();
-        for (PrintService printService : printServices)
+        final PrintService[] printServices = PrinterJob.lookupPrintServices();
+        for (final PrintService printService : printServices)
         {
             SYSERR.println("    " + printService.getName());
         }

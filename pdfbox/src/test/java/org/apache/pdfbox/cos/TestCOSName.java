@@ -37,12 +37,12 @@ class TestCOSName
     @Test
     void PDFBox4076() throws IOException
     {
-        String special = "中国你好!";
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final String special = "中国你好!";
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try (PDDocument document = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             document.addPage(page);
             document.getDocumentCatalog().getCOSObject().setString(COSName.getPDFName(special), special);
             
@@ -50,7 +50,7 @@ class TestCOSName
         }
         try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
         {
-            COSDictionary catalogDict = document.getDocumentCatalog().getCOSObject();
+            final COSDictionary catalogDict = document.getDocumentCatalog().getCOSObject();
             assertTrue(catalogDict.containsKey(special));
             assertEquals(special, catalogDict.getString(special));
         }

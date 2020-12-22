@@ -37,7 +37,7 @@ public final class PDJPXColorSpace extends PDColorSpace
      * Creates a new JPX color space from the given AWT color space.
      * @param colorSpace AWT color space from a JPX image
      */
-    public PDJPXColorSpace(ColorSpace colorSpace)
+    public PDJPXColorSpace(final ColorSpace colorSpace)
     {
         this.awtColorSpace = colorSpace;
     }
@@ -55,10 +55,10 @@ public final class PDJPXColorSpace extends PDColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
-        int n = getNumberOfComponents();
-        float[] decode = new float[n * 2];
+        final int n = getNumberOfComponents();
+        final float[] decode = new float[n * 2];
         for (int i = 0; i < n; i++)
         {
             decode[i * 2] = awtColorSpace.getMinValue(i);
@@ -74,19 +74,19 @@ public final class PDJPXColorSpace extends PDColorSpace
     }
 
     @Override
-    public float[] toRGB(float[] value)
+    public float[] toRGB(final float[] value)
     {
         throw new UnsupportedOperationException("JPX color spaces don't support drawing");
     }
 
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(final WritableRaster raster) throws IOException
     {
         return toRGBImageAWT(raster, awtColorSpace);
     }
 
     @Override
-    public BufferedImage toRawImage(WritableRaster raster)
+    public BufferedImage toRawImage(final WritableRaster raster)
     {
         return toRawImage(raster, this.awtColorSpace);
     }

@@ -28,7 +28,7 @@ public final class CIDSystemInfo
     private final String ordering;
     private final int supplement;
 
-    CIDSystemInfo(String registry, String ordering, int supplement)
+    CIDSystemInfo(final String registry, final String ordering, final int supplement)
     {
         this.registry = registry;
         this.ordering = ordering;

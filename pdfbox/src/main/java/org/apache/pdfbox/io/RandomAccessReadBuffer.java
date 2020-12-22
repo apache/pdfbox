@@ -58,7 +58,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     /**
      * Default constructor.
      */
-    private RandomAccessReadBuffer(int definedChunkSize)
+    private RandomAccessReadBuffer(final int definedChunkSize)
     {
         // starting with one chunk
         chunkSize = definedChunkSize;
@@ -72,7 +72,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
      * 
      * @param input the byte array to be read
      */
-    public RandomAccessReadBuffer(byte[] input)
+    public RandomAccessReadBuffer(final byte[] input)
     {
         // this is a special case. Wrap the given byte array to a single ByteBuffer.
         this(ByteBuffer.wrap(input));
@@ -83,7 +83,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
      * 
      * @param input the ByteBuffer to be read
      */
-    public RandomAccessReadBuffer(ByteBuffer input)
+    public RandomAccessReadBuffer(final ByteBuffer input)
     {
         chunkSize = input.capacity();
         size = chunkSize;
@@ -98,7 +98,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
      * @param input the input stream to be read
      * @throws IOException if something went wrong while copying the data
      */
-    public RandomAccessReadBuffer(InputStream input) throws IOException
+    public RandomAccessReadBuffer(final InputStream input) throws IOException
     {
         this();
         int bytesRead = 0;
@@ -126,15 +126,15 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         seek(0);
     }
 
-    private RandomAccessReadBuffer(RandomAccessReadBuffer parent)
+    private RandomAccessReadBuffer(final RandomAccessReadBuffer parent)
     {
         chunkSize = parent.chunkSize;
         size = parent.size;
         bufferListMaxIndex = parent.bufferListMaxIndex;
         bufferList = new ArrayList<>(parent.bufferList.size());
-        for (ByteBuffer buffer : parent.bufferList)
+        for (final ByteBuffer buffer : parent.bufferList)
         {
-            ByteBuffer newBuffer = buffer.duplicate();
+            final ByteBuffer newBuffer = buffer.duplicate();
             newBuffer.rewind();
             bufferList.add(newBuffer);
         }
@@ -156,7 +156,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
      * {@inheritDoc}
      */
     @Override
-    public void seek(long position) throws IOException
+    public void seek(final long position) throws IOException
     {
         checkClosed();
         if (position < 0)
@@ -223,7 +223,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
      * {@inheritDoc}
      */
     @Override
-    public int read(byte[] b, int offset, int length) throws IOException
+    public int read(final byte[] b, final int offset, final int length) throws IOException
     {
         checkClosed();
         int bytesRead = readRemainingBytes(b, offset, length);
@@ -242,14 +242,14 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         return bytesRead;
     }
 
-    private int readRemainingBytes(byte[] b, int offset, int length)
+    private int readRemainingBytes(final byte[] b, final int offset, final int length)
     {
         if (pointer >= size)
         {
             return -1;
         }
-        int maxLength = (int) Math.min(length, size - pointer);
-        int remainingBytes = chunkSize - currentBufferPointer;
+        final int maxLength = (int) Math.min(length, size - pointer);
+        final int remainingBytes = chunkSize - currentBufferPointer;
         // no more bytes left
         if (remainingBytes == 0)
         {
@@ -354,7 +354,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     }
 
     @Override
-    public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
+    public RandomAccessReadView createView(final long startPosition, final long streamLength) throws IOException
     {
         return new RandomAccessReadView(new RandomAccessReadBuffer(this), startPosition,
                 streamLength, true);

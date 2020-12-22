@@ -54,7 +54,7 @@ public class AppearanceStyle
      * 
      * @param font the font to be used.
      */
-    public void setFont(PDFont font)
+    public void setFont(final PDFont font)
     {
         this.font = font;
     }
@@ -74,7 +74,7 @@ public class AppearanceStyle
      * 
      * @param fontSize the font size.
      */
-    public void setFontSize(float fontSize)
+    public void setFontSize(final float fontSize)
     {
         this.fontSize = fontSize;
         leading = fontSize * 1.2f;
@@ -95,7 +95,7 @@ public class AppearanceStyle
      * 
      * @param leading the leading to be used.
      */
-    void setLeading(float leading)
+    void setLeading(final float leading)
     {
         this.leading = leading;
     }

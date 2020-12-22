@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 package org.apache.xmpbox;
 
 import java.util.ArrayList;
@@ -61,9 +61,9 @@ public class XMPMetadata
 
     private String xpacketEndData = XmpConstants.DEFAULT_XPACKET_END;
 
-    private List<XMPSchema> schemas;
+    private final List<XMPSchema> schemas;
 
-    private TypeMapping typeMapping;
+    private final TypeMapping typeMapping;
 
     /**
      * Constructor of an empty default XMPMetaData.
@@ -83,7 +83,7 @@ public class XMPMetadata
      * @param xpacketBytes Value of xpacketBytes
      * @param xpacketEncoding Value of xpacket encoding
      */
-    protected XMPMetadata(String xpacketBegin, String xpacketId, String xpacketBytes, String xpacketEncoding)
+    protected XMPMetadata(final String xpacketBegin, final String xpacketId, final String xpacketBytes, final String xpacketEncoding)
     {
         this.schemas = new ArrayList<>();
         this.typeMapping = new TypeMapping(this);
@@ -113,8 +113,8 @@ public class XMPMetadata
      * @param xpacketEncoding Value of xpacket encoding
      * @return the XMPMetadata created.
      */
-    public static XMPMetadata createXMPMetadata(String xpacketBegin, String xpacketId, String xpacketBytes,
-            String xpacketEncoding)
+    public static XMPMetadata createXMPMetadata(final String xpacketBegin, final String xpacketId, final String xpacketBytes,
+                                                final String xpacketEncoding)
     {
         return new XMPMetadata(xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
     }
@@ -183,7 +183,7 @@ public class XMPMetadata
      * 
      * @param data The XPacket End value
      */
-    public void setEndXPacket(String data)
+    public void setEndXPacket(final String data)
     {
         xpacketEndData = data;
     }
@@ -210,9 +210,9 @@ public class XMPMetadata
      * @param nsURI The namespace URI corresponding to the schema wanted
      * @return The matching XMP schema representation
      */
-    public XMPSchema getSchema(String nsURI)
+    public XMPSchema getSchema(final String nsURI)
     {
-        Iterator<XMPSchema> it = schemas.iterator();
+        final Iterator<XMPSchema> it = schemas.iterator();
         XMPSchema tmp;
         while (it.hasNext())
         {
@@ -237,9 +237,9 @@ public class XMPMetadata
      * @param clz The Class corresponding to the schema wanted
      * @return The matching XMP schema representation
      */
-    public XMPSchema getSchema(Class<? extends XMPSchema> clz)
+    public XMPSchema getSchema(final Class<? extends XMPSchema> clz)
     {
-        StructuredType st = clz.getAnnotation(StructuredType.class);
+        final StructuredType st = clz.getAnnotation(StructuredType.class);
         return getSchema(st.namespace());
     }
 
@@ -253,9 +253,9 @@ public class XMPMetadata
      * @param nsURI The namespace URI corresponding to the schema wanted
      * @return The Class Schema representation
      */
-    public XMPSchema getSchema(String prefix, String nsURI)
+    public XMPSchema getSchema(final String prefix, final String nsURI)
     {
-        Iterator<XMPSchema> it = getAllSchemas().iterator();
+        final Iterator<XMPSchema> it = getAllSchemas().iterator();
         XMPSchema tmp;
         while (it.hasNext())
         {
@@ -275,9 +275,9 @@ public class XMPMetadata
      * @param nsURI The namespace URI wanted for the schema
      * @return The schema added in order to work on it
      */
-    public XMPSchema createAndAddDefaultSchema(String nsPrefix, String nsURI)
+    public XMPSchema createAndAddDefaultSchema(final String nsPrefix, final String nsURI)
     {
-        XMPSchema schem = new XMPSchema(this, nsURI, nsPrefix);
+        final XMPSchema schem = new XMPSchema(this, nsURI, nsPrefix);
         schem.setAboutAsSimple("");
         addSchema(schem);
         return schem;
@@ -293,7 +293,7 @@ public class XMPMetadata
      */
     public PDFAExtensionSchema createAndAddPDFAExtensionSchemaWithDefaultNS()
     {
-        PDFAExtensionSchema pdfAExt = new PDFAExtensionSchema(this);
+        final PDFAExtensionSchema pdfAExt = new PDFAExtensionSchema(this);
         pdfAExt.setAboutAsSimple("");
         addSchema(pdfAExt);
         return pdfAExt;
@@ -309,10 +309,10 @@ public class XMPMetadata
      * @return schema added in order to work on it
      * @throws XmpSchemaException If namespaces list not contains PDF/A Extension namespace URI
      */
-    public PDFAExtensionSchema createAndAddPDFAExtensionSchemaWithNS(Map<String, String> namespaces)
+    public PDFAExtensionSchema createAndAddPDFAExtensionSchemaWithNS(final Map<String, String> namespaces)
             throws XmpSchemaException
     {
-        PDFAExtensionSchema pdfAExt = new PDFAExtensionSchema(this);
+        final PDFAExtensionSchema pdfAExt = new PDFAExtensionSchema(this);
         pdfAExt.setAboutAsSimple("");
         addSchema(pdfAExt);
         return pdfAExt;
@@ -339,7 +339,7 @@ public class XMPMetadata
      */
     public PDFAIdentificationSchema createAndAddPFAIdentificationSchema()
     {
-        PDFAIdentificationSchema pdfAId = new PDFAIdentificationSchema(this);
+        final PDFAIdentificationSchema pdfAId = new PDFAIdentificationSchema(this);
         pdfAId.setAboutAsSimple("");
         addSchema(pdfAId);
         return pdfAId;
@@ -366,7 +366,7 @@ public class XMPMetadata
      */
     public DublinCoreSchema createAndAddDublinCoreSchema()
     {
-        DublinCoreSchema dc = new DublinCoreSchema(this);
+        final DublinCoreSchema dc = new DublinCoreSchema(this);
         dc.setAboutAsSimple("");
         addSchema(dc);
         return dc;
@@ -393,7 +393,7 @@ public class XMPMetadata
      */
     public XMPBasicJobTicketSchema createAndAddBasicJobTicketSchema()
     {
-        XMPBasicJobTicketSchema sc = new XMPBasicJobTicketSchema(this);
+        final XMPBasicJobTicketSchema sc = new XMPBasicJobTicketSchema(this);
         sc.setAboutAsSimple("");
         addSchema(sc);
         return sc;
@@ -420,7 +420,7 @@ public class XMPMetadata
      */
     public XMPRightsManagementSchema createAndAddXMPRightsManagementSchema()
     {
-        XMPRightsManagementSchema rights = new XMPRightsManagementSchema(this);
+        final XMPRightsManagementSchema rights = new XMPRightsManagementSchema(this);
         rights.setAboutAsSimple("");
         addSchema(rights);
         return rights;
@@ -448,7 +448,7 @@ public class XMPMetadata
      */
     public XMPBasicSchema createAndAddXMPBasicSchema()
     {
-        XMPBasicSchema xmpB = new XMPBasicSchema(this);
+        final XMPBasicSchema xmpB = new XMPBasicSchema(this);
         xmpB.setAboutAsSimple("");
         addSchema(xmpB);
         return xmpB;
@@ -476,7 +476,7 @@ public class XMPMetadata
      */
     public XMPMediaManagementSchema createAndAddXMPMediaManagementSchema()
     {
-        XMPMediaManagementSchema xmpMM = new XMPMediaManagementSchema(this);
+        final XMPMediaManagementSchema xmpMM = new XMPMediaManagementSchema(this);
         xmpMM.setAboutAsSimple("");
         addSchema(xmpMM);
         return xmpMM;
@@ -491,7 +491,7 @@ public class XMPMetadata
      */
     public PhotoshopSchema createAndAddPhotoshopSchema()
     {
-        PhotoshopSchema photoshop = new PhotoshopSchema(this);
+        final PhotoshopSchema photoshop = new PhotoshopSchema(this);
         photoshop.setAboutAsSimple("");
         addSchema(photoshop);
         return photoshop;
@@ -530,7 +530,7 @@ public class XMPMetadata
      */
     public AdobePDFSchema createAndAddAdobePDFSchema()
     {
-        AdobePDFSchema pdf = new AdobePDFSchema(this);
+        final AdobePDFSchema pdf = new AdobePDFSchema(this);
         pdf.setAboutAsSimple("");
         addSchema(pdf);
         return pdf;
@@ -553,7 +553,7 @@ public class XMPMetadata
      * 
      * @param obj the schema to add
      */
-    public void addSchema(XMPSchema obj)
+    public void addSchema(final XMPSchema obj)
     {
         schemas.add(obj);
     }
@@ -563,7 +563,7 @@ public class XMPMetadata
      * 
      * @param schema The schema to remove
      */
-    public void removeSchema(XMPSchema schema)
+    public void removeSchema(final XMPSchema schema)
     {
         schemas.remove(schema);
     }

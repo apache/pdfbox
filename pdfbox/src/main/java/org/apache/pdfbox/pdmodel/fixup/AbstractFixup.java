@@ -22,7 +22,7 @@ public abstract class AbstractFixup implements PDDocumentFixup
 { 
     protected PDDocument document; 
 
-    protected AbstractFixup(PDDocument document)
+    protected AbstractFixup(final PDDocument document)
     { 
         this.document = document; 
     } 

@@ -32,10 +32,10 @@ class RandomAccessInputStreamTest
     @Test
     void testPositionSkip() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
+        final RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
                 new RandomAccessReadBuffer(bais));
 
         assertEquals(11, randomAccessInputStream.available());
@@ -50,10 +50,10 @@ class RandomAccessInputStreamTest
     @Test
     void testPositionRead() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
+        final RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
                 new RandomAccessReadBuffer(bais));
 
         assertEquals(11, randomAccessInputStream.available());
@@ -68,10 +68,10 @@ class RandomAccessInputStreamTest
     @Test
     void testSeekEOF() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
+        final RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
                 new RandomAccessReadBuffer(bais));
 
         assertEquals(12, randomAccessInputStream.skip(inputValues.length + 1));
@@ -86,14 +86,14 @@ class RandomAccessInputStreamTest
     @Test
     void testPositionReadBytes() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
+        final RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
                 new RandomAccessReadBuffer(bais));
 
         assertEquals(11, randomAccessInputStream.available());
-        byte[] buffer = new byte[4];
+        final byte[] buffer = new byte[4];
         randomAccessInputStream.read(buffer);
         assertEquals(0, buffer[0]);
         assertEquals(3, buffer[3]);
@@ -112,7 +112,7 @@ class RandomAccessInputStreamTest
     @Test
     void testEmptyBuffer() throws IOException
     {
-        RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
+        final RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
                 new RandomAccessReadBuffer(new ByteArrayOutputStream().toByteArray()));
 
         assertEquals(-1, randomAccessInputStream.read());

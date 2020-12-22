@@ -39,7 +39,7 @@ public class DeviceNColorant
         return name;
     }
 
-    public void setName(String name)
+    public void setName(final String name)
     {
         this.name = name;
     }
@@ -49,7 +49,7 @@ public class DeviceNColorant
         return maximum;
     }
 
-    public void setMaximum(Color maximum)
+    public void setMaximum(final Color maximum)
     {
         this.maximum = maximum;
     }
@@ -59,7 +59,7 @@ public class DeviceNColorant
         return minimum;
     }
 
-    public void setMinimum(Color minimum)
+    public void setMinimum(final Color minimum)
     {
         this.minimum = minimum;
     }

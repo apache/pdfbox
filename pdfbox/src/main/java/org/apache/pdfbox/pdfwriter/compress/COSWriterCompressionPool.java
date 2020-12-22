@@ -60,7 +60,7 @@ public class COSWriterCompressionPool
      * @param parameters The configuration of the compression operations, that shall be applied.
      * @throws IOException Shall be thrown if a compression operation failed.
      */
-    public COSWriterCompressionPool(PDDocument document, CompressParameters parameters)
+    public COSWriterCompressionPool(final PDDocument document, final CompressParameters parameters)
             throws IOException
     {
         this.document = document;
@@ -69,9 +69,9 @@ public class COSWriterCompressionPool
         originalPool = new COSObjectPool(document.getDocument().getHighestXRefObjectNumber());
 
         // Initialize object pool.
-        COSDocument cosDocument = document.getDocument();
+        final COSDocument cosDocument = document.getDocument();
 
-        COSDictionary trailer = cosDocument.getTrailer();
+        final COSDictionary trailer = cosDocument.getTrailer();
         addStructure(
                 new TraversedCOSElement(new COSObject(trailer.getCOSDictionary(COSName.ROOT))));
         addStructure(
@@ -89,7 +89,7 @@ public class COSWriterCompressionPool
      * @param key The {@link COSObjectKey} that shall be used as the {@link COSBase}s ID, if possible.
      * @param element The {@link COSBase}, that shall be registered in this pool.
      */
-    private COSBase addObjectToPool(COSObjectKey key, TraversedCOSElement element)
+    private COSBase addObjectToPool(final COSObjectKey key, final TraversedCOSElement element)
     {
         // Drop hollow objects.
         COSBase base = element.getCurrentObject();
@@ -111,7 +111,7 @@ public class COSWriterCompressionPool
                 || base instanceof COSStream)
         {
             originalPool.put(key, base);
-            COSObjectKey actualKey = objectPool.put(key, base);
+            final COSObjectKey actualKey = objectPool.put(key, base);
             if (actualKey == null)
             {
                 return base;
@@ -121,7 +121,7 @@ public class COSWriterCompressionPool
         }
 
         // Determine the object key.
-        COSObjectKey actualKey = objectPool.put(key, base);
+        final COSObjectKey actualKey = objectPool.put(key, base);
         if (actualKey == null)
         {
             return base;
@@ -138,9 +138,9 @@ public class COSWriterCompressionPool
      * @param traversedObject A Collection of all objects, that have already been traversed, to avoid cycles.
      * @throws IOException Shall be thrown, if compressing the object failed.
      */
-    private COSBase addStructure(TraversedCOSElement traversedObject) throws IOException
+    private COSBase addStructure(final TraversedCOSElement traversedObject) throws IOException
     {
-        COSBase current = traversedObject.getCurrentObject();
+        final COSBase current = traversedObject.getCurrentObject();
         COSBase base = current;
         COSBase retVal = current;
 
@@ -165,15 +165,15 @@ public class COSWriterCompressionPool
 
         if (base instanceof COSArray)
         {
-            COSArray array = (COSArray) base;
+            final COSArray array = (COSArray) base;
             for (int i = 0; i < array.size(); i++)
             {
-                COSBase value = array.get(i);
+                final COSBase value = array.get(i);
                 if ((value instanceof COSDictionary || value instanceof COSObject
                         || value instanceof COSArray)
                         && !traversedObject.getAllTraversedObjects().contains(value))
                 {
-                    COSBase writtenValue = addStructure(
+                    final COSBase writtenValue = addStructure(
                             traversedObject.appendTraversedElement(value));
                     if ((value instanceof COSStream || value instanceof COSObject)
                             && !value.equals(writtenValue))
@@ -185,15 +185,15 @@ public class COSWriterCompressionPool
         }
         else if (base instanceof COSDictionary)
         {
-            COSDictionary dictionary = (COSDictionary) base;
-            for (COSName name : dictionary.keySet())
+            final COSDictionary dictionary = (COSDictionary) base;
+            for (final COSName name : dictionary.keySet())
             {
-                COSBase value = dictionary.getItem(name);
+                final COSBase value = dictionary.getItem(name);
                 if ((value instanceof COSDictionary || value instanceof COSObject
                         || value instanceof COSArray)
                         && !traversedObject.getAllTraversedObjects().contains(value))
                 {
-                    COSBase writtenValue = addStructure(
+                    final COSBase writtenValue = addStructure(
                             traversedObject.appendTraversedElement(value));
                     if ((value instanceof COSStream || value instanceof COSObject)
                             && !value.equals(writtenValue))
@@ -236,7 +236,7 @@ public class COSWriterCompressionPool
      * @param object The object, that shall be checked.
      * @return True, if the given {@link COSBase} is a registered object of this compression pool.
      */
-    public boolean contains(COSBase object)
+    public boolean contains(final COSBase object)
     {
         return objectPool.contains(object) || originalPool.contains(object);
     }
@@ -248,7 +248,7 @@ public class COSWriterCompressionPool
      * @return The {@link COSObjectKey}, that is registered for the given {@link COSBase} in this compression pool, if
      * such an object is contained.
      */
-    public COSObjectKey getKey(COSBase object)
+    public COSObjectKey getKey(final COSBase object)
     {
         COSObjectKey key = objectPool.getKey(object);
         if (key == null)
@@ -265,7 +265,7 @@ public class COSWriterCompressionPool
      * @return The {@link COSBase}, that is registered for the given {@link COSObjectKey} in this compression pool, if
      * such an object is contained.
      */
-    public COSBase getObject(COSObjectKey key)
+    public COSBase getObject(final COSObjectKey key)
     {
         return objectPool.getObject(key);
     }
@@ -290,11 +290,11 @@ public class COSWriterCompressionPool
      */
     public List<COSWriterObjectStream> createObjectStreams()
     {
-        List<COSWriterObjectStream> objectStreams = new ArrayList<>();
+        final List<COSWriterObjectStream> objectStreams = new ArrayList<>();
         COSWriterObjectStream objectStream = null;
         for (int i = 0; i < objectStreamObjects.size(); i++)
         {
-            COSObjectKey key = objectStreamObjects.get(i);
+            final COSObjectKey key = objectStreamObjects.get(i);
             if (objectStream == null || (i % parameters.getObjectStreamSize()) == 0)
             {
                 objectStream = new COSWriterObjectStream(this);

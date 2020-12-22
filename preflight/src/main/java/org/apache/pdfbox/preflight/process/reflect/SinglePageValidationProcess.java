@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.process.reflect;
 
@@ -64,9 +64,9 @@ public class SinglePageValidationProcess extends AbstractProcess
     private static final Log LOGGER = LogFactory.getLog(SinglePageValidationProcess.class);
 
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
-        PreflightPath vPath = context.getValidationPath();
+        final PreflightPath vPath = context.getValidationPath();
         if (vPath.isEmpty())
         {
             return;
@@ -77,7 +77,7 @@ public class SinglePageValidationProcess extends AbstractProcess
         } 
         else 
         {
-            PDPage page = (PDPage) vPath.peek();
+            final PDPage page = (PDPage) vPath.peek();
             validateActions(context, page);
             validateAnnotation(context, page);
             validateColorSpaces(context, page);
@@ -97,7 +97,7 @@ public class SinglePageValidationProcess extends AbstractProcess
      * @param page the page to check.
      * @throws ValidationException
      */
-    protected void validateActions(PreflightContext context, PDPage page) throws ValidationException
+    protected void validateActions(final PreflightContext context, final PDPage page) throws ValidationException
     {
         ContextHelper.validateElement(context, page.getCOSObject(), ACTIONS_PROCESS);
     }
@@ -109,23 +109,23 @@ public class SinglePageValidationProcess extends AbstractProcess
      * @param context the preflight context.
      * @param page the page to check.
      */
-    protected void validateColorSpaces(PreflightContext context, PDPage page)
+    protected void validateColorSpaces(final PreflightContext context, final PDPage page)
     {
-        PDResources resources = page.getResources();
+        final PDResources resources = page.getResources();
         if (resources != null)
         {
-            PreflightConfiguration config = context.getConfig();
-            ColorSpaceHelperFactory colorSpaceFactory = config.getColorSpaceHelperFact();
-            for (COSName name : resources.getColorSpaceNames())
+            final PreflightConfiguration config = context.getConfig();
+            final ColorSpaceHelperFactory colorSpaceFactory = config.getColorSpaceHelperFact();
+            for (final COSName name : resources.getColorSpaceNames())
             {
                 try
                 {
-                    PDColorSpace pdCS = resources.getColorSpace(name);
-                    ColorSpaceHelper csHelper = colorSpaceFactory.getColorSpaceHelper(context, pdCS,
+                    final PDColorSpace pdCS = resources.getColorSpace(name);
+                    final ColorSpaceHelper csHelper = colorSpaceFactory.getColorSpaceHelper(context, pdCS,
                             ColorSpaceRestriction.NO_RESTRICTION);
                     csHelper.validate();
                 }
-                catch (IOException e)
+                catch (final IOException e)
                 {
                     // fixme: this code was previously in PDResources
                     LOGGER.debug("Unable to create colorspace", e);
@@ -142,7 +142,7 @@ public class SinglePageValidationProcess extends AbstractProcess
      * @param page the page to check.
      * @throws ValidationException
      */
-    protected void validateGraphicObjects(PreflightContext context, PDPage page) throws ValidationException
+    protected void validateGraphicObjects(final PreflightContext context, final PDPage page) throws ValidationException
     {
         COSBase thumbBase = page.getCOSObject().getItem(COSName.THUMB);
         if (thumbBase != null)
@@ -159,10 +159,10 @@ public class SinglePageValidationProcess extends AbstractProcess
                             "Thumb image must be a stream"));
                     return;
                 }
-                PDXObject thumbImg = PDImageXObject.createThumbnail((COSStream)thumbBase);
+                final PDXObject thumbImg = PDImageXObject.createThumbnail((COSStream)thumbBase);
                 ContextHelper.validateElement(context, thumbImg, GRAPHIC_PROCESS);
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 LOGGER.debug("Unable to read Thumb image", e);
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID, "Unable to read Thumb image : "
@@ -171,7 +171,7 @@ public class SinglePageValidationProcess extends AbstractProcess
         }
     }
 
-    protected void validateResources(PreflightContext context, PDPage page) throws ValidationException
+    protected void validateResources(final PreflightContext context, final PDPage page) throws ValidationException
     {
         ContextHelper.validateElement(context, page.getResources(), RESOURCES_PROCESS);
     }
@@ -182,15 +182,15 @@ public class SinglePageValidationProcess extends AbstractProcess
      * @param page the page to check.
      * @throws ValidationException
      */
-    protected void validateContent(PreflightContext context, PDPage page) throws ValidationException
+    protected void validateContent(final PreflightContext context, final PDPage page) throws ValidationException
     {
         // TODO add this wrapper in the config object ?
         try
         {
-            PreflightContentStream csWrapper = new PreflightContentStream(context, page);
+            final PreflightContentStream csWrapper = new PreflightContentStream(context, page);
             csWrapper.validatePageContentStream();
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOGGER.debug("Unable to read page content stream", e);
             context.addValidationError(new ValidationError(ERROR_UNKNOWN_ERROR, e.getMessage(), e));
@@ -203,25 +203,25 @@ public class SinglePageValidationProcess extends AbstractProcess
      * @param page the page to check.
      * @throws ValidationException
      */
-    protected void validateAnnotation(PreflightContext context, PDPage page) throws ValidationException
+    protected void validateAnnotation(final PreflightContext context, final PDPage page) throws ValidationException
     {
         try
         {
-            List<?> lAnnots = page.getAnnotations();
-            for (Object object : lAnnots)
+            final List<?> lAnnots = page.getAnnotations();
+            for (final Object object : lAnnots)
             {
                 if (object instanceof PDAnnotation)
                 {
-                    COSDictionary cosAnnot = ((PDAnnotation) object).getCOSObject();
+                    final COSDictionary cosAnnot = ((PDAnnotation) object).getCOSObject();
                     ContextHelper.validateElement(context, cosAnnot, ANNOTATIONS_PROCESS);
                 }
             }
         }
-        catch (ValidationException e)
+        catch (final ValidationException e)
         {
             throw e;
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             // TODO IOException probably due to Encrypt
             throw new ValidationException("Unable to access Annotation", e);
@@ -235,12 +235,12 @@ public class SinglePageValidationProcess extends AbstractProcess
      * @param page the page to check.
      * @throws ValidationException
      */
-    protected void validateGroupTransparency(PreflightContext context, PDPage page) throws ValidationException
+    protected void validateGroupTransparency(final PreflightContext context, final PDPage page) throws ValidationException
     {
-        COSDictionary groupDictionary = page.getCOSObject().getCOSDictionary(COSName.GROUP);
+        final COSDictionary groupDictionary = page.getCOSObject().getCOSDictionary(COSName.GROUP);
         if (groupDictionary != null)
         {
-            COSName sVal = groupDictionary.getCOSName(COSName.S);
+            final COSName sVal = groupDictionary.getCOSName(COSName.S);
             if (COSName.TRANSPARENCY.equals(sVal))
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP,

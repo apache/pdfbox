@@ -39,8 +39,8 @@ class TestCMap
     @Test
     void testLookup() throws IOException
     {
-        byte[] bs = new byte[] { (byte) 200 };
-        CMap cMap = new CMap();
+        final byte[] bs = new byte[] { (byte) 200 };
+        final CMap cMap = new CMap();
         cMap.addCharMapping(bs, "a");
         assertEquals("a", cMap.toUnicode(bs));
     }
@@ -56,7 +56,7 @@ class TestCMap
     {
         try (TrueTypeFont ttf = new TTFParser().parse("target/pdfs/NotoEmoji-Regular.ttf"))
         {
-            CmapLookup cmap = ttf.getUnicodeCmapLookup(false);
+            final CmapLookup cmap = ttf.getUnicodeCmapLookup(false);
             assertEquals(886, cmap.getGlyphId(0x1F681));
         }
     }

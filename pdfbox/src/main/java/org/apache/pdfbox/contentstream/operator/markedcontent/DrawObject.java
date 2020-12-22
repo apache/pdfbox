@@ -43,19 +43,19 @@ public class DrawObject extends OperatorProcessor
     private static final Log LOG = LogFactory.getLog(DrawObject.class);
 
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.isEmpty())
         {
             throw new MissingOperandException(operator, arguments);
         }
-        COSBase base0 = arguments.get(0);
+        final COSBase base0 = arguments.get(0);
         if (!(base0 instanceof COSName))
         {
             return;
         }
-        COSName name = (COSName) base0;
-        PDXObject xobject = context.getResources().getXObject(name);
+        final COSName name = (COSName) base0;
+        final PDXObject xobject = context.getResources().getXObject(name);
         ((PDFMarkedContentExtractor) context).xobject(xobject);
 
         if (xobject instanceof PDFormXObject)
@@ -68,7 +68,7 @@ public class DrawObject extends OperatorProcessor
                     LOG.error("recursion is too deep, skipping form XObject");
                     return;
                 }
-                PDFormXObject form = (PDFormXObject) xobject;
+                final PDFormXObject form = (PDFormXObject) xobject;
                 if (form instanceof PDTransparencyGroup)
                 {
                     context.showTransparencyGroup((PDTransparencyGroup) form);

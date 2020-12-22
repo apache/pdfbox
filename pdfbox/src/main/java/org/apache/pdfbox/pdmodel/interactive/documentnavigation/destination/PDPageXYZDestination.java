@@ -51,7 +51,7 @@ public class PDPageXYZDestination extends PDPageDestination
      *
      * @param arr The destination array.
      */
-    public PDPageXYZDestination( COSArray arr )
+    public PDPageXYZDestination(final COSArray arr )
     {
         super( arr );
     }
@@ -72,7 +72,7 @@ public class PDPageXYZDestination extends PDPageDestination
      * will be used.
      * @param x The left x coordinate.
      */
-    public void setLeft( int x )
+    public void setLeft(final int x )
     {
         array.growToSize( 3 );
         if( x == -1 )
@@ -101,7 +101,7 @@ public class PDPageXYZDestination extends PDPageDestination
      * will be used.
      * @param y The top ycoordinate.
      */
-    public void setTop( int y )
+    public void setTop(final int y )
     {
         array.growToSize( 4 );
         if( y == -1 )
@@ -122,7 +122,7 @@ public class PDPageXYZDestination extends PDPageDestination
      */
     public float getZoom()
     {
-        COSBase obj = array.getObject(4);
+        final COSBase obj = array.getObject(4);
         if (obj instanceof COSNumber)
         {
             return ((COSNumber) obj).floatValue();
@@ -135,7 +135,7 @@ public class PDPageXYZDestination extends PDPageDestination
      * will be used.
      * @param zoom The zoom value.
      */
-    public void setZoom( float zoom )
+    public void setZoom(final float zoom )
     {
         array.growToSize( 5 );
         if( Float.compare(zoom, -1) == 0)

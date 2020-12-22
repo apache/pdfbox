@@ -31,7 +31,7 @@ public class RangeRecord
     private final int endGlyphID;
     private final int startCoverageIndex;
 
-    public RangeRecord(int startGlyphID, int endGlyphID, int startCoverageIndex)
+    public RangeRecord(final int startGlyphID, final int endGlyphID, final int startCoverageIndex)
     {
         this.startGlyphID = startGlyphID;
         this.endGlyphID = endGlyphID;

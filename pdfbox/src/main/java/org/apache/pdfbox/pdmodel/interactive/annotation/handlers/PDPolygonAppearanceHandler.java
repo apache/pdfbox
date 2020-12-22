@@ -42,12 +42,12 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDPolygonAppearanceHandler.class);
 
-    public PDPolygonAppearanceHandler(PDAnnotation annotation)
+    public PDPolygonAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDPolygonAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDPolygonAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -63,9 +63,9 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        PDAnnotationPolygon annotation = (PDAnnotationPolygon) getAnnotation();
-        float lineWidth = getLineWidth();
-        PDRectangle rect = annotation.getRectangle();
+        final PDAnnotationPolygon annotation = (PDAnnotationPolygon) getAnnotation();
+        final float lineWidth = getLineWidth();
+        final PDRectangle rect = annotation.getRectangle();
 
         // Adjust rectangle even if not empty
         // CTAN-example-Annotations.pdf p2
@@ -74,7 +74,7 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
         float maxX = Float.MIN_VALUE;
         float maxY = Float.MIN_VALUE;
 
-        float[][] pathArray = getPathArray(annotation);
+        final float[][] pathArray = getPathArray(annotation);
         if (pathArray == null)
         {
             return;
@@ -83,8 +83,8 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
         {
             for (int j = 0; j < pathArray[i].length / 2; ++j)
             {
-                float x = pathArray[i][j * 2];
-                float y = pathArray[i][j * 2 + 1];
+                final float x = pathArray[i][j * 2];
+                final float y = pathArray[i][j * 2 + 1];
                 minX = Math.min(minX, x);
                 minY = Math.min(minY, y);
                 maxX = Math.max(maxX, x);
@@ -100,23 +100,23 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
 
         try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
-            boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
+            final boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
 
-            boolean hasBackground = contentStream
+            final boolean hasBackground = contentStream
                     .setNonStrokingColorOnDemand(annotation.getInteriorColor());
 
             setOpacity(contentStream, annotation.getConstantOpacity());
 
             contentStream.setBorderLine(lineWidth, annotation.getBorderStyle(), annotation.getBorder());
 
-            PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
+            final PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
             if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
             {
-                CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
+                final CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
                     borderEffect.getIntensity(), lineWidth, getRectangle());
                 cloudyBorder.createCloudyPolygon(pathArray);
                 annotation.setRectangle(cloudyBorder.getRectangle());
-                PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+                final PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
                 appearanceStream.setBBox(cloudyBorder.getBBox());
                 appearanceStream.setMatrix(cloudyBorder.getMatrix());
             }
@@ -127,7 +127,7 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
 
                 for (int i = 0; i < pathArray.length; i++)
                 {
-                    float[] pointsArray = pathArray[i];
+                    final float[] pointsArray = pathArray[i];
                     // first array shall be of size 2 and specify the moveto operator
                     if (i == 0 && pointsArray.length == 2)
                     {
@@ -152,25 +152,25 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
             }
             contentStream.drawShape(lineWidth, hasStroke, hasBackground);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOG.error(e);
         }
     }
 
-    private float[][] getPathArray(PDAnnotationPolygon annotation)
+    private float[][] getPathArray(final PDAnnotationPolygon annotation)
     {
         // PDF 2.0: Path takes priority over Vertices
         float[][] pathArray = annotation.getPath();
         if (pathArray == null)
         {
             // convert PDF 1.* array to PDF 2.0 array
-            float[] verticesArray = annotation.getVertices();
+            final float[] verticesArray = annotation.getVertices();
             if (verticesArray == null)
             {
                 return null;
             }
-            int points = verticesArray.length / 2;
+            final int points = verticesArray.length / 2;
             pathArray = new float[points][2];
             for (int i = 0; i < points; ++i)
             {
@@ -210,19 +210,19 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
     // here and removed from the individual handlers.
     float getLineWidth()
     {
-        PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
+        final PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
 
-        PDBorderStyleDictionary bs = annotation.getBorderStyle();
+        final PDBorderStyleDictionary bs = annotation.getBorderStyle();
 
         if (bs != null)
         {
             return bs.getWidth();
         }
 
-        COSArray borderCharacteristics = annotation.getBorder();
+        final COSArray borderCharacteristics = annotation.getBorder();
         if (borderCharacteristics.size() >= 3)
         {
-            COSBase base = borderCharacteristics.getObject(2);
+            final COSBase base = borderCharacteristics.getObject(2);
             if (base instanceof COSNumber)
             {
                 return ((COSNumber) base).floatValue();

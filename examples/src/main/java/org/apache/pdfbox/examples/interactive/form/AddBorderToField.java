@@ -44,22 +44,22 @@ public final class AddBorderToField
     {
     }
     
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         // Load the PDF document created by SimpleForm.java
         try (PDDocument document = Loader.loadPDF(new File("target/SimpleForm.pdf")))
         {
-            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            final PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             
             // Get the field and the widget associated to it.
             // Note: there might be multiple widgets
-            PDField field = acroForm.getField("SampleField");
-            PDAnnotationWidget widget = field.getWidgets().get(0);
+            final PDField field = acroForm.getField("SampleField");
+            final PDAnnotationWidget widget = field.getWidgets().get(0);
             
             // Create the definition for a red border
-            PDAppearanceCharacteristicsDictionary fieldAppearance =
+            final PDAppearanceCharacteristicsDictionary fieldAppearance =
                     new PDAppearanceCharacteristicsDictionary(new COSDictionary());
-            PDColor red = new PDColor(new float[] { 1, 0, 0 }, PDDeviceRGB.INSTANCE);
+            final PDColor red = new PDColor(new float[] { 1, 0, 0 }, PDDeviceRGB.INSTANCE);
             fieldAppearance.setBorderColour(red);
 
             // Set the information to be used by the widget which is responsible

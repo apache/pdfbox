@@ -33,7 +33,7 @@ public class PDTypedDictionaryWrapper extends PDDictionaryWrapper
      * 
      * @param type the type (Type)
      */
-    public PDTypedDictionaryWrapper(String type)
+    public PDTypedDictionaryWrapper(final String type)
     {
         super();
         this.getCOSObject().setName(COSName.TYPE, type);
@@ -44,7 +44,7 @@ public class PDTypedDictionaryWrapper extends PDDictionaryWrapper
      * 
      * @param dictionary the dictionary
      */
-    public PDTypedDictionaryWrapper(COSDictionary dictionary)
+    public PDTypedDictionaryWrapper(final COSDictionary dictionary)
     {
         super(dictionary);
     }

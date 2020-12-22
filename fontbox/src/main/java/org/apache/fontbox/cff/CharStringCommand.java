@@ -35,7 +35,7 @@ public class CharStringCommand
      * 
      * @param b0 value
      */
-    public CharStringCommand(int b0)
+    public CharStringCommand(final int b0)
     {
         commandKey = new Key(b0);
     }
@@ -46,7 +46,7 @@ public class CharStringCommand
      * @param b0 value1
      * @param b1 value2
      */
-    public CharStringCommand(int b0, int b1)
+    public CharStringCommand(final int b0, final int b1)
     {
         commandKey = new Key(b0, b1);
     }
@@ -56,7 +56,7 @@ public class CharStringCommand
      * 
      * @param values array of values
      */
-    public CharStringCommand(int[] values)
+    public CharStringCommand(final int[] values)
     {
         commandKey = new Key(values);
     }
@@ -87,14 +87,14 @@ public class CharStringCommand
     public String toString()
     {
         String str = null;
-        Type2KeyWord type2KeyWord = getType2KeyWord();
+        final Type2KeyWord type2KeyWord = getType2KeyWord();
         if (type2KeyWord != null)
         {
             str = type2KeyWord.toString();
         }
         else
         {
-            Type1KeyWord type1KeyWord = getType1KeyWord();
+            final Type1KeyWord type1KeyWord = getType1KeyWord();
             if (type1KeyWord != null)
             {
                 str = type1KeyWord.toString();
@@ -120,11 +120,11 @@ public class CharStringCommand
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object object)
+    public boolean equals(final Object object)
     {
         if (object instanceof CharStringCommand)
         {
-            CharStringCommand that = (CharStringCommand) object;
+            final CharStringCommand that = (CharStringCommand) object;
             return getKey().equals(that.getKey());
         }
         return false;
@@ -143,7 +143,7 @@ public class CharStringCommand
          * 
          * @param b0 value
          */
-        public Key(int b0)
+        public Key(final int b0)
         {
             keyValues = new int[] { b0 };
         }
@@ -154,7 +154,7 @@ public class CharStringCommand
          * @param b0 value1
          * @param b1 value2
          */
-        public Key(int b0, int b1)
+        public Key(final int b0, final int b1)
         {
             keyValues = new int[] { b0, b1 };
         }
@@ -164,7 +164,7 @@ public class CharStringCommand
          * 
          * @param values array of values
          */
-        public Key(int[] values)
+        public Key(final int[] values)
         {
             keyValues = values;
         }
@@ -205,11 +205,11 @@ public class CharStringCommand
          * {@inheritDoc}
          */
         @Override
-        public boolean equals(Object object)
+        public boolean equals(final Object object)
         {
             if (object instanceof Key)
             {
-                Key that = (Key) object;
+                final Key that = (Key) object;
                 if (keyValues[0] == 12 && that.keyValues[0] == 12)
                 {
                     if (keyValues.length > 1 && that.keyValues.length > 1)
@@ -239,7 +239,7 @@ public class CharStringCommand
 
         final Key key;
 
-        private Type1KeyWord(Key key)
+        private Type1KeyWord(final Key key)
         {
             this.key = key;
         }
@@ -248,13 +248,13 @@ public class CharStringCommand
             
         static
         {
-            for (Type1KeyWord e : values())
+            for (final Type1KeyWord e : values())
             {
                  BY_KEY.put(e.key, e);
             }
         }
         
-        public static Type1KeyWord valueOfKey(Key key)
+        public static Type1KeyWord valueOfKey(final Key key)
         {
             return BY_KEY.get(key);
         }
@@ -283,7 +283,7 @@ public class CharStringCommand
 
         final Key key;
 
-        private Type2KeyWord(Key key)
+        private Type2KeyWord(final Key key)
         {
             this.key = key;
         }
@@ -292,13 +292,13 @@ public class CharStringCommand
             
         static
         {
-            for (Type2KeyWord e : values())
+            for (final Type2KeyWord e : values())
             {
                  BY_KEY.put(e.key, e);
             }
         }
         
-        public static Type2KeyWord valueOfKey(Key key)
+        public static Type2KeyWord valueOfKey(final Key key)
         {
             return BY_KEY.get(key);
         }

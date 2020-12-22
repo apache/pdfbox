@@ -34,10 +34,10 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class NextLine extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         //move to start of next text line
-        List<COSBase> args = new ArrayList<>();
+        final List<COSBase> args = new ArrayList<>();
         args.add(new COSFloat(0f));
         // this must be -leading instead of just leading as written in the
         // specification (p.369) the acrobat reader seems to implement it the same way

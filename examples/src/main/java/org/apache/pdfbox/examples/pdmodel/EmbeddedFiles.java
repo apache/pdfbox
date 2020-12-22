@@ -56,13 +56,13 @@ public class EmbeddedFiles
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void doIt( String file) throws IOException
+    public void doIt(final String file) throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage( page );
-            PDFont font = PDType1Font.HELVETICA_BOLD;
+            final PDFont font = PDType1Font.HELVETICA_BOLD;
 
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
             {
@@ -74,19 +74,19 @@ public class EmbeddedFiles
             }
 
             //embedded files are stored in a named tree
-            PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
+            final PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
 
             //first create the file specification, which holds the embedded file
-            PDComplexFileSpecification fs = new PDComplexFileSpecification();
+            final PDComplexFileSpecification fs = new PDComplexFileSpecification();
 
             // use both methods for backwards, cross-platform and cross-language compatibility.
             fs.setFile( "Test.txt" );
             fs.setFileUnicode("Test.txt");
 
             //create a dummy file stream, this would probably normally be a FileInputStream
-            byte[] data = "This is the contents of the embedded file".getBytes(StandardCharsets.ISO_8859_1);
-            ByteArrayInputStream fakeFile = new ByteArrayInputStream(data);
-            PDEmbeddedFile ef = new PDEmbeddedFile(doc, fakeFile );
+            final byte[] data = "This is the contents of the embedded file".getBytes(StandardCharsets.ISO_8859_1);
+            final ByteArrayInputStream fakeFile = new ByteArrayInputStream(data);
+            final PDEmbeddedFile ef = new PDEmbeddedFile(doc, fakeFile );
             //now lets some of the optional parameters
             ef.setSubtype( "text/plain" );
             ef.setSize( data.length );
@@ -97,14 +97,14 @@ public class EmbeddedFiles
             fs.setEmbeddedFileUnicode(ef);
 
             // create a new tree node and add the embedded file
-            PDEmbeddedFilesNameTreeNode treeNode = new PDEmbeddedFilesNameTreeNode();
+            final PDEmbeddedFilesNameTreeNode treeNode = new PDEmbeddedFilesNameTreeNode();
             treeNode.setNames( Collections.singletonMap( "My first attachment",  fs ) );
             // add the new node as kid to the root node
-            List<PDEmbeddedFilesNameTreeNode> kids = new ArrayList<>();
+            final List<PDEmbeddedFilesNameTreeNode> kids = new ArrayList<>();
             kids.add(treeNode);
             efTree.setKids(kids);
             // add the tree to the document catalog
-            PDDocumentNameDictionary names = new PDDocumentNameDictionary( doc.getDocumentCatalog() );
+            final PDDocumentNameDictionary names = new PDDocumentNameDictionary( doc.getDocumentCatalog() );
             names.setEmbeddedFiles( efTree );
             doc.getDocumentCatalog().setNames( names );
 
@@ -122,9 +122,9 @@ public class EmbeddedFiles
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        EmbeddedFiles app = new EmbeddedFiles();
+        final EmbeddedFiles app = new EmbeddedFiles();
         if( args.length != 1 )
         {
             app.usage();

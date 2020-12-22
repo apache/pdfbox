@@ -31,8 +31,8 @@ import org.apache.pdfbox.io.IOUtils;
 final class IdentityFilter extends Filter
 {
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters, int index)
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded,
+                               final COSDictionary parameters, final int index)
         throws IOException
     {
         IOUtils.copy(encoded, decoded);
@@ -41,7 +41,7 @@ final class IdentityFilter extends Filter
     }
 
     @Override
-    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(final InputStream input, final OutputStream encoded, final COSDictionary parameters)
         throws IOException
     {
         IOUtils.copy(input, encoded);

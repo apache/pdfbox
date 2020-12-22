@@ -43,7 +43,7 @@ class SearchEngine
      * @param textComponent JTextComponent that is to be searched.
      * @param painter Highlighter.HighlightPainter instance to paint the highlights.
      */
-    SearchEngine(JTextComponent textComponent, Highlighter.HighlightPainter painter)
+    SearchEngine(final JTextComponent textComponent, final Highlighter.HighlightPainter painter)
     {
         this.document = textComponent.getDocument();
         this.highlighter = textComponent.getHighlighter();
@@ -56,9 +56,9 @@ class SearchEngine
      * @param isCaseSensitive boolean. If search is case sensitive.
      * @return ArrayList<Highlighter.Highlight>.
      */
-    public List<Highlighter.Highlight> search(String searchKey, boolean isCaseSensitive)
+    public List<Highlighter.Highlight> search(String searchKey, final boolean isCaseSensitive)
     {
-        List<Highlighter.Highlight> highlights = new ArrayList<>();
+        final List<Highlighter.Highlight> highlights = new ArrayList<>();
 
         if (searchKey != null)
         {
@@ -75,7 +75,7 @@ class SearchEngine
             {
                 textContent = document.getText(0, document.getLength());
             }
-            catch (BadLocationException e)
+            catch (final BadLocationException e)
             {
                 LOG.error(e.getMessage(), e);
                 return highlights;
@@ -86,7 +86,7 @@ class SearchEngine
                 searchKey = searchKey.toLowerCase();
             }
 
-            int searchKeyLength = searchKey.length();
+            final int searchKeyLength = searchKey.length();
             int startAt = 0;
             int resultantOffset;
             int indexOfHighLight = 0;
@@ -99,7 +99,7 @@ class SearchEngine
                     highlights.add(highlighter.getHighlights()[indexOfHighLight++]);
                     startAt = resultantOffset + searchKeyLength;
                 }
-                catch (BadLocationException e)
+                catch (final BadLocationException e)
                 {
                     LOG.error(e.getMessage(), e);
                 }

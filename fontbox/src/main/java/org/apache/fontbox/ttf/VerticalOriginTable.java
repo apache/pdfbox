@@ -46,7 +46,7 @@ public class VerticalOriginTable extends TTFTable
     private int defaultVertOriginY;
     private Map<Integer, Integer> origins;
 
-    VerticalOriginTable(TrueTypeFont font)
+    VerticalOriginTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -59,16 +59,16 @@ public class VerticalOriginTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
         version = data.read32Fixed();
         defaultVertOriginY = data.readSignedShort();
-        int numVertOriginYMetrics = data.readUnsignedShort();
+        final int numVertOriginYMetrics = data.readUnsignedShort();
         origins = new ConcurrentHashMap<>(numVertOriginYMetrics);
         for (int i = 0; i < numVertOriginYMetrics; ++i) 
         {
-            int g = data.readUnsignedShort();
-            int y = data.readSignedShort();
+            final int g = data.readUnsignedShort();
+            final int y = data.readSignedShort();
             origins.put(g, y);
         }
         initialized = true;
@@ -89,7 +89,7 @@ public class VerticalOriginTable extends TTFTable
      * @param gid GID
      * @return Returns the y-coordinate of the vertical origin.
      */
-    public int getOriginY(int gid)
+    public int getOriginY(final int gid)
     {
         if (origins.containsKey(gid))
         {

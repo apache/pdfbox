@@ -48,7 +48,7 @@ class FlagBitsPaneView
      * @param tableRowData Object 2d array for table row data.
      * @param columnNames String array for column names.
      */
-    FlagBitsPaneView(String flagHeader, String flagValue, Object[][] tableRowData, String[] columnNames)
+    FlagBitsPaneView(final String flagHeader, final String flagValue, final Object[][] tableRowData, final String[] columnNames)
     {
         this.flagHeader = flagHeader;
         this.flagValue = flagValue;
@@ -67,28 +67,28 @@ class FlagBitsPaneView
         panel.setLayout(new GridBagLayout());
         panel.setPreferredSize(new Dimension(300, 500));
 
-        JLabel flagLabel = new JLabel(flagHeader);
+        final JLabel flagLabel = new JLabel(flagHeader);
         flagLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         flagLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
-        JPanel flagLabelPanel = new JPanel();
+        final JPanel flagLabelPanel = new JPanel();
         flagLabelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         flagLabelPanel.add(flagLabel);
 
-        JLabel flagValueLabel = new JLabel(flagValue);
+        final JLabel flagValueLabel = new JLabel(flagValue);
         flagValueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         flagValueLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
 
-        JTable table = new JTable(tableData, columnNames);
-        JScrollPane scrollPane = new JScrollPane(table);
+        final JTable table = new JTable(tableData, columnNames);
+        final JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        Box box = Box.createVerticalBox();
+        final Box box = Box.createVerticalBox();
         box.add(flagValueLabel);
         box.add(scrollPane);
         box.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        final GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weighty = 0.05;

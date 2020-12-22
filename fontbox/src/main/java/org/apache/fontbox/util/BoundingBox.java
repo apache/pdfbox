@@ -47,7 +47,7 @@ public class BoundingBox
      * @param maxX upper right x value
      * @param maxY upper right y value
      */
-    public BoundingBox(float minX, float minY, float maxX, float maxY) 
+    public BoundingBox(final float minX, final float minY, final float maxX, final float maxY)
     {
         lowerLeftX = minX;
         lowerLeftY = minY;
@@ -60,7 +60,7 @@ public class BoundingBox
      *
      * @param numbers list of four numbers
      */
-    public BoundingBox(List<Number> numbers)
+    public BoundingBox(final List<Number> numbers)
     {
         lowerLeftX = numbers.get(0).floatValue();
         lowerLeftY = numbers.get(1).floatValue();
@@ -83,7 +83,7 @@ public class BoundingBox
      *
      * @param lowerLeftXValue New value of property lowerLeftX.
      */
-    public void setLowerLeftX(float lowerLeftXValue)
+    public void setLowerLeftX(final float lowerLeftXValue)
     {
         this.lowerLeftX = lowerLeftXValue;
     }
@@ -103,7 +103,7 @@ public class BoundingBox
      *
      * @param lowerLeftYValue New value of property lowerLeftY.
      */
-    public void setLowerLeftY(float lowerLeftYValue)
+    public void setLowerLeftY(final float lowerLeftYValue)
     {
         this.lowerLeftY = lowerLeftYValue;
     }
@@ -123,7 +123,7 @@ public class BoundingBox
      *
      * @param upperRightXValue New value of property upperRightX.
      */
-    public void setUpperRightX(float upperRightXValue)
+    public void setUpperRightX(final float upperRightXValue)
     {
         this.upperRightX = upperRightXValue;
     }
@@ -143,7 +143,7 @@ public class BoundingBox
      *
      * @param upperRightYValue New value of property upperRightY.
      */
-    public void setUpperRightY(float upperRightYValue)
+    public void setUpperRightY(final float upperRightYValue)
     {
         this.upperRightY = upperRightYValue;
     }
@@ -178,7 +178,7 @@ public class BoundingBox
      * 
      * @return true If the point is on the edge or inside the rectangle bounds. 
      */
-    public boolean contains( float x, float y )
+    public boolean contains(final float x, final float y )
     {
         return x >= lowerLeftX && x <= upperRightX &&
                y >= lowerLeftY && y <= upperRightY;

@@ -43,19 +43,19 @@ public final class DrawObject extends GraphicsOperatorProcessor
     private static final Log LOG = LogFactory.getLog(DrawObject.class);
 
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (operands.isEmpty())
         {
             throw new MissingOperandException(operator, operands);
         }
-        COSBase base0 = operands.get(0);
+        final COSBase base0 = operands.get(0);
         if (!(base0 instanceof COSName))
         {
             return;
         }
-        COSName objectName = (COSName) base0;
-        PDXObject xobject = context.getResources().getXObject(objectName);
+        final COSName objectName = (COSName) base0;
+        final PDXObject xobject = context.getResources().getXObject(objectName);
 
         if (xobject == null)
         {
@@ -63,7 +63,7 @@ public final class DrawObject extends GraphicsOperatorProcessor
         }
         else if (xobject instanceof PDImageXObject)
         {
-            PDImageXObject image = (PDImageXObject)xobject;
+            final PDImageXObject image = (PDImageXObject)xobject;
             context.drawImage(image);
         }
         else if (xobject instanceof PDFormXObject)
@@ -76,7 +76,7 @@ public final class DrawObject extends GraphicsOperatorProcessor
                     LOG.error("recursion is too deep, skipping form XObject");
                     return;
                 }
-                PDFormXObject form = (PDFormXObject) xobject;
+                final PDFormXObject form = (PDFormXObject) xobject;
                 if (form instanceof PDTransparencyGroup)
                 {
                     context.showTransparencyGroup((PDTransparencyGroup) form);

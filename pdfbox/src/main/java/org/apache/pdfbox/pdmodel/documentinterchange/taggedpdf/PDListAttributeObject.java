@@ -85,7 +85,7 @@ public class PDListAttributeObject extends PDStandardAttributeObject
      * 
      * @param dictionary the dictionary
      */
-    public PDListAttributeObject(COSDictionary dictionary)
+    public PDListAttributeObject(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -119,7 +119,7 @@ public class PDListAttributeObject extends PDStandardAttributeObject
      * 
      * @param listNumbering the list numbering
      */
-    public void setListNumbering(String listNumbering)
+    public void setListNumbering(final String listNumbering)
     {
         this.setName(LIST_NUMBERING, listNumbering);
     }
@@ -127,7 +127,7 @@ public class PDListAttributeObject extends PDStandardAttributeObject
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder().append(super.toString());
+        final StringBuilder sb = new StringBuilder().append(super.toString());
         if (this.isSpecified(LIST_NUMBERING))
         {
             sb.append(", ListNumbering=").append(this.getListNumbering());

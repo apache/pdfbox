@@ -32,7 +32,7 @@ import org.apache.pdfbox.cos.COSBase;
 public class Restore extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (context.getGraphicsStackSize() > 1)
         {

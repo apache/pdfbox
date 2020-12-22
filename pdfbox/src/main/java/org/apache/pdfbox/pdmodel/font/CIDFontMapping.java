@@ -30,7 +30,7 @@ public final class CIDFontMapping extends FontMapping<OpenTypeFont>
 {
     private final FontBoxFont ttf;
 
-    public CIDFontMapping(OpenTypeFont font, FontBoxFont fontBoxFont, boolean isFallback)
+    public CIDFontMapping(final OpenTypeFont font, final FontBoxFont fontBoxFont, final boolean isFallback)
     {
         super(font, isFallback);
         this.ttf = fontBoxFont;

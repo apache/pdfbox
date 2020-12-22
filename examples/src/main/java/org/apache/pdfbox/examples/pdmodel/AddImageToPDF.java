@@ -44,25 +44,25 @@ public class AddImageToPDF
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void createPDFFromImage( String inputFile, String imagePath, String outputFile )
+    public void createPDFFromImage(final String inputFile, final String imagePath, final String outputFile )
             throws IOException
     {
         try (PDDocument doc = Loader.loadPDF(new File(inputFile)))
         {
             //we will add the image to the first page.
-            PDPage page = doc.getPage(0);
+            final PDPage page = doc.getPage(0);
 
             // createFromFile is the easiest way with an image file
             // if you already have the image in a BufferedImage, 
             // call LosslessFactory.createFromImage() instead
-            PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, doc);
+            final PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, doc);
 
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.APPEND, true, true))
             {
                 // contentStream.drawImage(ximage, 20, 20 );
                 // better method inspired by http://stackoverflow.com/a/22318681/535646
                 // reduce this value if the image is too large
-                float scale = 1f;
+                final float scale = 1f;
                 contentStream.drawImage(pdImage, 20, 20, pdImage.getWidth() * scale, pdImage.getHeight() * scale);
             }
             doc.save(outputFile);
@@ -76,9 +76,9 @@ public class AddImageToPDF
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        AddImageToPDF app = new AddImageToPDF();
+        final AddImageToPDF app = new AddImageToPDF();
         if( args.length != 3 )
         {
             app.usage();

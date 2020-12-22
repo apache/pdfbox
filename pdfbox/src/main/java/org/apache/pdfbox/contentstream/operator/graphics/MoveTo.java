@@ -34,25 +34,25 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 public final class MoveTo extends GraphicsOperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (operands.size() < 2)
         {
             throw new MissingOperandException(operator, operands);
         }
-        COSBase base0 = operands.get(0);
+        final COSBase base0 = operands.get(0);
         if (!(base0 instanceof COSNumber))
         {
             return;
         }
-        COSBase base1 = operands.get(1);
+        final COSBase base1 = operands.get(1);
         if (!(base1 instanceof COSNumber))
         {
             return;
         }
-        COSNumber x = (COSNumber) base0;
-        COSNumber y = (COSNumber) base1;
-        Point2D.Float pos = context.transformedPoint(x.floatValue(), y.floatValue());
+        final COSNumber x = (COSNumber) base0;
+        final COSNumber y = (COSNumber) base1;
+        final Point2D.Float pos = context.transformedPoint(x.floatValue(), y.floatValue());
         context.moveTo(pos.x, pos.y);
     }
 

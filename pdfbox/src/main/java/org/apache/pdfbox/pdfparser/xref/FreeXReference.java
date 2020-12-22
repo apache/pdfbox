@@ -35,7 +35,7 @@ public class FreeXReference extends AbstractXReference
      *
      * @param nextFreeKey The key, that shall be set as the free reference of the document.
      */
-    public FreeXReference(COSObjectKey nextFreeKey)
+    public FreeXReference(final COSObjectKey nextFreeKey)
     {
         super(XReferenceType.FREE);
         this.nextFreeKey = nextFreeKey;

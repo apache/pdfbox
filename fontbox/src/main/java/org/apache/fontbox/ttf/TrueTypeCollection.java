@@ -40,7 +40,7 @@ public class TrueTypeCollection implements Closeable
      * @param file The TTC file.
      * @throws IOException If the font could not be parsed.
      */
-    public TrueTypeCollection(File file) throws IOException
+    public TrueTypeCollection(final File file) throws IOException
     {
         this(new RAFDataStream(file, "r"));
     }
@@ -51,7 +51,7 @@ public class TrueTypeCollection implements Closeable
      * @param stream A TTC input stream.
      * @throws IOException If the font could not be parsed.
      */
-    public TrueTypeCollection(InputStream stream) throws IOException
+    public TrueTypeCollection(final InputStream stream) throws IOException
     {
         this(new MemoryTTFDataStream(stream));
     }
@@ -62,17 +62,17 @@ public class TrueTypeCollection implements Closeable
      * @param stream The TTF file.
      * @throws IOException If the font could not be parsed.
      */
-    TrueTypeCollection(TTFDataStream stream) throws IOException
+    TrueTypeCollection(final TTFDataStream stream) throws IOException
     {
         this.stream = stream;
 
         // TTC header
-        String tag = stream.readTag();
+        final String tag = stream.readTag();
         if (!tag.equals("ttcf"))
         {
             throw new IOException("Missing TTC header");
         }
-        float version = stream.read32Fixed();
+        final float version = stream.read32Fixed();
         numFonts = (int)stream.readUnsignedInt();
         fontOffsets = new long[numFonts];
         for (int i = 0; i < numFonts; i++)
@@ -82,9 +82,9 @@ public class TrueTypeCollection implements Closeable
         if (version >= 2)
         {
             // not used at this time
-            int ulDsigTag = stream.readUnsignedShort();
-            int ulDsigLength = stream.readUnsignedShort();
-            int ulDsigOffset = stream.readUnsignedShort();
+            final int ulDsigTag = stream.readUnsignedShort();
+            final int ulDsigLength = stream.readUnsignedShort();
+            final int ulDsigOffset = stream.readUnsignedShort();
         }
     }
     
@@ -94,19 +94,19 @@ public class TrueTypeCollection implements Closeable
      * @param trueTypeFontProcessor the object with the callback method.
      * @throws IOException 
      */
-    public void processAllFonts(TrueTypeFontProcessor trueTypeFontProcessor) throws IOException
+    public void processAllFonts(final TrueTypeFontProcessor trueTypeFontProcessor) throws IOException
     {
         for (int i = 0; i < numFonts; i++)
         {
-            TrueTypeFont font = getFontAtIndex(i);
+            final TrueTypeFont font = getFontAtIndex(i);
             trueTypeFontProcessor.process(font);
         }
     }
     
-    private TrueTypeFont getFontAtIndex(int idx) throws IOException
+    private TrueTypeFont getFontAtIndex(final int idx) throws IOException
     {
         stream.seek(fontOffsets[idx]);
-        TTFParser parser;
+        final TTFParser parser;
         if (stream.readTag().equals("OTTO"))
         {
             parser = new OTFParser(false, true);
@@ -126,11 +126,11 @@ public class TrueTypeCollection implements Closeable
      * @return The found font, nor null if none is found.
      * @throws IOException 
      */
-    public TrueTypeFont getFontByName(String name) throws IOException
+    public TrueTypeFont getFontByName(final String name) throws IOException
     {
         for (int i = 0; i < numFonts; i++)
         {
-            TrueTypeFont font = getFontAtIndex(i);
+            final TrueTypeFont font = getFontAtIndex(i);
             if (font.getName().equals(name))
             {
                 return font;

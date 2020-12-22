@@ -44,7 +44,7 @@ public final class PDFontFactory
      * @return a PDFont instance, based on the SubType entry of the dictionary
      * @throws IOException if something goes wrong
      */
-    public static PDFont createFont(COSDictionary dictionary) throws IOException
+    public static PDFont createFont(final COSDictionary dictionary) throws IOException
     {
         return createFont(dictionary, null);
     }
@@ -57,18 +57,18 @@ public final class PDFontFactory
      * @return a PDFont instance, based on the SubType entry of the dictionary
      * @throws IOException if something goes wrong
      */
-    public static PDFont createFont(COSDictionary dictionary, ResourceCache resourceCache) throws IOException
+    public static PDFont createFont(final COSDictionary dictionary, final ResourceCache resourceCache) throws IOException
     {
-        COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
+        final COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
         if (!COSName.FONT.equals(type))
         {
             LOG.error("Expected 'Font' dictionary but found '" + type.getName() + "'");
         }
 
-        COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
+        final COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
         if (COSName.TYPE1.equals(subType))
         {
-            COSBase fd = dictionary.getDictionaryObject(COSName.FONT_DESC);
+            final COSBase fd = dictionary.getDictionaryObject(COSName.FONT_DESC);
             if (fd instanceof COSDictionary && ((COSDictionary) fd).containsKey(COSName.FONT_FILE3))
             {
                 return new PDType1CFont(dictionary);
@@ -77,7 +77,7 @@ public final class PDFontFactory
         }
         else if (COSName.MM_TYPE1.equals(subType))
         {
-            COSBase fd = dictionary.getDictionaryObject(COSName.FONT_DESC);
+            final COSBase fd = dictionary.getDictionaryObject(COSName.FONT_DESC);
             if (fd instanceof COSDictionary && ((COSDictionary) fd).containsKey(COSName.FONT_FILE3))
             {
                 return new PDType1CFont(dictionary);
@@ -120,16 +120,16 @@ public final class PDFontFactory
      * @return a PDCIDFont instance, based on the SubType entry of the dictionary
      * @throws IOException if something goes wrong
      */
-    static PDCIDFont createDescendantFont(COSDictionary dictionary, PDType0Font parent)
+    static PDCIDFont createDescendantFont(final COSDictionary dictionary, final PDType0Font parent)
             throws IOException
     {
-        COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
+        final COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
         if (!COSName.FONT.equals(type))
         {
             throw new IllegalArgumentException("Expected 'Font' dictionary but found '" + type.getName() + "'");
         }
 
-        COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
+        final COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
         if (COSName.CID_FONT_TYPE0.equals(subType))
         {
             return new PDCIDFontType0(dictionary, parent);

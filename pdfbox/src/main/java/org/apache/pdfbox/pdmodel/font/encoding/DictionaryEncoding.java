@@ -42,7 +42,7 @@ public class DictionaryEncoding extends Encoding
      * @param baseEncoding
      * @param differences
      */
-    public DictionaryEncoding(COSName baseEncoding, COSArray differences)
+    public DictionaryEncoding(final COSName baseEncoding, final COSArray differences)
     {
         encoding = new COSDictionary();
         encoding.setItem(COSName.NAME, COSName.ENCODING);
@@ -72,7 +72,7 @@ public class DictionaryEncoding extends Encoding
      *
      * @param fontEncoding The Type 3 encoding dictionary.
      */
-    public DictionaryEncoding(COSDictionary fontEncoding)
+    public DictionaryEncoding(final COSDictionary fontEncoding)
     {
         encoding = fontEncoding;
         baseEncoding = null;
@@ -86,15 +86,15 @@ public class DictionaryEncoding extends Encoding
      * @param isNonSymbolic True if the font is non-symbolic. False for Type 3 fonts.
      * @param builtIn The font's built-in encoding. Null for Type 3 fonts.
      */
-    public DictionaryEncoding(COSDictionary fontEncoding, boolean isNonSymbolic, Encoding builtIn)
+    public DictionaryEncoding(final COSDictionary fontEncoding, final boolean isNonSymbolic, final Encoding builtIn)
     {
         encoding = fontEncoding;
 
         Encoding base = null;
-        boolean hasBaseEncoding = encoding.containsKey(COSName.BASE_ENCODING);
+        final boolean hasBaseEncoding = encoding.containsKey(COSName.BASE_ENCODING);
         if (hasBaseEncoding)
         {
-            COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
+            final COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
             base = Encoding.getInstance(name); // null when the name is invalid
         }
 
@@ -131,23 +131,23 @@ public class DictionaryEncoding extends Encoding
     private void applyDifferences()
     {
         // now replace with the differences
-        COSBase base = encoding.getDictionaryObject(COSName.DIFFERENCES);
+        final COSBase base = encoding.getDictionaryObject(COSName.DIFFERENCES);
         if (!(base instanceof COSArray))
         {
             return;
         }
-        COSArray diffArray = (COSArray) base;
+        final COSArray diffArray = (COSArray) base;
         int currentIndex = -1;
         for (int i = 0; i < diffArray.size(); i++)
         {
-            COSBase next = diffArray.getObject(i);
+            final COSBase next = diffArray.getObject(i);
             if( next instanceof COSNumber)
             {
                 currentIndex = ((COSNumber)next).intValue();
             }
             else if( next instanceof COSName )
             {
-                COSName name = (COSName)next;
+                final COSName name = (COSName)next;
                 overwrite(currentIndex, name.getName());
                 this.differences.put(currentIndex, name.getName());
                 currentIndex++;

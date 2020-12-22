@@ -70,9 +70,9 @@ public class PDFText2HTML extends PDFTextStripper
     }
 
     @Override
-    protected void startDocument(PDDocument document) throws IOException
+    protected void startDocument(final PDDocument document) throws IOException
     {
-        StringBuilder buf = new StringBuilder(INITIAL_PDF_TO_HTML_BYTES);
+        final StringBuilder buf = new StringBuilder(INITIAL_PDF_TO_HTML_BYTES);
         buf.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"" + "\n"
                 + "\"http://www.w3.org/TR/html4/loose.dtd\">\n");
         buf.append("<html><head>");
@@ -87,7 +87,7 @@ public class PDFText2HTML extends PDFTextStripper
      * {@inheritDoc}
      */
     @Override
-    public void endDocument(PDDocument document) throws IOException
+    public void endDocument(final PDDocument document) throws IOException
     {
         super.writeString("</body></html>");
     }
@@ -100,22 +100,22 @@ public class PDFText2HTML extends PDFTextStripper
      */
     protected String getTitle()
     {
-        String titleGuess = document.getDocumentInformation().getTitle();
+        final String titleGuess = document.getDocumentInformation().getTitle();
         if(titleGuess != null && titleGuess.length() > 0)
         {
             return titleGuess;
         }
         else
         {
-            Iterator<List<TextPosition>> textIter = getCharactersByArticle().iterator();
+            final Iterator<List<TextPosition>> textIter = getCharactersByArticle().iterator();
             float lastFontSize = -1.0f;
 
-            StringBuilder titleText = new StringBuilder();
+            final StringBuilder titleText = new StringBuilder();
             while (textIter.hasNext())
             {
-                for (TextPosition position : textIter.next())
+                for (final TextPosition position : textIter.next())
                 {
-                    float currentFontSize = position.getFontSize();
+                    final float currentFontSize = position.getFontSize();
                     //If we're past 64 chars we will assume that we're past the title
                     //64 is arbitrary
                     if (Float.compare(currentFontSize, lastFontSize) != 0 || titleText.length() > 64)
@@ -146,7 +146,7 @@ public class PDFText2HTML extends PDFTextStripper
      *             If there is an error writing to the stream.
      */
     @Override
-    protected void startArticle(boolean isLTR) throws IOException
+    protected void startArticle(final boolean isLTR) throws IOException
     {
         if (isLTR)
         {
@@ -180,7 +180,7 @@ public class PDFText2HTML extends PDFTextStripper
      * @throws IOException If there is an error writing to the stream.
      */
     @Override
-    protected void writeString(String text, List<TextPosition> textPositions) throws IOException
+    protected void writeString(final String text, final List<TextPosition> textPositions) throws IOException
     {
         super.writeString(fontState.push(text, textPositions));
     }
@@ -193,7 +193,7 @@ public class PDFText2HTML extends PDFTextStripper
      *             If there is an error writing to the stream.
      */
     @Override
-    protected void writeString(String chars) throws IOException
+    protected void writeString(final String chars) throws IOException
     {
         super.writeString(escape(chars));
     }
@@ -218,9 +218,9 @@ public class PDFText2HTML extends PDFTextStripper
      * @param chars String to be escaped
      * @return returns escaped String.
      */
-    private static String escape(String chars)
+    private static String escape(final String chars)
     {
-        StringBuilder builder = new StringBuilder(chars.length());
+        final StringBuilder builder = new StringBuilder(chars.length());
         for (int i = 0; i < chars.length(); i++)
         {
             appendEscaped(builder, chars.charAt(i));
@@ -228,12 +228,12 @@ public class PDFText2HTML extends PDFTextStripper
         return builder.toString();
     }
 
-    private static void appendEscaped(StringBuilder builder, char character)
+    private static void appendEscaped(final StringBuilder builder, final char character)
     {
         // write non-ASCII as named entities
         if ((character < 32) || (character > 126))
         {
-            int charAsInt = character;
+            final int charAsInt = character;
             builder.append("&#").append(charAsInt).append(";");
         }
         else
@@ -277,9 +277,9 @@ public class PDFText2HTML extends PDFTextStripper
          *
          * @return A string that contains the text including tag changes caused by its font state.
          */
-        public String push(String text, List<TextPosition> textPositions)
+        public String push(final String text, final List<TextPosition> textPositions)
         {
-            StringBuilder buffer = new StringBuilder();
+            final StringBuilder buffer = new StringBuilder();
 
             if (text.length() == textPositions.size())
             {
@@ -310,19 +310,19 @@ public class PDFText2HTML extends PDFTextStripper
          */
         public String clear()
         {
-            StringBuilder buffer = new StringBuilder();
+            final StringBuilder buffer = new StringBuilder();
             closeUntil(buffer, null);
             stateList.clear();
             stateSet.clear();
             return buffer.toString();
         }
 
-        protected String push(StringBuilder buffer, char character, TextPosition textPosition)
+        protected String push(final StringBuilder buffer, final char character, final TextPosition textPosition)
         {
             boolean bold = false;
             boolean italics = false;
 
-            PDFontDescriptor descriptor = textPosition.getFont().getFontDescriptor();
+            final PDFontDescriptor descriptor = textPosition.getFont().getFontDescriptor();
             if (descriptor != null)
             {
                 bold = isBold(descriptor);
@@ -336,7 +336,7 @@ public class PDFText2HTML extends PDFTextStripper
             return buffer.toString();
         }
 
-        private String open(String tag)
+        private String open(final String tag)
         {
             if (stateSet.contains(tag))
             {
@@ -348,14 +348,14 @@ public class PDFText2HTML extends PDFTextStripper
             return openTag(tag);
         }
 
-        private String close(String tag)
+        private String close(final String tag)
         {
             if (!stateSet.contains(tag))
             {
                 return "";
             }
             // Close all tags until (but including) the one we should close
-            StringBuilder tagsBuilder = new StringBuilder();
+            final StringBuilder tagsBuilder = new StringBuilder();
             int index = closeUntil(tagsBuilder, tag);
 
             // Remove from state
@@ -370,11 +370,11 @@ public class PDFText2HTML extends PDFTextStripper
             return tagsBuilder.toString();
         }
 
-        private int closeUntil(StringBuilder tagsBuilder, String endTag)
+        private int closeUntil(final StringBuilder tagsBuilder, final String endTag)
         {
             for (int i = stateList.size(); i-- > 0;)
             {
-                String tag = stateList.get(i);
+                final String tag = stateList.get(i);
                 tagsBuilder.append(closeTag(tag));
                 if (endTag != null && tag.equals(endTag))
                 {
@@ -384,17 +384,17 @@ public class PDFText2HTML extends PDFTextStripper
             return -1;
         }
 
-        private String openTag(String tag)
+        private String openTag(final String tag)
         {
             return "<" + tag + ">";
         }
 
-        private String closeTag(String tag)
+        private String closeTag(final String tag)
         {
             return "</" + tag + ">";
         }
 
-        private boolean isBold(PDFontDescriptor descriptor)
+        private boolean isBold(final PDFontDescriptor descriptor)
         {
             if (descriptor.isForceBold())
             {
@@ -403,7 +403,7 @@ public class PDFText2HTML extends PDFTextStripper
             return descriptor.getFontName().contains("Bold");
         }
 
-        private boolean isItalic(PDFontDescriptor descriptor)
+        private boolean isItalic(final PDFontDescriptor descriptor)
         {
             if (descriptor.isItalic())
             {

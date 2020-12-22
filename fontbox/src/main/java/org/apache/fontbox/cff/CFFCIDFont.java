@@ -60,7 +60,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @param registry the registry to set
      */
-    void setRegistry(String registry)
+    void setRegistry(final String registry)
     {
         this.registry = registry;
     }
@@ -80,7 +80,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @param ordering the ordering to set
      */
-    void setOrdering(String ordering)
+    void setOrdering(final String ordering)
     {
         this.ordering = ordering;
     }
@@ -100,7 +100,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @param supplement the supplement to set
      */
-    void setSupplement(int supplement)
+    void setSupplement(final int supplement)
     {
         this.supplement = supplement;
     }
@@ -120,7 +120,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @param fontDict the fontDict to set
      */
-    void setFontDict(List<Map<String, Object>> fontDict)
+    void setFontDict(final List<Map<String, Object>> fontDict)
     {
         this.fontDictionaries = fontDict;
     }
@@ -140,7 +140,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @param privDict the privDict to set
      */
-    void setPrivDict(List<Map<String, Object>> privDict)
+    void setPrivDict(final List<Map<String, Object>> privDict)
     {
         this.privateDictionaries = privDict;
     }
@@ -160,7 +160,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @param fdSelect the fdSelect to set
      */
-    void setFdSelect(FDSelect fdSelect)
+    void setFdSelect(final FDSelect fdSelect)
     {
         this.fdSelect = fdSelect;
     }
@@ -170,14 +170,14 @@ public class CFFCIDFont extends CFFFont
      *
      * @param gid GID
      */
-    private int getDefaultWidthX(int gid)
+    private int getDefaultWidthX(final int gid)
     {
-        int fdArrayIndex = this.fdSelect.getFDIndex(gid);
+        final int fdArrayIndex = this.fdSelect.getFDIndex(gid);
         if (fdArrayIndex == -1)
         {
             return 1000;
         }
-        Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
+        final Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
         return privDict.containsKey("defaultWidthX") ? ((Number)privDict.get("defaultWidthX")).intValue() : 1000;
     }
 
@@ -186,14 +186,14 @@ public class CFFCIDFont extends CFFFont
      *
      * @param gid GID
      */
-    private int getNominalWidthX(int gid)
+    private int getNominalWidthX(final int gid)
     {
-        int fdArrayIndex = this.fdSelect.getFDIndex(gid);
+        final int fdArrayIndex = this.fdSelect.getFDIndex(gid);
         if (fdArrayIndex == -1)
         {
             return 0;
         }
-        Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
+        final Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
         return privDict.containsKey("nominalWidthX") ? ((Number)privDict.get("nominalWidthX")).intValue() : 0;
     }
 
@@ -202,14 +202,14 @@ public class CFFCIDFont extends CFFFont
      *
      * @param gid GID
      */
-    private byte[][] getLocalSubrIndex(int gid)
+    private byte[][] getLocalSubrIndex(final int gid)
     {
-        int fdArrayIndex = this.fdSelect.getFDIndex(gid);
+        final int fdArrayIndex = this.fdSelect.getFDIndex(gid);
         if (fdArrayIndex == -1)
         {
             return null;
         }
-        Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
+        final Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
         return (byte[][])privDict.get("Subrs");
     }
 
@@ -220,20 +220,20 @@ public class CFFCIDFont extends CFFFont
      * @throws IOException if the charstring could not be read
      */
     @Override
-    public CIDKeyedType2CharString getType2CharString(int cid) throws IOException
+    public CIDKeyedType2CharString getType2CharString(final int cid) throws IOException
     {
         CIDKeyedType2CharString type2 = charStringCache.get(cid);
         if (type2 == null)
         {
-            int gid = charset.getGIDForCID(cid);
+            final int gid = charset.getGIDForCID(cid);
 
             byte[] bytes = charStrings[gid];
             if (bytes == null)
             {
                 bytes = charStrings[0]; // .notdef
             }
-            Type2CharStringParser parser = new Type2CharStringParser(fontName, cid);
-            List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex(gid));
+            final Type2CharStringParser parser = new Type2CharStringParser(fontName, cid);
+            final List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex(gid));
             type2 = new CIDKeyedType2CharString(reader, fontName, cid, gid, type2seq,
                                                 getDefaultWidthX(gid), getNominalWidthX(gid));
             charStringCache.put(cid, type2);
@@ -249,30 +249,30 @@ public class CFFCIDFont extends CFFFont
     }
 
     @Override
-    public GeneralPath getPath(String selector) throws IOException
+    public GeneralPath getPath(final String selector) throws IOException
     {
-        int cid = selectorToCID(selector);
+        final int cid = selectorToCID(selector);
         return getType2CharString(cid).getPath();
     }
 
     @Override
-    public float getWidth(String selector) throws IOException
+    public float getWidth(final String selector) throws IOException
     {
-        int cid = selectorToCID(selector);
+        final int cid = selectorToCID(selector);
         return getType2CharString(cid).getWidth();
     }
 
     @Override
-    public boolean hasGlyph(String selector) throws IOException
+    public boolean hasGlyph(final String selector) throws IOException
     {
-        int cid = selectorToCID(selector);
+        final int cid = selectorToCID(selector);
         return cid != 0;
     }
 
     /**
      * Parses a CID selector of the form \ddddd.
      */
-    private int selectorToCID(String selector)
+    private int selectorToCID(final String selector)
     {
         if (!selector.startsWith("\\"))
         {
@@ -288,7 +288,7 @@ public class CFFCIDFont extends CFFFont
     private class PrivateType1CharStringReader implements Type1CharStringReader
     {
         @Override
-        public Type1CharString getType1CharString(String name) throws IOException
+        public Type1CharString getType1CharString(final String name) throws IOException
         {
             return CFFCIDFont.this.getType2CharString(0); // .notdef
         }

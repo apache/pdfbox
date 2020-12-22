@@ -39,15 +39,15 @@ class UpperPane extends JPanel
     }
 
     @Override
-    protected void paintComponent(Graphics g)
+    protected void paintComponent(final Graphics g)
     {
         super.paintComponent(g);
         
-        Graphics2D g2d = (Graphics2D)g;
+        final Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHints(HexView.RENDERING_HINTS);
         
         int x = HexView.LINE_INSET-2;
-        int y = 16;
+        final int y = 16;
 
         g.drawString("Offset", x, y);
 

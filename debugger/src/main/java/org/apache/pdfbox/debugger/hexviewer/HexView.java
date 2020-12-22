@@ -63,19 +63,19 @@ public class HexView
      * Constructor.
      * @param bytes takes a byte array.
      */
-    public HexView(byte[] bytes)
+    public HexView(final byte[] bytes)
     {
         mainPane = new JPanel(new BorderLayout());
         mainPane.add(new HexEditor(new HexModel(bytes)));
     }
 
-    public void changeData(byte[] bytes)
+    public void changeData(final byte[] bytes)
     {
         if (mainPane.getComponentCount() > 0)
         {
             mainPane.removeAll();
         }
-        HexModel model = new HexModel(bytes);
+        final HexModel model = new HexModel(bytes);
         mainPane.add(new HexEditor(model));
         mainPane.validate();
     }

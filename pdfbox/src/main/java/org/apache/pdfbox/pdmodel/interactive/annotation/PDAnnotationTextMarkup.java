@@ -34,7 +34,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
      *
      * @param subType the subtype the annotation represents
      */
-    protected PDAnnotationTextMarkup(String subType)
+    protected PDAnnotationTextMarkup(final String subType)
     {
         setSubtype(subType);
 
@@ -47,7 +47,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
      *
      * @param field the PDF object to represent as a field.
      */
-    protected PDAnnotationTextMarkup(COSDictionary field)
+    protected PDAnnotationTextMarkup(final COSDictionary field)
     {
         super(field);
     }
@@ -57,9 +57,9 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
      *
      * @param quadPoints an array representing the set of area covered
      */
-    public final void setQuadPoints(float[] quadPoints)
+    public final void setQuadPoints(final float[] quadPoints)
     {
-        COSArray newQuadPoints = new COSArray();
+        final COSArray newQuadPoints = new COSArray();
         newQuadPoints.setFloatArray(quadPoints);
         getCOSObject().setItem(COSName.QUADPOINTS, newQuadPoints);
     }
@@ -71,7 +71,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
      */
     public float[] getQuadPoints()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.QUADPOINTS);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.QUADPOINTS);
         if (base instanceof COSArray)
         {
             return ((COSArray) base).toFloatArray();

@@ -42,48 +42,48 @@ class TestCMapParser
     void testLookup() throws IOException
     {
         final String resourceDir = "src/test/resources/cmap";
-        File inDir = new File(resourceDir);
+        final File inDir = new File(resourceDir);
 
-        CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse(new File(inDir, "CMapTest"));
+        final CMapParser parser = new CMapParser();
+        final CMap cMap = parser.parse(new File(inDir, "CMapTest"));
 
         // char mappings
-        byte[] bytes1 = {0, 1};
+        final byte[] bytes1 = {0, 1};
         assertEquals("A", cMap.toUnicode(bytes1), "bytes 00 01 from bfrange <0001> <0005> <0041>");
 
-        byte[] bytes2 = {1, 00};
-        String str2 = "0";
+        final byte[] bytes2 = {1, 00};
+        final String str2 = "0";
         assertEquals(str2,
                 cMap.toUnicode(bytes2), "bytes 01 00 from bfrange <0100> <0109> <0030>");
 
-        byte[] bytes3 = { 1, 32 };
+        final byte[] bytes3 = { 1, 32 };
         assertEquals("P", cMap.toUnicode(bytes3), "bytes 01 00 from bfrange <0100> <0109> <0030>");
 
-        byte[] bytes4 = { 1, 33 };
+        final byte[] bytes4 = { 1, 33 };
         assertEquals("R", cMap.toUnicode(bytes4), "bytes 01 00 from bfrange <0100> <0109> <0030>");
 
-        byte[] bytes5 = { 0, 10 };
-        String str5 = "*";
+        final byte[] bytes5 = { 0, 10 };
+        final String str5 = "*";
         assertEquals(str5, cMap.toUnicode(bytes5), "bytes 00 0A from bfchar <000A> <002A>");
 
-        byte[] bytes6 = { 1, 10 };
-        String str6 = "+";
+        final byte[] bytes6 = { 1, 10 };
+        final String str6 = "+";
         assertEquals(str6, cMap.toUnicode(bytes6), "bytes 01 0A from bfchar <010A> <002B>");
 
         // CID mappings
-        byte[] cid1 = new byte[] { 0, 65 };
+        final byte[] cid1 = new byte[] { 0, 65 };
         assertEquals(65, cMap.toCID(cid1), "CID 65 from cidrange <0000> <00ff> 0 ");
 
-        byte[] cid2 = new byte[] { 1, 24 };
-        int strCID2 = 0x0118;
+        final byte[] cid2 = new byte[] { 1, 24 };
+        final int strCID2 = 0x0118;
         assertEquals(strCID2, cMap.toCID(cid2), "CID 280 from cidrange <0100> <01ff> 256");
 
-        byte[] cid3 = new byte[] { 2, 8 };
-        int strCID3 = 0x0208;
+        final byte[] cid3 = new byte[] { 2, 8 };
+        final int strCID3 = 0x0208;
         assertEquals(strCID3, cMap.toCID(cid3), "CID 520 from cidchar <0208> 520");
 
-        byte[] cid4 = new byte[] { 1, 0x2c };
-        int strCID4 = 0x12C;
+        final byte[] cid4 = new byte[] { 1, 0x2c };
+        final int strCID4 = 0x12C;
         assertEquals(strCID4, cMap.toCID(cid4), "CID 300 from cidrange <0300> <0300> 300");
     }
 
@@ -91,10 +91,10 @@ class TestCMapParser
     void testIdentity() throws IOException
     {
         final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
-        File inDir = new File(resourceDir);
+        final File inDir = new File(resourceDir);
 
-        CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse(new File(inDir, "Identity-H"));
+        final CMapParser parser = new CMapParser();
+        final CMap cMap = parser.parse(new File(inDir, "Identity-H"));
 
         assertEquals(65, cMap.toCID(new byte[] { 0, 65 }), "Indentity-H CID 65");
         assertEquals(12345, cMap.toCID(new byte[] { 0x30, 0x39 }), "Indentity-H CID 12345");
@@ -106,10 +106,10 @@ class TestCMapParser
     void testUniJIS_UTF16_H() throws IOException
     {
         final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
-        File inDir = new File(resourceDir);
+        final File inDir = new File(resourceDir);
 
-        CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse(new File(inDir, "UniJIS-UTF16-H"));
+        final CMapParser parser = new CMapParser();
+        final CMap cMap = parser.parse(new File(inDir, "UniJIS-UTF16-H"));
 
         // the next 3 cases demonstrate the issue of possible false result values of CMap.toCID(int code)
         assertEquals(694, cMap.toCID(0xb1), "UniJIS-UTF16-H CID 0xb1 -> 694");
@@ -134,10 +134,10 @@ class TestCMapParser
     void testUniJIS_UCS2_H() throws IOException
     {
         final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
-        File inDir = new File(resourceDir);
+        final File inDir = new File(resourceDir);
 
-        CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse(new File(inDir, "UniJIS-UCS2-H"));
+        final CMapParser parser = new CMapParser();
+        final CMap cMap = parser.parse(new File(inDir, "UniJIS-UCS2-H"));
 
         assertEquals(34, cMap.toCID(new byte[] { 0, 65 }), "UniJIS-UCS2-H CID 65 -> 34");
     }
@@ -146,10 +146,10 @@ class TestCMapParser
     void testAdobe_GB1_UCS2() throws IOException
     {
         final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
-        File inDir = new File(resourceDir);
+        final File inDir = new File(resourceDir);
 
-        CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse(new File(inDir, "Adobe-GB1-UCS2"));
+        final CMapParser parser = new CMapParser();
+        final CMap cMap = parser.parse(new File(inDir, "Adobe-GB1-UCS2"));
 
         assertEquals("0", cMap.toUnicode(new byte[] { 0, 0x11 }),
                 "Adobe-GB1-UCS2 CID 0x11 -> \"0\"");
@@ -162,7 +162,7 @@ class TestCMapParser
     @Test
     void testParserWithPoorWhitespace() throws IOException
     {
-        CMap cMap = new CMapParser().parse(new File("src/test/resources/cmap", "CMapNoWhitespace"));
+        final CMap cMap = new CMapParser().parse(new File("src/test/resources/cmap", "CMapNoWhitespace"));
 
         assertNotNull(cMap, "Failed to parse nasty CMap file");
     }
@@ -170,15 +170,15 @@ class TestCMapParser
     @Test
     void testParserWithMalformedbfrange1() throws IOException
     {
-        CMap cMap = new CMapParser()
+        final CMap cMap = new CMapParser()
                 .parse(new File("src/test/resources/cmap", "CMapMalformedbfrange1"));
 
         assertNotNull(cMap, "Failed to parse malformed CMap file");
 
-        byte[] bytes1 = { 0, 1 };
+        final byte[] bytes1 = { 0, 1 };
         assertEquals("A", cMap.toUnicode(bytes1), "bytes 00 01 from bfrange <0001> <0009> <0041>");
 
-        byte[] bytes2 = { 1, 00 };
+        final byte[] bytes2 = { 1, 00 };
         assertNull(cMap.toUnicode(bytes2));
 
     }
@@ -186,7 +186,7 @@ class TestCMapParser
     @Test
     void testParserWithMalformedbfrange2() throws IOException
     {
-        CMap cMap = new CMapParser()
+        final CMap cMap = new CMapParser()
                 .parse(new File("src/test/resources/cmap", "CMapMalformedbfrange2"));
 
         assertNotNull(cMap, "Failed to parse malformed CMap file");

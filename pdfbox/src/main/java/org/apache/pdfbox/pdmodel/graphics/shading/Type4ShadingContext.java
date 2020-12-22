@@ -53,8 +53,8 @@ class Type4ShadingContext extends GouraudShadingContext
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
-                               Matrix matrix, Rectangle deviceBounds) throws IOException
+    Type4ShadingContext(final PDShadingType4 shading, final ColorModel cm, final AffineTransform xform,
+                        final Matrix matrix, final Rectangle deviceBounds) throws IOException
     {
         super(shading, cm, xform, matrix);
         LOG.debug("Type4ShadingContext");
@@ -67,30 +67,30 @@ class Type4ShadingContext extends GouraudShadingContext
     }
 
     @SuppressWarnings("squid:S1166")
-    private List<ShadedTriangle> collectTriangles(PDShadingType4 freeTriangleShadingType, AffineTransform xform, Matrix matrix)
+    private List<ShadedTriangle> collectTriangles(final PDShadingType4 freeTriangleShadingType, final AffineTransform xform, final Matrix matrix)
             throws IOException
     {
-        COSDictionary dict = freeTriangleShadingType.getCOSObject();
+        final COSDictionary dict = freeTriangleShadingType.getCOSObject();
         if (!(dict instanceof COSStream))
         {
             return Collections.emptyList();
         }
-        PDRange rangeX = freeTriangleShadingType.getDecodeForParameter(0);
-        PDRange rangeY = freeTriangleShadingType.getDecodeForParameter(1);
+        final PDRange rangeX = freeTriangleShadingType.getDecodeForParameter(0);
+        final PDRange rangeY = freeTriangleShadingType.getDecodeForParameter(1);
         if (Float.compare(rangeX.getMin(), rangeX.getMax()) == 0 ||
             Float.compare(rangeY.getMin(), rangeY.getMax()) == 0)
         {
             return Collections.emptyList();
         }
-        PDRange[] colRange = new PDRange[numberOfColorComponents];
+        final PDRange[] colRange = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
             colRange[i] = freeTriangleShadingType.getDecodeForParameter(2 + i);
         }
-        List<ShadedTriangle> list = new ArrayList<>();
-        long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
-        long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
-        COSStream stream = (COSStream) dict;
+        final List<ShadedTriangle> list = new ArrayList<>();
+        final long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
+        final long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
+        final COSStream stream = (COSStream) dict;
 
         try (ImageInputStream mciis = new MemoryCacheImageInputStream(stream.createInputStream()))
         {
@@ -99,7 +99,7 @@ class Type4ShadingContext extends GouraudShadingContext
             {
                 flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
             }
-            catch (EOFException ex)
+            catch (final EOFException ex)
             {
                 LOG.error(ex);
             }
@@ -107,10 +107,12 @@ class Type4ShadingContext extends GouraudShadingContext
             boolean eof = false;
             while (!eof)
             {
-                Vertex p0, p1, p2;
-                Point2D[] ps;
-                float[][] cs;
-                int lastIndex;
+                final Vertex p0;
+                final Vertex p1;
+                final Vertex p2;
+                final Point2D[] ps;
+                final float[][] cs;
+                final int lastIndex;
                 try
                 {
                     switch (flag)
@@ -146,7 +148,7 @@ class Type4ShadingContext extends GouraudShadingContext
                             }
                             else
                             {
-                                ShadedTriangle preTri = list.get(lastIndex);
+                                final ShadedTriangle preTri = list.get(lastIndex);
                                 p2 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY,
                                                 colRange, matrix, xform);
                                 ps = new Point2D[] { flag == 1 ? preTri.corner[1] : preTri.corner[0],
@@ -164,7 +166,7 @@ class Type4ShadingContext extends GouraudShadingContext
                             break;
                     }
                 }
-                catch (EOFException ex)
+                catch (final EOFException ex)
                 {
                     eof = true;
                 }

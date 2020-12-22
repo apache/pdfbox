@@ -32,7 +32,7 @@ public class ExecutionContext
      * Creates a new execution context.
      * @param operatorSet the operator set
      */
-    public ExecutionContext(Operators operatorSet)
+    public ExecutionContext(final Operators operatorSet)
     {
         this.operators = operatorSet;
     }

@@ -108,12 +108,12 @@ public class Overlay implements Closeable
      *
      * @throws IOException if something went wrong
      */
-    public PDDocument overlay(Map<Integer, String> specificPageOverlayFile) throws IOException
+    public PDDocument overlay(final Map<Integer, String> specificPageOverlayFile) throws IOException
     {
-        Map<String, PDDocument> loadedDocuments = new HashMap<>();
-        Map<PDDocument, LayoutPage> layouts = new HashMap<>();
+        final Map<String, PDDocument> loadedDocuments = new HashMap<>();
+        final Map<PDDocument, LayoutPage> layouts = new HashMap<>();
         loadPDFs();
-        for (Map.Entry<Integer, String> e : specificPageOverlayFile.entrySet())
+        for (final Map.Entry<Integer, String> e : specificPageOverlayFile.entrySet())
         {
             PDDocument doc = loadedDocuments.get(e.getValue());
             if (doc == null)
@@ -143,12 +143,12 @@ public class Overlay implements Closeable
      *
      * @throws IOException if something went wrong
      */
-    public PDDocument overlayDocuments(Map<Integer, PDDocument> specificPageOverlayDocuments) throws IOException
+    public PDDocument overlayDocuments(final Map<Integer, PDDocument> specificPageOverlayDocuments) throws IOException
     {
         loadPDFs();
-        for (Map.Entry<Integer, PDDocument> e : specificPageOverlayDocuments.entrySet())
+        for (final Map.Entry<Integer, PDDocument> e : specificPageOverlayDocuments.entrySet())
         {
-            PDDocument doc = e.getValue();
+            final PDDocument doc = e.getValue();
             if (doc != null)
             {
                 specificPageOverlayPage.put(e.getKey(), getLayoutPage(doc));
@@ -190,7 +190,7 @@ public class Overlay implements Closeable
         {
             evenPageOverlay.close();
         }
-        for (PDDocument doc : openDocuments)
+        for (final PDDocument doc : openDocuments)
         {
             doc.close();
         }
@@ -263,7 +263,7 @@ public class Overlay implements Closeable
         }
     }
     
-    private PDDocument loadPDF(String pdfName) throws IOException
+    private PDDocument loadPDF(final String pdfName) throws IOException
     {
         return Loader.loadPDF(new File(pdfName));
     }
@@ -278,7 +278,7 @@ public class Overlay implements Closeable
         private final COSDictionary overlayResources;
         private final int overlayRotation;
 
-        private LayoutPage(PDRectangle mediaBox, COSStream contentStream, COSDictionary resources, int rotation)
+        private LayoutPage(final PDRectangle mediaBox, final COSStream contentStream, final COSDictionary resources, final int rotation)
         {
             overlayMediaBox = mediaBox;
             overlayContentStream = contentStream;
@@ -287,10 +287,10 @@ public class Overlay implements Closeable
         }
     }
 
-    private LayoutPage getLayoutPage(PDDocument doc) throws IOException
+    private LayoutPage getLayoutPage(final PDDocument doc) throws IOException
     {
-        PDPage page = doc.getPage(0);
-        COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
+        final PDPage page = doc.getPage(0);
+        final COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
         PDResources resources = page.getResources();
         if (resources == null)
         {
@@ -300,14 +300,14 @@ public class Overlay implements Closeable
                 resources.getCOSObject(), page.getRotation());
     }
     
-    private Map<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
+    private Map<Integer,LayoutPage> getLayoutPages(final PDDocument doc) throws IOException
     {
-        int numberOfPages = doc.getNumberOfPages();
-        Map<Integer,LayoutPage> layoutPages = new HashMap<>(numberOfPages);
+        final int numberOfPages = doc.getNumberOfPages();
+        final Map<Integer,LayoutPage> layoutPages = new HashMap<>(numberOfPages);
         for (int i=0;i<numberOfPages;i++)
         {
-            PDPage page = doc.getPage(i);
-            COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
+            final PDPage page = doc.getPage(i);
+            final COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
             PDResources resources = page.getResources();
             if (resources == null)
             {
@@ -319,14 +319,14 @@ public class Overlay implements Closeable
         return layoutPages;
     }
     
-    private COSStream createCombinedContentStream(COSBase contents) throws IOException
+    private COSStream createCombinedContentStream(final COSBase contents) throws IOException
     {
-        List<COSStream> contentStreams = createContentStreamList(contents);
+        final List<COSStream> contentStreams = createContentStreamList(contents);
         // concatenate streams
-        COSStream concatStream = inputPDFDocument.getDocument().createCOSStream();
+        final COSStream concatStream = inputPDFDocument.getDocument().createCOSStream();
         try (OutputStream out = concatStream.createOutputStream(COSName.FLATE_DECODE))
         {
-            for (COSStream contentStream : contentStreams)
+            for (final COSStream contentStream : contentStreams)
             {
                 try (InputStream in = contentStream.createInputStream())
                 {
@@ -339,9 +339,9 @@ public class Overlay implements Closeable
     }
 
     // get the content streams as a list
-    private List<COSStream> createContentStreamList(COSBase contents) throws IOException
+    private List<COSStream> createContentStreamList(final COSBase contents) throws IOException
     {
-        List<COSStream> contentStreams = new ArrayList<>();
+        final List<COSStream> contentStreams = new ArrayList<>();
         if (contents == null)
         {
             return contentStreams;
@@ -352,7 +352,7 @@ public class Overlay implements Closeable
         }
         else if (contents instanceof COSArray)
         {
-            for (COSBase item : (COSArray) contents)
+            for (final COSBase item : (COSArray) contents)
             {
                 contentStreams.addAll(createContentStreamList(item));
             }
@@ -368,16 +368,16 @@ public class Overlay implements Closeable
         return contentStreams;
     }
 
-    private void processPages(PDDocument document) throws IOException
+    private void processPages(final PDDocument document) throws IOException
     {
         int pageCounter = 0;
-        for (PDPage page : document.getPages())
+        for (final PDPage page : document.getPages())
         {
             pageCounter++;
-            COSDictionary pageDictionary = page.getCOSObject();
-            COSBase originalContent = pageDictionary.getDictionaryObject(COSName.CONTENTS);
-            COSArray newContentArray = new COSArray();
-            LayoutPage layoutPage = getLayoutPage(pageCounter, document.getNumberOfPages());
+            final COSDictionary pageDictionary = page.getCOSObject();
+            final COSBase originalContent = pageDictionary.getDictionaryObject(COSName.CONTENTS);
+            final COSArray newContentArray = new COSArray();
+            final LayoutPage layoutPage = getLayoutPage(pageCounter, document.getNumberOfPages());
             if (layoutPage == null)
             {
                 continue;
@@ -406,7 +406,7 @@ public class Overlay implements Closeable
         }
     }
 
-    private void addOriginalContent(COSBase contents, COSArray contentArray) throws IOException
+    private void addOriginalContent(final COSBase contents, final COSArray contentArray) throws IOException
     {
         if (contents == null)
         {
@@ -427,7 +427,7 @@ public class Overlay implements Closeable
         }
     }
 
-    private void overlayPage(PDPage page, LayoutPage layoutPage, COSArray array)
+    private void overlayPage(final PDPage page, final LayoutPage layoutPage, final COSArray array)
             throws IOException
     {
         PDResources resources = page.getResources();
@@ -436,11 +436,11 @@ public class Overlay implements Closeable
             resources = new PDResources();
             page.setResources(resources);
         }
-        COSName xObjectId = createOverlayXObject(page, layoutPage);
+        final COSName xObjectId = createOverlayXObject(page, layoutPage);
         array.add(createOverlayStream(page, layoutPage, xObjectId));
     }
 
-    private LayoutPage getLayoutPage(int pageNumber, int numberOfPages)
+    private LayoutPage getLayoutPage(final int pageNumber, final int numberOfPages)
     {
         LayoutPage layoutPage = null;
         if (!useAllOverlayPages && specificPageOverlayPage.containsKey(pageNumber))
@@ -469,19 +469,19 @@ public class Overlay implements Closeable
         }
         else if (useAllOverlayPages)
         {
-            int usePageNum = (pageNumber -1 ) % numberOfOverlayPages;
+            final int usePageNum = (pageNumber -1 ) % numberOfOverlayPages;
             layoutPage = specificPageOverlayPage.get(usePageNum);
         }
         return layoutPage;
     }
 
-    private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage)
+    private COSName createOverlayXObject(final PDPage page, final LayoutPage layoutPage)
     {
-        PDFormXObject xobjForm = new PDFormXObject(layoutPage.overlayContentStream);
+        final PDFormXObject xobjForm = new PDFormXObject(layoutPage.overlayContentStream);
         xobjForm.setResources(new PDResources(layoutPage.overlayResources));
         xobjForm.setFormType(1);
         xobjForm.setBBox(layoutPage.overlayMediaBox.createRetranslatedRectangle());
-        AffineTransform at = new AffineTransform();
+        final AffineTransform at = new AffineTransform();
         switch (layoutPage.overlayRotation)
         {
             case 90:
@@ -500,17 +500,17 @@ public class Overlay implements Closeable
                 break;
         }
         xobjForm.setMatrix(at);
-        PDResources resources = page.getResources();
+        final PDResources resources = page.getResources();
         return resources.add(xobjForm, "OL");
     }
 
-    private COSStream createOverlayStream(PDPage page, LayoutPage layoutPage, COSName xObjectId)
+    private COSStream createOverlayStream(final PDPage page, final LayoutPage layoutPage, final COSName xObjectId)
             throws IOException
     {
         // create a new content stream that executes the XObject content
-        StringBuilder overlayStream = new StringBuilder();
+        final StringBuilder overlayStream = new StringBuilder();
         overlayStream.append("q\nq\n");
-        PDRectangle overlayMediaBox = new PDRectangle(layoutPage.overlayMediaBox.getCOSArray());
+        final PDRectangle overlayMediaBox = new PDRectangle(layoutPage.overlayMediaBox.getCOSArray());
         if (layoutPage.overlayRotation == 90 || layoutPage.overlayRotation == 270)
         {
             overlayMediaBox.setLowerLeftX(layoutPage.overlayMediaBox.getLowerLeftY());
@@ -518,10 +518,10 @@ public class Overlay implements Closeable
             overlayMediaBox.setUpperRightX(layoutPage.overlayMediaBox.getUpperRightY());
             overlayMediaBox.setUpperRightY(layoutPage.overlayMediaBox.getUpperRightX());
         }
-        AffineTransform at = calculateAffineTransform(page, overlayMediaBox);
-        double[] flatmatrix = new double[6];
+        final AffineTransform at = calculateAffineTransform(page, overlayMediaBox);
+        final double[] flatmatrix = new double[6];
         at.getMatrix(flatmatrix);
-        for (double v : flatmatrix)
+        for (final double v : flatmatrix)
         {
             overlayStream.append(float2String((float) v));
             overlayStream.append(" ");
@@ -547,21 +547,21 @@ public class Overlay implements Closeable
      * @param overlayMediaBox The overlay media box.
      * @return The affine transform to be used.
      */
-    protected AffineTransform calculateAffineTransform(PDPage page, PDRectangle overlayMediaBox)
+    protected AffineTransform calculateAffineTransform(final PDPage page, final PDRectangle overlayMediaBox)
     {
-        AffineTransform at = new AffineTransform();
-        PDRectangle pageMediaBox = page.getMediaBox();
-        float hShift = (pageMediaBox.getWidth() - overlayMediaBox.getWidth()) / 2.0f;
-        float vShift = (pageMediaBox.getHeight() - overlayMediaBox.getHeight()) / 2.0f;
+        final AffineTransform at = new AffineTransform();
+        final PDRectangle pageMediaBox = page.getMediaBox();
+        final float hShift = (pageMediaBox.getWidth() - overlayMediaBox.getWidth()) / 2.0f;
+        final float vShift = (pageMediaBox.getHeight() - overlayMediaBox.getHeight()) / 2.0f;
         at.translate(hShift, vShift);
         return at;
     }
 
-    private String float2String(float floatValue)
+    private String float2String(final float floatValue)
     {
         // use a BigDecimal as intermediate state to avoid 
         // a floating point string representation of the float value
-        BigDecimal value = new BigDecimal(String.valueOf(floatValue));
+        final BigDecimal value = new BigDecimal(String.valueOf(floatValue));
         String stringValue = value.toPlainString();
         // remove fraction digit "0" only
         if (stringValue.indexOf('.') > -1 && !stringValue.endsWith(".0"))
@@ -574,9 +574,9 @@ public class Overlay implements Closeable
         return stringValue;
     }
     
-    private COSStream createStream(String content) throws IOException
+    private COSStream createStream(final String content) throws IOException
     {
-        COSStream stream = inputPDFDocument.getDocument().createCOSStream();
+        final COSStream stream = inputPDFDocument.getDocument().createCOSStream();
         try (OutputStream out = stream.createOutputStream(
                 content.length() > 20 ? COSName.FLATE_DECODE : null))
         {
@@ -590,7 +590,7 @@ public class Overlay implements Closeable
      * 
      * @param overlayPosition the overlay position
      */
-    public void setOverlayPosition(Position overlayPosition)
+    public void setOverlayPosition(final Position overlayPosition)
     {
         position = overlayPosition;
     }
@@ -602,7 +602,7 @@ public class Overlay implements Closeable
      * opening this file will be returned by
      * {@link #overlay(java.util.Map) overlay(Map&lt;Integer, String&gt;)}.
      */
-    public void setInputFile(String inputFile)
+    public void setInputFile(final String inputFile)
     {
         inputFileName = inputFile;
     }
@@ -613,7 +613,7 @@ public class Overlay implements Closeable
      * @param inputPDF the PDF to be overlaid. This will be the object that is returned by
      * {@link #overlay(java.util.Map) overlay(Map&lt;Integer, String&gt;)}.
      */
-    public void setInputPDF(PDDocument inputPDF)
+    public void setInputPDF(final PDDocument inputPDF)
     {
         inputPDFDocument = inputPDF;
     }
@@ -633,7 +633,7 @@ public class Overlay implements Closeable
      * 
      * @param defaultOverlayFile the default overlay file
      */
-    public void setDefaultOverlayFile(String defaultOverlayFile)
+    public void setDefaultOverlayFile(final String defaultOverlayFile)
     {
         defaultOverlayFilename = defaultOverlayFile;
     }
@@ -644,7 +644,7 @@ public class Overlay implements Closeable
      * 
      * @param defaultOverlayPDF the default overlay PDF
      */
-    public void setDefaultOverlayPDF(PDDocument defaultOverlayPDF)
+    public void setDefaultOverlayPDF(final PDDocument defaultOverlayPDF)
     {
         defaultOverlay = defaultOverlayPDF;
     }
@@ -664,7 +664,7 @@ public class Overlay implements Closeable
      * 
      * @param firstPageOverlayFile the first page overlay file
      */
-    public void setFirstPageOverlayFile(String firstPageOverlayFile)
+    public void setFirstPageOverlayFile(final String firstPageOverlayFile)
     {
         firstPageOverlayFilename = firstPageOverlayFile;
     }
@@ -675,7 +675,7 @@ public class Overlay implements Closeable
      * 
      * @param firstPageOverlayPDF the first page overlay PDF
      */
-    public void setFirstPageOverlayPDF(PDDocument firstPageOverlayPDF)
+    public void setFirstPageOverlayPDF(final PDDocument firstPageOverlayPDF)
     {
         firstPageOverlay = firstPageOverlayPDF;
     }
@@ -685,7 +685,7 @@ public class Overlay implements Closeable
      * 
      * @param lastPageOverlayFile the last page overlay file
      */
-    public void setLastPageOverlayFile(String lastPageOverlayFile)
+    public void setLastPageOverlayFile(final String lastPageOverlayFile)
     {
         lastPageOverlayFilename = lastPageOverlayFile;
     }
@@ -696,7 +696,7 @@ public class Overlay implements Closeable
      * 
      * @param lastPageOverlayPDF the last page overlay PDF
      */
-    public void setLastPageOverlayPDF(PDDocument lastPageOverlayPDF)
+    public void setLastPageOverlayPDF(final PDDocument lastPageOverlayPDF)
     {
         lastPageOverlay = lastPageOverlayPDF;
     }
@@ -706,7 +706,7 @@ public class Overlay implements Closeable
      * 
      * @param allPagesOverlayFile the all pages overlay file
      */
-    public void setAllPagesOverlayFile(String allPagesOverlayFile)
+    public void setAllPagesOverlayFile(final String allPagesOverlayFile)
     {
         allPagesOverlayFilename = allPagesOverlayFile;
     }
@@ -718,7 +718,7 @@ public class Overlay implements Closeable
      * @param allPagesOverlayPDF the all pages overlay PDF. This should not be a PDDocument that you
      * created on the fly, it should be saved first, if it contains any fonts that are subset.
      */
-    public void setAllPagesOverlayPDF(PDDocument allPagesOverlayPDF)
+    public void setAllPagesOverlayPDF(final PDDocument allPagesOverlayPDF)
     {
         allPagesOverlay = allPagesOverlayPDF;
     }
@@ -728,7 +728,7 @@ public class Overlay implements Closeable
      * 
      * @param oddPageOverlayFile the odd page overlay file
      */
-    public void setOddPageOverlayFile(String oddPageOverlayFile)
+    public void setOddPageOverlayFile(final String oddPageOverlayFile)
     {
         oddPageOverlayFilename = oddPageOverlayFile;
     }
@@ -739,7 +739,7 @@ public class Overlay implements Closeable
      * 
      * @param oddPageOverlayPDF the odd page overlay PDF
      */
-    public void setOddPageOverlayPDF(PDDocument oddPageOverlayPDF)
+    public void setOddPageOverlayPDF(final PDDocument oddPageOverlayPDF)
     {
         oddPageOverlay = oddPageOverlayPDF;
     }
@@ -749,7 +749,7 @@ public class Overlay implements Closeable
      * 
      * @param evenPageOverlayFile the even page overlay file
      */
-    public void setEvenPageOverlayFile(String evenPageOverlayFile)
+    public void setEvenPageOverlayFile(final String evenPageOverlayFile)
     {
         evenPageOverlayFilename = evenPageOverlayFile;
     }
@@ -760,7 +760,7 @@ public class Overlay implements Closeable
      * 
      * @param evenPageOverlayPDF the even page overlay PDF
      */
-    public void setEvenPageOverlayPDF(PDDocument evenPageOverlayPDF)
+    public void setEvenPageOverlayPDF(final PDDocument evenPageOverlayPDF)
     {
         evenPageOverlay = evenPageOverlayPDF;
     }

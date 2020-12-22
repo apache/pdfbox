@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.font.descriptor;
 
@@ -39,7 +39,7 @@ import org.apache.pdfbox.preflight.font.container.CIDType2Container;
 public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Container>
 {
 
-    public CIDType2DescriptorHelper(PreflightContext context, PDFontLike font, CIDType2Container fontContainer)
+    public CIDType2DescriptorHelper(final PreflightContext context, final PDFontLike font, final CIDType2Container fontContainer)
     {
         super(context, font, fontContainer);
     }
@@ -50,11 +50,11 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
      * 
      * @param pfDescriptor
      */
-    protected void checkCIDSet(PDFontDescriptor pfDescriptor)
+    protected void checkCIDSet(final PDFontDescriptor pfDescriptor)
     {
         if (isSubSet(pfDescriptor.getFontName()))
         {
-            COSBase cidset = pfDescriptor.getCOSObject().getDictionaryObject(COSName.CID_SET);
+            final COSBase cidset = pfDescriptor.getCOSObject().getDictionaryObject(COSName.CID_SET);
             if (!(cidset instanceof COSStream))
             {
                 this.fContainer.push(new ValidationResult.ValidationError(ERROR_FONTS_CIDSET_MISSING_FOR_SUBSET,
@@ -64,13 +64,13 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
     }
 
     @Override
-    public PDStream extractFontFile(PDFontDescriptor fontDescriptor)
+    public PDStream extractFontFile(final PDFontDescriptor fontDescriptor)
     {
-        PDStream ff2 = fontDescriptor.getFontFile2();
+        final PDStream ff2 = fontDescriptor.getFontFile2();
         if (ff2 != null)
         {
             // Stream validation should be done by the StreamValidateHelper. Process font specific check
-            COSStream stream = ff2.getCOSObject();
+            final COSStream stream = ff2.getCOSObject();
             if (stream == null)
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
@@ -83,7 +83,7 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
     }
 
     @Override
-    protected void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile)
+    protected void processFontFile(final PDFontDescriptor fontDescriptor, final PDStream fontFile)
     {
         if (font.isDamaged())
         {

@@ -31,7 +31,7 @@ public final class PDCIDSystemInfo implements COSObjectable
 {
     private final COSDictionary dictionary;
 
-    PDCIDSystemInfo(String registry, String ordering, int supplement)
+    PDCIDSystemInfo(final String registry, final String ordering, final int supplement)
     {
         dictionary = new COSDictionary();
         dictionary.setString(COSName.REGISTRY, registry);
@@ -39,7 +39,7 @@ public final class PDCIDSystemInfo implements COSObjectable
         dictionary.setInt(COSName.SUPPLEMENT, supplement);
     }
     
-    PDCIDSystemInfo(COSDictionary dictionary)
+    PDCIDSystemInfo(final COSDictionary dictionary)
     {
         this.dictionary = dictionary;
     }

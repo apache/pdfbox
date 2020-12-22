@@ -75,7 +75,7 @@ public abstract class GlyfDescript implements GlyphDescription
      * @param bais the stream to be read
      * @throws IOException is thrown if something went wrong
      */
-    GlyfDescript(short numberOfContours, TTFDataStream bais) throws IOException 
+    GlyfDescript(final short numberOfContours, final TTFDataStream bais) throws IOException
     {
         contourCount = numberOfContours;
     }
@@ -112,7 +112,7 @@ public abstract class GlyfDescript implements GlyphDescription
      * @param count the number of instructions to be read 
      * @throws IOException is thrown if something went wrong
      */
-    void readInstructions(TTFDataStream bais, int count) throws IOException
+    void readInstructions(final TTFDataStream bais, final int count) throws IOException
     {
         instructions = bais.readUnsignedByteArray(count);
     }

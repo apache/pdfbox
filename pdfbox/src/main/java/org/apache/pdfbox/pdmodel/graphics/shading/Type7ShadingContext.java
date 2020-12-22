@@ -40,14 +40,14 @@ class Type7ShadingContext extends PatchMeshesShadingContext
      * @param deviceBounds device bounds
      * @throws IOException if something went wrong
      */
-    Type7ShadingContext(PDShadingType7 shading, ColorModel colorModel, AffineTransform xform,
-                               Matrix matrix, Rectangle deviceBounds) throws IOException
+    Type7ShadingContext(final PDShadingType7 shading, final ColorModel colorModel, final AffineTransform xform,
+                        final Matrix matrix, final Rectangle deviceBounds) throws IOException
     {
         super(shading, colorModel, xform, matrix, deviceBounds, 16);
     }
 
     @Override
-    protected Patch generatePatch(Point2D[] points, float[][] color)
+    protected Patch generatePatch(final Point2D[] points, final float[][] color)
     {
         return new TensorPatch(points, color);
     }

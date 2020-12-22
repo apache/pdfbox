@@ -25,8 +25,8 @@ class COSDictionaryTest
     @Test
     void testCOSDictionaryNotEqualsCOSStream()
     {
-        COSDictionary cosDictionary = new COSDictionary();
-        COSStream cosStream = new COSStream();
+        final COSDictionary cosDictionary = new COSDictionary();
+        final COSStream cosStream = new COSStream();
         cosDictionary.setItem(COSName.BE, COSName.BE);
         cosDictionary.setInt(COSName.LENGTH, 0);
         cosStream.setItem(COSName.BE, COSName.BE);

@@ -35,7 +35,7 @@ public class IndexToLocationTable extends TTFTable
     
     private long[] offsets;
 
-    IndexToLocationTable(TrueTypeFont font)
+    IndexToLocationTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -48,14 +48,14 @@ public class IndexToLocationTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
-        HeaderTable head = ttf.getHeader();
+        final HeaderTable head = ttf.getHeader();
         if (head == null)
         {
             throw new IOException("Could not get head table");
         }
-        int numGlyphs = ttf.getNumberOfGlyphs();
+        final int numGlyphs = ttf.getNumberOfGlyphs();
         offsets = new long[ numGlyphs +1];
         for( int i=0; i<numGlyphs+1; i++ )
         {
@@ -84,7 +84,7 @@ public class IndexToLocationTable extends TTFTable
     /**
      * @param offsetsValue The offsets to set.
      */
-    public void setOffsets(long[] offsetsValue)
+    public void setOffsets(final long[] offsetsValue)
     {
         offsets = offsetsValue;
     }

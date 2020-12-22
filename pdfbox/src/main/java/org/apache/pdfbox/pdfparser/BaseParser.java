@@ -128,12 +128,12 @@ public abstract class BaseParser
     /**
      * Default constructor.
      */
-    BaseParser(RandomAccessRead pdfSource)
+    BaseParser(final RandomAccessRead pdfSource)
     {
         this.source = pdfSource;
     }
 
-    private static boolean isHexDigit(char ch)
+    private static boolean isHexDigit(final char ch)
     {
         return isDigit(ch) ||
         (ch >= 'a' && ch <= 'f') ||
@@ -149,8 +149,8 @@ public abstract class BaseParser
      */
     private COSBase parseCOSDictionaryValue() throws IOException
     {
-        long numOffset = source.getPosition();
-        COSBase value = parseDirObject();
+        final long numOffset = source.getPosition();
+        final COSBase value = parseDirObject();
         skipSpaces();
         // proceed if the given object is a number and the following is a number as well
         if (!(value instanceof COSNumber) || !isDigit())
@@ -158,8 +158,8 @@ public abstract class BaseParser
             return value;
         }
         // read the remaining information of the object number
-        long genOffset = source.getPosition();
-        COSBase generationNumber = parseDirObject();
+        final long genOffset = source.getPosition();
+        final COSBase generationNumber = parseDirObject();
         skipSpaces();
         readExpectedChar('R');
         if (!(value instanceof COSInteger))
@@ -172,13 +172,13 @@ public abstract class BaseParser
             LOG.error("expected number, actual=" + value + " at offset " + genOffset);
             return COSNull.NULL;
         }
-        COSObjectKey key = new COSObjectKey(((COSInteger) value).longValue(),
+        final COSObjectKey key = new COSObjectKey(((COSInteger) value).longValue(),
                 ((COSInteger) generationNumber).intValue());
         // dereference the object
         return getObjectFromPool(key);
     }
 
-    private COSBase getObjectFromPool(COSObjectKey key) throws IOException
+    private COSBase getObjectFromPool(final COSObjectKey key) throws IOException
     {
         if (document == null)
         {
@@ -201,12 +201,12 @@ public abstract class BaseParser
         readExpectedChar('<');
         readExpectedChar('<');
         skipSpaces();
-        COSDictionary obj = new COSDictionary();
+        final COSDictionary obj = new COSDictionary();
         boolean done = false;
         while (!done)
         {
             skipSpaces();
-            char c = (char) source.peek();
+            final char c = (char) source.peek();
             if (c == '>')
             {
                 done = true;
@@ -257,9 +257,9 @@ public abstract class BaseParser
                     if (c == D)
                     {
                         c = source.read();
-                        boolean isStream = c == S && source.read() == T && source.read() == R
+                        final boolean isStream = c == S && source.read() == T && source.read() == R
                                 && source.read() == E && source.read() == A && source.read() == M;
-                        boolean isObj = !isStream && c == O && source.read() == B
+                        final boolean isObj = !isStream && c == O && source.read() == B
                                 && source.read() == J;
                         if (isStream || isObj)
                         {
@@ -279,16 +279,16 @@ public abstract class BaseParser
         return false;
     }
 
-    private void parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException
+    private void parseCOSDictionaryNameValuePair(final COSDictionary obj) throws IOException
     {
-        COSName key = parseCOSName();
-        COSBase value = parseCOSDictionaryValue();
+        final COSName key = parseCOSName();
+        final COSBase value = parseCOSDictionaryValue();
         skipSpaces();
         if (((char) source.peek()) == 'd')
         {
             // if the next string is 'def' then we are parsing a cmap stream
             // and want to ignore it, otherwise throw an exception.
-            String potentialDEF = readString();
+            final String potentialDEF = readString();
             if (!potentialDEF.equals(DEF))
             {
                 source.rewind(potentialDEF.getBytes(StandardCharsets.ISO_8859_1).length);
@@ -363,8 +363,8 @@ public abstract class BaseParser
     private int checkForEndOfString(final int bracesParameter) throws IOException
     {
         int braces = bracesParameter;
-        byte[] nextThreeBytes = new byte[3];
-        int amountRead = source.read(nextThreeBytes);
+        final byte[] nextThreeBytes = new byte[3];
+        final int amountRead = source.read(nextThreeBytes);
 
         // Check the next 3 bytes if available
         // The following cases are valid indicators for the end of the string
@@ -396,7 +396,7 @@ public abstract class BaseParser
      */
     protected COSString parseCOSString() throws IOException
     {
-        char nextChar = (char) source.read();
+        final char nextChar = (char) source.read();
         if (nextChar == '<')
         {
             return parseCOSHexString();
@@ -407,14 +407,14 @@ public abstract class BaseParser
                     nextChar + "' at offset " + source.getPosition());
         }
         
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         // This is the number of braces read
         int braces = 1;
         int c = source.read();
         while( braces > 0 && c != -1)
         {
-            char ch = (char)c;
+            final char ch = (char)c;
             int nextc = -2; // not yet read
 
             if (ch == ')')
@@ -435,7 +435,7 @@ public abstract class BaseParser
             else if( ch == '\\' )
             {
                 //patched by ram
-                char next = (char) source.read();
+                final char next = (char) source.read();
                 switch(next)
                 {
                     case 'n':
@@ -487,7 +487,7 @@ public abstract class BaseParser
                     case '5':
                     case '6':
                     case '7':
-                        StringBuilder octal = new StringBuilder();
+                        final StringBuilder octal = new StringBuilder();
                         octal.append( next );
                         c = source.read();
                         char digit = (char)c;
@@ -515,7 +515,7 @@ public abstract class BaseParser
                         {
                             character = Integer.parseInt( octal.toString(), 8 );
                         }
-                        catch( NumberFormatException e )
+                        catch( final NumberFormatException e )
                         {
                             throw new IOException( "Error: Expected octal character, actual='" + octal + "'", e );
                         }
@@ -623,9 +623,9 @@ public abstract class BaseParser
      */
     protected COSArray parseCOSArray() throws IOException
     {
-        long startPosition = source.getPosition();
+        final long startPosition = source.getPosition();
         readExpectedChar('[');
-        COSArray po = new COSArray();
+        final COSArray po = new COSArray();
         COSBase pbo;
         skipSpaces();
         int i;
@@ -637,11 +637,11 @@ public abstract class BaseParser
                 // We have to check if the expected values are there or not PDFBOX-385
                 if (po.size() > 0 && po.get(po.size() - 1) instanceof COSInteger)
                 {
-                    COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
+                    final COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
                     if (po.size() > 0 && po.get(po.size() - 1) instanceof COSInteger)
                     {
-                        COSInteger number = (COSInteger)po.remove( po.size() -1 );
-                        COSObjectKey key = new COSObjectKey(number.longValue(), genNumber.intValue());
+                        final COSInteger number = (COSInteger)po.remove( po.size() -1 );
+                        final COSObjectKey key = new COSObjectKey(number.longValue(), genNumber.intValue());
                         pbo = getObjectFromPool(key);
                     }
                     else
@@ -667,7 +667,7 @@ public abstract class BaseParser
 
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
-                String isThisTheEnd = readString();
+                final String isThisTheEnd = readString();
                 source.rewind(isThisTheEnd.getBytes(StandardCharsets.ISO_8859_1).length);
                 if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
                 {
@@ -688,7 +688,7 @@ public abstract class BaseParser
      * @param ch The character
      * @return true if the character terminates a PDF name, otherwise false.
      */
-    protected boolean isEndOfName(int ch)
+    protected boolean isEndOfName(final int ch)
     {
         return ch == ASCII_SPACE || ch == ASCII_CR || ch == ASCII_LF || ch == 9 || ch == '>' ||
                ch == '<' || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(' || 
@@ -704,15 +704,15 @@ public abstract class BaseParser
     protected COSName parseCOSName() throws IOException
     {
         readExpectedChar('/');
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int c = source.read();
         while (c != -1)
         {
-            int ch = c;
+            final int ch = c;
             if (ch == '#')
             {
-                int ch1 = source.read();
-                int ch2 = source.read();
+                final int ch1 = source.read();
+                final int ch2 = source.read();
                 // Prior to PDF v1.2, the # was not a special character.  Also,
                 // it has been observed that various PDF tools do not follow the
                 // spec with respect to the # escape, even though they report
@@ -721,12 +721,12 @@ public abstract class BaseParser
                 // valid hex digits.
                 if (isHexDigit((char)ch1) && isHexDigit((char)ch2))
                 {
-                    String hex = Character.toString((char) ch1) + (char) ch2;
+                    final String hex = Character.toString((char) ch1) + (char) ch2;
                     try
                     {
                         buffer.write(Integer.parseInt(hex, 16));
                     }
-                    catch (NumberFormatException e)
+                    catch (final NumberFormatException e)
                     {
                         throw new IOException("Error: expected hex digit, actual='" + hex + "'", e);
                     }
@@ -761,8 +761,8 @@ public abstract class BaseParser
             source.rewind(1);
         }
         
-        byte[] bytes = buffer.toByteArray();
-        String string;
+        final byte[] bytes = buffer.toByteArray();
+        final String string;
         if (isValidUTF8(bytes))
         {
             string = new String(buffer.toByteArray(), StandardCharsets.UTF_8);
@@ -778,14 +778,14 @@ public abstract class BaseParser
     /**
      * Returns true if a byte sequence is valid UTF-8.
      */
-    private boolean isValidUTF8(byte[] input)
+    private boolean isValidUTF8(final byte[] input)
     {
         try
         {
             utf8Decoder.decode(ByteBuffer.wrap(input));
             return true;
         }
-        catch (CharacterCodingException e)
+        catch (final CharacterCodingException e)
         {
             LOG.debug("Character could not be decoded using StandardCharsets.UTF_8 - returning false", e);
             return false;
@@ -814,7 +814,7 @@ public abstract class BaseParser
             if(c == '<')
             {
 
-                COSDictionary retval = parseCOSDictionary();
+                final COSDictionary retval = parseCOSDictionary();
                 skipSpaces();
                 return retval;
             }
@@ -855,10 +855,10 @@ public abstract class BaseParser
                 //This is not suppose to happen, but we will allow for it
                 //so we are more compatible with POS writers that don't
                 //follow the spec
-                String badString = readString();
+                final String badString = readString();
                 if (badString.isEmpty())
                 {
-                    int peek = source.peek();
+                    final int peek = source.peek();
                     // we can end up in an infinite loop otherwise
                     throw new IOException( "Unknown dir object c='" + c +
                             "' cInt=" + (int)c + " peek='" + (char)peek 
@@ -882,7 +882,7 @@ public abstract class BaseParser
 
     private COSNumber parseCOSNumber() throws IOException
     {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         int ic = source.read();
         char c = (char) ic;
         while (Character.isDigit(c) || c == '-' || c == '+' || c == '.' || c == 'E' || c == 'e')
@@ -908,7 +908,7 @@ public abstract class BaseParser
     protected String readString() throws IOException
     {
         skipSpaces();
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
         int c = source.read();
         while( !isEndOfName((char)c) && c != -1 )
         {
@@ -929,10 +929,10 @@ public abstract class BaseParser
      * @param skipSpaces if set to true spaces before and after the string will be skipped
      * @throws IOException if pattern could not be read
      */
-    protected final void readExpectedString(final char[] expectedString, boolean skipSpaces) throws IOException
+    protected final void readExpectedString(final char[] expectedString, final boolean skipSpaces) throws IOException
     {
         skipSpaces();
-        for (char c : expectedString)
+        for (final char c : expectedString)
         {
             if (source.read() != c)
             {
@@ -951,9 +951,9 @@ public abstract class BaseParser
      * @throws IOException if the read char is not the expected value or if an
      * I/O error occurs.
      */
-    protected void readExpectedChar(char ec) throws IOException
+    protected void readExpectedChar(final char ec) throws IOException
     {
-        char c = (char) source.read();
+        final char c = (char) source.read();
         if (c != ec)
         {
             throw new IOException(
@@ -970,7 +970,7 @@ public abstract class BaseParser
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    protected String readString( int length ) throws IOException
+    protected String readString(final int length ) throws IOException
     {
         skipSpaces();
 
@@ -978,7 +978,7 @@ public abstract class BaseParser
 
         //average string size is around 2 and the normal string buffer size is
         //about 16 so lets save some space.
-        StringBuilder buffer = new StringBuilder(length);
+        final StringBuilder buffer = new StringBuilder(length);
         while( !isWhitespace(c) && !isClosing(c) && c != -1 && buffer.length() < length &&
                 c != '[' &&
                 c != '<' &&
@@ -1013,7 +1013,7 @@ public abstract class BaseParser
      * @param c The character to check against end of line
      * @return true if the next byte is ']', false otherwise.
      */
-    protected boolean isClosing(int c)
+    protected boolean isClosing(final int c)
     {
         return c == ']';
     }
@@ -1034,7 +1034,7 @@ public abstract class BaseParser
             throw new IOException( "Error: End-of-File, expected line");
         }
 
-        StringBuilder buffer = new StringBuilder( 11 );
+        final StringBuilder buffer = new StringBuilder( 11 );
 
         int c;
         while ((c = source.read()) != -1)
@@ -1083,17 +1083,17 @@ public abstract class BaseParser
      * @param c The character to check against end of line
      * @return true if the next byte is 0x0A or 0x0D.
      */
-    protected boolean isEOL(int c)
+    protected boolean isEOL(final int c)
     {
         return isLF(c) || isCR(c);
     }
 
-    private boolean isLF(int c)
+    private boolean isLF(final int c)
     {
         return ASCII_LF == c;
     }
 
-    private boolean isCR(int c)
+    private boolean isCR(final int c)
     {
         return ASCII_CR == c;
     }
@@ -1116,7 +1116,7 @@ public abstract class BaseParser
      * @param c The character to check against whitespace
      * @return true if the character is a whitespace character.
      */
-    protected boolean isWhitespace( int c )
+    protected boolean isWhitespace(final int c )
     {
         return c == 0 || c == 9 || c == 12  || c == ASCII_LF
         || c == ASCII_CR || c == ASCII_SPACE;
@@ -1140,7 +1140,7 @@ public abstract class BaseParser
      * @param c The character to check against space
      * @return true if the next byte in the stream is a space character.
      */
-    protected boolean isSpace(int c)
+    protected boolean isSpace(final int c)
     {
         return ASCII_SPACE == c;
     }
@@ -1163,7 +1163,7 @@ public abstract class BaseParser
      * @param c The character to be checked
      * @return true if the next byte in the stream is a digit.
      */
-    protected static boolean isDigit(int c)
+    protected static boolean isDigit(final int c)
     {
         return c >= ASCII_ZERO && c <= ASCII_NINE;
     }
@@ -1209,7 +1209,7 @@ public abstract class BaseParser
      */
     protected long readObjectNumber() throws IOException
     {
-        long retval = readLong();
+        final long retval = readLong();
         if (retval < 0 || retval >= OBJECT_NUMBER_THRESHOLD)
         {
             throw new IOException("Object Number '" + retval + "' has more than 10 digits or is negative");
@@ -1225,7 +1225,7 @@ public abstract class BaseParser
      */
     protected int readGenerationNumber() throws IOException
     {
-        int retval = readInt();
+        final int retval = readInt();
         if(retval < 0 || retval > GENERATION_NUMBER_THRESHOLD)
         {
             throw new IOException("Generation Number '" + retval + "' has more than 5 digits");
@@ -1245,13 +1245,13 @@ public abstract class BaseParser
         skipSpaces();
         int retval = 0;
 
-        StringBuilder intBuffer = readStringNumber();
+        final StringBuilder intBuffer = readStringNumber();
 
         try
         {
             retval = Integer.parseInt( intBuffer.toString() );
         }
-        catch( NumberFormatException e )
+        catch( final NumberFormatException e )
         {
             source.rewind(intBuffer.toString().getBytes(StandardCharsets.ISO_8859_1).length);
             throw new IOException("Error: Expected an integer type at offset " +
@@ -1274,13 +1274,13 @@ public abstract class BaseParser
         skipSpaces();
         long retval = 0;
 
-        StringBuilder longBuffer = readStringNumber();
+        final StringBuilder longBuffer = readStringNumber();
 
         try
         {
             retval = Long.parseLong( longBuffer.toString() );
         }
-        catch( NumberFormatException e )
+        catch( final NumberFormatException e )
         {
             source.rewind(longBuffer.toString().getBytes(StandardCharsets.ISO_8859_1).length);
             throw new IOException( "Error: Expected a long type at offset "
@@ -1299,7 +1299,7 @@ public abstract class BaseParser
     protected final StringBuilder readStringNumber() throws IOException
     {
         int lastByte;
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
         while ((lastByte = source.read()) >= '0' && lastByte <= '9')
         {
             buffer.append( (char)lastByte );

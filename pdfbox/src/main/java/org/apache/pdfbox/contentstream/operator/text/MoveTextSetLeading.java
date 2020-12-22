@@ -36,7 +36,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class MoveTextSetLeading extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.size() < 2)
         {
@@ -44,14 +44,14 @@ public class MoveTextSetLeading extends OperatorProcessor
         }
         
         //move text position and set leading
-        COSBase base1 = arguments.get(1);
+        final COSBase base1 = arguments.get(1);
         if (!(base1 instanceof COSNumber))
         {
             return;
         }
-        COSNumber y = (COSNumber) base1;
+        final COSNumber y = (COSNumber) base1;
         
-        List<COSBase> args = new ArrayList<>();
+        final List<COSBase> args = new ArrayList<>();
         args.add(new COSFloat(-1 * y.floatValue()));
         context.processOperator(OperatorName.SET_TEXT_LEADING, args);
         context.processOperator(OperatorName.MOVE_TEXT, arguments);

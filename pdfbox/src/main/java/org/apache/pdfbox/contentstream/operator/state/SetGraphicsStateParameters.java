@@ -39,21 +39,21 @@ public class SetGraphicsStateParameters extends OperatorProcessor
     private static final Log LOG = LogFactory.getLog(SetGraphicsStateParameters.class);
 
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.isEmpty())
         {
             throw new MissingOperandException(operator, arguments);
         }
-        COSBase base0 = arguments.get(0);
+        final COSBase base0 = arguments.get(0);
         if (!(base0 instanceof COSName))
         {
             return;
         }
         
         // set parameters from graphics state parameter dictionary
-        COSName graphicsName = (COSName) base0;
-        PDExtendedGraphicsState gs = context.getResources().getExtGState(graphicsName);
+        final COSName graphicsName = (COSName) base0;
+        final PDExtendedGraphicsState gs = context.getResources().getExtGState(graphicsName);
         if (gs == null)
         {
             LOG.error("name for 'gs' operator not found in resources: /" + graphicsName.getName());

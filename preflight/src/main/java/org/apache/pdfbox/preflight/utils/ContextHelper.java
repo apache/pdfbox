@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.utils;
 
@@ -49,7 +49,7 @@ public final class ContextHelper
      * @param processName
      * @throws ValidationException
      */
-    public static void validateElement(PreflightContext context, Object element, String processName) throws ValidationException
+    public static void validateElement(final PreflightContext context, final Object element, final String processName) throws ValidationException
     {
         if (element == null)
         {
@@ -71,10 +71,10 @@ public final class ContextHelper
      *            the process to instantiate and to compute
      * @throws ValidationException
      */
-    private static void callValidation(PreflightContext context, Object element, String processName)
+    private static void callValidation(final PreflightContext context, final Object element, final String processName)
     throws ValidationException
     {
-        PreflightPath validationPath = context.getValidationPath();
+        final PreflightPath validationPath = context.getValidationPath();
         
         if (hasRecursion(context, element, validationPath))
         {
@@ -88,7 +88,7 @@ public final class ContextHelper
                  PreflightConfiguration.FONT_PROCESS.equals(processName))) // for speed
         {
             // don't check PDObjects, only their COSObject
-            COSBase cos = ((COSObjectable) element).getCOSObject();
+            final COSBase cos = ((COSObjectable) element).getCOSObject();
             if (context.isInProcessedSet(cos))
             {
                 return;
@@ -96,9 +96,9 @@ public final class ContextHelper
             context.addToProcessedSet(cos);
         }
 
-        boolean needPop = validationPath.pushObject(element);
-        PreflightConfiguration config = context.getConfig();
-        ValidationProcess process = config.getInstanceOfProcess(processName);
+        final boolean needPop = validationPath.pushObject(element);
+        final PreflightConfiguration config = context.getConfig();
+        final ValidationProcess process = config.getInstanceOfProcess(processName);
         process.validate(context);
         if (needPop)
         {
@@ -107,16 +107,16 @@ public final class ContextHelper
     }
 
     // detect recursion that would lead to stack overflow
-    private static boolean hasRecursion(PreflightContext context, Object element, PreflightPath validationPath)
+    private static boolean hasRecursion(final PreflightContext context, final Object element, final PreflightPath validationPath)
     {
         if (element instanceof PDResources || element instanceof PDFormXObject)
         {
             for (int i = 0; i < validationPath.size(); ++i)
             {
-                Object obj = validationPath.getPathElement(i, Object.class);
+                final Object obj = validationPath.getPathElement(i, Object.class);
                 if (obj instanceof COSObjectable)
                 {
-                    COSObjectable cos = (COSObjectable) obj;
+                    final COSObjectable cos = (COSObjectable) obj;
                     if (cos.getCOSObject() == ((COSObjectable) element).getCOSObject())
                     {
                         context.addValidationError(new ValidationError(ERROR_PDF_PROCESSING, 
@@ -136,7 +136,7 @@ public final class ContextHelper
      * @param processName
      * @throws ValidationException
      */
-    public static void validateElement(PreflightContext context, String processName) throws ValidationException
+    public static void validateElement(final PreflightContext context, final String processName) throws ValidationException
     {
         callValidation(context, null, processName);
     }

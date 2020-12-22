@@ -32,7 +32,7 @@ class FieldFlag extends Flag
      * Constructor
      * @param dictionary COSDictionary instance
      */
-    FieldFlag(COSDictionary dictionary)
+    FieldFlag(final COSDictionary dictionary)
     {
         this.dictionary = dictionary;
     }
@@ -40,7 +40,7 @@ class FieldFlag extends Flag
     @Override
     String getFlagType()
     {
-        COSName fieldType = dictionary.getCOSName(COSName.FT);
+        final COSName fieldType = dictionary.getCOSName(COSName.FT);
         if (COSName.TX.equals(fieldType))
         {
             return "Text field flag";
@@ -65,8 +65,8 @@ class FieldFlag extends Flag
     @Override
     Object[][] getFlagBits()
     {
-        int flagValue = dictionary.getInt(COSName.FF);
-        COSName fieldType = dictionary.getCOSName(COSName.FT);
+        final int flagValue = dictionary.getInt(COSName.FF);
+        final COSName fieldType = dictionary.getCOSName(COSName.FT);
 
         if (COSName.TX.equals(fieldType))
         {
@@ -142,9 +142,9 @@ class FieldFlag extends Flag
      * @param bitPosition bit position to check
      * @return if set return true else false
      */
-    private Boolean isFlagBitSet(int flagValue, int bitPosition)
+    private Boolean isFlagBitSet(final int flagValue, final int bitPosition)
     {
-        int binaryFormat = 1 << (bitPosition - 1);
+        final int binaryFormat = 1 << (bitPosition - 1);
         return (flagValue & binaryFormat) == binaryFormat;
     }
 }

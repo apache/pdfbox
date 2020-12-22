@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.metadata;
 
@@ -59,7 +59,7 @@ public class SynchronizedMetaDataValidation
      * @param dc the Dublin Core Schema.
      * @param ve the list of validation errors.
      */
-    protected void analyzeTitleProperty(PDDocumentInformation dico, DublinCoreSchema dc, List<ValidationError> ve)
+    protected void analyzeTitleProperty(final PDDocumentInformation dico, final DublinCoreSchema dc, final List<ValidationError> ve)
     {
         String title = dico.getTitle();
         if (title != null)
@@ -86,10 +86,10 @@ public class SynchronizedMetaDataValidation
                             // with lot of PDF documents
                             // which use title without lang definition
                             // REM : MAY we have to delete this option in the future
-                            Iterator<AbstractField> it = dc.getTitleProperty().getContainer().getAllProperties().iterator();
+                            final Iterator<AbstractField> it = dc.getTitleProperty().getContainer().getAllProperties().iterator();
                             if (it.hasNext())
                             {
-                                AbstractField tmp = it.next();
+                                final AbstractField tmp = it.next();
                                 if (tmp instanceof TextType)
                                 {
                                     if (!((TextType) tmp).getStringValue().equals(title))
@@ -113,7 +113,7 @@ public class SynchronizedMetaDataValidation
                         ve.add(absentXMPPropertyError("Title", "Property is not defined"));
                     }
                 }
-                catch (BadFieldValueException ex)
+                catch (final BadFieldValueException ex)
                 {
                     ve.add(badFieldXMPPropertyError("Title", ex.getMessage()));
                 }
@@ -133,7 +133,7 @@ public class SynchronizedMetaDataValidation
      * @param dc Dublin Core Schema
      * @param ve The list of validation errors
      */
-    protected void analyzeAuthorProperty(PDDocumentInformation dico, DublinCoreSchema dc, List<ValidationError> ve)
+    protected void analyzeAuthorProperty(final PDDocumentInformation dico, final DublinCoreSchema dc, final List<ValidationError> ve)
     {
         String author = dico.getAuthor();
         if (author != null)
@@ -184,7 +184,7 @@ public class SynchronizedMetaDataValidation
      * @param dc Dublin Core Schema
      * @param ve The list of validation errors
      */
-    protected void analyzeSubjectProperty(PDDocumentInformation dico, DublinCoreSchema dc, List<ValidationError> ve)
+    protected void analyzeSubjectProperty(final PDDocumentInformation dico, final DublinCoreSchema dc, final List<ValidationError> ve)
     {
         String subject = dico.getSubject();
         if (subject != null)
@@ -213,7 +213,7 @@ public class SynchronizedMetaDataValidation
                             }
                         }
                     }
-                    catch (BadFieldValueException ex)
+                    catch (final BadFieldValueException ex)
                     {
                         ve.add(badFieldXMPPropertyError("Subject", ex.getMessage()));
                     }
@@ -238,7 +238,7 @@ public class SynchronizedMetaDataValidation
      * @param pdf PDF Schema
      * @param ve The list of validation errors
      */
-    protected void analyzeKeywordsProperty(PDDocumentInformation dico, AdobePDFSchema pdf, List<ValidationError> ve)
+    protected void analyzeKeywordsProperty(final PDDocumentInformation dico, final AdobePDFSchema pdf, final List<ValidationError> ve)
     {
         String keyword = dico.getKeywords();
         if (keyword != null)
@@ -274,7 +274,7 @@ public class SynchronizedMetaDataValidation
      * @param pdf PDF Schema
      * @param ve The list of validation errors
      */
-    protected void analyzeProducerProperty(PDDocumentInformation dico, AdobePDFSchema pdf, List<ValidationError> ve)
+    protected void analyzeProducerProperty(final PDDocumentInformation dico, final AdobePDFSchema pdf, final List<ValidationError> ve)
     {
         String producer = dico.getProducer();
         if (producer != null)
@@ -312,7 +312,7 @@ public class SynchronizedMetaDataValidation
      * @param ve The list of validation errors
      *
      */
-    protected void analyzeCreatorToolProperty(PDDocumentInformation dico, XMPBasicSchema xmp, List<ValidationError> ve)
+    protected void analyzeCreatorToolProperty(final PDDocumentInformation dico, final XMPBasicSchema xmp, final List<ValidationError> ve)
     {
         String creatorTool = dico.getCreator();
         if (creatorTool != null)
@@ -349,16 +349,16 @@ public class SynchronizedMetaDataValidation
      * @param ve The list of validation errors
      * @throws ValidationException
      */
-    protected void analyzeCreationDateProperty(PDDocumentInformation dico, XMPBasicSchema xmp, List<ValidationError> ve)
+    protected void analyzeCreationDateProperty(final PDDocumentInformation dico, final XMPBasicSchema xmp, final List<ValidationError> ve)
             throws ValidationException
     {
-        Calendar creationDate = dico.getCreationDate();
-        COSBase item = dico.getCOSObject().getItem(COSName.CREATION_DATE);
+        final Calendar creationDate = dico.getCreationDate();
+        final COSBase item = dico.getCOSObject().getItem(COSName.CREATION_DATE);
         if (creationDate != null && isValidPDFDateFormat(item))
         {
             if (xmp != null)
             {
-                Calendar xmpCreationDate = xmp.getCreateDate();
+                final Calendar xmpCreationDate = xmp.getCreateDate();
 
                 if (xmpCreationDate == null)
                 {
@@ -393,16 +393,16 @@ public class SynchronizedMetaDataValidation
      * @param ve The list of validation errors
      * @throws ValidationException
      */
-    protected void analyzeModifyDateProperty(PDDocumentInformation dico, XMPBasicSchema xmp, List<ValidationError> ve)
+    protected void analyzeModifyDateProperty(final PDDocumentInformation dico, final XMPBasicSchema xmp, final List<ValidationError> ve)
             throws ValidationException
     {
-        Calendar modifyDate = dico.getModificationDate();
-        COSBase item = dico.getCOSObject().getItem(COSName.MOD_DATE);        
+        final Calendar modifyDate = dico.getModificationDate();
+        final COSBase item = dico.getCOSObject().getItem(COSName.MOD_DATE);
         if (modifyDate != null && isValidPDFDateFormat(item))
         {
             if (xmp != null)
             {
-                Calendar xmpModifyDate = xmp.getModifyDate();
+                final Calendar xmpModifyDate = xmp.getModifyDate();
                 if (xmpModifyDate == null)
                 {
                     ve.add(absentXMPPropertyError("ModifyDate", "Property is not defined"));
@@ -435,10 +435,10 @@ public class SynchronizedMetaDataValidation
      * @return List of validation errors
      * @throws ValidationException
      */
-    public List<ValidationError> validateMetadataSynchronization(PDDocument document, XMPMetadata metadata)
+    public List<ValidationError> validateMetadataSynchronization(final PDDocument document, final XMPMetadata metadata)
             throws ValidationException
     {
-        List<ValidationError> ve = new ArrayList<>();
+        final List<ValidationError> ve = new ArrayList<>();
 
         if (document == null)
         {
@@ -446,14 +446,14 @@ public class SynchronizedMetaDataValidation
         }
         else
         {
-            PDDocumentInformation dico = document.getDocumentInformation();
+            final PDDocumentInformation dico = document.getDocumentInformation();
             if (metadata == null)
             {
                 throw new ValidationException("Metadata provided are null");
             }
             else
             {
-                DublinCoreSchema dc = metadata.getDublinCoreSchema();
+                final DublinCoreSchema dc = metadata.getDublinCoreSchema();
 
                 // TITLE
                 analyzeTitleProperty(dico, dc, ve);
@@ -462,14 +462,14 @@ public class SynchronizedMetaDataValidation
                 // SUBJECT
                 analyzeSubjectProperty(dico, dc, ve);
 
-                AdobePDFSchema pdf = metadata.getAdobePDFSchema();
+                final AdobePDFSchema pdf = metadata.getAdobePDFSchema();
 
                 // KEYWORDS
                 analyzeKeywordsProperty(dico, pdf, ve);
                 // PRODUCER
                 analyzeProducerProperty(dico, pdf, ve);
 
-                XMPBasicSchema xmp = metadata.getXMPBasicSchema();
+                final XMPBasicSchema xmp = metadata.getXMPBasicSchema();
 
                 // CREATOR TOOL
                 analyzeCreatorToolProperty(dico, xmp, ve);
@@ -494,9 +494,9 @@ public class SynchronizedMetaDataValidation
      * @param schema
      * @return the generated validation error.
      */
-    protected ValidationError unexpectedPrefixFoundError(String prefFound, String prefExpected, String schema)
+    protected ValidationError unexpectedPrefixFoundError(final String prefFound, final String prefExpected, final String schema)
     {
-        StringBuilder sb = new StringBuilder(80);
+        final StringBuilder sb = new StringBuilder(80);
         sb.append(schema).append(" found but prefix used is '").append(prefFound).append("', prefix '")
                 .append(prefExpected).append("' is expected.");
 
@@ -510,9 +510,9 @@ public class SynchronizedMetaDataValidation
      * @param cause the raised IOException
      * @return the generated exception
      */
-    protected ValidationException schemaAccessException(String target, Throwable cause)
+    protected ValidationException schemaAccessException(final String target, final Throwable cause)
     {
-        StringBuilder sb = new StringBuilder(80);
+        final StringBuilder sb = new StringBuilder(80);
         sb.append("Cannot access to the ").append(target).append(" schema");
         return new ValidationException(sb.toString(), cause);
     }
@@ -523,9 +523,9 @@ public class SynchronizedMetaDataValidation
      * @param target the concerned property
      * @return the generated validation error
      */
-    protected ValidationError unsynchronizedMetaDataError(String target)
+    protected ValidationError unsynchronizedMetaDataError(final String target)
     {
-        StringBuilder sb = new StringBuilder(80);
+        final StringBuilder sb = new StringBuilder(80);
         sb.append(target).append(" present in the document catalog dictionary doesn't match with XMP information");
         return new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString());
     }
@@ -537,9 +537,9 @@ public class SynchronizedMetaDataValidation
      * @param schema the XMP schema which can't be found
      * @return the generated validation error
      */
-    protected ValidationError absentSchemaMetaDataError(String target, String schema)
+    protected ValidationError absentSchemaMetaDataError(final String target, final String schema)
     {
-        StringBuilder sb = new StringBuilder(80);
+        final StringBuilder sb = new StringBuilder(80);
         sb.append(target).append(" present in the document catalog dictionary can't be found in XMP information (")
                 .append(schema).append(" schema not declared)");
         return new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString());
@@ -552,9 +552,9 @@ public class SynchronizedMetaDataValidation
      * @param details comments about the XMP property
      * @return the generated validation error
      */
-    protected ValidationError absentXMPPropertyError(String target, String details)
+    protected ValidationError absentXMPPropertyError(final String target, final String details)
     {
-        StringBuilder sb = new StringBuilder(80);
+        final StringBuilder sb = new StringBuilder(80);
         sb.append(target).append(" present in the document catalog dictionary can't be found in XMP information (")
                 .append(details).append(")");
         return new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString());
@@ -567,9 +567,9 @@ public class SynchronizedMetaDataValidation
      * @param details comments about the XMP property
      * @return the generated validation error
      */
-    protected ValidationError badFieldXMPPropertyError(String target, String details)
+    protected ValidationError badFieldXMPPropertyError(final String target, final String details)
     {
-        StringBuilder sb = new StringBuilder(80);
+        final StringBuilder sb = new StringBuilder(80);
         sb.append(target).append(" property is not a multi-lingual property in XMP information(")
                 .append(details).append(")");
         return new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString());
@@ -582,7 +582,7 @@ public class SynchronizedMetaDataValidation
      * @param string to be stripped
      * @return the stripped string
      */
-    private String removeTrailingNul(String string)
+    private String removeTrailingNul(final String string)
     {
         // remove trailing NUL values
         int length = string.length();
@@ -604,7 +604,7 @@ public class SynchronizedMetaDataValidation
      * @param date
      * @return the validation result
      */
-    private boolean hasTimeZone(Object date)
+    private boolean hasTimeZone(final Object date)
     {
         final String datePattern = "^D:.*[Z]$|^D:.*[+-].*|^\\d{4}.*T.*Z(\\d{2}:\\d{2}){0,1}$|^\\d{4}.*T.*[+-]\\d{2}.*$";
         if (date instanceof Calendar)
@@ -627,11 +627,11 @@ public class SynchronizedMetaDataValidation
      * @param item the date item that is to be checked.
      * @return true if the date format is assumed to be valid, false if not.
      */
-    private boolean isValidPDFDateFormat(COSBase item)
+    private boolean isValidPDFDateFormat(final COSBase item)
     {
         if (item instanceof COSString)
         {
-            String date = ((COSString) item).getString();
+            final String date = ((COSString) item).getString();
             if (date.matches("D:\\d{4}(\\d{2}(\\d{2}(\\d{2}(\\d{2}(\\d{2}([\\+\\-Z](\\d{2}'\\d{2}')?)?)?)?)?)?)?"))
             {
                 return true;

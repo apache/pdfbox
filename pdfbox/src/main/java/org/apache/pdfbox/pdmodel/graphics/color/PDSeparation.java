@@ -80,7 +80,7 @@ public class PDSeparation extends PDSpecialColorSpace
      * @param separation an array containing all separation information.
      * @throws IOException if the color space or the function could not be created.
      */
-    public PDSeparation(COSArray separation) throws IOException
+    public PDSeparation(final COSArray separation) throws IOException
     {
         array = separation;
         alternateColorSpace = PDColorSpace.create(array.getObject(ALTERNATE_CS));
@@ -100,7 +100,7 @@ public class PDSeparation extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
         return new float[] { 0, 1 };
     }
@@ -112,19 +112,19 @@ public class PDSeparation extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] toRGB(float[] value) throws IOException
+    public float[] toRGB(final float[] value) throws IOException
     {
         if (toRGBMap == null)
         {
             toRGBMap = new HashMap<>();
         }
-        int key = (int) (value[0] * 255);
+        final int key = (int) (value[0] * 255);
         float[] retval = toRGBMap.get(key);
         if (retval != null)
         {
             return retval;
         }
-        float[] altColor = tintTransform.eval(value);
+        final float[] altColor = tintTransform.eval(value);
         retval = alternateColorSpace.toRGB(altColor);
         toRGBMap.put(key, retval);
         return retval;
@@ -134,7 +134,7 @@ public class PDSeparation extends PDSpecialColorSpace
     // WARNING: this method is performance sensitive, modify with care!
     //
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(final WritableRaster raster) throws IOException
     {
         if (alternateColorSpace instanceof PDLab)
         {
@@ -144,17 +144,17 @@ public class PDSeparation extends PDSpecialColorSpace
         
         // use the tint transform to convert the sample into
         // the alternate color space (this is usually 1:many)
-        WritableRaster altRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
+        final WritableRaster altRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
                 raster.getWidth(), raster.getHeight(),
                 alternateColorSpace.getNumberOfComponents(),
                 new Point(0, 0));
 
-        int numAltComponents = alternateColorSpace.getNumberOfComponents();
-        int width = raster.getWidth();
-        int height = raster.getHeight();
-        float[] samples = new float[1];
+        final int numAltComponents = alternateColorSpace.getNumberOfComponents();
+        final int width = raster.getWidth();
+        final int height = raster.getHeight();
+        final float[] samples = new float[1];
 
-        Map<Integer, int[]> calculatedValues = new HashMap<>();
+        final Map<Integer, int[]> calculatedValues = new HashMap<>();
         Integer hash;
         for (int y = 0; y < height; y++)
         {
@@ -178,15 +178,15 @@ public class PDSeparation extends PDSpecialColorSpace
     }
 
     // converter that works without using super implementation of toRGBImage()
-    private BufferedImage toRGBImage2(WritableRaster raster) throws IOException
+    private BufferedImage toRGBImage2(final WritableRaster raster) throws IOException
     {
-        int width = raster.getWidth();
-        int height = raster.getHeight();
-        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        WritableRaster rgbRaster = rgbImage.getRaster();
-        float[] samples = new float[1];
+        final int width = raster.getWidth();
+        final int height = raster.getHeight();
+        final BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        final WritableRaster rgbRaster = rgbImage.getRaster();
+        final float[] samples = new float[1];
 
-        Map<Integer, int[]> calculatedValues = new HashMap<>();
+        final Map<Integer, int[]> calculatedValues = new HashMap<>();
         Integer hash;
         for (int y = 0; y < height; y++)
         {
@@ -198,8 +198,8 @@ public class PDSeparation extends PDSpecialColorSpace
                 if (rgb == null)
                 {
                     samples[0] /= 255;
-                    float[] altColor = tintTransform.eval(samples);
-                    float[] fltab = alternateColorSpace.toRGB(altColor);
+                    final float[] altColor = tintTransform.eval(samples);
+                    final float[] fltab = alternateColorSpace.toRGB(altColor);
                     rgb = new int[3];
                     rgb[0] = (int) (fltab[0] * 255);
                     rgb[1] = (int) (fltab[1] * 255);
@@ -212,10 +212,10 @@ public class PDSeparation extends PDSpecialColorSpace
         return rgbImage;
     }
 
-    protected void tintTransform(float[] samples, int[] alt) throws IOException
+    protected void tintTransform(final float[] samples, final int[] alt) throws IOException
     {
         samples[0] /= 255; // 0..1
-        float[] result = tintTransform.eval(samples);
+        final float[] result = tintTransform.eval(samples);
         for (int s = 0; s < alt.length; s++)
         {
             // scale to 0..255
@@ -224,7 +224,7 @@ public class PDSeparation extends PDSpecialColorSpace
     }
 
     @Override
-    public BufferedImage toRawImage(WritableRaster raster)
+    public BufferedImage toRawImage(final WritableRaster raster)
     {
         return toRawImage(raster, ColorSpace.getInstance(ColorSpace.CS_GRAY));
     }
@@ -244,7 +244,7 @@ public class PDSeparation extends PDSpecialColorSpace
      */
     public String getColorantName()
     {
-        COSName name = (COSName)array.getObject(COLORANT_NAMES);
+        final COSName name = (COSName)array.getObject(COLORANT_NAMES);
         return name.getName();
     }
 
@@ -252,7 +252,7 @@ public class PDSeparation extends PDSpecialColorSpace
      * Sets the colorant name.
      * @param name the name of the colorant
      */
-    public void setColorantName(String name)
+    public void setColorantName(final String name)
     {
         array.set(1, COSName.getPDFName(name));
     }
@@ -261,7 +261,7 @@ public class PDSeparation extends PDSpecialColorSpace
      * Sets the alternate color space.
      * @param colorSpace The alternate color space.
      */
-    public void setAlternateColorSpace(PDColorSpace colorSpace)
+    public void setAlternateColorSpace(final PDColorSpace colorSpace)
     {
         alternateColorSpace = colorSpace;
         COSBase space = null;
@@ -276,7 +276,7 @@ public class PDSeparation extends PDSpecialColorSpace
      * Sets the tint transform function.
      * @param tint the tint transform function
      */
-    public void setTintTransform(PDFunction tint)
+    public void setTintTransform(final PDFunction tint)
     {
         tintTransform = tint;
         array.set(TINT_TRANSFORM, tint);

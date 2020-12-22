@@ -43,7 +43,7 @@ public abstract class Encoding
      * @param code The character code that matches the character.
      * @param name The name of the character.
      */
-    protected void addCharacterEncoding( int code, String name )
+    protected void addCharacterEncoding(final int code, final String name )
     {
         codeToName.put( code, name );
         nameToCode.put( name, code );
@@ -55,7 +55,7 @@ public abstract class Encoding
      * @param name The name of the character.
      * @return The code for the character or null if it is not in the encoding.
      */
-    public Integer getCode( String name )
+    public Integer getCode(final String name )
     {
         return nameToCode.get( name );
     }
@@ -67,9 +67,9 @@ public abstract class Encoding
      * @param code The character code.
      * @return The name of the character, or ".notdef" if the bame doesn't exist.
      */
-    public String getName( int code )
+    public String getName(final int code )
     {
-        String name = codeToName.get( code );
+        final String name = codeToName.get( code );
         if (name != null)
         {
             return name;

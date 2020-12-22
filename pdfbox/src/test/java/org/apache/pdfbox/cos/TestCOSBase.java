@@ -65,7 +65,7 @@ abstract class TestCOSBase
      * @param byteArr2 the byte array being compared
      */
     @SuppressWarnings({"java:S5863"}) // don't flag tests for reflexivity
-    protected void testByteArrays(byte[] byteArr1, byte[] byteArr2)
+    protected void testByteArrays(final byte[] byteArr1, final byte[] byteArr2)
     {
         assertEquals(byteArr1.length, byteArr1.length);
         for (int i = 0; i < byteArr1.length; i++)

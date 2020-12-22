@@ -66,11 +66,11 @@ public class Tree extends JTree
     }
 
     @Override
-    public Point getPopupLocation(MouseEvent event)
+    public Point getPopupLocation(final MouseEvent event)
     {
         if (event != null)
         {
-            TreePath path = getClosestPathForLocation(event.getX(), event.getY());
+            final TreePath path = getClosestPathForLocation(event.getX(), event.getY());
             if (path == null)
             {
                 return null;
@@ -87,7 +87,7 @@ public class Tree extends JTree
      * Produce the popup menu items depending on the node of a certain TreePath.
      * @param nodePath is instance of TreePath of the specified Node.
      */
-    private void addPopupMenuItems(TreePath nodePath)
+    private void addPopupMenuItems(final TreePath nodePath)
     {
         Object obj = nodePath.getLastPathComponent();
 
@@ -109,10 +109,10 @@ public class Tree extends JTree
 
         treePopupMenu.addSeparator();
 
-        COSStream stream = (COSStream) obj;
+        final COSStream stream = (COSStream) obj;
         treePopupMenu.add(getStreamSaveMenu(stream, nodePath));
 
-        List<COSName> filters = new PDStream(stream).getFilters();
+        final List<COSName> filters = new PDStream(stream).getFilters();
         if (!filters.isEmpty())
         {
             if (filters.size() >= 2)
@@ -122,7 +122,7 @@ public class Tree extends JTree
             treePopupMenu.add(getRawStreamSaveMenu(stream));
         }
 
-        JMenuItem open = getFileOpenMenu(stream, nodePath);
+        final JMenuItem open = getFileOpenMenu(stream, nodePath);
         if (open != null)
         {
             treePopupMenu.addSeparator();
@@ -137,10 +137,10 @@ public class Tree extends JTree
      */
     private JMenuItem getTreePathMenuItem(final TreePath path)
     {
-        JMenuItem copyPathMenuItem = new JMenuItem("Copy Tree Path");
+        final JMenuItem copyPathMenuItem = new JMenuItem("Copy Tree Path");
         copyPathMenuItem.addActionListener(actionEvent ->
         {
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(new StringSelection(new TreeStatus(rootNode).getStringForPath(path)), null);
         });
         return copyPathMenuItem;
@@ -153,15 +153,15 @@ public class Tree extends JTree
      */
     private JMenuItem getRawStreamSaveMenu(final COSStream cosStream)
     {
-        JMenuItem saveMenuItem = new JMenuItem("Save Raw Stream (" + getFilters(cosStream) + ") As...");
+        final JMenuItem saveMenuItem = new JMenuItem("Save Raw Stream (" + getFilters(cosStream) + ") As...");
         saveMenuItem.addActionListener(actionEvent ->
         {
             try
             {
-                byte[] bytes = IOUtils.toByteArray(cosStream.createRawInputStream());
+                final byte[] bytes = IOUtils.toByteArray(cosStream.createRawInputStream());
                 saveStream(bytes, null, null);
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 e.printStackTrace();
             }
@@ -172,17 +172,17 @@ public class Tree extends JTree
     /**
      * Returns the filters used by the given stream.
      */
-    private String getFilters(COSStream cosStream)
+    private String getFilters(final COSStream cosStream)
     {
-        StringBuilder sb = new StringBuilder();
-        COSBase filters = cosStream.getFilters();
+        final StringBuilder sb = new StringBuilder();
+        final COSBase filters = cosStream.getFilters();
         if (filters instanceof COSName)
         {
             sb.append(((COSName) filters).getName());
         }
         else if (filters instanceof COSArray)
         {
-            COSArray filterArray = (COSArray) filters;
+            final COSArray filterArray = (COSArray) filters;
             for (int i = 0; i < filterArray.size(); i++)
             {
                 if (i > 0)
@@ -235,15 +235,15 @@ public class Tree extends JTree
             format = "";
         }
 
-        JMenuItem saveMenuItem = new JMenuItem("Save Stream As" + format + "...");
+        final JMenuItem saveMenuItem = new JMenuItem("Save Stream As" + format + "...");
         saveMenuItem.addActionListener(actionEvent ->
         {
             try
             {
-                byte[] bytes = IOUtils.toByteArray(cosStream.createInputStream());
+                final byte[] bytes = IOUtils.toByteArray(cosStream.createInputStream());
                 saveStream(bytes, fileFilter, extension);
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 e.printStackTrace();
             }
@@ -256,7 +256,7 @@ public class Tree extends JTree
      */
     private String getFileExtensionForStream(final COSStream cosStream, final TreePath nodePath)
     {
-        String name = nodePath.getLastPathComponent().toString();
+        final String name = nodePath.getLastPathComponent().toString();
         switch (name)
         {
             case "FontFile":
@@ -282,22 +282,22 @@ public class Tree extends JTree
             return null;
         }
 
-        JMenuItem openMenuItem = new JMenuItem("Open with Default Application");
+        final JMenuItem openMenuItem = new JMenuItem("Open with Default Application");
         openMenuItem.addActionListener(actionEvent ->
         {
             try
             {
-                File temp = File.createTempFile("pdfbox", "." + extension);
+                final File temp = File.createTempFile("pdfbox", "." + extension);
                 temp.deleteOnExit();
                 
                 try (InputStream is = cosStream.createInputStream();
-                        FileOutputStream os = new FileOutputStream(temp))
+                     final FileOutputStream os = new FileOutputStream(temp))
                 {
                     IOUtils.copy(is, os);
                 }
                 Desktop.getDesktop().open(temp);
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 e.printStackTrace();
             }
@@ -312,10 +312,10 @@ public class Tree extends JTree
      */
     private List<JMenuItem> getPartiallyDecodedStreamSaveMenu(final COSStream cosStream)
     {
-        List<JMenuItem> menuItems = new ArrayList<>();
-        PDStream stream = new PDStream(cosStream);
+        final List<JMenuItem> menuItems = new ArrayList<>();
+        final PDStream stream = new PDStream(cosStream);
 
-        List<COSName> filters = stream.getFilters();
+        final List<COSName> filters = stream.getFilters();
 
         for (int i = filters.size() - 1; i >= 1; i--)
         {
@@ -326,27 +326,27 @@ public class Tree extends JTree
 
     private JMenuItem getPartialStreamSavingMenuItem(final int indexOfStopFilter, final PDStream stream)
     {
-        List<COSName> filters = stream.getFilters();
+        final List<COSName> filters = stream.getFilters();
 
         final List<String> stopFilters = new ArrayList<>(1);
         stopFilters.add(filters.get(indexOfStopFilter).getName());
 
-        StringBuilder nameListBuilder = new StringBuilder();
+        final StringBuilder nameListBuilder = new StringBuilder();
         for (int i = indexOfStopFilter; i < filters.size(); i++)
         {
             nameListBuilder.append(filters.get(i).getName()).append(" & ");
         }
         nameListBuilder.delete(nameListBuilder.lastIndexOf("&"), nameListBuilder.length());
-        JMenuItem menuItem = new JMenuItem("Keep " + nameListBuilder.toString() + "...");
+        final JMenuItem menuItem = new JMenuItem("Keep " + nameListBuilder.toString() + "...");
 
         menuItem.addActionListener(actionEvent ->
         {
             try
             {
-                InputStream data = stream.createInputStream(stopFilters);
+                final InputStream data = stream.createInputStream(stopFilters);
                 saveStream(IOUtils.toByteArray(data), null, null);
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 e.printStackTrace();
             }
@@ -360,9 +360,9 @@ public class Tree extends JTree
      * @param filter an optional FileFilter
      * @throws IOException if there is an error in creation of the file.
      */
-    private void saveStream(byte[] bytes, FileFilter filter, String extension) throws IOException
+    private void saveStream(final byte[] bytes, final FileFilter filter, final String extension) throws IOException
     {
-        FileOpenSaveDialog saveDialog = new FileOpenSaveDialog(getParent(), filter);
+        final FileOpenSaveDialog saveDialog = new FileOpenSaveDialog(getParent(), filter);
         saveDialog.saveFile(bytes, extension);
     }
 }

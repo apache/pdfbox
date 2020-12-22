@@ -34,7 +34,7 @@ public class FontFlag extends Flag
      * Constructor
      * @param fontDescDictionary COSDictionary instance.
      */
-    FontFlag(COSDictionary fontDescDictionary)
+    FontFlag(final COSDictionary fontDescDictionary)
     {
         fontDescriptor = fontDescDictionary;
     }
@@ -54,7 +54,7 @@ public class FontFlag extends Flag
     @Override
     Object[][] getFlagBits()
     {
-        PDFontDescriptor fontDesc = new PDFontDescriptor(fontDescriptor);
+        final PDFontDescriptor fontDesc = new PDFontDescriptor(fontDescriptor);
         return new Object[][]{
                 new Object[]{1, "FixedPitch", fontDesc.isFixedPitch()},
                 new Object[]{2, "Serif", fontDesc.isSerif()},

@@ -41,9 +41,9 @@ class GlyphRenderer
 {
     private static final Log LOG = LogFactory.getLog(GlyphRenderer.class);
 
-    private GlyphDescription glyphDescription;
+    private final GlyphDescription glyphDescription;
 
-    GlyphRenderer(GlyphDescription glyphDescription)
+    GlyphRenderer(final GlyphDescription glyphDescription)
     {
         this.glyphDescription = glyphDescription;
     }
@@ -54,25 +54,25 @@ class GlyphRenderer
      */
     public GeneralPath getPath()
     {
-        Point[] points = describe(glyphDescription);
+        final Point[] points = describe(glyphDescription);
         return calculatePath(points);
     }
 
     /**
      * Set the points of a glyph from the GlyphDescription.
      */
-    private Point[] describe(GlyphDescription gd)
+    private Point[] describe(final GlyphDescription gd)
     {
         int endPtIndex = 0;
         int endPtOfContourIndex = -1;
-        Point[] points = new Point[gd.getPointCount()];
+        final Point[] points = new Point[gd.getPointCount()];
         for (int i = 0; i < gd.getPointCount(); i++)
         {
             if (endPtOfContourIndex == -1)
             {
                 endPtOfContourIndex = gd.getEndPtOfContours(endPtIndex);
             }
-            boolean endPt = endPtOfContourIndex == i;
+            final boolean endPt = endPtOfContourIndex == i;
             if (endPt)
             {
                 endPtIndex++;
@@ -91,17 +91,17 @@ class GlyphRenderer
      *
      * @return the calculated GeneralPath
      */
-    private GeneralPath calculatePath(Point[] points)
+    private GeneralPath calculatePath(final Point[] points)
     {
-        GeneralPath path = new GeneralPath();
+        final GeneralPath path = new GeneralPath();
         int start = 0;
         for (int p = 0, len = points.length; p < len; ++p)
         {
             if (points[p].endOfContour)
             {
-                Point firstPoint = points[start];
-                Point lastPoint = points[p];
-                List<Point> contour = new ArrayList<>();
+                final Point firstPoint = points[start];
+                final Point lastPoint = points[p];
+                final List<Point> contour = new ArrayList<>();
                 for (int q = start; q <= p; ++q)
                 {
                     contour.add(points[q]);
@@ -119,14 +119,14 @@ class GlyphRenderer
                 else
                 {
                     // start and end are off-curve points, creating implicit one
-                    Point pmid = midValue(firstPoint, lastPoint);
+                    final Point pmid = midValue(firstPoint, lastPoint);
                     contour.add(0, pmid);
                     contour.add(pmid);
                 }
                 moveTo(path, contour.get(0));
                 for (int j = 1, clen = contour.size(); j < clen; j++)
                 {
-                    Point pnow = contour.get(j);
+                    final Point pnow = contour.get(j);
                     if (pnow.onCurve)
                     {
                         lineTo(path, pnow);
@@ -148,7 +148,7 @@ class GlyphRenderer
         return path;
     }
 
-    private void moveTo(GeneralPath path, Point point)
+    private void moveTo(final GeneralPath path, final Point point)
     {
         path.moveTo(point.x, point.y);
         if (LOG.isDebugEnabled())
@@ -157,7 +157,7 @@ class GlyphRenderer
         }
     }
 
-    private void lineTo(GeneralPath path, Point point)
+    private void lineTo(final GeneralPath path, final Point point)
     {
         path.lineTo(point.x, point.y);
         if (LOG.isDebugEnabled())
@@ -166,7 +166,7 @@ class GlyphRenderer
         }
     }
 
-    private void quadTo(GeneralPath path, Point ctrlPoint, Point point)
+    private void quadTo(final GeneralPath path, final Point ctrlPoint, final Point point)
     {
         path.quadTo(ctrlPoint.x, ctrlPoint.y, point.x, point.y);
         if (LOG.isDebugEnabled())
@@ -176,13 +176,13 @@ class GlyphRenderer
         }
     }
 
-    private int midValue(int a, int b)
+    private int midValue(final int a, final int b)
     {
         return a + (b - a) / 2;
     }
 
     // this creates an onCurve point that is between point1 and point2
-    private Point midValue(Point point1, Point point2)
+    private Point midValue(final Point point1, final Point point2)
     {
         return new Point(midValue(point1.x, point2.x), midValue(point1.y, point2.y));
     }
@@ -197,7 +197,7 @@ class GlyphRenderer
         private boolean onCurve = true;
         private boolean endOfContour = false;
 
-        Point(int xValue, int yValue, boolean onCurveValue, boolean endOfContourValue)
+        Point(final int xValue, final int yValue, final boolean onCurveValue, final boolean endOfContourValue)
         {
             x = xValue;
             y = yValue;
@@ -206,7 +206,7 @@ class GlyphRenderer
         }
 
         // this constructs an on-curve, non-endofcountour point
-        Point(int xValue, int yValue)
+        Point(final int xValue, final int yValue)
         {
             this(xValue, yValue, true, false);
         }

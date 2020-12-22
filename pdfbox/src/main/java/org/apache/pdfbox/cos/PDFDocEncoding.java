@@ -109,7 +109,7 @@ final class PDFDocEncoding
     {
     }
 
-    private static void set(int code, char unicode)
+    private static void set(final int code, final char unicode)
     {
         CODE_TO_UNI[code] = unicode;
         UNI_TO_CODE.put(unicode, code);
@@ -118,10 +118,10 @@ final class PDFDocEncoding
     /**
      * Returns the string representation of the given PDFDocEncoded bytes.
      */
-    public static String toString(byte[] bytes)
+    public static String toString(final byte[] bytes)
     {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes)
+        final StringBuilder sb = new StringBuilder();
+        for (final byte b : bytes)
         {
             if ((b & 0xff) >= CODE_TO_UNI.length)
             {
@@ -138,12 +138,12 @@ final class PDFDocEncoding
     /**
      * Returns the given string encoded with PDFDocEncoding.
      */
-    public static byte[] getBytes(String text)
+    public static byte[] getBytes(final String text)
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (char c : text.toCharArray())
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        for (final char c : text.toCharArray())
         {
-            Integer code = UNI_TO_CODE.get(c);
+            final Integer code = UNI_TO_CODE.get(c);
             if (code == null)
             {
                 out.write(0);
@@ -161,7 +161,7 @@ final class PDFDocEncoding
      *
      * @param character UTF-16 character
      */
-    public static boolean containsChar(char character)
+    public static boolean containsChar(final char character)
     {
         return UNI_TO_CODE.containsKey(character);
     }

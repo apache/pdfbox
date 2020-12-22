@@ -34,9 +34,9 @@ import java.util.List;
 public class SetNonStrokingDeviceRGBColor extends SetNonStrokingColor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
-        PDColorSpace cs = context.getResources().getColorSpace(COSName.DEVICERGB);
+        final PDColorSpace cs = context.getResources().getColorSpace(COSName.DEVICERGB);
         context.getGraphicsState().setNonStrokingColorSpace(cs);
         super.process(operator, arguments);
     }

@@ -43,7 +43,7 @@ public abstract class ProtectionPolicy
      *
      * @param l the length in bits (must be 40, 128 or 256)
      */
-    public void setEncryptionKeyLength(int l)
+    public void setEncryptionKeyLength(final int l)
     {
         if(l!=40 && l!=128 && l!=256)
         {
@@ -82,7 +82,7 @@ public abstract class ProtectionPolicy
      *
      * @param preferAES
      */
-    public void setPreferAES(boolean preferAES)
+    public void setPreferAES(final boolean preferAES)
     {
         this.preferAES = preferAES;
     }

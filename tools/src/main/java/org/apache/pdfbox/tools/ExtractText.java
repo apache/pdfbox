@@ -74,41 +74,41 @@ public final class ExtractText  implements Callable<Integer>
 
     @Option(names = "-alwaysNext", description = "Process next page (if applicable) despite IOException " + 
         "(ignored when -html)")
-    private boolean alwaysNext = false;
+    private final boolean alwaysNext = false;
 
     @Option(names = "-console", description = "Send text to console instead of file")
-    private boolean toConsole = false;
+    private final boolean toConsole = false;
 
     @Option(names = "-debug", description = "Enables debug output about the time consumption of every stage")
-    private boolean debug = false;
+    private final boolean debug = false;
 
     @Option(names = "-encoding", description = "UTF-8 or ISO-8859-1, UTF-16BE, UTF-16LE, etc. (default: ${DEFAULT-VALUE})")
     private String encoding = STD_ENCODING;
 
     @Option(names = "-endPage", description = "The last page to extract (1 based, inclusive)")
-    private int endPage = Integer.MAX_VALUE;
+    private final int endPage = Integer.MAX_VALUE;
 
     @Option(names = "-html", description = "Output in HTML format instead of raw text")
-    private boolean toHTML = false;
+    private final boolean toHTML = false;
 
     @Option(names = "-ignoreBeads", description = "Disables the separation by beads")
-    private boolean ignoreBeads = false;
+    private final boolean ignoreBeads = false;
 
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
     @Option(names = "-password", description = "the password for the PDF or certificate in keystore.")    
-    private String password = "";
+    private final String password = "";
 
     @Option(names = "-rotationMagic", description = "Analyze each page for rotated/skewed text, rotate to 0° " +
         "and extract separately (slower, and ignored when -html)" )
-    private boolean rotationMagic = false;
+    private final boolean rotationMagic = false;
 
     @Option(names = "-sort", description = "Sort the text before writing of every stage")
-    private boolean sort = false;
+    private final boolean sort = false;
 
     @Option(names = "-startPage", description = "The first page to start extraction (1 based)")
-    private int startPage = 1;
+    private final int startPage = 1;
 
     @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to decrypt.")
     private File infile;
@@ -121,12 +121,12 @@ public final class ExtractText  implements Callable<Integer>
      *
      * @param args Command line arguments, should be one and a reference to a file.
      */
-    public static void main( String[] args )
+    public static void main(final String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new ExtractText()).execute(args);
+        final int exitCode = new CommandLine(new ExtractText()).execute(args);
         System.exit(exitCode);
     }
 
@@ -134,7 +134,7 @@ public final class ExtractText  implements Callable<Integer>
      * For testing as SureFire doesn't support testing methods which 
      * call System.exit 
      */
-    static int test (String[] args)
+    static int test (final String[] args)
     {
         return new CommandLine(new ExtractText()).execute(args);
     }
@@ -146,20 +146,20 @@ public final class ExtractText  implements Callable<Integer>
     public Integer call()
     {
         // set file extension
-        String ext = toHTML ? ".html" : ".txt";
+        final String ext = toHTML ? ".html" : ".txt";
 
         if (outfile == null)
         {
-            String outPath = FilenameUtils.removeExtension(infile.getAbsolutePath()) + ext;
+            final String outPath = FilenameUtils.removeExtension(infile.getAbsolutePath()) + ext;
             outfile = new File(outPath);
         }
 
         try (PDDocument document = Loader.loadPDF(infile, password);
-             Writer output = toConsole ? new OutputStreamWriter( SYSOUT, encoding ) : new OutputStreamWriter( new FileOutputStream( outfile ), encoding ))
+             final Writer output = toConsole ? new OutputStreamWriter( SYSOUT, encoding ) : new OutputStreamWriter( new FileOutputStream( outfile ), encoding ))
         {
             long startTime = startProcessing("Loading PDF " + infile);
 
-            AccessPermission ap = document.getCurrentAccessPermission();
+            final AccessPermission ap = document.getCurrentAccessPermission();
             if( ! ap.canExtractContent() )
             {
                 SYSERR.println( "You do not have permission to extract text");
@@ -181,7 +181,7 @@ public final class ExtractText  implements Callable<Integer>
                 SYSERR.println("Writing to " + outfile.getAbsolutePath());
             }
 
-            PDFTextStripper stripper;
+            final PDFTextStripper stripper;
             if(toHTML)
             {
                 // HTML stripper can't work page by page because of startDocument() callback
@@ -213,24 +213,24 @@ public final class ExtractText  implements Callable<Integer>
             }
 
             // ... also for any embedded PDFs:
-            PDDocumentCatalog catalog = document.getDocumentCatalog();
-            PDDocumentNameDictionary names = catalog.getNames();    
+            final PDDocumentCatalog catalog = document.getDocumentCatalog();
+            final PDDocumentNameDictionary names = catalog.getNames();
             if (names != null)
             {
-                PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
+                final PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
                 if (embeddedFiles != null)
                 {
-                    Map<String, PDComplexFileSpecification> embeddedFileNames = embeddedFiles.getNames();
+                    final Map<String, PDComplexFileSpecification> embeddedFileNames = embeddedFiles.getNames();
                     if (embeddedFileNames != null)
                     {
-                        for (Map.Entry<String, PDComplexFileSpecification> ent : embeddedFileNames.entrySet()) 
+                        for (final Map.Entry<String, PDComplexFileSpecification> ent : embeddedFileNames.entrySet())
                         {
                             if (debug)
                             {
                                 SYSERR.println("Processing embedded file " + ent.getKey() + ":");
                             }
-                            PDComplexFileSpecification spec = ent.getValue();
-                            PDEmbeddedFile file = spec.getEmbeddedFile();
+                            final PDComplexFileSpecification spec = ent.getValue();
+                            final PDEmbeddedFile file = spec.getEmbeddedFile();
                             if (file != null && "application/pdf".equals(file.getSubtype()))
                             {
                                 if (debug)
@@ -238,7 +238,7 @@ public final class ExtractText  implements Callable<Integer>
                                     SYSERR.println("  is PDF (size=" + file.getSize() + ")");
                                 }
                                 try (InputStream fis = file.createInputStream();
-                                        PDDocument subDoc = Loader.loadPDF(fis))
+                                     final PDDocument subDoc = Loader.loadPDF(fis))
                                 {
                                     if (toHTML)
                                     {
@@ -258,7 +258,7 @@ public final class ExtractText  implements Callable<Integer>
             }
             stopProcessing("Time for extraction: ", startTime);
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             SYSERR.println( "Error extracting test for document: " + ioe.getMessage());
             return 4;
@@ -267,9 +267,9 @@ public final class ExtractText  implements Callable<Integer>
         return 0;
     }
 
-    private void extractPages(int startPage, int endPage,
-            PDFTextStripper stripper, PDDocument document, Writer output,
-            boolean rotationMagic, boolean alwaysNext) throws IOException
+    private void extractPages(final int startPage, final int endPage,
+                              final PDFTextStripper stripper, final PDDocument document, final Writer output,
+                              final boolean rotationMagic, final boolean alwaysNext) throws IOException
     {
         for (int p = startPage; p <= endPage; ++p)
         {
@@ -279,19 +279,19 @@ public final class ExtractText  implements Callable<Integer>
             {
                 if (rotationMagic)
                 {
-                    PDPage page = document.getPage(p - 1);
-                    int rotation = page.getRotation();
+                    final PDPage page = document.getPage(p - 1);
+                    final int rotation = page.getRotation();
                     page.setRotation(0);
-                    AngleCollector angleCollector = new AngleCollector();
+                    final AngleCollector angleCollector = new AngleCollector();
                     angleCollector.setStartPage(p);
                     angleCollector.setEndPage(p);
                     angleCollector.writeText(document, new NullWriter());
                     // rotation magic
-                    for (int angle : angleCollector.getAngles())
+                    for (final int angle : angleCollector.getAngles())
                     {
                         // prepend a transformation
                         // (we could skip these parts for angle 0, but it doesn't matter much)
-                        try (PDPageContentStream cs = new PDPageContentStream(document, page, 
+                        try (PDPageContentStream cs = new PDPageContentStream(document, page,
                                 PDPageContentStream.AppendMode.PREPEND, false))
                         {
                             cs.transform(Matrix.getRotateInstance(-Math.toRadians(angle), 0, 0));
@@ -309,7 +309,7 @@ public final class ExtractText  implements Callable<Integer>
                     stripper.writeText(document, output);
                 }
             }
-            catch (IOException ex)
+            catch (final IOException ex)
             {
                 if (!alwaysNext)
                 {
@@ -320,7 +320,7 @@ public final class ExtractText  implements Callable<Integer>
         }
     }
 
-    private long startProcessing(String message) 
+    private long startProcessing(final String message)
     {
         if (debug) 
         {
@@ -329,20 +329,20 @@ public final class ExtractText  implements Callable<Integer>
         return System.currentTimeMillis();
     }
     
-    private void stopProcessing(String message, long startTime) 
+    private void stopProcessing(final String message, final long startTime)
     {
         if (debug)
         {
-            long stopTime = System.currentTimeMillis();
-            float elapsedTime = ((float)(stopTime - startTime))/1000;
+            final long stopTime = System.currentTimeMillis();
+            final float elapsedTime = ((float)(stopTime - startTime))/1000;
             SYSERR.println(message + elapsedTime + " seconds");
         }
     }
 
-    static int getAngle(TextPosition text)
+    static int getAngle(final TextPosition text)
     {
         // should this become a part of TextPosition?
-        Matrix m = text.getTextMatrix().clone();
+        final Matrix m = text.getTextMatrix().clone();
         m.concatenate(text.getFont().getFontMatrix());
         return (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
     }
@@ -368,7 +368,7 @@ class AngleCollector extends PDFTextStripper
     }
 
     @Override
-    protected void processTextPosition(TextPosition text)
+    protected void processTextPosition(final TextPosition text)
     {
         int angle = ExtractText.getAngle(text);
         angle = (angle + 360) % 360;
@@ -386,9 +386,9 @@ class FilteredTextStripper extends PDFTextStripper
     }
 
     @Override
-    protected void processTextPosition(TextPosition text)
+    protected void processTextPosition(final TextPosition text)
     {
-        int angle = ExtractText.getAngle(text);
+        final int angle = ExtractText.getAngle(text);
         if (angle == 0)
         {
             super.processTextPosition(text);
@@ -402,7 +402,7 @@ class FilteredTextStripper extends PDFTextStripper
 class NullWriter extends Writer
 {
     @Override
-    public void write(char[] cbuf, int off, int len) throws IOException
+    public void write(final char[] cbuf, final int off, final int len) throws IOException
     {
         // do nothing
     }

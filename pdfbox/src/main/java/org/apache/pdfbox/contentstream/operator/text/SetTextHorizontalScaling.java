@@ -34,19 +34,19 @@ import org.apache.pdfbox.cos.COSNumber;
 public class SetTextHorizontalScaling extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.isEmpty())
         {
             throw new MissingOperandException(operator, arguments);
         }
         
-        COSBase base = arguments.get(0);
+        final COSBase base = arguments.get(0);
         if (!(base instanceof COSNumber))
         {
             return;
         }
-        COSNumber scaling = (COSNumber) base;
+        final COSNumber scaling = (COSNumber) base;
         context.getGraphicsState().getTextState().setHorizontalScaling(scaling.floatValue());
     }
 

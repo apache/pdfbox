@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.schema;
 
@@ -62,12 +62,12 @@ public class PDFAIdentificationSchema extends XMPSchema
      * @param metadata
      *            The metadata to attach this schema
      */
-    public PDFAIdentificationSchema(XMPMetadata metadata)
+    public PDFAIdentificationSchema(final XMPMetadata metadata)
     {
         super(metadata);
     }
 
-    public PDFAIdentificationSchema(XMPMetadata metadata, String prefix)
+    public PDFAIdentificationSchema(final XMPMetadata metadata, final String prefix)
     {
         super(metadata, prefix);
     }
@@ -79,9 +79,9 @@ public class PDFAIdentificationSchema extends XMPSchema
      *            The version Id value to set
      * 
      */
-    public void setPartValueWithString(String value)
+    public void setPartValueWithString(final String value)
     {
-        IntegerType part = (IntegerType) instanciateSimple(PART, value);
+        final IntegerType part = (IntegerType) instanciateSimple(PART, value);
         addProperty(part);
     }
 
@@ -91,9 +91,9 @@ public class PDFAIdentificationSchema extends XMPSchema
      * @param value
      *            The version Id value to set
      */
-    public void setPartValueWithInt(int value)
+    public void setPartValueWithInt(final int value)
     {
-        IntegerType part = (IntegerType) instanciateSimple(PART, value);
+        final IntegerType part = (IntegerType) instanciateSimple(PART, value);
         addProperty(part);
     }
 
@@ -103,7 +103,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      * @param value
      *            The version Id property to set
      */
-    public void setPart(Integer value)
+    public void setPart(final Integer value)
     {
         setPartValueWithInt(value);
     }
@@ -114,7 +114,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      * @param part
      *            set the PDF/A Version id property
      */
-    public void setPartProperty(IntegerType part)
+    public void setPartProperty(final IntegerType part)
     {
         addProperty(part);
     }
@@ -125,9 +125,9 @@ public class PDFAIdentificationSchema extends XMPSchema
      * @param value
      *            The amendment identifier value to set
      */
-    public void setAmd(String value)
+    public void setAmd(final String value)
     {
-        TextType amd = createTextType(AMD, value);
+        final TextType amd = createTextType(AMD, value);
         addProperty(amd);
     }
 
@@ -137,7 +137,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      * @param amd
      *            The amendment identifier property to set
      */
-    public void setAmdProperty(TextType amd)
+    public void setAmdProperty(final TextType amd)
     {
         addProperty(amd);
     }
@@ -150,11 +150,11 @@ public class PDFAIdentificationSchema extends XMPSchema
      * @throws BadFieldValueException
      *             If Conformance Value not 'A', 'B' or 'U' (PDF/A-2 and PDF/A-3)
      */
-    public void setConformance(String value) throws BadFieldValueException
+    public void setConformance(final String value) throws BadFieldValueException
     {
         if (value.equals("A") || value.equals("B") || value.equals("U"))
         {
-            TextType conf = createTextType(CONFORMANCE, value);
+            final TextType conf = createTextType(CONFORMANCE, value);
             addProperty(conf);
 
         }
@@ -173,9 +173,9 @@ public class PDFAIdentificationSchema extends XMPSchema
      * @throws BadFieldValueException
      *             If Conformance Value not 'A', 'B' or 'U' (PDF/A-2 and PDF/A-3)
      */
-    public void setConformanceProperty(TextType conf) throws BadFieldValueException
+    public void setConformanceProperty(final TextType conf) throws BadFieldValueException
     {
-        String value = conf.getStringValue();
+        final String value = conf.getStringValue();
         if (value.equals("A") || value.equals("B") || value.equals("U"))
         {
             addProperty(conf);
@@ -194,7 +194,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public Integer getPart()
     {
-        IntegerType tmp = getPartProperty();
+        final IntegerType tmp = getPartProperty();
         if (tmp == null)
         {
             return null;
@@ -209,7 +209,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public IntegerType getPartProperty()
     {
-        AbstractField tmp = getProperty(PART);
+        final AbstractField tmp = getProperty(PART);
         if (tmp instanceof IntegerType)
         {
             return (IntegerType) tmp;
@@ -224,7 +224,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public String getAmendment()
     {
-        AbstractField tmp = getProperty(AMD);
+        final AbstractField tmp = getProperty(AMD);
         if (tmp instanceof TextType)
         {
             return ((TextType) tmp).getStringValue();
@@ -239,7 +239,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public TextType getAmdProperty()
     {
-        AbstractField tmp = getProperty(AMD);
+        final AbstractField tmp = getProperty(AMD);
         if (tmp instanceof TextType)
         {
             return (TextType) tmp;
@@ -254,10 +254,10 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public String getAmd()
     {
-        TextType tmp = getAmdProperty();
+        final TextType tmp = getAmdProperty();
         if (tmp == null)
         {
-            for (Attribute attribute : getAllAttributes())
+            for (final Attribute attribute : getAllAttributes())
             {
                 if (attribute.getName().equals(AMD))
                 {
@@ -279,7 +279,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public TextType getConformanceProperty()
     {
-        AbstractField tmp = getProperty(CONFORMANCE);
+        final AbstractField tmp = getProperty(CONFORMANCE);
         if (tmp instanceof TextType)
         {
             return (TextType) tmp;
@@ -294,10 +294,10 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public String getConformance()
     {
-        TextType tt = getConformanceProperty();
+        final TextType tt = getConformanceProperty();
         if (tt == null)
         {
-            for (Attribute attribute : getAllAttributes())
+            for (final Attribute attribute : getAllAttributes())
             {
                 if (attribute.getName().equals(CONFORMANCE))
                 {

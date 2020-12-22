@@ -38,15 +38,15 @@ public final class EmbeddedFonts
     {
     }
     
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         try (PDDocument document = new PDDocument())
         {
-            PDPage page = new PDPage(PDRectangle.A4);
+            final PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
             
-            String dir = "../pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/";
-            PDType0Font font = PDType0Font.load(document, new File(dir + "LiberationSans-Regular.ttf"));
+            final String dir = "../pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/";
+            final PDType0Font font = PDType0Font.load(document, new File(dir + "LiberationSans-Regular.ttf"));
             
             try (PDPageContentStream stream = new PDPageContentStream(document, page))
             {

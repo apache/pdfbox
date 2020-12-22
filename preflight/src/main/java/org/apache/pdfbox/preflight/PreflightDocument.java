@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight;
 
@@ -33,9 +33,9 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 public class PreflightDocument extends PDDocument
 {
-    private ValidationResult result = new ValidationResult(true);
+    private final ValidationResult result = new ValidationResult(true);
 
-    private PreflightConfiguration config;
+    private final PreflightConfiguration config;
 
     private PreflightContext context;
 
@@ -47,7 +47,7 @@ public class PreflightDocument extends PDDocument
      * @param doc the underlying COSDocument
      * @param format the format used for validation
      */
-    public PreflightDocument(COSDocument doc, Format format)
+    public PreflightDocument(final COSDocument doc, final Format format)
     {
         this(doc, format, null);
     }
@@ -60,7 +60,7 @@ public class PreflightDocument extends PDDocument
      * @param format the format used for validation
      * @param config the configuration used for validation
      */
-    public PreflightDocument(COSDocument doc, Format format, PreflightConfiguration config)
+    public PreflightDocument(final COSDocument doc, final Format format, final PreflightConfiguration config)
     {
         super(doc);
         this.specification = format;
@@ -83,7 +83,7 @@ public class PreflightDocument extends PDDocument
      * 
      * @param error the validation error to be added
      */
-    public void addValidationError(ValidationError error)
+    public void addValidationError(final ValidationError error)
     {
         if (error != null)
         {
@@ -96,7 +96,7 @@ public class PreflightDocument extends PDDocument
      * 
      * @param errorList the list of validation errors
      */
-    public void addValidationErrors(List<ValidationError> errorList)
+    public void addValidationErrors(final List<ValidationError> errorList)
     {
         if (errorList != null)
         {
@@ -119,7 +119,7 @@ public class PreflightDocument extends PDDocument
      * 
      * @param context the associated preflight context
      */
-    public void setContext(PreflightContext context)
+    public void setContext(final PreflightContext context)
     {
         this.context = context;
     }
@@ -136,8 +136,8 @@ public class PreflightDocument extends PDDocument
         // on java 9 & 10, or to add jaxb-api on java 11 and later
         javax.xml.bind.DatatypeConverter.parseInt("0");
         context.setConfig(config);
-        Collection<String> processes = config.getProcessNames();
-        for (String name : processes)
+        final Collection<String> processes = config.getProcessNames();
+        for (final String name : processes)
         {
             ContextHelper.validateElement(context, name);
         }

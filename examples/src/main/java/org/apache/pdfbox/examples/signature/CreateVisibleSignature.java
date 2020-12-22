@@ -68,7 +68,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      *
      * @param lateExternalSigning
      */
-    public void setLateExternalSigning(boolean lateExternalSigning)
+    public void setLateExternalSigning(final boolean lateExternalSigning)
     {
         this.lateExternalSigning = lateExternalSigning;
     }
@@ -84,8 +84,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param page the signature should be placed on
      * @throws IOException
      */
-    public void setVisibleSignDesigner(String filename, int x, int y, int zoomPercent, 
-            InputStream imageStream, int page) 
+    public void setVisibleSignDesigner(final String filename, final int x, final int y, final int zoomPercent,
+                                       final InputStream imageStream, final int page)
             throws IOException
     {
         visibleSignDesigner = new PDVisibleSignDesigner(filename, imageStream, page);
@@ -99,7 +99,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param imageStream input stream of an image.
      * @throws IOException
      */
-    public void setVisibleSignDesigner(int zoomPercent, InputStream imageStream) 
+    public void setVisibleSignDesigner(final int zoomPercent, final InputStream imageStream)
             throws IOException
     {
         visibleSignDesigner = new PDVisibleSignDesigner(imageStream);
@@ -116,8 +116,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param page
      * @param visualSignEnabled
      */
-    public void setVisibleSignatureProperties(String name, String location, String reason, int preferredSize, 
-            int page, boolean visualSignEnabled)
+    public void setVisibleSignatureProperties(final String name, final String location, final String reason, final int preferredSize,
+                                              final int page, final boolean visualSignEnabled)
     {
         visibleSignatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
                 preferredSize(preferredSize).page(page).visualSignEnabled(visualSignEnabled).
@@ -132,8 +132,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param reason
      * @param visualSignEnabled
      */
-    public void setVisibleSignatureProperties(String name, String location, String reason,
-            boolean visualSignEnabled)
+    public void setVisibleSignatureProperties(final String name, final String location, final String reason,
+                                              final boolean visualSignEnabled)
     {
         visibleSignatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
                 visualSignEnabled(visualSignEnabled).setPdVisibleSignature(visibleSignDesigner);
@@ -151,7 +151,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @throws CertificateException if the certificate is not valid as signing time
      * @throws IOException if no certificate could be found
      */
-    public CreateVisibleSignature(KeyStore keystore, char[] pin)
+    public CreateVisibleSignature(final KeyStore keystore, final char[] pin)
             throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException
     {
         super(keystore, pin);
@@ -165,7 +165,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param tsaUrl optional TSA url
      * @throws IOException
      */
-    public void signPDF(File inputFile, File signedFile, String tsaUrl) throws IOException
+    public void signPDF(final File inputFile, final File signedFile, final String tsaUrl) throws IOException
     {
         this.signPDF(inputFile, signedFile, tsaUrl, null);
     }
@@ -179,7 +179,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param signatureFieldName optional name of an existing (unsigned) signature field
      * @throws IOException
      */
-    public void signPDF(File inputFile, File signedFile, String tsaUrl, String signatureFieldName) throws IOException
+    public void signPDF(final File inputFile, final File signedFile, final String tsaUrl, final String signatureFieldName) throws IOException
     {
         if (inputFile == null || !inputFile.exists())
         {
@@ -191,9 +191,9 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // creating output document and prepare the IO streams.
         
         try (FileOutputStream fos = new FileOutputStream(signedFile);
-                PDDocument doc = Loader.loadPDF(inputFile))
+             final PDDocument doc = Loader.loadPDF(inputFile))
         {
-            int accessPermissions = SigUtils.getMDPPermission(doc);
+            final int accessPermissions = SigUtils.getMDPPermission(doc);
             if (accessPermissions == 1)
             {
                 throw new IllegalStateException("No changes to the document are permitted due to DocMDP transform parameters dictionary");
@@ -222,7 +222,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
                 SigUtils.setMDPPermission(doc, signature, 2);
             }
 
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             if (acroForm != null && acroForm.getNeedAppearances())
             {
                 // PDFBOX-3738 NeedAppearances true results in visible signature becoming invisible 
@@ -262,7 +262,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
             signature.setSignDate(Calendar.getInstance());
 
             // do not set SignatureInterface instance, if external signing used
-            SignatureInterface signatureInterface = isExternalSigning() ? null : this;
+            final SignatureInterface signatureInterface = isExternalSigning() ? null : this;
 
             // register signature dictionary and sign interface
             if (visibleSignatureProperties != null && visibleSignatureProperties.isVisualSignEnabled())
@@ -279,9 +279,9 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
             if (isExternalSigning())
             {
-                ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(fos);
+                final ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(fos);
                 // invoke external signature service
-                byte[] cmsSignature = sign(externalSigning.getContent());
+                final byte[] cmsSignature = sign(externalSigning.getContent());
 
                 // Explanation of late external signing (off by default):
                 // If you want to add the signature in a separate step, then set an empty byte array
@@ -298,7 +298,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
                     externalSigning.setSignature(new byte[0]);
 
                     // remember the offset (add 1 because of "<")
-                    int offset = signature.getByteRange()[1] + 1;
+                    final int offset = signature.getByteRange()[1] + 1;
 
                     // now write the signature at the correct offset without any PDFBox methods
                     try (RandomAccessFile raf = new RandomAccessFile(signedFile, "rw"))
@@ -329,11 +329,11 @@ public class CreateVisibleSignature extends CreateSignatureBase
     }
 
     // Find an existing signature (assumed to be empty). You will usually not need this.
-    private PDSignature findExistingSignature(PDDocument doc, String sigFieldName)
+    private PDSignature findExistingSignature(final PDDocument doc, final String sigFieldName)
     {
         PDSignature signature = null;
-        PDSignatureField signatureField;
-        PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+        final PDSignatureField signatureField;
+        final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
         if (acroForm != null)
         {
             signatureField = (PDSignatureField) acroForm.getField(sigFieldName);
@@ -372,7 +372,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @throws java.security.NoSuchAlgorithmException
      * @throws java.security.UnrecoverableKeyException
      */
-    public static void main(String[] args) throws KeyStoreException, CertificateException,
+    public static void main(final String[] args) throws KeyStoreException, CertificateException,
             IOException, NoSuchAlgorithmException, UnrecoverableKeyException
     {
         // generate with
@@ -405,21 +405,21 @@ public class CreateVisibleSignature extends CreateSignatureBase
             }
         }
 
-        File ksFile = new File(args[0]);
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        char[] pin = args[1].toCharArray();
+        final File ksFile = new File(args[0]);
+        final KeyStore keystore = KeyStore.getInstance("PKCS12");
+        final char[] pin = args[1].toCharArray();
         keystore.load(new FileInputStream(ksFile), pin);
 
-        File documentFile = new File(args[2]);
+        final File documentFile = new File(args[2]);
 
-        CreateVisibleSignature signing = new CreateVisibleSignature(keystore, pin.clone());
+        final CreateVisibleSignature signing = new CreateVisibleSignature(keystore, pin.clone());
 
-        File signedDocumentFile;
-        int page;
+        final File signedDocumentFile;
+        final int page;
         try (InputStream imageStream = new FileInputStream(args[3]))
         {
-            String name = documentFile.getName();
-            String substring = name.substring(0, name.lastIndexOf('.'));
+            final String name = documentFile.getName();
+            final String substring = name.substring(0, name.lastIndexOf('.'));
             signedDocumentFile = new File(documentFile.getParent(), substring + "_signed.pdf");
             // page is 1-based here
             page = 1;

@@ -44,7 +44,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param a The action dictionary.
      */
-    public PDAnnotationAdditionalActions( COSDictionary a )
+    public PDAnnotationAdditionalActions(final COSDictionary a )
     {
         actions = a;
     }
@@ -68,7 +68,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getE()
     {
-        COSDictionary e = (COSDictionary)actions.getDictionaryObject( "E" );
+        final COSDictionary e = (COSDictionary)actions.getDictionaryObject( "E" );
         PDAction retval = null;
         if( e != null )
         {
@@ -83,7 +83,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param e The action to be performed.
      */
-    public void setE( PDAction e )
+    public void setE(final PDAction e )
     {
         actions.setItem( "E", e );
     }
@@ -96,7 +96,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getX()
     {
-        COSDictionary x = (COSDictionary)actions.getDictionaryObject( "X" );
+        final COSDictionary x = (COSDictionary)actions.getDictionaryObject( "X" );
         PDAction retval = null;
         if( x != null )
         {
@@ -111,7 +111,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param x The action to be performed.
      */
-    public void setX( PDAction x )
+    public void setX(final PDAction x )
     {
         actions.setItem( "X", x );
     }
@@ -125,7 +125,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getD()
     {
-        COSDictionary d = (COSDictionary)actions.getDictionaryObject( COSName.D );
+        final COSDictionary d = (COSDictionary)actions.getDictionaryObject( COSName.D );
         PDAction retval = null;
         if( d != null )
         {
@@ -141,7 +141,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param d The action to be performed.
      */
-    public void setD( PDAction d )
+    public void setD(final PDAction d )
     {
         actions.setItem( COSName.D, d );
     }
@@ -155,7 +155,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getU()
     {
-        COSDictionary u = (COSDictionary)actions.getDictionaryObject( "U" );
+        final COSDictionary u = (COSDictionary)actions.getDictionaryObject( "U" );
         PDAction retval = null;
         if( u != null )
         {
@@ -171,7 +171,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param u The action to be performed.
      */
-    public void setU( PDAction u )
+    public void setU(final PDAction u )
     {
         actions.setItem( "U", u );
     }
@@ -184,7 +184,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getFo()
     {
-        COSDictionary fo = (COSDictionary)actions.getDictionaryObject( "Fo" );
+        final COSDictionary fo = (COSDictionary)actions.getDictionaryObject( "Fo" );
         PDAction retval = null;
         if( fo != null )
         {
@@ -199,7 +199,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param fo The action to be performed.
      */
-    public void setFo( PDAction fo )
+    public void setFo(final PDAction fo )
     {
         actions.setItem( "Fo", fo );
     }
@@ -213,7 +213,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getBl()
     {
-        COSDictionary bl = (COSDictionary)actions.getDictionaryObject( "Bl" );
+        final COSDictionary bl = (COSDictionary)actions.getDictionaryObject( "Bl" );
         PDAction retval = null;
         if( bl != null )
         {
@@ -229,7 +229,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param bl The action to be performed.
      */
-    public void setBl( PDAction bl )
+    public void setBl(final PDAction bl )
     {
         actions.setItem( "Bl", bl );
     }
@@ -244,7 +244,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getPO()
     {
-        COSDictionary po = (COSDictionary)actions.getDictionaryObject( "PO" );
+        final COSDictionary po = (COSDictionary)actions.getDictionaryObject( "PO" );
         PDAction retval = null;
         if( po != null )
         {
@@ -261,7 +261,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param po The action to be performed.
      */
-    public void setPO( PDAction po )
+    public void setPO(final PDAction po )
     {
         actions.setItem( "PO", po );
     }
@@ -275,7 +275,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getPC()
     {
-        COSDictionary pc = (COSDictionary)actions.getDictionaryObject( "PC" );
+        final COSDictionary pc = (COSDictionary)actions.getDictionaryObject( "PC" );
         PDAction retval = null;
         if( pc != null )
         {
@@ -291,7 +291,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param pc The action to be performed.
      */
-    public void setPC( PDAction pc )
+    public void setPC(final PDAction pc )
     {
         actions.setItem( "PC", pc );
     }
@@ -304,7 +304,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getPV()
     {
-        COSDictionary pv = (COSDictionary)actions.getDictionaryObject( "PV" );
+        final COSDictionary pv = (COSDictionary)actions.getDictionaryObject( "PV" );
         PDAction retval = null;
         if( pv != null )
         {
@@ -319,7 +319,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param pv The action to be performed.
      */
-    public void setPV( PDAction pv )
+    public void setPV(final PDAction pv )
     {
         actions.setItem( "PV", pv );
     }
@@ -332,7 +332,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getPI()
     {
-        COSDictionary pi = (COSDictionary)actions.getDictionaryObject( "PI" );
+        final COSDictionary pi = (COSDictionary)actions.getDictionaryObject( "PI" );
         PDAction retval = null;
         if( pi != null )
         {
@@ -347,7 +347,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      *
      * @param pi The action to be performed.
      */
-    public void setPI( PDAction pi )
+    public void setPI(final PDAction pi )
     {
         actions.setItem( "PI", pi );
     }

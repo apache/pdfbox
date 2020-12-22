@@ -619,7 +619,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * 
      * @return A COSName with the specified name.
      */
-    public static COSName getPDFName(String aName)
+    public static COSName getPDFName(final String aName)
     {
         COSName name = null;
         if (aName != null)
@@ -647,7 +647,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * @param staticValue Indicates if the COSName object is static so that it can be stored in the HashMap without
      * synchronizing.
      */
-    private COSName(String aName, boolean staticValue)
+    private COSName(final String aName, final boolean staticValue)
     {
         name = aName;
         hashCode = name.hashCode();
@@ -666,7 +666,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * 
      * @param aName The name of the COSName object.
      */
-    private COSName(String aName)
+    private COSName(final String aName)
     {
         this(aName, true);
     }
@@ -688,7 +688,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     }
 
     @Override
-    public boolean equals(Object object)
+    public boolean equals(final Object object)
     {
         return object instanceof COSName && name.equals(((COSName) object).name);
     }
@@ -700,7 +700,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     }
 
     @Override
-    public int compareTo(COSName other)
+    public int compareTo(final COSName other)
     {
         return name.compareTo(other.name);
     }
@@ -715,7 +715,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     }
 
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public Object accept(final ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromName(this);
     }
@@ -726,13 +726,13 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void writePDF(OutputStream output) throws IOException
+    public void writePDF(final OutputStream output) throws IOException
     {
         output.write('/');
-        byte[] bytes = getName().getBytes(StandardCharsets.UTF_8);
-        for (byte b : bytes)
+        final byte[] bytes = getName().getBytes(StandardCharsets.UTF_8);
+        for (final byte b : bytes)
         {
-            int current = b & 0xFF;
+            final int current = b & 0xFF;
 
             // be more restrictive than the PDF spec, "Name Objects", see PDFBOX-2073
             if (current >= 'A' && current <= 'Z' ||

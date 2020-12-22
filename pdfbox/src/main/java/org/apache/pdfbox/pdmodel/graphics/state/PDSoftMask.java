@@ -42,7 +42,7 @@ public final class PDSoftMask implements COSObjectable
      *
      * @param dictionary SMask
      */
-    public static PDSoftMask create(COSBase dictionary)
+    public static PDSoftMask create(final COSBase dictionary)
     {
         if (dictionary instanceof COSName)
         {
@@ -85,7 +85,7 @@ public final class PDSoftMask implements COSObjectable
      *
      * @param dictionary The soft mask dictionary.
      */
-    public PDSoftMask(COSDictionary dictionary)
+    public PDSoftMask(final COSDictionary dictionary)
     {
         this.dictionary = dictionary;
     }
@@ -118,10 +118,10 @@ public final class PDSoftMask implements COSObjectable
     {
         if (group == null)
         {
-            COSBase cosGroup = getCOSObject().getDictionaryObject(COSName.G);
+            final COSBase cosGroup = getCOSObject().getDictionaryObject(COSName.G);
             if (cosGroup != null)
             {
-                PDXObject x = PDXObject.createXObject(cosGroup, null);
+                final PDXObject x = PDXObject.createXObject(cosGroup, null);
                 if (x instanceof PDTransparencyGroup)
                 {
                     group = (PDTransparencyGroup) x;
@@ -151,7 +151,7 @@ public final class PDSoftMask implements COSObjectable
     {
         if (transferFunction == null)
         {
-            COSBase cosTF = getCOSObject().getDictionaryObject(COSName.TR);
+            final COSBase cosTF = getCOSObject().getDictionaryObject(COSName.TR);
             if (cosTF != null)
             {
                 transferFunction = PDFunction.create(cosTF);
@@ -165,7 +165,7 @@ public final class PDSoftMask implements COSObjectable
      *
      * @param ctm
      */
-    void setInitialTransformationMatrix(Matrix ctm)
+    void setInitialTransformationMatrix(final Matrix ctm)
     {
         this.ctm = ctm;
     }

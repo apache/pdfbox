@@ -26,7 +26,7 @@ class LigatureTest
     @Test
     void testLigature()
     {
-        Ligature ligature = new Ligature("successor", "ligature");
+        final Ligature ligature = new Ligature("successor", "ligature");
         assertEquals("successor", ligature.getSuccessor());
         assertEquals("ligature", ligature.getLigature());
     }

@@ -38,7 +38,7 @@ public class CurveToReplicateInitialPoint extends GraphicsOperatorProcessor
     private static final Log LOG = LogFactory.getLog(CurveToReplicateInitialPoint.class);
     
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (operands.size() < 4)
         {
@@ -48,15 +48,15 @@ public class CurveToReplicateInitialPoint extends GraphicsOperatorProcessor
         {
             return;
         }
-        COSNumber x2 = (COSNumber)operands.get(0);
-        COSNumber y2 = (COSNumber)operands.get(1);
-        COSNumber x3 = (COSNumber)operands.get(2);
-        COSNumber y3 = (COSNumber)operands.get(3);
+        final COSNumber x2 = (COSNumber)operands.get(0);
+        final COSNumber y2 = (COSNumber)operands.get(1);
+        final COSNumber x3 = (COSNumber)operands.get(2);
+        final COSNumber y3 = (COSNumber)operands.get(3);
 
-        Point2D currentPoint = context.getCurrentPoint();
+        final Point2D currentPoint = context.getCurrentPoint();
 
-        Point2D.Float point2 = context.transformedPoint(x2.floatValue(), y2.floatValue());
-        Point2D.Float point3 = context.transformedPoint(x3.floatValue(), y3.floatValue());
+        final Point2D.Float point2 = context.transformedPoint(x2.floatValue(), y2.floatValue());
+        final Point2D.Float point3 = context.transformedPoint(x3.floatValue(), y3.floatValue());
 
         if (currentPoint == null)
         {

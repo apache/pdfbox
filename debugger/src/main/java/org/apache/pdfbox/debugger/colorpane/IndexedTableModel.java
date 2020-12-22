@@ -19,8 +19,8 @@ package org.apache.pdfbox.debugger.colorpane;
 import java.awt.Color;
 import javax.swing.table.AbstractTableModel;
 
-/**
- * @author Khyrul Bashar.
+/*
+  @author Khyrul Bashar.
  */
 
 /**
@@ -37,7 +37,7 @@ public class IndexedTableModel extends AbstractTableModel
      * Constructor
      * @param colorants array of IndexedColorant
      */
-    public IndexedTableModel(IndexedColorant[] colorants)
+    public IndexedTableModel(final IndexedColorant[] colorants)
     {
         data = colorants;
     }
@@ -55,7 +55,7 @@ public class IndexedTableModel extends AbstractTableModel
     }
 
     @Override
-    public Object getValueAt(int row, int column)
+    public Object getValueAt(final int row, final int column)
     {
         switch (column)
         {
@@ -71,13 +71,13 @@ public class IndexedTableModel extends AbstractTableModel
     }
 
     @Override
-    public String getColumnName(int column)
+    public String getColumnName(final int column)
     {
         return COLUMNSNAMES[column];
     }
 
     @Override
-    public Class<?> getColumnClass(int columnIndex)
+    public Class<?> getColumnClass(final int columnIndex)
     {
         switch (columnIndex)
         {

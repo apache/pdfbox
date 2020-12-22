@@ -59,7 +59,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
     /**
      * Default constructor.
      */
-    public PDExportFormatAttributeObject(String owner)
+    public PDExportFormatAttributeObject(final String owner)
     {
         this.setOwner(owner);
     }
@@ -69,7 +69,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
      * 
      * @param dictionary the dictionary
      */
-    public PDExportFormatAttributeObject(COSDictionary dictionary)
+    public PDExportFormatAttributeObject(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -104,7 +104,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
      * 
      * @param listNumbering the list numbering
      */
-    public void setListNumbering(String listNumbering)
+    public void setListNumbering(final String listNumbering)
     {
         this.setName(PDListAttributeObject.LIST_NUMBERING, listNumbering);
     }
@@ -126,7 +126,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
      * 
      * @param rowSpan the row span
      */
-    public void setRowSpan(int rowSpan)
+    public void setRowSpan(final int rowSpan)
     {
         this.setInteger(PDTableAttributeObject.ROW_SPAN, rowSpan);
     }
@@ -148,7 +148,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
      * 
      * @param colSpan the column span
      */
-    public void setColSpan(int colSpan)
+    public void setColSpan(final int colSpan)
     {
         this.setInteger(PDTableAttributeObject.COL_SPAN, colSpan);
     }
@@ -174,7 +174,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
      * 
      * @param headers the headers
      */
-    public void setHeaders(String[] headers)
+    public void setHeaders(final String[] headers)
     {
         this.setArrayOfString(PDTableAttributeObject.HEADERS, headers);
     }
@@ -204,7 +204,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
      * 
      * @param scope the scope
      */
-    public void setScope(String scope)
+    public void setScope(final String scope)
     {
         this.setName(PDTableAttributeObject.SCOPE, scope);
     }
@@ -224,7 +224,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
      * 
      * @param summary the summary
      */
-    public void setSummary(String summary)
+    public void setSummary(final String summary)
     {
         this.setString(PDTableAttributeObject.SUMMARY, summary);
     }
@@ -233,7 +233,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder().append(super.toString());
+        final StringBuilder sb = new StringBuilder().append(super.toString());
         if (this.isSpecified(PDListAttributeObject.LIST_NUMBERING))
         {
             sb.append(", ListNumbering=").append(this.getListNumbering());

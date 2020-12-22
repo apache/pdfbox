@@ -57,23 +57,23 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
     private static final ImageIcon ICON_PDF = new ImageIcon(getImageUrl("pdf"));
     private static final ImageIcon ICON_PAGE = new ImageIcon(getImageUrl("page"));
 
-    private static URL getImageUrl(String name)
+    private static URL getImageUrl(final String name)
     {
-        String fullName = "/org/apache/pdfbox/debugger/" + name + ".png";
+        final String fullName = "/org/apache/pdfbox/debugger/" + name + ".png";
         return PDFTreeCellRenderer.class.getResource(fullName);
     }
     
     @Override
     public Component getTreeCellRendererComponent(
-            JTree tree,
-            Object nodeValue,
-            boolean isSelected,
-            boolean expanded,
-            boolean leaf,
-            int row,
-            boolean componentHasFocus)
+            final JTree tree,
+            final Object nodeValue,
+            final boolean isSelected,
+            final boolean expanded,
+            final boolean leaf,
+            final int row,
+            final boolean componentHasFocus)
     {
-        Component component = super.getTreeCellRendererComponent(tree,
+        final Component component = super.getTreeCellRendererComponent(tree,
                 toTreeObject(nodeValue),
                 isSelected, expanded, leaf, row, componentHasFocus);
         
@@ -82,18 +82,18 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         return component;
     }
 
-    private Object toTreeObject(Object nodeValue)
+    private Object toTreeObject(final Object nodeValue)
     {
         Object result = nodeValue;
         if (nodeValue instanceof MapEntry || nodeValue instanceof ArrayEntry)
         {
-            String key;
-            Object object;
-            Object value;
-            COSBase item;
+            final String key;
+            final Object object;
+            final Object value;
+            final COSBase item;
             if (nodeValue instanceof MapEntry)
             {
-                MapEntry entry = (MapEntry) nodeValue;
+                final MapEntry entry = (MapEntry) nodeValue;
                 key = entry.getKey().getName();
                 object = toTreeObject(entry.getValue());
                 value = entry.getValue();
@@ -101,7 +101,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
             }
             else
             {
-                ArrayEntry entry = (ArrayEntry) nodeValue;
+                final ArrayEntry entry = (ArrayEntry) nodeValue;
                 key = Integer.toString(entry.getIndex());
                 object = toTreeObject(entry.getValue());
                 value = entry.getValue();
@@ -114,7 +114,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
                 stringResult += ":  " + object;
                 if (item instanceof COSObject)
                 {
-                    COSObject indirect = (COSObject)item;
+                    final COSObject indirect = (COSObject)item;
                     stringResult += " [" + indirect.getObjectNumber() + " " +
                                            indirect.getGenerationNumber() + " R]";
                 }
@@ -139,7 +139,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             String text = ((COSString) nodeValue).getString();
             // display unprintable strings as hex
-            for (char c : text.toCharArray())
+            for (final char c : text.toCharArray())
             {
                 if (Character.isISOControl(c))
                 {
@@ -159,7 +159,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         }
         else if (nodeValue instanceof COSDictionary)
         {
-            COSDictionary dict = (COSDictionary) nodeValue;
+            final COSDictionary dict = (COSDictionary) nodeValue;
             if (COSName.XREF.equals(dict.getCOSName(COSName.TYPE)))
             {
                 result = "";
@@ -171,7 +171,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         }
         else if (nodeValue instanceof COSArray)
         {
-            COSArray array = (COSArray) nodeValue;
+            final COSArray array = (COSArray) nodeValue;
             result = "(" + array.size() + ")";
         }
         else if (nodeValue instanceof DocumentEntry)
@@ -181,19 +181,19 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         return result;
     }
 
-    private String toTreePostfix(Object nodeValue)
+    private String toTreePostfix(final Object nodeValue)
     {
         if (nodeValue instanceof COSDictionary)
         {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             
-            COSDictionary dict = (COSDictionary)nodeValue;
+            final COSDictionary dict = (COSDictionary)nodeValue;
             
             if (COSName.ANNOT.equals(dict.getCOSName(COSName.TYPE))
                     && COSName.WIDGET.equals(dict.getCOSName(COSName.SUBTYPE)) || 
                     dict.containsKey(COSName.T) && dict.containsKey(COSName.KIDS))
             {
-                String name = dict.getString(COSName.T);
+                final String name = dict.getString(COSName.T);
                 if (name != null)
                 {
                     sb.append("   Name: ");
@@ -204,7 +204,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
             
             if (dict.containsKey(COSName.TYPE))
             {
-                COSName type = dict.getCOSName(COSName.TYPE);
+                final COSName type = dict.getCOSName(COSName.TYPE);
                 if (type != null)
                 {
                     sb.append("   /T:").append(type.getName());
@@ -213,7 +213,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
 
             if (dict.containsKey(COSName.SUBTYPE))
             {
-                COSName subtype = dict.getCOSName(COSName.SUBTYPE);
+                final COSName subtype = dict.getCOSName(COSName.SUBTYPE);
                 if (subtype != null)
                 {
                     sb.append("  /S:").append(subtype.getName());
@@ -227,15 +227,15 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         }
     }
 
-    private ImageIcon lookupIconWithOverlay(Object nodeValue)
+    private ImageIcon lookupIconWithOverlay(final Object nodeValue)
     {
-        ImageIcon icon = lookupIcon(nodeValue);
+        final ImageIcon icon = lookupIcon(nodeValue);
         boolean isIndirect = false;
         boolean isStream = false;
         
         if (nodeValue instanceof MapEntry)
         {
-            MapEntry entry = (MapEntry) nodeValue;
+            final MapEntry entry = (MapEntry) nodeValue;
             if (entry.getItem() instanceof COSObject)
             {
                 isIndirect = true;
@@ -244,7 +244,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         }
         else if (nodeValue instanceof ArrayEntry)
         {
-            ArrayEntry entry = (ArrayEntry) nodeValue;
+            final ArrayEntry entry = (ArrayEntry) nodeValue;
             if (entry.getItem() instanceof COSObject)
             {
                 isIndirect = true;
@@ -254,23 +254,23 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         
         if (isIndirect && !isStream)
         {
-            OverlayIcon overlay = new OverlayIcon(icon);
+            final OverlayIcon overlay = new OverlayIcon(icon);
             overlay.add(ICON_INDIRECT);
             return overlay;
         }
         return icon;
     }
     
-    private ImageIcon lookupIcon(Object nodeValue)
+    private ImageIcon lookupIcon(final Object nodeValue)
     {
         if (nodeValue instanceof MapEntry)
         {
-            MapEntry entry = (MapEntry) nodeValue;
+            final MapEntry entry = (MapEntry) nodeValue;
             return lookupIcon(entry.getValue());
         }
         else if (nodeValue instanceof ArrayEntry)
         {
-            ArrayEntry entry = (ArrayEntry) nodeValue;
+            final ArrayEntry entry = (ArrayEntry) nodeValue;
             return lookupIcon(entry.getValue());
         }
         else if (nodeValue instanceof COSBoolean)
@@ -287,9 +287,9 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         }
         else if (nodeValue instanceof COSString)
         {
-            String text = ((COSString) nodeValue).getString();
+            final String text = ((COSString) nodeValue).getString();
             // display unprintable strings as hex
-            for (char c : text.toCharArray())
+            for (final char c : text.toCharArray())
             {
                 if (Character.isISOControl(c))
                 {
@@ -340,20 +340,20 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         private final ImageIcon base;
         private final List<ImageIcon> overlays;
 
-        OverlayIcon(ImageIcon base)
+        OverlayIcon(final ImageIcon base)
         {
             super(base.getImage());
             this.base = base;
             this.overlays = new ArrayList<>();
         }
 
-        void add(ImageIcon overlay)
+        void add(final ImageIcon overlay)
         {
             overlays.add(overlay);
         }
 
         @Override
-        public synchronized void paintIcon(Component c, Graphics g, int x, int y)
+        public synchronized void paintIcon(final Component c, final Graphics g, final int x, final int y)
         {
             base.paintIcon(c, g, x, y);
             overlays.forEach(icon -> icon.paintIcon(c, g, x, y));

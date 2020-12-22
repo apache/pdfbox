@@ -1,25 +1,25 @@
 package org.apache.pdfbox.preflight.integration;
 
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,14 +67,14 @@ class TestInvalidFiles
 
     @ParameterizedTest
 	@MethodSource("initializeParameters")
-    void validate(File path, String expectedError) throws Exception
+    void validate(final File path, final String expectedError) throws Exception
     {
         tester.validate(path, expectedError);
     }
 
     protected static Collection<Arguments> stopIfExpected() throws Exception
     {
-        List<Arguments> ret = new ArrayList<>();
+        final List<Arguments> ret = new ArrayList<>();
         ret.add(Arguments.of(null, null));
         return ret;
     }
@@ -82,44 +82,44 @@ class TestInvalidFiles
     public static Collection<Arguments> initializeParameters() throws Exception
     {
         // find isartor files
-        String isartor = System.getProperty(ISARTOR_FILES);
+        final String isartor = System.getProperty(ISARTOR_FILES);
         if (isartor == null)
         {
             staticLogger.warn(ISARTOR_FILES + " (where are isartor pdf files) is not defined.");
             return stopIfExpected();
         }
-        File root = new File(isartor);
+        final File root = new File(isartor);
         // load expected errors
-        Properties props = new Properties();
-        String expectedPath = System.getProperty(EXPECTED_ERRORS);
+        final Properties props = new Properties();
+        final String expectedPath = System.getProperty(EXPECTED_ERRORS);
         if (expectedPath == null)
         {
             staticLogger.warn(EXPECTED_ERRORS + " not defined, only check if file is invalid");
         }
         else
         {
-            File expectedFile = new File(expectedPath);
+            final File expectedFile = new File(expectedPath);
             if (!expectedFile.exists() || !expectedFile.isFile())
             {
                 staticLogger.warn("'expected.errors' does not reference valid file, so cannot execute tests : "
                         + expectedFile.getAbsolutePath());
                 return stopIfExpected();
             }
-            InputStream expected = new FileInputStream(expectedPath);
+            final InputStream expected = new FileInputStream(expectedPath);
             props.load(expected);
             IOUtils.closeQuietly(expected);
         }
         // prepare config
-        List<Arguments> data = new ArrayList<>();
-        Collection<?> files = FileUtils.listFiles(root, new String[] { "pdf" }, true);
+        final List<Arguments> data = new ArrayList<>();
+        final Collection<?> files = FileUtils.listFiles(root, new String[] { "pdf" }, true);
 
-        for (Object object : files)
+        for (final Object object : files)
         {
-            File file = (File) object;
-            String fn = file.getName();
+            final File file = (File) object;
+            final String fn = file.getName();
             if (props.getProperty(fn) != null)
             {
-                String expectedError = new StringTokenizer(props.getProperty(fn), "//").nextToken().trim();
+                final String expectedError = new StringTokenizer(props.getProperty(fn), "//").nextToken().trim();
                 data.add(Arguments.of(file, expectedError));
             }
             else

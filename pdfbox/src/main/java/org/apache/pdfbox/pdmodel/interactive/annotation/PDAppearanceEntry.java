@@ -44,7 +44,7 @@ public class PDAppearanceEntry implements COSObjectable
      * 
      * @param entry
      */
-    public PDAppearanceEntry(COSDictionary entry)
+    public PDAppearanceEntry(final COSDictionary entry)
     {
         this.entry = entry;
     }
@@ -97,12 +97,12 @@ public class PDAppearanceEntry implements COSObjectable
             throw new IllegalStateException("This entry is not an appearance subdictionary");
         }
 
-        COSDictionary dict = entry;
-        Map<COSName, PDAppearanceStream> map = new HashMap<>();
+        final COSDictionary dict = entry;
+        final Map<COSName, PDAppearanceStream> map = new HashMap<>();
 
-        for (COSName name : dict.keySet())
+        for (final COSName name : dict.keySet())
         {
-            COSBase value = dict.getDictionaryObject(name);
+            final COSBase value = dict.getDictionaryObject(name);
 
             // the file from PDFBOX-1599 contains /null as its entry, so we skip non-stream entries
             if (value instanceof COSStream)

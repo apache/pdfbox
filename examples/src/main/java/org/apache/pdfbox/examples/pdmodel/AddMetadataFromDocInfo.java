@@ -54,7 +54,7 @@ public final class AddMetadataFromDocInfo
      * @throws IOException If there is an error parsing the document.
      * @throws TransformerException
      */
-    public static void main( String[] args ) throws IOException, TransformerException
+    public static void main(final String[] args ) throws IOException, TransformerException
     {
         if( args.length != 2 )
         {
@@ -69,31 +69,31 @@ public final class AddMetadataFromDocInfo
                     System.err.println( "Error: Cannot add metadata to encrypted document." );
                     System.exit( 1 );
                 }
-                PDDocumentCatalog catalog = document.getDocumentCatalog();
-                PDDocumentInformation info = document.getDocumentInformation();
+                final PDDocumentCatalog catalog = document.getDocumentCatalog();
+                final PDDocumentInformation info = document.getDocumentInformation();
                 
-                XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+                final XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
-                AdobePDFSchema pdfSchema = metadata.createAndAddAdobePDFSchema();
+                final AdobePDFSchema pdfSchema = metadata.createAndAddAdobePDFSchema();
                 pdfSchema.setKeywords( info.getKeywords() );
                 pdfSchema.setProducer( info.getProducer() );
 
-                XMPBasicSchema basicSchema = metadata.createAndAddXMPBasicSchema();
+                final XMPBasicSchema basicSchema = metadata.createAndAddXMPBasicSchema();
                 basicSchema.setModifyDate( info.getModificationDate() );
                 basicSchema.setCreateDate( info.getCreationDate() );
                 basicSchema.setCreatorTool( info.getCreator() );
                 basicSchema.setMetadataDate( new GregorianCalendar() );
 
-                DublinCoreSchema dcSchema = metadata.createAndAddDublinCoreSchema();
+                final DublinCoreSchema dcSchema = metadata.createAndAddDublinCoreSchema();
                 dcSchema.setTitle( info.getTitle() );
                 dcSchema.addCreator( "PDFBox" );
                 dcSchema.setDescription( info.getSubject() );
 
-                PDMetadata metadataStream = new PDMetadata(document);
+                final PDMetadata metadataStream = new PDMetadata(document);
                 catalog.setMetadata( metadataStream );
                 
-                XmpSerializer serializer = new XmpSerializer();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                final XmpSerializer serializer = new XmpSerializer();
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 serializer.serialize(metadata, baos, false);
                 metadataStream.importXMPMetadata( baos.toByteArray() );
 

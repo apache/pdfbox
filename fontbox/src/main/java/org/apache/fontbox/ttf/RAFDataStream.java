@@ -43,7 +43,7 @@ class RAFDataStream extends TTFDataStream
      * 
      * @see RandomAccessFile#RandomAccessFile( String, String )
      */
-    RAFDataStream(String name, String mode) throws IOException
+    RAFDataStream(final String name, final String mode) throws IOException
     {
         this( new File( name ), mode );
     }
@@ -58,7 +58,7 @@ class RAFDataStream extends TTFDataStream
      * 
      * @see RandomAccessFile#RandomAccessFile( File, String )
      */
-    RAFDataStream(File file, String mode) throws IOException
+    RAFDataStream(final File file, final String mode) throws IOException
     {
         raf = new BufferedRandomAccessFile(file, mode, BUFFERSIZE);
         ttfFile = file;
@@ -148,7 +148,7 @@ class RAFDataStream extends TTFDataStream
      * @throws IOException If there is an error seeking to that position.
      */
     @Override
-    public void seek(long pos) throws IOException
+    public void seek(final long pos) throws IOException
     {
         raf.seek( pos );
     }
@@ -165,7 +165,7 @@ class RAFDataStream extends TTFDataStream
      * @throws IOException If there is an error reading from the stream.
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException
+    public int read(final byte[] b, final int off, final int len) throws IOException
     {
         return raf.read(b, off, len);
     }

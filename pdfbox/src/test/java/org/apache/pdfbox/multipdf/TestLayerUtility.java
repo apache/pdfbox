@@ -62,18 +62,18 @@ public class TestLayerUtility
      */
     public void testLayerImport() throws Exception
     {
-        File mainPDF = createMainPDF();
-        File overlay1 = createOverlay1();
-        File targetFile = new File(testResultsDir, "text-with-form-overlay.pdf");
+        final File mainPDF = createMainPDF();
+        final File overlay1 = createOverlay1();
+        final File targetFile = new File(testResultsDir, "text-with-form-overlay.pdf");
 
         try (PDDocument targetDoc = Loader.loadPDF(mainPDF);
-                PDDocument overlay1Doc = Loader.loadPDF(overlay1))
+             final PDDocument overlay1Doc = Loader.loadPDF(overlay1))
         {
-            LayerUtility layerUtil = new LayerUtility(targetDoc);
-            PDFormXObject form = layerUtil.importPageAsForm(overlay1Doc, 0);
-            PDPage targetPage = targetDoc.getPage(0);
+            final LayerUtility layerUtil = new LayerUtility(targetDoc);
+            final PDFormXObject form = layerUtil.importPageAsForm(overlay1Doc, 0);
+            final PDPage targetPage = targetDoc.getPage(0);
             layerUtil.wrapInSaveRestore(targetPage);
-            AffineTransform at = new AffineTransform();
+            final AffineTransform at = new AffineTransform();
             layerUtil.appendFormAsLayer(targetPage, form, at, "overlay");
 
             targetDoc.save(targetFile.getAbsolutePath());
@@ -81,30 +81,30 @@ public class TestLayerUtility
 
         try (PDDocument doc = Loader.loadPDF(targetFile))
         {
-            PDDocumentCatalog catalog = doc.getDocumentCatalog();
+            final PDDocumentCatalog catalog = doc.getDocumentCatalog();
 
             //OCGs require PDF 1.5 or later
             assertEquals(1.5f, doc.getVersion());
 
-            PDPage page = doc.getPage(0);
-            PDOptionalContentGroup ocg = (PDOptionalContentGroup) page.getResources()
+            final PDPage page = doc.getPage(0);
+            final PDOptionalContentGroup ocg = (PDOptionalContentGroup) page.getResources()
                     .getProperties(COSName.getPDFName("oc1"));
             assertNotNull(ocg);
             assertEquals("overlay", ocg.getName());
 
-            PDOptionalContentProperties ocgs = catalog.getOCProperties();
-            PDOptionalContentGroup overlay = ocgs.getGroup("overlay");
+            final PDOptionalContentProperties ocgs = catalog.getOCProperties();
+            final PDOptionalContentGroup overlay = ocgs.getGroup("overlay");
             assertEquals(ocg.getName(), overlay.getName());
         }
     }
 
     private File createMainPDF() throws IOException
     {
-        File targetFile = new File(testResultsDir, "text-doc.pdf");
+        final File targetFile = new File(testResultsDir, "text-doc.pdf");
         try (PDDocument doc = new PDDocument())
         {
             //Create new page
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             PDResources resources = page.getResources();
             if( resources == null )
@@ -133,10 +133,10 @@ public class TestLayerUtility
                 contentStream.endText();
                 font = PDType1Font.HELVETICA;
                 contentStream.beginText();
-                int fontSize = 12;
+                final int fontSize = 12;
                 contentStream.setFont(font, fontSize);
                 contentStream.newLineAtOffset(50, 700);
-                for (String line : text)
+                for (final String line : text)
                 {
                     contentStream.newLineAtOffset(0, -fontSize * 1.2f);
                     contentStream.showText(line);
@@ -150,11 +150,11 @@ public class TestLayerUtility
 
     private File createOverlay1() throws IOException
     {
-        File targetFile = new File(testResultsDir, "overlay1.pdf");
+        final File targetFile = new File(testResultsDir, "overlay1.pdf");
         try (PDDocument doc = new PDDocument())
         {
             //Create new page
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             PDResources resources = page.getResources();
             if( resources == null )
@@ -166,18 +166,18 @@ public class TestLayerUtility
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
                 //Setup page content stream and paint background/title
-                PDFont font = PDType1Font.HELVETICA_BOLD;
+                final PDFont font = PDType1Font.HELVETICA_BOLD;
                 contentStream.setNonStrokingColor(Color.LIGHT_GRAY);
                 contentStream.beginText();
-                float fontSize = 96;
+                final float fontSize = 96;
                 contentStream.setFont(font, fontSize);
-                String text = "OVERLAY";
+                final String text = "OVERLAY";
                 //float sw = font.getStringWidth(text);
                 //Too bad, base 14 fonts don't return character metrics.
-                PDRectangle crop = page.getCropBox();
-                float cx = crop.getWidth() / 2f;
-                float cy = crop.getHeight() / 2f;
-                Matrix transform = new Matrix();
+                final PDRectangle crop = page.getCropBox();
+                final float cx = crop.getWidth() / 2f;
+                final float cy = crop.getHeight() / 2f;
+                final Matrix transform = new Matrix();
                 transform.translate(cx, cy);
                 transform.rotate(Math.toRadians(45));
                 transform.translate(-190 /* sw/2 */, 0);

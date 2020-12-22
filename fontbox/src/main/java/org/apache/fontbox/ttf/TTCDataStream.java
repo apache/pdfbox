@@ -29,7 +29,7 @@ class TTCDataStream extends TTFDataStream
 {
     private final TTFDataStream stream; 
     
-    TTCDataStream(TTFDataStream stream)
+    TTCDataStream(final TTFDataStream stream)
     {
         this.stream = stream;
     }
@@ -66,13 +66,13 @@ class TTCDataStream extends TTFDataStream
     }
 
     @Override
-    public void seek(long pos) throws IOException
+    public void seek(final long pos) throws IOException
     {
         stream.seek(pos);
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException
+    public int read(final byte[] b, final int off, final int len) throws IOException
     {
         return stream.read(b, off, len);
     }

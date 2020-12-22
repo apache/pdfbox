@@ -82,7 +82,7 @@ public class TextToPDF implements Callable<Integer>
     private boolean landscape = false;
 
     @Option(names = "-pageSize", description = "the page size to use: Letter, Legal, A0, A1, A2, A3, A4, A5, A6 (default: ${DEFAULT-VALUE})")
-    private String pageSize = "Letter";
+    private final String pageSize = "Letter";
 
     @Option(names = "-standardFont", description = "the font to use for the text. Either this or -ttf should be specified but not both.")
     private String standardFont;
@@ -126,12 +126,12 @@ public class TextToPDF implements Callable<Integer>
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new TextToPDF()).execute(args);
+        final int exitCode = new CommandLine(new TextToPDF()).execute(args);
         System.exit(exitCode);
     }
 
@@ -159,7 +159,7 @@ public class TextToPDF implements Callable<Integer>
             }
             doc.save(outfile);
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             SYSERR.println( "Error converting image to PDF: " + ioe.getMessage());
             return 4;
@@ -176,9 +176,9 @@ public class TextToPDF implements Callable<Integer>
      *
      * @throws IOException If there is an error writing the data.
      */
-    public PDDocument createPDFFromText( Reader text ) throws IOException
+    public PDDocument createPDFFromText(final Reader text ) throws IOException
     {
-        PDDocument doc = new PDDocument();
+        final PDDocument doc = new PDDocument();
         createPDFFromText(doc, text);
         return doc;
     }
@@ -191,7 +191,7 @@ public class TextToPDF implements Callable<Integer>
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void createPDFFromText( PDDocument doc, Reader text ) throws IOException
+    public void createPDFFromText(final PDDocument doc, final Reader text ) throws IOException
     {
         try
         {
@@ -206,12 +206,12 @@ public class TextToPDF implements Callable<Integer>
 
             //calculate font height and increase by a factor.
             height = height*fontSize*LINE_HEIGHT_FACTOR;
-            BufferedReader data = new BufferedReader( text );
+            final BufferedReader data = new BufferedReader( text );
             String nextLine;
             PDPage page = new PDPage(actualMediaBox);
             PDPageContentStream contentStream = null;
             float y = -1;
-            float maxStringLength = page.getMediaBox().getWidth() - 2*margin;
+            final float maxStringLength = page.getMediaBox().getWidth() - 2*margin;
 
             // There is a special case of creating a PDF document from an empty string.
             boolean textIsEmpty = true;
@@ -224,16 +224,17 @@ public class TextToPDF implements Callable<Integer>
                 // the text.
                 textIsEmpty = false;
 
-                String[] lineWords = nextLine.replaceAll("[\\n\\r]+$", "").split(" ");
+                final String[] lineWords = nextLine.replaceAll("[\\n\\r]+$", "").split(" ");
                 int lineIndex = 0;
                 while( lineIndex < lineWords.length )
                 {
-                    StringBuilder nextLineToDraw = new StringBuilder();
+                    final StringBuilder nextLineToDraw = new StringBuilder();
                     float lengthIfUsingNextWord = 0;
                     boolean ff = false;
                     do
                     {
-                        String word1, word2 = "";
+                        final String word1;
+                        String word2 = "";
                         int indexFF = lineWords[lineIndex].indexOf('\f');
                         if (indexFF == -1)
                         {
@@ -278,7 +279,7 @@ public class TextToPDF implements Callable<Integer>
                                 nextWord = nextWord.substring(0, indexFF);
                             }
                             
-                            String lineWithNextWord = nextLineToDraw.toString() + " " + nextWord;
+                            final String lineWithNextWord = nextLineToDraw.toString() + " " + nextWord;
                             lengthIfUsingNextWord =
                                 (font.getStringWidth( lineWithNextWord )/FONTSCALE) * fontSize;
                         }
@@ -339,7 +340,7 @@ public class TextToPDF implements Callable<Integer>
                 contentStream.close();
             }
         }
-        catch( IOException io )
+        catch( final IOException io )
         {
             if( doc != null )
             {
@@ -349,7 +350,7 @@ public class TextToPDF implements Callable<Integer>
         }
     }
 
-    private static PDRectangle createRectangle( String paperSize )
+    private static PDRectangle createRectangle(final String paperSize )
     {
         if ("letter".equalsIgnoreCase(paperSize))
         {
@@ -400,7 +401,7 @@ public class TextToPDF implements Callable<Integer>
      *
      * @return The font that matches the name or null if it does not exist.
      */
-    private static PDType1Font getStandardFont(String name)
+    private static PDType1Font getStandardFont(final String name)
     {
         return STANDARD_14.get(name);
     }
@@ -415,7 +416,7 @@ public class TextToPDF implements Callable<Integer>
     /**
      * @param aFont The font to set.
      */
-    public void setFont(PDFont aFont)
+    public void setFont(final PDFont aFont)
     {
         this.font = aFont;
     }
@@ -429,7 +430,7 @@ public class TextToPDF implements Callable<Integer>
     /**
      * @param aFontSize The fontSize to set.
      */
-    public void setFontSize(int aFontSize)
+    public void setFontSize(final int aFontSize)
     {
         this.fontSize = aFontSize;
     }
@@ -449,7 +450,7 @@ public class TextToPDF implements Callable<Integer>
      *
      * @param mediaBox
      */
-    public void setMediaBox(PDRectangle mediaBox)
+    public void setMediaBox(final PDRectangle mediaBox)
     {
         this.mediaBox = mediaBox;
     }
@@ -469,7 +470,7 @@ public class TextToPDF implements Callable<Integer>
      *
      * @param landscape
      */
-    public void setLandscape(boolean landscape)
+    public void setLandscape(final boolean landscape)
     {
         this.landscape = landscape;
     }

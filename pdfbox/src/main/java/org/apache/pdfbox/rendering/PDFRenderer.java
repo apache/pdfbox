@@ -73,7 +73,7 @@ public class PDFRenderer
      * Creates a new PDFRenderer.
      * @param document the document to render
      */
-    public PDFRenderer(PDDocument document)
+    public PDFRenderer(final PDDocument document)
     {
         this.document = document;
 
@@ -101,7 +101,7 @@ public class PDFRenderer
      * 
      * @param annotationsFilter the AnnotationFilter
      */
-    public void setAnnotationsFilter(AnnotationFilter annotationsFilter)
+    public void setAnnotationsFilter(final AnnotationFilter annotationsFilter)
     {
         this.annotationFilter = annotationsFilter;
     }
@@ -129,7 +129,7 @@ public class PDFRenderer
      *
      * @param subsamplingAllowed The new value indicating if subsampling is allowed.
      */
-    public void setSubsamplingAllowed(boolean subsamplingAllowed)
+    public void setSubsamplingAllowed(final boolean subsamplingAllowed)
     {
         this.subsamplingAllowed = subsamplingAllowed;
     }
@@ -145,7 +145,7 @@ public class PDFRenderer
     /**
      * @param defaultDestination the defaultDestination to set
      */
-    public void setDefaultDestination(RenderDestination defaultDestination)
+    public void setDefaultDestination(final RenderDestination defaultDestination)
     {
         this.defaultDestination = defaultDestination;
     }
@@ -167,7 +167,7 @@ public class PDFRenderer
      *
      * @param renderingHints
      */
-    public void setRenderingHints(RenderingHints renderingHints)
+    public void setRenderingHints(final RenderingHints renderingHints)
     {
         this.renderingHints = renderingHints;
     }
@@ -190,7 +190,7 @@ public class PDFRenderer
      *
      * @param imageDownscalingOptimizationThreshold
      */
-    public void setImageDownscalingOptimizationThreshold(float imageDownscalingOptimizationThreshold)
+    public void setImageDownscalingOptimizationThreshold(final float imageDownscalingOptimizationThreshold)
     {
         this.imageDownscalingOptimizationThreshold = imageDownscalingOptimizationThreshold;
     }
@@ -201,7 +201,7 @@ public class PDFRenderer
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
      */
-    public BufferedImage renderImage(int pageIndex) throws IOException
+    public BufferedImage renderImage(final int pageIndex) throws IOException
     {
         return renderImage(pageIndex, 1);
     }
@@ -214,7 +214,7 @@ public class PDFRenderer
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
      */
-    public BufferedImage renderImage(int pageIndex, float scale) throws IOException
+    public BufferedImage renderImage(final int pageIndex, final float scale) throws IOException
     {
         return renderImage(pageIndex, scale, ImageType.RGB);
     }
@@ -226,7 +226,7 @@ public class PDFRenderer
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
      */
-    public BufferedImage renderImageWithDPI(int pageIndex, float dpi) throws IOException
+    public BufferedImage renderImageWithDPI(final int pageIndex, final float dpi) throws IOException
     {
         return renderImage(pageIndex, dpi / 72f, ImageType.RGB);
     }
@@ -239,7 +239,7 @@ public class PDFRenderer
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
      */
-    public BufferedImage renderImageWithDPI(int pageIndex, float dpi, ImageType imageType)
+    public BufferedImage renderImageWithDPI(final int pageIndex, final float dpi, final ImageType imageType)
             throws IOException
     {
         return renderImage(pageIndex, dpi / 72f, imageType);
@@ -253,7 +253,7 @@ public class PDFRenderer
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
      */
-    public BufferedImage renderImage(int pageIndex, float scale, ImageType imageType)
+    public BufferedImage renderImage(final int pageIndex, final float scale, final ImageType imageType)
             throws IOException
     {
         return renderImage(pageIndex, scale, imageType, 
@@ -269,18 +269,18 @@ public class PDFRenderer
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
      */
-    public BufferedImage renderImage(int pageIndex, float scale, ImageType imageType, RenderDestination destination)
+    public BufferedImage renderImage(final int pageIndex, final float scale, final ImageType imageType, final RenderDestination destination)
             throws IOException
     {
-        PDPage page = document.getPage(pageIndex);
+        final PDPage page = document.getPage(pageIndex);
 
-        PDRectangle cropbBox = page.getCropBox();
-        float widthPt = cropbBox.getWidth();
-        float heightPt = cropbBox.getHeight();
+        final PDRectangle cropbBox = page.getCropBox();
+        final float widthPt = cropbBox.getWidth();
+        final float heightPt = cropbBox.getHeight();
 
         // PDFBOX-4306 avoid single blank pixel line on the right or on the bottom
-        int widthPx = (int) Math.max(Math.floor(widthPt * scale), 1);
-        int heightPx = (int) Math.max(Math.floor(heightPt * scale), 1);
+        final int widthPx = (int) Math.max(Math.floor(widthPt * scale), 1);
+        final int heightPx = (int) Math.max(Math.floor(heightPt * scale), 1);
 
         // PDFBOX-4518 the maximum size (w*h) of a buffered image is limited to Integer.MAX_VALUE
         if ((long) widthPx * (long) heightPx > Integer.MAX_VALUE)
@@ -289,7 +289,7 @@ public class PDFRenderer
                     + widthPt + " * " + heightPt + " * " + scale + " > " + Integer.MAX_VALUE);
         }
 
-        int rotationAngle = page.getRotation();
+        final int rotationAngle = page.getRotation();
 
         int bimType = imageType.toBufferedImageType();
         if (imageType != ImageType.ARGB && hasBlendMode(page))
@@ -315,7 +315,7 @@ public class PDFRenderer
         pageImage = image;
 
         // use a transparent background if the image type supports alpha
-        Graphics2D g = image.createGraphics();
+        final Graphics2D g = image.createGraphics();
         if (image.getType() == BufferedImage.TYPE_INT_ARGB)
         {
             g.setBackground(new Color(0, 0, 0, 0));
@@ -329,12 +329,12 @@ public class PDFRenderer
         transform(g, page, scale, scale);
 
         // the end-user may provide a custom PageDrawer
-        RenderingHints actualRenderingHints =
+        final RenderingHints actualRenderingHints =
                 renderingHints == null ? createDefaultRenderingHints(g) : renderingHints;
-        PageDrawerParameters parameters =
+        final PageDrawerParameters parameters =
                 new PageDrawerParameters(this, page, subsamplingAllowed, destination,
                         actualRenderingHints, imageDownscalingOptimizationThreshold);
-        PageDrawer drawer = createPageDrawer(parameters);
+        final PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(g, page.getCropBox());       
         
         g.dispose();
@@ -342,9 +342,9 @@ public class PDFRenderer
         if (image.getType() != imageType.toBufferedImageType())
         {
             // PDFBOX-4095: draw temporary transparent image on white background
-            BufferedImage newImage = 
+            final BufferedImage newImage =
                     new BufferedImage(image.getWidth(), image.getHeight(), imageType.toBufferedImageType());
-            Graphics2D dstGraphics = newImage.createGraphics();
+            final Graphics2D dstGraphics = newImage.createGraphics();
             dstGraphics.setBackground(Color.WHITE);
             dstGraphics.clearRect(0, 0, image.getWidth(), image.getHeight());
             dstGraphics.drawImage(image, 0, 0, null);
@@ -365,7 +365,7 @@ public class PDFRenderer
      * @param graphics the Graphics2D on which to draw the page
      * @throws IOException if the PDF cannot be read
      */
-    public void renderPageToGraphics(int pageIndex, Graphics2D graphics) throws IOException
+    public void renderPageToGraphics(final int pageIndex, final Graphics2D graphics) throws IOException
     {
         renderPageToGraphics(pageIndex, graphics, 1);
     }
@@ -381,7 +381,7 @@ public class PDFRenderer
      * @param scale the scaling factor, where 1 = 72 DPI
      * @throws IOException if the PDF cannot be read
      */
-    public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scale)
+    public void renderPageToGraphics(final int pageIndex, final Graphics2D graphics, final float scale)
             throws IOException
     {
         renderPageToGraphics(pageIndex, graphics, scale, scale);
@@ -399,7 +399,7 @@ public class PDFRenderer
      * @param scaleY the scale to draw the page at for the y-axis, where 1 = 72 DPI
      * @throws IOException if the PDF cannot be read
      */
-    public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scaleX, float scaleY)
+    public void renderPageToGraphics(final int pageIndex, final Graphics2D graphics, final float scaleX, final float scaleY)
             throws IOException
     {
         renderPageToGraphics(pageIndex, graphics, scaleX, scaleY, 
@@ -428,24 +428,24 @@ public class PDFRenderer
      * @param destination controlling visibility of optional content groups
      * @throws IOException if the PDF cannot be read
      */
-    public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scaleX, float scaleY, RenderDestination destination)
+    public void renderPageToGraphics(final int pageIndex, final Graphics2D graphics, final float scaleX, final float scaleY, final RenderDestination destination)
             throws IOException
     {
-        PDPage page = document.getPage(pageIndex);
+        final PDPage page = document.getPage(pageIndex);
         // TODO need width/height calculations? should these be in PageDrawer?
 
         transform(graphics, page, scaleX, scaleY);
 
-        PDRectangle cropBox = page.getCropBox();
+        final PDRectangle cropBox = page.getCropBox();
         graphics.clearRect(0, 0, (int) cropBox.getWidth(), (int) cropBox.getHeight());
 
         // the end-user may provide a custom PageDrawer
-        RenderingHints actualRenderingHints =
+        final RenderingHints actualRenderingHints =
                 renderingHints == null ? createDefaultRenderingHints(graphics) : renderingHints;
-        PageDrawerParameters parameters =
+        final PageDrawerParameters parameters =
                 new PageDrawerParameters(this, page, subsamplingAllowed, destination,
                         actualRenderingHints, imageDownscalingOptimizationThreshold);
-        PageDrawer drawer = createPageDrawer(parameters);
+        final PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(graphics, cropBox);
     }
 
@@ -454,20 +454,20 @@ public class PDFRenderer
      * @param group the group
      * @return true if the group is enabled
      */
-    public boolean isGroupEnabled(PDOptionalContentGroup group)
+    public boolean isGroupEnabled(final PDOptionalContentGroup group)
     {
-        PDOptionalContentProperties ocProperties = document.getDocumentCatalog().getOCProperties();
+        final PDOptionalContentProperties ocProperties = document.getDocumentCatalog().getOCProperties();
         return ocProperties == null || ocProperties.isGroupEnabled(group);
     }
 
     // scale rotate translate
-    private void transform(Graphics2D graphics, PDPage page, float scaleX, float scaleY)
+    private void transform(final Graphics2D graphics, final PDPage page, final float scaleX, final float scaleY)
     {
         graphics.scale(scaleX, scaleY);
 
         // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
-        int rotationAngle = page.getRotation();
-        PDRectangle cropBox = page.getCropBox();
+        final int rotationAngle = page.getRotation();
+        final PDRectangle cropBox = page.getCropBox();
 
         if (rotationAngle != 0)
         {
@@ -493,19 +493,19 @@ public class PDFRenderer
         }
     }
 
-    private boolean isBitonal(Graphics2D graphics)
+    private boolean isBitonal(final Graphics2D graphics)
     {
-        GraphicsConfiguration deviceConfiguration = graphics.getDeviceConfiguration();
+        final GraphicsConfiguration deviceConfiguration = graphics.getDeviceConfiguration();
         if (deviceConfiguration == null)
         {
             return false;
         }
-        GraphicsDevice device = deviceConfiguration.getDevice();
+        final GraphicsDevice device = deviceConfiguration.getDevice();
         if (device == null)
         {
             return false;
         }
-        DisplayMode displayMode = device.getDisplayMode();
+        final DisplayMode displayMode = device.getDisplayMode();
         if (displayMode == null)
         {
             return false;
@@ -513,9 +513,9 @@ public class PDFRenderer
         return displayMode.getBitDepth() == 1;
     }
 
-    private RenderingHints createDefaultRenderingHints(Graphics2D graphics)
+    private RenderingHints createDefaultRenderingHints(final Graphics2D graphics)
     {
-        RenderingHints r = new RenderingHints(null);
+        final RenderingHints r = new RenderingHints(null);
         r.put(RenderingHints.KEY_INTERPOLATION, isBitonal(graphics) ?
                 RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR :
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -529,31 +529,31 @@ public class PDFRenderer
     /**
      * Returns a new PageDrawer instance, using the given parameters. May be overridden.
      */
-    protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
+    protected PageDrawer createPageDrawer(final PageDrawerParameters parameters) throws IOException
     {
-        PageDrawer pageDrawer = new PageDrawer(parameters);
+        final PageDrawer pageDrawer = new PageDrawer(parameters);
         pageDrawer.setAnnotationFilter(annotationFilter);
         return pageDrawer;
     }
 
-    private boolean hasBlendMode(PDPage page)
+    private boolean hasBlendMode(final PDPage page)
     {
         // check the current resources for blend modes
-        PDResources resources = page.getResources();
+        final PDResources resources = page.getResources();
         if (resources == null)
         {
             return false;
         }
-        for (COSName name : resources.getExtGStateNames())
+        for (final COSName name : resources.getExtGStateNames())
         {
-            PDExtendedGraphicsState extGState = resources.getExtGState(name);
+            final PDExtendedGraphicsState extGState = resources.getExtGState(name);
             if (extGState == null)
             {
                 // can happen if key exists but no value 
                 // see PDFBOX-3950-23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf
                 continue;
             }
-            BlendMode blendMode = extGState.getBlendMode();
+            final BlendMode blendMode = extGState.getBlendMode();
             if (blendMode != BlendMode.NORMAL)
             {
                 return true;
@@ -574,7 +574,7 @@ public class PDFRenderer
 
     private static void suggestKCMS()
     {
-        String cmmProperty = System.getProperty("sun.java2d.cmm");
+        final String cmmProperty = System.getProperty("sun.java2d.cmm");
         if (!"sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty))
         {
             try
@@ -582,7 +582,7 @@ public class PDFRenderer
                 // Make sure that class exists
                 Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
 
-                String version = System.getProperty("java.version");
+                final String version = System.getProperty("java.version");
                 if (version == null ||
                     isGoodVersion(version, "1.8.0_(\\d+)", 191) ||
                     isGoodVersion(version, "9.0.(\\d+)", 4))
@@ -596,28 +596,28 @@ public class PDFRenderer
                 LOG.info("  use the option -Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider");
                 LOG.info("  or call System.setProperty(\"sun.java2d.cmm\", \"sun.java2d.cmm.kcms.KcmsServiceProvider\")");
             }
-            catch (ClassNotFoundException e)
+            catch (final ClassNotFoundException e)
             {
                 // KCMS not available
             }
         }
     }
 
-    private static boolean isGoodVersion(String version, String regex, int min)
+    private static boolean isGoodVersion(final String version, final String regex, final int min)
     {
-        Matcher matcher = Pattern.compile(regex).matcher(version);
+        final Matcher matcher = Pattern.compile(regex).matcher(version);
         if (matcher.matches() && matcher.groupCount() >= 1)
         {
             try
             {
-                int v = Integer.parseInt(matcher.group(1));
+                final int v = Integer.parseInt(matcher.group(1));
                 if (v >= min)
                 {
                     // LCMS no longer bad
                     return true;
                 }
             }
-            catch (NumberFormatException ex)
+            catch (final NumberFormatException ex)
             {
                 return true;
             }

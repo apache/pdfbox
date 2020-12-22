@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.process.reflect;
 
@@ -51,9 +51,9 @@ public class ShadingPatternValidationProcess extends AbstractProcess
     private static final Log LOGGER = LogFactory.getLog(ShadingPatternValidationProcess.class);
     
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
-        PreflightPath vPath = context.getValidationPath();
+        final PreflightPath vPath = context.getValidationPath();
         if (vPath.isEmpty())
         {
             return;
@@ -65,8 +65,8 @@ public class ShadingPatternValidationProcess extends AbstractProcess
         } 
         else 
         {
-            PDShading shadingResource = (PDShading) vPath.peek();
-            PDPage page = vPath.getClosestPathElement(PDPage.class);
+            final PDShading shadingResource = (PDShading) vPath.peek();
+            final PDPage page = vPath.getClosestPathElement(PDPage.class);
             checkColorSpace(context, page, shadingResource);
             checkGraphicState(context, page, shadingResource);
         }
@@ -83,18 +83,18 @@ public class ShadingPatternValidationProcess extends AbstractProcess
      * @param shadingRes the Shading pattern to check.
      * @throws ValidationException
      */
-    protected void checkColorSpace(PreflightContext context, PDPage page, PDShading shadingRes)
+    protected void checkColorSpace(final PreflightContext context, final PDPage page, final PDShading shadingRes)
             throws ValidationException
     {
         try
         {
-            PDColorSpace pColorSpace = shadingRes.getColorSpace();
-            PreflightConfiguration config = context.getConfig();
-            ColorSpaceHelperFactory csFact = config.getColorSpaceHelperFact();
-            ColorSpaceHelper csh = csFact.getColorSpaceHelper(context, pColorSpace, ColorSpaceRestriction.NO_PATTERN);
+            final PDColorSpace pColorSpace = shadingRes.getColorSpace();
+            final PreflightConfiguration config = context.getConfig();
+            final ColorSpaceHelperFactory csFact = config.getColorSpaceHelperFact();
+            final ColorSpaceHelper csh = csFact.getColorSpaceHelper(context, pColorSpace, ColorSpaceRestriction.NO_PATTERN);
             csh.validate();
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOGGER.debug("Unable to get the color space", e);
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE, e.getMessage()));
@@ -110,10 +110,10 @@ public class ShadingPatternValidationProcess extends AbstractProcess
      * @param shadingRes the Shading pattern to check.
      * @throws ValidationException
      */
-    protected void checkGraphicState(PreflightContext context, PDPage page, PDShading shadingRes)
+    protected void checkGraphicState(final PreflightContext context, final PDPage page, final PDShading shadingRes)
             throws ValidationException
     {
-        COSDictionary resources = (COSDictionary) shadingRes.getCOSObject()
+        final COSDictionary resources = (COSDictionary) shadingRes.getCOSObject()
                 .getDictionaryObject(COSName.EXT_G_STATE);
         if (resources != null)
         {

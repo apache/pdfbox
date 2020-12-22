@@ -41,12 +41,12 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDHighlightAppearanceHandler.class);
 
-    public PDHighlightAppearanceHandler(PDAnnotation annotation)
+    public PDHighlightAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDHighlightAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDHighlightAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -62,15 +62,15 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        PDAnnotationHighlight annotation = (PDAnnotationHighlight) getAnnotation();
-        PDRectangle rect = annotation.getRectangle();
-        float[] pathsArray = annotation.getQuadPoints();
+        final PDAnnotationHighlight annotation = (PDAnnotationHighlight) getAnnotation();
+        final PDRectangle rect = annotation.getRectangle();
+        final float[] pathsArray = annotation.getQuadPoints();
         if (pathsArray == null)
         {
             return;
         }
-        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
-        PDColor color = annotation.getColor();
+        final AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
+        final PDColor color = annotation.getColor();
         if (color == null || color.getComponents().length == 0)
         {
             return;
@@ -86,8 +86,8 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
         float maxY = Float.MIN_VALUE;
         for (int i = 0; i < pathsArray.length / 2; ++i)
         {
-            float x = pathsArray[i * 2];
-            float y = pathsArray[i * 2 + 1];
+            final float x = pathsArray[i * 2];
+            final float y = pathsArray[i * 2 + 1];
             minX = Math.min(minX, x);
             minY = Math.min(minY, y);
             maxX = Math.max(maxX, x);
@@ -101,7 +101,7 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
             // one of the two is 0, depending whether the rectangle is 
             // horizontal or vertical
             // if it is diagonal then... uh...
-            float delta = Math.max((pathsArray[i + 0] - pathsArray[i + 4]) / 4, 
+            final float delta = Math.max((pathsArray[i + 0] - pathsArray[i + 4]) / 4,
                                    (pathsArray[i + 1] - pathsArray[i + 5]) / 4);
             maxDelta = Math.max(delta, maxDelta);
         }
@@ -114,8 +114,8 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
 
         try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
         {
-            PDExtendedGraphicsState r0 = new PDExtendedGraphicsState();
-            PDExtendedGraphicsState r1 = new PDExtendedGraphicsState();
+            final PDExtendedGraphicsState r0 = new PDExtendedGraphicsState();
+            final PDExtendedGraphicsState r1 = new PDExtendedGraphicsState();
             r0.setAlphaSourceFlag(false);
             r0.setStrokingAlphaConstant(annotation.getConstantOpacity());
             r0.setNonStrokingAlphaConstant(annotation.getConstantOpacity());
@@ -123,15 +123,15 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
             r1.setBlendMode(BlendMode.MULTIPLY);
             cs.setGraphicsStateParameters(r0);
             cs.setGraphicsStateParameters(r1);
-            PDFormXObject frm1 = new PDFormXObject(createCOSStream());
-            PDFormXObject frm2 = new PDFormXObject(createCOSStream());
+            final PDFormXObject frm1 = new PDFormXObject(createCOSStream());
+            final PDFormXObject frm2 = new PDFormXObject(createCOSStream());
             frm1.setResources(new PDResources());
             try (PDFormContentStream mwfofrmCS = new PDFormContentStream(frm1))
             {
                 mwfofrmCS.drawForm(frm2);
             }
             frm1.setBBox(annotation.getRectangle());
-            COSDictionary groupDict = new COSDictionary();
+            final COSDictionary groupDict = new COSDictionary();
             groupDict.setItem(COSName.S, COSName.TRANSPARENCY);
             //TODO PDFormXObject.setGroup() is missing
             frm1.getCOSObject().setItem(COSName.GROUP, groupDict);
@@ -212,7 +212,7 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                 }
             }
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             LOG.error(ex);
         }

@@ -67,8 +67,8 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
      * @param deviceBounds the bounds of the area to paint, in device units
      * @throws IOException if there is an error getting the color space or doing color conversion.
      */
-    public AxialShadingContext(PDShadingType2 shading, ColorModel colorModel, AffineTransform xform,
-                               Matrix matrix, Rectangle deviceBounds) throws IOException
+    public AxialShadingContext(final PDShadingType2 shading, final ColorModel colorModel, final AffineTransform xform,
+                               final Matrix matrix, final Rectangle deviceBounds) throws IOException
     {
         super(shading, colorModel, xform, matrix);
         this.axialShadingType = shading;
@@ -85,7 +85,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
             domain = new float[] { 0, 1 };
         }
         // extend values
-        COSArray extendValues = shading.getExtend();
+        final COSArray extendValues = shading.getExtend();
         if (extendValues != null)
         {
             extend = new boolean[2];
@@ -110,18 +110,18 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
             rat = matrix.createAffineTransform().createInverse();
             rat.concatenate(xform.createInverse());
         }
-        catch (NoninvertibleTransformException ex)
+        catch (final NoninvertibleTransformException ex)
         {
             LOG.error(ex.getMessage() + ", matrix: " + matrix, ex);
             rat = new AffineTransform();
         }
 
         // shading space -> device space
-        AffineTransform shadingToDevice = (AffineTransform)xform.clone();
+        final AffineTransform shadingToDevice = (AffineTransform)xform.clone();
         shadingToDevice.concatenate(matrix.createAffineTransform());
 
         // worst case for the number of steps is opposite diagonal corners, so use that
-        double dist = Math.sqrt(Math.pow(deviceBounds.getMaxX() - deviceBounds.getMinX(), 2) +
+        final double dist = Math.sqrt(Math.pow(deviceBounds.getMaxX() - deviceBounds.getMinX(), 2) +
                                 Math.pow(deviceBounds.getMaxY() - deviceBounds.getMinY(), 2));
         factor = (int) Math.ceil(dist);
         
@@ -138,18 +138,18 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
      */
     private int[] calcColorTable() throws IOException
     {
-        int[] map = new int[factor + 1];
+        final int[] map = new int[factor + 1];
         if (factor == 0 || Float.compare(d1d0, 0) == 0)
         {
-            float[] values = axialShadingType.evalFunction(domain[0]);
+            final float[] values = axialShadingType.evalFunction(domain[0]);
             map[0] = convertToRGB(values);
         }
         else
         {
             for (int i = 0; i <= factor; i++)
             {
-                float t = domain[0] + d1d0 * i / factor;
-                float[] values = axialShadingType.evalFunction(t);
+                final float t = domain[0] + d1d0 * i / factor;
+                final float[] values = axialShadingType.evalFunction(t);
                 map[i] = convertToRGB(values);
             }
         }
@@ -170,18 +170,18 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     }
 
     @Override
-    public Raster getRaster(int x, int y, int w, int h)
+    public Raster getRaster(final int x, final int y, final int w, final int h)
     {
         // create writable raster
-        WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
+        final WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         boolean useBackground;
-        int[] data = new int[w * h * 4];
+        final int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
             for (int i = 0; i < w; i++)
             {
                 useBackground = false;
-                float[] values = new float[] { x + i, y + j };
+                final float[] values = new float[] { x + i, y + j };
                 rat.transform(values, 0, values, 0, 1);
                 double inputValue = x1x0 * (values[0] - coords[0]) + y1y0 * (values[1] - coords[1]);
                 // TODO this happens if start == end, see PDFBOX-1442
@@ -239,10 +239,10 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                 }
                 else
                 {
-                    int key = (int) (inputValue * factor);
+                    final int key = (int) (inputValue * factor);
                     value = colorTable[key];
                 }
-                int index = (j * w + i) * 4;
+                final int index = (j * w + i) * 4;
                 data[index] = value & 255;
                 value >>= 8;
                 data[index + 1] = value & 255;

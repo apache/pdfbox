@@ -45,7 +45,7 @@ public final class TreeStatus
      * @param rootNode the root node of the tree which will be used to construct a treepath from a
      * tree status string.
      */
-    public TreeStatus(Object rootNode)
+    public TreeStatus(final Object rootNode)
     {
         this.rootNode = rootNode;
     }
@@ -55,7 +55,7 @@ public final class TreeStatus
      * @param path TreePath instance.
      * @return pathString.
      */
-    public String getStringForPath(TreePath path)
+    public String getStringForPath(final TreePath path)
     {
         return generatePathString(path);
     }
@@ -65,7 +65,7 @@ public final class TreeStatus
      * @param statusString
      * @return path.
      */
-    public TreePath getPathForString(String statusString)
+    public TreePath getPathForString(final String statusString)
     {
         return generatePath(statusString);
     }
@@ -77,10 +77,10 @@ public final class TreeStatus
      */
     private String generatePathString(TreePath path)
     {
-        StringBuilder pathStringBuilder = new StringBuilder();
+        final StringBuilder pathStringBuilder = new StringBuilder();
         while (path.getParentPath() != null)
         {
-            Object object = path.getLastPathComponent();
+            final Object object = path.getLastPathComponent();
             pathStringBuilder.insert(0, "/" + getObjectName(object));
             path = path.getParentPath();
         }
@@ -93,16 +93,16 @@ public final class TreeStatus
      * @param pathString
      * @return a TreePath, or null if there is an error.
      */
-    private TreePath generatePath(String pathString)
+    private TreePath generatePath(final String pathString)
     {
-        List<String> nodes = parsePathString(pathString);
+        final List<String> nodes = parsePathString(pathString);
         if (nodes == null)
         {
             return null;
         }
         Object obj = rootNode;
         TreePath treePath = new TreePath(obj);
-        for (String node : nodes)
+        for (final String node : nodes)
         {
             obj = searchNode(obj, node);
             if (obj == null)
@@ -122,22 +122,22 @@ public final class TreeStatus
      * @return the name of the node.
      * @throws IllegalArgumentException if there is an unknown treeNode type.
      */
-    private String getObjectName(Object treeNode)
+    private String getObjectName(final Object treeNode)
     {
         if (treeNode instanceof MapEntry)
         {
-            MapEntry entry = (MapEntry) treeNode;
-            COSName key = entry.getKey();
+            final MapEntry entry = (MapEntry) treeNode;
+            final COSName key = entry.getKey();
             return key.getName();
         }
         else if (treeNode instanceof ArrayEntry)
         {
-            ArrayEntry entry = (ArrayEntry) treeNode;
+            final ArrayEntry entry = (ArrayEntry) treeNode;
             return "[" + entry.getIndex() + "]";
         }
         else if (treeNode instanceof PageEntry)
         {
-            PageEntry entry = (PageEntry) treeNode;
+            final PageEntry entry = (PageEntry) treeNode;
             return entry.getPath();
         }
         throw new IllegalArgumentException("Unknown treeNode type: " + treeNode.getClass().getName());
@@ -149,9 +149,9 @@ public final class TreeStatus
      * @param path a tree path.
      * @return a list of nodes, or null if there is an empty node.
      */
-    private List<String> parsePathString(String path)
+    private List<String> parsePathString(final String path)
     {
-        List<String> nodes = new ArrayList<>();
+        final List<String> nodes = new ArrayList<>();
         for (String node : path.split("/"))
         {
             node = node.trim();
@@ -175,7 +175,7 @@ public final class TreeStatus
      * @param searchStr
      * @return
      */
-    private Object searchNode(Object obj, String searchStr)
+    private Object searchNode(Object obj, final String searchStr)
     {
         if (obj instanceof MapEntry)
         {
@@ -191,10 +191,10 @@ public final class TreeStatus
         }
         if (obj instanceof COSDictionary)
         {
-            COSDictionary dic = (COSDictionary) obj;
+            final COSDictionary dic = (COSDictionary) obj;
             if (dic.containsKey(searchStr))
             {
-                MapEntry entry = new MapEntry();
+                final MapEntry entry = new MapEntry();
                 entry.setKey(COSName.getPDFName(searchStr));
                 entry.setValue(dic.getDictionaryObject(searchStr));
                 entry.setValue(dic.getItem(searchStr));
@@ -203,11 +203,11 @@ public final class TreeStatus
         }
         else if (obj instanceof COSArray)
         {
-            int index = Integer.parseInt(searchStr);
-            COSArray array = (COSArray) obj;
+            final int index = Integer.parseInt(searchStr);
+            final COSArray array = (COSArray) obj;
             if (index <= array.size() - 1)
             {
-                ArrayEntry entry = new ArrayEntry();
+                final ArrayEntry entry = new ArrayEntry();
                 entry.setIndex(index);
                 entry.setValue(array.getObject(index));
                 entry.setItem(array.get(index));

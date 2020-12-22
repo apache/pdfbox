@@ -56,7 +56,7 @@ public class CmapTable extends TTFTable
 
     private CmapSubtable[] cmaps;
 
-    CmapTable(TrueTypeFont font)
+    CmapTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -69,15 +69,14 @@ public class CmapTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
-        @SuppressWarnings({"unused", "squid:S1854", "squid:S1481"})
-        int version = data.readUnsignedShort();
-        int numberOfTables = data.readUnsignedShort();
+        @SuppressWarnings({"unused", "squid:S1854", "squid:S1481"}) final int version = data.readUnsignedShort();
+        final int numberOfTables = data.readUnsignedShort();
         cmaps = new CmapSubtable[numberOfTables];
         for (int i = 0; i < numberOfTables; i++)
         {
-            CmapSubtable cmap = new CmapSubtable();
+            final CmapSubtable cmap = new CmapSubtable();
             cmap.initData(data);
             cmaps[i] = cmap;
         }
@@ -99,7 +98,7 @@ public class CmapTable extends TTFTable
     /**
      * @param cmapsValue The cmaps to set.
      */
-    public void setCmaps(CmapSubtable[] cmapsValue)
+    public void setCmaps(final CmapSubtable[] cmapsValue)
     {
         cmaps = cmapsValue;
     }
@@ -107,9 +106,9 @@ public class CmapTable extends TTFTable
     /**
      * Returns the subtable, if any, for the given platform and encoding.
      */
-    public CmapSubtable getSubtable(int platformId, int platformEncodingId)
+    public CmapSubtable getSubtable(final int platformId, final int platformEncodingId)
     {
-        for (CmapSubtable cmap : cmaps)
+        for (final CmapSubtable cmap : cmaps)
         {
             if (cmap.getPlatformId() == platformId &&
                 cmap.getPlatformEncodingId() == platformEncodingId)

@@ -43,7 +43,7 @@ public class PDActionMovie extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionMovie(COSDictionary a)
+    public PDActionMovie(final COSDictionary a)
     {
         super(a);
     }

@@ -49,7 +49,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param acroForm The acroform.
      */
-    public PDChoice(PDAcroForm acroForm)
+    public PDChoice(final PDAcroForm acroForm)
     {
         super(acroForm);
         getCOSObject().setItem(COSName.FT, COSName.CH);
@@ -62,7 +62,7 @@ public abstract class PDChoice extends PDVariableText
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDChoice(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDChoice(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -86,7 +86,7 @@ public abstract class PDChoice extends PDVariableText
      */
     public List<String> getOptions()
     {
-        COSBase values = getCOSObject().getDictionaryObject(COSName.OPT);
+        final COSBase values = getCOSObject().getDictionaryObject(COSName.OPT);
         return FieldUtils.getPairableItems(values, 0);
     }
 
@@ -105,7 +105,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param displayValues List containing all possible options.
      */
-    public void setOptions(List<String> displayValues)
+    public void setOptions(final List<String> displayValues)
     {
         if (displayValues != null && !displayValues.isEmpty())
         {
@@ -140,7 +140,7 @@ public abstract class PDChoice extends PDVariableText
      * @param exportValues List containing all possible export values.
      * @param displayValues List containing all possible display values.
      */
-    public void setOptions(List<String> exportValues, List<String> displayValues)
+    public void setOptions(final List<String> exportValues, final List<String> displayValues)
     {
         if (exportValues != null && displayValues != null && !exportValues.isEmpty() && !displayValues.isEmpty()) 
         {
@@ -151,17 +151,17 @@ public abstract class PDChoice extends PDVariableText
             }
             else
             {
-                List<KeyValue> keyValuePairs = FieldUtils.toKeyValueList(exportValues, displayValues);
+                final List<KeyValue> keyValuePairs = FieldUtils.toKeyValueList(exportValues, displayValues);
 
                 if (isSort())
                 {
                     FieldUtils.sortByValue(keyValuePairs);
                 } 
 
-                COSArray options = new COSArray();
+                final COSArray options = new COSArray();
                 for (int i = 0; i<exportValues.size(); i++)
                 {
-                    COSArray entry = new COSArray();
+                    final COSArray entry = new COSArray();
                     entry.add(new COSString(keyValuePairs.get(i).getKey()));
                     entry.add(new COSString(keyValuePairs.get(i).getValue()));
                     options.add(entry);
@@ -189,7 +189,7 @@ public abstract class PDChoice extends PDVariableText
      */
     public List<String> getOptionsDisplayValues()
     {
-        COSBase values = getCOSObject().getDictionaryObject(COSName.OPT);
+        final COSBase values = getCOSObject().getDictionaryObject(COSName.OPT);
         return FieldUtils.getPairableItems(values, 1);
     }
 
@@ -223,7 +223,7 @@ public abstract class PDChoice extends PDVariableText
      */
     public List<Integer> getSelectedOptionsIndex()
     {
-        COSBase value = getCOSObject().getDictionaryObject(COSName.I);
+        final COSBase value = getCOSObject().getDictionaryObject(COSName.I);
         if (value instanceof COSArray)
         {
             return ((COSArray) value).toCOSNumberIntegerList();
@@ -244,7 +244,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param values List containing the indices of all selected options.
      */
-    public void setSelectedOptionsIndex(List<Integer> values)
+    public void setSelectedOptionsIndex(final List<Integer> values)
     {
         if (values != null && !values.isEmpty())
         {
@@ -283,7 +283,7 @@ public abstract class PDChoice extends PDVariableText
      * @see #isSort()
      * @param sort The value for Sort.
      */
-    public void setSort(boolean sort)
+    public void setSort(final boolean sort)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_SORT, sort);
     }
@@ -303,7 +303,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param multiSelect The value for MultiSelect.
      */
-    public void setMultiSelect(boolean multiSelect)
+    public void setMultiSelect(final boolean multiSelect)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_MULTI_SELECT, multiSelect);
     }
@@ -323,7 +323,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param doNotSpellCheck The value for DoNotSpellCheck.
      */
-    public void setDoNotSpellCheck(boolean doNotSpellCheck)
+    public void setDoNotSpellCheck(final boolean doNotSpellCheck)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck);
     }
@@ -343,7 +343,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param commitOnSelChange The value for CommitOnSelChange.
      */
-    public void setCommitOnSelChange(boolean commitOnSelChange)
+    public void setCommitOnSelChange(final boolean commitOnSelChange)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_COMMIT_ON_SEL_CHANGE, commitOnSelChange);
     }
@@ -363,7 +363,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param combo The value for Combo.
      */
-    public void setCombo(boolean combo)
+    public void setCombo(final boolean combo)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_COMBO, combo);
     }
@@ -375,7 +375,7 @@ public abstract class PDChoice extends PDVariableText
      * @throws IOException if the value could not be set
      */
     @Override
-    public void setValue(String value) throws IOException
+    public void setValue(final String value) throws IOException
     {
         getCOSObject().setString(COSName.V, value);
         
@@ -390,7 +390,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param value The name of the selected item.
      */
-    public void setDefaultValue(String value)
+    public void setDefaultValue(final String value)
     {
         getCOSObject().setString(COSName.DV, value);
     }
@@ -401,7 +401,7 @@ public abstract class PDChoice extends PDVariableText
      * @param values the list of values
      * @throws IOException if the appearance couldn't be generated.
      */    
-    public void setValue(List<String> values) throws IOException
+    public void setValue(final List<String> values) throws IOException
     {
         if (values != null && !values.isEmpty())
         {
@@ -450,9 +450,9 @@ public abstract class PDChoice extends PDVariableText
     /**
      * Returns the selected values, or an empty List, for the given key.
      */
-    private List<String> getValueFor(COSName name)
+    private List<String> getValueFor(final COSName name)
     {
-        COSBase value = getCOSObject().getDictionaryObject(name);
+        final COSBase value = getCOSObject().getDictionaryObject(name);
         if (value instanceof COSString)
         {
             return Collections.singletonList(((COSString) value).getString());
@@ -473,12 +473,12 @@ public abstract class PDChoice extends PDVariableText
     /**
      * Update the 'I' key based on values set.
      */
-    private void updateSelectedOptionsIndex(List<String> values)
+    private void updateSelectedOptionsIndex(final List<String> values)
     {
-        List<String> options = getOptions();
-        List<Integer> indices = new ArrayList<>();
+        final List<String> options = getOptions();
+        final List<Integer> indices = new ArrayList<>();
 
-        for (String value : values)
+        for (final String value : values)
         {
             indices.add(options.indexOf(value));
         }

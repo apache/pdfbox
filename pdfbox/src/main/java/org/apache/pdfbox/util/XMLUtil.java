@@ -53,7 +53,7 @@ public final class XMLUtil
      * @return The DOM document.
      * @throws IOException It there is an error creating the dom.
      */
-    public static Document parse(InputStream is) throws IOException
+    public static Document parse(final InputStream is) throws IOException
     {
         return parse(is, false);
     }
@@ -66,11 +66,11 @@ public final class XMLUtil
      * @return The DOM document.
      * @throws IOException It there is an error creating the dom.
      */
-    public static Document parse(InputStream is, boolean nsAware) throws IOException
+    public static Document parse(final InputStream is, final boolean nsAware) throws IOException
     {
         try
         {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            final DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             builderFactory.setFeature("http://xml.org/sax/features/external-general-entities",
                     false);
@@ -81,10 +81,10 @@ public final class XMLUtil
             builderFactory.setXIncludeAware(false);
             builderFactory.setExpandEntityReferences(false);
             builderFactory.setNamespaceAware(nsAware);
-            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            final DocumentBuilder builder = builderFactory.newDocumentBuilder();
             return builder.parse(is);
         }
-        catch (FactoryConfigurationError | ParserConfigurationException | SAXException e)
+        catch (final FactoryConfigurationError | ParserConfigurationException | SAXException e)
         {
             throw new IOException(e.getMessage(), e);
         }
@@ -96,14 +96,14 @@ public final class XMLUtil
      * @param node The node to get the text value for.
      * @return The text of the node.
      */
-    public static String getNodeValue(Element node)
+    public static String getNodeValue(final Element node)
     {
-        StringBuilder sb = new StringBuilder();
-        NodeList children = node.getChildNodes();
-        int numNodes = children.getLength();
+        final StringBuilder sb = new StringBuilder();
+        final NodeList children = node.getChildNodes();
+        final int numNodes = children.getLength();
         for (int i = 0; i < numNodes; i++)
         {
-            Node next = children.item(i);
+            final Node next = children.item(i);
             if (next instanceof Text)
             {
                 sb.append(next.getNodeValue());

@@ -42,7 +42,7 @@ public class PDURIDictionary implements COSObjectable
      * 
      * @param dictionary the corresponding dictionary
      */
-    public PDURIDictionary(COSDictionary dictionary)
+    public PDURIDictionary(final COSDictionary dictionary)
     {
         this.uriDictionary = dictionary;
     }
@@ -82,7 +82,7 @@ public class PDURIDictionary implements COSObjectable
      *
      * @param base The base URI to be used.
      */
-    public void setBase(String base)
+    public void setBase(final String base)
     {
         this.getCOSObject().setString("Base", base);
     }

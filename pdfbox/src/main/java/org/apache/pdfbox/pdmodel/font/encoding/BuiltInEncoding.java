@@ -32,7 +32,7 @@ public class BuiltInEncoding extends Encoding
      *
      * @param codeToName the given code to name mapping
      */
-    public BuiltInEncoding(Map<Integer, String> codeToName)
+    public BuiltInEncoding(final Map<Integer, String> codeToName)
     {
         codeToName.forEach(this::add);
     }

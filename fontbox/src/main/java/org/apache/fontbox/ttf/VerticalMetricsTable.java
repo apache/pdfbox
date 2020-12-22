@@ -41,7 +41,7 @@ public class VerticalMetricsTable extends TTFTable
     private short[] additionalTopSideBearing;
     private int numVMetrics;
 
-    VerticalMetricsTable(TrueTypeFont font)
+    VerticalMetricsTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -54,15 +54,15 @@ public class VerticalMetricsTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
-        VerticalHeaderTable vHeader = ttf.getVerticalHeader();
+        final VerticalHeaderTable vHeader = ttf.getVerticalHeader();
         if (vHeader == null)
         {
             throw new IOException("Could not get vhea table");
         }
         numVMetrics = vHeader.getNumberOfVMetrics();
-        int numGlyphs = ttf.getNumberOfGlyphs();
+        final int numGlyphs = ttf.getNumberOfGlyphs();
 
         int bytesRead = 0;
         advanceHeight = new int[ numVMetrics ];
@@ -103,7 +103,7 @@ public class VerticalMetricsTable extends TTFTable
      *
      * @param gid GID
      */
-    public int getTopSideBearing(int gid)
+    public int getTopSideBearing(final int gid)
     {
         if (gid < numVMetrics)
         {
@@ -120,7 +120,7 @@ public class VerticalMetricsTable extends TTFTable
      *
      * @param gid GID
      */
-    public int getAdvanceHeight(int gid)
+    public int getAdvanceHeight(final int gid)
     {
         if (gid < numVMetrics)
         {

@@ -82,7 +82,7 @@ public class PDDeviceN extends PDSpecialColorSpace
      * Creates a new DeviceN color space from the given COS array.
      * @param deviceN an array containing the color space information
      */
-    public PDDeviceN(COSArray deviceN) throws IOException
+    public PDDeviceN(final COSArray deviceN) throws IOException
     {
         array = deviceN;
         alternateColorSpace = PDColorSpace.create(array.getObject(ALTERNATE_CS));
@@ -95,8 +95,8 @@ public class PDDeviceN extends PDSpecialColorSpace
         initColorConversionCache();
 
         // set initial color space
-        int n = getNumberOfComponents();
-        float[] initial = new float[n];
+        final int n = getNumberOfComponents();
+        final float[] initial = new float[n];
         for (int i = 0; i < n; i++)
         {
             initial[i] = 1;
@@ -114,7 +114,7 @@ public class PDDeviceN extends PDSpecialColorSpace
         }
 
         // colorant names
-        List<String> colorantNames = getColorantNames();
+        final List<String> colorantNames = getColorantNames();
         numColorants = colorantNames.size();
 
         // process components
@@ -126,7 +126,7 @@ public class PDDeviceN extends PDSpecialColorSpace
 
         if (attributes.getProcess() != null)
         {
-            List<String> components = attributes.getProcess().getComponents();
+            final List<String> components = attributes.getProcess().getComponents();
 
             // map each colorant to the corresponding process component (if any)
             for (int c = 0; c < numColorants; c++)
@@ -142,13 +142,13 @@ public class PDDeviceN extends PDSpecialColorSpace
         spotColorSpaces = new PDSeparation[numColorants];
 
         // spot color spaces
-        Map<String, PDSeparation> spotColorants = attributes.getColorants();
+        final Map<String, PDSeparation> spotColorants = attributes.getColorants();
 
         // map each colorant to the corresponding spot color space
         for (int c = 0; c < numColorants; c++)
         {
-            String name = colorantNames.get(c);
-            PDSeparation spot = spotColorants.get(name);
+            final String name = colorantNames.get(c);
+            final PDSeparation spot = spotColorants.get(name);
             if (spot != null)
             {
                 // spot colorant
@@ -170,7 +170,7 @@ public class PDDeviceN extends PDSpecialColorSpace
     }
 
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(final WritableRaster raster) throws IOException
     {
         if (attributes != null)
         {
@@ -185,16 +185,16 @@ public class PDDeviceN extends PDSpecialColorSpace
     //
     // WARNING: this method is performance sensitive, modify with care!
     //
-    private BufferedImage toRGBWithAttributes(WritableRaster raster) throws IOException
+    private BufferedImage toRGBWithAttributes(final WritableRaster raster) throws IOException
     {
-        int width = raster.getWidth();
-        int height = raster.getHeight();
+        final int width = raster.getWidth();
+        final int height = raster.getHeight();
 
-        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        WritableRaster rgbRaster = rgbImage.getRaster();
+        final BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        final WritableRaster rgbRaster = rgbImage.getRaster();
 
         // white background
-        Graphics2D g = rgbImage.createGraphics();
+        final Graphics2D g = rgbImage.createGraphics();
         g.setBackground(Color.WHITE);
         g.clearRect(0, 0, width, height);
         g.dispose();
@@ -202,7 +202,7 @@ public class PDDeviceN extends PDSpecialColorSpace
         // look up each colorant
         for (int c = 0; c < numColorants; c++)
         {
-            PDColorSpace componentColorSpace;
+            final PDColorSpace componentColorSpace;
             if (colorantToComponent[c] >= 0)
             {
                 // process color
@@ -221,13 +221,13 @@ public class PDDeviceN extends PDSpecialColorSpace
             }
 
             // copy single-component to its own raster in the component color space
-            WritableRaster componentRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
+            final WritableRaster componentRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
                 width, height, componentColorSpace.getNumberOfComponents(), new Point(0, 0));
 
-            int[] samples = new int[numColorants];
-            int[] componentSamples = new int[componentColorSpace.getNumberOfComponents()];
-            boolean isProcessColorant = colorantToComponent[c] >= 0;
-            int componentIndex = colorantToComponent[c];
+            final int[] samples = new int[numColorants];
+            final int[] componentSamples = new int[componentColorSpace.getNumberOfComponents()];
+            final boolean isProcessColorant = colorantToComponent[c] >= 0;
+            final int componentIndex = colorantToComponent[c];
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -248,12 +248,12 @@ public class PDDeviceN extends PDSpecialColorSpace
             }
 
             // convert single-component raster to RGB
-            BufferedImage rgbComponentImage = componentColorSpace.toRGBImage(componentRaster);
-            WritableRaster rgbComponentRaster = rgbComponentImage.getRaster();
+            final BufferedImage rgbComponentImage = componentColorSpace.toRGBImage(componentRaster);
+            final WritableRaster rgbComponentRaster = rgbComponentImage.getRaster();
 
             // combine the RGB component with the RGB composite raster
-            int[] rgbChannel = new int[3];
-            int[] rgbComposite = new int[3];
+            final int[] rgbChannel = new int[3];
+            final int[] rgbComposite = new int[3];
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -277,22 +277,22 @@ public class PDDeviceN extends PDSpecialColorSpace
     //
     // WARNING: this method is performance sensitive, modify with care!
     //
-    private BufferedImage toRGBWithTintTransform(WritableRaster raster) throws IOException
+    private BufferedImage toRGBWithTintTransform(final WritableRaster raster) throws IOException
     {
         // cache color mappings
-        Map<String, int[]> map1 = new HashMap<>();
+        final Map<String, int[]> map1 = new HashMap<>();
         String key;
 
-        int width = raster.getWidth();
-        int height = raster.getHeight();
+        final int width = raster.getWidth();
+        final int height = raster.getHeight();
 
         // use the tint transform to convert the sample into
         // the alternate color space (this is usually 1:many)
-        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        WritableRaster rgbRaster = rgbImage.getRaster();
-        int[] rgb = new int[3];
-        int numSrcComponents = getColorantNames().size();
-        float[] src = new float[numSrcComponents];
+        final BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        final WritableRaster rgbRaster = rgbImage.getRaster();
+        final int[] rgb = new int[3];
+        final int numSrcComponents = getColorantNames().size();
+        final float[] src = new float[numSrcComponents];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -304,7 +304,7 @@ public class PDDeviceN extends PDSpecialColorSpace
                 {
                     key += "#" + Float.toString(src[s]);
                 }
-                int[] pxl = map1.get(key);
+                final int[] pxl = map1.get(key);
                 if (pxl != null)
                 {
                     rgbRaster.setPixel(x, y, pxl);
@@ -317,10 +317,10 @@ public class PDDeviceN extends PDSpecialColorSpace
                 }
 
                 // convert to alternate color space via tint transform
-                float[] result = tintTransform.eval(src);
+                final float[] result = tintTransform.eval(src);
                 
                 // convert from alternate color space to RGB
-                float[] rgbFloat = alternateColorSpace.toRGB(result);
+                final float[] rgbFloat = alternateColorSpace.toRGB(result);
                 
                 for (int s = 0; s < 3; s++)
                 {
@@ -337,7 +337,7 @@ public class PDDeviceN extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] toRGB(float[] value) throws IOException
+    public float[] toRGB(final float[] value) throws IOException
     {
         if (attributes != null)
         {
@@ -349,14 +349,14 @@ public class PDDeviceN extends PDSpecialColorSpace
         }
     }
 
-    private float[] toRGBWithAttributes(float[] value) throws IOException
+    private float[] toRGBWithAttributes(final float[] value) throws IOException
     {
-        float[] rgbValue = new float[] { 1, 1, 1 };
+        final float[] rgbValue = new float[] { 1, 1, 1 };
 
         // look up each colorant
         for (int c = 0; c < numColorants; c++)
         {
-            PDColorSpace componentColorSpace;
+            final PDColorSpace componentColorSpace;
             if (colorantToComponent[c] >= 0)
             {
                 // process color
@@ -375,9 +375,9 @@ public class PDDeviceN extends PDSpecialColorSpace
             }
 
             // get the single component
-            boolean isProcessColorant = colorantToComponent[c] >= 0;
-            float[] componentSamples = new float[componentColorSpace.getNumberOfComponents()];
-            int componentIndex = colorantToComponent[c];
+            final boolean isProcessColorant = colorantToComponent[c] >= 0;
+            final float[] componentSamples = new float[componentColorSpace.getNumberOfComponents()];
+            final int componentIndex = colorantToComponent[c];
 
             if (isProcessColorant)
             {
@@ -391,7 +391,7 @@ public class PDDeviceN extends PDSpecialColorSpace
             }
 
             // convert single component to RGB
-            float[] rgbComponent = componentColorSpace.toRGB(componentSamples);
+            final float[] rgbComponent = componentColorSpace.toRGB(componentSamples);
 
             // combine the RGB component value with the RGB composite value
 
@@ -404,18 +404,18 @@ public class PDDeviceN extends PDSpecialColorSpace
         return rgbValue;
     }
 
-    private float[] toRGBWithTintTransform(float[] value) throws IOException
+    private float[] toRGBWithTintTransform(final float[] value) throws IOException
     {
         // use the tint transform to convert the sample into
         // the alternate color space (this is usually 1:many)
-        float[] altValue = tintTransform.eval(value);
+        final float[] altValue = tintTransform.eval(value);
 
         // convert the alternate color space to RGB
         return alternateColorSpace.toRGB(altValue);
     }
 
     @Override
-    public BufferedImage toRawImage(WritableRaster raster)
+    public BufferedImage toRawImage(final WritableRaster raster)
     {
         // We don't know how to convert that.
         return null;
@@ -443,10 +443,10 @@ public class PDDeviceN extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
-        int n = getNumberOfComponents();
-        float[] decode = new float[n * 2];
+        final int n = getNumberOfComponents();
+        final float[] decode = new float[n * 2];
         for (int i = 0; i < n; i++)
         {
             decode[i * 2 + 1] = 1;
@@ -482,9 +482,9 @@ public class PDDeviceN extends PDSpecialColorSpace
      * Sets the list of colorants
      * @param names the list of colorants
      */
-    public void setColorantNames(List<String> names)
+    public void setColorantNames(final List<String> names)
     {
-        COSArray namesArray = COSArray.ofCOSNames(names);
+        final COSArray namesArray = COSArray.ofCOSNames(names);
         array.set(COLORANT_NAMES, namesArray);
     }
 
@@ -493,7 +493,7 @@ public class PDDeviceN extends PDSpecialColorSpace
      * If null is passed in then all attribute will be removed.
      * @param attributes the color space attributes, or null
      */
-    public void setAttributes(PDDeviceNAttributes attributes)
+    public void setAttributes(final PDDeviceNAttributes attributes)
     {
         this.attributes = attributes;
         if (attributes == null)
@@ -533,7 +533,7 @@ public class PDDeviceN extends PDSpecialColorSpace
      *
      * @param cs The alternate color space.
      */
-    public void setAlternateColorSpace(PDColorSpace cs)
+    public void setAlternateColorSpace(final PDColorSpace cs)
     {
         alternateColorSpace = cs;
         COSBase space = null;
@@ -565,7 +565,7 @@ public class PDDeviceN extends PDSpecialColorSpace
      *
      * @param tint The tint transform function.
      */
-    public void setTintTransform(PDFunction tint)
+    public void setTintTransform(final PDFunction tint)
     {
         tintTransform = tint;
         array.set(TINT_TRANSFORM, tint);
@@ -575,9 +575,9 @@ public class PDDeviceN extends PDSpecialColorSpace
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder(getName());
+        final StringBuilder sb = new StringBuilder(getName());
         sb.append('{');
-        for (String col : getColorantNames())
+        for (final String col : getColorantNames())
         {
             sb.append('\"');
             sb.append(col);

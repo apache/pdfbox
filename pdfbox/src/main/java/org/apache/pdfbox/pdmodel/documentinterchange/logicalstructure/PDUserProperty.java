@@ -36,7 +36,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      * 
      * @param userAttributeObject the user attribute object
      */
-    public PDUserProperty(PDUserAttributeObject userAttributeObject)
+    public PDUserProperty(final PDUserAttributeObject userAttributeObject)
     {
         this.userAttributeObject = userAttributeObject;
     }
@@ -47,8 +47,8 @@ public class PDUserProperty extends PDDictionaryWrapper
      * @param dictionary the dictionary
      * @param userAttributeObject the user attribute object
      */
-    public PDUserProperty(COSDictionary dictionary,
-        PDUserAttributeObject userAttributeObject)
+    public PDUserProperty(final COSDictionary dictionary,
+                          final PDUserAttributeObject userAttributeObject)
     {
         super(dictionary);
         this.userAttributeObject = userAttributeObject;
@@ -70,7 +70,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      * 
      * @param name the property name
      */
-    public void setName(String name)
+    public void setName(final String name)
     {
         this.potentiallyNotifyChanged(this.getName(), name);
         this.getCOSObject().setName(COSName.N, name);
@@ -91,7 +91,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      * 
      * @param value the property value
      */
-    public void setValue(COSBase value)
+    public void setValue(final COSBase value)
     {
         this.potentiallyNotifyChanged(this.getValue(), value);
         this.getCOSObject().setItem(COSName.V, value);
@@ -112,7 +112,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      * 
      * @param formattedValue the string for the property value
      */
-    public void setFormattedValue(String formattedValue)
+    public void setFormattedValue(final String formattedValue)
     {
         this.potentiallyNotifyChanged(this.getFormattedValue(), formattedValue);
         this.getCOSObject().setString(COSName.F, formattedValue);
@@ -135,7 +135,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      * @param hidden <code>true</code> if the property shall be hidden,
      * <code>false</code> otherwise
      */
-    public void setHidden(boolean hidden)
+    public void setHidden(final boolean hidden)
     {
         this.potentiallyNotifyChanged(this.isHidden(), hidden);
         this.getCOSObject().setBoolean(COSName.H, hidden);
@@ -158,7 +158,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      * @param oldEntry old entry
      * @param newEntry new entry
      */
-    private void potentiallyNotifyChanged(Object oldEntry, Object newEntry)
+    private void potentiallyNotifyChanged(final Object oldEntry, final Object newEntry)
     {
         if (this.isEntryChanged(oldEntry, newEntry))
         {
@@ -174,7 +174,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      * @return <code>true</code> if the entry is changed, <code>false</code>
      * otherwise
      */
-    private boolean isEntryChanged(Object oldEntry, Object newEntry)
+    private boolean isEntryChanged(final Object oldEntry, final Object newEntry)
     {
         if (oldEntry == null)
         {
@@ -194,7 +194,7 @@ public class PDUserProperty extends PDDictionaryWrapper
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(final Object obj)
     {
         if (this == obj)
         {
@@ -208,7 +208,7 @@ public class PDUserProperty extends PDDictionaryWrapper
         {
             return false;
         }
-        PDUserProperty other = (PDUserProperty) obj;
+        final PDUserProperty other = (PDUserProperty) obj;
         if (userAttributeObject == null)
         {
             if (other.userAttributeObject != null)

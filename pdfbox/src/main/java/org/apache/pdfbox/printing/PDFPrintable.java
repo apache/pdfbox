@@ -57,7 +57,7 @@ public final class PDFPrintable implements Printable
      *
      * @param document the document to print
      */
-    public PDFPrintable(PDDocument document)
+    public PDFPrintable(final PDDocument document)
     {
         this(document, Scaling.SHRINK_TO_FIT);
     }
@@ -68,7 +68,7 @@ public final class PDFPrintable implements Printable
      * @param document the document to print
      * @param scaling page scaling policy
      */
-    public PDFPrintable(PDDocument document, Scaling scaling)
+    public PDFPrintable(final PDDocument document, final Scaling scaling)
     {
        this(document, scaling, false, 0);
     }
@@ -80,7 +80,7 @@ public final class PDFPrintable implements Printable
      * @param scaling page scaling policy
      * @param showPageBorder true if page borders are to be printed
      */
-    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder)
+    public PDFPrintable(final PDDocument document, final Scaling scaling, final boolean showPageBorder)
     {
         this(document, scaling, showPageBorder, 0);
     }
@@ -94,7 +94,7 @@ public final class PDFPrintable implements Printable
      * @param showPageBorder true if page borders are to be printed
      * @param dpi if non-zero then the image will be rasterized at the given DPI
      */
-    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi)
+    public PDFPrintable(final PDDocument document, final Scaling scaling, final boolean showPageBorder, final float dpi)
     {
         this(document, scaling, showPageBorder, dpi, true);
     }
@@ -109,8 +109,8 @@ public final class PDFPrintable implements Printable
      * @param dpi if non-zero then the image will be rasterized at the given DPI
      * @param center true if the content is to be centered on the page (otherwise top-left).
      */
-    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi,
-                        boolean center)
+    public PDFPrintable(final PDDocument document, final Scaling scaling, final boolean showPageBorder, final float dpi,
+                        final boolean center)
     {
         this.document = document;
         this.renderer = new PDFRenderer(document);
@@ -143,7 +143,7 @@ public final class PDFPrintable implements Printable
      *
      * @param subsamplingAllowed The new value indicating if subsampling is allowed.
      */
-    public void setSubsamplingAllowed(boolean subsamplingAllowed)
+    public void setSubsamplingAllowed(final boolean subsamplingAllowed)
     {
         this.subsamplingAllowed = subsamplingAllowed;
     }
@@ -165,13 +165,13 @@ public final class PDFPrintable implements Printable
      *
      * @param renderingHints
      */
-    public void setRenderingHints(RenderingHints renderingHints)
+    public void setRenderingHints(final RenderingHints renderingHints)
     {
         this.renderingHints = renderingHints;
     }
 
     @Override
-    public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
+    public int print(final Graphics graphics, final PageFormat pageFormat, final int pageIndex)
             throws PrinterException
     {
         if (pageIndex < 0 || pageIndex >= document.getNumberOfPages())
@@ -182,8 +182,8 @@ public final class PDFPrintable implements Printable
         {
             Graphics2D graphics2D = (Graphics2D)graphics;
 
-            PDPage page = document.getPage(pageIndex);
-            PDRectangle cropBox = getRotatedCropBox(page);
+            final PDPage page = document.getPage(pageIndex);
+            final PDRectangle cropBox = getRotatedCropBox(page);
 
             // the imageable area is the area within the page margins
             final double imageableWidth = pageFormat.getImageableWidth();
@@ -193,8 +193,8 @@ public final class PDFPrintable implements Printable
             if (scaling != Scaling.ACTUAL_SIZE)
             {
                 // scale to fit
-                double scaleX = imageableWidth / cropBox.getWidth();
-                double scaleY = imageableHeight / cropBox.getHeight();
+                final double scaleX = imageableWidth / cropBox.getWidth();
+                final double scaleY = imageableHeight / cropBox.getHeight();
                 scale = Math.min(scaleX, scaleY);
 
                 // only shrink to fit when enabled
@@ -225,7 +225,7 @@ public final class PDFPrintable implements Printable
             BufferedImage image = null;
             if (dpi > 0)
             {
-                float dpiScale = dpi / 72;
+                final float dpiScale = dpi / 72;
                 image = new BufferedImage((int)(imageableWidth * dpiScale / scale),
                                           (int)(imageableHeight * dpiScale / scale),
                                           BufferedImage.TYPE_INT_ARGB);
@@ -239,7 +239,7 @@ public final class PDFPrintable implements Printable
             }
 
             // draw to graphics using PDFRender
-            AffineTransform transform = (AffineTransform)graphics2D.getTransform().clone();
+            final AffineTransform transform = (AffineTransform)graphics2D.getTransform().clone();
             graphics2D.setBackground(Color.WHITE);
             renderer.setSubsamplingAllowed(subsamplingAllowed);
             renderer.setRenderingHints(renderingHints);
@@ -267,7 +267,7 @@ public final class PDFPrintable implements Printable
 
             return PAGE_EXISTS;
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new PrinterIOException(e);
         }
@@ -279,10 +279,10 @@ public final class PDFPrintable implements Printable
      *
      * @return The CropBox at this level in the hierarchy.
      */
-    static PDRectangle getRotatedCropBox(PDPage page)
+    static PDRectangle getRotatedCropBox(final PDPage page)
     {
-        PDRectangle cropBox = page.getCropBox();
-        int rotationAngle = page.getRotation();
+        final PDRectangle cropBox = page.getCropBox();
+        final int rotationAngle = page.getRotation();
         if (rotationAngle == 90 || rotationAngle == 270)
         {
             return new PDRectangle(cropBox.getLowerLeftY(), cropBox.getLowerLeftX(),
@@ -300,10 +300,10 @@ public final class PDFPrintable implements Printable
      *
      * @return The MediaBox at this level in the hierarchy.
      */
-    static PDRectangle getRotatedMediaBox(PDPage page)
+    static PDRectangle getRotatedMediaBox(final PDPage page)
     {
-        PDRectangle mediaBox = page.getMediaBox();
-        int rotationAngle = page.getRotation();
+        final PDRectangle mediaBox = page.getMediaBox();
+        final int rotationAngle = page.getRotation();
         if (rotationAngle == 90 || rotationAngle == 270)
         {
             return new PDRectangle(mediaBox.getLowerLeftY(), mediaBox.getLowerLeftX(),

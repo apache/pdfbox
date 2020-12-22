@@ -42,7 +42,7 @@ public class PDSimpleFileSpecification extends PDFileSpecification
      *
      * @param fileName The file that this spec represents.
      */
-    public PDSimpleFileSpecification( COSString fileName )
+    public PDSimpleFileSpecification(final COSString fileName )
     {
         file = fileName;
     }
@@ -64,7 +64,7 @@ public class PDSimpleFileSpecification extends PDFileSpecification
      * @param fileName The name of the file.
      */
     @Override
-    public void setFile( String fileName )
+    public void setFile(final String fileName )
     {
     file = new COSString( fileName );
     }

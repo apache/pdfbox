@@ -47,7 +47,7 @@ public final class PDTristimulus implements COSObjectable
      * Constructor from COS object.
      * @param array the array containing the XYZ values
      */
-    public PDTristimulus(COSArray array)
+    public PDTristimulus(final COSArray array)
     {
         values = array;
     }
@@ -56,7 +56,7 @@ public final class PDTristimulus implements COSObjectable
      * Constructor from COS object.
      * @param array the array containing the XYZ values
      */
-    public PDTristimulus(float[] array)
+    public PDTristimulus(final float[] array)
     {
         values = new COSArray();
         for(int i=0; i<array.length && i<3; i++)
@@ -88,7 +88,7 @@ public final class PDTristimulus implements COSObjectable
      * Sets the x value of the tristimulus.
      * @param x the x value for the tristimulus
      */
-    public void setX(float x)
+    public void setX(final float x)
     {
         values.set(0, new COSFloat(x));
     }
@@ -106,7 +106,7 @@ public final class PDTristimulus implements COSObjectable
      * Sets the y value of the tristimulus.
      * @param y the y value for the tristimulus
      */
-    public void setY(float y)
+    public void setY(final float y)
     {
         values.set(1, new COSFloat(y));
     }
@@ -124,7 +124,7 @@ public final class PDTristimulus implements COSObjectable
      * Sets the z value of the tristimulus.
      * @param z the z value for the tristimulus
      */
-    public void setZ(float z)
+    public void setZ(final float z)
     {
         values.set(2, new COSFloat(z));
     }

@@ -73,7 +73,7 @@ public final class PublicKeyProtectionPolicy extends ProtectionPolicy
      * Adds a new recipient to the recipients list.
      * @param recipient A new recipient.
      */
-    public void addRecipient(PublicKeyRecipient recipient)
+    public void addRecipient(final PublicKeyRecipient recipient)
     {
         recipients.add(recipient);
     }
@@ -83,7 +83,7 @@ public final class PublicKeyProtectionPolicy extends ProtectionPolicy
      * @param recipient The recipient to remove.
      * @return true If a recipient was found and removed.
      */
-    public boolean removeRecipient(PublicKeyRecipient recipient)
+    public boolean removeRecipient(final PublicKeyRecipient recipient)
     {
         return recipients.remove(recipient);
     }
@@ -111,7 +111,7 @@ public final class PublicKeyProtectionPolicy extends ProtectionPolicy
      * Sets the decryption certificate
      * @param decryptionCertificate the new decryption certificate.
      */
-    public void setDecryptionCertificate(X509Certificate decryptionCertificate)
+    public void setDecryptionCertificate(final X509Certificate decryptionCertificate)
     {
         this.decryptionCertificate = decryptionCertificate;
     }

@@ -39,29 +39,29 @@ class SequenceRandomAccessReadTest
     @Test
     void TestCreateAndRead() throws IOException
     {
-        String input1 = "This is a test string number 1";
-        RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
+        final String input1 = "This is a test string number 1";
+        final RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
                 input1.getBytes());
-        String input2 = "This is a test string number 2";
-        RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
+        final String input2 = "This is a test string number 2";
+        final RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
                 input2.getBytes());
-        List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1,
+        final List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1,
                 randomAccessReadBuffer2);
-        SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
+        final SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
 
         try
         {
             sequenceRandomAccessRead.createView(0, 10);
             fail("createView should have thrown an IOException");
         }
-        catch(IOException e)
+        catch(final IOException e)
         {
         }
         
-        int overallLength = input1.length() + input2.length();
+        final int overallLength = input1.length() + input2.length();
         assertEquals(overallLength, sequenceRandomAccessRead.length());
         
-        byte[] bytesRead = new byte[overallLength];
+        final byte[] bytesRead = new byte[overallLength];
         
         assertEquals(overallLength, sequenceRandomAccessRead.read(bytesRead));
         assertEquals(input1 + input2, new String(bytesRead));
@@ -73,7 +73,7 @@ class SequenceRandomAccessReadTest
         {
             fail("Constructor should have thrown an IllegalArgumentException");
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
         }
 
@@ -82,7 +82,7 @@ class SequenceRandomAccessReadTest
         {
             fail("Constructor should have thrown an IllegalArgumentException");
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
         }
         // test problematic list
@@ -90,7 +90,7 @@ class SequenceRandomAccessReadTest
         {
             fail("Constructor should have thrown an IllegalArgumentException");
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
         }
     }
@@ -98,15 +98,15 @@ class SequenceRandomAccessReadTest
     @Test
     void TestSeekPeekAndRewind() throws IOException
     {
-        String input1 = "01234567890123456789";
-        RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
+        final String input1 = "01234567890123456789";
+        final RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
                 input1.getBytes());
-        String input2 = "abcdefghijklmnopqrst";
-        RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
+        final String input2 = "abcdefghijklmnopqrst";
+        final RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
                 input2.getBytes());
-        List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1,
+        final List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1,
                 randomAccessReadBuffer2);
-        SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
+        final SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
 
         // test seek, rewind and peek in the first part of the sequence
         sequenceRandomAccessRead.seek(4);
@@ -135,7 +135,7 @@ class SequenceRandomAccessReadTest
             sequenceRandomAccessRead.seek(-1);
             fail("seek should have thrown an IOException");
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
         }
         
@@ -145,15 +145,15 @@ class SequenceRandomAccessReadTest
     @Test
     void TestBorderCases() throws IOException
     {
-        String input1 = "01234567890123456789";
-        RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
+        final String input1 = "01234567890123456789";
+        final RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
                 input1.getBytes());
-        String input2 = "abcdefghijklmnopqrst";
-        RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
+        final String input2 = "abcdefghijklmnopqrst";
+        final RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
                 input2.getBytes());
-        List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1,
+        final List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1,
                 randomAccessReadBuffer2);
-        SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
+        final SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
 
         // jump to the last byte of the first part of the sequence
         sequenceRandomAccessRead.seek(19);
@@ -189,17 +189,17 @@ class SequenceRandomAccessReadTest
     @Test
     void TestEOF() throws IOException
     {
-        String input1 = "01234567890123456789";
-        RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
+        final String input1 = "01234567890123456789";
+        final RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
                 input1.getBytes());
-        String input2 = "abcdefghijklmnopqrst";
-        RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
+        final String input2 = "abcdefghijklmnopqrst";
+        final RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
                 input2.getBytes());
-        List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1,
+        final List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1,
                 randomAccessReadBuffer2);
-        SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
+        final SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
 
-        int overallLength = input1.length() + input2.length();
+        final int overallLength = input1.length() + input2.length();
 
         sequenceRandomAccessRead.seek(overallLength - 1);
         assertFalse(sequenceRandomAccessRead.isEOF());
@@ -212,7 +212,7 @@ class SequenceRandomAccessReadTest
         // rewind
         sequenceRandomAccessRead.rewind(5);
         assertFalse(sequenceRandomAccessRead.isEOF());
-        byte[] bytesRead = new byte[5];
+        final byte[] bytesRead = new byte[5];
         assertEquals(5, sequenceRandomAccessRead.read(bytesRead));
         assertEquals("pqrst", new String(bytesRead));
         assertTrue(sequenceRandomAccessRead.isEOF());
@@ -233,7 +233,7 @@ class SequenceRandomAccessReadTest
             sequenceRandomAccessRead.read();
             fail("checkClosed should have thrown an IOException");
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
         }
     }
@@ -241,17 +241,17 @@ class SequenceRandomAccessReadTest
     @Test
     void TestEmptyStream() throws IOException
     {
-        String input1 = "01234567890123456789";
-        RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
+        final String input1 = "01234567890123456789";
+        final RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
                 input1.getBytes());
-        String input2 = "abcdefghijklmnopqrst";
-        RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
+        final String input2 = "abcdefghijklmnopqrst";
+        final RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
                 input2.getBytes());
-        RandomAccessReadBuffer emptyBuffer = new RandomAccessReadBuffer("".getBytes());
+        final RandomAccessReadBuffer emptyBuffer = new RandomAccessReadBuffer("".getBytes());
 
-        List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1, emptyBuffer,
+        final List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1, emptyBuffer,
                 randomAccessReadBuffer2);
-        SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
+        final SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
 
         // check length
         assertEquals(sequenceRandomAccessRead.length(), input1.length() + input2.length());

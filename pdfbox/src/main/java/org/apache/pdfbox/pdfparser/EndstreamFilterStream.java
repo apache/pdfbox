@@ -41,7 +41,7 @@ class EndstreamFilterStream
      * @param off offset.
      * @param len length of segment to write.
      */
-    public void filter(byte[] b, int off, int len)
+    public void filter(final byte[] b, final int off, int len)
     {
         if (pos == 0 && len > 10)
         {

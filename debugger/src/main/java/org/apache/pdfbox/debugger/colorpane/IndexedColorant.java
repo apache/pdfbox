@@ -18,8 +18,8 @@ package org.apache.pdfbox.debugger.colorpane;
 
 import java.awt.Color;
 
-/**
- * @author Khyrul Bashar.
+/*
+  @author Khyrul Bashar.
  */
 
 /**
@@ -40,12 +40,12 @@ public class IndexedColorant
         return index;
     }
 
-    public void setIndex(int index)
+    public void setIndex(final int index)
     {
         this.index = index;
     }
 
-    public void setRgbValues(float[] rgbValues)
+    public void setRgbValues(final float[] rgbValues)
     {
         this.rgbValues = rgbValues;
     }
@@ -57,8 +57,8 @@ public class IndexedColorant
 
     public String getRGBValuesString()
     {
-        StringBuilder builder = new StringBuilder();
-        for (float i: rgbValues)
+        final StringBuilder builder = new StringBuilder();
+        for (final float i: rgbValues)
         {
             builder.append((int)(i*255));
             builder.append(", ");

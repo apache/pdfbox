@@ -43,19 +43,19 @@ public class PDStructureElementNameTreeNode extends PDNameTreeNode<PDStructureEl
      *
      * @param dic The COS dictionary.
      */
-    public PDStructureElementNameTreeNode( COSDictionary dic )
+    public PDStructureElementNameTreeNode(final COSDictionary dic )
     {
         super(dic);
     }
 
     @Override
-    protected PDStructureElement convertCOSToPD( COSBase base ) throws IOException
+    protected PDStructureElement convertCOSToPD(final COSBase base ) throws IOException
     {
         return new PDStructureElement((COSDictionary)base);
     }
 
     @Override
-    protected PDNameTreeNode<PDStructureElement> createChildNode( COSDictionary dic )
+    protected PDNameTreeNode<PDStructureElement> createChildNode(final COSDictionary dic )
     {
         return new PDStructureElementNameTreeNode(dic);
     }

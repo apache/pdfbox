@@ -32,7 +32,7 @@ public class InstructionSequence
      * Add a name (ex. an operator)
      * @param name the name
      */
-    public void addName(String name)
+    public void addName(final String name)
     {
         this.instructions.add(name);
     }
@@ -41,7 +41,7 @@ public class InstructionSequence
      * Adds an int value.
      * @param value the value
      */
-    public void addInteger(int value)
+    public void addInteger(final int value)
     {
         this.instructions.add(value);
     }
@@ -50,7 +50,7 @@ public class InstructionSequence
      * Adds a real value.
      * @param value the value
      */
-    public void addReal(float value)
+    public void addReal(final float value)
     {
         this.instructions.add(value);
     }
@@ -59,7 +59,7 @@ public class InstructionSequence
      * Adds a bool value.
      * @param value the value
      */
-    public void addBoolean(boolean value)
+    public void addBoolean(final boolean value)
     {
         this.instructions.add(value);
     }
@@ -68,7 +68,7 @@ public class InstructionSequence
      * Adds a proc (sub-sequence of instructions).
      * @param child the child proc
      */
-    public void addProc(InstructionSequence child)
+    public void addProc(final InstructionSequence child)
     {
         this.instructions.add(child);
     }
@@ -77,15 +77,15 @@ public class InstructionSequence
      * Executes the instruction sequence.
      * @param context the execution context
      */
-    public void execute(ExecutionContext context)
+    public void execute(final ExecutionContext context)
     {
-        Stack<Object> stack = context.getStack();
-        for (Object o : instructions)
+        final Stack<Object> stack = context.getStack();
+        for (final Object o : instructions)
         {
             if (o instanceof String)
             {
-                String name = (String)o;
-                Operator cmd = context.getOperators().getOperator(name);
+                final String name = (String)o;
+                final Operator cmd = context.getOperators().getOperator(name);
                 if (cmd != null)
                 {
                     cmd.execute(context);
@@ -104,7 +104,7 @@ public class InstructionSequence
         //Handles top-level procs that simply need to be executed
         while (!stack.isEmpty() && stack.peek() instanceof InstructionSequence)
         {
-            InstructionSequence nested = (InstructionSequence)stack.pop();
+            final InstructionSequence nested = (InstructionSequence)stack.pop();
             nested.execute(context);
         }
     }

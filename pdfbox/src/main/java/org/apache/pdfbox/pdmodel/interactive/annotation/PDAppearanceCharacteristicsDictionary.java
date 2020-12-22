@@ -43,7 +43,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @param dict dictionary
      */
-    public PDAppearanceCharacteristicsDictionary(COSDictionary dict)
+    public PDAppearanceCharacteristicsDictionary(final COSDictionary dict)
     {
         this.dictionary = dict;
     }
@@ -74,7 +74,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @param rotation the rotation as a multiple of 90
      */
-    public void setRotation(int rotation)
+    public void setRotation(final int rotation)
     {
         this.getCOSObject().setInt(COSName.R, rotation);
     }
@@ -94,7 +94,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @param c the border color
      */
-    public void setBorderColour(PDColor c)
+    public void setBorderColour(final PDColor c)
     {
         this.getCOSObject().setItem(COSName.BC, c.toCOSArray());
     }
@@ -114,7 +114,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @param c the background color
      */
-    public void setBackground(PDColor c)
+    public void setBackground(final PDColor c)
     {
         this.getCOSObject().setItem(COSName.BG, c.toCOSArray());
     }
@@ -134,7 +134,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @param caption the normal caption
      */
-    public void setNormalCaption(String caption)
+    public void setNormalCaption(final String caption)
     {
         this.getCOSObject().setString(COSName.CA, caption);
     }
@@ -154,7 +154,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @param caption the rollover caption
      */
-    public void setRolloverCaption(String caption)
+    public void setRolloverCaption(final String caption)
     {
         this.getCOSObject().setString(COSName.RC, caption);
     }
@@ -174,7 +174,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @param caption the alternate caption
      */
-    public void setAlternateCaption(String caption)
+    public void setAlternateCaption(final String caption)
     {
         this.getCOSObject().setString(COSName.AC, caption);
     }
@@ -186,7 +186,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public PDFormXObject getNormalIcon()
     {
-        COSBase i = this.getCOSObject().getDictionaryObject(COSName.I);
+        final COSBase i = this.getCOSObject().getDictionaryObject(COSName.I);
         if (i instanceof COSStream)
         {
             return new PDFormXObject((COSStream)i);
@@ -201,7 +201,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public PDFormXObject getRolloverIcon()
     {
-        COSBase i = this.getCOSObject().getDictionaryObject(COSName.RI);
+        final COSBase i = this.getCOSObject().getDictionaryObject(COSName.RI);
         if (i instanceof COSStream)
         {
             return new PDFormXObject((COSStream)i);
@@ -216,7 +216,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public PDFormXObject getAlternateIcon()
     {
-        COSBase i = this.getCOSObject().getDictionaryObject(COSName.IX);
+        final COSBase i = this.getCOSObject().getDictionaryObject(COSName.IX);
         if (i instanceof COSStream)
         {
             return new PDFormXObject((COSStream)i);
@@ -224,12 +224,12 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
         return null;
     }
 
-    private PDColor getColor(COSName itemName)
+    private PDColor getColor(final COSName itemName)
     {
-        COSBase c = this.getCOSObject().getItem(itemName);
+        final COSBase c = this.getCOSObject().getItem(itemName);
         if (c instanceof COSArray)
         {
-            PDColorSpace colorSpace;
+            final PDColorSpace colorSpace;
             switch (((COSArray) c).size())
             {
             case 1:

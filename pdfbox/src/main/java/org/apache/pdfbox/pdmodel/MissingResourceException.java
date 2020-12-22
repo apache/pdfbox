@@ -24,7 +24,7 @@ import java.io.IOException;
  */
 public final class MissingResourceException extends IOException
 {
-    public MissingResourceException(String message)
+    public MissingResourceException(final String message)
     {
         super(message);
     }

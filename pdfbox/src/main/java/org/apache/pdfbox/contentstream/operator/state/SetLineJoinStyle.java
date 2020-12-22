@@ -34,13 +34,13 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 public class SetLineJoinStyle extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.isEmpty())
         {
             throw new MissingOperandException(operator, arguments);
         }
-        int lineJoinStyle = ((COSNumber)arguments.get( 0 )).intValue();
+        final int lineJoinStyle = ((COSNumber)arguments.get( 0 )).intValue();
         context.getGraphicsState().setLineJoin( lineJoinStyle );
     }
 

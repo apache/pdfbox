@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.annotation;
 
@@ -63,7 +63,7 @@ public abstract class AnnotationValidator
      */
     protected PDAnnotation pdAnnot = null;
 
-    public AnnotationValidator(PreflightContext context, COSDictionary annotDictionary)
+    public AnnotationValidator(final PreflightContext context, final COSDictionary annotDictionary)
     {
         this.ctx = context;
         this.annotDictionary = annotDictionary;
@@ -105,10 +105,10 @@ public abstract class AnnotationValidator
      */
     protected boolean checkCA()
     {
-        COSBase ca = this.pdAnnot.getCOSObject().getDictionaryObject(COSName.CA);
+        final COSBase ca = this.pdAnnot.getCOSObject().getDictionaryObject(COSName.CA);
         if (ca instanceof COSFloat)
         {
-            float caf = ((COSFloat) ca).floatValue();
+            final float caf = ((COSFloat) ca).floatValue();
             if (Float.compare(caf, 1.0f) != 0)
             { // ---- Only 1.0 is authorized as value
                 ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_CA,
@@ -145,7 +145,7 @@ public abstract class AnnotationValidator
      */
     protected boolean searchRGBProfile() throws ValidationException
     {
-        ICCProfileWrapper iccpw = ICCProfileWrapper.getOrSearchICCProfile(ctx);
+        final ICCProfileWrapper iccpw = ICCProfileWrapper.getOrSearchICCProfile(ctx);
         if (iccpw != null)
         {
             return iccpw.isRGBColorSpace();
@@ -166,10 +166,10 @@ public abstract class AnnotationValidator
      */
     protected boolean checkAP() throws ValidationException
     {
-        PDAppearanceDictionary ap = this.pdAnnot.getAppearance();
+        final PDAppearanceDictionary ap = this.pdAnnot.getAppearance();
         if (ap != null)
         {
-            COSDictionary apDict = ap.getCOSObject();
+            final COSDictionary apDict = ap.getCOSObject();
             // Only N entry is authorized
             if (apDict.getItem(COSName.D) != null || apDict.getItem(COSName.R) != null)
             {
@@ -186,9 +186,9 @@ public abstract class AnnotationValidator
             }
             else
             {
-                COSBase apn = apDict.getDictionaryObject(COSName.N);
-                COSName subtype = annotDictionary.getCOSName(COSName.SUBTYPE);
-                COSBase ft = getFieldType();
+                final COSBase apn = apDict.getDictionaryObject(COSName.N);
+                final COSName subtype = annotDictionary.getCOSName(COSName.SUBTYPE);
+                final COSBase ft = getFieldType();
                 if (COSName.WIDGET.equals(subtype) && COSName.BTN.equals(ft))
                 {
                     // TECHNICAL CORRIGENDUM 2 for ISO 19005-1:2005 (PDF/A-1) 
@@ -291,7 +291,7 @@ public abstract class AnnotationValidator
      */
     protected boolean checkPopup() throws ValidationException
     {
-        COSBase cosPopup = this.annotDictionary
+        final COSBase cosPopup = this.annotDictionary
                 .getDictionaryObject(COSName.getPDFName(PDAnnotationPopup.SUB_TYPE));
         if (cosPopup != null)
         {
@@ -301,7 +301,7 @@ public abstract class AnnotationValidator
                         "An Annotation has a Popup entry, but the value is missing or isn't a dictionary"));
                 return false;
             }
-            AnnotationValidator popupVal = this.annotFact.getAnnotationValidator(ctx,
+            final AnnotationValidator popupVal = this.annotFact.getAnnotationValidator(ctx,
                     (COSDictionary) cosPopup);
             return popupVal.validate();
         }
@@ -334,10 +334,10 @@ public abstract class AnnotationValidator
      */
     protected boolean checkMandatoryFields()
     {
-        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
+        final boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
+        final boolean rect = this.annotDictionary.containsKey(COSName.RECT);
 
-        boolean result = (subtype && rect && checkSpecificMandatoryFields());
+        final boolean result = (subtype && rect && checkSpecificMandatoryFields());
         if (!result)
         {
             ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS, "A mandatory field for the "
@@ -362,7 +362,7 @@ public abstract class AnnotationValidator
      * 
      * @param fact
      */
-    public final void setFactory(AnnotationValidatorFactory fact)
+    public final void setFactory(final AnnotationValidatorFactory fact)
     {
         this.annotFact = fact;
     }
@@ -374,7 +374,7 @@ public abstract class AnnotationValidator
         while (ft == null)
         {
             // /FT could be in parent, so look upwards
-            COSBase parentBase = parent.getDictionaryObject(COSName.PARENT);
+            final COSBase parentBase = parent.getDictionaryObject(COSName.PARENT);
             if (parentBase instanceof COSDictionary)
             {
                 parent = (COSDictionary) parentBase;

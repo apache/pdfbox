@@ -42,15 +42,15 @@ class PDFieldTreeTest
     @Test
     void test5044() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016994/PDFBOX-4131-0.pdf";
+        final String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016994/PDFBOX-4131-0.pdf";
 
         try (InputStream is = new URL(sourceUrl).openStream();
-             PDDocument doc = Loader.loadPDF(is))
+             final PDDocument doc = Loader.loadPDF(is))
         {
-            PDDocumentCatalog catalog = doc.getDocumentCatalog();
-            PDAcroForm acroForm = catalog.getAcroForm();
+            final PDDocumentCatalog catalog = doc.getDocumentCatalog();
+            final PDAcroForm acroForm = catalog.getAcroForm();
             int count = 0;
-            for (PDField field : acroForm.getFieldTree())
+            for (final PDField field : acroForm.getFieldTree())
             {
                 ++count;
             }

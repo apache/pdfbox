@@ -61,13 +61,13 @@ class HexEditor extends JPanel implements SelectionChangeListener
      * Constructor.
      * @param model HexModel instance.
      */
-    HexEditor(HexModel model)
+    HexEditor(final HexModel model)
     {
         super();
         this.jumpToIndex = new AbstractAction()
         {
             @Override
-            public void actionPerformed(ActionEvent actionEvent)
+            public void actionPerformed(final ActionEvent actionEvent)
             {
                 createJumpDialog().setVisible(true);
             }
@@ -84,22 +84,22 @@ class HexEditor extends JPanel implements SelectionChangeListener
         hexPane = new HexPane(model);
         hexPane.addHexChangeListeners(model);
         asciiPane = new ASCIIPane(model);
-        UpperPane upperPane = new UpperPane();
+        final UpperPane upperPane = new UpperPane();
         statusPane = new StatusPane();
 
         model.addHexModelChangeListener(hexPane);
         model.addHexModelChangeListener(asciiPane);
 
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        final JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         panel.setPreferredSize(new Dimension(HexView.TOTAL_WIDTH, HexView.CHAR_HEIGHT * (model.totalLine() + 1)));
         panel.add(addressPane);
         panel.add(hexPane);
         panel.add(asciiPane);
 
-        JScrollPane scrollPane = getScrollPane();
+        final JScrollPane scrollPane = getScrollPane();
         scrollPane.setViewportView(panel);
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        final GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.FIRST_LINE_START;
@@ -121,20 +121,20 @@ class HexEditor extends JPanel implements SelectionChangeListener
 
         hexPane.addSelectionChangeListener(this);
 
-        KeyStroke jumpKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK);
+        final KeyStroke jumpKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK);
         this.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(jumpKeyStroke, "jump");
         this.getActionMap().put("jump", jumpToIndex);
     }
 
     private JScrollPane getScrollPane()
     {
-        JScrollPane scrollPane = new JScrollPane();
+        final JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBorder(new LineBorder(Color.LIGHT_GRAY));
 
-        Action blankAction = new AbstractAction()
+        final Action blankAction = new AbstractAction()
         {
             @Override
-            public void actionPerformed(ActionEvent actionEvent)
+            public void actionPerformed(final ActionEvent actionEvent)
             {
                 // do nothing
             }
@@ -145,7 +145,7 @@ class HexEditor extends JPanel implements SelectionChangeListener
         scrollPane.getActionMap().put("unitScrollRight", blankAction);
         scrollPane.getActionMap().put("unitScrollUp", blankAction);
 
-        JScrollBar verticalScrollBar = scrollPane.createVerticalScrollBar();
+        final JScrollBar verticalScrollBar = scrollPane.createVerticalScrollBar();
         verticalScrollBar.setUnitIncrement(HexView.CHAR_HEIGHT);
         verticalScrollBar.setBlockIncrement(HexView.CHAR_HEIGHT * 20);
         verticalScrollBar.setValues(0, 1, 0, HexView.CHAR_HEIGHT * (model.totalLine()+1));
@@ -155,7 +155,7 @@ class HexEditor extends JPanel implements SelectionChangeListener
     }
 
     @Override
-    public void selectionChanged(SelectEvent event)
+    public void selectionChanged(final SelectEvent event)
     {
         int index = event.getHexIndex();
 
@@ -198,9 +198,9 @@ class HexEditor extends JPanel implements SelectionChangeListener
         field.addActionListener(new AbstractAction()
         {
             @Override
-            public void actionPerformed(ActionEvent actionEvent)
+            public void actionPerformed(final ActionEvent actionEvent)
             {
-                int index = Integer.parseInt(field.getText(), 10);
+                final int index = Integer.parseInt(field.getText(), 10);
                 if (index >= 0 && index <= model.size() - 1)
                 {
                     selectionChanged(new SelectEvent(index, SelectEvent.IN));
@@ -209,14 +209,14 @@ class HexEditor extends JPanel implements SelectionChangeListener
             }
         });
 
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        final JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panel.add(nowLabel);
 
-        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        final JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         inputPanel.add(label);
         inputPanel.add(field);
 
-        JPanel contentPanel = new JPanel();
+        final JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.add(panel);
         contentPanel.add(inputPanel);

@@ -28,7 +28,7 @@ public class DigitalSignatureTable extends TTFTable
      */
     public static final String TAG = "DSIG";
 
-    DigitalSignatureTable(TrueTypeFont font)
+    DigitalSignatureTable(final TrueTypeFont font)
     {
         super(font);
     }

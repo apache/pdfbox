@@ -37,7 +37,7 @@ public class PDShadingType2 extends PDShading
      *
      * @param shadingDictionary the dictionary for this shading
      */
-    public PDShadingType2(COSDictionary shadingDictionary)
+    public PDShadingType2(final COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -67,7 +67,7 @@ public class PDShadingType2 extends PDShading
      *
      * @param newExtend the extend array
      */
-    public void setExtend(COSArray newExtend)
+    public void setExtend(final COSArray newExtend)
     {
         extend = newExtend;
         getCOSObject().setItem(COSName.EXTEND, newExtend);
@@ -92,7 +92,7 @@ public class PDShadingType2 extends PDShading
      *
      * @param newDomain the domain array
      */
-    public void setDomain(COSArray newDomain)
+    public void setDomain(final COSArray newDomain)
     {
         domain = newDomain;
         getCOSObject().setItem(COSName.DOMAIN, newDomain);
@@ -117,14 +117,14 @@ public class PDShadingType2 extends PDShading
      *
      * @param newCoords the coordinates array
      */
-    public void setCoords(COSArray newCoords)
+    public void setCoords(final COSArray newCoords)
     {
         coords = newCoords;
         getCOSObject().setItem(COSName.COORDS, newCoords);
     }
 
     @Override
-    public Paint toPaint(Matrix matrix)
+    public Paint toPaint(final Matrix matrix)
     {
         return new AxialShadingPaint(this, matrix);
     }

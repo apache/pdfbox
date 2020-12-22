@@ -43,7 +43,7 @@ public final class PDColor
      * @param array a COS array containing the color value
      * @param colorSpace color space in which the color value is defined
      */
-    public PDColor(COSArray array, PDColorSpace colorSpace)
+    public PDColor(final COSArray array, final PDColorSpace colorSpace)
     {
         if (array.size() > 0 && array.get(array.size() - 1) instanceof COSName)
         {
@@ -75,7 +75,7 @@ public final class PDColor
      * @param components array of color component values
      * @param colorSpace color space in which the components are defined
      */
-    public PDColor(float[] components, PDColorSpace colorSpace)
+    public PDColor(final float[] components, final PDColorSpace colorSpace)
     {
         this.components = components.clone();
         this.patternName = null;
@@ -87,7 +87,7 @@ public final class PDColor
      * @param patternName the name of a pattern in a pattern dictionary
      * @param colorSpace color space in which the pattern is defined
      */
-    public PDColor(COSName patternName, PDColorSpace colorSpace)
+    public PDColor(final COSName patternName, final PDColorSpace colorSpace)
     {
         this.components = new float[0];
         this.patternName = patternName;
@@ -100,7 +100,7 @@ public final class PDColor
      * @param patternName the name of a pattern in a pattern dictionary
      * @param colorSpace color space in which the pattern/components are defined
      */
-    public PDColor(float[] components, COSName patternName, PDColorSpace colorSpace)
+    public PDColor(final float[] components, final COSName patternName, final PDColorSpace colorSpace)
     {
         this.components = components.clone();
         this.patternName = patternName;
@@ -150,10 +150,10 @@ public final class PDColor
      */
     public int toRGB() throws IOException
     {
-        float[] floats = colorSpace.toRGB(components);
-        int r = Math.round(floats[0] * 255);
-        int g = Math.round(floats[1] * 255);
-        int b = Math.round(floats[2] * 255);
+        final float[] floats = colorSpace.toRGB(components);
+        final int r = Math.round(floats[0] * 255);
+        final int g = Math.round(floats[1] * 255);
+        final int b = Math.round(floats[2] * 255);
         int rgb = r;
         rgb = (rgb << 8) + g;
         rgb = (rgb << 8) + b;
@@ -166,7 +166,7 @@ public final class PDColor
      */
     public COSArray toCOSArray()
     {
-        COSArray array = new COSArray();
+        final COSArray array = new COSArray();
         array.setFloatArray(components);
         if (patternName != null)
         {

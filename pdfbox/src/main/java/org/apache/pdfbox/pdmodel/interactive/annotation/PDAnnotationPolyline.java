@@ -50,7 +50,7 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      *
      * @param dict The annotations dictionary.
      */
-    public PDAnnotationPolyline(COSDictionary dict)
+    public PDAnnotationPolyline(final COSDictionary dict)
     {
         super(dict);
     }
@@ -60,11 +60,11 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      *
      * @param style The new style.
      */
-    public void setStartPointEndingStyle(String style)
+    public void setStartPointEndingStyle(final String style)
     {
-        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
-        COSArray array;
+        final String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        final COSArray array;
         if (!(base instanceof COSArray) || ((COSArray) base).size() == 0)
         {
             array = new COSArray();
@@ -86,7 +86,7 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      */
     public String getStartPointEndingStyle()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
         if (base instanceof COSArray && ((COSArray) base).size() >= 2)
         {
             return ((COSArray) base).getName(0, PDAnnotationLine.LE_NONE);
@@ -99,11 +99,11 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      *
      * @param style The new style.
      */
-    public void setEndPointEndingStyle(String style)
+    public void setEndPointEndingStyle(final String style)
     {
-        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
-        COSArray array;
+        final String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        final COSArray array;
         if (!(base instanceof COSArray) || ((COSArray) base).size() < 2)
         {
             array = new COSArray();
@@ -125,7 +125,7 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      */
     public String getEndPointEndingStyle()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
         if (base instanceof COSArray && ((COSArray) base).size() >= 2)
         {
             return ((COSArray) base).getName(1, PDAnnotationLine.LE_NONE);
@@ -138,7 +138,7 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      *
      * @param ic color.
      */
-    public void setInteriorColor(PDColor ic)
+    public void setInteriorColor(final PDColor ic)
     {
         getCOSObject().setItem(COSName.IC, ic.toCOSArray());
     }
@@ -161,7 +161,7 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      */
     public float[] getVertices()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.VERTICES);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.VERTICES);
         if (base instanceof COSArray)
         {
             return ((COSArray) base).toFloatArray();
@@ -176,9 +176,9 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      * @param points an array with the numbers that shall represent the alternating horizontal and
      * vertical coordinates.
      */
-    public void setVertices(float[] points)
+    public void setVertices(final float[] points)
     {
-        COSArray ar = new COSArray();
+        final COSArray ar = new COSArray();
         ar.setFloatArray(points);
         getCOSObject().setItem(COSName.VERTICES, ar);
     }
@@ -188,7 +188,7 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -200,11 +200,11 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDPolylineAppearanceHandler appearanceHandler = new PDPolylineAppearanceHandler(this, document);
+            final PDPolylineAppearanceHandler appearanceHandler = new PDPolylineAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

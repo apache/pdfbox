@@ -61,7 +61,7 @@ public class PDVisibleSignDesigner
      * @param page The 1-based page number for which the page size should be calculated.
      * @throws IOException
      */
-    public PDVisibleSignDesigner(String filename, InputStream imageStream, int page)
+    public PDVisibleSignDesigner(final String filename, final InputStream imageStream, final int page)
             throws IOException
     {
         // set visible signature image Input stream
@@ -79,7 +79,7 @@ public class PDVisibleSignDesigner
      * @param page The 1-based page number for which the page size should be calculated.
      * @throws IOException
      */
-    public PDVisibleSignDesigner(InputStream documentStream, InputStream imageStream, int page)
+    public PDVisibleSignDesigner(final InputStream documentStream, final InputStream imageStream, final int page)
             throws IOException
     {
         // set visible signature image Input stream
@@ -97,7 +97,7 @@ public class PDVisibleSignDesigner
      * @param page The 1-based page number for which the page size should be calculated.
      * @throws IOException If we can't read, flush, or can't close stream.
      */
-    public PDVisibleSignDesigner(PDDocument document, InputStream imageStream, int page) throws IOException
+    public PDVisibleSignDesigner(final PDDocument document, final InputStream imageStream, final int page) throws IOException
     {
         readImageStream(imageStream);
         calculatePageSize(document, page);
@@ -111,7 +111,7 @@ public class PDVisibleSignDesigner
      * @param page The 1-based page number for which the page size should be calculated.
      * @throws IOException
      */
-    public PDVisibleSignDesigner(String filename, BufferedImage image, int page)
+    public PDVisibleSignDesigner(final String filename, final BufferedImage image, final int page)
             throws IOException
     {
         // set visible signature image
@@ -129,7 +129,7 @@ public class PDVisibleSignDesigner
      * @param page The 1-based page number for which the page size should be calculated.
      * @throws IOException
      */
-    public PDVisibleSignDesigner(InputStream documentStream, BufferedImage image, int page)
+    public PDVisibleSignDesigner(final InputStream documentStream, final BufferedImage image, final int page)
             throws IOException
     {
         // set visible signature image
@@ -146,7 +146,7 @@ public class PDVisibleSignDesigner
      * @param image
      * @param page The 1-based page number for which the page size should be calculated.
      */
-    public PDVisibleSignDesigner(PDDocument document, BufferedImage image, int page)
+    public PDVisibleSignDesigner(final PDDocument document, final BufferedImage image, final int page)
     {
         setImage(image);
         calculatePageSize(document, page);
@@ -158,13 +158,13 @@ public class PDVisibleSignDesigner
      * @param imageStream image as a stream
      * @throws IOException
      */
-    public PDVisibleSignDesigner(InputStream imageStream) throws IOException
+    public PDVisibleSignDesigner(final InputStream imageStream) throws IOException
     {
         // set visible signature image Input stream
         readImageStream(imageStream);
     }
 
-    private void calculatePageSizeFromFile(String filename, int page) throws IOException
+    private void calculatePageSizeFromFile(final String filename, final int page) throws IOException
     {
         try (PDDocument document = Loader.loadPDF(new File(filename)))
         {
@@ -173,7 +173,7 @@ public class PDVisibleSignDesigner
         }
     }
 
-    private void calculatePageSizeFromStream(InputStream documentStream, int page) throws IOException
+    private void calculatePageSizeFromStream(final InputStream documentStream, final int page) throws IOException
     {
         try (PDDocument document = Loader.loadPDF(documentStream))
         {
@@ -190,15 +190,15 @@ public class PDVisibleSignDesigner
      * @param page The 1-based page number for which the page size should be calculated.
      * @throws IllegalArgumentException if the page argument is lower than 0.
      */
-    private void calculatePageSize(PDDocument document, int page)
+    private void calculatePageSize(final PDDocument document, final int page)
     {
         if (page < 1)
         {
             throw new IllegalArgumentException("First page of pdf is 1, not " + page);
         }
 
-        PDPage firstPage = document.getPage(page - 1);
-        PDRectangle mediaBox = firstPage.getMediaBox();
+        final PDPage firstPage = document.getPage(page - 1);
+        final PDRectangle mediaBox = firstPage.getMediaBox();
         pageHeight(mediaBox.getHeight());
         pageWidth = mediaBox.getWidth();
         imageSizeInPercents = 100;
@@ -230,8 +230,8 @@ public class PDVisibleSignDesigner
                 break;
 
             case 180:
-                float newX = pageWidth - xAxis - imageWidth;
-                float newY = pageHeight - yAxis - imageHeight;
+                final float newX = pageWidth - xAxis - imageWidth;
+                final float newY = pageHeight - yAxis - imageHeight;
                 xAxis = newX;
                 yAxis = newY;
 
@@ -265,7 +265,7 @@ public class PDVisibleSignDesigner
      * @return Visible Signature Configuration Object
      * @throws IOException
      */
-    public PDVisibleSignDesigner signatureImage(String path) throws IOException
+    public PDVisibleSignDesigner signatureImage(final String path) throws IOException
     {
         try (InputStream in = new BufferedInputStream(new FileInputStream(path)))
         {
@@ -280,7 +280,7 @@ public class PDVisibleSignDesigner
      * @param percent increase (positive value) or decrease (negative value) image with x percent.
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner zoom(float percent)
+    public PDVisibleSignDesigner zoom(final float percent)
     {
         imageHeight += (imageHeight * percent) / 100;
         imageWidth += (imageWidth * percent) / 100;
@@ -295,7 +295,7 @@ public class PDVisibleSignDesigner
      * @param y - y coordinate
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner coordinates(float x, float y)
+    public PDVisibleSignDesigner coordinates(final float x, final float y)
     {
         xAxis(x);
         yAxis(y);
@@ -316,7 +316,7 @@ public class PDVisibleSignDesigner
      * @param xAxis  - x coordinate 
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner xAxis(float xAxis)
+    public PDVisibleSignDesigner xAxis(final float xAxis)
     {
         this.xAxis = xAxis;
         return this;
@@ -336,7 +336,7 @@ public class PDVisibleSignDesigner
      * @param yAxis
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner yAxis(float yAxis)
+    public PDVisibleSignDesigner yAxis(final float yAxis)
     {
         this.yAxis = yAxis;
         return this;
@@ -356,7 +356,7 @@ public class PDVisibleSignDesigner
      * @param width signature image width
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner width(float width)
+    public PDVisibleSignDesigner width(final float width)
     {
         this.imageWidth = width;
         this.formatterRectangleParameters[2] = (int) width;
@@ -377,7 +377,7 @@ public class PDVisibleSignDesigner
      * @param height signature image height
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner height(float height)
+    public PDVisibleSignDesigner height(final float height)
     {
         this.imageHeight = height;
         this.formatterRectangleParameters[3] = (int) height;
@@ -398,7 +398,7 @@ public class PDVisibleSignDesigner
      * @param templateHeight
      * @return Visible Signature Configuration Object
      */
-    private PDVisibleSignDesigner pageHeight(float templateHeight)
+    private PDVisibleSignDesigner pageHeight(final float templateHeight)
     {
         this.pageHeight = templateHeight;
         return this;
@@ -418,7 +418,7 @@ public class PDVisibleSignDesigner
      * @param signatureFieldName
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner signatureFieldName(String signatureFieldName)
+    public PDVisibleSignDesigner signatureFieldName(final String signatureFieldName)
     {
         this.signatureFieldName = signatureFieldName;
         return this;
@@ -439,7 +439,7 @@ public class PDVisibleSignDesigner
      * @param stream stream of your visible signature image
      * @throws IOException If we can't read, flush, or close stream of image
      */
-    private void readImageStream(InputStream stream) throws IOException
+    private void readImageStream(final InputStream stream) throws IOException
     {
         ImageIO.setUseCache(false);
         setImage(ImageIO.read(stream));
@@ -450,7 +450,7 @@ public class PDVisibleSignDesigner
      *
      * @param image
      */
-    private void setImage(BufferedImage image)
+    private void setImage(final BufferedImage image)
     {
         this.image = image;
         imageHeight = (float) image.getHeight();
@@ -472,7 +472,7 @@ public class PDVisibleSignDesigner
      * @param affineTransform
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner transform(AffineTransform affineTransform)
+    public PDVisibleSignDesigner transform(final AffineTransform affineTransform)
     {
         this.affineTransform = new AffineTransform(affineTransform);
         return this;
@@ -493,7 +493,7 @@ public class PDVisibleSignDesigner
      * @param formatterRectangleParameters
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner formatterRectangleParameters(int[] formatterRectangleParameters)
+    public PDVisibleSignDesigner formatterRectangleParameters(final int[] formatterRectangleParameters)
     {
         this.formatterRectangleParameters = formatterRectangleParameters;
         return this;
@@ -513,7 +513,7 @@ public class PDVisibleSignDesigner
      * @param pageWidth pageWidth
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner pageWidth(float pageWidth)
+    public PDVisibleSignDesigner pageWidth(final float pageWidth)
     {
         this.pageWidth = pageWidth;
         return this;
@@ -541,7 +541,7 @@ public class PDVisibleSignDesigner
     * 
     * @param imageSizeInPercents
     */
-    public void imageSizeInPercents(float imageSizeInPercents)
+    public void imageSizeInPercents(final float imageSizeInPercents)
     {
         this.imageSizeInPercents = imageSizeInPercents;
     }
@@ -560,7 +560,7 @@ public class PDVisibleSignDesigner
      * @param signatureText - adds the text on visible signature
      * @return the signature design
      */
-    public PDVisibleSignDesigner signatureText(String signatureText)
+    public PDVisibleSignDesigner signatureText(final String signatureText)
     {
         throw new UnsupportedOperationException("That method is not yet implemented");
     }

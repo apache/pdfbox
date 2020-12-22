@@ -36,7 +36,7 @@ class COSWriterTest
         try (PDDocument doc = new PDDocument())
         {
             
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             doc.save(new BufferedOutputStream(new ByteArrayOutputStream(1024)
             {

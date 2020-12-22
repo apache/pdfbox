@@ -49,7 +49,7 @@ public abstract class PDColorSpace implements COSObjectable
      * @return a new color space
      * @throws IOException if the color space is unknown or cannot be created
      */
-    public static PDColorSpace create(COSBase colorSpace) throws IOException
+    public static PDColorSpace create(final COSBase colorSpace) throws IOException
     {
         return create(colorSpace, null);
     }
@@ -64,8 +64,8 @@ public abstract class PDColorSpace implements COSObjectable
      * @throws MissingResourceException if the color space is missing in the resources dictionary
      * @throws IOException if the color space is unknown or cannot be created
      */
-    public static PDColorSpace create(COSBase colorSpace,
-                                      PDResources resources)
+    public static PDColorSpace create(final COSBase colorSpace,
+                                      final PDResources resources)
                                       throws IOException
     {
         return create(colorSpace, resources, false);
@@ -83,9 +83,9 @@ public abstract class PDColorSpace implements COSObjectable
      * @throws MissingResourceException if the color space is missing in the resources dictionary
      * @throws IOException if the color space is unknown or cannot be created.
      */
-    public static PDColorSpace create(COSBase colorSpace,
-                                      PDResources resources,
-                                      boolean wasDefault)
+    public static PDColorSpace create(final COSBase colorSpace,
+                                      final PDResources resources,
+                                      final boolean wasDefault)
                                       throws IOException
     {
         if (colorSpace instanceof COSObject)
@@ -94,7 +94,7 @@ public abstract class PDColorSpace implements COSObjectable
         }
         else if (colorSpace instanceof COSName)
         {
-            COSName name = (COSName)colorSpace;
+            final COSName name = (COSName)colorSpace;
 
             // default color spaces
             if (resources != null)
@@ -154,17 +154,17 @@ public abstract class PDColorSpace implements COSObjectable
         }
         else if (colorSpace instanceof COSArray)
         {
-            COSArray array = (COSArray)colorSpace;
+            final COSArray array = (COSArray)colorSpace;
             if (array.size() == 0)
             {
                 throw new IOException("Colorspace array is empty");
             }
-            COSBase base = array.getObject(0);
+            final COSBase base = array.getObject(0);
             if (!(base instanceof COSName))
             {
                 throw new IOException("First element in colorspace array must be a name");
             }
-            COSName name = (COSName) base;
+            final COSName name = (COSName) base;
 
             // TODO cache these returned color spaces?
 
@@ -231,13 +231,13 @@ public abstract class PDColorSpace implements COSObjectable
         }
     }
 
-    private static PDColorSpace createFromCOSObject(COSObject colorSpace, PDResources resources)
+    private static PDColorSpace createFromCOSObject(final COSObject colorSpace, final PDResources resources)
             throws IOException
     {
         PDColorSpace cs;
         if (resources != null && resources.getResourceCache() != null)
         {
-            ResourceCache resourceCache = resources.getResourceCache();
+            final ResourceCache resourceCache = resources.getResourceCache();
             cs = resourceCache.getColorSpace(colorSpace);
             if (cs != null)
             {
@@ -247,7 +247,7 @@ public abstract class PDColorSpace implements COSObjectable
         cs = create(colorSpace.getObject(), resources);
         if (resources != null && resources.getResourceCache() != null && cs != null)
         {
-            ResourceCache resourceCache = resources.getResourceCache();
+            final ResourceCache resourceCache = resources.getResourceCache();
             resourceCache.put(colorSpace, cs);
         }
         return cs;
@@ -318,9 +318,9 @@ public abstract class PDColorSpace implements COSObjectable
      * @param awtColorSpace the AWT colorspace
      * @return a BufferedImage in this colorspace
      */
-    protected final BufferedImage toRawImage(WritableRaster raster, ColorSpace awtColorSpace)
+    protected final BufferedImage toRawImage(final WritableRaster raster, final ColorSpace awtColorSpace)
     {
-        ColorModel colorModel = new ComponentColorModel(awtColorSpace,
+        final ColorModel colorModel = new ComponentColorModel(awtColorSpace,
                 false, false, Transparency.OPAQUE, raster.getDataBuffer().getDataType());
         return new BufferedImage(colorModel, raster, false, null);
     }
@@ -332,20 +332,20 @@ public abstract class PDColorSpace implements COSObjectable
      * @param colorSpace the AWT
      * @return an (A)RGB buffered image
      */
-    protected BufferedImage toRGBImageAWT(WritableRaster raster, ColorSpace colorSpace)
+    protected BufferedImage toRGBImageAWT(final WritableRaster raster, final ColorSpace colorSpace)
     {
         //
         // WARNING: this method is performance sensitive, modify with care!
         //
 
         // ICC Profile color transforms are only fast when performed using ColorConvertOp
-        ColorModel colorModel = new ComponentColorModel(colorSpace,
+        final ColorModel colorModel = new ComponentColorModel(colorSpace,
             false, false, Transparency.OPAQUE, raster.getDataBuffer().getDataType());
 
-        BufferedImage src = new BufferedImage(colorModel, raster, false, null);
-        BufferedImage dest = new BufferedImage(raster.getWidth(), raster.getHeight(),
+        final BufferedImage src = new BufferedImage(colorModel, raster, false, null);
+        final BufferedImage dest = new BufferedImage(raster.getWidth(), raster.getHeight(),
                                                BufferedImage.TYPE_INT_RGB);
-        ColorConvertOp op = new ColorConvertOp(null);
+        final ColorConvertOp op = new ColorConvertOp(null);
         op.filter(src, dest);
         return dest;
     }

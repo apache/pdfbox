@@ -47,7 +47,7 @@ public class PDActionJavaScript extends PDAction
      *
      * @param js Some javascript code.
      */
-    public PDActionJavaScript( String js )
+    public PDActionJavaScript(final String js )
     {
         this();
         setAction(js);
@@ -58,7 +58,7 @@ public class PDActionJavaScript extends PDAction
      *
      *  @param a The action dictionary.
      */
-    public PDActionJavaScript(COSDictionary a)
+    public PDActionJavaScript(final COSDictionary a)
     {
         super(a);
     }
@@ -66,7 +66,7 @@ public class PDActionJavaScript extends PDAction
     /**
      * @param sAction The JavaScript.
      */
-    public final void setAction(String sAction)
+    public final void setAction(final String sAction)
     {
         action.setString(COSName.JS, sAction);
     }
@@ -76,7 +76,7 @@ public class PDActionJavaScript extends PDAction
      */
     public String getAction()
     {
-        COSBase base = action.getDictionaryObject( COSName.JS );
+        final COSBase base = action.getDictionaryObject( COSName.JS );
         if (base instanceof COSString)
         {
             return ((COSString)base).getString();

@@ -32,8 +32,8 @@ public class LookupTable
     private final int markFilteringSet;
     private final LookupSubTable[] subTables;
 
-    public LookupTable(int lookupType, int lookupFlag, int markFilteringSet,
-            LookupSubTable[] subTables)
+    public LookupTable(final int lookupType, final int lookupFlag, final int markFilteringSet,
+                       final LookupSubTable[] subTables)
     {
         this.lookupType = lookupType;
         this.lookupFlag = lookupFlag;

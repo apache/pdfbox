@@ -30,7 +30,7 @@ public class CFFDataInput extends DataInput
      * Constructor.
      * @param buffer the buffer to be read 
      */
-    public CFFDataInput(byte[] buffer)
+    public CFFDataInput(final byte[] buffer)
     {
         super(buffer);
     }
@@ -61,7 +61,7 @@ public class CFFDataInput extends DataInput
      * @return the offset
      * @throws IOException if an error occurs during reading
      */
-    public int readOffset(int offSize) throws IOException
+    public int readOffset(final int offSize) throws IOException
     {
         int value = 0;
         for (int i = 0; i < offSize; i++)
@@ -79,7 +79,7 @@ public class CFFDataInput extends DataInput
      */
     public int readOffSize() throws IOException
     {
-        int offSize = readUnsignedByte();
+        final int offSize = readUnsignedByte();
         if (offSize < 1 || offSize > 4)
         {
             throw new IOException("Illegal (< 1 or > 4) offSize value " + offSize + " in CFF font at position " + (getPosition() - 1));

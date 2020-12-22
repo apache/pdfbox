@@ -52,7 +52,7 @@ public class FDFAnnotationSquare extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationSquare(COSDictionary a)
+    public FDFAnnotationSquare(final COSDictionary a)
     {
         super(a);
     }
@@ -64,32 +64,32 @@ public class FDFAnnotationSquare extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationSquare(Element element) throws IOException
+    public FDFAnnotationSquare(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
 
-        String color = element.getAttribute("interior-color");
+        final String color = element.getAttribute("interior-color");
         if (color != null && color.length() == 7 && color.charAt(0) == '#')
         {
-            int colorValue = Integer.parseInt(color.substring(1, 7), 16);
+            final int colorValue = Integer.parseInt(color.substring(1, 7), 16);
             setInteriorColor(new Color(colorValue));
         }
 
         initFringe(element);
     }
 
-    private void initFringe(Element element) throws IOException
+    private void initFringe(final Element element) throws IOException
     {
-        String fringe = element.getAttribute("fringe");
+        final String fringe = element.getAttribute("fringe");
         if (fringe != null && !fringe.isEmpty())
         {
-            String[] fringeValues = fringe.split(",");
+            final String[] fringeValues = fringe.split(",");
             if (fringeValues.length != 4)
             {
                 throw new IOException("Error: wrong amount of numbers in attribute 'fringe'");
             }
-            PDRectangle rect = new PDRectangle();
+            final PDRectangle rect = new PDRectangle();
             rect.setLowerLeftX(Float.parseFloat(fringeValues[0]));
             rect.setLowerLeftY(Float.parseFloat(fringeValues[1]));
             rect.setUpperRightX(Float.parseFloat(fringeValues[2]));
@@ -103,12 +103,12 @@ public class FDFAnnotationSquare extends FDFAnnotation
      *
      * @param color The interior color of the circle.
      */
-    public final void setInteriorColor(Color color)
+    public final void setInteriorColor(final Color color)
     {
         COSArray array = null;
         if (color != null)
         {
-            float[] colors = color.getRGBColorComponents(null);
+            final float[] colors = color.getRGBColorComponents(null);
             array = new COSArray();
             array.setFloatArray(colors);
         }
@@ -123,10 +123,10 @@ public class FDFAnnotationSquare extends FDFAnnotation
     public Color getInteriorColor()
     {
         Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
         if (array != null)
         {
-            float[] rgb = array.toFloatArray();
+            final float[] rgb = array.toFloatArray();
             if (rgb.length >= 3)
             {
                 retval = new Color(rgb[0], rgb[1], rgb[2]);
@@ -141,7 +141,7 @@ public class FDFAnnotationSquare extends FDFAnnotation
      *
      * @param fringe the fringe
      */
-    public final void setFringe(PDRectangle fringe)
+    public final void setFringe(final PDRectangle fringe)
     {
         annot.setItem(COSName.RD, fringe);
     }
@@ -154,7 +154,7 @@ public class FDFAnnotationSquare extends FDFAnnotation
      */
     public PDRectangle getFringe()
     {
-        COSArray rd = (COSArray) annot.getDictionaryObject(COSName.RD);
+        final COSArray rd = (COSArray) annot.getDictionaryObject(COSName.RD);
         if (rd != null)
         {
             return new PDRectangle(rd);

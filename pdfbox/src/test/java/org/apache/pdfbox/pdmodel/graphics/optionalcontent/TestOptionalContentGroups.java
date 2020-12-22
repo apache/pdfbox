@@ -74,7 +74,7 @@ class TestOptionalContentGroups
         try (PDDocument doc = new PDDocument())
         {
             //Create new page
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             PDResources resources = page.getResources();
             if( resources == null )
@@ -84,23 +84,23 @@ class TestOptionalContentGroups
             }
 
             //Prepare OCG functionality
-            PDOptionalContentProperties ocprops = new PDOptionalContentProperties();
+            final PDOptionalContentProperties ocprops = new PDOptionalContentProperties();
             doc.getDocumentCatalog().setOCProperties(ocprops);
             //ocprops.setBaseState(BaseState.ON); //ON=default
 
             //Create OCG for background
-            PDOptionalContentGroup background = new PDOptionalContentGroup("background");
+            final PDOptionalContentGroup background = new PDOptionalContentGroup("background");
             ocprops.addGroup(background);
             assertTrue(ocprops.isGroupEnabled("background"));
 
             //Create OCG for enabled
-            PDOptionalContentGroup enabled = new PDOptionalContentGroup("enabled");
+            final PDOptionalContentGroup enabled = new PDOptionalContentGroup("enabled");
             ocprops.addGroup(enabled);
             assertFalse(ocprops.setGroupEnabled("enabled", true));
             assertTrue(ocprops.isGroupEnabled("enabled"));
 
             //Create OCG for disabled
-            PDOptionalContentGroup disabled = new PDOptionalContentGroup("disabled");
+            final PDOptionalContentGroup disabled = new PDOptionalContentGroup("disabled");
             ocprops.addGroup(disabled);
             assertFalse(ocprops.setGroupEnabled("disabled", true));
             assertTrue(ocprops.isGroupEnabled("disabled"));
@@ -108,7 +108,7 @@ class TestOptionalContentGroups
             assertFalse(ocprops.isGroupEnabled("disabled"));
 
             //Setup page content stream and paint background/title
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
+            final PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
             PDFont font = PDType1Font.HELVETICA_BOLD;
             contentStream.beginMarkedContent(COSName.OC, background);
             contentStream.beginText();
@@ -148,7 +148,7 @@ class TestOptionalContentGroups
 
             contentStream.close();
 
-            File targetFile = new File(testResultsDir, "ocg-generation.pdf");
+            final File targetFile = new File(testResultsDir, "ocg-generation.pdf");
             doc.save(targetFile.getAbsolutePath());
         }
     }
@@ -160,7 +160,7 @@ class TestOptionalContentGroups
     @Test
     void testOCGConsumption() throws Exception
     {
-        File pdfFile = new File(testResultsDir, "ocg-generation.pdf");
+        final File pdfFile = new File(testResultsDir, "ocg-generation.pdf");
         if (!pdfFile.exists())
         {
             testOCGGeneration();
@@ -169,21 +169,21 @@ class TestOptionalContentGroups
         try (PDDocument doc = Loader.loadPDF(pdfFile))
         {
             assertEquals(1.6f, doc.getVersion());
-            PDDocumentCatalog catalog = doc.getDocumentCatalog();
+            final PDDocumentCatalog catalog = doc.getDocumentCatalog();
 
-            PDPage page = doc.getPage(0);
-            PDResources resources = page.getResources();
+            final PDPage page = doc.getPage(0);
+            final PDResources resources = page.getResources();
 
-            COSName mc0 = COSName.getPDFName("oc1");
-            PDOptionalContentGroup ocg = (PDOptionalContentGroup)resources.getProperties(mc0);
+            final COSName mc0 = COSName.getPDFName("oc1");
+            final PDOptionalContentGroup ocg = (PDOptionalContentGroup)resources.getProperties(mc0);
             assertNotNull(ocg);
             assertEquals("background", ocg.getName());
 
             assertNull(resources.getProperties(COSName.getPDFName("inexistent")));
 
-            PDOptionalContentProperties ocgs = catalog.getOCProperties();
+            final PDOptionalContentProperties ocgs = catalog.getOCProperties();
             assertEquals(BaseState.ON, ocgs.getBaseState());
-            Set<String> names = new java.util.HashSet<>(Arrays.asList(ocgs.getGroupNames()));
+            final Set<String> names = new java.util.HashSet<>(Arrays.asList(ocgs.getGroupNames()));
             assertEquals(3, names.size());
             assertTrue(names.contains("background"));
 
@@ -194,14 +194,14 @@ class TestOptionalContentGroups
             ocgs.setGroupEnabled("background", false);
             assertFalse(ocgs.isGroupEnabled("background"));
 
-            PDOptionalContentGroup background = ocgs.getGroup("background");
+            final PDOptionalContentGroup background = ocgs.getGroup("background");
             assertEquals(ocg.getName(), background.getName());
             assertNull(ocgs.getGroup("inexistent"));
 
-            Collection<PDOptionalContentGroup> coll = ocgs.getOptionalContentGroups();
+            final Collection<PDOptionalContentGroup> coll = ocgs.getOptionalContentGroups();
             assertEquals(3, coll.size());
-            Set<String> nameSet = new HashSet<>();
-            for (PDOptionalContentGroup ocg2 : coll)
+            final Set<String> nameSet = new HashSet<>();
+            for (final PDOptionalContentGroup ocg2 : coll)
             {
                 nameSet.add(ocg2.getName());
             }
@@ -217,7 +217,7 @@ class TestOptionalContentGroups
         try (PDDocument doc = new PDDocument())
         {
             //Create new page
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             PDResources resources = page.getResources();
             if( resources == null )
@@ -227,17 +227,17 @@ class TestOptionalContentGroups
             }
 
             //Prepare OCG functionality
-            PDOptionalContentProperties ocprops = new PDOptionalContentProperties();
+            final PDOptionalContentProperties ocprops = new PDOptionalContentProperties();
             doc.getDocumentCatalog().setOCProperties(ocprops);
             //ocprops.setBaseState(BaseState.ON); //ON=default
 
             //Create visible OCG
-            PDOptionalContentGroup visible = new PDOptionalContentGroup("layer");
+            final PDOptionalContentGroup visible = new PDOptionalContentGroup("layer");
             ocprops.addGroup(visible);
             assertTrue(ocprops.isGroupEnabled(visible));
 
             //Create invisible OCG
-            PDOptionalContentGroup invisible = new PDOptionalContentGroup("layer");
+            final PDOptionalContentGroup invisible = new PDOptionalContentGroup("layer");
             ocprops.addGroup(invisible);
             assertFalse(ocprops.setGroupEnabled(invisible, false));
             assertFalse(ocprops.isGroupEnabled(invisible));
@@ -275,7 +275,7 @@ class TestOptionalContentGroups
                 contentStream.endMarkedContent();
             }
 
-            File targetFile = new File(testResultsDir, "ocg-generation-same-name.pdf");
+            final File targetFile = new File(testResultsDir, "ocg-generation-same-name.pdf");
             doc.save(targetFile.getAbsolutePath());
         }
     }
@@ -289,13 +289,13 @@ class TestOptionalContentGroups
     @Test
     void testOCGGenerationSameNameCanHaveSameVisibilityOff() throws IOException
     {
-        BufferedImage expectedImage;
-        BufferedImage actualImage;
+        final BufferedImage expectedImage;
+        final BufferedImage actualImage;
 
         try (PDDocument doc = new PDDocument())
         {
             //Create new page
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             PDResources resources = page.getResources();
             if (resources == null)
@@ -305,27 +305,27 @@ class TestOptionalContentGroups
             }
 
             //Prepare OCG functionality
-            PDOptionalContentProperties ocprops = new PDOptionalContentProperties();
+            final PDOptionalContentProperties ocprops = new PDOptionalContentProperties();
             doc.getDocumentCatalog().setOCProperties(ocprops);
             //ocprops.setBaseState(BaseState.ON); //ON=default
 
             //Create OCG for background
-            PDOptionalContentGroup background = new PDOptionalContentGroup("background");
+            final PDOptionalContentGroup background = new PDOptionalContentGroup("background");
             ocprops.addGroup(background);
             assertTrue(ocprops.isGroupEnabled("background"));
 
             //Create OCG for enabled
-            PDOptionalContentGroup enabled = new PDOptionalContentGroup("science");
+            final PDOptionalContentGroup enabled = new PDOptionalContentGroup("science");
             ocprops.addGroup(enabled);
             assertFalse(ocprops.setGroupEnabled("science", true));
             assertTrue(ocprops.isGroupEnabled("science"));
 
             //Create OCG for disabled1
-            PDOptionalContentGroup disabled1 = new PDOptionalContentGroup("alternative");
+            final PDOptionalContentGroup disabled1 = new PDOptionalContentGroup("alternative");
             ocprops.addGroup(disabled1);
 
             //Create OCG for disabled2 with same name as disabled1
-            PDOptionalContentGroup disabled2 = new PDOptionalContentGroup("alternative");
+            final PDOptionalContentGroup disabled2 = new PDOptionalContentGroup("alternative");
             ocprops.addGroup(disabled2);
 
             assertFalse(ocprops.setGroupEnabled("alternative", false));
@@ -378,14 +378,14 @@ class TestOptionalContentGroups
 
             doc.getDocumentCatalog().setPageMode(PageMode.USE_OPTIONAL_CONTENT);
 
-            File targetFile = new File(testResultsDir, "ocg-generation-same-name-off.pdf");
+            final File targetFile = new File(testResultsDir, "ocg-generation-same-name-off.pdf");
             doc.save(targetFile.getAbsolutePath());
         }
 
         // create PDF without OCGs to created expected rendering
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             PDResources resources = page.getResources();
             if (resources == null)
@@ -396,7 +396,7 @@ class TestOptionalContentGroups
 
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
-                PDFont font = PDType1Font.HELVETICA;
+                final PDFont font = PDType1Font.HELVETICA;
                 
                 contentStream.setNonStrokingColor(Color.RED);
                 contentStream.beginText();
@@ -429,8 +429,8 @@ class TestOptionalContentGroups
         }
 
         // compare images
-        DataBufferInt expectedData = (DataBufferInt) expectedImage.getRaster().getDataBuffer();
-        DataBufferInt actualData = (DataBufferInt) actualImage.getRaster().getDataBuffer();
+        final DataBufferInt expectedData = (DataBufferInt) expectedImage.getRaster().getDataBuffer();
+        final DataBufferInt actualData = (DataBufferInt) actualImage.getRaster().getDataBuffer();
         assertArrayEquals(expectedData.getData(), actualData.getData());
     }
 }

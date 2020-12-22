@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.type;
 
@@ -66,7 +66,7 @@ public final class TypeMapping
 
     private Map<String, XMPSchemaFactory> schemaMap;
 
-    public TypeMapping(XMPMetadata metadata)
+    public TypeMapping(final XMPMetadata metadata)
     {
         this.metadata = metadata;
         initialize();
@@ -80,15 +80,15 @@ public final class TypeMapping
         // structured types
         structuredMappings = new EnumMap<>(Types.class);
         structuredNamespaces = new HashMap<>();
-        for (Types type : Types.values())
+        for (final Types type : Types.values())
         {
             if (type.isStructured())
             {
-                Class<? extends AbstractStructuredType> clz = type.getImplementingClass().asSubclass(
+                final Class<? extends AbstractStructuredType> clz = type.getImplementingClass().asSubclass(
                         AbstractStructuredType.class);
-                StructuredType st = clz.getAnnotation(StructuredType.class);
-                String ns = st.namespace();
-                PropertiesDescription pm = initializePropMapping(clz);
+                final StructuredType st = clz.getAnnotation(StructuredType.class);
+                final String ns = st.namespace();
+                final PropertiesDescription pm = initializePropMapping(clz);
                 structuredNamespaces.put(ns, type);
                 structuredMappings.put(type, pm);
             }
@@ -114,57 +114,57 @@ public final class TypeMapping
         addNameSpace(XMPageTextSchema.class);
     }
 
-    public void addToDefinedStructuredTypes(String typeName, String ns, PropertiesDescription pm)
+    public void addToDefinedStructuredTypes(final String typeName, final String ns, final PropertiesDescription pm)
     {
         definedStructuredNamespaces.put(ns, typeName);
         definedStructuredMappings.put(typeName, pm);
     }
 
-    public PropertiesDescription getDefinedDescriptionByNamespace(String namespace)
+    public PropertiesDescription getDefinedDescriptionByNamespace(final String namespace)
     {
-        String dt = definedStructuredNamespaces.get(namespace);
+        final String dt = definedStructuredNamespaces.get(namespace);
         return this.definedStructuredMappings.get(dt);
     }
 
-    public AbstractStructuredType instanciateStructuredType(Types type, String propertyName)
+    public AbstractStructuredType instanciateStructuredType(final Types type, final String propertyName)
             throws BadFieldValueException
     {
         try
         {
-            Class<? extends AbstractStructuredType> propertyTypeClass = type.getImplementingClass().asSubclass(
+            final Class<? extends AbstractStructuredType> propertyTypeClass = type.getImplementingClass().asSubclass(
                     AbstractStructuredType.class);
-            Constructor<? extends AbstractStructuredType> construct = propertyTypeClass
+            final Constructor<? extends AbstractStructuredType> construct = propertyTypeClass
                     .getDeclaredConstructor(XMPMetadata.class);
-            AbstractStructuredType tmp = construct.newInstance(metadata);
+            final AbstractStructuredType tmp = construct.newInstance(metadata);
             tmp.setPropertyName(propertyName);
             return tmp;
         }
-        catch (InvocationTargetException | IllegalArgumentException | InstantiationException |
+        catch (final InvocationTargetException | IllegalArgumentException | InstantiationException |
                IllegalAccessException | SecurityException | NoSuchMethodException e)
         {
             throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
         }
     }
 
-    public AbstractStructuredType instanciateDefinedType(String propertyName, String namespace)
+    public AbstractStructuredType instanciateDefinedType(final String propertyName, final String namespace)
     {
         return new DefinedStructuredType(metadata, namespace, null, propertyName);
     }
 
-    public AbstractSimpleProperty instanciateSimpleProperty(String nsuri, String prefix, String name, Object value,
-            Types type)
+    public AbstractSimpleProperty instanciateSimpleProperty(final String nsuri, final String prefix, final String name, final Object value,
+                                                            final Types type)
     {
         // constructor parameters
-        Object[] params = new Object[] { metadata, nsuri, prefix, name, value };
+        final Object[] params = new Object[] { metadata, nsuri, prefix, name, value };
         // type
-        Class<? extends AbstractSimpleProperty> clz =
+        final Class<? extends AbstractSimpleProperty> clz =
                 type.getImplementingClass().asSubclass(AbstractSimpleProperty.class);
         try
         {
-            Constructor<? extends AbstractSimpleProperty> cons = clz.getDeclaredConstructor(SIMPLEPROPERTYCONSTPARAMS);
+            final Constructor<? extends AbstractSimpleProperty> cons = clz.getDeclaredConstructor(SIMPLEPROPERTYCONSTPARAMS);
             return cons.newInstance(params);
         }
-        catch (NoSuchMethodError | IllegalArgumentException | InstantiationException |
+        catch (final NoSuchMethodError | IllegalArgumentException | InstantiationException |
                IllegalAccessException | InvocationTargetException | SecurityException |
                NoSuchMethodException e)
         {
@@ -172,12 +172,12 @@ public final class TypeMapping
         }
     }
 
-    public AbstractSimpleProperty instanciateSimpleField(Class<?> clz, String nsuri, String prefix,
-            String propertyName, Object value)
+    public AbstractSimpleProperty instanciateSimpleField(final Class<?> clz, final String nsuri, final String prefix,
+                                                         final String propertyName, final Object value)
     {
-        PropertiesDescription pm = initializePropMapping(clz);
-        PropertyType simpleType = pm.getPropertyType(propertyName);
-        Types type = simpleType.type();
+        final PropertiesDescription pm = initializePropMapping(clz);
+        final PropertyType simpleType = pm.getPropertyType(propertyName);
+        final Types type = simpleType.type();
         return instanciateSimpleProperty(nsuri, prefix, propertyName, value, type);
     }
 
@@ -188,35 +188,35 @@ public final class TypeMapping
      *            The namespace URI to check
      * @return True if namespace URI is a reference for a complex basic type
      */
-    public boolean isStructuredTypeNamespace(String namespace)
+    public boolean isStructuredTypeNamespace(final String namespace)
     {
         return structuredNamespaces.containsKey(namespace);
     }
 
-    public boolean isDefinedTypeNamespace(String namespace)
+    public boolean isDefinedTypeNamespace(final String namespace)
     {
         return definedStructuredNamespaces.containsKey(namespace);
     }
 
-    public boolean isDefinedType(String name)
+    public boolean isDefinedType(final String name)
     {
         return this.definedStructuredMappings.containsKey(name);
     }
 
-    private void addNameSpace(Class<? extends XMPSchema> classSchem)
+    private void addNameSpace(final Class<? extends XMPSchema> classSchem)
     {
-        StructuredType st = classSchem.getAnnotation(StructuredType.class);
-        String ns = st.namespace();
+        final StructuredType st = classSchem.getAnnotation(StructuredType.class);
+        final String ns = st.namespace();
         schemaMap.put(ns, new XMPSchemaFactory(ns, classSchem, initializePropMapping(classSchem)));
     }
 
-    public void addNewNameSpace(String ns, String preferred)
+    public void addNewNameSpace(final String ns, final String preferred)
     {
-        PropertiesDescription mapping = new PropertiesDescription();
+        final PropertiesDescription mapping = new PropertiesDescription();
         schemaMap.put(ns, new XMPSchemaFactory(ns, XMPSchema.class, mapping));
     }
 
-    public PropertiesDescription getStructuredPropMapping(Types type)
+    public PropertiesDescription getStructuredPropMapping(final Types type)
     {
         return structuredMappings.get(type);
     }
@@ -234,22 +234,22 @@ public final class TypeMapping
      * @throws XmpSchemaException
      *             When Instancing specified Object Schema failed
      */
-    public XMPSchema getAssociatedSchemaObject(XMPMetadata metadata, String namespace, String prefix)
+    public XMPSchema getAssociatedSchemaObject(final XMPMetadata metadata, final String namespace, final String prefix)
             throws XmpSchemaException
     {
         if (schemaMap.containsKey(namespace))
         {
-            XMPSchemaFactory factory = schemaMap.get(namespace);
+            final XMPSchemaFactory factory = schemaMap.get(namespace);
             return factory.createXMPSchema(metadata, prefix);
         }
         else
         {
-            XMPSchemaFactory factory = getSchemaFactory(namespace);
+            final XMPSchemaFactory factory = getSchemaFactory(namespace);
             return factory != null ? factory.createXMPSchema(metadata, prefix) : null;
         }
     }
 
-    public XMPSchemaFactory getSchemaFactory(String namespace)
+    public XMPSchemaFactory getSchemaFactory(final String namespace)
     {
         return schemaMap.get(namespace);
     }
@@ -261,12 +261,12 @@ public final class TypeMapping
      *            The namespace URI checked
      * @return True if namespace URI is known
      */
-    public boolean isDefinedSchema(String namespace)
+    public boolean isDefinedSchema(final String namespace)
     {
         return schemaMap.containsKey(namespace);
     }
 
-    public boolean isDefinedNamespace(String namespace)
+    public boolean isDefinedNamespace(final String namespace)
     {
         return isDefinedSchema(namespace) || isStructuredTypeNamespace(namespace) || isDefinedTypeNamespace(namespace);
     }
@@ -279,9 +279,9 @@ public final class TypeMapping
      * @return Property type declared for namespace specified, null if unknown
      * @throws org.apache.xmpbox.type.BadFieldValueException if the name was not found.
      */
-    public PropertyType getSpecifiedPropertyType(QName name) throws BadFieldValueException
+    public PropertyType getSpecifiedPropertyType(final QName name) throws BadFieldValueException
     {
-        XMPSchemaFactory factory = getSchemaFactory(name.getNamespaceURI());
+        final XMPSchemaFactory factory = getSchemaFactory(name.getNamespaceURI());
         if (factory != null)
         {
             // found in schema
@@ -290,7 +290,7 @@ public final class TypeMapping
         else
         {
             // try in structured
-            Types st = structuredNamespaces.get(name.getNamespaceURI());
+            final Types st = structuredNamespaces.get(name.getNamespaceURI());
             if (st != null)
             {
                 return createPropertyType(st, Cardinality.Simple);
@@ -298,7 +298,7 @@ public final class TypeMapping
             else
             {
                 // try in defined
-                String dt = definedStructuredNamespaces.get(name.getNamespaceURI());
+                final String dt = definedStructuredNamespaces.get(name.getNamespaceURI());
                 if (dt == null)
                 {
                     // not found
@@ -312,12 +312,12 @@ public final class TypeMapping
         }
     }
 
-    public PropertiesDescription initializePropMapping(Class<?> classSchem)
+    public PropertiesDescription initializePropMapping(final Class<?> classSchem)
     {
-        PropertiesDescription propMap = new PropertiesDescription();
-        Field[] fields = classSchem.getFields();
+        final PropertiesDescription propMap = new PropertiesDescription();
+        final Field[] fields = classSchem.getFields();
         String propName = null;
-        for (Field field : fields)
+        for (final Field field : fields)
         {
             if (field.isAnnotationPresent(PropertyType.class))
             {
@@ -325,100 +325,100 @@ public final class TypeMapping
                 {
                     propName = (String) field.get(propName);
                 }
-                catch (Exception e)
+                catch (final Exception e)
                 {
                     throw new IllegalArgumentException(
                             "couldn't read one type declaration, please check accessibility and declaration of fields annotated in "
                                     + classSchem.getName(), e);
                 }
-                PropertyType propType = field.getAnnotation(PropertyType.class);
+                final PropertyType propType = field.getAnnotation(PropertyType.class);
                 propMap.addNewProperty(propName, propType);
             }
         }
         return propMap;
     }
 
-    public BooleanType createBoolean(String namespaceURI, String prefix, String propertyName, boolean value)
+    public BooleanType createBoolean(final String namespaceURI, final String prefix, final String propertyName, final boolean value)
     {
         return new BooleanType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public DateType createDate(String namespaceURI, String prefix, String propertyName, Calendar value)
+    public DateType createDate(final String namespaceURI, final String prefix, final String propertyName, final Calendar value)
     {
         return new DateType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public IntegerType createInteger(String namespaceURI, String prefix, String propertyName, int value)
+    public IntegerType createInteger(final String namespaceURI, final String prefix, final String propertyName, final int value)
     {
         return new IntegerType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public RealType createReal(String namespaceURI, String prefix, String propertyName, float value)
+    public RealType createReal(final String namespaceURI, final String prefix, final String propertyName, final float value)
     {
         return new RealType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public TextType createText(String namespaceURI, String prefix, String propertyName, String value)
+    public TextType createText(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new TextType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public ProperNameType createProperName(String namespaceURI, String prefix, String propertyName, String value)
+    public ProperNameType createProperName(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new ProperNameType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public URIType createURI(String namespaceURI, String prefix, String propertyName, String value)
+    public URIType createURI(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new URIType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public URLType createURL(String namespaceURI, String prefix, String propertyName, String value)
+    public URLType createURL(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new URLType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public RenditionClassType createRenditionClass(String namespaceURI, String prefix, String propertyName, String value)
+    public RenditionClassType createRenditionClass(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new RenditionClassType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public PartType createPart(String namespaceURI, String prefix, String propertyName, String value)
+    public PartType createPart(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new PartType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public MIMEType createMIMEType(String namespaceURI, String prefix, String propertyName, String value)
+    public MIMEType createMIMEType(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new MIMEType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public LocaleType createLocale(String namespaceURI, String prefix, String propertyName, String value)
+    public LocaleType createLocale(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new LocaleType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public GUIDType createGUID(String namespaceURI, String prefix, String propertyName, String value)
+    public GUIDType createGUID(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new GUIDType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public ChoiceType createChoice(String namespaceURI, String prefix, String propertyName, String value)
+    public ChoiceType createChoice(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new ChoiceType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public AgentNameType createAgentName(String namespaceURI, String prefix, String propertyName, String value)
+    public AgentNameType createAgentName(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new AgentNameType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public XPathType createXPath(String namespaceURI, String prefix, String propertyName, String value)
+    public XPathType createXPath(final String namespaceURI, final String prefix, final String propertyName, final String value)
     {
         return new XPathType(metadata, namespaceURI, prefix, propertyName, value);
     }
 
-    public ArrayProperty createArrayProperty(String namespace, String prefix, String propertyName, Cardinality type)
+    public ArrayProperty createArrayProperty(final String namespace, final String prefix, final String propertyName, final Cardinality type)
     {
         return new ArrayProperty(metadata, namespace, prefix, propertyName, type);
     }

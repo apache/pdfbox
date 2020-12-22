@@ -111,18 +111,18 @@ final class Standard14Fonts
      * @param fontName one of the standard 14 font names for which to lod the metrics.
      * @throws IOException if no metrics exist for that font.
      */
-    private static void loadMetrics(String fontName) throws IOException
+    private static void loadMetrics(final String fontName) throws IOException
     {
-        String resourceName = "/org/apache/pdfbox/resources/afm/" + fontName + ".afm";
+        final String resourceName = "/org/apache/pdfbox/resources/afm/" + fontName + ".afm";
         try (InputStream resourceAsStream = PDType1Font.class.getResourceAsStream(resourceName);
-             InputStream afmStream = new BufferedInputStream(resourceAsStream))
+             final InputStream afmStream = new BufferedInputStream(resourceAsStream))
         {
             if (resourceAsStream == null)
             {
                 throw new IOException("resource '" + resourceName + "' not found");
             }
-            AFMParser parser = new AFMParser(afmStream);
-            FontMetrics metric = parser.parse(true);
+            final AFMParser parser = new AFMParser(afmStream);
+            final FontMetrics metric = parser.parse(true);
             FONTS.put(fontName, metric);
         }
     }
@@ -135,7 +135,7 @@ final class Standard14Fonts
      * @see #getAFM
      * @param baseName the base name of the font; must be one of the 14 standard fonts
      */
-    private static void mapName(String baseName)
+    private static void mapName(final String baseName)
     {
         ALIASES.put(baseName, baseName);
     }
@@ -148,7 +148,7 @@ final class Standard14Fonts
      * @param alias an alias for the font
      * @param baseName the base name of the font; must be one of the 14 standard fonts
      */
-    private static void mapName(String alias, String baseName)
+    private static void mapName(final String alias, final String baseName)
     {
         ALIASES.put(alias, baseName);
     }
@@ -161,9 +161,9 @@ final class Standard14Fonts
      * @return the font metrics or null if the name is not one of the known names
      * @throws IllegalArgumentException if no metrics exist for that font.
      */
-    public static FontMetrics getAFM(String fontName)
+    public static FontMetrics getAFM(final String fontName)
     {
-        String baseName = ALIASES.get(fontName);
+        final String baseName = ALIASES.get(fontName);
         if (baseName == null)
         {
             return null;
@@ -179,7 +179,7 @@ final class Standard14Fonts
                     {
                         loadMetrics(baseName);
                     }
-                    catch (IOException e)
+                    catch (final IOException e)
                     {
                         throw new IllegalArgumentException(e);
                     }
@@ -196,7 +196,7 @@ final class Standard14Fonts
      * @param fontName the name of font, either a base name or alias
      * @return true if the name is one of the known names
      */
-    public static boolean containsName(String fontName)
+    public static boolean containsName(final String fontName)
     {
         return ALIASES.containsKey(fontName);
     }
@@ -215,7 +215,7 @@ final class Standard14Fonts
      * @param fontName name of font, either a base name or an alias
      * @return the base name or null if this is not one of the known names
      */
-    public static String getMappedFontName(String fontName)
+    public static String getMappedFontName(final String fontName)
     {
         return ALIASES.get(fontName);
     }

@@ -22,7 +22,7 @@ public abstract class AbstractProcessor implements PDDocumentProcessor
 { 
     protected PDDocument document; 
 
-    protected AbstractProcessor(PDDocument document)
+    protected AbstractProcessor(final PDDocument document)
     { 
         this.document = document; 
     } 

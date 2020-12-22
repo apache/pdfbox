@@ -58,7 +58,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationPolygon(COSDictionary a)
+    public FDFAnnotationPolygon(final COSDictionary a)
     {
         super(a);
     }
@@ -70,39 +70,39 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationPolygon(Element element) throws IOException
+    public FDFAnnotationPolygon(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
 
         initVertices(element);
-        String color = element.getAttribute("interior-color");
+        final String color = element.getAttribute("interior-color");
         if (color != null && color.length() == 7 && color.charAt(0) == '#')
         {
-            int colorValue = Integer.parseInt(color.substring(1, 7), 16);
+            final int colorValue = Integer.parseInt(color.substring(1, 7), 16);
             setInteriorColor(new Color(colorValue));
         }
     }
 
-    private void initVertices(Element element) throws IOException
+    private void initVertices(final Element element) throws IOException
     {
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
         try
         {
-            String vertices = xpath.evaluate("vertices", element);
+            final String vertices = xpath.evaluate("vertices", element);
             if (vertices == null || vertices.isEmpty())
             {
                 throw new IOException("Error: missing element 'vertices'");
             }
-            String[] verticesValues = vertices.split(",|;");
-            float[] values = new float[verticesValues.length];
+            final String[] verticesValues = vertices.split(",|;");
+            final float[] values = new float[verticesValues.length];
             for (int i = 0; i < verticesValues.length; i++)
             {
                 values[i] = Float.parseFloat(verticesValues[i]);
             }
             setVertices(values);
         }
-        catch (XPathExpressionException e)
+        catch (final XPathExpressionException e)
         {
             LOG.debug("Error while evaluating XPath expression for polygon vertices", e);
         }
@@ -113,9 +113,9 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      *
      * @param vertices array of floats [x1, y1, x2, y2, ...] vertex coordinates in default user space.
      */
-    public final void setVertices(float[] vertices)
+    public final void setVertices(final float[] vertices)
     {
-        COSArray newVertices = new COSArray();
+        final COSArray newVertices = new COSArray();
         newVertices.setFloatArray(vertices);
         annot.setItem(COSName.VERTICES, newVertices);
     }
@@ -127,7 +127,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      */
     public float[] getVertices()
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.VERTICES);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.VERTICES);
         if (array != null)
         {
             return array.toFloatArray();
@@ -143,12 +143,12 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      *
      * @param color The interior color of the drawn area.
      */
-    public final void setInteriorColor(Color color)
+    public final void setInteriorColor(final Color color)
     {
         COSArray array = null;
         if (color != null)
         {
-            float[] colors = color.getRGBColorComponents(null);
+            final float[] colors = color.getRGBColorComponents(null);
             array = new COSArray();
             array.setFloatArray(colors);
         }
@@ -163,10 +163,10 @@ public class FDFAnnotationPolygon extends FDFAnnotation
     public Color getInteriorColor()
     {
         Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
         if (array != null)
         {
-            float[] rgb = array.toFloatArray();
+            final float[] rgb = array.toFloatArray();
             if (rgb.length >= 3)
             {
                 retval = new Color(rgb[0], rgb[1], rgb[2]);

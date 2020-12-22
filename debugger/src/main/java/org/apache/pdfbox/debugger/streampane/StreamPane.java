@@ -119,8 +119,8 @@ public class StreamPane implements ActionListener
      * @param resourcesDic COSDictionary instance that holds the resource dictionary for the stream.
      * @throws IOException if there is an I/O error during internal data transfer.
      */
-    public StreamPane(COSStream cosStream, boolean isContentStream, boolean isThumb,
-                      COSDictionary resourcesDic) throws IOException
+    public StreamPane(final COSStream cosStream, final boolean isContentStream, final boolean isThumb,
+                      final COSDictionary resourcesDic) throws IOException
     {
         this.stream = new Stream(cosStream, isThumb);
         if (resourcesDic != null)
@@ -180,25 +180,25 @@ public class StreamPane implements ActionListener
         return panel;
     }
 
-    private JPanel createHeaderPanel(List<String> availableFilters, String i, ActionListener actionListener)
+    private JPanel createHeaderPanel(final List<String> availableFilters, final String i, final ActionListener actionListener)
     {
-        JComboBox<String> filters = new JComboBox<>(availableFilters.toArray(new String[0]));
+        final JComboBox<String> filters = new JComboBox<>(availableFilters.toArray(new String[0]));
         filters.setSelectedItem(i);
         filters.addActionListener(actionListener);
 
-        JPanel headerPanel = new JPanel(new FlowLayout());
+        final JPanel headerPanel = new JPanel(new FlowLayout());
         headerPanel.add(filters);
 
         return headerPanel;
     }
 
     @Override
-    public void actionPerformed(ActionEvent actionEvent)
+    public void actionPerformed(final ActionEvent actionEvent)
     {
         if ("comboBoxChanged".equals(actionEvent.getActionCommand()))
         {
-            JComboBox comboBox = (JComboBox) actionEvent.getSource();
-            String currentFilter = (String) comboBox.getSelectedItem();
+            final JComboBox comboBox = (JComboBox) actionEvent.getSource();
+            final String currentFilter = (String) comboBox.getSelectedItem();
 
             try
             {
@@ -223,7 +223,7 @@ public class StreamPane implements ActionListener
                 }
                 requestStreamText(currentFilter);
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 LOG.error(e.getMessage(), e);
             }
@@ -234,7 +234,7 @@ public class StreamPane implements ActionListener
     {
         if (stream.isImage())
         {
-            BufferedImage image;
+            final BufferedImage image;
             synchronized (stream)
             {
                 image = stream.getImage(resources);
@@ -248,7 +248,7 @@ public class StreamPane implements ActionListener
         }
     }
 
-    private void requestStreamText(String command) throws IOException
+    private void requestStreamText(final String command) throws IOException
     {
         new DocumentCreator(rawView, command, false).execute();
         if (niceView != null)
@@ -257,7 +257,7 @@ public class StreamPane implements ActionListener
         }
         synchronized (stream)
         {
-            InputStream is = stream.getStream(command);
+            final InputStream is = stream.getStream(command);
             if (is == null)
             {
                 JOptionPane.showMessageDialog(panel, command + " text not available (filter missing?)");
@@ -278,7 +278,7 @@ public class StreamPane implements ActionListener
         private int indent;
         private boolean needIndent;
 
-        private DocumentCreator(StreamPaneView targetView, String filterKey, boolean nice)
+        private DocumentCreator(final StreamPaneView targetView, final String filterKey, final boolean nice)
         {
             this.targetView = targetView;
             this.filterKey = filterKey;
@@ -296,14 +296,14 @@ public class StreamPane implements ActionListener
                 {
                     encoding = "UTF-8";
                 }
-                InputStream inputStream = stream.getStream(filterKey);
+                final InputStream inputStream = stream.getStream(filterKey);
                 if (nice && Stream.DECODED.equals(filterKey))
                 {
                     if (stream.isXmlMetadata())
                     {
                         return getXMLDocument(inputStream);
                     }
-                    StyledDocument document = getContentStreamDocument(inputStream);
+                    final StyledDocument document = getContentStreamDocument(inputStream);
                     if (document != null)
                     {
                         return document;
@@ -321,30 +321,30 @@ public class StreamPane implements ActionListener
             {
                 targetView.showStreamText(get(), tTController);
             }
-            catch (InterruptedException | ExecutionException e)
+            catch (final InterruptedException | ExecutionException e)
             {
                 LOG.error(e.getMessage(), e);
             }
         }
 
-        private String getStringOfStream(InputStream in, String encoding)
+        private String getStringOfStream(final InputStream in, final String encoding)
         {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try
             {
                 IOUtils.copy(in, baos);
                 return baos.toString(encoding);
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 LOG.error(e.getMessage(), e);
                 return null;
             }
         }
 
-        private StyledDocument getDocument(InputStream inputStream, String encoding)
+        private StyledDocument getDocument(final InputStream inputStream, final String encoding)
         {
-            StyledDocument docu = new DefaultStyledDocument();
+            final StyledDocument docu = new DefaultStyledDocument();
             if (inputStream != null)
             {
                 String data = getStringOfStream(inputStream, encoding);
@@ -361,7 +361,7 @@ public class StreamPane implements ActionListener
                 {
                     docu.insertString(0, data, null);
                 }
-                catch (BadLocationException e)
+                catch (final BadLocationException e)
                 {
                     LOG.error(e.getMessage(), e);
                 }
@@ -369,28 +369,28 @@ public class StreamPane implements ActionListener
             return docu;
         }
 
-        private StyledDocument getXMLDocument(InputStream inputStream)
+        private StyledDocument getXMLDocument(final InputStream inputStream)
         {
-            StyledDocument docu = new DefaultStyledDocument();
+            final StyledDocument docu = new DefaultStyledDocument();
             if (inputStream != null)
             {
                 try
                 {
-                    Document doc = XMLUtil.parse(inputStream);
-                    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                    final Document doc = XMLUtil.parse(inputStream);
+                    final TransformerFactory transformerFactory = TransformerFactory.newInstance();
                     transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
                     transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
                     transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-                    Transformer transformer = transformerFactory.newTransformer();
+                    final Transformer transformer = transformerFactory.newTransformer();
                     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                     transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "1");
-                    StringWriter sw = new StringWriter();
-                    StreamResult result = new StreamResult(sw);
-                    DOMSource source = new DOMSource(doc);
+                    final StringWriter sw = new StringWriter();
+                    final StreamResult result = new StreamResult(sw);
+                    final DOMSource source = new DOMSource(doc);
                     transformer.transform(source, result);
                     docu.insertString(0, sw.toString(), null);
                 }
-                catch (IOException | TransformerFactoryConfigurationError | IllegalArgumentException |
+                catch (final IOException | TransformerFactoryConfigurationError | IllegalArgumentException |
                        TransformerException | BadLocationException ex)
                 {
                     LOG.error(ex.getMessage(), ex);
@@ -399,24 +399,24 @@ public class StreamPane implements ActionListener
             return docu;
         }
 
-        private StyledDocument getContentStreamDocument(InputStream inputStream)
+        private StyledDocument getContentStreamDocument(final InputStream inputStream)
         {
-            StyledDocument docu = new DefaultStyledDocument();
+            final StyledDocument docu = new DefaultStyledDocument();
 
-            PDFStreamParser parser;
+            final PDFStreamParser parser;
             try
             {
                 parser = new PDFStreamParser(IOUtils.toByteArray(inputStream));
                 parser.parse().forEach(obj -> writeToken(obj, docu));
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 return null;
             }
             return docu;
         }
 
-        private void writeToken(Object obj, StyledDocument docu)
+        private void writeToken(final Object obj, final StyledDocument docu)
         {
             try
             {
@@ -429,30 +429,30 @@ public class StreamPane implements ActionListener
                     writeOperand(obj, docu);
                 }
             }
-            catch (BadLocationException e)
+            catch (final BadLocationException e)
             {
                 LOG.error(e.getMessage(), e);
             }
         }
 
-        private void writeOperand(Object obj, StyledDocument docu) throws BadLocationException
+        private void writeOperand(final Object obj, final StyledDocument docu) throws BadLocationException
         {
             writeIndent(docu);
 
             if (obj instanceof COSName)
             {
-                String str = "/" + ((COSName) obj).getName();
+                final String str = "/" + ((COSName) obj).getName();
                 docu.insertString(docu.getLength(), str + " ", NAME_STYLE);
             }
             else if (obj instanceof COSBoolean)
             {
-                String str = obj.toString();
+                final String str = obj.toString();
                 docu.insertString(docu.getLength(), str + " ", null);
             }
             else if (obj instanceof COSArray)
             {
                 docu.insertString(docu.getLength(), "[ ", null);
-                for (COSBase elem : (COSArray) obj)
+                for (final COSBase elem : (COSArray) obj)
                 {
                     writeOperand(elem, docu);
                 }
@@ -461,26 +461,26 @@ public class StreamPane implements ActionListener
             else if (obj instanceof COSString)
             {
                 docu.insertString(docu.getLength(), "(", null);
-                byte[] bytes = ((COSString) obj).getBytes();
-                for (byte b : bytes)
+                final byte[] bytes = ((COSString) obj).getBytes();
+                for (final byte b : bytes)
                 {
-                    int chr = b & 0xff;
+                    final int chr = b & 0xff;
                     if (chr < 0x20 || chr > 0x7e)
                     {
                         // non-printable ASCII is shown as an octal escape
-                        String str = String.format("\\%03o", chr);
+                        final String str = String.format("\\%03o", chr);
                         docu.insertString(docu.getLength(), str, ESCAPE_STYLE);
                     }
                     else if (chr == '(' || chr == ')' || chr == '\n' || chr == '\r' ||
                              chr == '\t' || chr == '\b' || chr == '\f' || chr == '\\')
                     {
                         // PDF reserved characters must be escaped
-                        String str = "\\" + (char)chr;
+                        final String str = "\\" + (char)chr;
                         docu.insertString(docu.getLength(), str, ESCAPE_STYLE);
                     }
                     else
                     {
-                        String str = Character.toString((char) chr);
+                        final String str = Character.toString((char) chr);
                         docu.insertString(docu.getLength(), str, STRING_STYLE);
                     }
                 }
@@ -488,7 +488,7 @@ public class StreamPane implements ActionListener
             }
             else if (obj instanceof COSNumber)
             {
-                String str;
+                final String str;
                 if (obj instanceof COSFloat)
                 {
                     str = Float.toString(((COSFloat) obj).floatValue());
@@ -502,8 +502,8 @@ public class StreamPane implements ActionListener
             else if (obj instanceof COSDictionary)
             {
                 docu.insertString(docu.getLength(), "<< ", null);
-                COSDictionary dict = (COSDictionary) obj;
-                for (Map.Entry<COSName, COSBase> entry : dict.entrySet())
+                final COSDictionary dict = (COSDictionary) obj;
+                for (final Map.Entry<COSName, COSBase> entry : dict.entrySet())
                 {
                     writeOperand(entry.getKey(), docu);
                     writeOperand(entry.getValue(), docu);
@@ -522,9 +522,9 @@ public class StreamPane implements ActionListener
             }
         }
 
-        private void addOperators(Object obj, StyledDocument docu) throws BadLocationException
+        private void addOperators(final Object obj, final StyledDocument docu) throws BadLocationException
         {
-            Operator op = (Operator) obj;
+            final Operator op = (Operator) obj;
 
             if (op.getName().equals(OperatorName.END_TEXT)
                     || op.getName().equals(OperatorName.RESTORE)
@@ -537,15 +537,15 @@ public class StreamPane implements ActionListener
             if (op.getName().equals(OperatorName.BEGIN_INLINE_IMAGE))
             {
                 docu.insertString(docu.getLength(), OperatorName.BEGIN_INLINE_IMAGE + "\n", OPERATOR_STYLE);
-                COSDictionary dic = op.getImageParameters();
-                for (COSName key : dic.keySet())
+                final COSDictionary dic = op.getImageParameters();
+                for (final COSName key : dic.keySet())
                 {
-                    Object value = dic.getDictionaryObject(key);
+                    final Object value = dic.getDictionaryObject(key);
                     docu.insertString(docu.getLength(), "/" + key.getName() + " ", null);
                     writeToken(value, docu);
                     docu.insertString(docu.getLength(), "\n", null);
                 }
-                String imageString = new String(op.getImageData(), StandardCharsets.ISO_8859_1);
+                final String imageString = new String(op.getImageData(), StandardCharsets.ISO_8859_1);
                 docu.insertString(docu.getLength(), OperatorName.BEGIN_INLINE_IMAGE_DATA + "\n", INLINE_IMAGE_STYLE);
                 docu.insertString(docu.getLength(), imageString, null);
                 docu.insertString(docu.getLength(), "\n", null);
@@ -553,7 +553,7 @@ public class StreamPane implements ActionListener
             }
             else
             {
-                String operator = ((Operator) obj).getName();
+                final String operator = ((Operator) obj).getName();
                 docu.insertString(docu.getLength(), operator + "\n", OPERATOR_STYLE);
 
                 // nested opening operators
@@ -568,7 +568,7 @@ public class StreamPane implements ActionListener
             needIndent = true;
         }
 
-        void writeIndent(StyledDocument docu) throws BadLocationException
+        void writeIndent(final StyledDocument docu) throws BadLocationException
         {
             if (needIndent)
             {

@@ -89,7 +89,7 @@ public abstract class PDShading implements COSObjectable
      *
      * @param shadingDictionary the dictionary for this shading
      */
-    public PDShading(COSDictionary shadingDictionary)
+    public PDShading(final COSDictionary shadingDictionary)
     {
         dictionary = shadingDictionary;
     }
@@ -120,7 +120,7 @@ public abstract class PDShading implements COSObjectable
      *
      * @param shadingType the new shading type
      */
-    public void setShadingType(int shadingType)
+    public void setShadingType(final int shadingType)
     {
         dictionary.setInt(COSName.SHADING_TYPE, shadingType);
     }
@@ -137,7 +137,7 @@ public abstract class PDShading implements COSObjectable
      *
      * @param newBackground the new background
      */
-    public void setBackground(COSArray newBackground)
+    public void setBackground(final COSArray newBackground)
     {
         background = newBackground;
         dictionary.setItem(COSName.BACKGROUND, newBackground);
@@ -168,7 +168,7 @@ public abstract class PDShading implements COSObjectable
     {
         if (bBox == null)
         {
-            COSArray array = (COSArray) dictionary.getDictionaryObject(COSName.BBOX);
+            final COSArray array = (COSArray) dictionary.getDictionaryObject(COSName.BBOX);
             if (array != null)
             {
                 bBox = new PDRectangle(array);
@@ -182,7 +182,7 @@ public abstract class PDShading implements COSObjectable
      *
      * @param newBBox the new BBox
      */
-    public void setBBox(PDRectangle newBBox)
+    public void setBBox(final PDRectangle newBBox)
     {
         bBox = newBBox;
         if (bBox == null)
@@ -200,7 +200,7 @@ public abstract class PDShading implements COSObjectable
      *
      * @param antiAlias the new AntiAlias value
      */
-    public void setAntiAlias(boolean antiAlias)
+    public void setAntiAlias(final boolean antiAlias)
     {
         dictionary.setBoolean(COSName.ANTI_ALIAS, antiAlias);
     }
@@ -225,7 +225,7 @@ public abstract class PDShading implements COSObjectable
     {
         if (colorSpace == null)
         {
-            COSBase colorSpaceDictionary = dictionary.getDictionaryObject(COSName.CS, COSName.COLORSPACE);
+            final COSBase colorSpaceDictionary = dictionary.getDictionaryObject(COSName.CS, COSName.COLORSPACE);
             colorSpace = PDColorSpace.create(colorSpaceDictionary);
         }
         return colorSpace;
@@ -236,7 +236,7 @@ public abstract class PDShading implements COSObjectable
      *
      * @param colorSpace the color space
      */
-    public void setColorSpace(PDColorSpace colorSpace)
+    public void setColorSpace(final PDColorSpace colorSpace)
     {
         this.colorSpace = colorSpace;
         if (colorSpace != null)
@@ -256,10 +256,10 @@ public abstract class PDShading implements COSObjectable
      * @return the newly created shading resources object
      * @throws IOException if we are unable to create the PDShading object
      */
-    public static PDShading create(COSDictionary shadingDictionary) throws IOException
+    public static PDShading create(final COSDictionary shadingDictionary) throws IOException
     {
         PDShading shading = null;
-        int shadingType = shadingDictionary.getInt(COSName.SHADING_TYPE, 0);
+        final int shadingType = shadingDictionary.getInt(COSName.SHADING_TYPE, 0);
         switch (shadingType)
         {
             case SHADING_TYPE1:
@@ -294,7 +294,7 @@ public abstract class PDShading implements COSObjectable
      *
      * @param newFunction the new function
      */
-    public void setFunction(PDFunction newFunction)
+    public void setFunction(final PDFunction newFunction)
     {
         functionArray = null;
         function = newFunction;
@@ -306,7 +306,7 @@ public abstract class PDShading implements COSObjectable
      *
      * @param newFunctions the new COSArray containing all functions
      */
-    public void setFunction(COSArray newFunctions)
+    public void setFunction(final COSArray newFunctions)
     {
         functionArray = null;
         function = null;
@@ -323,7 +323,7 @@ public abstract class PDShading implements COSObjectable
     {
         if (function == null)
         {
-            COSBase dictionaryFunctionObject = getCOSObject().getDictionaryObject(COSName.FUNCTION);
+            final COSBase dictionaryFunctionObject = getCOSObject().getDictionaryObject(COSName.FUNCTION);
             if (dictionaryFunctionObject != null)
             {
                 function = PDFunction.create(dictionaryFunctionObject);
@@ -342,7 +342,7 @@ public abstract class PDShading implements COSObjectable
     {
         if (functionArray == null)
         {
-            COSBase functionObject = getCOSObject().getDictionaryObject(COSName.FUNCTION);
+            final COSBase functionObject = getCOSObject().getDictionaryObject(COSName.FUNCTION);
             if (functionObject instanceof COSDictionary)
             {
                 functionArray = new PDFunction[1];
@@ -350,8 +350,8 @@ public abstract class PDShading implements COSObjectable
             }
             else if (functionObject instanceof COSArray)
             {
-                COSArray functionCOSArray = (COSArray) functionObject;
-                int numberOfFunctions = functionCOSArray.size();
+                final COSArray functionCOSArray = (COSArray) functionObject;
+                final int numberOfFunctions = functionCOSArray.size();
                 functionArray = new PDFunction[numberOfFunctions];
                 for (int i = 0; i < numberOfFunctions; i++)
                 {
@@ -373,7 +373,7 @@ public abstract class PDShading implements COSObjectable
      * @return the output values
      * @throws IOException thrown if something went wrong
      */
-    public float[] evalFunction(float inputValue) throws IOException
+    public float[] evalFunction(final float inputValue) throws IOException
     {
         return evalFunction(new float[] { inputValue });
     }
@@ -385,11 +385,11 @@ public abstract class PDShading implements COSObjectable
      * @return the output values
      * @throws IOException thrown if something went wrong
      */
-    public float[] evalFunction(float[] input) throws IOException
+    public float[] evalFunction(final float[] input) throws IOException
     {
-        PDFunction[] functions = getFunctionsArray();
-        int numberOfFunctions = functions.length;
-        float[] returnValues;
+        final PDFunction[] functions = getFunctionsArray();
+        final int numberOfFunctions = functions.length;
+        final float[] returnValues;
         if (numberOfFunctions == 1)
         {
             returnValues = functions[0].eval(input);
@@ -399,7 +399,7 @@ public abstract class PDShading implements COSObjectable
             returnValues = new float[numberOfFunctions];
             for (int i = 0; i < numberOfFunctions; i++)
             {
-                float[] newValue = functions[i].eval(input);
+                final float[] newValue = functions[i].eval(input);
                 returnValues[i] = newValue[0];
             }
         }

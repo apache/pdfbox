@@ -35,7 +35,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     private boolean isClosed = false;
     private RandomAccessRead currentRandomAccessRead = null;
     
-    public SequenceRandomAccessRead(List<RandomAccessRead> randomAccessReadList)
+    public SequenceRandomAccessRead(final List<RandomAccessRead> randomAccessReadList)
     {
         if (randomAccessReadList == null)
         {
@@ -51,7 +51,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
                     {
                         return r.length() > 0;
                     }
-                    catch (IOException e)
+                    catch (final IOException e)
                     {
                         throw new IllegalArgumentException("Problematic list", e);
                     }
@@ -68,7 +68,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
                 totalLength += readerList.get(i).length();
                 endPositions[i] = totalLength - 1;
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 throw new IllegalArgumentException("Problematic list", e);
             }
@@ -78,7 +78,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     @Override
     public void close() throws IOException
     {
-        for (RandomAccessRead randomAccessRead : readerList)
+        for (final RandomAccessRead randomAccessRead : readerList)
         {
             randomAccessRead.close();
         }
@@ -102,8 +102,8 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     public int read() throws IOException
     {
         checkClosed();
-        RandomAccessRead randomAccessRead = getCurrentReader();
-        int value = randomAccessRead.read();
+        final RandomAccessRead randomAccessRead = getCurrentReader();
+        final int value = randomAccessRead.read();
         if (value > -1)
         {
             currentPosition++;
@@ -112,10 +112,10 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     }
 
     @Override
-    public int read(byte[] b, int offset, int length) throws IOException
+    public int read(final byte[] b, final int offset, final int length) throws IOException
     {
         checkClosed();
-        int maxAvailBytes = Math.min(available(), length);
+        final int maxAvailBytes = Math.min(available(), length);
         if (maxAvailBytes == 0)
         {
             return -1;
@@ -139,7 +139,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     }
 
     @Override
-    public void seek(long position) throws IOException
+    public void seek(final long position) throws IOException
     {
         checkClosed();
         if (position < 0)
@@ -204,7 +204,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     }
 
     @Override
-    public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
+    public RandomAccessReadView createView(final long startPosition, final long streamLength) throws IOException
     {
         throw new IOException(getClass().getName() + ".createView isn't supported.");
     }

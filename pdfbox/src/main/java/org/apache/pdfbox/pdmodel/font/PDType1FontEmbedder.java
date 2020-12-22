@@ -52,14 +52,14 @@ class PDType1FontEmbedder
      * @param pfbStream The pfb input.
      * @throws IOException If there is an error loading the data.
      */
-    PDType1FontEmbedder(PDDocument doc, COSDictionary dict, InputStream pfbStream,
-                        Encoding encoding) throws IOException
+    PDType1FontEmbedder(final PDDocument doc, final COSDictionary dict, final InputStream pfbStream,
+                        final Encoding encoding) throws IOException
     {
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
 
         // read the pfb
-        byte[] pfbBytes = IOUtils.toByteArray(pfbStream);
-        PfbParser pfbParser = new PfbParser(pfbBytes);
+        final byte[] pfbBytes = IOUtils.toByteArray(pfbStream);
+        final PfbParser pfbParser = new PfbParser(pfbBytes);
         type1 = Type1Font.createWithPFB(pfbBytes);
         
         if (encoding == null)
@@ -72,9 +72,9 @@ class PDType1FontEmbedder
         }
 
         // build font descriptor
-        PDFontDescriptor fd = buildFontDescriptor(type1);
+        final PDFontDescriptor fd = buildFontDescriptor(type1);
 
-        PDStream fontStream = new PDStream(doc, pfbParser.getInputStream(), COSName.FLATE_DECODE);
+        final PDStream fontStream = new PDStream(doc, pfbParser.getInputStream(), COSName.FLATE_DECODE);
         fontStream.getCOSObject().setInt("Length", pfbParser.size());
         for (int i = 0; i < pfbParser.getLengths().length; i++)
         {
@@ -87,11 +87,11 @@ class PDType1FontEmbedder
         dict.setName(COSName.BASE_FONT, type1.getName());
 
         // widths
-        List<Integer> widths = new ArrayList<>(256);
+        final List<Integer> widths = new ArrayList<>(256);
         for (int code = 0; code <= 255; code++)
         {
-            String name = fontEncoding.getName(code);
-            int width = Math.round(type1.getWidth(name));
+            final String name = fontEncoding.getName(code);
+            final int width = Math.round(type1.getWidth(name));
             widths.add(width);
         }
         
@@ -104,12 +104,12 @@ class PDType1FontEmbedder
     /**
      * Returns a PDFontDescriptor for the given PFB.
      */
-    static PDFontDescriptor buildFontDescriptor(Type1Font type1)
+    static PDFontDescriptor buildFontDescriptor(final Type1Font type1)
     {
-        boolean isSymbolic = type1.getEncoding()
+        final boolean isSymbolic = type1.getEncoding()
                 instanceof org.apache.fontbox.encoding.BuiltInEncoding;
 
-        PDFontDescriptor fd = new PDFontDescriptor();
+        final PDFontDescriptor fd = new PDFontDescriptor();
         fd.setFontName(type1.getName());
         fd.setFontFamily(type1.getFamilyName());
         fd.setNonSymbolic(!isSymbolic);
@@ -129,11 +129,11 @@ class PDType1FontEmbedder
      *
      * @param metrics AFM
      */
-    static PDFontDescriptor buildFontDescriptor(FontMetrics metrics)
+    static PDFontDescriptor buildFontDescriptor(final FontMetrics metrics)
     {
-        boolean isSymbolic = metrics.getEncodingScheme().equals("FontSpecific");
+        final boolean isSymbolic = metrics.getEncodingScheme().equals("FontSpecific");
 
-        PDFontDescriptor fd = new PDFontDescriptor();
+        final PDFontDescriptor fd = new PDFontDescriptor();
         fd.setFontName(metrics.getFontName());
         fd.setFontFamily(metrics.getFamilyName());
         fd.setNonSymbolic(!isSymbolic);

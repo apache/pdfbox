@@ -35,8 +35,8 @@ public class MapBackedGsubData implements GsubData
     private final String activeScriptName;
     private final Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap;
 
-    public MapBackedGsubData(Language language, String activeScriptName,
-            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap)
+    public MapBackedGsubData(final Language language, final String activeScriptName,
+                             final Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap)
     {
         this.language = language;
         this.activeScriptName = activeScriptName;
@@ -56,13 +56,13 @@ public class MapBackedGsubData implements GsubData
     }
 
     @Override
-    public boolean isFeatureSupported(String featureName)
+    public boolean isFeatureSupported(final String featureName)
     {
         return glyphSubstitutionMap.containsKey(featureName);
     }
 
     @Override
-    public ScriptFeature getFeature(String featureName)
+    public ScriptFeature getFeature(final String featureName)
     {
         if (!isFeatureSupported(featureName))
         {

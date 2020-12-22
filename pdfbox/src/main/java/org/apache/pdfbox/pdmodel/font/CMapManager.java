@@ -44,16 +44,16 @@ final class CMapManager
      * @return The predefined CMap, never null.
      * @throws IOException 
      */
-    public static CMap getPredefinedCMap(String cMapName) throws IOException
+    public static CMap getPredefinedCMap(final String cMapName) throws IOException
     {
-        CMap cmap = cMapCache.get(cMapName);
+        final CMap cmap = cMapCache.get(cMapName);
         if (cmap != null)
         {
             return cmap;
         }
 
-        CMapParser parser = new CMapParser();
-        CMap targetCmap = parser.parsePredefined(cMapName);
+        final CMapParser parser = new CMapParser();
+        final CMap targetCmap = parser.parsePredefined(cMapName);
 
         // limit the cache to predefined CMaps
         cMapCache.put(targetCmap.getName(), targetCmap);
@@ -66,12 +66,12 @@ final class CMapManager
      * @param cMapStream the CMap to be read
      * @return the parsed CMap
      */
-    public static CMap parseCMap(InputStream cMapStream) throws IOException
+    public static CMap parseCMap(final InputStream cMapStream) throws IOException
     {
         CMap targetCmap = null;
         if (cMapStream != null)
         {
-            CMapParser parser = new CMapParser();
+            final CMapParser parser = new CMapParser();
             targetCmap = parser.parse(cMapStream);
         }
         return targetCmap;

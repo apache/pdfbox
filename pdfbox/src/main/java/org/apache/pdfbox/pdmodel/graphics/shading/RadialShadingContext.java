@@ -69,8 +69,8 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
      * @param deviceBounds the bounds of the area to paint, in device units
      * @throws IOException if there is an error getting the color space or doing color conversion.
      */
-    public RadialShadingContext(PDShadingType3 shading, ColorModel colorModel,
-                                AffineTransform xform, Matrix matrix, Rectangle deviceBounds)
+    public RadialShadingContext(final PDShadingType3 shading, final ColorModel colorModel,
+                                final AffineTransform xform, final Matrix matrix, final Rectangle deviceBounds)
                                 throws IOException
     {
         super(shading, colorModel, xform, matrix);
@@ -89,7 +89,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         }
 
         // extend values
-        COSArray extendValues = shading.getExtend();
+        final COSArray extendValues = shading.getExtend();
         if (extendValues != null)
         {
             extend = new boolean[2];
@@ -116,18 +116,18 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
             rat = matrix.createAffineTransform().createInverse();
             rat.concatenate(xform.createInverse());
         }
-        catch (NoninvertibleTransformException ex)
+        catch (final NoninvertibleTransformException ex)
         {
             LOG.error(ex.getMessage() + ", matrix: " + matrix, ex);
             rat = new AffineTransform();
         }
 
         // shading space -> device space
-        AffineTransform shadingToDevice = (AffineTransform)xform.clone();
+        final AffineTransform shadingToDevice = (AffineTransform)xform.clone();
         shadingToDevice.concatenate(matrix.createAffineTransform());
 
         // worst case for the number of steps is opposite diagonal corners, so use that
-        double dist = Math.sqrt(Math.pow(deviceBounds.getMaxX() - deviceBounds.getMinX(), 2) +
+        final double dist = Math.sqrt(Math.pow(deviceBounds.getMaxX() - deviceBounds.getMinX(), 2) +
                                 Math.pow(deviceBounds.getMaxY() - deviceBounds.getMinY(), 2));
         factor = (int) Math.ceil(dist);
 
@@ -143,18 +143,18 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
      */
     private int[] calcColorTable() throws IOException
     {
-        int[] map = new int[factor + 1];
+        final int[] map = new int[factor + 1];
         if (factor == 0 || Float.compare(d1d0,0) == 0)
         {
-            float[] values = radialShadingType.evalFunction(domain[0]);
+            final float[] values = radialShadingType.evalFunction(domain[0]);
             map[0] = convertToRGB(values);
         }
         else
         {
             for (int i = 0; i <= factor; i++)
             {
-                float t = domain[0] + d1d0 * i / factor;
-                float[] values = radialShadingType.evalFunction(t);
+                final float t = domain[0] + d1d0 * i / factor;
+                final float[] values = radialShadingType.evalFunction(t);
                 map[i] = convertToRGB(values);
             }
         }
@@ -175,21 +175,21 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
     }
 
     @Override
-    public Raster getRaster(int x, int y, int w, int h)
+    public Raster getRaster(final int x, final int y, final int w, final int h)
     {
         // create writable raster
-        WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
+        final WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         float inputValue = -1;
         boolean useBackground;
-        int[] data = new int[w * h * 4];
+        final int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
             for (int i = 0; i < w; i++)
             {
-                float[] values = new float[] { x + i, y + j };
+                final float[] values = new float[] { x + i, y + j };
                 rat.transform(values, 0, values, 0, 1);
                 useBackground = false;
-                float[] inputValues = calculateInputValues(values[0], values[1]);
+                final float[] inputValues = calculateInputValues(values[0], values[1]);
                 if (Float.isNaN(inputValues[0]) && Float.isNaN(inputValues[1]))
                 {
                     if (getBackground() == null)
@@ -290,10 +290,10 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                 }
                 else
                 {
-                    int key = (int) (inputValue * factor);
+                    final int key = (int) (inputValue * factor);
                     value = colorTable[key];
                 }
-                int index = (j * w + i) * 4;
+                final int index = (j * w + i) * 4;
                 data[index] = value & 255;
                 value >>= 8;
                 data[index + 1] = value & 255;
@@ -306,7 +306,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         return raster;
     }
 
-    private float[] calculateInputValues(double x, double y)
+    private float[] calculateInputValues(final double x, final double y)
     {
         // According to Adobes Technical Note #5600 we have to do the following
         //
@@ -324,11 +324,11 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         //
         // The following code calculates the 2 possible values of s
         //
-        double p = -(x - coords[0]) * x1x0 - (y - coords[1]) * y1y0 - coords[2] * r1r0;
-        double q = (Math.pow(x - coords[0], 2) + Math.pow(y - coords[1], 2) - r0pow2);
-        double root = Math.sqrt(p * p - denom * q);
-        float root1 = (float) ((-p + root) / denom);
-        float root2 = (float) ((-p - root) / denom);
+        final double p = -(x - coords[0]) * x1x0 - (y - coords[1]) * y1y0 - coords[2] * r1r0;
+        final double q = (Math.pow(x - coords[0], 2) + Math.pow(y - coords[1], 2) - r0pow2);
+        final double root = Math.sqrt(p * p - denom * q);
+        final float root1 = (float) ((-p + root) / denom);
+        final float root2 = (float) ((-p - root) / denom);
         if (denom < 0)
         {
             return new float[] { root1, root2 };

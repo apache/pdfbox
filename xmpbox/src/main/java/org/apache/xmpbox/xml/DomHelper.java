@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.xml;
 
@@ -39,9 +39,9 @@ public final class DomHelper
     {
     }
 
-    public static Element getUniqueElementChild(Element description) throws XmpParsingException
+    public static Element getUniqueElementChild(final Element description) throws XmpParsingException
     {
-        NodeList nl = description.getChildNodes();
+        final NodeList nl = description.getChildNodes();
         int pos = -1;
         for (int i = 0; i < nl.getLength(); i++)
         {
@@ -67,9 +67,9 @@ public final class DomHelper
      * @param description
      * @return the first child element. Might be null.
      */
-    public static Element getFirstChildElement(Element description)
+    public static Element getFirstChildElement(final Element description)
     {
-        NodeList nl = description.getChildNodes();
+        final NodeList nl = description.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++)
         {
             if (nl.item(i) instanceof Element)
@@ -80,10 +80,10 @@ public final class DomHelper
         return null;
     }
 
-    public static List<Element> getElementChildren(Element description)
+    public static List<Element> getElementChildren(final Element description)
     {
-        NodeList nl = description.getChildNodes();
-        List<Element> ret = new ArrayList<>(nl.getLength());
+        final NodeList nl = description.getChildNodes();
+        final List<Element> ret = new ArrayList<>(nl.getLength());
         for (int i = 0; i < nl.getLength(); i++)
         {
             if (nl.item(i) instanceof Element)
@@ -94,20 +94,20 @@ public final class DomHelper
         return ret;
     }
 
-    public static QName getQName(Element element)
+    public static QName getQName(final Element element)
     {
         return new QName(element.getNamespaceURI(), element.getLocalName(), element.getPrefix());
     }
 
-    public static boolean isRdfDescription(Element element)
+    public static boolean isRdfDescription(final Element element)
     {
         return (XmpConstants.DEFAULT_RDF_PREFIX.equals(element.getPrefix()) && XmpConstants.DESCRIPTION_NAME
                 .equals(element.getLocalName()));
     }
 
-    public static boolean isParseTypeResource(Element element)
+    public static boolean isParseTypeResource(final Element element)
     {
-        Attr parseType = element.getAttributeNodeNS(XmpConstants.RDF_NAMESPACE, XmpConstants.PARSE_TYPE);
+        final Attr parseType = element.getAttributeNodeNS(XmpConstants.RDF_NAMESPACE, XmpConstants.PARSE_TYPE);
         return parseType != null && XmpConstants.RESOURCE_NAME.equals(parseType.getValue());
     }
 

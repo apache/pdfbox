@@ -32,7 +32,7 @@ public class CoverageTableFormat2 extends CoverageTableFormat1
 {
     private final RangeRecord[] rangeRecords;
 
-    public CoverageTableFormat2(int coverageFormat, RangeRecord[] rangeRecords)
+    public CoverageTableFormat2(final int coverageFormat, final RangeRecord[] rangeRecords)
     {
         super(coverageFormat, getRangeRecordsAsArray(rangeRecords));
         this.rangeRecords = rangeRecords;
@@ -43,11 +43,11 @@ public class CoverageTableFormat2 extends CoverageTableFormat1
         return rangeRecords;
     }
 
-    private static int[] getRangeRecordsAsArray(RangeRecord[] rangeRecords)
+    private static int[] getRangeRecordsAsArray(final RangeRecord[] rangeRecords)
     {
-        List<Integer> glyphIds = new ArrayList<>();
+        final List<Integer> glyphIds = new ArrayList<>();
 
-        for (RangeRecord rangeRecord : rangeRecords)
+        for (final RangeRecord rangeRecord : rangeRecords)
         {
             for (int glyphId = rangeRecord.getStartGlyphID(); glyphId <= rangeRecord.getEndGlyphID(); glyphId++)
             {
@@ -55,7 +55,7 @@ public class CoverageTableFormat2 extends CoverageTableFormat1
             }
         }
 
-        int[] glyphArray = new int[glyphIds.size()];
+        final int[] glyphArray = new int[glyphIds.size()];
 
         for (int i = 0; i < glyphArray.length; i++)
         {

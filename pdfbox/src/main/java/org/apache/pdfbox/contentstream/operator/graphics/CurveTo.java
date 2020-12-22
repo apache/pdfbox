@@ -38,7 +38,7 @@ public class CurveTo extends GraphicsOperatorProcessor
     private static final Log LOG = LogFactory.getLog(CurveTo.class);
     
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (operands.size() < 6)
         {
@@ -48,16 +48,16 @@ public class CurveTo extends GraphicsOperatorProcessor
         {
             return;
         }
-        COSNumber x1 = (COSNumber)operands.get(0);
-        COSNumber y1 = (COSNumber)operands.get(1);
-        COSNumber x2 = (COSNumber)operands.get(2);
-        COSNumber y2 = (COSNumber)operands.get(3);
-        COSNumber x3 = (COSNumber)operands.get(4);
-        COSNumber y3 = (COSNumber)operands.get(5);
+        final COSNumber x1 = (COSNumber)operands.get(0);
+        final COSNumber y1 = (COSNumber)operands.get(1);
+        final COSNumber x2 = (COSNumber)operands.get(2);
+        final COSNumber y2 = (COSNumber)operands.get(3);
+        final COSNumber x3 = (COSNumber)operands.get(4);
+        final COSNumber y3 = (COSNumber)operands.get(5);
 
-        Point2D.Float point1 = context.transformedPoint(x1.floatValue(), y1.floatValue());
-        Point2D.Float point2 = context.transformedPoint(x2.floatValue(), y2.floatValue());
-        Point2D.Float point3 = context.transformedPoint(x3.floatValue(), y3.floatValue());
+        final Point2D.Float point1 = context.transformedPoint(x1.floatValue(), y1.floatValue());
+        final Point2D.Float point2 = context.transformedPoint(x2.floatValue(), y2.floatValue());
+        final Point2D.Float point3 = context.transformedPoint(x3.floatValue(), y3.floatValue());
 
         if (context.getCurrentPoint() == null)
         {

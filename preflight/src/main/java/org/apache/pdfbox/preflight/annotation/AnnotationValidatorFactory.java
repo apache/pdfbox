@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.annotation;
 
@@ -45,13 +45,13 @@ public abstract class AnnotationValidatorFactory
         initializeClasses();
     }
 
-    public AnnotationValidatorFactory(ActionManagerFactory actionFact)
+    public AnnotationValidatorFactory(final ActionManagerFactory actionFact)
     {
         super();
         this.actionFact = actionFact;
     }
 
-    public final void setActionFact(ActionManagerFactory _actionFact)
+    public final void setActionFact(final ActionManagerFactory _actionFact)
     {
         this.actionFact = _actionFact;
     }
@@ -68,13 +68,13 @@ public abstract class AnnotationValidatorFactory
      * @param annotDic the annotation dictionary.
      * @return the AnnotationValidator instance.
      */
-    public final AnnotationValidator getAnnotationValidator(PreflightContext ctx, COSDictionary annotDic)
+    public final AnnotationValidator getAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDic)
             throws ValidationException
     {
 
         AnnotationValidator result = null;
-        String subtype = annotDic.getNameAsString(COSName.SUBTYPE);
-        Class<? extends AnnotationValidator> clazz = this.validatorClasses.get(subtype);
+        final String subtype = annotDic.getNameAsString(COSName.SUBTYPE);
+        final Class<? extends AnnotationValidator> clazz = this.validatorClasses.get(subtype);
 
         if (clazz == null)
         {
@@ -85,12 +85,12 @@ public abstract class AnnotationValidatorFactory
         {
             try
             {
-                Constructor<? extends AnnotationValidator> constructor =
+                final Constructor<? extends AnnotationValidator> constructor =
                         clazz.getDeclaredConstructor(PreflightContext.class, COSDictionary.class);
                 result = constructor.newInstance(ctx, annotDic);
                 result.setFactory(this);
             }
-            catch (Exception e)
+            catch (final Exception e)
             {
                 throw new ValidationException(e.getMessage(), e);
             }

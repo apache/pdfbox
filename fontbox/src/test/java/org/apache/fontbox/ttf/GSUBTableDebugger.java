@@ -36,19 +36,19 @@ public class GSUBTableDebugger
     @Test
     public void printLohitBengaliTTF() throws IOException
     {
-        MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
+        final MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
                 GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE));
 
         memoryTTFDataStream.seek(GlyphSubstitutionTableTest.DATA_POSITION_FOR_GSUB_TABLE);
 
-        GlyphSubstitutionTable glyphSubstitutionTable = new GlyphSubstitutionTable(null);
+        final GlyphSubstitutionTable glyphSubstitutionTable = new GlyphSubstitutionTable(null);
 
         glyphSubstitutionTable.read(null, memoryTTFDataStream);
 
-        TrueTypeFont trueTypeFont = new TTFParser()
+        final TrueTypeFont trueTypeFont = new TTFParser()
                 .parse(GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE));
 
-        GsubData gsubData = glyphSubstitutionTable.getGsubData();
+        final GsubData gsubData = glyphSubstitutionTable.getGsubData();
         new GSUBTablePrintUtil().printCharacterToGlyph(gsubData,
                 trueTypeFont.getUnicodeCmapLookup());
     }

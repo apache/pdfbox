@@ -37,7 +37,7 @@ public class ExtensionFileFilter extends FileFilter
      * @param ext A list of filename extensions, ie new String[] { "PDF"}.
      * @param description A description of the files.
      */
-    public ExtensionFileFilter( String[] ext, String description )
+    public ExtensionFileFilter(final String[] ext, final String description )
     {
         extensions = ext;
         desc = description;
@@ -47,14 +47,14 @@ public class ExtensionFileFilter extends FileFilter
      * {@inheritDoc}
      */
     @Override
-    public boolean accept(File pathname)
+    public boolean accept(final File pathname)
     {
         if (pathname.isDirectory())
         {
             return true;
         }
         boolean acceptable = false;
-        String name = pathname.getName().toUpperCase();
+        final String name = pathname.getName().toUpperCase();
         for( int i=0; !acceptable && i<extensions.length; i++ )
         {
             if( name.endsWith( extensions[i].toUpperCase() ) )

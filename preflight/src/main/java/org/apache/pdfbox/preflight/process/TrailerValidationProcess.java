@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.process;
 
@@ -42,11 +42,11 @@ public class TrailerValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext ctx) throws ValidationException
+    public void validate(final PreflightContext ctx) throws ValidationException
     {
-        PDDocument pdfDoc = ctx.getDocument();
+        final PDDocument pdfDoc = ctx.getDocument();
 
-        COSDictionary linearizedDict = pdfDoc.getDocument().getLinearizedDictionary();
+        final COSDictionary linearizedDict = pdfDoc.getDocument().getLinearizedDictionary();
         // linearized files have two trailers, everything else is not a linearized file
         // so don't make the checks for updated linearized files
         if (linearizedDict != null && ctx.getXrefTrailerResolver().getTrailerCount() == 2 &&
@@ -59,7 +59,7 @@ public class TrailerValidationProcess extends AbstractProcess
             // and it must have the same ID than the last trailer.
             // According to the PDF version, trailers are available by the trailer key word (pdf <= 1.4)
             // or in the dictionary of the XRef stream ( PDF >= 1.5)
-            float pdfVersion = pdfDoc.getVersion();
+            final float pdfVersion = pdfDoc.getVersion();
             if (pdfVersion <= 1.4f)
             {
                 checkTrailersForLinearizedPDF14(ctx);
@@ -81,9 +81,9 @@ public class TrailerValidationProcess extends AbstractProcess
      * 
      * @param ctx the preflight context.
      */
-    protected void checkTrailersForLinearizedPDF14(PreflightContext ctx)
+    protected void checkTrailersForLinearizedPDF14(final PreflightContext ctx)
     {
-        COSDictionary first = ctx.getXrefTrailerResolver().getFirstTrailer();
+        final COSDictionary first = ctx.getXrefTrailerResolver().getFirstTrailer();
         if (first == null)
         {
             addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER,
@@ -91,7 +91,7 @@ public class TrailerValidationProcess extends AbstractProcess
         }
         else
         {
-            COSDictionary last = ctx.getXrefTrailerResolver().getLastTrailer();
+            final COSDictionary last = ctx.getXrefTrailerResolver().getLastTrailer();
             checkMainTrailer(ctx, first);
             if (!compareIds(first, last))
             {
@@ -106,10 +106,10 @@ public class TrailerValidationProcess extends AbstractProcess
      * 
      * @param ctx the preflight context.
      */
-    protected void checkTrailersForLinearizedPDF15(PreflightContext ctx)
+    protected void checkTrailersForLinearizedPDF15(final PreflightContext ctx)
     {
-        COSDocument cosDocument = ctx.getDocument().getDocument();
-        List<COSObject> xrefs = cosDocument.getObjectsByType(COSName.XREF);
+        final COSDocument cosDocument = ctx.getDocument().getDocument();
+        final List<COSObject> xrefs = cosDocument.getObjectsByType(COSName.XREF);
 
         if (xrefs.isEmpty())
         {
@@ -124,9 +124,9 @@ public class TrailerValidationProcess extends AbstractProcess
             COSDictionary lastTrailer = null;
 
             // Search First and Last trailers according to offset position.
-            for (COSObject co : xrefs)
+            for (final COSObject co : xrefs)
             {
-                long offset = cosDocument.getXrefTable().get(new COSObjectKey(co));
+                final long offset = cosDocument.getXrefTable().get(new COSObjectKey(co));
                 if (offset < min)
                 {
                     min = offset;
@@ -158,10 +158,10 @@ public class TrailerValidationProcess extends AbstractProcess
      * @param last the last dictionary for comparison.
      * @return true if the IDs of the first and last dictionary are the same.
      */
-    protected boolean compareIds(COSDictionary first, COSDictionary last)
+    protected boolean compareIds(final COSDictionary first, final COSDictionary last)
     {
-        COSBase idFirst = first.getDictionaryObject(COSName.ID);
-        COSBase idLast = last.getDictionaryObject(COSName.ID);
+        final COSBase idFirst = first.getDictionaryObject(COSName.ID);
+        final COSBase idLast = last.getDictionaryObject(COSName.ID);
         // According to the revised PDF/A specification the IDs have to be identical
         // if both are present, otherwise everything is fine
         if (idFirst != null && idLast != null)
@@ -173,10 +173,10 @@ public class TrailerValidationProcess extends AbstractProcess
             }
             // ---- compare both arrays
             boolean isEqual = true;
-            for (COSBase of : ((COSArray) idFirst).toList())
+            for (final COSBase of : ((COSArray) idFirst).toList())
             {
                 boolean oneIsEquals = false;
-                for (COSBase ol : ((COSArray) idLast).toList())
+                for (final COSBase ol : ((COSArray) idLast).toList())
                 {
                     // ---- according to PDF Reference 1-4, ID is an array containing two
                     // strings
@@ -209,7 +209,7 @@ public class TrailerValidationProcess extends AbstractProcess
      * @param ctx the preflight context.
      * @param trailer the trailer dictionary.
      */
-    protected void checkMainTrailer(PreflightContext ctx, COSDictionary trailer)
+    protected void checkMainTrailer(final PreflightContext ctx, final COSDictionary trailer)
     {
         // PDF/A Trailer dictionary must contain the ID key
         if (!trailer.containsKey(COSName.ID))
@@ -284,16 +284,16 @@ public class TrailerValidationProcess extends AbstractProcess
      * @param ctx the preflight context.
      * @param linearizedDict the linearization dictionary.
      */
-    protected void checkLinearizedDictionary(PreflightContext ctx, COSDictionary linearizedDict)
+    protected void checkLinearizedDictionary(final PreflightContext ctx, final COSDictionary linearizedDict)
     {
         // ---- check if all keys are authorized in a linearized dictionary
         // ---- Linearized dictionary must contain the lhoent keys
-        boolean l = linearizedDict.getItem(COSName.L) != null;
-        boolean h = linearizedDict.getItem(COSName.H) != null;
-        boolean o = linearizedDict.getItem(COSName.O) != null;
-        boolean e = linearizedDict.getItem(COSName.E) != null;
-        boolean n = linearizedDict.getItem(COSName.N) != null;
-        boolean t = linearizedDict.getItem(COSName.T) != null;
+        final boolean l = linearizedDict.getItem(COSName.L) != null;
+        final boolean h = linearizedDict.getItem(COSName.H) != null;
+        final boolean o = linearizedDict.getItem(COSName.O) != null;
+        final boolean e = linearizedDict.getItem(COSName.E) != null;
+        final boolean n = linearizedDict.getItem(COSName.N) != null;
+        final boolean t = linearizedDict.getItem(COSName.T) != null;
 
         if (!(l && h && o && e && t && n))
         {

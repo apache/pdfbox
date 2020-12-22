@@ -38,7 +38,7 @@ public final class PDCheckBox extends PDButton
      *
      * @param acroForm The acroform.
      */
-    public PDCheckBox(PDAcroForm acroForm)
+    public PDCheckBox(final PDAcroForm acroForm)
     {
         super(acroForm);
     }
@@ -50,7 +50,7 @@ public final class PDCheckBox extends PDButton
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDCheckBox(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDCheckBox(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -99,17 +99,17 @@ public final class PDCheckBox extends PDButton
      */
     public String getOnValue()
     {
-        PDAnnotationWidget widget = this.getWidgets().get(0);
-        PDAppearanceDictionary apDictionary = widget.getAppearance();
+        final PDAnnotationWidget widget = this.getWidgets().get(0);
+        final PDAppearanceDictionary apDictionary = widget.getAppearance();
         
         String onValue = "";
         if (apDictionary != null) 
         {
-            PDAppearanceEntry normalAppearance = apDictionary.getNormalAppearance();
+            final PDAppearanceEntry normalAppearance = apDictionary.getNormalAppearance();
             if (normalAppearance != null)
             {
-                Set<COSName> entries = normalAppearance.getSubDictionary().keySet();
-                for (COSName entry : entries)
+                final Set<COSName> entries = normalAppearance.getSubDictionary().keySet();
+                for (final COSName entry : entries)
                 {
                     if (COSName.Off.compareTo(entry) != 0)
                     {

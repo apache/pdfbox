@@ -41,12 +41,12 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDCircleAppearanceHandler.class);
     
-    public PDCircleAppearanceHandler(PDAnnotation annotation)
+    public PDCircleAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDCircleAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDCircleAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -62,27 +62,27 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        float lineWidth = getLineWidth();
-        PDAnnotationCircle annotation = (PDAnnotationCircle) getAnnotation();
+        final float lineWidth = getLineWidth();
+        final PDAnnotationCircle annotation = (PDAnnotationCircle) getAnnotation();
         try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
-            boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
-            boolean hasBackground = contentStream
+            final boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
+            final boolean hasBackground = contentStream
                     .setNonStrokingColorOnDemand(annotation.getInteriorColor());
 
             setOpacity(contentStream, annotation.getConstantOpacity());
 
             contentStream.setBorderLine(lineWidth, annotation.getBorderStyle(), annotation.getBorder());
-            PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
+            final PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
 
             if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
             {
-                CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
+                final CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
                     borderEffect.getIntensity(), lineWidth, getRectangle());
                 cloudyBorder.createCloudyEllipse(annotation.getRectDifference());
                 annotation.setRectangle(cloudyBorder.getRectangle());
                 annotation.setRectDifference(cloudyBorder.getRectDifference());
-                PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+                final PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
                 appearanceStream.setBBox(cloudyBorder.getBBox());
                 appearanceStream.setMatrix(cloudyBorder.getMatrix());
             }
@@ -91,24 +91,24 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
                 // Acrobat applies a padding to each side of the bbox so the line is completely within
                 // the bbox.
 
-                PDRectangle borderBox = handleBorderBox(annotation, lineWidth);
+                final PDRectangle borderBox = handleBorderBox(annotation, lineWidth);
 
                 // lower left corner
-                float x0 = borderBox.getLowerLeftX();
-                float y0 = borderBox.getLowerLeftY();
+                final float x0 = borderBox.getLowerLeftX();
+                final float y0 = borderBox.getLowerLeftY();
                 // upper right corner
-                float x1 = borderBox.getUpperRightX();
-                float y1 = borderBox.getUpperRightY();
+                final float x1 = borderBox.getUpperRightX();
+                final float y1 = borderBox.getUpperRightY();
                 // mid points
-                float xm = x0 + borderBox.getWidth() / 2;
-                float ym = y0 + borderBox.getHeight() / 2;
+                final float xm = x0 + borderBox.getWidth() / 2;
+                final float ym = y0 + borderBox.getHeight() / 2;
                 // see http://spencermortensen.com/articles/bezier-circle/
                 // the below number was calculated from sampling content streams
                 // generated using Adobe Reader
-                float magic = 0.55555417f;
+                final float magic = 0.55555417f;
                 // control point offsets
-                float vOffset = borderBox.getHeight() / 2 * magic;
-                float hOffset = borderBox.getWidth() / 2 * magic;
+                final float vOffset = borderBox.getHeight() / 2 * magic;
+                final float hOffset = borderBox.getWidth() / 2 * magic;
 
                 contentStream.moveTo(xm, y1);
                 contentStream.curveTo((xm + hOffset), y1, x1, (ym + vOffset), x1, ym);
@@ -120,7 +120,7 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
 
             contentStream.drawShape(lineWidth, hasStroke, hasBackground);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOG.error(e);
         }
@@ -155,19 +155,19 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
     // here and removed from the individual handlers.
     float getLineWidth()
     {
-        PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
+        final PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
 
-        PDBorderStyleDictionary bs = annotation.getBorderStyle();
+        final PDBorderStyleDictionary bs = annotation.getBorderStyle();
 
         if (bs != null)
         {
             return bs.getWidth();
         }
 
-        COSArray borderCharacteristics = annotation.getBorder();
+        final COSArray borderCharacteristics = annotation.getBorder();
         if (borderCharacteristics.size() >= 3)
         {
-            COSBase base = borderCharacteristics.getObject(2);
+            final COSBase base = borderCharacteristics.getObject(2);
             if (base instanceof COSNumber)
             {
                 return ((COSNumber) base).floatValue();

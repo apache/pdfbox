@@ -31,13 +31,13 @@ public class DebugLog implements Log
     private static final boolean TRACE = false;
     private static final boolean DEBUG = false;
 
-    public DebugLog(String name)
+    public DebugLog(final String name)
     {
         this.name = name;
     }
 
     @Override
-    public void debug(Object o)
+    public void debug(final Object o)
     {
         if (DEBUG)
         {
@@ -46,7 +46,7 @@ public class DebugLog implements Log
     }
 
     @Override
-    public void debug(Object o, Throwable throwable)
+    public void debug(final Object o, final Throwable throwable)
     {
         if (DEBUG)
         {
@@ -55,31 +55,31 @@ public class DebugLog implements Log
     }
 
     @Override
-    public void error(Object o)
+    public void error(final Object o)
     {
         LogDialog.instance().log(name, "error", o, null);
     }
 
     @Override
-    public void error(Object o, Throwable throwable)
+    public void error(final Object o, final Throwable throwable)
     {
         LogDialog.instance().log(name, "error", o, throwable);
     }
 
     @Override
-    public void fatal(Object o)
+    public void fatal(final Object o)
     {
         LogDialog.instance().log(name, "fatal", o, null);
     }
 
     @Override
-    public void fatal(Object o, Throwable throwable)
+    public void fatal(final Object o, final Throwable throwable)
     {
         LogDialog.instance().log(name, "fatal", o, throwable);
     }
 
     @Override
-    public void info(Object o)
+    public void info(final Object o)
     {
         if (INFO)
         {
@@ -88,7 +88,7 @@ public class DebugLog implements Log
     }
 
     @Override
-    public void info(Object o, Throwable throwable)
+    public void info(final Object o, final Throwable throwable)
     {
         if (INFO)
         {
@@ -133,7 +133,7 @@ public class DebugLog implements Log
     }
 
     @Override
-    public void trace(Object o)
+    public void trace(final Object o)
     {
         if (TRACE)
         {
@@ -142,7 +142,7 @@ public class DebugLog implements Log
     }
 
     @Override
-    public void trace(Object o, Throwable throwable)
+    public void trace(final Object o, final Throwable throwable)
     {
         if (TRACE)
         {
@@ -151,13 +151,13 @@ public class DebugLog implements Log
     }
 
     @Override
-    public void warn(Object o)
+    public void warn(final Object o)
     {
         LogDialog.instance().log(name, "warn", o, null);
     }
 
     @Override
-    public void warn(Object o, Throwable throwable)
+    public void warn(final Object o, final Throwable throwable)
     {
         LogDialog.instance().log(name, "warn", o, throwable);
     }

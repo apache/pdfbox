@@ -30,7 +30,7 @@ public class FeatureRecord
     private final String featureTag;
     private final FeatureTable featureTable;
 
-    public FeatureRecord(String featureTag, FeatureTable featureTable)
+    public FeatureRecord(final String featureTag, final FeatureTable featureTable)
     {
         this.featureTag = featureTag;
         this.featureTable = featureTable;

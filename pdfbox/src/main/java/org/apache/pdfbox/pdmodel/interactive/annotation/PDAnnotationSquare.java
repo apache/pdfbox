@@ -44,7 +44,7 @@ public class PDAnnotationSquare extends PDAnnotationSquareCircle
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationSquare(COSDictionary field)
+    public PDAnnotationSquare(final COSDictionary field)
     {
         super(field);
     }
@@ -54,7 +54,7 @@ public class PDAnnotationSquare extends PDAnnotationSquareCircle
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -66,11 +66,11 @@ public class PDAnnotationSquare extends PDAnnotationSquareCircle
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDSquareAppearanceHandler appearanceHandler = new PDSquareAppearanceHandler(this, document);
+            final PDSquareAppearanceHandler appearanceHandler = new PDSquareAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

@@ -39,10 +39,10 @@ class FDFAnnotationTest
     @Test
     void loadXFDFAnnotations() throws IOException, URISyntaxException
     {
-        File f = new File(FDFAnnotationTest.class.getResource("xfdf-test-document-annotations.xml").toURI());
+        final File f = new File(FDFAnnotationTest.class.getResource("xfdf-test-document-annotations.xml").toURI());
         try (FDFDocument fdfDoc = Loader.loadXFDF(f))
         {
-            List<FDFAnnotation> fdfAnnots = fdfDoc.getCatalog().getFDF().getAnnotations();
+            final List<FDFAnnotation> fdfAnnots = fdfDoc.getCatalog().getFDF().getAnnotations();
             assertEquals(18, fdfAnnots.size());
             
             // test PDFBOX-4345 and PDFBOX-3646
@@ -50,11 +50,11 @@ class FDFAnnotationTest
             // <body style="font:12pt Helvetica; color:#D66C00;" xfa:APIVersion="Acrobat:7.0.8" xfa:spec="2.0.2" xmlns="http://www.w3.org/1999/xhtml" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/"><p dir="ltr"><span style="text-decoration:word;font-family:Helvetica">P&2</span></p></body>
             // i.e. the & was not escaped, and P&amp;1 and P&amp;3 was missing
             boolean testedPDFBox4345andPDFBox3646 = false;
-            for (FDFAnnotation ann : fdfAnnots)
+            for (final FDFAnnotation ann : fdfAnnots)
             {
                 if (ann instanceof FDFAnnotationFreeText)
                 {
-                    FDFAnnotationFreeText annotationFreeText = (FDFAnnotationFreeText) ann;
+                    final FDFAnnotationFreeText annotationFreeText = (FDFAnnotationFreeText) ann;
                     if ("P&1 P&2 P&3".equals(annotationFreeText.getContents()))
                     {
                         testedPDFBox4345andPDFBox3646 = true;

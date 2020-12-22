@@ -37,7 +37,7 @@ public class PDShadingType1 extends PDShading
      *
      * @param shadingDictionary the dictionary for this shading
      */
-    public PDShadingType1(COSDictionary shadingDictionary)
+    public PDShadingType1(final COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -63,12 +63,12 @@ public class PDShadingType1 extends PDShading
      *
      * @param transform the transformation matrix
      */
-    public void setMatrix(AffineTransform transform)
+    public void setMatrix(final AffineTransform transform)
     {
-        COSArray matrix = new COSArray();
-        double[] values = new double[6];
+        final COSArray matrix = new COSArray();
+        final double[] values = new double[6];
         transform.getMatrix(values);
-        for (double v : values)
+        for (final double v : values)
         {
             matrix.add(new COSFloat((float) v));
         }
@@ -94,14 +94,14 @@ public class PDShadingType1 extends PDShading
      *
      * @param newDomain the domain array
      */
-    public void setDomain(COSArray newDomain)
+    public void setDomain(final COSArray newDomain)
     {
         domain = newDomain;
         getCOSObject().setItem(COSName.DOMAIN, newDomain);
     }
 
     @Override
-    public Paint toPaint(Matrix matrix)
+    public Paint toPaint(final Matrix matrix)
     {
         return new Type1ShadingPaint(this, matrix);
     }

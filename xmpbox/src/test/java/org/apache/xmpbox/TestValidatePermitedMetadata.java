@@ -1,23 +1,23 @@
-/*****************************************************************************
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 package org.apache.xmpbox;
 
 import org.apache.xmpbox.schema.XMPSchema;
@@ -46,20 +46,20 @@ class TestValidatePermitedMetadata
 
     static Collection<Object[]> initializeParameters() throws Exception
     {
-        List<Object[]> params = new ArrayList<>();
-        InputStream is =  TestValidatePermitedMetadata.class.getResourceAsStream("/permited_metadata.txt");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1));
+        final List<Object[]> params = new ArrayList<>();
+        final InputStream is =  TestValidatePermitedMetadata.class.getResourceAsStream("/permited_metadata.txt");
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1));
         String line = reader.readLine();
         while (line!=null)
         {
             if (line.startsWith("http://"))
             {
                 // this is a line to handle
-                int pos = line.lastIndexOf(':');
-                int spos = line.lastIndexOf('/',pos);
-                String namespace = line.substring(0,spos+1);
-                String preferred = line.substring(spos+1,pos);
-                String fieldname = line.substring(pos+1);
+                final int pos = line.lastIndexOf(':');
+                final int spos = line.lastIndexOf('/',pos);
+                final String namespace = line.substring(0,spos+1);
+                final String preferred = line.substring(spos+1,pos);
+                final String fieldname = line.substring(pos+1);
                 params.add(new String [] {namespace, preferred, fieldname});
             } // else skip line
             // next line
@@ -70,28 +70,28 @@ class TestValidatePermitedMetadata
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void checkExistence(String namespace, String preferred, String fieldname) throws Exception
+    void checkExistence(final String namespace, final String preferred, final String fieldname) throws Exception
     {
         // ensure schema exists
-        XMPMetadata xmpmd = new XMPMetadata();
-        TypeMapping mapping = new TypeMapping(xmpmd);
-        XMPSchemaFactory factory = mapping.getSchemaFactory(namespace);
+        final XMPMetadata xmpmd = new XMPMetadata();
+        final TypeMapping mapping = new TypeMapping(xmpmd);
+        final XMPSchemaFactory factory = mapping.getSchemaFactory(namespace);
         assertNotNull(factory, "Schema not existing: " + namespace);
         // ensure preferred is as expected
-        XMPSchema schema = factory.createXMPSchema(xmpmd,"aa");
+        final XMPSchema schema = factory.createXMPSchema(xmpmd,"aa");
         assertEquals(preferred,schema.getPreferedPrefix());
         // ensure field is defined
         boolean found = false;
-        Class<?> clz  = schema.getClass();
-        for (Field dfield : clz.getDeclaredFields())
+        final Class<?> clz  = schema.getClass();
+        for (final Field dfield : clz.getDeclaredFields())
         {
-            PropertyType ptype = dfield.getAnnotation(PropertyType.class);
+            final PropertyType ptype = dfield.getAnnotation(PropertyType.class);
             if (ptype!=null)
             {
                 // is a field definition
                 if (String.class.equals(dfield.getType()))
                 {
-                    String value = (String) dfield.get(clz);
+                    final String value = (String) dfield.get(clz);
                     if (fieldname.equals(value))
                     {
                         // found the field defining
@@ -108,7 +108,7 @@ class TestValidatePermitedMetadata
 
             }
         }
-        String msg = String.format("Did not find field definition for '%s' in %s (%s)",
+        final String msg = String.format("Did not find field definition for '%s' in %s (%s)",
                 fieldname,clz.getSimpleName(),namespace);
         assertTrue(found, msg);
     }

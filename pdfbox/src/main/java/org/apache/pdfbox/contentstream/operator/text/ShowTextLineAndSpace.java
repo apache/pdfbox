@@ -34,7 +34,7 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 public class ShowTextLineAndSpace extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.size() < 3)
         {

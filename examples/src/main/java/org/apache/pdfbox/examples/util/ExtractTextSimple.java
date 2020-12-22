@@ -45,7 +45,7 @@ public class ExtractTextSimple
      *
      * @throws IOException If there is an error parsing or extracting the document.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 1)
         {
@@ -54,13 +54,13 @@ public class ExtractTextSimple
 
         try (PDDocument document = Loader.loadPDF(new File(args[0])))
         {
-            AccessPermission ap = document.getCurrentAccessPermission();
+            final AccessPermission ap = document.getCurrentAccessPermission();
             if (!ap.canExtractContent())
             {
                 throw new IOException("You do not have permission to extract text");
             }
 
-            PDFTextStripper stripper = new PDFTextStripper();
+            final PDFTextStripper stripper = new PDFTextStripper();
 
             // This example uses sorting, but in some cases it is more useful to switch it off,
             // e.g. in some files with columns where the PDF content stream respects the
@@ -74,10 +74,10 @@ public class ExtractTextSimple
                 stripper.setEndPage(p);
 
                 // let the magic happen
-                String text = stripper.getText(document);
+                final String text = stripper.getText(document);
 
                 // do some nice output with a header
-                String pageStr = String.format("page %d:", p);
+                final String pageStr = String.format("page %d:", p);
                 System.out.println(pageStr);
                 for (int i = 0; i < pageStr.length(); ++i)
                 {

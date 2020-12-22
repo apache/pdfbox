@@ -30,14 +30,14 @@ public class PDThread implements COSObjectable
 {
 
 
-    private COSDictionary thread;
+    private final COSDictionary thread;
 
     /**
      * Constructor that is used for a preexisting dictionary.
      *
      * @param t The underlying dictionary.
      */
-    public PDThread( COSDictionary t )
+    public PDThread(final COSDictionary t )
     {
         thread = t;
     }
@@ -71,7 +71,7 @@ public class PDThread implements COSObjectable
     public PDDocumentInformation getThreadInfo()
     {
         PDDocumentInformation retval = null;
-        COSDictionary info = (COSDictionary)thread.getDictionaryObject( "I" );
+        final COSDictionary info = (COSDictionary)thread.getDictionaryObject( "I" );
         if( info != null )
         {
             retval = new PDDocumentInformation( info );
@@ -85,7 +85,7 @@ public class PDThread implements COSObjectable
      *
      * @param info The info dictionary about this thread.
      */
-    public void setThreadInfo( PDDocumentInformation info )
+    public void setThreadInfo(final PDDocumentInformation info )
     {
         thread.setItem( "I", info );
     }
@@ -99,7 +99,7 @@ public class PDThread implements COSObjectable
     public PDThreadBead getFirstBead()
     {
         PDThreadBead retval = null;
-        COSDictionary bead = (COSDictionary)thread.getDictionaryObject( "F" );
+        final COSDictionary bead = (COSDictionary)thread.getDictionaryObject( "F" );
         if( bead != null )
         {
             retval = new PDThreadBead( bead );
@@ -114,7 +114,7 @@ public class PDThread implements COSObjectable
      *
      * @param bead The first bead in the thread.
      */
-    public void setFirstBead( PDThreadBead bead )
+    public void setFirstBead(final PDThreadBead bead )
     {
         if( bead != null )
         {

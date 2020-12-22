@@ -50,7 +50,7 @@ public class FDFJavaScript implements COSObjectable
      *
      * @param javaScript The FDF java script.
      */
-    public FDFJavaScript(COSDictionary javaScript)
+    public FDFJavaScript(final COSDictionary javaScript)
     {
         dictionary = javaScript;
     }
@@ -73,7 +73,7 @@ public class FDFJavaScript implements COSObjectable
      */
     public String getBefore()
     {
-        COSBase base = dictionary.getDictionaryObject(COSName.BEFORE);
+        final COSBase base = dictionary.getDictionaryObject(COSName.BEFORE);
         if (base instanceof COSString)
         {
             return ((COSString) base).getString();
@@ -93,7 +93,7 @@ public class FDFJavaScript implements COSObjectable
      *
      * @param before A reference to some javascript code.
      */
-    public void setBefore(String before)
+    public void setBefore(final String before)
     {
         dictionary.setItem(COSName.BEFORE, new COSString(before));
     }
@@ -105,7 +105,7 @@ public class FDFJavaScript implements COSObjectable
      */
     public String getAfter()
     {
-        COSBase base = dictionary.getDictionaryObject(COSName.AFTER);
+        final COSBase base = dictionary.getDictionaryObject(COSName.AFTER);
         if (base instanceof COSString)
         {
             return ((COSString) base).getString();
@@ -125,7 +125,7 @@ public class FDFJavaScript implements COSObjectable
      *
      * @param after A reference to some javascript code.
      */
-    public void setAfter(String after)
+    public void setAfter(final String after)
     {
         dictionary.setItem(COSName.AFTER, new COSString(after));
     }
@@ -138,8 +138,8 @@ public class FDFJavaScript implements COSObjectable
      */
     public Map<String, PDActionJavaScript> getDoc()
     {
-        Map<String, PDActionJavaScript> map = new LinkedHashMap<>();
-        COSArray array = (COSArray) dictionary.getDictionaryObject(COSName.DOC);
+        final Map<String, PDActionJavaScript> map = new LinkedHashMap<>();
+        final COSArray array = (COSArray) dictionary.getDictionaryObject(COSName.DOC);
         if (array == null)
         {
             return null;
@@ -156,9 +156,9 @@ public class FDFJavaScript implements COSObjectable
      * 
      * @param map Map of named "JavaScript" dictionaries.
      */
-    public void setDoc(Map<String, PDActionJavaScript> map)
+    public void setDoc(final Map<String, PDActionJavaScript> map)
     {
-        COSArray array = new COSArray();
+        final COSArray array = new COSArray();
         map.forEach((key, value) ->
         {
             array.add(new COSString(key));

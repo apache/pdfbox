@@ -59,7 +59,7 @@ public class CharMetric
     /** Setter for property boundingBox.
      * @param bBox New value of property boundingBox.
      */
-    public void setBoundingBox(BoundingBox bBox)
+    public void setBoundingBox(final BoundingBox bBox)
     {
         boundingBox = bBox;
     }
@@ -75,7 +75,7 @@ public class CharMetric
     /** Setter for property characterCode.
      * @param cCode New value of property characterCode.
      */
-    public void setCharacterCode(int cCode)
+    public void setCharacterCode(final int cCode)
     {
         characterCode = cCode;
     }
@@ -85,7 +85,7 @@ public class CharMetric
      *
      * @param ligature The ligature to add.
      */
-    public void addLigature( Ligature ligature )
+    public void addLigature(final Ligature ligature )
     {
         ligatures.add( ligature );
     }
@@ -109,7 +109,7 @@ public class CharMetric
     /** Setter for property name.
      * @param n New value of property name.
      */
-    public void setName(String n)
+    public void setName(final String n)
     {
         this.name = n;
     }
@@ -125,7 +125,7 @@ public class CharMetric
     /** Setter for property vv.
      * @param vvValue New value of property vv.
      */
-    public void setVv(float[] vvValue)
+    public void setVv(final float[] vvValue)
     {
         this.vv = vvValue;
     }
@@ -141,7 +141,7 @@ public class CharMetric
     /** Setter for property w.
      * @param wValue New value of property w.
      */
-    public void setW(float[] wValue)
+    public void setW(final float[] wValue)
     {
         this.w = wValue;
     }
@@ -157,7 +157,7 @@ public class CharMetric
     /** Setter for property w0.
      * @param w0Value New value of property w0.
      */
-    public void setW0(float[] w0Value)
+    public void setW0(final float[] w0Value)
     {
         w0 = w0Value;
     }
@@ -173,7 +173,7 @@ public class CharMetric
     /** Setter for property w0x.
      * @param w0xValue New value of property w0x.
      */
-    public void setW0x(float w0xValue)
+    public void setW0x(final float w0xValue)
     {
         w0x = w0xValue;
     }
@@ -189,7 +189,7 @@ public class CharMetric
     /** Setter for property w0y.
      * @param w0yValue New value of property w0y.
      */
-    public void setW0y(float w0yValue)
+    public void setW0y(final float w0yValue)
     {
         w0y = w0yValue;
     }
@@ -205,7 +205,7 @@ public class CharMetric
     /** Setter for property w1.
      * @param w1Value New value of property w1.
      */
-    public void setW1(float[] w1Value)
+    public void setW1(final float[] w1Value)
     {
         w1 = w1Value;
     }
@@ -221,7 +221,7 @@ public class CharMetric
     /** Setter for property w1x.
      * @param w1xValue New value of property w1x.
      */
-    public void setW1x(float w1xValue)
+    public void setW1x(final float w1xValue)
     {
         w1x = w1xValue;
     }
@@ -237,7 +237,7 @@ public class CharMetric
     /** Setter for property w1y.
      * @param w1yValue New value of property w1y.
      */
-    public void setW1y(float w1yValue)
+    public void setW1y(final float w1yValue)
     {
         w1y = w1yValue;
     }
@@ -253,7 +253,7 @@ public class CharMetric
     /** Setter for property wx.
      * @param wxValue New value of property wx.
      */
-    public void setWx(float wxValue)
+    public void setWx(final float wxValue)
     {
         wx = wxValue;
     }
@@ -269,7 +269,7 @@ public class CharMetric
     /** Setter for property wy.
      * @param wyValue New value of property wy.
      */
-    public void setWy(float wyValue)
+    public void setWy(final float wyValue)
     {
         this.wy = wyValue;
     }

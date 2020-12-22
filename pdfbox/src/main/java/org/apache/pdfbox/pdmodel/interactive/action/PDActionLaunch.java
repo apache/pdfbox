@@ -51,7 +51,7 @@ public class PDActionLaunch extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionLaunch( COSDictionary a )
+    public PDActionLaunch(final COSDictionary a )
     {
         super( a );
     }
@@ -81,7 +81,7 @@ public class PDActionLaunch extends PDAction
      *
      * @param fs The file specification.
      */
-    public void setFile( PDFileSpecification fs )
+    public void setFile(final PDFileSpecification fs )
     {
         getCOSObject().setItem(COSName.F, fs);
     }
@@ -93,7 +93,7 @@ public class PDActionLaunch extends PDAction
      */
     public PDWindowsLaunchParams getWinLaunchParams()
     {
-        COSDictionary win = (COSDictionary)action.getDictionaryObject( "Win" );
+        final COSDictionary win = (COSDictionary)action.getDictionaryObject( "Win" );
         PDWindowsLaunchParams retval = null;
         if( win != null )
         {
@@ -107,7 +107,7 @@ public class PDActionLaunch extends PDAction
      *
      * @param win The action to be performed.
      */
-    public void setWinLaunchParams( PDWindowsLaunchParams win )
+    public void setWinLaunchParams(final PDWindowsLaunchParams win )
     {
         action.setItem( "Win", win );
     }
@@ -133,7 +133,7 @@ public class PDActionLaunch extends PDAction
      *
      * @param f The file name to be launched.
      */
-    public void setF( String f )
+    public void setF(final String f )
     {
         action.setString(COSName.F, f );
     }
@@ -153,7 +153,7 @@ public class PDActionLaunch extends PDAction
      *
      * @param d The default directory.
      */
-    public void setD( String d )
+    public void setD(final String d )
     {
         action.setString(COSName.D, d );
     }
@@ -181,7 +181,7 @@ public class PDActionLaunch extends PDAction
      *
      * @param o The operation to perform.
      */
-    public void setO( String o )
+    public void setO(final String o )
     {
         action.setString(COSName.O, o );
     }
@@ -203,7 +203,7 @@ public class PDActionLaunch extends PDAction
      *
      * @param p The parameter string.
      */
-    public void setP( String p )
+    public void setP(final String p )
     {
         action.setString(COSName.P, p );
     }
@@ -218,7 +218,7 @@ public class PDActionLaunch extends PDAction
     {
         if (getCOSObject().getDictionaryObject(COSName.NEW_WINDOW) instanceof COSBoolean)
         {
-            COSBoolean b = (COSBoolean) getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
+            final COSBoolean b = (COSBoolean) getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
             return b.getValue() ? OpenMode.NEW_WINDOW : OpenMode.SAME_WINDOW;
         }
         return OpenMode.USER_PREFERENCE;
@@ -229,7 +229,7 @@ public class PDActionLaunch extends PDAction
      *
      * @param value The flag value.
      */
-    public void setOpenInNewWindow(OpenMode value)
+    public void setOpenInNewWindow(final OpenMode value)
     {
         if (null == value)
         {

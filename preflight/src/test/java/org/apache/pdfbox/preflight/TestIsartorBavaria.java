@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight;
 
@@ -54,32 +54,32 @@ class TestIsartorBavaria
 
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        String filter = System.getProperty(FILTER_FILE);
-        String skipBavaria = System.getProperty(SKIP_BAVARIA);
+        final String filter = System.getProperty(FILTER_FILE);
+        final String skipBavaria = System.getProperty(SKIP_BAVARIA);
 
         // load expected errors
-        File f = new File("src/test/resources/expected_errors.txt");
-        InputStream expected = new FileInputStream(f);
-        Properties props = new Properties();
+        final File f = new File("src/test/resources/expected_errors.txt");
+        final InputStream expected = new FileInputStream(f);
+        final Properties props = new Properties();
         props.load(expected);
         IOUtils.closeQuietly(expected);
 
         // prepare config
-        List<Object[]> data = new ArrayList<>();
+        final List<Object[]> data = new ArrayList<>();
 
-        File isartor = new File("target/pdfs/Isartor testsuite/PDFA-1b");
+        final File isartor = new File("target/pdfs/Isartor testsuite/PDFA-1b");
         if (isartor.isDirectory())
         {
-            Collection<?> pdfFiles = FileUtils.listFiles(isartor, new String[] {"pdf","PDF"}, true);
-            for (Object pdfFile : pdfFiles)
+            final Collection<?> pdfFiles = FileUtils.listFiles(isartor, new String[] {"pdf","PDF"}, true);
+            for (final Object pdfFile : pdfFiles)
             {
-                String fn = ((File)pdfFile).getName();
+                final String fn = ((File)pdfFile).getName();
                 if (filter == null || fn.contains(filter))
                 {
-                    String path = props.getProperty(fn);
-                    String error = new StringTokenizer(path, "//").nextToken().trim();
-                    String[] errTab = error.split(",");
-                    Set<String> errorSet = new HashSet<>(Arrays.asList(errTab));
+                    final String path = props.getProperty(fn);
+                    final String error = new StringTokenizer(path, "//").nextToken().trim();
+                    final String[] errTab = error.split(",");
+                    final Set<String> errorSet = new HashSet<>(Arrays.asList(errTab));
                     data.add(new Object[] { pdfFile, errorSet } );
                 }
             }
@@ -91,20 +91,20 @@ class TestIsartorBavaria
         
         if ("false".equals(skipBavaria))
         {
-            File bavaria = new File("target/pdfs/Bavaria testsuite");
+            final File bavaria = new File("target/pdfs/Bavaria testsuite");
             if (bavaria.isDirectory())
             {
-                Collection<?> pdfFiles = FileUtils.listFiles(bavaria, new String[] {"pdf","PDF"}, true);
-                for (Object pdfFile : pdfFiles)
+                final Collection<?> pdfFiles = FileUtils.listFiles(bavaria, new String[] {"pdf","PDF"}, true);
+                for (final Object pdfFile : pdfFiles)
                 {
-                    String fn = ((File) pdfFile).getName();
+                    final String fn = ((File) pdfFile).getName();
                     if (filter == null || fn.contains(filter))
                     {
-                        String path = props.getProperty(fn);
-                        Set<String> errorSet = new HashSet<>();
+                        final String path = props.getProperty(fn);
+                        final Set<String> errorSet = new HashSet<>();
                         if (!path.isEmpty())
                         {
-                            String error = new StringTokenizer(path, "//").nextToken().trim();
+                            final String error = new StringTokenizer(path, "//").nextToken().trim();
                             errorSet.addAll(Arrays.asList(error.split(",")));
                         }
                         data.add(new Object[] { pdfFile, errorSet } );
@@ -127,10 +127,10 @@ class TestIsartorBavaria
     @BeforeAll
     public static void beforeClass() throws Exception
     {
-        String irp = System.getProperty("isartor.results.path");
+        final String irp = System.getProperty("isartor.results.path");
         if (irp != null)
         {
-            File f = new File(irp);
+            final File f = new File(irp);
             if (f.exists() && f.isFile())
             {
                 f.delete();
@@ -158,19 +158,19 @@ class TestIsartorBavaria
 
     @ParameterizedTest
 	@MethodSource("initializeParameters")
-    void validate(File file, Set<String> expectedErrorSet) throws Exception
+    void validate(final File file, final Set<String> expectedErrorSet) throws Exception
     {
-        ValidationResult result = PreflightParser.validate(file);
+        final ValidationResult result = PreflightParser.validate(file);
         if (result != null)
         {
             if (expectedErrorSet.isEmpty())
             {
-                Set<String> errorSet = new HashSet<>();
-                for (ValidationError error : result.getErrorsList())
+                final Set<String> errorSet = new HashSet<>();
+                for (final ValidationError error : result.getErrorsList())
                 {
                     errorSet.add(error.getErrorCode());
                 }
-                StringBuilder message = new StringBuilder();
+                final StringBuilder message = new StringBuilder();
                 message.append(file.getName());
                 message.append(" : PDF/A file should be valid, but has error");
                 if (errorSet.size() > 1)
@@ -178,7 +178,7 @@ class TestIsartorBavaria
                     message.append('s');
                 }
                 message.append(':');
-                for (String errMsg : errorSet)
+                for (final String errMsg : errorSet)
                 {
                     message.append(' ');
                     message.append(errMsg);
@@ -196,10 +196,10 @@ class TestIsartorBavaria
                 // each expected error should occur
                 boolean logged = false;
                 boolean allFound = true;
-                for (String expectedError : expectedErrorSet)
+                for (final String expectedError : expectedErrorSet)
                 {
                     boolean oneFound = false;
-                    for (ValidationError error : result.getErrorsList())
+                    for (final ValidationError error : result.getErrorsList())
                     {
                         if (error.getErrorCode().equals(expectedError))
                         {
@@ -207,7 +207,7 @@ class TestIsartorBavaria
                         }
                         if (isartorResultFile != null && !logged)
                         {
-                            String log = file.getName().replace(".pdf", "") + "#"
+                            final String log = file.getName().replace(".pdf", "") + "#"
                                     + error.getErrorCode() + "#" + error.getDetails() + "\n";
                             isartorResultFile.write(log.getBytes());
                         }
@@ -223,13 +223,13 @@ class TestIsartorBavaria
                 }
                 if (!allFound)
                 {
-                    Set<String> errorSet = new HashSet<>();
-                    for (ValidationError error : result.getErrorsList())
+                    final Set<String> errorSet = new HashSet<>();
+                    for (final ValidationError error : result.getErrorsList())
                     {
                         errorSet.add(error.getErrorCode());
                     }
-                    StringBuilder message = new StringBuilder();
-                    for (String errMsg : errorSet)
+                    final StringBuilder message = new StringBuilder();
+                    for (final String errMsg : errorSet)
                     {
                         if (message.length() > 0)
                         {

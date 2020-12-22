@@ -37,15 +37,15 @@ public class LookupTypeSingleSubstFormat2 extends LookupSubTable
 {
     private final int[] substituteGlyphIDs;
 
-    public LookupTypeSingleSubstFormat2(int substFormat, CoverageTable coverageTable,
-            int[] substituteGlyphIDs)
+    public LookupTypeSingleSubstFormat2(final int substFormat, final CoverageTable coverageTable,
+                                        final int[] substituteGlyphIDs)
     {
         super(substFormat, coverageTable);
         this.substituteGlyphIDs = substituteGlyphIDs;
     }
 
     @Override
-    public int doSubstitution(int gid, int coverageIndex)
+    public int doSubstitution(final int gid, final int coverageIndex)
     {
         return coverageIndex < 0 ? gid : substituteGlyphIDs[coverageIndex];
     }

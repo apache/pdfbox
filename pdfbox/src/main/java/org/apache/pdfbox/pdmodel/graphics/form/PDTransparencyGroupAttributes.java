@@ -47,7 +47,7 @@ public final class PDTransparencyGroupAttributes implements COSObjectable
      * Creates a group object from a given dictionary
      * @param dic {@link COSDictionary} object
      */
-    public PDTransparencyGroupAttributes(COSDictionary dic)
+    public PDTransparencyGroupAttributes(final COSDictionary dic)
     {
         dictionary = dic;
     }
@@ -76,7 +76,7 @@ public final class PDTransparencyGroupAttributes implements COSObjectable
      * @return the group color space.
      * @throws IOException
      */
-    public PDColorSpace getColorSpace(PDResources resources) throws IOException
+    public PDColorSpace getColorSpace(final PDResources resources) throws IOException
     {
         if (colorSpace == null && getCOSObject().containsKey(COSName.CS))
         {

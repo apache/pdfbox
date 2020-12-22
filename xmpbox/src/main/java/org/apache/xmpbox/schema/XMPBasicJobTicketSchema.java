@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.schema;
 
@@ -43,33 +43,33 @@ public class XMPBasicJobTicketSchema extends XMPSchema
 
     private ArrayProperty bagJobs;
 
-    public XMPBasicJobTicketSchema(XMPMetadata metadata)
+    public XMPBasicJobTicketSchema(final XMPMetadata metadata)
     {
         this(metadata, null);
     }
 
-    public XMPBasicJobTicketSchema(XMPMetadata metadata, String ownPrefix)
+    public XMPBasicJobTicketSchema(final XMPMetadata metadata, final String ownPrefix)
     {
         super(metadata, ownPrefix);
     }
 
-    public void addJob(String id, String name, String url)
+    public void addJob(final String id, final String name, final String url)
     {
         addJob(id, name, url, null);
     }
 
-    public void addJob(String id, String name, String url, String fieldPrefix)
+    public void addJob(final String id, final String name, final String url, final String fieldPrefix)
     {
-        JobType job = new JobType(getMetadata(), fieldPrefix);
+        final JobType job = new JobType(getMetadata(), fieldPrefix);
         job.setId(id);
         job.setName(name);
         job.setUrl(url);
         addJob(job);
     }
 
-    public void addJob(JobType job)
+    public void addJob(final JobType job)
     {
-        String prefix = getNamespacePrefix(job.getNamespace());
+        final String prefix = getNamespacePrefix(job.getNamespace());
         if (prefix != null)
         {
             // use same prefix for all jobs
@@ -92,11 +92,11 @@ public class XMPBasicJobTicketSchema extends XMPSchema
 
     public List<JobType> getJobs() throws BadFieldValueException
     {
-        List<AbstractField> tmp = getUnqualifiedArrayList(JOB_REF);
+        final List<AbstractField> tmp = getUnqualifiedArrayList(JOB_REF);
         if (tmp != null)
         {
-            List<JobType> layers = new ArrayList<>();
-            for (AbstractField abstractField : tmp)
+            final List<JobType> layers = new ArrayList<>();
+            for (final AbstractField abstractField : tmp)
             {
                 if (abstractField instanceof JobType)
                 {

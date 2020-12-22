@@ -30,7 +30,7 @@ class PDOutlineItemIterator implements Iterator<PDOutlineItem>
     private PDOutlineItem currentItem;
     private final PDOutlineItem startingItem;
 
-    PDOutlineItemIterator(PDOutlineItem startingItem)
+    PDOutlineItemIterator(final PDOutlineItem startingItem)
     {
         this.startingItem = startingItem;
     }

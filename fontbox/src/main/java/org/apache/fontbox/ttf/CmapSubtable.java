@@ -52,7 +52,7 @@ public class CmapSubtable implements CmapLookup
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    void initData(TTFDataStream data) throws IOException
+    void initData(final TTFDataStream data) throws IOException
     {
         platformId = data.readUnsignedShort();
         platformEncodingId = data.readUnsignedShort();
@@ -67,12 +67,12 @@ public class CmapSubtable implements CmapLookup
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    void initSubtable(CmapTable cmap, int numGlyphs, TTFDataStream data) throws IOException
+    void initSubtable(final CmapTable cmap, final int numGlyphs, final TTFDataStream data) throws IOException
     {
         data.seek(cmap.getOffset() + subTableOffset);
-        int subtableFormat = data.readUnsignedShort();
-        long length;
-        long version;
+        final int subtableFormat = data.readUnsignedShort();
+        final long length;
+        final long version;
         if (subtableFormat < 8)
         {
             length = data.readUnsignedShort();
@@ -127,11 +127,11 @@ public class CmapSubtable implements CmapLookup
      * @param numGlyphs number of glyphs to be read
      * @throws IOException If there is an error parsing the true type font.
      */
-    void processSubtype8(TTFDataStream data, int numGlyphs) throws IOException
+    void processSubtype8(final TTFDataStream data, final int numGlyphs) throws IOException
     {
         // --- is32 is a 65536 BITS array ( = 8192 BYTES)
-        int[] is32 = data.readUnsignedByteArray(8192);
-        long nbGroups = data.readUnsignedInt();
+        final int[] is32 = data.readUnsignedByteArray(8192);
+        final long nbGroups = data.readUnsignedInt();
 
         // --- nbGroups shouldn't be greater than 65536
         if (nbGroups > 65536)
@@ -149,9 +149,9 @@ public class CmapSubtable implements CmapLookup
         // -- Read all sub header
         for (long i = 0; i < nbGroups; ++i)
         {
-            long firstCode = data.readUnsignedInt();
-            long endCode = data.readUnsignedInt();
-            long startGlyph = data.readUnsignedInt();
+            final long firstCode = data.readUnsignedInt();
+            final long endCode = data.readUnsignedInt();
+            final long startGlyph = data.readUnsignedInt();
 
             // -- process simple validation
             if (firstCode > endCode || 0 > firstCode)
@@ -171,7 +171,7 @@ public class CmapSubtable implements CmapLookup
                     throw new IOException("[Sub Format 8] Invalid character code " + j);
                 }
 
-                int currentCharCode;
+                final int currentCharCode;
                 if ((is32[(int) j / 8] & (1 << ((int) j % 8))) == 0)
                 {
                     currentCharCode = (int) j;
@@ -180,10 +180,10 @@ public class CmapSubtable implements CmapLookup
                 {
                     // the character code uses a 32bits format
                     // convert it in decimal : see http://www.unicode.org/faq//utf_bom.html#utf16-4
-                    long lead = LEAD_OFFSET + (j >> 10);
-                    long trail = 0xDC00 + (j & 0x3FF);
+                    final long lead = LEAD_OFFSET + (j >> 10);
+                    final long trail = 0xDC00 + (j & 0x3FF);
 
-                    long codepoint = (lead << 10) + trail + SURROGATE_OFFSET;
+                    final long codepoint = (lead << 10) + trail + SURROGATE_OFFSET;
                     if (codepoint > Integer.MAX_VALUE)
                     {
                         throw new IOException("[Sub Format 8] Invalid character code " + codepoint);
@@ -191,7 +191,7 @@ public class CmapSubtable implements CmapLookup
                     currentCharCode = (int) codepoint;
                 }
 
-                long glyphIndex = startGlyph + (j - firstCode);
+                final long glyphIndex = startGlyph + (j - firstCode);
                 if (glyphIndex > numGlyphs || glyphIndex > Integer.MAX_VALUE)
                 {
                     throw new IOException("CMap contains an invalid glyph index");
@@ -210,10 +210,10 @@ public class CmapSubtable implements CmapLookup
      * @param numGlyphs number of glyphs to be read
      * @throws IOException If there is an error parsing the true type font.
      */
-    void processSubtype10(TTFDataStream data, int numGlyphs) throws IOException
+    void processSubtype10(final TTFDataStream data, final int numGlyphs) throws IOException
     {
-        long startCode = data.readUnsignedInt();
-        long numChars = data.readUnsignedInt();
+        final long startCode = data.readUnsignedInt();
+        final long numChars = data.readUnsignedInt();
         if (numChars > Integer.MAX_VALUE)
         {
             throw new IOException("Invalid number of Characters");
@@ -234,9 +234,9 @@ public class CmapSubtable implements CmapLookup
      * @param numGlyphs number of glyphs to be read
      * @throws IOException If there is an error parsing the true type font.
      */
-    void processSubtype12(TTFDataStream data, int numGlyphs) throws IOException
+    void processSubtype12(final TTFDataStream data, final int numGlyphs) throws IOException
     {
-        long nbGroups = data.readUnsignedInt();
+        final long nbGroups = data.readUnsignedInt();
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         characterCodeToGlyphId = new HashMap<>(numGlyphs);
         if (numGlyphs == 0)
@@ -246,9 +246,9 @@ public class CmapSubtable implements CmapLookup
         }
         for (long i = 0; i < nbGroups; ++i)
         {
-            long firstCode = data.readUnsignedInt();
-            long endCode = data.readUnsignedInt();
-            long startGlyph = data.readUnsignedInt();
+            final long firstCode = data.readUnsignedInt();
+            final long endCode = data.readUnsignedInt();
+            final long startGlyph = data.readUnsignedInt();
 
             if (firstCode < 0 || firstCode > 0x0010FFFF ||
                 firstCode >= 0x0000D800 && firstCode <= 0x0000DFFF)
@@ -265,7 +265,7 @@ public class CmapSubtable implements CmapLookup
 
             for (long j = 0; j <= endCode - firstCode; ++j)
             {
-                long glyphIndex = startGlyph + j;
+                final long glyphIndex = startGlyph + j;
                 if (glyphIndex >= numGlyphs)
                 {
                     LOG.warn("Format 12 cmap contains an invalid glyph index");
@@ -290,9 +290,9 @@ public class CmapSubtable implements CmapLookup
      * @param numGlyphs number of glyphs to be read
      * @throws IOException If there is an error parsing the true type font.
      */
-    void processSubtype13(TTFDataStream data, int numGlyphs) throws IOException
+    void processSubtype13(final TTFDataStream data, final int numGlyphs) throws IOException
     {
-        long nbGroups = data.readUnsignedInt();
+        final long nbGroups = data.readUnsignedInt();
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         characterCodeToGlyphId = new HashMap<>(numGlyphs);
         if (numGlyphs == 0)
@@ -302,9 +302,9 @@ public class CmapSubtable implements CmapLookup
         }
         for (long i = 0; i < nbGroups; ++i)
         {
-            long firstCode = data.readUnsignedInt();
-            long endCode = data.readUnsignedInt();
-            long glyphId = data.readUnsignedInt();
+            final long firstCode = data.readUnsignedInt();
+            final long endCode = data.readUnsignedInt();
+            final long glyphId = data.readUnsignedInt();
 
             if (glyphId > numGlyphs)
             {
@@ -348,7 +348,7 @@ public class CmapSubtable implements CmapLookup
      * @param numGlyphs number of glyphs to be read
      * @throws IOException If there is an error parsing the true type font.
      */
-    void processSubtype14(TTFDataStream data, int numGlyphs) throws IOException
+    void processSubtype14(final TTFDataStream data, final int numGlyphs) throws IOException
     {
         // Unicode Variation Sequences (UVS)
         // see http://blogs.adobe.com/CCJKType/2013/05/opentype-cmap-table-ramblings.html
@@ -362,17 +362,17 @@ public class CmapSubtable implements CmapLookup
      * @param numGlyphs number of glyphs to be read
      * @throws IOException If there is an error parsing the true type font.
      */
-    void processSubtype6(TTFDataStream data, int numGlyphs) throws IOException
+    void processSubtype6(final TTFDataStream data, final int numGlyphs) throws IOException
     {
-        int firstCode = data.readUnsignedShort();
-        int entryCount = data.readUnsignedShort();
+        final int firstCode = data.readUnsignedShort();
+        final int entryCount = data.readUnsignedShort();
         // skip empty tables
         if (entryCount == 0)
         {
             return;
         }
         characterCodeToGlyphId = new HashMap<>(numGlyphs);
-        int[] glyphIdArray = data.readUnsignedShortArray(entryCount);
+        final int[] glyphIdArray = data.readUnsignedShortArray(entryCount);
         int maxGlyphId = 0;
         for (int i = 0; i < entryCount; i++)
         {
@@ -389,43 +389,43 @@ public class CmapSubtable implements CmapLookup
      * @param numGlyphs number of glyphs to be read
      * @throws IOException If there is an error parsing the true type font.
      */
-    void processSubtype4(TTFDataStream data, int numGlyphs) throws IOException
+    void processSubtype4(final TTFDataStream data, final int numGlyphs) throws IOException
     {
-        int segCountX2 = data.readUnsignedShort();
-        int segCount = segCountX2 / 2;
-        int searchRange = data.readUnsignedShort();
-        int entrySelector = data.readUnsignedShort();
-        int rangeShift = data.readUnsignedShort();
-        int[] endCount = data.readUnsignedShortArray(segCount);
-        int reservedPad = data.readUnsignedShort();
-        int[] startCount = data.readUnsignedShortArray(segCount);
-        int[] idDelta = data.readUnsignedShortArray(segCount);
-        long idRangeOffsetPosition = data.getCurrentPosition();
-        int[] idRangeOffset = data.readUnsignedShortArray(segCount);
+        final int segCountX2 = data.readUnsignedShort();
+        final int segCount = segCountX2 / 2;
+        final int searchRange = data.readUnsignedShort();
+        final int entrySelector = data.readUnsignedShort();
+        final int rangeShift = data.readUnsignedShort();
+        final int[] endCount = data.readUnsignedShortArray(segCount);
+        final int reservedPad = data.readUnsignedShort();
+        final int[] startCount = data.readUnsignedShortArray(segCount);
+        final int[] idDelta = data.readUnsignedShortArray(segCount);
+        final long idRangeOffsetPosition = data.getCurrentPosition();
+        final int[] idRangeOffset = data.readUnsignedShortArray(segCount);
 
         characterCodeToGlyphId = new HashMap<>(numGlyphs);
         int maxGlyphId = 0;
 
         for (int i = 0; i < segCount; i++)
         {
-            int start = startCount[i];
-            int end = endCount[i];
-            int delta = idDelta[i];
-            int rangeOffset = idRangeOffset[i];
-            long segmentRangeOffset = idRangeOffsetPosition + (i * 2) + rangeOffset;
+            final int start = startCount[i];
+            final int end = endCount[i];
+            final int delta = idDelta[i];
+            final int rangeOffset = idRangeOffset[i];
+            final long segmentRangeOffset = idRangeOffsetPosition + (i * 2) + rangeOffset;
             if (start != 65535 && end != 65535)
             {
                 for (int j = start; j <= end; j++)
                 {
                     if (rangeOffset == 0)
                     {
-                        int glyphid = (j + delta) & 0xFFFF;
+                        final int glyphid = (j + delta) & 0xFFFF;
                         maxGlyphId = Math.max(glyphid, maxGlyphId);
                         characterCodeToGlyphId.put(j, glyphid);
                     }
                     else
                     {
-                        long glyphOffset = segmentRangeOffset + ((j - start) * 2);
+                        final long glyphOffset = segmentRangeOffset + ((j - start) * 2);
                         data.seek(glyphOffset);
                         int glyphIndex = data.readUnsignedShort();
                         if (glyphIndex != 0)
@@ -451,7 +451,7 @@ public class CmapSubtable implements CmapLookup
         buildGlyphIdToCharacterCodeLookup(maxGlyphId);
     }
 
-    private void buildGlyphIdToCharacterCodeLookup(int maxGlyphId)
+    private void buildGlyphIdToCharacterCodeLookup(final int maxGlyphId)
     {
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(maxGlyphId + 1);
         characterCodeToGlyphId.forEach((key, value) ->
@@ -485,9 +485,9 @@ public class CmapSubtable implements CmapLookup
      * @param numGlyphs number of glyphs to be read
      * @throws IOException If there is an error parsing the true type font.
      */
-    void processSubtype2(TTFDataStream data, int numGlyphs) throws IOException
+    void processSubtype2(final TTFDataStream data, final int numGlyphs) throws IOException
     {
-        int[] subHeaderKeys = new int[256];
+        final int[] subHeaderKeys = new int[256];
         // ---- keep the Max Index of the SubHeader array to know its length
         int maxSubHeaderIndex = 0;
         for (int i = 0; i < 256; i++)
@@ -497,16 +497,16 @@ public class CmapSubtable implements CmapLookup
         }
 
         // ---- Read all SubHeaders to avoid useless seek on DataSource
-        SubHeader[] subHeaders = new SubHeader[maxSubHeaderIndex + 1];
+        final SubHeader[] subHeaders = new SubHeader[maxSubHeaderIndex + 1];
         for (int i = 0; i <= maxSubHeaderIndex; ++i)
         {
-            int firstCode = data.readUnsignedShort();
-            int entryCount = data.readUnsignedShort();
-            short idDelta = data.readSignedShort();
-            int idRangeOffset = data.readUnsignedShort() - (maxSubHeaderIndex + 1 - i - 1) * 8 - 2;
+            final int firstCode = data.readUnsignedShort();
+            final int entryCount = data.readUnsignedShort();
+            final short idDelta = data.readSignedShort();
+            final int idRangeOffset = data.readUnsignedShort() - (maxSubHeaderIndex + 1 - i - 1) * 8 - 2;
             subHeaders[i] = new SubHeader(firstCode, entryCount, idDelta, idRangeOffset);
         }
-        long startGlyphIndexOffset = data.getCurrentPosition();
+        final long startGlyphIndexOffset = data.getCurrentPosition();
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         characterCodeToGlyphId = new HashMap<>(numGlyphs);
         if (numGlyphs == 0)
@@ -516,11 +516,11 @@ public class CmapSubtable implements CmapLookup
         }
         for (int i = 0; i <= maxSubHeaderIndex; ++i)
         {
-            SubHeader sh = subHeaders[i];
-            int firstCode = sh.getFirstCode();
-            int idRangeOffset = sh.getIdRangeOffset();
-            int idDelta = sh.getIdDelta();
-            int entryCount = sh.getEntryCount();
+            final SubHeader sh = subHeaders[i];
+            final int firstCode = sh.getFirstCode();
+            final int idRangeOffset = sh.getIdRangeOffset();
+            final int idDelta = sh.getIdDelta();
+            final int entryCount = sh.getEntryCount();
             data.seek(startGlyphIndexOffset + idRangeOffset);
             for (int j = 0; j < entryCount; ++j)
             {
@@ -561,14 +561,14 @@ public class CmapSubtable implements CmapLookup
      * @param data the data stream of the to be parsed ttf font
      * @throws IOException If there is an error parsing the true type font.
      */
-    void processSubtype0(TTFDataStream data) throws IOException
+    void processSubtype0(final TTFDataStream data) throws IOException
     {
-        byte[] glyphMapping = data.read(256);
+        final byte[] glyphMapping = data.read(256);
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(256);
         characterCodeToGlyphId = new HashMap<>(glyphMapping.length);
         for (int i = 0; i < glyphMapping.length; i++)
         {
-            int glyphIndex = glyphMapping[i] & 0xFF;
+            final int glyphIndex = glyphMapping[i] & 0xFF;
             glyphIdToCharacterCode[glyphIndex] = i;
             characterCodeToGlyphId.put(i, glyphIndex);
         }
@@ -578,9 +578,9 @@ public class CmapSubtable implements CmapLookup
      * Workaround for the fact that glyphIdToCharacterCode doesn't distinguish between
      * missing character codes and code 0.
      */
-    private int[] newGlyphIdToCharacterCode(int size)
+    private int[] newGlyphIdToCharacterCode(final int size)
     {
-        int[] gidToCode = new int[size];
+        final int[] gidToCode = new int[size];
         Arrays.fill(gidToCode, -1);
         return gidToCode;
     }
@@ -596,7 +596,7 @@ public class CmapSubtable implements CmapLookup
     /**
      * @param platformEncodingIdValue The platformEncodingId to set.
      */
-    public void setPlatformEncodingId(int platformEncodingIdValue)
+    public void setPlatformEncodingId(final int platformEncodingIdValue)
     {
         platformEncodingId = platformEncodingIdValue;
     }
@@ -612,7 +612,7 @@ public class CmapSubtable implements CmapLookup
     /**
      * @param platformIdValue The platformId to set.
      */
-    public void setPlatformId(int platformIdValue)
+    public void setPlatformId(final int platformIdValue)
     {
         platformId = platformIdValue;
     }
@@ -624,9 +624,9 @@ public class CmapSubtable implements CmapLookup
      * @return glyphId the corresponding glyph id for the given character code
      */
     @Override
-    public int getGlyphId(int characterCode)
+    public int getGlyphId(final int characterCode)
     {
-        Integer glyphId = characterCodeToGlyphId.get(characterCode);
+        final Integer glyphId = characterCodeToGlyphId.get(characterCode);
         return glyphId == null ? 0 : glyphId;
     }
 
@@ -640,9 +640,9 @@ public class CmapSubtable implements CmapLookup
      * default.
      */
     @Deprecated
-    public Integer getCharacterCode(int gid)
+    public Integer getCharacterCode(final int gid)
     {
-        int code = getCharCode(gid);
+        final int code = getCharCode(gid);
         if (code == -1)
         {
             return null;
@@ -650,7 +650,7 @@ public class CmapSubtable implements CmapLookup
         // ambiguous mapping
         if (code == Integer.MIN_VALUE)
         {
-            List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
+            final List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
             if (mappedValues != null)
             {
                 // use the first mapping
@@ -660,7 +660,7 @@ public class CmapSubtable implements CmapLookup
         return code;
     }
 
-    private int getCharCode(int gid)
+    private int getCharCode(final int gid)
     {
         if (gid < 0 || gid >= glyphIdToCharacterCode.length)
         {
@@ -677,9 +677,9 @@ public class CmapSubtable implements CmapLookup
      * 
      */
     @Override
-    public List<Integer> getCharCodes(int gid)
+    public List<Integer> getCharCodes(final int gid)
     {
-        int code = getCharCode(gid);
+        final int code = getCharCode(gid);
         if (code == -1)
         {
             return null;
@@ -687,7 +687,7 @@ public class CmapSubtable implements CmapLookup
         List<Integer> codes = null;
         if (code == Integer.MIN_VALUE)
         {
-            List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
+            final List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
             if (mappedValues != null)
             {
                 codes = new ArrayList<>(mappedValues);
@@ -727,7 +727,7 @@ public class CmapSubtable implements CmapLookup
          */
         private final int idRangeOffset;
 
-        private SubHeader(int firstCodeValue, int entryCountValue, short idDeltaValue, int idRangeOffsetValue)
+        private SubHeader(final int firstCodeValue, final int entryCountValue, final short idDeltaValue, final int idRangeOffsetValue)
         {
             firstCode = firstCodeValue;
             entryCount = entryCountValue;

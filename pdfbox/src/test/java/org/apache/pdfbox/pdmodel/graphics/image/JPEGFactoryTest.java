@@ -65,9 +65,9 @@ class JPEGFactoryTest
     @Test
     void testCreateFromStream() throws IOException
     {
-        PDDocument document = new PDDocument();
-        InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
-        PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
+        final PDDocument document = new PDDocument();
+        final InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
+        final PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
 
         doWritePDF(document, ximage, testResultsDir, "jpegrgbstream.pdf");
@@ -81,9 +81,9 @@ class JPEGFactoryTest
     @Test
     void testCreateFromStreamCMYK() throws IOException
     {
-        PDDocument document = new PDDocument();
-        InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg");
-        PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
+        final PDDocument document = new PDDocument();
+        final InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg");
+        final PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 343, 287, "jpg", PDDeviceCMYK.INSTANCE.getName());
 
         doWritePDF(document, ximage, testResultsDir, "jpegcmykstream.pdf");
@@ -97,9 +97,9 @@ class JPEGFactoryTest
     @Test
     void testCreateFromStream256() throws IOException
     {
-        PDDocument document = new PDDocument();
-        InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
-        PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
+        final PDDocument document = new PDDocument();
+        final InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
+        final PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
 
         doWritePDF(document, ximage, testResultsDir, "jpeg256stream.pdf");
@@ -113,10 +113,10 @@ class JPEGFactoryTest
     @Test
     void testCreateFromImageRGB() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+        final PDDocument document = new PDDocument();
+        final BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
         assertEquals(3, image.getColorModel().getNumComponents());
-        PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
+        final PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
 
         doWritePDF(document, ximage, testResultsDir, "jpegrgb.pdf");
@@ -129,10 +129,10 @@ class JPEGFactoryTest
     @Test
     void testCreateFromImage256() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
+        final PDDocument document = new PDDocument();
+        final BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
         assertEquals(1, image.getColorModel().getNumComponents());
-        PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
+        final PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
 
         doWritePDF(document, ximage, testResultsDir, "jpeg256.pdf");
@@ -155,14 +155,14 @@ class JPEGFactoryTest
             return;
         }
 
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+        final PDDocument document = new PDDocument();
+        final BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
 
         // create an ARGB image
-        int width = image.getWidth();
-        int height = image.getHeight();
-        BufferedImage argbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics ag = argbImage.getGraphics();
+        final int width = image.getWidth();
+        final int height = image.getHeight();
+        final BufferedImage argbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final Graphics ag = argbImage.getGraphics();
         ag.drawImage(image, 0, 0, null);
         ag.dispose();
 
@@ -174,7 +174,7 @@ class JPEGFactoryTest
             }
         }
 
-        PDImageXObject ximage = JPEGFactory.createFromImage(document, argbImage);
+        final PDImageXObject ximage = JPEGFactory.createFromImage(document, argbImage);
         validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
@@ -200,14 +200,14 @@ class JPEGFactoryTest
             return;
         }
 
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+        final PDDocument document = new PDDocument();
+        final BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
 
         // create an ARGB image
-        int width = image.getWidth();
-        int height = image.getHeight();
-        BufferedImage argbImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-        Graphics ag = argbImage.getGraphics();
+        final int width = image.getWidth();
+        final int height = image.getHeight();
+        final BufferedImage argbImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics ag = argbImage.getGraphics();
         ag.drawImage(image, 0, 0, null);
         ag.dispose();
 
@@ -219,7 +219,7 @@ class JPEGFactoryTest
             }
         }
 
-        PDImageXObject ximage = JPEGFactory.createFromImage(document, argbImage);
+        final PDImageXObject ximage = JPEGFactory.createFromImage(document, argbImage);
         validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
@@ -246,14 +246,14 @@ class JPEGFactoryTest
             return;
         }
 
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+        final PDDocument document = new PDDocument();
+        final BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
 
         // create an USHORT_555_RGB image
-        int width = image.getWidth();
-        int height = image.getHeight();
-        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_555_RGB);
-        Graphics ag = rgbImage.getGraphics();
+        final int width = image.getWidth();
+        final int height = image.getHeight();
+        final BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_555_RGB);
+        final Graphics ag = rgbImage.getGraphics();
         ag.drawImage(image, 0, 0, null);
         ag.dispose();
 
@@ -265,7 +265,7 @@ class JPEGFactoryTest
             }
         }
 
-        PDImageXObject ximage = JPEGFactory.createFromImage(document, rgbImage);
+        final PDImageXObject ximage = JPEGFactory.createFromImage(document, rgbImage);
         validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
         assertNull(ximage.getSoftMask());
 
@@ -274,15 +274,15 @@ class JPEGFactoryTest
 
     // check whether it is possible to extract the jpeg stream exactly 
     // as it was passed to createFromStream
-    private void checkJpegStream(File testResultsDir, String filename, InputStream resourceStream)
+    private void checkJpegStream(final File testResultsDir, final String filename, final InputStream resourceStream)
             throws IOException
     {
-        PDDocument doc = Loader.loadPDF(new File(testResultsDir, filename));
-        PDImageXObject img =
+        final PDDocument doc = Loader.loadPDF(new File(testResultsDir, filename));
+        final PDImageXObject img =
                 (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("Im1"));
-        InputStream dctStream = img.createInputStream(Arrays.asList(COSName.DCT_DECODE.getName()));
-        ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+        final InputStream dctStream = img.createInputStream(Arrays.asList(COSName.DCT_DECODE.getName()));
+        final ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
         IOUtils.copy(resourceStream, baos1);
         IOUtils.copy(dctStream, baos2);
         resourceStream.close();

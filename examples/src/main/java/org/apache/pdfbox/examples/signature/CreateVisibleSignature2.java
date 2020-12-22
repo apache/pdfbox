@@ -95,7 +95,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
      * @throws CertificateException if the certificate is not valid as signing time
      * @throws IOException if no certificate could be found
      */
-    public CreateVisibleSignature2(KeyStore keystore, char[] pin)
+    public CreateVisibleSignature2(final KeyStore keystore, final char[] pin)
             throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException
     {
         super(keystore, pin);
@@ -106,7 +106,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         return imageFile;
     }
 
-    public void setImageFile(File imageFile)
+    public void setImageFile(final File imageFile)
     {
         this.imageFile = imageFile;
     }
@@ -123,7 +123,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
      *
      * @param lateExternalSigning
      */
-    public void setLateExternalSigning(boolean lateExternalSigning)
+    public void setLateExternalSigning(final boolean lateExternalSigning)
     {
         this.lateExternalSigning = lateExternalSigning;
     }
@@ -137,7 +137,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
      * @param tsaUrl optional TSA url
      * @throws IOException
      */
-    public void signPDF(File inputFile, File signedFile, Rectangle2D humanRect, String tsaUrl) throws IOException
+    public void signPDF(final File inputFile, final File signedFile, final Rectangle2D humanRect, final String tsaUrl) throws IOException
     {
         this.signPDF(inputFile, signedFile, humanRect, tsaUrl, null);
     }
@@ -152,7 +152,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
      * @param signatureFieldName optional name of an existing (unsigned) signature field
      * @throws IOException
      */
-    public void signPDF(File inputFile, File signedFile, Rectangle2D humanRect, String tsaUrl, String signatureFieldName) throws IOException
+    public void signPDF(final File inputFile, final File signedFile, final Rectangle2D humanRect, final String tsaUrl, final String signatureFieldName) throws IOException
     {
         if (inputFile == null || !inputFile.exists())
         {
@@ -164,9 +164,9 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         // creating output document and prepare the IO streams.
 
         try (FileOutputStream fos = new FileOutputStream(signedFile);
-                PDDocument doc = Loader.loadPDF(inputFile))
+             final PDDocument doc = Loader.loadPDF(inputFile))
         {
-            int accessPermissions = SigUtils.getMDPPermission(doc);
+            final int accessPermissions = SigUtils.getMDPPermission(doc);
             if (accessPermissions == 1)
             {
                 throw new IllegalStateException("No changes to the document are permitted due to DocMDP transform parameters dictionary");
@@ -176,7 +176,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
             // be careful with such files.
 
             PDSignature signature = null;
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDRectangle rect = null;
 
             // sign a PDF with an existing empty signature, as created by the CreateEmptySignatureForm example.
@@ -242,7 +242,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
             signature.setSignDate(Calendar.getInstance());
 
             // do not set SignatureInterface instance, if external signing used
-            SignatureInterface signatureInterface = isExternalSigning() ? null : this;
+            final SignatureInterface signatureInterface = isExternalSigning() ? null : this;
 
             // register signature dictionary and sign interface
             signatureOptions = new SignatureOptions();
@@ -252,9 +252,9 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 
             if (isExternalSigning())
             {
-                ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(fos);
+                final ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(fos);
                 // invoke external signature service
-                byte[] cmsSignature = sign(externalSigning.getContent());
+                final byte[] cmsSignature = sign(externalSigning.getContent());
 
                 // Explanation of late external signing (off by default):
                 // If you want to add the signature in a separate step, then set an empty byte array
@@ -271,7 +271,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
                     externalSigning.setSignature(new byte[0]);
 
                     // remember the offset (add 1 because of "<")
-                    int offset = signature.getByteRange()[1] + 1;
+                    final int offset = signature.getByteRange()[1] + 1;
 
                     // now write the signature at the correct offset without any PDFBox methods
                     try (RandomAccessFile raf = new RandomAccessFile(signedFile, "rw"))
@@ -301,15 +301,15 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         IOUtils.closeQuietly(signatureOptions);
     }
 
-    private PDRectangle createSignatureRectangle(PDDocument doc, Rectangle2D humanRect)
+    private PDRectangle createSignatureRectangle(final PDDocument doc, final Rectangle2D humanRect)
     {
-        float x = (float) humanRect.getX();
-        float y = (float) humanRect.getY();
-        float width = (float) humanRect.getWidth();
-        float height = (float) humanRect.getHeight();
-        PDPage page = doc.getPage(0);
-        PDRectangle pageRect = page.getCropBox();
-        PDRectangle rect = new PDRectangle();
+        final float x = (float) humanRect.getX();
+        final float y = (float) humanRect.getY();
+        final float width = (float) humanRect.getWidth();
+        final float height = (float) humanRect.getHeight();
+        final PDPage page = doc.getPage(0);
+        final PDRectangle pageRect = page.getCropBox();
+        final PDRectangle rect = new PDRectangle();
         // signing should be at the same position regardless of page rotation.
         switch (page.getRotation())
         {
@@ -343,18 +343,18 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
     }
 
     // create a template PDF document with empty signature and return it as a stream.
-    private InputStream createVisualSignatureTemplate(PDDocument srcDoc, int pageNum, 
-            PDRectangle rect, PDSignature signature) throws IOException
+    private InputStream createVisualSignatureTemplate(final PDDocument srcDoc, final int pageNum,
+                                                      final PDRectangle rect, final PDSignature signature) throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage(srcDoc.getPage(pageNum).getMediaBox());
+            final PDPage page = new PDPage(srcDoc.getPage(pageNum).getMediaBox());
             doc.addPage(page);
-            PDAcroForm acroForm = new PDAcroForm(doc);
+            final PDAcroForm acroForm = new PDAcroForm(doc);
             doc.getDocumentCatalog().setAcroForm(acroForm);
-            PDSignatureField signatureField = new PDSignatureField(acroForm);
-            PDAnnotationWidget widget = signatureField.getWidgets().get(0);
-            List<PDField> acroFormFields = acroForm.getFields();
+            final PDSignatureField signatureField = new PDSignatureField(acroForm);
+            final PDAnnotationWidget widget = signatureField.getWidgets().get(0);
+            final List<PDField> acroFormFields = acroForm.getFields();
             acroForm.setSignaturesExist(true);
             acroForm.setAppendOnly(true);
             acroForm.getCOSObject().setDirect(true);
@@ -363,12 +363,12 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
             widget.setRectangle(rect);
 
             // from PDVisualSigBuilder.createHolderForm()
-            PDStream stream = new PDStream(doc);
-            PDFormXObject form = new PDFormXObject(stream);
-            PDResources res = new PDResources();
+            final PDStream stream = new PDStream(doc);
+            final PDFormXObject form = new PDFormXObject(stream);
+            final PDResources res = new PDResources();
             form.setResources(res);
             form.setFormType(1);
-            PDRectangle bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
+            final PDRectangle bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
             float height = bbox.getHeight();
             Matrix initialScale = null;
             switch (srcDoc.getPage(pageNum).getRotation())
@@ -391,12 +391,12 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
                     break;
             }
             form.setBBox(bbox);
-            PDFont font = PDType1Font.HELVETICA_BOLD;
+            final PDFont font = PDType1Font.HELVETICA_BOLD;
 
             // from PDVisualSigBuilder.createAppearanceDictionary()
-            PDAppearanceDictionary appearance = new PDAppearanceDictionary();
+            final PDAppearanceDictionary appearance = new PDAppearanceDictionary();
             appearance.getCOSObject().setDirect(true);
-            PDAppearanceStream appearanceStream = new PDAppearanceStream(form.getCOSObject());
+            final PDAppearanceStream appearanceStream = new PDAppearanceStream(form.getCOSObject());
             appearance.setNormalAppearance(appearanceStream);
             widget.setAppearance(appearance);
 
@@ -421,31 +421,31 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
                     // save and restore graphics if the image is too large and needs to be scaled
                     cs.saveGraphicsState();
                     cs.transform(Matrix.getScaleInstance(0.25f, 0.25f));
-                    PDImageXObject img = PDImageXObject.createFromFileByExtension(imageFile, doc);
+                    final PDImageXObject img = PDImageXObject.createFromFileByExtension(imageFile, doc);
                     cs.drawImage(img, 0, 0);
                     cs.restoreGraphicsState();
                 }
 
                 // show text
-                float fontSize = 10;
-                float leading = fontSize * 1.5f;
+                final float fontSize = 10;
+                final float leading = fontSize * 1.5f;
                 cs.beginText();
                 cs.setFont(font, fontSize);
                 cs.setNonStrokingColor(Color.black);
                 cs.newLineAtOffset(fontSize, height - leading);
                 cs.setLeading(leading);
 
-                X509Certificate cert = (X509Certificate) getCertificateChain()[0];
+                final X509Certificate cert = (X509Certificate) getCertificateChain()[0];
 
                 // https://stackoverflow.com/questions/2914521/
-                X500Name x500Name = new X500Name(cert.getSubjectX500Principal().getName());
-                RDN cn = x500Name.getRDNs(BCStyle.CN)[0];
-                String name = IETFUtils.valueToString(cn.getFirst().getValue());
+                final X500Name x500Name = new X500Name(cert.getSubjectX500Principal().getName());
+                final RDN cn = x500Name.getRDNs(BCStyle.CN)[0];
+                final String name = IETFUtils.valueToString(cn.getFirst().getValue());
 
                 // See https://stackoverflow.com/questions/12575990
                 // for better date formatting
-                String date = signature.getSignDate().getTime().toString();
-                String reason = signature.getReason();
+                final String date = signature.getSignDate().getTime().toString();
+                final String reason = signature.getReason();
 
                 cs.showText("Signer: " + name);
                 cs.newLine();
@@ -458,17 +458,17 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 
             // no need to set annotations and /P entry
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             doc.save(baos);
             return new ByteArrayInputStream(baos.toByteArray());
         }
     }
 
     // Find an existing signature (assumed to be empty). You will usually not need this.
-    private PDSignature findExistingSignature(PDAcroForm acroForm, String sigFieldName)
+    private PDSignature findExistingSignature(final PDAcroForm acroForm, final String sigFieldName)
     {
         PDSignature signature = null;
-        PDSignatureField signatureField;
+        final PDSignatureField signatureField;
         if (acroForm != null)
         {
             signatureField = (PDSignatureField) acroForm.getField(sigFieldName);
@@ -507,7 +507,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
      * @throws java.security.NoSuchAlgorithmException
      * @throws java.security.UnrecoverableKeyException
      */
-    public static void main(String[] args) throws KeyStoreException, CertificateException,
+    public static void main(final String[] args) throws KeyStoreException, CertificateException,
             IOException, NoSuchAlgorithmException, UnrecoverableKeyException
     {
         if (args.length < 3)
@@ -538,23 +538,23 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
             }
         }
 
-        File ksFile = new File(args[0]);
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        char[] pin = args[1].toCharArray();
+        final File ksFile = new File(args[0]);
+        final KeyStore keystore = KeyStore.getInstance("PKCS12");
+        final char[] pin = args[1].toCharArray();
         keystore.load(new FileInputStream(ksFile), pin);
 
-        File documentFile = new File(args[2]);
+        final File documentFile = new File(args[2]);
 
-        CreateVisibleSignature2 signing = new CreateVisibleSignature2(keystore, pin.clone());
+        final CreateVisibleSignature2 signing = new CreateVisibleSignature2(keystore, pin.clone());
 
         if (args.length >= 4 && !"-tsa".equals(args[3]))
         {
             signing.setImageFile(new File(args[3]));
         }
 
-        File signedDocumentFile;
-        String name = documentFile.getName();
-        String substring = name.substring(0, name.lastIndexOf('.'));
+        final File signedDocumentFile;
+        final String name = documentFile.getName();
+        final String substring = name.substring(0, name.lastIndexOf('.'));
         signedDocumentFile = new File(documentFile.getParent(), substring + "_signed.pdf");
 
         signing.setExternalSigning(externalSig);
@@ -564,7 +564,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         // So a human would want to position a signature (x,y) units from the
         // top left of the displayed page, and the field has a horizontal width and a vertical height
         // regardless of page rotation.
-        Rectangle2D humanRect = new Rectangle2D.Float(100, 200, 150, 50);
+        final Rectangle2D humanRect = new Rectangle2D.Float(100, 200, 150, 50);
 
         signing.signPDF(documentFile, signedDocumentFile, humanRect, tsaUrl, "Signature1");
     }

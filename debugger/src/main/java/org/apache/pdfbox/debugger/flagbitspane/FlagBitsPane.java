@@ -37,7 +37,7 @@ public class FlagBitsPane
      * @param dictionary COSDictionary instance.
      * @param flagType COSName instance.
      */
-    public FlagBitsPane(PDDocument document, final COSDictionary dictionary, COSName flagType)
+    public FlagBitsPane(final PDDocument document, final COSDictionary dictionary, final COSName flagType)
     {
         this.document = document;
         createPane(dictionary, flagType);

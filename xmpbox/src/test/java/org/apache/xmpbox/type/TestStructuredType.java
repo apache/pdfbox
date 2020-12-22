@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.type;
 
@@ -42,25 +42,25 @@ class TestStructuredType extends AbstractTypeTester
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testInitializedToNull(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testInitializedToNull(final AbstractStructuredType structured, final Class<? extends AbstractStructuredType> clz, final String fieldName, final Types type) throws Exception
     {
         assertNull(structured.getProperty(fieldName));
         // accessor
-        Method get = clz.getMethod(calculateSimpleGetter(fieldName));
-        Object result = get.invoke(structured);
+        final Method get = clz.getMethod(calculateSimpleGetter(fieldName));
+        final Object result = get.invoke(structured);
         assertNull(result);
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testSettingValue(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testSettingValue(final AbstractStructuredType structured, final Class<? extends AbstractStructuredType> clz, final String fieldName, final Types type) throws Exception
     {
         internalTestSettingValue(structured, clz, fieldName, type);
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomSettingValue(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testRandomSettingValue(final AbstractStructuredType structured, final Class<? extends AbstractStructuredType> clz, final String fieldName, final Types type) throws Exception
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
@@ -68,17 +68,17 @@ class TestStructuredType extends AbstractTypeTester
             internalTestSettingValue(structured, clz, fieldName, type);        }
     }
 
-    private void internalTestSettingValue(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    private void internalTestSettingValue(final AbstractStructuredType structured, final Class<? extends AbstractStructuredType> clz, final String fieldName, final Types type) throws Exception
     {
-        Object value = getJavaValue(type);
+        final Object value = getJavaValue(type);
         structured.addSimpleProperty(fieldName, value);
         assertNotNull(structured.getProperty(fieldName));
         // check other properties not modified
-        List<Field> fields = getXmpFields(clz);
-        for (Field field : fields)
+        final List<Field> fields = getXmpFields(clz);
+        for (final Field field : fields)
         {
             // do not check the current name
-            String name = field.get(null).toString();
+            final String name = field.get(null).toString();
             if (!name.equals(fieldName))
             {
                 assertNull(structured.getProperty(name));
@@ -88,14 +88,14 @@ class TestStructuredType extends AbstractTypeTester
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testPropertyType(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testPropertyType(final AbstractStructuredType structured, final Class<? extends AbstractStructuredType> clz, final String fieldName, final Types type) throws Exception
     {
         internalTestPropertyType(structured, clz, fieldName, type);
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomPropertyType(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testRandomPropertyType(final AbstractStructuredType structured, final Class<? extends AbstractStructuredType> clz, final String fieldName, final Types type) throws Exception
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
@@ -105,27 +105,27 @@ class TestStructuredType extends AbstractTypeTester
     }
 
 
-    private void internalTestPropertyType(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    private void internalTestPropertyType(final AbstractStructuredType structured, final Class<? extends AbstractStructuredType> clz, final String fieldName, final Types type) throws Exception
     {
-        Object value = getJavaValue(type);
+        final Object value = getJavaValue(type);
         structured.addSimpleProperty(fieldName, value);
         assertNotNull(structured.getProperty(fieldName));
         // check property type
-        AbstractSimpleProperty asp = (AbstractSimpleProperty) structured.getProperty(fieldName);
+        final AbstractSimpleProperty asp = (AbstractSimpleProperty) structured.getProperty(fieldName);
         assertEquals(type.getImplementingClass(), asp.getClass());
     }
 
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testSetter(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testSetter(final AbstractStructuredType structured, final Class<? extends AbstractStructuredType> clz, final String fieldName, final Types type) throws Exception
     {
         internalTestSetter(structured, clz, fieldName, type);
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomSetter(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testRandomSetter(final AbstractStructuredType structured, final Class<? extends AbstractStructuredType> clz, final String fieldName, final Types type) throws Exception
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
@@ -134,24 +134,24 @@ class TestStructuredType extends AbstractTypeTester
         }
     }
 
-    private void internalTestSetter(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    private void internalTestSetter(final AbstractStructuredType structured, final Class<? extends AbstractStructuredType> clz, final String fieldName, final Types type) throws Exception
     {
-        String setter = calculateSimpleSetter(fieldName);
-        Object value = getJavaValue(type);
-        Method set = clz.getMethod(setter, getJavaType(type));
+        final String setter = calculateSimpleSetter(fieldName);
+        final Object value = getJavaValue(type);
+        final Method set = clz.getMethod(setter, getJavaType(type));
         set.invoke(structured, value);
         // check property set
         assertEquals(value, ((AbstractSimpleProperty) structured.getProperty(fieldName)).getValue());
         // check getter
-        Method get = clz.getMethod(calculateSimpleGetter(fieldName));
-        Object result = get.invoke(structured);
+        final Method get = clz.getMethod(calculateSimpleGetter(fieldName));
+        final Object result = get.invoke(structured);
         assertTrue(getJavaType(type).isAssignableFrom(result.getClass()));
         assertEquals(value, result);
     }
 
     private static Stream<Arguments> initializeParameters()
     {
-        XMPMetadata xmp = XMPMetadata.createXMPMetadata();
+        final XMPMetadata xmp = XMPMetadata.createXMPMetadata();
 
         return Stream.of(
             // data for JobType

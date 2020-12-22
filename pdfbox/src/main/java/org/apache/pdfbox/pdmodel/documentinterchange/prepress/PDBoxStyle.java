@@ -57,7 +57,7 @@ public class PDBoxStyle implements COSObjectable
      *
      * @param dic The existing dictionary.
      */
-    public PDBoxStyle( COSDictionary dic )
+    public PDBoxStyle(final COSDictionary dic )
     {
         dictionary = dic;
     }
@@ -99,7 +99,7 @@ public class PDBoxStyle implements COSObjectable
      *
      * @param color The new colorspace value.
      */
-    public void setGuideLineColor( PDColor color )
+    public void setGuideLineColor(final PDColor color )
     {
         COSArray values = null;
         if( color != null )
@@ -125,7 +125,7 @@ public class PDBoxStyle implements COSObjectable
      *
      * @param width The width in default user space units.
      */
-    public void setGuidelineWidth( float width )
+    public void setGuidelineWidth(final float width )
     {
         dictionary.setFloat(COSName.W, width);
     }
@@ -149,7 +149,7 @@ public class PDBoxStyle implements COSObjectable
      * @see PDBoxStyle#GUIDELINE_STYLE_DASHED
      * @see PDBoxStyle#GUIDELINE_STYLE_SOLID
      */
-    public void setGuidelineStyle( String style )
+    public void setGuidelineStyle(final String style )
     {
         dictionary.setName(COSName.S, style);
     }
@@ -162,7 +162,7 @@ public class PDBoxStyle implements COSObjectable
      */
     public PDLineDashPattern getLineDashPattern()
     {
-        PDLineDashPattern pattern;
+        final PDLineDashPattern pattern;
         COSArray d = (COSArray) dictionary.getDictionaryObject(COSName.D);
         if( d == null )
         {
@@ -170,7 +170,7 @@ public class PDBoxStyle implements COSObjectable
             d.add( COSInteger.THREE );
             dictionary.setItem(COSName.D, d);
         }
-        COSArray lineArray = new COSArray();
+        final COSArray lineArray = new COSArray();
         lineArray.add( d );
         //dash phase is not specified and assumed to be zero.
         pattern = new PDLineDashPattern( lineArray, 0 );
@@ -182,7 +182,7 @@ public class PDBoxStyle implements COSObjectable
      *
      * @param dashArray The patter for this box style.
      */
-    public void setLineDashPattern( COSArray dashArray )
+    public void setLineDashPattern(final COSArray dashArray )
     {
         COSArray array = null;
         if( dashArray != null )

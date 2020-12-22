@@ -55,27 +55,27 @@ public class GlyphSubstitutionDataExtractor
 
     private static final Log LOG = LogFactory.getLog(GlyphSubstitutionDataExtractor.class);
 
-    public GsubData getGsubData(Map<String, ScriptTable> scriptList,
-            FeatureListTable featureListTable, LookupListTable lookupListTable)
+    public GsubData getGsubData(final Map<String, ScriptTable> scriptList,
+                                final FeatureListTable featureListTable, final LookupListTable lookupListTable)
     {
 
-        ScriptTableDetails scriptTableDetails = getSupportedLanguage(scriptList);
+        final ScriptTableDetails scriptTableDetails = getSupportedLanguage(scriptList);
 
         if (scriptTableDetails == null)
         {
             return GsubData.NO_DATA_FOUND;
         }
 
-        ScriptTable scriptTable = scriptTableDetails.getScriptTable();
+        final ScriptTable scriptTable = scriptTableDetails.getScriptTable();
 
-        Map<String, Map<List<Integer>, Integer>> gsubData = new LinkedHashMap<>();
+        final Map<String, Map<List<Integer>, Integer>> gsubData = new LinkedHashMap<>();
         // the starting point is really the scriptTags
         if (scriptTable.getDefaultLangSysTable() != null)
         {
             populateGsubData(gsubData, scriptTable.getDefaultLangSysTable(), featureListTable,
                     lookupListTable);
         }
-        for (LangSysTable langSysTable : scriptTable.getLangSysTables().values())
+        for (final LangSysTable langSysTable : scriptTable.getLangSysTables().values())
         {
             populateGsubData(gsubData, langSysTable, featureListTable, lookupListTable);
         }
@@ -84,11 +84,11 @@ public class GlyphSubstitutionDataExtractor
                 scriptTableDetails.getFeatureName(), gsubData);
     }
 
-    private ScriptTableDetails getSupportedLanguage(Map<String, ScriptTable> scriptList)
+    private ScriptTableDetails getSupportedLanguage(final Map<String, ScriptTable> scriptList)
     {
-        for (Language lang : Language.values())
+        for (final Language lang : Language.values())
         {
-            for (String scriptName : lang.getScriptNames())
+            for (final String scriptName : lang.getScriptNames())
             {
                 if (scriptList.containsKey(scriptName))
                 {
@@ -99,12 +99,12 @@ public class GlyphSubstitutionDataExtractor
         return null;
     }
 
-    private void populateGsubData(Map<String, Map<List<Integer>, Integer>> gsubData,
-            LangSysTable langSysTable, FeatureListTable featureListTable,
-            LookupListTable lookupListTable)
+    private void populateGsubData(final Map<String, Map<List<Integer>, Integer>> gsubData,
+                                  final LangSysTable langSysTable, final FeatureListTable featureListTable,
+                                  final LookupListTable lookupListTable)
     {
-        FeatureRecord[] featureRecords = featureListTable.getFeatureRecords();
-        for (int featureIndex : langSysTable.getFeatureIndices())
+        final FeatureRecord[] featureRecords = featureListTable.getFeatureRecords();
+        for (final int featureIndex : langSysTable.getFeatureIndices())
         {
             if (featureIndex < featureRecords.length)
             {
@@ -113,12 +113,12 @@ public class GlyphSubstitutionDataExtractor
         }
     }
 
-    private void populateGsubData(Map<String, Map<List<Integer>, Integer>> gsubData,
-            FeatureRecord featureRecord, LookupListTable lookupListTable)
+    private void populateGsubData(final Map<String, Map<List<Integer>, Integer>> gsubData,
+                                  final FeatureRecord featureRecord, final LookupListTable lookupListTable)
     {
-        LookupTable[] lookups = lookupListTable.getLookups();
-        Map<List<Integer>, Integer> glyphSubstitutionMap = new LinkedHashMap<>();
-        for (int lookupIndex : featureRecord.getFeatureTable().getLookupListIndices())
+        final LookupTable[] lookups = lookupListTable.getLookups();
+        final Map<List<Integer>, Integer> glyphSubstitutionMap = new LinkedHashMap<>();
+        for (final int lookupIndex : featureRecord.getFeatureTable().getLookupListIndices())
         {
             if (lookupIndex < lookups.length)
             {
@@ -134,11 +134,11 @@ public class GlyphSubstitutionDataExtractor
                 Collections.unmodifiableMap(glyphSubstitutionMap));
     }
 
-    private void extractData(Map<List<Integer>, Integer> glyphSubstitutionMap,
-            LookupTable lookupTable)
+    private void extractData(final Map<List<Integer>, Integer> glyphSubstitutionMap,
+                             final LookupTable lookupTable)
     {
 
-        for (LookupSubTable lookupSubTable : lookupTable.getSubTables())
+        for (final LookupSubTable lookupSubTable : lookupTable.getSubTables())
         {
             if (lookupSubTable instanceof LookupTypeLigatureSubstitutionSubstFormat1)
             {
@@ -165,25 +165,25 @@ public class GlyphSubstitutionDataExtractor
     }
 
     private void extractDataFromSingleSubstTableFormat1Table(
-            Map<List<Integer>, Integer> glyphSubstitutionMap,
-            LookupTypeSingleSubstFormat1 singleSubstTableFormat1)
+            final Map<List<Integer>, Integer> glyphSubstitutionMap,
+            final LookupTypeSingleSubstFormat1 singleSubstTableFormat1)
     {
-        CoverageTable coverageTable = singleSubstTableFormat1.getCoverageTable();
+        final CoverageTable coverageTable = singleSubstTableFormat1.getCoverageTable();
         for (int i = 0; i < coverageTable.getSize(); i++)
         {
-            int coverageGlyphId = coverageTable.getGlyphId(i);
-            int substituteGlyphId = coverageGlyphId + singleSubstTableFormat1.getDeltaGlyphID();
+            final int coverageGlyphId = coverageTable.getGlyphId(i);
+            final int substituteGlyphId = coverageGlyphId + singleSubstTableFormat1.getDeltaGlyphID();
             putNewSubstitutionEntry(glyphSubstitutionMap, substituteGlyphId,
                     Arrays.asList(coverageGlyphId));
         }
     }
 
     private void extractDataFromSingleSubstTableFormat2Table(
-            Map<List<Integer>, Integer> glyphSubstitutionMap,
-            LookupTypeSingleSubstFormat2 singleSubstTableFormat2)
+            final Map<List<Integer>, Integer> glyphSubstitutionMap,
+            final LookupTypeSingleSubstFormat2 singleSubstTableFormat2)
     {
 
-        CoverageTable coverageTable = singleSubstTableFormat2.getCoverageTable();
+        final CoverageTable coverageTable = singleSubstTableFormat2.getCoverageTable();
 
         if (coverageTable.getSize() != singleSubstTableFormat2.getSubstituteGlyphIDs().length)
         {
@@ -193,8 +193,8 @@ public class GlyphSubstitutionDataExtractor
 
         for (int i = 0; i < coverageTable.getSize(); i++)
         {
-            int coverageGlyphId = coverageTable.getGlyphId(i);
-            int substituteGlyphId = coverageGlyphId
+            final int coverageGlyphId = coverageTable.getGlyphId(i);
+            final int substituteGlyphId = coverageGlyphId
                     + singleSubstTableFormat2.getSubstituteGlyphIDs()[i];
             putNewSubstitutionEntry(glyphSubstitutionMap, substituteGlyphId,
                     Arrays.asList(coverageGlyphId));
@@ -202,13 +202,13 @@ public class GlyphSubstitutionDataExtractor
     }
 
     private void extractDataFromLigatureSubstitutionSubstFormat1Table(
-            Map<List<Integer>, Integer> glyphSubstitutionMap,
-            LookupTypeLigatureSubstitutionSubstFormat1 ligatureSubstitutionTable)
+            final Map<List<Integer>, Integer> glyphSubstitutionMap,
+            final LookupTypeLigatureSubstitutionSubstFormat1 ligatureSubstitutionTable)
     {
 
-        for (LigatureSetTable ligatureSetTable : ligatureSubstitutionTable.getLigatureSetTables())
+        for (final LigatureSetTable ligatureSetTable : ligatureSubstitutionTable.getLigatureSetTables())
         {
-            for (LigatureTable ligatureTable : ligatureSetTable.getLigatureTables())
+            for (final LigatureTable ligatureTable : ligatureSetTable.getLigatureTables())
             {
                 extractDataFromLigatureTable(glyphSubstitutionMap, ligatureTable);
             }
@@ -217,13 +217,13 @@ public class GlyphSubstitutionDataExtractor
 
     }
 
-    private void extractDataFromLigatureTable(Map<List<Integer>, Integer> glyphSubstitutionMap,
-            LigatureTable ligatureTable)
+    private void extractDataFromLigatureTable(final Map<List<Integer>, Integer> glyphSubstitutionMap,
+                                              final LigatureTable ligatureTable)
     {
 
-        List<Integer> glyphsToBeSubstituted = new ArrayList<>();
+        final List<Integer> glyphsToBeSubstituted = new ArrayList<>();
 
-        for (int componentGlyphID : ligatureTable.getComponentGlyphIDs())
+        for (final int componentGlyphID : ligatureTable.getComponentGlyphIDs())
         {
             glyphsToBeSubstituted.add(componentGlyphID);
         }
@@ -235,14 +235,14 @@ public class GlyphSubstitutionDataExtractor
 
     }
 
-    private void putNewSubstitutionEntry(Map<List<Integer>, Integer> glyphSubstitutionMap,
-            int newGlyph, List<Integer> glyphsToBeSubstituted)
+    private void putNewSubstitutionEntry(final Map<List<Integer>, Integer> glyphSubstitutionMap,
+                                         final int newGlyph, final List<Integer> glyphsToBeSubstituted)
     {
-        Integer oldValue = glyphSubstitutionMap.put(glyphsToBeSubstituted, newGlyph);
+        final Integer oldValue = glyphSubstitutionMap.put(glyphsToBeSubstituted, newGlyph);
 
         if (oldValue != null)
         {
-            String message = "For the newGlyph: " + newGlyph + ", newValue: "
+            final String message = "For the newGlyph: " + newGlyph + ", newValue: "
                     + glyphsToBeSubstituted + " is trying to override the oldValue: " + oldValue;
             LOG.warn(message);
         }
@@ -254,7 +254,7 @@ public class GlyphSubstitutionDataExtractor
         private final String featureName;
         private final ScriptTable scriptTable;
 
-        private ScriptTableDetails(Language language, String featureName, ScriptTable scriptTable)
+        private ScriptTableDetails(final Language language, final String featureName, final ScriptTable scriptTable)
         {
             this.language = language;
             this.featureName = featureName;

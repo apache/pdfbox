@@ -46,7 +46,7 @@ class TestPDFParser
             Loader.loadPDF(new File(TestPDFParser.class.getResource("MissingCatalog.pdf").toURI()))
                 .close();
         }
-        catch (Exception exception)
+        catch (final Exception exception)
         {
             fail("Unexpected Exception");
         }
@@ -65,7 +65,7 @@ class TestPDFParser
         try (PDDocument doc = Loader
                 .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3208-L33MUTT2SVCWGCS6UIYL5TH3PNPXHIS6.pdf")))
         {
-            PDDocumentInformation di = doc.getDocumentInformation();
+            final PDDocumentInformation di = doc.getDocumentInformation();
             assertEquals("Liquent Enterprise Services", di.getAuthor());
             assertEquals("Liquent services server", di.getCreator());
             assertEquals("Amyuni PDF Converter version 4.0.0.9", di.getProducer());
@@ -88,7 +88,7 @@ class TestPDFParser
     {
         try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-3940-079977.pdf")))
         {
-            PDDocumentInformation di = doc.getDocumentInformation();
+            final PDDocumentInformation di = doc.getDocumentInformation();
             assertEquals("Unknown", di.getAuthor());
             assertEquals("C:REGULA~1IREGSFR_EQ_EM.WP", di.getCreator());
             assertEquals("Acrobat PDFWriter 3.02 for Windows", di.getProducer());
@@ -111,7 +111,7 @@ class TestPDFParser
                     new File(TARGETPDFDIR, "PDFBOX-3783-72GLBIGUC6LB46ELZFBARRJTLN4RBSQM.pdf"))
                     .close();
         }
-        catch (Exception exception)
+        catch (final Exception exception)
         {
             fail("Unexpected IOException");
         }
@@ -143,7 +143,7 @@ class TestPDFParser
         {
             Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-3947-670064.pdf")).close();
         }
-        catch (Exception exception)
+        catch (final Exception exception)
         {
             fail("Unexpected Exception");
         }
@@ -161,7 +161,7 @@ class TestPDFParser
                     new File(TARGETPDFDIR, "PDFBOX-3948-EUWO6SQS5TM4VGOMRD3FLXZHU35V2CP2.pdf"))
                     .close();
         }
-        catch (Exception exception)
+        catch (final Exception exception)
         {
             fail("Unexpected Exception");
         }
@@ -179,7 +179,7 @@ class TestPDFParser
                     new File(TARGETPDFDIR, "PDFBOX-3949-MKFYUGZWS3OPXLLVU2Z4LWCTVA5WNOGF.pdf"))
                     .close();
         }
-        catch (Exception exception)
+        catch (final Exception exception)
         {
             fail("Unexpected Exception");
         }
@@ -197,14 +197,14 @@ class TestPDFParser
                 .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3950-23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf")))
         {
             assertEquals(4, doc.getNumberOfPages());
-            PDFRenderer renderer = new PDFRenderer(doc);
+            final PDFRenderer renderer = new PDFRenderer(doc);
             for (int i = 0; i < doc.getNumberOfPages(); ++i)
             {
                 try
                 {
                     renderer.renderImage(i);
                 }
-                catch (IOException ex)
+                catch (final IOException ex)
                 {
                     if (i == 3 && ex.getMessage().equals("Missing descendant font array"))
                     {
@@ -258,7 +258,7 @@ class TestPDFParser
         try (PDDocument doc = Loader
                 .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3977-63NGFQRI44HQNPIPEJH5W2TBM6DJZWMI.pdf")))
         {
-            PDDocumentInformation di = doc.getDocumentInformation();
+            final PDDocumentInformation di = doc.getDocumentInformation();
             assertEquals("QuarkXPress(tm) 6.52", di.getCreator());
             assertEquals("Acrobat Distiller 7.0 pour Macintosh", di.getProducer());
             assertEquals("Fich sal Fabr corr1 (Page 6)", di.getTitle());
@@ -277,7 +277,7 @@ class TestPDFParser
         {
             Loader.loadPDF(new File(TARGETPDFDIR, "genko_oc_shiryo1.pdf")).close();
         }
-        catch (Exception exception)
+        catch (final Exception exception)
         {
             fail("Unexpected Exception");
         }
@@ -294,7 +294,7 @@ class TestPDFParser
         {
             Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4338.pdf")).close();
         }
-        catch (Exception exception)
+        catch (final Exception exception)
         {
             fail("Unexpected Exception");
         }
@@ -311,7 +311,7 @@ class TestPDFParser
         {
             Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4339.pdf")).close();
         }
-        catch (Exception exception)
+        catch (final Exception exception)
         {
             fail("Unexpected Exception");
         }
@@ -328,8 +328,8 @@ class TestPDFParser
     {
         try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4153-WXMDXCYRWFDCMOSFQJ5OAJIAFXYRZ5OA.pdf")))
         {
-            PDDocumentOutline documentOutline = doc.getDocumentCatalog().getDocumentOutline();
-            PDOutlineItem firstChild = documentOutline.getFirstChild();
+            final PDDocumentOutline documentOutline = doc.getDocumentCatalog().getDocumentOutline();
+            final PDOutlineItem firstChild = documentOutline.getFirstChild();
             assertEquals("Main Menu", firstChild.getTitle());
         }
     }

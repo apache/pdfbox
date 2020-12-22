@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -44,7 +46,7 @@ class BufferedRandomAccessFileTest
         try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file)))
         {
             final String content = "1234567890";
-            outputStream.write(content.getBytes("UTF-8"));
+            outputStream.write(content.getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
         }
 
@@ -75,7 +77,7 @@ class BufferedRandomAccessFileTest
         try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file)))
         {
             final String content = "012345678A012345678B012345678C012345678D";
-            outputStream.write(content.getBytes("UTF-8"));
+            outputStream.write(content.getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
         }
 

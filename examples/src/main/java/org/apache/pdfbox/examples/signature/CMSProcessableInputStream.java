@@ -35,15 +35,15 @@ import org.apache.pdfbox.io.IOUtils;
  */
 class CMSProcessableInputStream implements CMSTypedData
 {
-    private InputStream in;
+    private final InputStream in;
     private final ASN1ObjectIdentifier contentType;
 
-    CMSProcessableInputStream(InputStream is)
+    CMSProcessableInputStream(final InputStream is)
     {
         this(new ASN1ObjectIdentifier(CMSObjectIdentifiers.data.getId()), is);
     }
 
-    CMSProcessableInputStream(ASN1ObjectIdentifier type, InputStream is)
+    CMSProcessableInputStream(final ASN1ObjectIdentifier type, final InputStream is)
     {
         contentType = type;
         in = is;
@@ -56,7 +56,7 @@ class CMSProcessableInputStream implements CMSTypedData
     }
 
     @Override
-    public void write(OutputStream out) throws IOException, CMSException
+    public void write(final OutputStream out) throws IOException, CMSException
     {
         // read the content only one time
         IOUtils.copy(in, out);

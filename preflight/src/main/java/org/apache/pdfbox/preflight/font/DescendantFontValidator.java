@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.font;
 
@@ -40,7 +40,7 @@ import org.apache.pdfbox.preflight.font.container.FontContainer;
 public abstract class DescendantFontValidator<T extends FontContainer> extends SimpleFontValidator<T>
 {
 
-    public DescendantFontValidator(PreflightContext context, PDCIDFont font, T fContainer)
+    public DescendantFontValidator(final PreflightContext context, final PDCIDFont font, final T fContainer)
     {
         super(context, font, font.getCOSObject(), fContainer);
     }
@@ -74,13 +74,13 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
      * 
      * @param sysinfo
      */
-    protected void checkCIDSystemInfo(COSDictionary sysinfo)
+    protected void checkCIDSystemInfo(final COSDictionary sysinfo)
     {
         if (sysinfo != null)
         {
-            String reg = sysinfo.getString(COSName.REGISTRY);
-            String ord = sysinfo.getString(COSName.ORDERING);
-            COSBase sup = sysinfo.getDictionaryObject(COSName.SUPPLEMENT);
+            final String reg = sysinfo.getString(COSName.REGISTRY);
+            final String ord = sysinfo.getString(COSName.ORDERING);
+            final COSBase sup = sysinfo.getDictionaryObject(COSName.SUPPLEMENT);
 
             if (!(reg != null && ord != null && sup instanceof COSInteger))
             {
@@ -116,7 +116,7 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
      * @param ctog
      * @param mandatory true for CIDType2 , false for CIDType0
      */
-    protected void checkCIDToGIDMap(COSBase ctog, boolean mandatory)
+    protected void checkCIDToGIDMap(final COSBase ctog, final boolean mandatory)
     {
         if (ctog instanceof COSName)
         {
@@ -132,10 +132,10 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
             try
             {
                 // todo: check the map's content? (won't pdfbox do this?)
-                InputStream is = ((COSStream) ctog).createInputStream();
+                final InputStream is = ((COSStream) ctog).createInputStream();
                 is.close();
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 // map can be invalid, return a Validation Error
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID, 

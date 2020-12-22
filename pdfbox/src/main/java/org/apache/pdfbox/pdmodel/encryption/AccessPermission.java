@@ -79,7 +79,7 @@ public class AccessPermission
      * @param b the bytes as defined in PDF specs
      */
 
-    public AccessPermission(byte[] b)
+    public AccessPermission(final byte[] b)
     {
         bytes = 0;
         bytes |= b[0] & 0xFF;
@@ -96,17 +96,17 @@ public class AccessPermission
      *
      * @param permissions The permission bits.
      */
-    public AccessPermission( int permissions )
+    public AccessPermission(final int permissions )
     {
         bytes = permissions;
     }
 
-    private boolean isPermissionBitOn( int bit )
+    private boolean isPermissionBitOn(final int bit )
     {
         return (bytes & (1 << (bit-1))) != 0;
     }
 
-    private boolean setPermissionBit( int bit, boolean value )
+    private boolean setPermissionBit(final int bit, final boolean value )
     {
         int permissions = bytes;
         if( value )
@@ -152,7 +152,7 @@ public class AccessPermission
 
     public static AccessPermission getOwnerAccessPermission()
     {
-        AccessPermission ret = new AccessPermission();
+        final AccessPermission ret = new AccessPermission();
         ret.setCanAssembleDocument(true);
         ret.setCanExtractContent(true);
         ret.setCanExtractForAccessibility(true);
@@ -214,7 +214,7 @@ public class AccessPermission
      *
      * @param allowPrinting A boolean determining if the user can print.
      */
-    public void setCanPrint( boolean allowPrinting )
+    public void setCanPrint(final boolean allowPrinting )
     {
         if(!readOnly)
         {
@@ -239,7 +239,7 @@ public class AccessPermission
      *
      * @param allowModifications A boolean determining if the user can modify the document.
      */
-    public void setCanModify( boolean allowModifications )
+    public void setCanModify(final boolean allowModifications )
     {
         if(!readOnly)
         {
@@ -266,7 +266,7 @@ public class AccessPermission
      * @param allowExtraction A boolean determining if the user can extract content
      *                        from the document.
      */
-    public void setCanExtractContent( boolean allowExtraction )
+    public void setCanExtractContent(final boolean allowExtraction )
     {
         if(!readOnly)
         {
@@ -299,7 +299,7 @@ public class AccessPermission
      *
      * @param allowAnnotationModification A boolean determining the new setting.
      */
-    public void setCanModifyAnnotations( boolean allowAnnotationModification )
+    public void setCanModifyAnnotations(final boolean allowAnnotationModification )
     {
         if(!readOnly)
         {
@@ -328,7 +328,7 @@ public class AccessPermission
      *
      * @param allowFillingInForm A boolean determining if the user can fill in interactive forms.
      */
-    public void setCanFillInForm( boolean allowFillingInForm )
+    public void setCanFillInForm(final boolean allowFillingInForm )
     {
         if(!readOnly)
         {
@@ -356,7 +356,7 @@ public class AccessPermission
      * @param allowExtraction A boolean determining if the user can extract content
      *                        from the document.
      */
-    public void setCanExtractForAccessibility( boolean allowExtraction )
+    public void setCanExtractForAccessibility(final boolean allowExtraction )
     {
         if(!readOnly)
         {
@@ -381,7 +381,7 @@ public class AccessPermission
      *
      * @param allowAssembly A boolean determining if the user can assemble the document.
      */
-    public void setCanAssembleDocument( boolean allowAssembly )
+    public void setCanAssembleDocument(final boolean allowAssembly )
     {
         if(!readOnly)
         {
@@ -408,7 +408,7 @@ public class AccessPermission
      * @param canPrintDegraded A boolean determining if the user can print the
      *        document in a degraded format.
      */
-    public void setCanPrintDegraded( boolean canPrintDegraded )
+    public void setCanPrintDegraded(final boolean canPrintDegraded )
     {
         if(!readOnly)
         {

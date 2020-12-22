@@ -55,11 +55,11 @@ public abstract class COSNumber extends COSBase
      *
      * @throws IOException If the string is not a number.
      */
-    public static COSNumber get( String number ) throws IOException
+    public static COSNumber get(final String number ) throws IOException
     {
         if (number.length() == 1)
         {
-            char digit = number.charAt(0);
+            final char digit = number.charAt(0);
             if ('0' <= digit && digit <= '9') 
             {
                 return COSInteger.get((long) digit - '0');
@@ -82,10 +82,10 @@ public abstract class COSNumber extends COSBase
         {
             return COSInteger.get(Long.parseLong(number));
         }
-        catch (NumberFormatException e)
+        catch (final NumberFormatException e)
         {
             // check if the given string could be a number at all
-            String numberString = number.startsWith("+") || number.startsWith("-")
+            final String numberString = number.startsWith("+") || number.startsWith("-")
                     ? number.substring(1) : number;
             if (!numberString.matches("[0-9]*"))
             {
@@ -95,12 +95,12 @@ public abstract class COSNumber extends COSBase
         }
     }
 
-    private static boolean isFloat( String number )
+    private static boolean isFloat(final String number )
     {
-        int length = number.length();
+        final int length = number.length();
         for (int i = 0; i < length; i++)
         {
-            char digit = number.charAt(i);
+            final char digit = number.charAt(i);
             if (digit == '.' || digit == 'e')
             {
                 return true;

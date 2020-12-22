@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.process;
 
@@ -57,14 +57,14 @@ public class MetadataValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext ctx) throws ValidationException
+    public void validate(final PreflightContext ctx) throws ValidationException
     {
         try
         {
-            PDDocument document = ctx.getDocument();
+            final PDDocument document = ctx.getDocument();
 
-            XMPMetadata metadata;
-            DomXmpParser builder = new DomXmpParser();
+            final XMPMetadata metadata;
+            final DomXmpParser builder = new DomXmpParser();
             try (InputStream is = getXpacket(document))
             {
                 metadata = builder.parse(is);
@@ -101,14 +101,14 @@ public class MetadataValidationProcess extends AbstractProcess
             {
                 new RDFAboutAttributeConcordanceValidation().validateRDFAboutAttributes(metadata);
             }
-            catch (DifferentRDFAboutException e)
+            catch (final DifferentRDFAboutException e)
             {
                 addValidationError(ctx, new ValidationError(
                         PreflightConstants.ERROR_METADATA_RDF_ABOUT_ATTRIBUTE_INEQUAL_VALUE, e.getMessage(), e));
             }
 
         }
-        catch (XpacketParsingException e)
+        catch (final XpacketParsingException e)
         {
             if (e.getError() != null)
             {
@@ -119,7 +119,7 @@ public class MetadataValidationProcess extends AbstractProcess
                 addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_MAIN, "Unexpected error", e));
             }
         }
-        catch (XmpParsingException e)
+        catch (final XmpParsingException e)
         {
             if (e.getErrorType() == ErrorType.NoValueType)
             {
@@ -160,26 +160,26 @@ public class MetadataValidationProcess extends AbstractProcess
                 addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, e.getMessage(), e));
             }
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new ValidationException("Failed while validating", e);
         }
     }
 
     // check thumbnails. See Bavaria Testsuite file PDFA_Conference_2009_nc.pdf for an example.
-    private void checkThumbnails(PreflightContext ctx, XMPMetadata metadata)
+    private void checkThumbnails(final PreflightContext ctx, final XMPMetadata metadata)
     {
-        XMPBasicSchema xmp = metadata.getXMPBasicSchema();
+        final XMPBasicSchema xmp = metadata.getXMPBasicSchema();
         if (xmp == null)
         {
             return;
         }
-        List<ThumbnailType> tbProp;
+        final List<ThumbnailType> tbProp;
         try
         {
             tbProp = xmp.getThumbnailsProperty();
         }
-        catch (BadFieldValueException e)
+        catch (final BadFieldValueException e)
         {
             // should not happen here because it would have happened in XmpParser already
             addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, e.getMessage(), e));
@@ -192,14 +192,14 @@ public class MetadataValidationProcess extends AbstractProcess
         tbProp.forEach(tb -> checkThumbnail(tb, ctx));
     }
 
-    private void checkThumbnail(ThumbnailType tb, PreflightContext ctx)
+    private void checkThumbnail(final ThumbnailType tb, final PreflightContext ctx)
     {
-        byte[] binImage;
+        final byte[] binImage;
         try
         {
             binImage = Hex.decodeBase64(tb.getImage());
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
                     "xapGImg:image is not correct base64 encoding"));
@@ -211,12 +211,12 @@ public class MetadataValidationProcess extends AbstractProcess
                     "xapGImg:image decoded base64 content is not in JPEG format"));
             return;
         }
-        BufferedImage bim;
+        final BufferedImage bim;
         try
         {
             bim = ImageIO.read(new ByteArrayInputStream(binImage));
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, e.getMessage(), e));
             return;
@@ -238,7 +238,7 @@ public class MetadataValidationProcess extends AbstractProcess
         }
     }
     
-    private boolean hasJpegMagicNumber(byte[] binImage)
+    private boolean hasJpegMagicNumber(final byte[] binImage)
     {
         if (binImage.length < 4)
         {
@@ -253,23 +253,23 @@ public class MetadataValidationProcess extends AbstractProcess
     /**
      * Return the xpacket from the dictionary's stream
      */
-    private static InputStream getXpacket(PDDocument document)
+    private static InputStream getXpacket(final PDDocument document)
             throws IOException, XpacketParsingException
     {
-        PDDocumentCatalog catalog = document.getDocumentCatalog();
-        PDMetadata metadata = catalog.getMetadata();
+        final PDDocumentCatalog catalog = document.getDocumentCatalog();
+        final PDMetadata metadata = catalog.getMetadata();
         if (metadata == null)
         {
-            COSBase metaObject = catalog.getCOSObject().getDictionaryObject(COSName.METADATA);
+            final COSBase metaObject = catalog.getCOSObject().getDictionaryObject(COSName.METADATA);
             if (!(metaObject instanceof COSStream))
             {
                 // the Metadata object isn't a stream
-                ValidationError error = new ValidationError(
+                final ValidationError error = new ValidationError(
                         PreflightConstants.ERROR_METADATA_FORMAT, "Metadata is not a stream");
                 throw new XpacketParsingException("Failed while retrieving xpacket", error);
             }
             // missing Metadata Key in catalog
-            ValidationError error = new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
+            final ValidationError error = new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
                     "Missing Metadata Key in catalog");
             throw new XpacketParsingException("Failed while retrieving xpacket", error);
         }
@@ -277,7 +277,7 @@ public class MetadataValidationProcess extends AbstractProcess
         if (metadata.getCOSObject().containsKey(COSName.FILTER))
         {
             // filter key should not be defined
-            ValidationError error = new ValidationError(
+            final ValidationError error = new ValidationError(
                     PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER,
                     "Filter specified in metadata dictionary");
             throw new XpacketParsingException("Failed while retrieving xpacket", error);
@@ -292,10 +292,10 @@ public class MetadataValidationProcess extends AbstractProcess
      * @param doc the document to check.
      * @return the list of validation errors.
      */
-    protected List<ValidationError> checkStreamFilterUsage(PDDocument doc)
+    protected List<ValidationError> checkStreamFilterUsage(final PDDocument doc)
     {
-        List<ValidationError> ve = new ArrayList<>();
-        List<?> filters = doc.getDocumentCatalog().getMetadata().getFilters();
+        final List<ValidationError> ve = new ArrayList<>();
+        final List<?> filters = doc.getDocumentCatalog().getMetadata().getFilters();
         if (!filters.isEmpty())
         {
             ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_MAIN,

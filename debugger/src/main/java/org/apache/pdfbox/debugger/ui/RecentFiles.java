@@ -46,7 +46,7 @@ public class RecentFiles
      * to create preference instance.
      * @param maximumFile the number of recent files to remember.
      */
-    public RecentFiles(Class className, int maximumFile)
+    public RecentFiles(final Class className, final int maximumFile)
     {
         this.maximum = maximumFile;
         this.pref = Preferences.userNodeForPackage(className);
@@ -80,7 +80,7 @@ public class RecentFiles
      *
      * @param path path to the file. this path means File#getPath() method returned String.
      */
-    public void addFile(String path)
+    public void addFile(final String path)
     {
         if (filePaths.size() >= maximum + 1 && path != null)
         {
@@ -95,7 +95,7 @@ public class RecentFiles
      *
      * @param path path string to the file. this path means File#getPath() method returned String.
      */
-    public void removeFile(String path)
+    public void removeFile(final String path)
     {
         if (filePaths.contains(path))
         {
@@ -113,7 +113,7 @@ public class RecentFiles
     {
         if (!isEmpty())
         {
-            List<String> files = filePaths.stream().
+            final List<String> files = filePaths.stream().
                     filter(path -> new File(path).exists()).
                     collect(Collectors.toList());
             if (files.size() > maximum)
@@ -136,10 +136,10 @@ public class RecentFiles
         writeHistoryToPref(filePaths);
     }
 
-    private String[] breakString(String fullPath)
+    private String[] breakString(final String fullPath)
     {
-        int allowedStringLength = Preferences.MAX_VALUE_LENGTH;
-        List<String> pieces = new ArrayList<>();
+        final int allowedStringLength = Preferences.MAX_VALUE_LENGTH;
+        final List<String> pieces = new ArrayList<>();
         int beginIndex = 0;
         int remainingLength = fullPath.length();
         int endIndex = 0;
@@ -153,18 +153,18 @@ public class RecentFiles
         return pieces.toArray(new String[pieces.size()]);
     }
 
-    private void writeHistoryToPref(Queue<String> filePaths)
+    private void writeHistoryToPref(final Queue<String> filePaths)
     {
         if (filePaths.isEmpty())
         {
             return;
         }
-        Preferences node = pref.node(KEY);
+        final Preferences node = pref.node(KEY);
         node.putInt(HISTORY_LENGTH, filePaths.size());
         int fileCount = 1;
-        for (String path : filePaths)
+        for (final String path : filePaths)
         {
-            String[] pieces = breakString(path);
+            final String[] pieces = breakString(path);
             node.putInt(String.format(PIECES_LENGTH_KEY, fileCount), pieces.length);
             for (int i = 0; i < pieces.length; i++)
             {
@@ -176,21 +176,21 @@ public class RecentFiles
 
     private Queue<String> readHistoryFromPref()
     {
-        Preferences node = pref.node(KEY);
-        int historyLength = node.getInt(HISTORY_LENGTH, 0);
+        final Preferences node = pref.node(KEY);
+        final int historyLength = node.getInt(HISTORY_LENGTH, 0);
         if (historyLength == 0)
         {
             return null;
         }
-        Queue<String> history = new ArrayDeque<>();
+        final Queue<String> history = new ArrayDeque<>();
 
         for (int i = 1; i <= historyLength; i++)
         {
-            int totalPieces = node.getInt(String.format(PIECES_LENGTH_KEY, i), 0);
-            StringBuilder stringBuilder = new StringBuilder();
+            final int totalPieces = node.getInt(String.format(PIECES_LENGTH_KEY, i), 0);
+            final StringBuilder stringBuilder = new StringBuilder();
             for (int j = 0; j < totalPieces; j++)
             {
-                String piece = node.get(String.format(PATH_KEY, i, j), "");
+                final String piece = node.get(String.format(PATH_KEY, i, j), "");
                 stringBuilder.append(piece);
             }
             history.add(stringBuilder.toString());

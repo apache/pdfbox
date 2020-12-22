@@ -31,7 +31,7 @@ import java.io.IOException;
 public final class CloseFillEvenOddAndStrokePath extends GraphicsOperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         context.processOperator(OperatorName.CLOSE_PATH, operands);
         context.processOperator(OperatorName.FILL_EVEN_ODD_AND_STROKE, operands);

@@ -52,7 +52,7 @@ class PDFCloneUtility
      * Creates a new instance for the given target document.
      * @param dest the destination PDF document that will receive the clones
      */
-    PDFCloneUtility(PDDocument dest)
+    PDFCloneUtility(final PDDocument dest)
     {
         this.destination = dest;
     }
@@ -73,7 +73,7 @@ class PDFCloneUtility
      * @return the cloned instance of the base object
      * @throws IOException if an I/O error occurs
      */
-      COSBase cloneForNewDocument( Object base ) throws IOException
+      COSBase cloneForNewDocument(final Object base ) throws IOException
       {
           if( base == null )
           {
@@ -92,9 +92,9 @@ class PDFCloneUtility
           }
           if (base instanceof List)
           {
-              COSArray array = new COSArray();
-              List<?> list = (List<?>) base;
-              for (Object obj : list)
+              final COSArray array = new COSArray();
+              final List<?> list = (List<?>) base;
+              for (final Object obj : list)
               {
                   array.add(cloneForNewDocument(obj));
               }
@@ -106,13 +106,13 @@ class PDFCloneUtility
           }
           else if( base instanceof COSObject )
           {
-              COSObject object = (COSObject)base;
+              final COSObject object = (COSObject)base;
               retval = cloneForNewDocument( object.getObject() );
           }
           else if( base instanceof COSArray )
           {
-              COSArray newArray = new COSArray();
-              COSArray array = (COSArray)base;
+              final COSArray newArray = new COSArray();
+              final COSArray array = (COSArray)base;
               for( int i=0; i<array.size(); i++ )
               {
                   newArray.add( cloneForNewDocument( array.get( i ) ) );
@@ -121,15 +121,15 @@ class PDFCloneUtility
           }
           else if( base instanceof COSStream )
           {
-              COSStream originalStream = (COSStream)base;
-              COSStream stream = destination.getDocument().createCOSStream();
+              final COSStream originalStream = (COSStream)base;
+              final COSStream stream = destination.getDocument().createCOSStream();
               try (OutputStream output = stream.createRawOutputStream();
-                   InputStream input = originalStream.createRawInputStream())
+                   final InputStream input = originalStream.createRawInputStream())
               {
                   IOUtils.copy(input, output);
               }
               clonedVersion.put( base, stream );
-              for( Map.Entry<COSName, COSBase> entry :  originalStream.entrySet() )
+              for( final Map.Entry<COSName, COSBase> entry :  originalStream.entrySet() )
               {
                   stream.setItem(entry.getKey(), cloneForNewDocument(entry.getValue()));
               }
@@ -137,10 +137,10 @@ class PDFCloneUtility
           }
           else if( base instanceof COSDictionary )
           {
-              COSDictionary dic = (COSDictionary)base;
+              final COSDictionary dic = (COSDictionary)base;
               retval = new COSDictionary();
               clonedVersion.put( base, retval );
-              for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
+              for( final Map.Entry<COSName, COSBase> entry : dic.entrySet() )
               {
                   ((COSDictionary)retval).setItem(
                           entry.getKey(),
@@ -164,7 +164,7 @@ class PDFCloneUtility
        * @param target the merge target
        * @throws IOException if an I/O error occurs
        */
-      void cloneMerge( final COSObjectable base, COSObjectable target) throws IOException
+      void cloneMerge(final COSObjectable base, final COSObjectable target) throws IOException
       {
           if( base == null )
           {
@@ -200,7 +200,7 @@ class PDFCloneUtility
               }
               else
               {
-                  COSArray array = (COSArray) base;
+                  final COSArray array = (COSArray) base;
                   for (int i = 0; i < array.size(); i++)
                   {
                       ((COSArray) target).add(cloneForNewDocument(array.get(i)));
@@ -210,14 +210,14 @@ class PDFCloneUtility
           else if( base instanceof COSStream )
           {
             // does that make sense???
-              COSStream originalStream = (COSStream)base;
-              COSStream stream = destination.getDocument().createCOSStream();
+              final COSStream originalStream = (COSStream)base;
+              final COSStream stream = destination.getDocument().createCOSStream();
               try (OutputStream output = stream.createOutputStream(originalStream.getFilters()))
               {
                   IOUtils.copy(originalStream.createInputStream(), output);
               }
               clonedVersion.put( base, stream );
-              for( Map.Entry<COSName, COSBase> entry : originalStream.entrySet() )
+              for( final Map.Entry<COSName, COSBase> entry : originalStream.entrySet() )
               {
                   stream.setItem(entry.getKey(), cloneForNewDocument(entry.getValue()));
               }
@@ -231,12 +231,12 @@ class PDFCloneUtility
               }
               else
               {
-                  COSDictionary dic = (COSDictionary) base;
+                  final COSDictionary dic = (COSDictionary) base;
                   clonedVersion.put(base, retval);
-                  for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
+                  for (final Map.Entry<COSName, COSBase> entry : dic.entrySet())
                   {
-                      COSName key = entry.getKey();
-                      COSBase value = entry.getValue();
+                      final COSName key = entry.getKey();
+                      final COSBase value = entry.getValue();
                       if (((COSDictionary) target).getItem(key) != null)
                       {
                           cloneMerge(value, ((COSDictionary) target).getItem(key));

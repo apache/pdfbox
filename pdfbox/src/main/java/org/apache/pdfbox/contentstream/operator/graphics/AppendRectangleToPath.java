@@ -34,7 +34,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 public final class AppendRectangleToPath extends GraphicsOperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (operands.size() < 4)
         {
@@ -44,22 +44,22 @@ public final class AppendRectangleToPath extends GraphicsOperatorProcessor
         {
             return;
         }
-        COSNumber x = (COSNumber) operands.get(0);
-        COSNumber y = (COSNumber) operands.get(1);
-        COSNumber w = (COSNumber) operands.get(2);
-        COSNumber h = (COSNumber) operands.get(3);
+        final COSNumber x = (COSNumber) operands.get(0);
+        final COSNumber y = (COSNumber) operands.get(1);
+        final COSNumber w = (COSNumber) operands.get(2);
+        final COSNumber h = (COSNumber) operands.get(3);
 
-        float x1 = x.floatValue();
-        float y1 = y.floatValue();
+        final float x1 = x.floatValue();
+        final float y1 = y.floatValue();
 
         // create a pair of coordinates for the transformation
-        float x2 = w.floatValue() + x1;
-        float y2 = h.floatValue() + y1;
+        final float x2 = w.floatValue() + x1;
+        final float y2 = h.floatValue() + y1;
 
-        Point2D p0 = context.transformedPoint(x1, y1);
-        Point2D p1 = context.transformedPoint(x2, y1);
-        Point2D p2 = context.transformedPoint(x2, y2);
-        Point2D p3 = context.transformedPoint(x1, y2);
+        final Point2D p0 = context.transformedPoint(x1, y1);
+        final Point2D p1 = context.transformedPoint(x2, y1);
+        final Point2D p2 = context.transformedPoint(x2, y2);
+        final Point2D p3 = context.transformedPoint(x1, y2);
 
         context.appendRectangle(p0, p1, p2, p3);
     }

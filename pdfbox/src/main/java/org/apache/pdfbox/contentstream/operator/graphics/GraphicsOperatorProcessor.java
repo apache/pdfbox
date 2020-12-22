@@ -31,7 +31,7 @@ public abstract class GraphicsOperatorProcessor extends OperatorProcessor
     protected PDFGraphicsStreamEngine context;
 
     @Override
-    public void setContext(PDFStreamEngine context)
+    public void setContext(final PDFStreamEngine context)
     {
         super.setContext(context);
         this.context = (PDFGraphicsStreamEngine)context;

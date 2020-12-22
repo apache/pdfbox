@@ -58,7 +58,7 @@ class StreamImageView implements ActionListener, AncestorListener
      * constructor.
      * @param image instance of BufferedImage.
      */
-    StreamImageView(BufferedImage image)
+    StreamImageView(final BufferedImage image)
     {
         this.image = image;
         initUI();
@@ -66,7 +66,7 @@ class StreamImageView implements ActionListener, AncestorListener
 
     private void initUI()
     {
-        JPanel panel = new JPanel();
+        final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         zoomMenu = ZoomMenu.getInstance();
@@ -96,18 +96,18 @@ class StreamImageView implements ActionListener, AncestorListener
         return scrollPane;
     }
 
-    private Image zoomImage(BufferedImage origin, float scale, int rotation)
+    private Image zoomImage(final BufferedImage origin, final float scale, final int rotation)
     {
-        BufferedImage rotatedImage = ImageUtil.getRotatedImage(origin, rotation);
-        int resizedWidth = (int) (rotatedImage.getWidth() * scale);
-        int resizedHeight = (int) (rotatedImage.getHeight() * scale);
+        final BufferedImage rotatedImage = ImageUtil.getRotatedImage(origin, rotation);
+        final int resizedWidth = (int) (rotatedImage.getWidth() * scale);
+        final int resizedHeight = (int) (rotatedImage.getHeight() * scale);
         return rotatedImage.getScaledInstance(resizedWidth, resizedHeight, Image.SCALE_SMOOTH);
     }
 
     @Override
-    public void actionPerformed(ActionEvent actionEvent)
+    public void actionPerformed(final ActionEvent actionEvent)
     {
-        String actionCommand = actionEvent.getActionCommand();
+        final String actionCommand = actionEvent.getActionCommand();
         if (ZoomMenu.isZoomMenu(actionCommand) || RotationMenu.isRotationMenu(actionCommand))
         {
             addImage(zoomImage(image, ZoomMenu.getZoomScale(), RotationMenu.getRotationDegrees()));
@@ -115,10 +115,10 @@ class StreamImageView implements ActionListener, AncestorListener
         }
     }
 
-    private void addImage(Image img)
+    private void addImage(final Image img)
     {
         // for JDK9; see explanation in PagePane
-        AffineTransform tx = GraphicsEnvironment.getLocalGraphicsEnvironment().
+        final AffineTransform tx = GraphicsEnvironment.getLocalGraphicsEnvironment().
                 getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
         label.setSize((int) Math.ceil(img.getWidth(null) / tx.getScaleX()), 
                       (int) Math.ceil(img.getHeight(null) / tx.getScaleY()));
@@ -127,7 +127,7 @@ class StreamImageView implements ActionListener, AncestorListener
     }
 
     @Override
-    public void ancestorAdded(AncestorEvent ancestorEvent)
+    public void ancestorAdded(final AncestorEvent ancestorEvent)
     {
         zoomMenu.addMenuListeners(this);
         zoomMenu.setEnableMenu(true);
@@ -139,14 +139,14 @@ class StreamImageView implements ActionListener, AncestorListener
     }
 
     @Override
-    public void ancestorRemoved(AncestorEvent ancestorEvent)
+    public void ancestorRemoved(final AncestorEvent ancestorEvent)
     {
         zoomMenu.setEnableMenu(false);
         rotationMenu.setEnableMenu(false);
     }
 
     @Override
-    public void ancestorMoved(AncestorEvent ancestorEvent)
+    public void ancestorMoved(final AncestorEvent ancestorEvent)
     {
     }
 }

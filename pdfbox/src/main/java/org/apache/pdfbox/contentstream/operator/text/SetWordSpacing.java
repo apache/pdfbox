@@ -32,18 +32,18 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class SetWordSpacing extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments)
+    public void process(final Operator operator, final List<COSBase> arguments)
     {
         if (arguments.isEmpty())
         {
             return;
         }
-        COSBase base = arguments.get(0);
+        final COSBase base = arguments.get(0);
         if (!(base instanceof COSNumber))
         {
             return;
         }
-        COSNumber wordSpacing = (COSNumber) base;
+        final COSNumber wordSpacing = (COSNumber) base;
         context.getGraphicsState().getTextState().setWordSpacing( wordSpacing.floatValue() );
     }
 

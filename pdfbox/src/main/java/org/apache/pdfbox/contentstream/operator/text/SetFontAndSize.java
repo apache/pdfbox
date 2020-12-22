@@ -43,15 +43,15 @@ public class SetFontAndSize extends OperatorProcessor
     private static final Log LOG = LogFactory.getLog(SetFontAndSize.class);
 
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.size() < 2)
         {
             throw new MissingOperandException(operator, arguments);
         }
 
-        COSBase base0 = arguments.get(0);
-        COSBase base1 = arguments.get(1);
+        final COSBase base0 = arguments.get(0);
+        final COSBase base1 = arguments.get(1);
         if (!(base0 instanceof COSName))
         {
             return;
@@ -60,10 +60,10 @@ public class SetFontAndSize extends OperatorProcessor
         {
             return;
         }
-        COSName fontName = (COSName) base0;
-        float fontSize = ((COSNumber) base1).floatValue();
+        final COSName fontName = (COSName) base0;
+        final float fontSize = ((COSNumber) base1).floatValue();
         context.getGraphicsState().getTextState().setFontSize(fontSize);
-        PDFont font = context.getResources().getFont(fontName);
+        final PDFont font = context.getResources().getFont(fontName);
         if (font == null)
         {
             LOG.warn("font '" + fontName.getName() + "' not found in resources");

@@ -18,5 +18,5 @@ package org.apache.pdfbox.pdmodel.fixup;
 
 public interface PDDocumentFixup
 { 
-    public void apply(); 
+    void apply();
 }  	

@@ -43,8 +43,8 @@ public class RandomAccessReadView implements RandomAccessRead
      * @param startPosition start position within the underlying random access read
      * @param streamLength stream length
      */
-    public RandomAccessReadView(RandomAccessRead randomAccessRead, long startPosition,
-            long streamLength)
+    public RandomAccessReadView(final RandomAccessRead randomAccessRead, final long startPosition,
+                                final long streamLength)
     {
         this(randomAccessRead, startPosition, streamLength, false);
     }
@@ -57,8 +57,8 @@ public class RandomAccessReadView implements RandomAccessRead
      * @param streamLength stream length
      * @param closeInput close the underlying random access read when closing the view if set to true
      */
-    public RandomAccessReadView(RandomAccessRead randomAccessRead, long startPosition,
-            long streamLength, boolean closeInput)
+    public RandomAccessReadView(final RandomAccessRead randomAccessRead, final long startPosition,
+                                final long streamLength, final boolean closeInput)
     {
         this.randomAccessRead = randomAccessRead;
         this.startPosition = startPosition;
@@ -102,7 +102,7 @@ public class RandomAccessReadView implements RandomAccessRead
             return -1;
         }
         restorePosition();
-        int readValue = randomAccessRead.read();
+        final int readValue = randomAccessRead.read();
         if (readValue > -1)
         {
             currentPosition++;
@@ -114,14 +114,14 @@ public class RandomAccessReadView implements RandomAccessRead
      * {@inheritDoc}
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException
+    public int read(final byte[] b, final int off, final int len) throws IOException
     {
         if (isEOF())
         {
             return -1;
         }
         restorePosition();
-        int readBytes = randomAccessRead.read(b, off, Math.min(len, available()));
+        final int readBytes = randomAccessRead.read(b, off, Math.min(len, available()));
         currentPosition += readBytes;
         return readBytes;
     }
@@ -162,7 +162,7 @@ public class RandomAccessReadView implements RandomAccessRead
      * {@inheritDoc}
      */
     @Override
-    public void rewind(int bytes) throws IOException
+    public void rewind(final int bytes) throws IOException
     {
         checkClosed();
         restorePosition();
@@ -205,7 +205,7 @@ public class RandomAccessReadView implements RandomAccessRead
     }
 
     @Override
-    public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
+    public RandomAccessReadView createView(final long startPosition, final long streamLength) throws IOException
     {
         throw new IOException(getClass().getName() + ".createView isn't supported.");
     }

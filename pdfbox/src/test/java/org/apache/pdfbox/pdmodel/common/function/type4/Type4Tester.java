@@ -27,7 +27,7 @@ public class Type4Tester
 
     private final ExecutionContext context;
 
-    private Type4Tester(ExecutionContext ctxt)
+    private Type4Tester(final ExecutionContext ctxt)
     {
         this.context = ctxt;
     }
@@ -37,11 +37,11 @@ public class Type4Tester
      * @param text the text of the type 4 function
      * @return the tester instance
      */
-    public static Type4Tester create(String text)
+    public static Type4Tester create(final String text)
     {
-        InstructionSequence instructions = InstructionSequenceBuilder.parse(text);
+        final InstructionSequence instructions = InstructionSequenceBuilder.parse(text);
 
-        ExecutionContext context = new ExecutionContext(new Operators());
+        final ExecutionContext context = new ExecutionContext(new Operators());
         instructions.execute(context);
         return new Type4Tester(context);
     }
@@ -51,9 +51,9 @@ public class Type4Tester
      * @param expected the expected bool value
      * @return this instance
      */
-    public Type4Tester pop(boolean expected)
+    public Type4Tester pop(final boolean expected)
     {
-        boolean value = (Boolean)context.getStack().pop();
+        final boolean value = (Boolean)context.getStack().pop();
         assertEquals(expected, value);
         return this;
     }
@@ -63,7 +63,7 @@ public class Type4Tester
      * @param expected the expected real value
      * @return this instance
      */
-    public Type4Tester popReal(float expected)
+    public Type4Tester popReal(final float expected)
     {
         return popReal(expected, 0.0000001);
     }
@@ -74,9 +74,9 @@ public class Type4Tester
      * @param delta the allowed deviation of the value from the expected result
      * @return this instance
      */
-    public Type4Tester popReal(float expected, double delta)
+    public Type4Tester popReal(final float expected, final double delta)
     {
-        Float value = (Float)context.getStack().pop();
+        final Float value = (Float)context.getStack().pop();
         assertEquals(expected, value, delta);
         return this;
     }
@@ -86,9 +86,9 @@ public class Type4Tester
      * @param expected the expected int value
      * @return this instance
      */
-    public Type4Tester pop(int expected)
+    public Type4Tester pop(final int expected)
     {
-        int value = context.popInt();
+        final int value = context.popInt();
         assertEquals(expected, value);
         return this;
     }
@@ -98,7 +98,7 @@ public class Type4Tester
      * @param expected the expected numeric value
      * @return this instance
      */
-    public Type4Tester pop(float expected)
+    public Type4Tester pop(final float expected)
     {
         return pop(expected, 0.0000001);
     }
@@ -109,9 +109,9 @@ public class Type4Tester
      * @param delta the allowed deviation of the value from the expected result
      * @return this instance
      */
-    public Type4Tester pop(float expected, double delta)
+    public Type4Tester pop(final float expected, final double delta)
     {
-        Number value = context.popNumber();
+        final Number value = context.popNumber();
         assertEquals(expected, value.doubleValue(), delta);
         return this;
     }

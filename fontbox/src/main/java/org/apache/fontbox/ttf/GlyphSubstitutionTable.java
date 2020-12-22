@@ -74,22 +74,21 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private GsubData gsubData;
 
-    GlyphSubstitutionTable(TrueTypeFont font)
+    GlyphSubstitutionTable(final TrueTypeFont font)
     {
         super(font);
     }
 
     @Override
     @SuppressWarnings({"squid:S1854"})
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
-        long start = data.getCurrentPosition();
-        @SuppressWarnings({"unused"})
-        int majorVersion = data.readUnsignedShort();
-        int minorVersion = data.readUnsignedShort();
-        int scriptListOffset = data.readUnsignedShort();
-        int featureListOffset = data.readUnsignedShort();
-        int lookupListOffset = data.readUnsignedShort();
+        final long start = data.getCurrentPosition();
+        @SuppressWarnings({"unused"}) final int majorVersion = data.readUnsignedShort();
+        final int minorVersion = data.readUnsignedShort();
+        final int scriptListOffset = data.readUnsignedShort();
+        final int featureListOffset = data.readUnsignedShort();
+        final int lookupListOffset = data.readUnsignedShort();
         @SuppressWarnings({"unused"})
         long featureVariationsOffset = -1L;
         if (minorVersion == 1L)
@@ -101,20 +100,20 @@ public class GlyphSubstitutionTable extends TTFTable
         featureListTable = readFeatureList(data, start + featureListOffset);
         lookupListTable = readLookupList(data, start + lookupListOffset);
 
-        GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
+        final GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
 
         gsubData = glyphSubstitutionDataExtractor
                 .getGsubData(scriptList, featureListTable, lookupListTable);
     }
 
-    private Map<String, ScriptTable> readScriptList(TTFDataStream data, long offset)
+    private Map<String, ScriptTable> readScriptList(final TTFDataStream data, final long offset)
             throws IOException
     {
         data.seek(offset);
-        int scriptCount = data.readUnsignedShort();
-        ScriptTable[] scriptTables= new ScriptTable[scriptCount];
-        int[] scriptOffsets = new int[scriptCount];
-        String[] scriptTags = new String[scriptCount];
+        final int scriptCount = data.readUnsignedShort();
+        final ScriptTable[] scriptTables= new ScriptTable[scriptCount];
+        final int[] scriptOffsets = new int[scriptCount];
+        final String[] scriptTags = new String[scriptCount];
         for (int i = 0; i < scriptCount; i++)
         {
             scriptTags[i] = data.readString(4);
@@ -124,23 +123,23 @@ public class GlyphSubstitutionTable extends TTFTable
         {
             scriptTables[i] = readScriptTable(data, offset + scriptOffsets[i]);
         }
-        Map<String, ScriptTable> resultScriptList = new LinkedHashMap<>(scriptCount);
+        final Map<String, ScriptTable> resultScriptList = new LinkedHashMap<>(scriptCount);
         for (int i = 0; i < scriptCount; i++)
         {
-            ScriptRecord scriptRecord = new ScriptRecord(scriptTags[i], scriptTables[i]);
+            final ScriptRecord scriptRecord = new ScriptRecord(scriptTags[i], scriptTables[i]);
             resultScriptList.put(scriptRecord.getScriptTag(), scriptRecord.getScriptTable());
         }
         return Collections.unmodifiableMap(resultScriptList);
     }
 
-    private ScriptTable readScriptTable(TTFDataStream data, long offset) throws IOException
+    private ScriptTable readScriptTable(final TTFDataStream data, final long offset) throws IOException
     {
         data.seek(offset);
-        int defaultLangSys = data.readUnsignedShort();
-        int langSysCount = data.readUnsignedShort();
-        LangSysRecord[] langSysRecords = new LangSysRecord[langSysCount];
-        String[] langSysTags = new String[langSysCount];
-        int[] langSysOffsets = new int[langSysCount];
+        final int defaultLangSys = data.readUnsignedShort();
+        final int langSysCount = data.readUnsignedShort();
+        final LangSysRecord[] langSysRecords = new LangSysRecord[langSysCount];
+        final String[] langSysTags = new String[langSysCount];
+        final int[] langSysOffsets = new int[langSysCount];
         for (int i = 0; i < langSysCount; i++)
         {
             langSysTags[i] = data.readString(4);
@@ -163,11 +162,11 @@ public class GlyphSubstitutionTable extends TTFTable
         }
         for (int i = 0; i < langSysCount; i++)
         {
-            LangSysTable langSysTable = readLangSysTable(data, offset + langSysOffsets[i]);
+            final LangSysTable langSysTable = readLangSysTable(data, offset + langSysOffsets[i]);
             langSysRecords[i] = new LangSysRecord(langSysTags[i], langSysTable);
         }
-        Map<String, LangSysTable> langSysTables = new LinkedHashMap<>(langSysCount);
-        for (LangSysRecord langSysRecord : langSysRecords)
+        final Map<String, LangSysTable> langSysTables = new LinkedHashMap<>(langSysCount);
+        for (final LangSysRecord langSysRecord : langSysRecords)
         {
             langSysTables.put(langSysRecord.getLangSysTag(),
                     langSysRecord.getLangSysTable());
@@ -175,13 +174,13 @@ public class GlyphSubstitutionTable extends TTFTable
         return new ScriptTable(defaultLangSysTable, Collections.unmodifiableMap(langSysTables));
     }
 
-    private LangSysTable readLangSysTable(TTFDataStream data, long offset) throws IOException
+    private LangSysTable readLangSysTable(final TTFDataStream data, final long offset) throws IOException
     {
         data.seek(offset);
-        int lookupOrder = data.readUnsignedShort();
-        int requiredFeatureIndex = data.readUnsignedShort();
-        int featureIndexCount = data.readUnsignedShort();
-        int[] featureIndices = new int[featureIndexCount];
+        final int lookupOrder = data.readUnsignedShort();
+        final int requiredFeatureIndex = data.readUnsignedShort();
+        final int featureIndexCount = data.readUnsignedShort();
+        final int[] featureIndices = new int[featureIndexCount];
         for (int i = 0; i < featureIndexCount; i++)
         {
             featureIndices[i] = data.readUnsignedShort();
@@ -190,13 +189,13 @@ public class GlyphSubstitutionTable extends TTFTable
                 featureIndices);
     }
 
-    private FeatureListTable readFeatureList(TTFDataStream data, long offset) throws IOException
+    private FeatureListTable readFeatureList(final TTFDataStream data, final long offset) throws IOException
     {
         data.seek(offset);
-        int featureCount = data.readUnsignedShort();
-        FeatureRecord[] featureRecords = new FeatureRecord[featureCount];
-        int[] featureOffsets = new int[featureCount];
-        String[] featureTags = new String[featureCount];
+        final int featureCount = data.readUnsignedShort();
+        final FeatureRecord[] featureRecords = new FeatureRecord[featureCount];
+        final int[] featureOffsets = new int[featureCount];
+        final String[] featureTags = new String[featureCount];
         for (int i = 0; i < featureCount; i++)
         {
             featureTags[i] = data.readString(4);
@@ -222,18 +221,18 @@ public class GlyphSubstitutionTable extends TTFTable
         }
         for (int i = 0; i < featureCount; i++)
         {
-            FeatureTable featureTable = readFeatureTable(data, offset + featureOffsets[i]);
+            final FeatureTable featureTable = readFeatureTable(data, offset + featureOffsets[i]);
             featureRecords[i] = new FeatureRecord(featureTags[i], featureTable);
         }
         return new FeatureListTable(featureCount, featureRecords);
     }
 
-    private FeatureTable readFeatureTable(TTFDataStream data, long offset) throws IOException
+    private FeatureTable readFeatureTable(final TTFDataStream data, final long offset) throws IOException
     {
         data.seek(offset);
-        int featureParams = data.readUnsignedShort();
-        int lookupIndexCount = data.readUnsignedShort();
-        int[] lookupListIndices = new int[lookupIndexCount];
+        final int featureParams = data.readUnsignedShort();
+        final int lookupIndexCount = data.readUnsignedShort();
+        final int[] lookupListIndices = new int[lookupIndexCount];
         for (int i = 0; i < lookupIndexCount; i++)
         {
             lookupListIndices[i] = data.readUnsignedShort();
@@ -241,16 +240,16 @@ public class GlyphSubstitutionTable extends TTFTable
         return new FeatureTable(featureParams, lookupIndexCount, lookupListIndices);
     }
 
-    private LookupListTable readLookupList(TTFDataStream data, long offset) throws IOException
+    private LookupListTable readLookupList(final TTFDataStream data, final long offset) throws IOException
     {
         data.seek(offset);
-        int lookupCount = data.readUnsignedShort();
-        int[] lookups = new int[lookupCount];
+        final int lookupCount = data.readUnsignedShort();
+        final int[] lookups = new int[lookupCount];
         for (int i = 0; i < lookupCount; i++)
         {
             lookups[i] = data.readUnsignedShort();
         }
-        LookupTable[] lookupTables = new LookupTable[lookupCount];
+        final LookupTable[] lookupTables = new LookupTable[lookupCount];
         for (int i = 0; i < lookupCount; i++)
         {
             lookupTables[i] = readLookupTable(data, offset + lookups[i]);
@@ -258,19 +257,19 @@ public class GlyphSubstitutionTable extends TTFTable
         return new LookupListTable(lookupCount, lookupTables);
     }
 
-    private LookupTable readLookupTable(TTFDataStream data, long offset) throws IOException
+    private LookupTable readLookupTable(final TTFDataStream data, final long offset) throws IOException
     {
         data.seek(offset);
-        int lookupType = data.readUnsignedShort();
-        int lookupFlag = data.readUnsignedShort();
-        int subTableCount = data.readUnsignedShort();
-        int[] subTableOffets = new int[subTableCount];
+        final int lookupType = data.readUnsignedShort();
+        final int lookupFlag = data.readUnsignedShort();
+        final int subTableCount = data.readUnsignedShort();
+        final int[] subTableOffets = new int[subTableCount];
         for (int i = 0; i < subTableCount; i++)
         {
             subTableOffets[i] = data.readUnsignedShort();
         }
 
-        int markFilteringSet;
+        final int markFilteringSet;
         if ((lookupFlag & 0x0010) != 0)
         {
             markFilteringSet = data.readUnsignedShort();
@@ -279,7 +278,7 @@ public class GlyphSubstitutionTable extends TTFTable
         {
             markFilteringSet = 0;
         }
-        LookupSubTable[] subTables = new LookupSubTable[subTableCount];
+        final LookupSubTable[] subTables = new LookupSubTable[subTableCount];
         switch (lookupType)
         {
         case 1:
@@ -306,33 +305,33 @@ public class GlyphSubstitutionTable extends TTFTable
         return new LookupTable(lookupType, lookupFlag, markFilteringSet, subTables);
     }
 
-    private LookupSubTable readLookupSubTable(TTFDataStream data, long offset) throws IOException
+    private LookupSubTable readLookupSubTable(final TTFDataStream data, final long offset) throws IOException
     {
         data.seek(offset);
-        int substFormat = data.readUnsignedShort();
+        final int substFormat = data.readUnsignedShort();
         switch (substFormat)
         {
         case 1:
         {
             // LookupType 1: Single Substitution Subtable
             // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#11-single-substitution-format-1
-            int coverageOffset = data.readUnsignedShort();
-            short deltaGlyphID = data.readSignedShort();
-            CoverageTable coverageTable = readCoverageTable(data, offset + coverageOffset);
+            final int coverageOffset = data.readUnsignedShort();
+            final short deltaGlyphID = data.readSignedShort();
+            final CoverageTable coverageTable = readCoverageTable(data, offset + coverageOffset);
             return new LookupTypeSingleSubstFormat1(substFormat, coverageTable, deltaGlyphID);
         }
         case 2:
         {
             // Single Substitution Format 2
             // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#12-single-substitution-format-2
-            int coverageOffset = data.readUnsignedShort();
-            int glyphCount = data.readUnsignedShort();
-            int[] substituteGlyphIDs = new int[glyphCount];
+            final int coverageOffset = data.readUnsignedShort();
+            final int glyphCount = data.readUnsignedShort();
+            final int[] substituteGlyphIDs = new int[glyphCount];
             for (int i = 0; i < glyphCount; i++)
             {
                 substituteGlyphIDs[i] = data.readUnsignedShort();
             }
-            CoverageTable coverageTable = readCoverageTable(data, offset + coverageOffset);
+            final CoverageTable coverageTable = readCoverageTable(data, offset + coverageOffset);
             return new LookupTypeSingleSubstFormat2(substFormat, coverageTable, substituteGlyphIDs);
         }
         default:
@@ -340,11 +339,11 @@ public class GlyphSubstitutionTable extends TTFTable
         }
     }
 
-    private LookupSubTable readLigatureSubstitutionSubtable(TTFDataStream data, long offset)
+    private LookupSubTable readLigatureSubstitutionSubtable(final TTFDataStream data, final long offset)
             throws IOException
     {
         data.seek(offset);
-        int substFormat = data.readUnsignedShort();
+        final int substFormat = data.readUnsignedShort();
 
         if (substFormat != 1)
         {
@@ -352,17 +351,17 @@ public class GlyphSubstitutionTable extends TTFTable
                     "The expected SubstFormat for LigatureSubstitutionTable is 1");
         }
 
-        int coverage = data.readUnsignedShort();
-        int ligSetCount = data.readUnsignedShort();
+        final int coverage = data.readUnsignedShort();
+        final int ligSetCount = data.readUnsignedShort();
 
-        int[] ligatureOffsets = new int[ligSetCount];
+        final int[] ligatureOffsets = new int[ligSetCount];
 
         for (int i = 0; i < ligSetCount; i++)
         {
             ligatureOffsets[i] = data.readUnsignedShort();
         }
 
-        CoverageTable coverageTable = readCoverageTable(data, offset + coverage);
+        final CoverageTable coverageTable = readCoverageTable(data, offset + coverage);
 
         if (ligSetCount != coverageTable.getSize())
         {
@@ -370,12 +369,12 @@ public class GlyphSubstitutionTable extends TTFTable
                     "According to the OpenTypeFont specifications, the coverage count should be equal to the no. of LigatureSetTables");
         }
 
-        LigatureSetTable[] ligatureSetTables = new LigatureSetTable[ligSetCount];
+        final LigatureSetTable[] ligatureSetTables = new LigatureSetTable[ligSetCount];
 
         for (int i = 0; i < ligSetCount; i++)
         {
 
-            int coverageGlyphId = coverageTable.getGlyphId(i);
+            final int coverageGlyphId = coverageTable.getGlyphId(i);
 
             ligatureSetTables[i] = readLigatureSetTable(data,
                     offset + ligatureOffsets[i], coverageGlyphId);
@@ -385,16 +384,16 @@ public class GlyphSubstitutionTable extends TTFTable
                 ligatureSetTables);
     }
 
-    private LigatureSetTable readLigatureSetTable(TTFDataStream data, long ligatureSetTableLocation,
-            int coverageGlyphId) throws IOException
+    private LigatureSetTable readLigatureSetTable(final TTFDataStream data, final long ligatureSetTableLocation,
+                                                  final int coverageGlyphId) throws IOException
     {
         data.seek(ligatureSetTableLocation);
 
-        int ligatureCount = data.readUnsignedShort();
+        final int ligatureCount = data.readUnsignedShort();
         LOG.debug("ligatureCount=" + ligatureCount);
 
-        int[] ligatureOffsets = new int[ligatureCount];
-        LigatureTable[] ligatureTables = new LigatureTable[ligatureCount];
+        final int[] ligatureOffsets = new int[ligatureCount];
+        final LigatureTable[] ligatureTables = new LigatureTable[ligatureCount];
 
         for (int i = 0; i < ligatureOffsets.length; i++)
         {
@@ -403,7 +402,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
         for (int i = 0; i < ligatureOffsets.length; i++)
         {
-            int ligatureOffset = ligatureOffsets[i];
+            final int ligatureOffset = ligatureOffsets[i];
             ligatureTables[i] = readLigatureTable(data,
                     ligatureSetTableLocation + ligatureOffset, coverageGlyphId);
         }
@@ -411,16 +410,16 @@ public class GlyphSubstitutionTable extends TTFTable
         return new LigatureSetTable(ligatureCount, ligatureTables);
     }
 
-    private LigatureTable readLigatureTable(TTFDataStream data, long ligatureTableLocation,
-            int coverageGlyphId) throws IOException
+    private LigatureTable readLigatureTable(final TTFDataStream data, final long ligatureTableLocation,
+                                            final int coverageGlyphId) throws IOException
     {
         data.seek(ligatureTableLocation);
 
-        int ligatureGlyph = data.readUnsignedShort();
+        final int ligatureGlyph = data.readUnsignedShort();
 
-        int componentCount = data.readUnsignedShort();
+        final int componentCount = data.readUnsignedShort();
 
-        int[] componentGlyphIDs = new int[componentCount];
+        final int[] componentGlyphIDs = new int[componentCount];
 
         if (componentCount > 0)
         {
@@ -436,16 +435,16 @@ public class GlyphSubstitutionTable extends TTFTable
 
     }
 
-    private CoverageTable readCoverageTable(TTFDataStream data, long offset) throws IOException
+    private CoverageTable readCoverageTable(final TTFDataStream data, final long offset) throws IOException
     {
         data.seek(offset);
-        int coverageFormat = data.readUnsignedShort();
+        final int coverageFormat = data.readUnsignedShort();
         switch (coverageFormat)
         {
         case 1:
         {
-            int glyphCount = data.readUnsignedShort();
-            int[] glyphArray = new int[glyphCount];
+            final int glyphCount = data.readUnsignedShort();
+            final int[] glyphArray = new int[glyphCount];
             for (int i = 0; i < glyphCount; i++)
             {
                 glyphArray[i] = data.readUnsignedShort();
@@ -454,8 +453,8 @@ public class GlyphSubstitutionTable extends TTFTable
         }
         case 2:
         {
-            int rangeCount = data.readUnsignedShort();
-            RangeRecord[] rangeRecords = new RangeRecord[rangeCount];
+            final int rangeCount = data.readUnsignedShort();
+            final RangeRecord[] rangeRecords = new RangeRecord[rangeCount];
 
 
             for (int i = 0; i < rangeCount; i++)
@@ -478,11 +477,11 @@ public class GlyphSubstitutionTable extends TTFTable
      * @param tags
      * @return The best OpenType script tag
      */
-    private String selectScriptTag(String[] tags)
+    private String selectScriptTag(final String[] tags)
     {
         if (tags.length == 1)
         {
-            String tag = tags[0];
+            final String tag = tags[0];
             if (OpenTypeScript.INHERITED.equals(tag)
                     || (OpenTypeScript.TAG_DEFAULT.equals(tag) && !scriptList.containsKey(tag)))
             {
@@ -497,7 +496,7 @@ public class GlyphSubstitutionTable extends TTFTable
                 return lastUsedSupportedScript;
             }
         }
-        for (String tag : tags)
+        for (final String tag : tags)
         {
             if (scriptList.containsKey(tag))
             {
@@ -510,10 +509,10 @@ public class GlyphSubstitutionTable extends TTFTable
         return tags[0];
     }
 
-    private Collection<LangSysTable> getLangSysTables(String scriptTag)
+    private Collection<LangSysTable> getLangSysTables(final String scriptTag)
     {
         Collection<LangSysTable> result = Collections.emptyList();
-        ScriptTable scriptTable = scriptList.get(scriptTag);
+        final ScriptTable scriptTable = scriptList.get(scriptTag);
         if (scriptTable != null)
         {
             if (scriptTable.getDefaultLangSysTable() == null)
@@ -542,23 +541,23 @@ public class GlyphSubstitutionTable extends TTFTable
      * @param enabledFeatures An optional list of feature tags ({@code null} to allow all)
      * @return The indicated {@code FeatureRecord}s
      */
-    private List<FeatureRecord> getFeatureRecords(Collection<LangSysTable> langSysTables,
-            final List<String> enabledFeatures)
+    private List<FeatureRecord> getFeatureRecords(final Collection<LangSysTable> langSysTables,
+                                                  final List<String> enabledFeatures)
     {
         if (langSysTables.isEmpty())
         {
             return Collections.emptyList();
         }
-        List<FeatureRecord> result = new ArrayList<>();
+        final List<FeatureRecord> result = new ArrayList<>();
         langSysTables.forEach(langSysTable ->
         {
-            int required = langSysTable.getRequiredFeatureIndex();
-            FeatureRecord[] featureRecords = featureListTable.getFeatureRecords();
+            final int required = langSysTable.getRequiredFeatureIndex();
+            final FeatureRecord[] featureRecords = featureListTable.getFeatureRecords();
             if (required != 0xffff && required < featureRecords.length) // if no required features = 0xFFFF
             {
                 result.add(featureRecords[required]);
             }
-            for (int featureIndex : langSysTable.getFeatureIndices())
+            for (final int featureIndex : langSysTable.getFeatureIndices())
             {
                 if (featureIndex < featureRecords.length &&
                         (enabledFeatures == null ||
@@ -586,15 +585,15 @@ public class GlyphSubstitutionTable extends TTFTable
         return result;
     }
 
-    private boolean containsFeature(List<FeatureRecord> featureRecords, String featureTag)
+    private boolean containsFeature(final List<FeatureRecord> featureRecords, final String featureTag)
     {
         return featureRecords.stream().anyMatch(
                    featureRecord -> featureRecord.getFeatureTag().equals(featureTag));
     }
 
-    private void removeFeature(List<FeatureRecord> featureRecords, String featureTag)
+    private void removeFeature(final List<FeatureRecord> featureRecords, final String featureTag)
     {
-        Iterator<FeatureRecord> iter = featureRecords.iterator();
+        final Iterator<FeatureRecord> iter = featureRecords.iterator();
         while (iter.hasNext())
         {
             if (iter.next().getFeatureTag().equals(featureTag))
@@ -604,12 +603,12 @@ public class GlyphSubstitutionTable extends TTFTable
         }
     }
 
-    private int applyFeature(FeatureRecord featureRecord, int gid)
+    private int applyFeature(final FeatureRecord featureRecord, final int gid)
     {
         int lookupResult = gid;
-        for (int lookupListIndex : featureRecord.getFeatureTable().getLookupListIndices())
+        for (final int lookupListIndex : featureRecord.getFeatureTable().getLookupListIndices())
         {
-            LookupTable lookupTable = lookupListTable.getLookups()[lookupListIndex];
+            final LookupTable lookupTable = lookupListTable.getLookups()[lookupListIndex];
             if (lookupTable.getLookupType() != 1)
             {
                 LOG.debug("Skipping GSUB feature '" + featureRecord.getFeatureTag()
@@ -622,11 +621,11 @@ public class GlyphSubstitutionTable extends TTFTable
         return lookupResult;
     }
 
-    private int doLookup(LookupTable lookupTable, int gid)
+    private int doLookup(final LookupTable lookupTable, final int gid)
     {
-        for (LookupSubTable lookupSubtable : lookupTable.getSubTables())
+        for (final LookupSubTable lookupSubtable : lookupTable.getSubTables())
         {
-            int coverageIndex = lookupSubtable.getCoverageTable().getCoverageIndex(gid);
+            final int coverageIndex = lookupSubtable.getCoverageTable().getCoverageIndex(gid);
             if (coverageIndex >= 0)
             {
                 return lookupSubtable.doSubstitution(gid, coverageIndex);
@@ -648,13 +647,13 @@ public class GlyphSubstitutionTable extends TTFTable
      * @param scriptTags Script tags applicable to the gid (see {@link OpenTypeScript})
      * @param enabledFeatures list of features to apply
      */
-    public int getSubstitution(int gid, String[] scriptTags, List<String> enabledFeatures)
+    public int getSubstitution(final int gid, final String[] scriptTags, final List<String> enabledFeatures)
     {
         if (gid == -1)
         {
             return -1;
         }
-        Integer cached = lookupCache.get(gid);
+        final Integer cached = lookupCache.get(gid);
         if (cached != null)
         {
             // Because script detection for indeterminate scripts (COMMON, INHERIT, etc.) depends on context,
@@ -662,11 +661,11 @@ public class GlyphSubstitutionTable extends TTFTable
             // as we need a one-to-one mapping.
             return cached;
         }
-        String scriptTag = selectScriptTag(scriptTags);
-        Collection<LangSysTable> langSysTables = getLangSysTables(scriptTag);
-        List<FeatureRecord> featureRecords = getFeatureRecords(langSysTables, enabledFeatures);
+        final String scriptTag = selectScriptTag(scriptTags);
+        final Collection<LangSysTable> langSysTables = getLangSysTables(scriptTag);
+        final List<FeatureRecord> featureRecords = getFeatureRecords(langSysTables, enabledFeatures);
         int sgid = gid;
-        for (FeatureRecord featureRecord : featureRecords)
+        for (final FeatureRecord featureRecord : featureRecords)
         {
             sgid = applyFeature(featureRecord, sgid);
         }
@@ -684,9 +683,9 @@ public class GlyphSubstitutionTable extends TTFTable
      *
      * @param sgid Substitute GID
      */
-    public int getUnsubstitution(int sgid)
+    public int getUnsubstitution(final int sgid)
     {
-        Integer gid = reverseLookup.get(sgid);
+        final Integer gid = reverseLookup.get(sgid);
         if (gid == null)
         {
             LOG.warn("Trying to un-substitute a never-before-seen gid: " + sgid);
@@ -700,11 +699,11 @@ public class GlyphSubstitutionTable extends TTFTable
         return gsubData;
     }
 
-    private RangeRecord readRangeRecord(TTFDataStream data) throws IOException
+    private RangeRecord readRangeRecord(final TTFDataStream data) throws IOException
     {
-        int startGlyphID = data.readUnsignedShort();
-        int endGlyphID = data.readUnsignedShort();
-        int startCoverageIndex = data.readUnsignedShort();
+        final int startGlyphID = data.readUnsignedShort();
+        final int endGlyphID = data.readUnsignedShort();
+        final int startCoverageIndex = data.readUnsignedShort();
         return new RangeRecord(startGlyphID, endGlyphID, startCoverageIndex);
     }
 

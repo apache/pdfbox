@@ -41,7 +41,7 @@ public final class PDRadioButton extends PDButton
      *
      * @param acroForm The acroform.
      */
-    public PDRadioButton(PDAcroForm acroForm)
+    public PDRadioButton(final PDAcroForm acroForm)
     {
         super(acroForm);
         getCOSObject().setFlag(COSName.FF, FLAG_RADIO, true);
@@ -54,7 +54,7 @@ public final class PDRadioButton extends PDButton
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDRadioButton(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDRadioButton(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -67,7 +67,7 @@ public final class PDRadioButton extends PDButton
      *
      * @param radiosInUnison The new flag for radiosInUnison.
      */
-    public void setRadiosInUnison(boolean radiosInUnison)
+    public void setRadiosInUnison(final boolean radiosInUnison)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison);
     }
@@ -95,7 +95,7 @@ public final class PDRadioButton extends PDButton
     public int getSelectedIndex()
     {
         int idx = 0;
-        for (PDAnnotationWidget widget : getWidgets())
+        for (final PDAnnotationWidget widget : getWidgets())
         {
             if (!COSName.Off.equals(widget.getAppearanceState()))
             {
@@ -122,9 +122,9 @@ public final class PDRadioButton extends PDButton
      */
     public List<String> getSelectedExportValues()
     {
-        Set<String> onValues = getOnValues();
-        List<String> exportValues = getExportValues();
-        List<String> selectedExportValues = new ArrayList<>();
+        final Set<String> onValues = getOnValues();
+        final List<String> exportValues = getExportValues();
+        final List<String> selectedExportValues = new ArrayList<>();
         if (exportValues.isEmpty())
         {
             selectedExportValues.add(getValue());
@@ -132,9 +132,9 @@ public final class PDRadioButton extends PDButton
         }
         else
         {
-            String fieldValue = getValue();
+            final String fieldValue = getValue();
             int idx = 0;
-            for (String onValue : onValues)
+            for (final String onValue : onValues)
             {
                 if (onValue.compareTo(fieldValue) == 0)
                 {

@@ -30,7 +30,7 @@ class CharMetricTest
     @Test
     void testCharMetricSimpleValues()
     {
-        CharMetric charMetric = new CharMetric();
+        final CharMetric charMetric = new CharMetric();
         charMetric.setCharacterCode(0);
         charMetric.setName("name");
         charMetric.setWx(10f);
@@ -53,7 +53,7 @@ class CharMetricTest
     @Test
     void testCharMetricArrayValues()
     {
-        CharMetric charMetric = new CharMetric();
+        final CharMetric charMetric = new CharMetric();
         charMetric.setW(new float[] { 10f, 20f });
         charMetric.setW0(new float[] { 30f, 40f });
         charMetric.setW1(new float[] { 50f, 60f });
@@ -71,7 +71,7 @@ class CharMetricTest
     @Test
     void testCharMetricComplexValues()
     {
-        CharMetric charMetric = new CharMetric();
+        final CharMetric charMetric = new CharMetric();
         charMetric.setBoundingBox(new BoundingBox(10, 20, 30, 40));
         assertEquals(10, charMetric.getBoundingBox().getLowerLeftX(), 0);
         assertEquals(20, charMetric.getBoundingBox().getLowerLeftY(), 0);
@@ -79,9 +79,9 @@ class CharMetricTest
         assertEquals(40, charMetric.getBoundingBox().getUpperRightY(), 0);
 
         assertEquals(0, charMetric.getLigatures().size());
-        Ligature ligature = new Ligature("successor", "ligature");
+        final Ligature ligature = new Ligature("successor", "ligature");
         charMetric.addLigature(ligature);
-        List<Ligature> ligatures = charMetric.getLigatures();
+        final List<Ligature> ligatures = charMetric.getLigatures();
         assertEquals(1, ligatures.size());
         assertEquals("successor", ligatures.get(0).getSuccessor());
         try
@@ -89,7 +89,7 @@ class CharMetricTest
             ligatures.add(ligature);
             fail("An UnsupportedOperationException should have been thrown");
         }
-        catch (UnsupportedOperationException exception)
+        catch (final UnsupportedOperationException exception)
         {
             // do nothing
         }

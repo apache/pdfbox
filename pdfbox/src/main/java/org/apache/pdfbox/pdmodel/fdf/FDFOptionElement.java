@@ -47,7 +47,7 @@ public class FDFOptionElement implements COSObjectable
      *
      * @param o The option element.
      */
-    public FDFOptionElement(COSArray o)
+    public FDFOptionElement(final COSArray o)
     {
         option = o;
     }
@@ -88,7 +88,7 @@ public class FDFOptionElement implements COSObjectable
      *
      * @param opt One of the available options.
      */
-    public void setOption(String opt)
+    public void setOption(final String opt)
     {
         option.set(0, new COSString(opt));
     }
@@ -108,7 +108,7 @@ public class FDFOptionElement implements COSObjectable
      *
      * @param da The default appearance string.
      */
-    public void setDefaultAppearanceString(String da)
+    public void setDefaultAppearanceString(final String da)
     {
         option.set(1, new COSString(da));
     }

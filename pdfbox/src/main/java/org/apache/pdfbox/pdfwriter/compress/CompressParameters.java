@@ -43,7 +43,7 @@ public class CompressParameters
      * @param objectStreamSize The number of objects, that can be contained in compressed object streams.
      * 
      */
-    public CompressParameters(int objectStreamSize)
+    public CompressParameters(final int objectStreamSize)
     {
         if (objectStreamSize < 0)
         {

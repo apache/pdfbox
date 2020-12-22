@@ -48,29 +48,29 @@ public class CFFType1Font extends CFFFont implements EncodedFont
     private class PrivateType1CharStringReader implements Type1CharStringReader
     {
         @Override
-        public Type1CharString getType1CharString(String name) throws IOException
+        public Type1CharString getType1CharString(final String name) throws IOException
         {
             return CFFType1Font.this.getType1CharString(name);
         }
     }
 
     @Override
-    public GeneralPath getPath(String name) throws IOException
+    public GeneralPath getPath(final String name) throws IOException
     {
         return getType1CharString(name).getPath();
     }
 
     @Override
-    public float getWidth(String name) throws IOException
+    public float getWidth(final String name) throws IOException
     {
         return getType1CharString(name).getWidth();
     }
 
     @Override
-    public boolean hasGlyph(String name)
+    public boolean hasGlyph(final String name)
     {
-        int sid = charset.getSID(name);
-        int gid = charset.getGIDForSID(sid);
+        final int sid = charset.getSID(name);
+        final int gid = charset.getGIDForSID(sid);
         return gid != 0;
     }
 
@@ -86,10 +86,10 @@ public class CFFType1Font extends CFFFont implements EncodedFont
      * @param name PostScript glyph name
      * @throws IOException if the charstring could not be read
      */
-    public Type1CharString getType1CharString(String name) throws IOException
+    public Type1CharString getType1CharString(final String name) throws IOException
     {
         // lookup via charset
-        int gid = nameToGID(name);
+        final int gid = nameToGID(name);
 
         // lookup in CharStrings INDEX
         return getType2CharString(gid, name);
@@ -101,10 +101,10 @@ public class CFFType1Font extends CFFFont implements EncodedFont
      * @param name a PostScript glyph name.
      * @return GID
      */
-    public int nameToGID(String name)
+    public int nameToGID(final String name)
     {
         // some fonts have glyphs beyond their encoding, so we look up by charset SID
-        int sid = charset.getSID(name);
+        final int sid = charset.getSID(name);
         return charset.getGIDForSID(sid);
     }
 
@@ -115,14 +115,14 @@ public class CFFType1Font extends CFFFont implements EncodedFont
      * @throws IOException if the charstring could not be read
      */
     @Override
-    public Type2CharString getType2CharString(int gid) throws IOException
+    public Type2CharString getType2CharString(final int gid) throws IOException
     {
-        String name = "GID+" + gid; // for debugging only
+        final String name = "GID+" + gid; // for debugging only
         return getType2CharString(gid, name);
     }
 
     // Returns the Type 2 charstring for the given GID, with name for debugging
-    private Type2CharString getType2CharString(int gid, String name) throws IOException
+    private Type2CharString getType2CharString(final int gid, final String name) throws IOException
     {
         Type2CharString type2 = charStringCache.get(gid);
         if (type2 == null)
@@ -137,8 +137,8 @@ public class CFFType1Font extends CFFFont implements EncodedFont
                 // .notdef
                 bytes = charStrings[0];
             }
-            Type2CharStringParser parser = new Type2CharStringParser(fontName, name);
-            List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex());
+            final Type2CharStringParser parser = new Type2CharStringParser(fontName, name);
+            final List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex());
             type2 = new Type2CharString(reader, fontName, name, gid, type2seq, getDefaultWidthX(),
                     getNominalWidthX());
             charStringCache.put(gid, type2);
@@ -163,7 +163,7 @@ public class CFFType1Font extends CFFFont implements EncodedFont
      * @param value the given value
      */
     // todo: can't we just accept a Map?
-    void addToPrivateDict(String name, Object value)
+    void addToPrivateDict(final String name, final Object value)
     {
         if (value != null)
         {
@@ -187,7 +187,7 @@ public class CFFType1Font extends CFFFont implements EncodedFont
      *
      * @param encoding the given CFFEncoding
      */
-    void setEncoding(CFFEncoding encoding)
+    void setEncoding(final CFFEncoding encoding)
     {
         this.encoding = encoding;
     }
@@ -198,14 +198,14 @@ public class CFFType1Font extends CFFFont implements EncodedFont
     }
 
     // helper for looking up keys/values
-    private Object getProperty(String name)
+    private Object getProperty(final String name)
     {
-        Object topDictValue = topDict.get(name);
+        final Object topDictValue = topDict.get(name);
         if (topDictValue != null)
         {
             return topDictValue;
         }
-        Object privateDictValue = privateDict.get(name);
+        final Object privateDictValue = privateDict.get(name);
         if (privateDictValue != null)
         {
             return privateDictValue;
@@ -215,7 +215,7 @@ public class CFFType1Font extends CFFFont implements EncodedFont
 
     private int getDefaultWidthX()
     {
-        Number num = (Number)getProperty("defaultWidthX");
+        final Number num = (Number)getProperty("defaultWidthX");
         if (num == null)
         {
             return 1000;
@@ -225,7 +225,7 @@ public class CFFType1Font extends CFFFont implements EncodedFont
 
     private int getNominalWidthX()
     {
-        Number num = (Number)getProperty("nominalWidthX");
+        final Number num = (Number)getProperty("nominalWidthX");
         if (num == null)
         {
             return 0;

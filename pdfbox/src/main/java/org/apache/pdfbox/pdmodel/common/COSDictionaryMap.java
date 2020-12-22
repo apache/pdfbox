@@ -47,7 +47,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      * @param actualsMap The map with standard java objects as values.
      * @param dicMap The map with COSBase objects as values.
      */
-    public COSDictionaryMap( Map<K,V> actualsMap, COSDictionary dicMap )
+    public COSDictionaryMap(final Map<K,V> actualsMap, final COSDictionary dicMap )
     {
         actuals = actualsMap;
         map = dicMap;
@@ -76,7 +76,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      * {@inheritDoc}
      */
     @Override
-    public boolean containsKey(Object key)
+    public boolean containsKey(final Object key)
     {
         return actuals.containsKey( key );
     }
@@ -85,7 +85,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      * {@inheritDoc}
      */
     @Override
-    public boolean containsValue(Object value)
+    public boolean containsValue(final Object value)
     {
         return actuals.containsValue( value );
     }
@@ -94,7 +94,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      * {@inheritDoc}
      */
     @Override
-    public V get(Object key)
+    public V get(final Object key)
     {
         return actuals.get( key );
     }
@@ -103,9 +103,9 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      * {@inheritDoc}
      */
     @Override
-    public V put(K key, V value)
+    public V put(final K key, final V value)
     {
-        COSObjectable object = (COSObjectable)value;
+        final COSObjectable object = (COSObjectable)value;
 
         map.setItem( COSName.getPDFName( (String)key ), object.getCOSObject() );
         return actuals.put( key, value );
@@ -115,7 +115,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      * {@inheritDoc}
      */
     @Override
-    public V remove(Object key)
+    public V remove(final Object key)
     {
         map.removeItem( COSName.getPDFName( (String)key ) );
         return actuals.remove( key );
@@ -125,7 +125,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      * {@inheritDoc}
      */
     @Override
-    public void putAll(Map<? extends K, ? extends V> t)
+    public void putAll(final Map<? extends K, ? extends V> t)
     {
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -171,12 +171,12 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object o)
+    public boolean equals(final Object o)
     {
         boolean retval = false;
         if( o instanceof COSDictionaryMap )
         {
-            COSDictionaryMap<K, V> other = (COSDictionaryMap<K, V>) o;
+            final COSDictionaryMap<K, V> other = (COSDictionaryMap<K, V>) o;
             retval = other.map.equals( this.map );
         }
         return retval;
@@ -208,12 +208,12 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      *
      * @return A proper COSDictionary
      */
-    public static COSDictionary convert(Map<String, ?> someMap)
+    public static COSDictionary convert(final Map<String, ?> someMap)
     {
-        COSDictionary dic = new COSDictionary();
+        final COSDictionary dic = new COSDictionary();
         someMap.forEach((name, objectable) ->
         {
-            COSObjectable object = (COSObjectable) objectable;
+            final COSObjectable object = (COSObjectable) objectable;
             dic.setItem(COSName.getPDFName(name), object.getCOSObject());
         });
         return dic;
@@ -227,15 +227,15 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      * @return A standard java map.
      * @throws IOException If there is an error during the conversion.
      */
-    public static COSDictionaryMap<String, Object> convertBasicTypesToMap( COSDictionary map ) throws IOException
+    public static COSDictionaryMap<String, Object> convertBasicTypesToMap(final COSDictionary map ) throws IOException
     {
         COSDictionaryMap<String, Object> retval = null;
         if( map != null )
         {
-            Map<String, Object> actualMap = new HashMap<>();
-            for( COSName key : map.keySet() )
+            final Map<String, Object> actualMap = new HashMap<>();
+            for( final COSName key : map.keySet() )
             {
-                COSBase cosObj = map.getDictionaryObject( key );
+                final COSBase cosObj = map.getDictionaryObject( key );
                 Object actualObject = null;
                 if( cosObj instanceof COSString )
                 {

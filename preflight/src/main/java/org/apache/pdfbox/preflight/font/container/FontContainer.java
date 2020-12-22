@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.font.container;
 
@@ -54,17 +54,17 @@ public abstract class FontContainer<T extends PDFontLike>
      */
     protected final T font;
 
-    public FontContainer(T font)
+    public FontContainer(final T font)
     {
         this.font = font;
     }
 
-    public void push(ValidationError error)
+    public void push(final ValidationError error)
     {
         this.errorBuffer.add(error);
     }
 
-    public void push(List<ValidationError> errors)
+    public void push(final List<ValidationError> errors)
     {
         this.errorBuffer.addAll(errors);
     }
@@ -84,7 +84,7 @@ public abstract class FontContainer<T extends PDFontLike>
         return errorsAlreadyMerged;
     }
 
-    public void setErrorsAlreadyMerged(boolean errorsAlreadyMerged)
+    public void setErrorsAlreadyMerged(final boolean errorsAlreadyMerged)
     {
         this.errorsAlreadyMerged = errorsAlreadyMerged;
     }
@@ -105,7 +105,7 @@ public abstract class FontContainer<T extends PDFontLike>
      * @param code character code
      * @throws GlyphException
      */
-    public void checkGlyphWidth(int code) throws GlyphException
+    public void checkGlyphWidth(final int code) throws GlyphException
     {
         if (isAlreadyProcessed(code))
         {
@@ -117,7 +117,7 @@ public abstract class FontContainer<T extends PDFontLike>
             // check for missing glyphs
             if (!hasGlyph(code))
             {
-                GlyphException e = new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH_MISSING, code, "The character code "
+                final GlyphException e = new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH_MISSING, code, "The character code "
                         + code + " in the font program \"" + font.getName()
                         + "\" is missing from the Character Encoding");
                 markAsInvalid(code, e);
@@ -125,11 +125,11 @@ public abstract class FontContainer<T extends PDFontLike>
             }
 
             // check widths
-            float expectedWidth = font.getWidth(code);
-            float foundWidth = font.getWidthFromFont(code);
+            final float expectedWidth = font.getWidth(code);
+            final float foundWidth = font.getWidthFromFont(code);
             checkWidthsConsistency(code, expectedWidth, foundWidth);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH, code,
                     "Unexpected error during the width validation for the character code " + code +
@@ -151,10 +151,10 @@ public abstract class FontContainer<T extends PDFontLike>
      * @return true if the CID has previously been marked as valid, false otherwise
      * @throws GlyphException if the code has previously been marked as invalid // TODO useful ??
      */
-    private boolean isAlreadyProcessed(int code) throws GlyphException
+    private boolean isAlreadyProcessed(final int code) throws GlyphException
     {
         boolean already = false;
-        GlyphDetail detail = codeToDetail.get(code);
+        final GlyphDetail detail = codeToDetail.get(code);
         if (detail != null)
         {
             detail.throwExceptionIfNotValid();
@@ -173,12 +173,12 @@ public abstract class FontContainer<T extends PDFontLike>
      * value if the CID is missing from the font.
      * @throws GlyphException the appropriate exception if the CID is invalid.
      */
-    private void checkWidthsConsistency(int code, float expectedWidth, float foundWidth) throws GlyphException
+    private void checkWidthsConsistency(final int code, final float expectedWidth, final float foundWidth) throws GlyphException
     {
         // consistent is defined to be a difference of no more than 1/1000 unit.
         if (Math.abs(foundWidth - expectedWidth) > 1)
         {
-            GlyphException e = new GlyphException(PreflightConstants.ERROR_FONTS_METRICS, code,
+            final GlyphException e = new GlyphException(PreflightConstants.ERROR_FONTS_METRICS, code,
                     "Width (" + foundWidth + ") of the character \"" + code + "\" in the font program \"" + this.font.getName()
                             + "\" is inconsistent with the width (" + expectedWidth + ") in the PDF dictionary.");
             markAsInvalid(code, e);
@@ -187,12 +187,12 @@ public abstract class FontContainer<T extends PDFontLike>
         markAsValid(code);
     }
 
-    public final void markAsValid(int code)
+    public final void markAsValid(final int code)
     {
         this.codeToDetail.put(code, new GlyphDetail(code));
     }
 
-    public final void markAsInvalid(int code, GlyphException e)
+    public final void markAsInvalid(final int code, final GlyphException e)
     {
         this.codeToDetail.put(code, new GlyphDetail(code, e));
     }

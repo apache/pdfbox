@@ -105,7 +105,7 @@ class AppearanceGeneratorHelper
      * @param field the field which you wish to control the appearance of
      * @throws IOException 
      */
-    AppearanceGeneratorHelper(PDVariableText field) throws IOException
+    AppearanceGeneratorHelper(final PDVariableText field) throws IOException
     {
         this.field = field;
         validateAndEnsureAcroFormResources();
@@ -114,7 +114,7 @@ class AppearanceGeneratorHelper
         {
             this.defaultAppearance = field.getDefaultAppearanceString();
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             throw new IOException("Could not process default appearance string '" +
                                    field.getDefaultAppearance() + "' for field '" +
@@ -136,14 +136,14 @@ class AppearanceGeneratorHelper
             return;
         }
         
-        PDResources acroFormResources = field.getAcroForm().getDefaultResources();
+        final PDResources acroFormResources = field.getAcroForm().getDefaultResources();
         
-        for (PDAnnotationWidget widget : field.getWidgets())
+        for (final PDAnnotationWidget widget : field.getWidgets())
         {
             if (widget.getNormalAppearanceStream() != null && widget.getNormalAppearanceStream().getResources() != null)
             {
-                PDResources widgetResources = widget.getNormalAppearanceStream().getResources();
-                for (COSName fontResourceName : widgetResources.getFontNames())
+                final PDResources widgetResources = widget.getNormalAppearanceStream().getResources();
+                for (final COSName fontResourceName : widgetResources.getFontNames())
                 {
                     try
                     {
@@ -153,7 +153,7 @@ class AppearanceGeneratorHelper
                             acroFormResources.put(fontResourceName, widgetResources.getFont(fontResourceName));
                         }
                     }
-                    catch (IOException e)
+                    catch (final IOException e)
                     {
                         LOG.warn("Unable to match field level font with AcroForm font", e);
                     }
@@ -168,7 +168,7 @@ class AppearanceGeneratorHelper
      * @param apValue the String value which the appearance should represent
      * @throws IOException If there is an error creating the stream.
      */
-    public void setAppearanceValue(String apValue) throws IOException
+    public void setAppearanceValue(final String apValue) throws IOException
     {
         value = getFormattedValue(apValue);
 
@@ -183,7 +183,7 @@ class AppearanceGeneratorHelper
             value = apValue.replaceAll("\\u000D\\u000A|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]", " ");
         }
 
-        for (PDAnnotationWidget widget : field.getWidgets())
+        for (final PDAnnotationWidget widget : field.getWidgets())
         {
             if (widget.getCOSObject().containsKey("PMD"))
             {
@@ -193,14 +193,14 @@ class AppearanceGeneratorHelper
 
             // some fields have the /Da at the widget level if the 
             // widgets differ in layout.
-            PDDefaultAppearanceString acroFormAppearance = defaultAppearance;
+            final PDDefaultAppearanceString acroFormAppearance = defaultAppearance;
             
             if (widget.getCOSObject().getDictionaryObject(COSName.DA) != null)
             {
                 defaultAppearance = getWidgetDefaultAppearanceString(widget);
             }
 
-            PDRectangle rect = widget.getRectangle();
+            final PDRectangle rect = widget.getRectangle();
             if (rect == null)
             {
                 widget.getCOSObject().removeItem(COSName.AP);
@@ -215,10 +215,10 @@ class AppearanceGeneratorHelper
                 widget.setAppearance(appearanceDict);
             }
 
-            PDAppearanceEntry appearance = appearanceDict.getNormalAppearance();
+            final PDAppearanceEntry appearance = appearanceDict.getNormalAppearance();
             // TODO support appearances other than "normal"
                 
-            PDAppearanceStream appearanceStream;
+            final PDAppearanceStream appearanceStream;
             if (isValidAppearanceStream(appearance))
             {
                 appearanceStream = appearance.getAppearanceStream();
@@ -249,17 +249,17 @@ class AppearanceGeneratorHelper
         }
     }
 
-    private String getFormattedValue(String apValue)
+    private String getFormattedValue(final String apValue)
     {
         // format the field value for the appearance if there is scripting support and the field
         // has a format event
-        PDFormFieldAdditionalActions actions = field.getActions();
+        final PDFormFieldAdditionalActions actions = field.getActions();
 
         if (actions != null && actions.getF() != null)
         {
             if (field.getAcroForm().getScriptingHandler() != null)
             {
-                ScriptingHandler scriptingHandler = field.getAcroForm().getScriptingHandler();
+                final ScriptingHandler scriptingHandler = field.getAcroForm().getScriptingHandler();
                 return scriptingHandler.format((PDActionJavaScript) field.getActions().getF(), apValue);
             }
             else
@@ -271,7 +271,7 @@ class AppearanceGeneratorHelper
         return apValue;
     }
 
-    private static boolean isValidAppearanceStream(PDAppearanceEntry appearance)
+    private static boolean isValidAppearanceStream(final PDAppearanceEntry appearance)
     {
         if (appearance == null)
         {
@@ -281,7 +281,7 @@ class AppearanceGeneratorHelper
         {
             return false;
         }
-        PDRectangle bbox = appearance.getAppearanceStream().getBBox();
+        final PDRectangle bbox = appearance.getAppearanceStream().getBBox();
         if (bbox == null)
         {
             return false;
@@ -289,21 +289,21 @@ class AppearanceGeneratorHelper
         return Math.abs(bbox.getWidth()) > 0 && Math.abs(bbox.getHeight()) > 0;
     }
 
-    private PDAppearanceStream prepareNormalAppearanceStream(PDAnnotationWidget widget)
+    private PDAppearanceStream prepareNormalAppearanceStream(final PDAnnotationWidget widget)
     {
-        PDAppearanceStream appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
+        final PDAppearanceStream appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
 
         // Calculate the entries for the bounding box and the transformation matrix
         // settings for the appearance stream
-        int rotation = resolveRotation(widget);
-        PDRectangle rect = widget.getRectangle();
-        Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), 0, 0);
-        Point2D.Float point2D = matrix.transformPoint(rect.getWidth(), rect.getHeight());
+        final int rotation = resolveRotation(widget);
+        final PDRectangle rect = widget.getRectangle();
+        final Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), 0, 0);
+        final Point2D.Float point2D = matrix.transformPoint(rect.getWidth(), rect.getHeight());
 
-        PDRectangle bbox = new PDRectangle(Math.abs((float) point2D.getX()), Math.abs((float) point2D.getY()));
+        final PDRectangle bbox = new PDRectangle(Math.abs((float) point2D.getX()), Math.abs((float) point2D.getY()));
         appearanceStream.setBBox(bbox);
 
-        AffineTransform at = calculateMatrix(bbox, rotation);
+        final AffineTransform at = calculateMatrix(bbox, rotation);
         if (!at.isIdentity())
         {
             appearanceStream.setMatrix(at);
@@ -313,16 +313,16 @@ class AppearanceGeneratorHelper
         return appearanceStream;
     }
     
-    private PDDefaultAppearanceString getWidgetDefaultAppearanceString(PDAnnotationWidget widget) throws IOException
+    private PDDefaultAppearanceString getWidgetDefaultAppearanceString(final PDAnnotationWidget widget) throws IOException
     {
-        COSString da = (COSString) widget.getCOSObject().getDictionaryObject(COSName.DA);
-        PDResources dr = field.getAcroForm().getDefaultResources();
+        final COSString da = (COSString) widget.getCOSObject().getDictionaryObject(COSName.DA);
+        final PDResources dr = field.getAcroForm().getDefaultResources();
         return new PDDefaultAppearanceString(da, dr);
     }
     
-    private int resolveRotation(PDAnnotationWidget widget)
+    private int resolveRotation(final PDAnnotationWidget widget)
     {
-        PDAppearanceCharacteristicsDictionary  characteristicsDictionary = widget.getAppearanceCharacteristics();
+        final PDAppearanceCharacteristicsDictionary  characteristicsDictionary = widget.getAppearanceCharacteristics();
         if (characteristicsDictionary != null)
         {
             // 0 is the default value if the R key doesn't exist
@@ -341,34 +341,34 @@ class AppearanceGeneratorHelper
      * @param appearanceStream the appearance stream to be used
      * @throws IOException in case we can't write to the appearance stream
      */
-    private void initializeAppearanceContent(PDAnnotationWidget widget, PDAppearanceStream appearanceStream) throws IOException
+    private void initializeAppearanceContent(final PDAnnotationWidget widget, final PDAppearanceStream appearanceStream) throws IOException
     {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream();
-                PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output))
+             final PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output))
         {
 
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
+            final PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
             
             // TODO: support more entries like patterns, etc.
             if (appearanceCharacteristics != null)
             {
-                PDColor backgroundColour = appearanceCharacteristics.getBackground();
+                final PDColor backgroundColour = appearanceCharacteristics.getBackground();
                 if (backgroundColour != null)
                 {
                     contents.setNonStrokingColor(backgroundColour);
-                    PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
+                    final PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
                     contents.addRect(bbox.getLowerLeftX(),bbox.getLowerLeftY(),bbox.getWidth(), bbox.getHeight());
                     contents.fill();
                 }
     
                 float lineWidth = 0f;
-                PDColor borderColour = appearanceCharacteristics.getBorderColour();
+                final PDColor borderColour = appearanceCharacteristics.getBorderColour();
                 if (borderColour != null)
                 {
                     contents.setStrokingColor(borderColour);
                     lineWidth = 1f;
                 }
-                PDBorderStyleDictionary borderStyle = widget.getBorderStyle();
+                final PDBorderStyleDictionary borderStyle = widget.getBorderStyle();
                 if (borderStyle != null && borderStyle.getWidth() > 0)
                 {
                     lineWidth = borderStyle.getWidth();
@@ -380,8 +380,8 @@ class AppearanceGeneratorHelper
                     {
                         contents.setLineWidth(lineWidth);
                     }
-                    PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
-                    PDRectangle clipRect = applyPadding(bbox, Math.max(DEFAULT_PADDING, lineWidth/2)); 
+                    final PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
+                    final PDRectangle clipRect = applyPadding(bbox, Math.max(DEFAULT_PADDING, lineWidth/2));
                     contents.addRect(clipRect.getLowerLeftX(),clipRect.getLowerLeftY(),clipRect.getWidth(), clipRect.getHeight());
                     contents.closeAndStroke();
                 }
@@ -395,8 +395,8 @@ class AppearanceGeneratorHelper
     /**
      * Constructs and sets new contents for given appearance stream.
      */
-    private void setAppearanceContent(PDAnnotationWidget widget,
-                                      PDAppearanceStream appearanceStream) throws IOException
+    private void setAppearanceContent(final PDAnnotationWidget widget,
+                                      final PDAppearanceStream appearanceStream) throws IOException
     {
         // first copy any needed resources from the document’s DR dictionary into
         // the stream’s Resources dictionary
@@ -406,10 +406,10 @@ class AppearanceGeneratorHelper
         // to the matching EMC
         try (ByteArrayOutputStream output = new ByteArrayOutputStream())
         {
-            ContentStreamWriter writer = new ContentStreamWriter(output);
+            final ContentStreamWriter writer = new ContentStreamWriter(output);
             
-            List<Object> tokens = new PDFStreamParser(appearanceStream).parse();
-            int bmcIndex = tokens.indexOf(BMC);
+            final List<Object> tokens = new PDFStreamParser(appearanceStream).parse();
+            final int bmcIndex = tokens.indexOf(BMC);
             if (bmcIndex == -1)
             {
                 // append to existing stream
@@ -425,7 +425,7 @@ class AppearanceGeneratorHelper
             // insert field contents
             insertGeneratedAppearance(widget, appearanceStream, output);
             
-            int emcIndex = tokens.indexOf(EMC);
+            final int emcIndex = tokens.indexOf(EMC);
             if (emcIndex == -1)
             {
                 // append EMC
@@ -443,13 +443,13 @@ class AppearanceGeneratorHelper
     /**
      * Generate and insert text content and clipping around it.   
      */
-    private void insertGeneratedAppearance(PDAnnotationWidget widget,
-                                           PDAppearanceStream appearanceStream,
-                                           OutputStream output) throws IOException
+    private void insertGeneratedAppearance(final PDAnnotationWidget widget,
+                                           final PDAppearanceStream appearanceStream,
+                                           final OutputStream output) throws IOException
     {
         try (PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output))
         {
-            PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
+            final PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
             
             // Acrobat calculates the left and right padding dependent on the offset of the border edge
             // This calculation works for forms having been generated by Acrobat.
@@ -459,8 +459,8 @@ class AppearanceGeneratorHelper
             {
                 borderWidth = widget.getBorderStyle().getWidth();
             }
-            PDRectangle clipRect = applyPadding(bbox, Math.max(1f, borderWidth));
-            PDRectangle contentRect = applyPadding(clipRect, Math.max(1f, borderWidth));
+            final PDRectangle clipRect = applyPadding(bbox, Math.max(1f, borderWidth));
+            final PDRectangle contentRect = applyPadding(clipRect, Math.max(1f, borderWidth));
             
             contents.saveGraphicsState();
             
@@ -470,7 +470,7 @@ class AppearanceGeneratorHelper
             contents.clip();
             
             // get the font
-            PDFont font = defaultAppearance.getFont();
+            final PDFont font = defaultAppearance.getFont();
             if (font == null)
             {
                 throw new IllegalArgumentException("font is null, check whether /DA entry is incomplete or incorrect");
@@ -512,8 +512,8 @@ class AppearanceGeneratorHelper
             float y;
             
             // calculate font metrics at font size
-            float fontScaleY = fontSize / FONTSCALE;
-            float fontBoundingBoxAtSize = font.getBoundingBox().getHeight() * fontScaleY;
+            final float fontScaleY = fontSize / FONTSCALE;
+            final float fontBoundingBoxAtSize = font.getBoundingBox().getHeight() * fontScaleY;
 
             float fontCapAtSize = 0;
             float fontDescentAtSize = 0;
@@ -522,8 +522,8 @@ class AppearanceGeneratorHelper
                 fontCapAtSize = font.getFontDescriptor().getCapHeight() * fontScaleY;
                 fontDescentAtSize = font.getFontDescriptor().getDescent() * fontScaleY;
             } else {
-                float fontCapHeight = resolveCapHeight(font);
-                float fontDescent = resolveDescent(font);
+                final float fontCapHeight = resolveCapHeight(font);
+                final float fontDescent = resolveDescent(font);
                 LOG.debug("missing font descriptor - resolved Cap/Descent to " + fontCapHeight + "/" + fontDescent);
                 fontCapAtSize = fontCapHeight * fontScaleY;
                 fontDescentAtSize = fontDescent * fontScaleY;
@@ -548,8 +548,8 @@ class AppearanceGeneratorHelper
                     // check to ensure that ascents and descents fit
                     if (y - clipRect.getLowerLeftY() < -fontDescentAtSize) {
                         
-                        float fontDescentBased = -fontDescentAtSize + contentRect.getLowerLeftY();
-                        float fontCapBased = contentRect.getHeight() - contentRect.getLowerLeftY() - fontCapAtSize;
+                        final float fontDescentBased = -fontDescentAtSize + contentRect.getLowerLeftY();
+                        final float fontCapBased = contentRect.getHeight() - contentRect.getLowerLeftY() - fontCapAtSize;
                         
                         y = Math.min(fontDescentBased, Math.max(y, fontCapBased));
                     }
@@ -557,7 +557,7 @@ class AppearanceGeneratorHelper
             }
             
             // show the text
-            float x = contentRect.getLowerLeftX();
+            final float x = contentRect.getLowerLeftX();
             
             // special handling for comb boxes as these are like table cells with individual
             // chars
@@ -571,15 +571,15 @@ class AppearanceGeneratorHelper
             }
             else
             {
-                PlainText textContent = new PlainText(value);
-                AppearanceStyle appearanceStyle = new AppearanceStyle();
+                final PlainText textContent = new PlainText(value);
+                final AppearanceStyle appearanceStyle = new AppearanceStyle();
                 appearanceStyle.setFont(font);
                 appearanceStyle.setFontSize(fontSize);
                 
                 // Adobe Acrobat uses the font's bounding box for the leading between the lines
                 appearanceStyle.setLeading(font.getBoundingBox().getHeight() * fontScaleY);
                 
-                PlainTextFormatter formatter = new PlainTextFormatter
+                final PlainTextFormatter formatter = new PlainTextFormatter
                         .Builder(contents)
                         .style(appearanceStyle)
                         .text(textContent)
@@ -602,14 +602,14 @@ class AppearanceGeneratorHelper
      * quadding /Q entry we need to do a low level access to the dictionary and
      * otherwise get the quadding from the field.
      */
-    private int getTextAlign(PDAnnotationWidget widget)
+    private int getTextAlign(final PDAnnotationWidget widget)
     {
         // Use quadding value from joined field/widget if set, else use from field.
         return widget.getCOSObject().getInt(COSName.Q, field.getQ());
     }
 
 
-    private AffineTransform calculateMatrix(PDRectangle bbox, int rotation)
+    private AffineTransform calculateMatrix(final PDRectangle bbox, final int rotation)
     {
         if (rotation == 0)
         {
@@ -631,7 +631,7 @@ class AppearanceGeneratorHelper
             default:
                 break;
         }
-        Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), tx, ty);
+        final Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), tx, ty);
         return matrix.createAffineTransform();
     }
 
@@ -670,20 +670,20 @@ class AppearanceGeneratorHelper
      * @param fontSize the font size to be used
      * @throws IOException
      */
-    private void insertGeneratedCombAppearance(PDAppearanceContentStream contents, PDAppearanceStream appearanceStream,
-            PDFont font, float fontSize) throws IOException
+    private void insertGeneratedCombAppearance(final PDAppearanceContentStream contents, final PDAppearanceStream appearanceStream,
+                                               final PDFont font, final float fontSize) throws IOException
     {
         
         // TODO:    Currently the quadding is not taken into account
         //          so the comb is always filled from left to right.
         
-        int maxLen = ((PDTextField) field).getMaxLen();
-        int numChars = Math.min(value.length(), maxLen);
+        final int maxLen = ((PDTextField) field).getMaxLen();
+        final int numChars = Math.min(value.length(), maxLen);
         
-        PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
+        final PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
         
-        float combWidth = appearanceStream.getBBox().getWidth() / maxLen;
-        float ascentAtFontSize = font.getFontDescriptor().getAscent() / FONTSCALE * fontSize;
+        final float combWidth = appearanceStream.getBBox().getWidth() / maxLen;
+        final float ascentAtFontSize = font.getFontDescriptor().getAscent() / FONTSCALE * fontSize;
         float baselineOffset = paddingEdge.getLowerLeftY() +  
                 (appearanceStream.getBBox().getHeight() - ascentAtFontSize)/2;
         
@@ -693,8 +693,8 @@ class AppearanceGeneratorHelper
 
         for (int i = 0; i < numChars; i++) 
         {
-            String combString = value.substring(i, i+1);
-            float currCharWidth = font.getStringWidth(combString) / FONTSCALE * fontSize/2;
+            final String combString = value.substring(i, i+1);
+            final float currCharWidth = font.getStringWidth(combString) / FONTSCALE * fontSize/2;
             
             xOffset = xOffset + prevCharWidth/2 - currCharWidth/2;
             
@@ -707,18 +707,18 @@ class AppearanceGeneratorHelper
         }
     }
     
-    private void insertGeneratedListboxSelectionHighlight(PDAppearanceContentStream contents, PDAppearanceStream appearanceStream,
-            PDFont font, float fontSize) throws IOException
+    private void insertGeneratedListboxSelectionHighlight(final PDAppearanceContentStream contents, final PDAppearanceStream appearanceStream,
+                                                          final PDFont font, final float fontSize) throws IOException
     {
         List<Integer> indexEntries = ((PDListBox) field).getSelectedOptionsIndex();
-        List<String> values = ((PDListBox) field).getValue();
-        List<String> options = ((PDListBox) field).getOptionsExportValues();
+        final List<String> values = ((PDListBox) field).getValue();
+        final List<String> options = ((PDListBox) field).getOptionsExportValues();
         
         if (!values.isEmpty() && !options.isEmpty() && indexEntries.isEmpty())
         {
             // create indexEntries from options
             indexEntries = new ArrayList<>();
-            for (String v : values)
+            for (final String v : values)
             {
                 indexEntries.add(options.indexOf(v));
             }
@@ -727,14 +727,14 @@ class AppearanceGeneratorHelper
         // The first entry which shall be presented might be adjusted by the optional TI key
         // If this entry is present the first entry to be displayed is the keys value otherwise
         // display starts with the first entry in Opt.
-        int topIndex = ((PDListBox) field).getTopIndex();
+        final int topIndex = ((PDListBox) field).getTopIndex();
         
-        float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / FONTSCALE;       
+        final float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / FONTSCALE;
 
         // the padding area 
-        PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
+        final PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
 
-        for (int selectedIndex : indexEntries)
+        for (final int selectedIndex : indexEntries)
         {
             contents.setNonStrokingColor(HIGHLIGHT_COLOR[0], HIGHLIGHT_COLOR[1], HIGHLIGHT_COLOR[2]);
 
@@ -748,17 +748,17 @@ class AppearanceGeneratorHelper
     }
     
     
-    private void insertGeneratedListboxAppearance(PDAppearanceContentStream contents, PDAppearanceStream appearanceStream,
-            PDRectangle contentRect, PDFont font, float fontSize) throws IOException
+    private void insertGeneratedListboxAppearance(final PDAppearanceContentStream contents, final PDAppearanceStream appearanceStream,
+                                                  final PDRectangle contentRect, final PDFont font, final float fontSize) throws IOException
     {
         contents.setNonStrokingColor(0f);
         
-        int q = field.getQ();
+        final int q = field.getQ();
 
         if (q == PDVariableText.QUADDING_CENTERED || q == PDVariableText.QUADDING_RIGHT)
         {
-            float fieldWidth = appearanceStream.getBBox().getWidth();
-            float stringWidth = (font.getStringWidth(value) / FONTSCALE) * fontSize;
+            final float fieldWidth = appearanceStream.getBBox().getWidth();
+            final float stringWidth = (font.getStringWidth(value) / FONTSCALE) * fontSize;
             float adjustAmount = fieldWidth - stringWidth - 4;
 
             if (q == PDVariableText.QUADDING_CENTERED)
@@ -773,12 +773,12 @@ class AppearanceGeneratorHelper
             throw new IOException("Error: Unknown justification value:" + q);
         }
 
-        List<String> options = ((PDListBox) field).getOptionsDisplayValues();
-        int numOptions = options.size();
+        final List<String> options = ((PDListBox) field).getOptionsDisplayValues();
+        final int numOptions = options.size();
 
         float yTextPos = contentRect.getUpperRightY();
 
-        int topIndex = ((PDListBox) field).getTopIndex();
+        final int topIndex = ((PDListBox) field).getTopIndex();
         
         for (int i = topIndex; i < numOptions; i++)
         {
@@ -808,7 +808,7 @@ class AppearanceGeneratorHelper
      *
      * @throws IOException If there is an error writing to the stream
      */
-    private void writeToStream(byte[] data, PDAppearanceStream appearanceStream) throws IOException
+    private void writeToStream(final byte[] data, final PDAppearanceStream appearanceStream) throws IOException
     {
         try (OutputStream out = appearanceStream.getCOSObject().createOutputStream())
         {
@@ -823,32 +823,32 @@ class AppearanceGeneratorHelper
      * @return the calculated font-size
      * @throws IOException If there is an error getting the font information.
      */
-    private float calculateFontSize(PDFont font, PDRectangle contentRect) throws IOException
+    private float calculateFontSize(final PDFont font, final PDRectangle contentRect) throws IOException
     {
-        float fontSize = defaultAppearance.getFontSize();
+        final float fontSize = defaultAppearance.getFontSize();
         
         // zero is special, it means the text is auto-sized
         if (Float.compare(fontSize, 0) == 0)
         {
             if (isMultiLine())
             {
-                PlainText textContent = new PlainText(value);
+                final PlainText textContent = new PlainText(value);
                 if (textContent.getParagraphs() != null)
                 {
-                    float width = contentRect.getWidth() - contentRect.getLowerLeftX();
+                    final float width = contentRect.getWidth() - contentRect.getLowerLeftX();
                     float fs = MINIMUM_FONT_SIZE;
                     while (fs <= DEFAULT_FONT_SIZE)
                     {
                         // determine the number of lines needed for this font and contentRect
                         int numLines = 0;
-                        for (PlainText.Paragraph paragraph : textContent.getParagraphs())
+                        for (final PlainText.Paragraph paragraph : textContent.getParagraphs())
                         {
                             numLines += paragraph.getLines(font, fs, width).size();
                         }
                         // calculate the height required for this font size
-                        float fontScaleY = fs / FONTSCALE;
-                        float leading = font.getBoundingBox().getHeight() * fontScaleY;
-                        float height = leading * numLines;
+                        final float fontScaleY = fs / FONTSCALE;
+                        final float leading = font.getBoundingBox().getHeight() * fontScaleY;
+                        final float height = leading * numLines;
 
                         // if this font size didn't fit, use the prior size that did fit
                         if (height > contentRect.getHeight())
@@ -865,12 +865,12 @@ class AppearanceGeneratorHelper
             }
             else
             {
-                float yScalingFactor = FONTSCALE * font.getFontMatrix().getScaleY();
-                float xScalingFactor = FONTSCALE * font.getFontMatrix().getScaleX();
+                final float yScalingFactor = FONTSCALE * font.getFontMatrix().getScaleY();
+                final float xScalingFactor = FONTSCALE * font.getFontMatrix().getScaleX();
                 
                 // fit width
-                float width = font.getStringWidth(value) * font.getFontMatrix().getScaleX();
-                float widthBasedFontSize = contentRect.getWidth() / width * xScalingFactor;
+                final float width = font.getStringWidth(value) * font.getFontMatrix().getScaleX();
+                final float widthBasedFontSize = contentRect.getWidth() / width * xScalingFactor;
 
                 // fit height
                 float height = (font.getFontDescriptor().getCapHeight() +
@@ -880,7 +880,7 @@ class AppearanceGeneratorHelper
                     height = font.getBoundingBox().getHeight() * font.getFontMatrix().getScaleY();
                 }
 
-                float heightBasedFontSize = contentRect.getHeight() / height * yScalingFactor;
+                final float heightBasedFontSize = contentRect.getHeight() / height * yScalingFactor;
                 
                 return Math.min(heightBasedFontSize, widthBasedFontSize);
             }
@@ -893,7 +893,7 @@ class AppearanceGeneratorHelper
      * 
      * This is a very basic implementation using the height of "H" as reference.
      */
-    private float resolveCapHeight(PDFont font) throws IOException {
+    private float resolveCapHeight(final PDFont font) throws IOException {
         return resolveGlyphHeight(font, "H".codePointAt(0));
     }
 
@@ -902,12 +902,12 @@ class AppearanceGeneratorHelper
      * 
      * This is a very basic implementation using the height of "y" - "a" as reference.
      */
-    private float resolveDescent(PDFont font) throws IOException {
+    private float resolveDescent(final PDFont font) throws IOException {
         return resolveGlyphHeight(font, "y".codePointAt(0)) - resolveGlyphHeight(font, "a".codePointAt(0));
     }
 
     // this calculates the real (except for type 3 fonts) individual glyph bounds
-    private float resolveGlyphHeight(PDFont font, int code) throws IOException {
+    private float resolveGlyphHeight(final PDFont font, final int code) throws IOException {
         GeneralPath path = null;
         if (font instanceof PDType3Font) {
             // It is difficult to calculate the real individual glyph bounds for type 3
@@ -915,11 +915,11 @@ class AppearanceGeneratorHelper
             // because these are not vector fonts, the content stream could contain almost
             // anything
             // that is found in page content streams.
-            PDType3Font t3Font = (PDType3Font) font;
-            PDType3CharProc charProc = t3Font.getCharProc(code);
+            final PDType3Font t3Font = (PDType3Font) font;
+            final PDType3CharProc charProc = t3Font.getCharProc(code);
             if (charProc != null) {
-                BoundingBox fontBBox = t3Font.getBoundingBox();
-                PDRectangle glyphBBox = charProc.getGlyphBBox();
+                final BoundingBox fontBBox = t3Font.getBoundingBox();
+                final PDRectangle glyphBBox = charProc.getGlyphBBox();
                 if (glyphBBox != null) {
                     // PDFBOX-3850: glyph bbox could be larger than the font bbox
                     glyphBBox.setLowerLeftX(Math.max(fontBBox.getLowerLeftX(), glyphBBox.getLowerLeftX()));
@@ -930,14 +930,14 @@ class AppearanceGeneratorHelper
                 }
             }
         } else if (font instanceof PDVectorFont) {
-            PDVectorFont vectorFont = (PDVectorFont) font;
+            final PDVectorFont vectorFont = (PDVectorFont) font;
             path = vectorFont.getPath(code);
         } else if (font instanceof PDSimpleFont) {
-            PDSimpleFont simpleFont = (PDSimpleFont) font;
+            final PDSimpleFont simpleFont = (PDSimpleFont) font;
 
             // these two lines do not always work, e.g. for the TT fonts in file 032431.pdf
             // which is why PDVectorFont is tried first.
-            String name = simpleFont.getEncoding().getName(code);
+            final String name = simpleFont.getEncoding().getName(code);
             path = simpleFont.getPath(name);
         } else {
             // shouldn't happen, please open issue in JIRA
@@ -956,8 +956,8 @@ class AppearanceGeneratorHelper
      * @param appearanceStream the annotations appearance stream.
      * @return the resolved boundingBox.
      */
-    private PDRectangle resolveBoundingBox(PDAnnotationWidget fieldWidget,
-                                           PDAppearanceStream appearanceStream)
+    private PDRectangle resolveBoundingBox(final PDAnnotationWidget fieldWidget,
+                                           final PDAppearanceStream appearanceStream)
     {
         PDRectangle boundingBox = appearanceStream.getBBox();
         if (boundingBox == null)
@@ -973,7 +973,7 @@ class AppearanceGeneratorHelper
      * @param box box
      * @return the padded box.
      */
-    private PDRectangle applyPadding(PDRectangle box, float padding)
+    private PDRectangle applyPadding(final PDRectangle box, final float padding)
     {
         return new PDRectangle(box.getLowerLeftX() + padding, 
                                box.getLowerLeftY() + padding, 

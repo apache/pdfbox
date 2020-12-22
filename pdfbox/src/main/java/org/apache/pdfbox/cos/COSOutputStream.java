@@ -50,8 +50,8 @@ public final class COSOutputStream extends FilterOutputStream
      * 
      * @throws IOException If there was an error creating a temporary buffer
      */
-    COSOutputStream(List<Filter> filters, COSDictionary parameters, OutputStream output,
-                    ScratchFile scratchFile) throws IOException
+    COSOutputStream(final List<Filter> filters, final COSDictionary parameters, final OutputStream output,
+                    final ScratchFile scratchFile) throws IOException
     {
         super(output);
         this.filters = filters;
@@ -69,7 +69,7 @@ public final class COSOutputStream extends FilterOutputStream
     }
 
     @Override
-    public void write(byte[] b) throws IOException
+    public void write(final byte[] b) throws IOException
     {
         if (buffer != null)
         {
@@ -82,7 +82,7 @@ public final class COSOutputStream extends FilterOutputStream
     }
 
     @Override
-    public void write(byte[] b, int off, int len) throws IOException
+    public void write(final byte[] b, final int off, final int len) throws IOException
     {
         if (buffer != null)
         {
@@ -95,7 +95,7 @@ public final class COSOutputStream extends FilterOutputStream
     }
 
     @Override
-    public void write(int b) throws IOException
+    public void write(final int b) throws IOException
     {
         if (buffer != null)
         {
@@ -144,7 +144,7 @@ public final class COSOutputStream extends FilterOutputStream
                                         filters.get(i).encode(unfilteredIn, filteredOut, parameters, i);
                                     }
 
-                                    RandomAccess tmpSwap = filteredBuffer;
+                                    final RandomAccess tmpSwap = filteredBuffer;
                                     filteredBuffer = buffer;
                                     buffer = tmpSwap;
                                 }

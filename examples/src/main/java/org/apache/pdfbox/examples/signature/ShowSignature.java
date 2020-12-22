@@ -109,7 +109,7 @@ public final class ShowSignature
      * @throws org.apache.pdfbox.examples.signature.cert.CertificateVerificationException
      * @throws java.security.GeneralSecurityException
      */
-    public static void main(String[] args) throws IOException,
+    public static void main(final String[] args) throws IOException,
                                                   TSPException,
                                                   CertificateVerificationException,
                                                   GeneralSecurityException
@@ -117,11 +117,11 @@ public final class ShowSignature
         // register BouncyCastle provider, needed for "exotic" algorithms
         Security.addProvider(SecurityProvider.getProvider());
 
-        ShowSignature show = new ShowSignature();
+        final ShowSignature show = new ShowSignature();
         show.showSignature( args );
     }
 
-    private void showSignature(String[] args) throws IOException,
+    private void showSignature(final String[] args) throws IOException,
                                                      GeneralSecurityException,
                                                      TSPException,
                                                      CertificateVerificationException
@@ -132,24 +132,24 @@ public final class ShowSignature
         }
         else
         {
-            String password = args[0];
-            File infile = new File(args[1]);
+            final String password = args[0];
+            final File infile = new File(args[1]);
             // use old-style document loading to disable leniency
             // see also https://www.pdf-insecurity.org/
-            RandomAccessReadBufferedFile raFile = new RandomAccessReadBufferedFile(infile);
+            final RandomAccessReadBufferedFile raFile = new RandomAccessReadBufferedFile(infile);
             // If your files are not too large, you can also download the PDF into a byte array
             // with IOUtils.toByteArray() and pass a RandomAccessBuffer() object to the
             // PDFParser constructor.
-            PDFParser parser = new PDFParser(raFile, password);
+            final PDFParser parser = new PDFParser(raFile, password);
             try (PDDocument document = parser.parse(false))
             {
-                for (PDSignature sig : document.getSignatureDictionaries())
+                for (final PDSignature sig : document.getSignatureDictionaries())
                 {
-                    COSDictionary sigDict = sig.getCOSObject();
-                    byte[] contents = sig.getContents();
+                    final COSDictionary sigDict = sig.getCOSObject();
+                    final byte[] contents = sig.getContents();
 
                     // download the signed content
-                    byte[] buf;
+                    final byte[] buf;
                     try (FileInputStream fis = new FileInputStream(infile))
                     {
                         buf = sig.getSignedContent(fis); // alternatively, pass a byte array here
@@ -165,7 +165,7 @@ public final class ShowSignature
                     {
                         System.out.println("Modified: " + sdf.format(sig.getSignDate().getTime()));
                     }
-                    String subFilter = sig.getSubFilter();
+                    final String subFilter = sig.getSubFilter();
                     if (subFilter != null)
                     {
                         switch (subFilter)
@@ -177,31 +177,31 @@ public final class ShowSignature
                             case "adbe.pkcs7.sha1":
                             {
                                 // example: PDFBOX-1452.pdf
-                                CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                                ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
-                                Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+                                final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                                final ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
+                                final Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
                                 System.out.println("certs=" + certs);
-                                byte[] hash = MessageDigest.getInstance("SHA1").digest(buf);
+                                final byte[] hash = MessageDigest.getInstance("SHA1").digest(buf);
                                 verifyPKCS7(hash, contents, sig);
                                 break;
                             }
                             case "adbe.x509.rsa_sha1":
                             {
                                 // example: PDFBOX-2693.pdf
-                                COSString certString = (COSString) sigDict.getDictionaryObject(COSName.CERT);
+                                final COSString certString = (COSString) sigDict.getDictionaryObject(COSName.CERT);
                                 //TODO this could also be an array.
                                 if (certString == null)
                                 {
                                     System.err.println("The /Cert certificate string is missing in the signature dictionary");
                                     return;
                                 }
-                                byte[] certData = certString.getBytes();
-                                CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                                ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
-                                Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+                                final byte[] certData = certString.getBytes();
+                                final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                                final ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
+                                final Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
                                 System.out.println("certs=" + certs);
                                 
-                                X509Certificate cert = (X509Certificate) certs.iterator().next();
+                                final X509Certificate cert = (X509Certificate) certs.iterator().next();
 
                                 // to verify signature, see code at 
                                 // https://stackoverflow.com/questions/43383859/
@@ -218,11 +218,11 @@ public final class ShowSignature
                                         System.err.println("Certificate cannot be verified without signing time");
                                     }
                                 }
-                                catch (CertificateExpiredException ex)
+                                catch (final CertificateExpiredException ex)
                                 {
                                     System.err.println("Certificate expired at signing time");
                                 }
-                                catch (CertificateNotYetValidException ex)
+                                catch (final CertificateNotYetValidException ex)
                                 {
                                     System.err.println("Certificate not yet valid at signing time");
                                 }
@@ -236,8 +236,7 @@ public final class ShowSignature
 
                                     if (sig.getSignDate() != null)
                                     {
-                                        @SuppressWarnings("unchecked")
-                                        Store<X509CertificateHolder> store = new JcaCertStore(certs);
+                                        @SuppressWarnings("unchecked") final Store<X509CertificateHolder> store = new JcaCertStore(certs);
                                         SigUtils.verifyCertificateChain(store, cert, sig.getSignDate().getTime());
                                     }
                                 }
@@ -260,17 +259,17 @@ public final class ShowSignature
                         throw new IOException("Missing subfilter for cert dictionary");
                     }
 
-                    int[] byteRange = sig.getByteRange();
+                    final int[] byteRange = sig.getByteRange();
                     if (byteRange.length != 4)
                     {
                         System.err.println("Signature byteRange must have 4 items");
                     }
                     else
                     {
-                        long fileLen = infile.length();
-                        long rangeMax = byteRange[2] + (long) byteRange[3];
+                        final long fileLen = infile.length();
+                        final long rangeMax = byteRange[2] + (long) byteRange[3];
                         // multiply content length with 2 (because it is in hex in the PDF) and add 2 for < and >
-                        int contentLen = contents.length * 2 + 2;
+                        final int contentLen = contents.length * 2 + 2;
                         if (fileLen != rangeMax || byteRange[0] != 0 || byteRange[1] + contentLen != byteRange[2])
                         {
                             // a false result doesn't necessarily mean that the PDF is a fake
@@ -287,7 +286,7 @@ public final class ShowSignature
                 }
                 analyseDSS(document);
             }
-            catch (CMSException | OperatorCreationException ex)
+            catch (final CMSException | OperatorCreationException ex)
             {
                 throw new IOException(ex);
             }
@@ -295,7 +294,7 @@ public final class ShowSignature
         }
     }
 
-    private void checkContentValueWithFile(File file, int[] byteRange, byte[] contents) throws IOException
+    private void checkContentValueWithFile(final File file, final int[] byteRange, final byte[] contents) throws IOException
     {
         // https://stackoverflow.com/questions/55049270
         // comment by mkl: check whether gap contains a hex value equal
@@ -309,8 +308,8 @@ public final class ShowSignature
             {
                 System.err.println("'<' expected at offset " + byteRange[1] + ", but got " + (char) c);
             }
-            byte[] contentFromFile = new byte[byteRange[2] - byteRange[1] - 2];
-            int contentLength = contentFromFile.length;
+            final byte[] contentFromFile = new byte[byteRange[2] - byteRange[1] - 2];
+            final int contentLength = contentFromFile.length;
             int contentBytesRead = raf.read(contentFromFile);
             while (contentBytesRead > -1 && contentBytesRead < contentLength)
             {
@@ -318,7 +317,7 @@ public final class ShowSignature
                         contentBytesRead,
                         contentLength - contentBytesRead);
             }
-            byte[] contentAsHex = Hex.getString(contents).getBytes(StandardCharsets.US_ASCII);
+            final byte[] contentAsHex = Hex.getString(contents).getBytes(StandardCharsets.US_ASCII);
             if (contentBytesRead != contentAsHex.length)
             {
                 System.err.println("Raw content length from file is " +
@@ -340,7 +339,7 @@ public final class ShowSignature
                         break;
                     }
                 }
-                catch (NumberFormatException ex)
+                catch (final NumberFormatException ex)
                 {
                     System.err.println("Incorrect hex value");
                     System.err.println("Possible manipulation at file offset " +
@@ -359,7 +358,7 @@ public final class ShowSignature
     /**
      * Verify ETSI.RFC3161 TImeStampToken
      *
-     * @param byteArray the byte sequence that has been signed
+     * @param buf the byte sequence that has been signed
      * @param contents the /Contents field as a COSString
      * @throws CMSException
      * @throws NoSuchAlgorithmException
@@ -369,24 +368,24 @@ public final class ShowSignature
      * @throws CertificateVerificationException
      * @throws CertificateException 
      */
-    private void verifyETSIdotRFC3161(byte[] buf, byte[] contents)
+    private void verifyETSIdotRFC3161(final byte[] buf, final byte[] contents)
             throws CMSException, NoSuchAlgorithmException, IOException, TSPException,
             OperatorCreationException, CertificateVerificationException, CertificateException
     {
-        TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents));
-        TimeStampTokenInfo timeStampInfo = timeStampToken.getTimeStampInfo();
+        final TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents));
+        final TimeStampTokenInfo timeStampInfo = timeStampToken.getTimeStampInfo();
         System.out.println("Time stamp gen time: " + timeStampInfo.getGenTime());
         if (timeStampInfo.getTsa() != null)
         {
             System.out.println("Time stamp tsa name: " + timeStampInfo.getTsa().getName());
         }
         
-        CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
-        Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+        final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        final ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
+        final Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
         System.out.println("certs=" + certs);
         
-        String hashAlgorithm = timeStampInfo.getMessageImprintAlgOID().getId();
+        final String hashAlgorithm = timeStampInfo.getMessageImprintAlgOID().getId();
         // compare the hash of the signed content with the hash in the timestamp
         if (Arrays.equals(MessageDigest.getInstance(hashAlgorithm).digest(buf),
                 timeStampInfo.getMessageImprintDigest()))
@@ -398,7 +397,7 @@ public final class ShowSignature
             System.err.println("ETSI.RFC3161 timestamp signature verification failed");
         }
 
-        X509Certificate certFromTimeStamp = (X509Certificate) certs.iterator().next();
+        final X509Certificate certFromTimeStamp = (X509Certificate) certs.iterator().next();
         SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
         SigUtils.validateTimestampToken(timeStampToken);
         SigUtils.verifyCertificateChain(timeStampToken.getCertificates(),
@@ -417,7 +416,7 @@ public final class ShowSignature
      * @throws GeneralSecurityException
      * @throws CertificateVerificationException
      */
-    private void verifyPKCS7(byte[] byteArray, byte[] contents, PDSignature sig)
+    private void verifyPKCS7(final byte[] byteArray, final byte[] contents, final PDSignature sig)
             throws CMSException, OperatorCreationException,
                    CertificateVerificationException, GeneralSecurityException,
                    TSPException, IOException
@@ -425,21 +424,20 @@ public final class ShowSignature
         // inspiration:
         // http://stackoverflow.com/a/26702631/535646
         // http://stackoverflow.com/a/9261365/535646
-        CMSProcessable signedContent = new CMSProcessableByteArray(byteArray);
-        CMSSignedData signedData = new CMSSignedData(signedContent, contents);
-        Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
+        final CMSProcessable signedContent = new CMSProcessableByteArray(byteArray);
+        final CMSSignedData signedData = new CMSSignedData(signedContent, contents);
+        final Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
         if (certificatesStore.getMatches(null).isEmpty())
         {
             throw new IOException("No certificates in signature");
         }
-        Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
+        final Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
         if (signers.isEmpty())
         {
             throw new IOException("No signers in signature");
         }
-        SignerInformation signerInformation = signers.iterator().next();
-        @SuppressWarnings("unchecked")
-        Collection<X509CertificateHolder> matches =
+        final SignerInformation signerInformation = signers.iterator().next();
+        @SuppressWarnings("unchecked") final Collection<X509CertificateHolder> matches =
                 certificatesStore.getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
         if (matches.isEmpty())
         {
@@ -447,27 +445,27 @@ public final class ShowSignature
                                   ", serial# " + signerInformation.getSID().getSerialNumber() + 
                                   " does not match any certificates");
         }
-        X509CertificateHolder certificateHolder = matches.iterator().next();
-        X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
+        final X509CertificateHolder certificateHolder = matches.iterator().next();
+        final X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
         System.out.println("certFromSignedData: " + certFromSignedData);
 
         SigUtils.checkCertificateUsage(certFromSignedData);
         
         // Embedded timestamp
-        TimeStampToken timeStampToken = SigUtils.extractTimeStampTokenFromSignerInformation(signerInformation);
+        final TimeStampToken timeStampToken = SigUtils.extractTimeStampTokenFromSignerInformation(signerInformation);
         if (timeStampToken != null)
         {
             // tested with QV_RCA1_RCA3_CPCPS_V4_11.pdf
             // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
             // also 021496.pdf and 036351.pdf from digitalcorpora
             SigUtils.validateTimestampToken(timeStampToken);
-            @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
+            @SuppressWarnings("unchecked") final // TimeStampToken.getSID() is untyped
             Collection<X509CertificateHolder> tstMatches =
                 timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
-            X509CertificateHolder tstCertHolder = tstMatches.iterator().next();
-            X509Certificate certFromTimeStamp = new JcaX509CertificateConverter().getCertificate(tstCertHolder);
+            final X509CertificateHolder tstCertHolder = tstMatches.iterator().next();
+            final X509Certificate certFromTimeStamp = new JcaX509CertificateConverter().getCertificate(tstCertHolder);
             // merge both stores using a set to remove duplicates
-            HashSet<X509CertificateHolder> certificateHolderSet = new HashSet<>();
+            final HashSet<X509CertificateHolder> certificateHolderSet = new HashSet<>();
             certificateHolderSet.addAll(certificatesStore.getMatches(null));
             certificateHolderSet.addAll(timeStampToken.getCertificates().getMatches(null));
             SigUtils.verifyCertificateChain(new CollectionStore<>(certificateHolderSet),
@@ -476,9 +474,9 @@ public final class ShowSignature
             SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
 
             // compare the hash of the signature with the hash in the timestamp
-            byte[] tsMessageImprintDigest = timeStampToken.getTimeStampInfo().getMessageImprintDigest();
-            String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
-            byte[] sigMessageImprintDigest = MessageDigest.getInstance(hashAlgorithm).digest(signerInformation.getSignature());
+            final byte[] tsMessageImprintDigest = timeStampToken.getTimeStampInfo().getMessageImprintDigest();
+            final String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
+            final byte[] sigMessageImprintDigest = MessageDigest.getInstance(hashAlgorithm).digest(signerInformation.getSignature());
             if (Arrays.equals(tsMessageImprintDigest, sigMessageImprintDigest))
             {
                 System.out.println("timestamp signature verified");
@@ -501,11 +499,11 @@ public final class ShowSignature
                 System.err.println("Certificate cannot be verified without signing time");
             }
         }
-        catch (CertificateExpiredException ex)
+        catch (final CertificateExpiredException ex)
         {
             System.err.println("Certificate expired at signing time");
         }
-        catch (CertificateNotYetValidException ex)
+        catch (final CertificateNotYetValidException ex)
         {
             System.err.println("Certificate not yet valid at signing time");
         }
@@ -514,20 +512,20 @@ public final class ShowSignature
         if (signerInformation.getSignedAttributes() != null)
         {
             // From SignedMailValidator.getSignatureTime()
-            Attribute signingTime = signerInformation.getSignedAttributes().get(CMSAttributes.signingTime);
+            final Attribute signingTime = signerInformation.getSignedAttributes().get(CMSAttributes.signingTime);
             if (signingTime != null)
             {
-                Time timeInstance = Time.getInstance(signingTime.getAttrValues().getObjectAt(0));
+                final Time timeInstance = Time.getInstance(signingTime.getAttrValues().getObjectAt(0));
                 try
                 {
                     certFromSignedData.checkValidity(timeInstance.getDate());
                     System.out.println("Certificate valid at signing time: " + timeInstance.getDate());
                 }
-                catch (CertificateExpiredException ex)
+                catch (final CertificateExpiredException ex)
                 {
                     System.err.println("Certificate expired at signing time");
                 }
-                catch (CertificateNotYetValidException ex)
+                catch (final CertificateNotYetValidException ex)
                 {
                     System.err.println("Certificate not yet valid at signing time");
                 }
@@ -568,10 +566,10 @@ public final class ShowSignature
     private Set<X509Certificate> getRootCertificates()
             throws GeneralSecurityException, IOException
     {
-        Set<X509Certificate> rootCertificates = new HashSet<>();
+        final Set<X509Certificate> rootCertificates = new HashSet<>();
 
         // https://stackoverflow.com/questions/3508050/
-        String filename = System.getProperty("java.home") + "/lib/security/cacerts";
+        final String filename = System.getProperty("java.home") + "/lib/security/cacerts";
         KeyStore keystore;
         try (FileInputStream is = new FileInputStream(filename))
         {
@@ -579,7 +577,7 @@ public final class ShowSignature
             keystore.load(is, null);
         }
         PKIXParameters params = new PKIXParameters(keystore);
-        for (TrustAnchor trustAnchor : params.getTrustAnchors())
+        for (final TrustAnchor trustAnchor : params.getTrustAnchors())
         {
             rootCertificates.add(trustAnchor.getTrustedCert());
         }
@@ -590,12 +588,12 @@ public final class ShowSignature
             keystore = KeyStore.getInstance("Windows-ROOT");
             keystore.load(null, null);
             params = new PKIXParameters(keystore);
-            for (TrustAnchor trustAnchor : params.getTrustAnchors())
+            for (final TrustAnchor trustAnchor : params.getTrustAnchors())
             {
                 rootCertificates.add(trustAnchor.getTrustedCert());
             }
         }
-        catch (InvalidAlgorithmParameterException | KeyStoreException ex)
+        catch (final InvalidAlgorithmParameterException | KeyStoreException ex)
         {
             // empty or not windows
         }
@@ -609,26 +607,26 @@ public final class ShowSignature
      * 
      * @param document PDDocument, to get the DSS from
      */
-    private void analyseDSS(PDDocument document) throws IOException
+    private void analyseDSS(final PDDocument document) throws IOException
     {
-        PDDocumentCatalog catalog = document.getDocumentCatalog();
-        COSBase dssElement = catalog.getCOSObject().getDictionaryObject("DSS");
+        final PDDocumentCatalog catalog = document.getDocumentCatalog();
+        final COSBase dssElement = catalog.getCOSObject().getDictionaryObject("DSS");
 
         if (dssElement instanceof COSDictionary)
         {
-            COSDictionary dss = (COSDictionary) dssElement;
+            final COSDictionary dss = (COSDictionary) dssElement;
             System.out.println("DSS Dictionary: " + dss);
-            COSBase certsElement = dss.getDictionaryObject("Certs");
+            final COSBase certsElement = dss.getDictionaryObject("Certs");
             if (certsElement instanceof COSArray)
             {
                 printStreamsFromArray((COSArray) certsElement, "Cert");
             }
-            COSBase ocspsElement = dss.getDictionaryObject("OCSPs");
+            final COSBase ocspsElement = dss.getDictionaryObject("OCSPs");
             if (ocspsElement instanceof COSArray)
             {
                 printStreamsFromArray((COSArray) ocspsElement, "Ocsp");
             }
-            COSBase crlElement = dss.getDictionaryObject("CRLs");
+            final COSBase crlElement = dss.getDictionaryObject("CRLs");
             if (crlElement instanceof COSArray)
             {
                 printStreamsFromArray((COSArray) crlElement, "CRL");
@@ -644,17 +642,17 @@ public final class ShowSignature
      * @param description to append on Print
      * @throws IOException
      */
-    private void printStreamsFromArray(COSArray elements, String description) throws IOException
+    private void printStreamsFromArray(final COSArray elements, final String description) throws IOException
     {
-        for (COSBase baseElem : elements)
+        for (final COSBase baseElem : elements)
         {
-            COSObject streamObj = (COSObject) baseElem;
+            final COSObject streamObj = (COSObject) baseElem;
             if (streamObj.getObject() instanceof COSStream)
             {
-                COSStream cosStream = (COSStream) streamObj.getObject();
+                final COSStream cosStream = (COSStream) streamObj.getObject();
                 try (InputStream is = cosStream.createInputStream())
                 {
-                    byte[] streamBytes = IOUtils.toByteArray(is);
+                    final byte[] streamBytes = IOUtils.toByteArray(is);
                     System.out.println(description + " (" + elements.indexOf(streamObj) + "): "
                         + Hex.getString(streamBytes));
                 }

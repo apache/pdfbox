@@ -34,12 +34,12 @@ class CompoundCharacterTokenizerTest
     {
 
         // given
-        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
+        final CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
                 new HashSet<>(Arrays.asList(new String[] { "HrkJj", "68RetP", "Yx!23uyt" })));
-        String text = "12345HrkJjxabbcc68RetPxxxcfb1245678Yx!23uyt889000";
+        final String text = "12345HrkJjxabbcc68RetPxxxcfb1245678Yx!23uyt889000";
 
         // when
-        List<String> tokens = tokenizer.tokenize(text);
+        final List<String> tokens = tokenizer.tokenize(text);
 
         // then
         assertEquals(text, String.join("", tokens));
@@ -52,12 +52,12 @@ class CompoundCharacterTokenizerTest
     {
 
         // given
-        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
+        final CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
                 new HashSet<>(Arrays.asList(new String[] { "84_93", "104_82", "104_87" })));
-        String text = "84_112_93_104_82_61_96_102_93_104_87_110";
+        final String text = "84_112_93_104_82_61_96_102_93_104_87_110";
 
         // when
-        List<String> tokens = tokenizer.tokenize(text);
+        final List<String> tokens = tokenizer.tokenize(text);
 
         // then
         assertEquals(text, String.join("", tokens));
@@ -70,12 +70,12 @@ class CompoundCharacterTokenizerTest
     {
 
         // given
-        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
+        final CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
                 new HashSet<>(Arrays.asList(new String[] { "67_112_96", "74_112_76" })));
-        String text = "67_112_96_103_93_108_93";
+        final String text = "67_112_96_103_93_108_93";
 
         // when
-        List<String> tokens = tokenizer.tokenize(text);
+        final List<String> tokens = tokenizer.tokenize(text);
 
         // then
         assertEquals(text, String.join("", tokens));
@@ -87,12 +87,12 @@ class CompoundCharacterTokenizerTest
     {
 
         // given
-        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
+        final CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
                 new HashSet<>(Arrays.asList(new String[] { "67_112_96", "74_112_76" })));
-        String text = "94_67_112_96_112_91_103";
+        final String text = "94_67_112_96_112_91_103";
 
         // when
-        List<String> tokens = tokenizer.tokenize(text);
+        final List<String> tokens = tokenizer.tokenize(text);
 
         // then
         assertEquals(text, String.join("", tokens));
@@ -104,12 +104,12 @@ class CompoundCharacterTokenizerTest
     {
 
         // given
-        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
+        final CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
                 new HashSet<>(Arrays.asList(new String[] { "67_112", "76_112" })));
-        String text = "94_167_112_91_103";
+        final String text = "94_167_112_91_103";
 
         // when
-        List<String> tokens = tokenizer.tokenize(text);
+        final List<String> tokens = tokenizer.tokenize(text);
 
         // then
         assertEquals(text, String.join("", tokens));
@@ -120,12 +120,12 @@ class CompoundCharacterTokenizerTest
     void testTokenize_regexAtStart()
     {
         // given
-        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
+        final CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
                 new HashSet<>(Arrays.asList(new String[] { "HrkJj", "68RetP", "Yx!23uyt" })));
-        String text = "Yx!23uyte12345HrkJjxabbcc68RetPxxxcfb1245678Yx!23uyt889000";
+        final String text = "Yx!23uyte12345HrkJjxabbcc68RetPxxxcfb1245678Yx!23uyt889000";
 
         // when
-        List<String> tokens = tokenizer.tokenize(text);
+        final List<String> tokens = tokenizer.tokenize(text);
 
         // then
         assertEquals(text, String.join("", tokens));
@@ -136,12 +136,12 @@ class CompoundCharacterTokenizerTest
     void testTokenize_regexAtEnd()
     {
         // given
-        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
+        final CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
                 new HashSet<>(Arrays.asList(new String[] { "HrkJj", "68RetP", "Yx!23uyt" })));
-        String text = "Yx!23uyte12345HrkJjxabbcc68RetPxxxcfb1245678Yx!23uyt889000HrkJj";
+        final String text = "Yx!23uyte12345HrkJjxabbcc68RetPxxxcfb1245678Yx!23uyt889000HrkJj";
 
         // when
-        List<String> tokens = tokenizer.tokenize(text);
+        final List<String> tokens = tokenizer.tokenize(text);
 
         // then
         assertEquals(text, String.join("", tokens));
@@ -154,12 +154,12 @@ class CompoundCharacterTokenizerTest
     void testTokenize_Bangla()
     {
         // given
-        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(new HashSet<>(
+        final CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(new HashSet<>(
                 Arrays.asList(new String[] { "\u0995\u09cd\u09b7", "\u09aa\u09c1\u09a4\u09c1" })));
-        String text = "\u0986\u09ae\u09bf \u0995\u09cb\u09a8 \u09aa\u09a5\u09c7  \u0995\u09cd\u09b7\u09c0\u09b0\u09c7\u09b0 \u09b7\u09a8\u09cd\u09a1  \u09aa\u09c1\u09a4\u09c1\u09b2 \u09b0\u09c1\u09aa\u09cb  \u0997\u0999\u09cd\u0997\u09be \u098b\u09b7\u09bf";
+        final String text = "\u0986\u09ae\u09bf \u0995\u09cb\u09a8 \u09aa\u09a5\u09c7  \u0995\u09cd\u09b7\u09c0\u09b0\u09c7\u09b0 \u09b7\u09a8\u09cd\u09a1  \u09aa\u09c1\u09a4\u09c1\u09b2 \u09b0\u09c1\u09aa\u09cb  \u0997\u0999\u09cd\u0997\u09be \u098b\u09b7\u09bf";
 
         // when
-        List<String> tokens = tokenizer.tokenize(text);
+        final List<String> tokens = tokenizer.tokenize(text);
 
         // then
         assertEquals(text, String.join("", tokens));

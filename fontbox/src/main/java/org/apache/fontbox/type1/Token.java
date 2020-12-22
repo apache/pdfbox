@@ -62,7 +62,7 @@ class Token
      * @param text
      * @param type
      */
-    Token(String text, Kind type)
+    Token(final String text, final Kind type)
     {
         this.text = text;
         this.kind = type;
@@ -73,7 +73,7 @@ class Token
      * @param character
      * @param type
      */
-    Token(char character, Kind type)
+    Token(final char character, final Kind type)
     {
         this.text = Character.toString(character);
         this.kind = type;
@@ -85,7 +85,7 @@ class Token
      * @param data
      * @param type
      */
-    Token(byte[] data, Kind type)
+    Token(final byte[] data, final Kind type)
     {
         this.data = data;
         this.kind = type;

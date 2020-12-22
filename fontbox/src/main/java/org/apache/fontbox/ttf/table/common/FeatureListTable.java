@@ -30,7 +30,7 @@ public class FeatureListTable
     private final int featureCount;
     private final FeatureRecord[] featureRecords;
 
-    public FeatureListTable(int featureCount, FeatureRecord[] featureRecords)
+    public FeatureListTable(final int featureCount, final FeatureRecord[] featureRecords)
     {
         this.featureCount = featureCount;
         this.featureRecords = featureRecords;

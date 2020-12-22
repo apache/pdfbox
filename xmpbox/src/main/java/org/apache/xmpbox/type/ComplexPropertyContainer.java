@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.type;
 
@@ -56,12 +56,12 @@ public class ComplexPropertyContainer
      *            the property type of property wanted
      * @return the property wanted
      */
-    protected AbstractField getFirstEquivalentProperty(String localName, Class<? extends AbstractField> type)
+    protected AbstractField getFirstEquivalentProperty(final String localName, final Class<? extends AbstractField> type)
     {
-        List<AbstractField> list = getPropertiesByLocalName(localName);
+        final List<AbstractField> list = getPropertiesByLocalName(localName);
         if (list != null)
         {
-            for (AbstractField abstractField : list)
+            for (final AbstractField abstractField : list)
             {
                 if (abstractField.getClass().equals(type))
                 {
@@ -78,7 +78,7 @@ public class ComplexPropertyContainer
      * @param obj
      *            the property to add
      */
-    public void addProperty(AbstractField obj)
+    public void addProperty(final AbstractField obj)
     {
         if (containsProperty(obj))
         {
@@ -104,9 +104,9 @@ public class ComplexPropertyContainer
      * @return All properties with local name which match with localName given, or null if there are
      * none.
      */
-    public List<AbstractField> getPropertiesByLocalName(String localName)
+    public List<AbstractField> getPropertiesByLocalName(final String localName)
     {
-        List<AbstractField> list =
+        final List<AbstractField> list =
                 getAllProperties().stream().
                 filter(abstractField -> (abstractField.getPropertyName().equals(localName))).
                 collect(Collectors.toList());
@@ -129,13 +129,13 @@ public class ComplexPropertyContainer
      *            Second property
      * @return True if these properties are equal.
      */
-    public boolean isSameProperty(AbstractField prop1, AbstractField prop2)
+    public boolean isSameProperty(final AbstractField prop1, final AbstractField prop2)
     {
 
         if (prop1.getClass().equals(prop2.getClass()))
         {
-            String pn1 = prop1.getPropertyName();
-            String pn2 = prop2.getPropertyName();
+            final String pn1 = prop1.getPropertyName();
+            final String pn2 = prop2.getPropertyName();
             if (pn1 == null)
             {
                 return pn2 == null;
@@ -158,9 +158,9 @@ public class ComplexPropertyContainer
      *            The property to check
      * @return True if property is present in this container
      */
-    public boolean containsProperty(AbstractField property)
+    public boolean containsProperty(final AbstractField property)
     {
-        Iterator<AbstractField> it = getAllProperties().iterator();
+        final Iterator<AbstractField> it = getAllProperties().iterator();
         AbstractField tmp;
         while (it.hasNext())
         {
@@ -179,7 +179,7 @@ public class ComplexPropertyContainer
      * @param property
      *            The property to remove
      */
-    public void removeProperty(AbstractField property)
+    public void removeProperty(final AbstractField property)
     {
         if (containsProperty(property))
         {
@@ -192,13 +192,13 @@ public class ComplexPropertyContainer
      * 
      * @param localName The name for which to remove all.
      */
-    public void removePropertiesByName(String localName)
+    public void removePropertiesByName(final String localName)
     {
         if (properties.isEmpty())
         {
             return;
         }
-        List<AbstractField> propList = getPropertiesByLocalName(localName);
+        final List<AbstractField> propList = getPropertiesByLocalName(localName);
         if (propList == null)
         {
             return;

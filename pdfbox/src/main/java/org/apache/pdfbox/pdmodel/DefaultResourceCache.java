@@ -60,9 +60,9 @@ public class DefaultResourceCache implements ResourceCache
             new HashMap<>();
 
     @Override
-    public PDFont getFont(COSObject indirect) throws IOException
+    public PDFont getFont(final COSObject indirect) throws IOException
     {
-        SoftReference<PDFont> font = fonts.get(indirect);
+        final SoftReference<PDFont> font = fonts.get(indirect);
         if (font != null)
         {
             return font.get();
@@ -71,15 +71,15 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDFont font) throws IOException
+    public void put(final COSObject indirect, final PDFont font) throws IOException
     {
         fonts.put(indirect, new SoftReference<>(font));
     }
 
     @Override
-    public PDColorSpace getColorSpace(COSObject indirect) throws IOException
+    public PDColorSpace getColorSpace(final COSObject indirect) throws IOException
     {
-        SoftReference<PDColorSpace> colorSpace = colorSpaces.get(indirect);
+        final SoftReference<PDColorSpace> colorSpace = colorSpaces.get(indirect);
         if (colorSpace != null)
         {
             return colorSpace.get();
@@ -88,15 +88,15 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDColorSpace colorSpace) throws IOException
+    public void put(final COSObject indirect, final PDColorSpace colorSpace) throws IOException
     {
         colorSpaces.put(indirect, new SoftReference<>(colorSpace));
     }
 
     @Override
-    public PDExtendedGraphicsState getExtGState(COSObject indirect)
+    public PDExtendedGraphicsState getExtGState(final COSObject indirect)
     {
-        SoftReference<PDExtendedGraphicsState> extGState = extGStates.get(indirect);
+        final SoftReference<PDExtendedGraphicsState> extGState = extGStates.get(indirect);
         if (extGState != null)
         {
             return extGState.get();
@@ -105,15 +105,15 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDExtendedGraphicsState extGState)
+    public void put(final COSObject indirect, final PDExtendedGraphicsState extGState)
     {
         extGStates.put(indirect, new SoftReference<>(extGState));
     }
 
     @Override
-    public PDShading getShading(COSObject indirect) throws IOException
+    public PDShading getShading(final COSObject indirect) throws IOException
     {
-        SoftReference<PDShading> shading = shadings.get(indirect);
+        final SoftReference<PDShading> shading = shadings.get(indirect);
         if (shading != null)
         {
             return shading.get();
@@ -122,15 +122,15 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDShading shading) throws IOException
+    public void put(final COSObject indirect, final PDShading shading) throws IOException
     {
         shadings.put(indirect, new SoftReference<>(shading));
     }
 
     @Override
-    public PDAbstractPattern getPattern(COSObject indirect) throws IOException
+    public PDAbstractPattern getPattern(final COSObject indirect) throws IOException
     {
-        SoftReference<PDAbstractPattern> pattern = patterns.get(indirect);
+        final SoftReference<PDAbstractPattern> pattern = patterns.get(indirect);
         if (pattern != null)
         {
             return pattern.get();
@@ -139,15 +139,15 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDAbstractPattern pattern) throws IOException
+    public void put(final COSObject indirect, final PDAbstractPattern pattern) throws IOException
     {
         patterns.put(indirect, new SoftReference<>(pattern));
     }
     
     @Override
-    public PDPropertyList getProperties(COSObject indirect)
+    public PDPropertyList getProperties(final COSObject indirect)
     {
-        SoftReference<PDPropertyList> propertyList = properties.get(indirect);
+        final SoftReference<PDPropertyList> propertyList = properties.get(indirect);
         if (propertyList != null)
         {
             return propertyList.get();
@@ -156,15 +156,15 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDPropertyList propertyList)
+    public void put(final COSObject indirect, final PDPropertyList propertyList)
     {
         properties.put(indirect, new SoftReference<>(propertyList));
     }
 
     @Override
-    public PDXObject getXObject(COSObject indirect) throws IOException
+    public PDXObject getXObject(final COSObject indirect) throws IOException
     {
-        SoftReference<PDXObject> xobject = xobjects.get(indirect);
+        final SoftReference<PDXObject> xobject = xobjects.get(indirect);
         if (xobject != null)
         {
             return xobject.get();
@@ -173,7 +173,7 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDXObject xobject) throws IOException
+    public void put(final COSObject indirect, final PDXObject xobject) throws IOException
     {
         xobjects.put(indirect, new SoftReference<>(xobject));
     }

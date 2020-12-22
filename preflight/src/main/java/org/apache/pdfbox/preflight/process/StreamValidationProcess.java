@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.process;
 
@@ -45,21 +45,21 @@ public class StreamValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext ctx) throws ValidationException
+    public void validate(final PreflightContext ctx) throws ValidationException
     {
-        COSDocument cosDocument = ctx.getDocument().getDocument();
+        final COSDocument cosDocument = ctx.getDocument().getDocument();
 
         // get all keys with a positive offset in ascending order to read the pdf linear
-        List<COSObjectKey> objectKeys = cosDocument.getXrefTable().entrySet().stream() //
+        final List<COSObjectKey> objectKeys = cosDocument.getXrefTable().entrySet().stream() //
                 .filter(e -> e.getValue() > 0L) //
                 .sorted(Comparator.comparing(Entry::getValue)) //
                 .map(Entry::getKey) //
                 .collect(Collectors.toList());
 
-        for (COSObjectKey objectKey : objectKeys)
+        for (final COSObjectKey objectKey : objectKeys)
         {
             // If this object represents a Stream, the Dictionary must contain the Length key
-            COSBase cBase = cosDocument.getObjectFromPool(objectKey).getObject();
+            final COSBase cBase = cosDocument.getObjectFromPool(objectKey).getObject();
             if (cBase instanceof COSStream)
             {
                 validateStreamObject(ctx, cBase);
@@ -67,9 +67,9 @@ public class StreamValidationProcess extends AbstractProcess
         }
     }
 
-    public void validateStreamObject(PreflightContext context, COSBase cObj)
+    public void validateStreamObject(final PreflightContext context, final COSBase cObj)
     {
-        COSStream streamObj = (COSStream) cObj;
+        final COSStream streamObj = (COSStream) cObj;
         // ---- Check dictionary entries
         // ---- Only the Length entry is mandatory
         // ---- In a PDF/A file, F, FFilter and FDecodeParms are forbidden
@@ -85,14 +85,14 @@ public class StreamValidationProcess extends AbstractProcess
      * @param stream the stream to check.
      * @param context the preflight context.
      */
-    protected void checkFilters(COSStream stream, PreflightContext context)
+    protected void checkFilters(final COSStream stream, final PreflightContext context)
     {
-        COSBase bFilter = stream.getDictionaryObject(COSName.FILTER);
+        final COSBase bFilter = stream.getDictionaryObject(COSName.FILTER);
         if (bFilter != null)
         {
             if (bFilter instanceof COSArray)
             {
-                COSArray afName = (COSArray) bFilter;
+                final COSArray afName = (COSArray) bFilter;
                 for (int i = 0; i < afName.size(); ++i)
                 {
                     FilterHelper.isAuthorizedFilter(context, afName.getString(i));
@@ -100,7 +100,7 @@ public class StreamValidationProcess extends AbstractProcess
             }
             else if (bFilter instanceof COSName)
             {
-                String fName = ((COSName) bFilter).getName();
+                final String fName = ((COSName) bFilter).getName();
                 FilterHelper.isAuthorizedFilter(context, fName);
             }
             else
@@ -120,12 +120,12 @@ public class StreamValidationProcess extends AbstractProcess
      * @param context the preflight context.
      * @param streamObj the stream to check.
      */
-    protected void checkDictionaryEntries(PreflightContext context, COSStream streamObj)
+    protected void checkDictionaryEntries(final PreflightContext context, final COSStream streamObj)
     {
-        boolean len = streamObj.containsKey(COSName.LENGTH);
-        boolean f = streamObj.containsKey(COSName.F);
-        boolean ffilter = streamObj.containsKey(COSName.F_FILTER);
-        boolean fdecParams = streamObj.containsKey(COSName.F_DECODE_PARMS);
+        final boolean len = streamObj.containsKey(COSName.LENGTH);
+        final boolean f = streamObj.containsKey(COSName.F);
+        final boolean ffilter = streamObj.containsKey(COSName.F_FILTER);
+        final boolean fdecParams = streamObj.containsKey(COSName.F_DECODE_PARMS);
 
         if (!len)
         {

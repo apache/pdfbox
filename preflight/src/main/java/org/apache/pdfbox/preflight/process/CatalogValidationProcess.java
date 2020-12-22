@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.process;
 
@@ -82,15 +82,15 @@ public class CatalogValidationProcess extends AbstractProcess
     {
     }
 
-    private boolean isStandardICCCharacterization(String name)
+    private boolean isStandardICCCharacterization(final String name)
     {
         return listICC.stream().anyMatch(i -> i.contains(name));
     }
 
     @Override
-    public void validate(PreflightContext ctx) throws ValidationException
+    public void validate(final PreflightContext ctx) throws ValidationException
     {
-        PDDocument pdfbox = ctx.getDocument();
+        final PDDocument pdfbox = ctx.getDocument();
         catalog = pdfbox.getDocumentCatalog();
 
         if (catalog == null)
@@ -114,7 +114,7 @@ public class CatalogValidationProcess extends AbstractProcess
      * @param ctx
      * @throws ValidationException Propagate the ActionManager exception
      */
-    private void validateActions(PreflightContext ctx) throws ValidationException
+    private void validateActions(final PreflightContext ctx) throws ValidationException
     {
         ContextHelper.validateElement(ctx, catalog.getCOSObject(), ACTIONS_PROCESS);
         // AA entry if forbidden in PDF/A-1
@@ -131,9 +131,9 @@ public class CatalogValidationProcess extends AbstractProcess
      * 
      * @param ctx
      */
-    private void validateLang(PreflightContext ctx)
+    private void validateLang(final PreflightContext ctx)
     {
-        String lang = catalog.getLanguage();
+        final String lang = catalog.getLanguage();
         if (lang != null && !lang.isEmpty() && !lang.matches("[A-Za-z]{1,8}(-[A-Za-z]{1,8})*"))
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_LANG_NOT_RFC1766));
@@ -145,9 +145,9 @@ public class CatalogValidationProcess extends AbstractProcess
      * 
      * @param ctx
      */
-    private void validateNames(PreflightContext ctx)
+    private void validateNames(final PreflightContext ctx)
     {
-        PDDocumentNameDictionary names = catalog.getNames();
+        final PDDocumentNameDictionary names = catalog.getNames();
         if (names != null)
         {
             if (names.getEmbeddedFiles() != null)
@@ -168,7 +168,7 @@ public class CatalogValidationProcess extends AbstractProcess
      * 
      * @param ctx
      */
-    private void validateOCProperties(PreflightContext ctx)
+    private void validateOCProperties(final PreflightContext ctx)
     {
         if (catalog.getOCProperties() != null)
         {
@@ -188,13 +188,13 @@ public class CatalogValidationProcess extends AbstractProcess
      * @param ctx
      * @throws ValidationException
      */
-    private void validateOutputIntent(PreflightContext ctx) throws ValidationException
+    private void validateOutputIntent(final PreflightContext ctx) throws ValidationException
     {
-        COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
-        Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<>();
+        final COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
+        final Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<>();
         for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i)
         {
-            COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
+            final COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
 
             if (outputIntentDict == null)
             {
@@ -204,7 +204,7 @@ public class CatalogValidationProcess extends AbstractProcess
             else
             {
                 // S entry is mandatory and must be equals to GTS_PDFA1
-                COSName sValue = outputIntentDict.getCOSName(COSName.S);
+                final COSName sValue = outputIntentDict.getCOSName(COSName.S);
                 if (!COSName.GTS_PDFA1.equals(sValue))
                 {
                     addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_S_VALUE_INVALID,
@@ -213,7 +213,7 @@ public class CatalogValidationProcess extends AbstractProcess
                 }
 
                 // OutputConditionIdentifier is a mandatory field
-                String outputConditionIdentifier = outputIntentDict
+                final String outputConditionIdentifier = outputIntentDict
                         .getString(COSName.OUTPUT_CONDITION_IDENTIFIER);
                 if (outputConditionIdentifier == null)
                 {
@@ -230,16 +230,16 @@ public class CatalogValidationProcess extends AbstractProcess
                  * Because of PDF/A conforming file needs to specify the color characteristics, the DestOutputProfile is
                  * checked even if the OutputConditionIdentifier isn't "Custom"
                  */
-                COSBase destOutputProfile = outputIntentDict.getItem(COSName.DEST_OUTPUT_PROFILE);
+                final COSBase destOutputProfile = outputIntentDict.getItem(COSName.DEST_OUTPUT_PROFILE);
                 validateICCProfile(destOutputProfile, tmpDestOutputProfile, ctx);
 
-                PreflightConfiguration config = ctx.getConfig();
+                final PreflightConfiguration config = ctx.getConfig();
                 if (config.isLazyValidation() && !isStandardICCCharacterization(outputConditionIdentifier))
                 {
-                    String info = outputIntentDict.getString(COSName.INFO);
+                    final String info = outputIntentDict.getString(COSName.INFO);
                     if (info == null || info.isEmpty())
                     {
-                        ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+                        final ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
                                 "The Info entry of a OutputIntent dictionary is missing");
                         error.setWarning(true);
                         addValidationError(ctx, error);
@@ -266,9 +266,9 @@ public class CatalogValidationProcess extends AbstractProcess
      * @param ctx the preflight context.
      * @throws ValidationException
      */
-    private void validateICCProfile(COSBase destOutputProfile,
-            Map<COSObjectKey, Boolean> mapDestOutputProfile,
-            PreflightContext ctx) throws ValidationException
+    private void validateICCProfile(final COSBase destOutputProfile,
+                                    final Map<COSObjectKey, Boolean> mapDestOutputProfile,
+                                    final PreflightContext ctx) throws ValidationException
             {
         try
         {
@@ -307,15 +307,15 @@ public class CatalogValidationProcess extends AbstractProcess
                         "OutputIntent object must be a stream"));
                 return;
             }
-            COSStream stream = (COSStream) localDestOutputProfile;
+            final COSStream stream = (COSStream) localDestOutputProfile;
 
-            COSArray array = new COSArray();
+            final COSArray array = new COSArray();
             array.add(COSName.ICCBASED);
             array.add(stream);
-            PDICCBased iccBased = PDICCBased.create(array, null);
-            PreflightConfiguration cfg = ctx.getConfig();
-            ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
-            ColorSpaceHelper csHelper =
+            final PDICCBased iccBased = PDICCBased.create(array, null);
+            final PreflightConfiguration cfg = ctx.getConfig();
+            final ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
+            final ColorSpaceHelper csHelper =
                     csFact.getColorSpaceHelper(ctx, iccBased, ColorSpaceRestriction.NO_RESTRICTION);
             csHelper.validate();
 
@@ -327,13 +327,13 @@ public class CatalogValidationProcess extends AbstractProcess
                 }
             }
         }
-        catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e)
+        catch (final IllegalArgumentException | ArrayIndexOutOfBoundsException e)
         {
             // this is not a ICC_Profile
             addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
                     "DestOutputProfile isn't a valid ICCProfile: " + e.getMessage(), e));
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new ValidationException("Unable to parse the ICC Profile.", e);
         }

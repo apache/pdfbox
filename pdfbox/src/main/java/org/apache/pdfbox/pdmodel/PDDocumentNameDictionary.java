@@ -36,9 +36,9 @@ public class PDDocumentNameDictionary implements COSObjectable
      *
      * @param cat The document catalog that this dictionary is part of.
      */
-    public PDDocumentNameDictionary( PDDocumentCatalog cat )
+    public PDDocumentNameDictionary(final PDDocumentCatalog cat )
     {
-        COSBase names = cat.getCOSObject().getDictionaryObject(COSName.NAMES);
+        final COSBase names = cat.getCOSObject().getDictionaryObject(COSName.NAMES);
         if (names != null)
         {
             nameDictionary = (COSDictionary)names;
@@ -57,7 +57,7 @@ public class PDDocumentNameDictionary implements COSObjectable
      * @param cat The document that this dictionary is part of.
      * @param names The names dictionary.
      */
-    public PDDocumentNameDictionary( PDDocumentCatalog cat, COSDictionary names )
+    public PDDocumentNameDictionary(final PDDocumentCatalog cat, final COSDictionary names )
     {
         catalog = cat;
         nameDictionary = names;
@@ -106,7 +106,7 @@ public class PDDocumentNameDictionary implements COSObjectable
      *
      * @param dests The destination names.
      */
-    public void setDests( PDDestinationNameTreeNode dests )
+    public void setDests(final PDDestinationNameTreeNode dests )
     {
         nameDictionary.setItem( COSName.DESTS, dests );
         //The dests can either be in the document catalog or in the
@@ -127,7 +127,7 @@ public class PDDocumentNameDictionary implements COSObjectable
     {
         PDEmbeddedFilesNameTreeNode retval = null;
 
-        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( COSName.EMBEDDED_FILES );
+        final COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( COSName.EMBEDDED_FILES );
 
         if( dic != null )
         {
@@ -142,7 +142,7 @@ public class PDDocumentNameDictionary implements COSObjectable
      *
      * @param ef The new embedded files
      */
-    public void setEmbeddedFiles( PDEmbeddedFilesNameTreeNode ef )
+    public void setEmbeddedFiles(final PDEmbeddedFilesNameTreeNode ef )
     {
         nameDictionary.setItem( COSName.EMBEDDED_FILES, ef );
     }
@@ -158,7 +158,7 @@ public class PDDocumentNameDictionary implements COSObjectable
     {
         PDJavascriptNameTreeNode retval = null;
 
-        COSDictionary dic = (COSDictionary) nameDictionary.getDictionaryObject(COSName.JAVA_SCRIPT);
+        final COSDictionary dic = (COSDictionary) nameDictionary.getDictionaryObject(COSName.JAVA_SCRIPT);
 
         if( dic != null )
         {
@@ -173,7 +173,7 @@ public class PDDocumentNameDictionary implements COSObjectable
      *
      * @param js The new Javascript entries.
      */
-    public void setJavascript( PDJavascriptNameTreeNode js )
+    public void setJavascript(final PDJavascriptNameTreeNode js )
     {
         nameDictionary.setItem( COSName.JAVA_SCRIPT, js );
     }

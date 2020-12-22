@@ -48,7 +48,7 @@ public class PDActionURI extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionURI(COSDictionary a)
+    public PDActionURI(final COSDictionary a)
     {
         super(a);
     }
@@ -61,10 +61,10 @@ public class PDActionURI extends PDAction
      */
     public String getURI()
     {
-        COSBase base = action.getDictionaryObject(COSName.URI);
+        final COSBase base = action.getDictionaryObject(COSName.URI);
         if (base instanceof COSString)
         {
-            byte[] bytes = ((COSString) base).getBytes();
+            final byte[] bytes = ((COSString) base).getBytes();
             if (bytes.length >= 2)
             {
                 // UTF-16 (BE)
@@ -89,7 +89,7 @@ public class PDActionURI extends PDAction
      *
      * @param uri The uniform resource identifier.
      */
-    public void setURI(String uri)
+    public void setURI(final String uri)
     {
         action.setString(COSName.URI, uri);
     }
@@ -114,7 +114,7 @@ public class PDActionURI extends PDAction
      *
      * @param value The flag value.
      */
-    public void setTrackMousePosition(boolean value)
+    public void setTrackMousePosition(final boolean value)
     {
         this.action.setBoolean("IsMap", value);
     }

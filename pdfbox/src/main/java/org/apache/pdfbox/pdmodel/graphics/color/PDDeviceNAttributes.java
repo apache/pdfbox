@@ -56,7 +56,7 @@ public final class PDDeviceNAttributes
      * Creates a new DeviceN colour space attributes dictionary from the given dictionary.
      * @param attributes a dictionary that has all of the attributes
      */
-    public PDDeviceNAttributes(COSDictionary attributes)
+    public PDDeviceNAttributes(final COSDictionary attributes)
     {
         dictionary = attributes;
     }
@@ -77,16 +77,16 @@ public final class PDDeviceNAttributes
      */
     public Map<String, PDSeparation> getColorants() throws IOException
     {
-        Map<String,PDSeparation> actuals = new HashMap<>();
+        final Map<String,PDSeparation> actuals = new HashMap<>();
         COSDictionary colorants = dictionary.getCOSDictionary(COSName.COLORANTS);
         if(colorants == null)
         {
             colorants = new COSDictionary();
             dictionary.setItem(COSName.COLORANTS, colorants);
         }
-        for(COSName name : colorants.keySet())
+        for(final COSName name : colorants.keySet())
         {
-            COSBase value = colorants.getDictionaryObject(name);
+            final COSBase value = colorants.getDictionaryObject(name);
             actuals.put(name.getName(), (PDSeparation)PDColorSpace.create(value));
         }
         return new COSDictionaryMap<>(actuals, colorants);
@@ -98,7 +98,7 @@ public final class PDDeviceNAttributes
      */
     public PDDeviceNProcess getProcess()
     {
-        COSDictionary process = dictionary.getCOSDictionary(COSName.PROCESS);
+        final COSDictionary process = dictionary.getCOSDictionary(COSName.PROCESS);
         if (process == null)
         {
             return null;
@@ -119,7 +119,7 @@ public final class PDDeviceNAttributes
      * Sets the colorant map.
      * @param colorants the map of colorants
      */
-    public void setColorants(Map<String, PDColorSpace> colorants)
+    public void setColorants(final Map<String, PDColorSpace> colorants)
     {
         COSDictionary colorantDict = null;
         if(colorants != null)
@@ -132,21 +132,21 @@ public final class PDDeviceNAttributes
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder(dictionary.getNameAsString(COSName.SUBTYPE));
+        final StringBuilder sb = new StringBuilder(dictionary.getNameAsString(COSName.SUBTYPE));
         sb.append('{');
-        PDDeviceNProcess process = getProcess();
+        final PDDeviceNProcess process = getProcess();
         if (process != null)
         {
             sb.append(getProcess());
             sb.append(' ');
         }
 
-        Map<String, PDSeparation> colorants;
+        final Map<String, PDSeparation> colorants;
         try
         {
             colorants = getColorants();
             sb.append("Colorants{");
-            for (Map.Entry<String, PDSeparation> col : colorants.entrySet())
+            for (final Map.Entry<String, PDSeparation> col : colorants.entrySet())
             {
                 sb.append('\"');
                 sb.append(col.getKey());
@@ -156,7 +156,7 @@ public final class PDDeviceNAttributes
             }
             sb.append('}');
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOG.debug("Couldn't get the colorants information - returning 'ERROR' instead'", e);
             sb.append("ERROR");

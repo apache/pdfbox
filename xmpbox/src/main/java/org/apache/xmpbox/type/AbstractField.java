@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.type;
 
@@ -51,7 +51,7 @@ public abstract class AbstractField
      * @param propertyName
      *            the local name to set for this field
      */
-    public AbstractField(XMPMetadata metadata, String propertyName)
+    public AbstractField(final XMPMetadata metadata, final String propertyName)
     {
         this.metadata = metadata;
         this.propertyName = propertyName;
@@ -68,7 +68,7 @@ public abstract class AbstractField
         return propertyName;
     }
 
-    public final void setPropertyName(String value)
+    public final void setPropertyName(final String value)
     {
         this.propertyName = value;
     }
@@ -79,7 +79,7 @@ public abstract class AbstractField
      * @param value
      *            The Attribute property to add
      */
-    public final void setAttribute(Attribute value)
+    public final void setAttribute(final Attribute value)
     {
         if (attributes.containsKey(value.getName()))
         {
@@ -96,7 +96,7 @@ public abstract class AbstractField
      *            the full qualified name of the attribute concerned
      * @return true if attribute is present
      */
-    public final boolean containsAttribute(String qualifiedName)
+    public final boolean containsAttribute(final String qualifiedName)
     {
         return attributes.containsKey(qualifiedName);
     }
@@ -108,7 +108,7 @@ public abstract class AbstractField
      *            the full qualified name of the attribute wanted
      * @return The attribute property
      */
-    public final Attribute getAttribute(String qualifiedName)
+    public final Attribute getAttribute(final String qualifiedName)
     {
         return attributes.get(qualifiedName);
     }
@@ -129,7 +129,7 @@ public abstract class AbstractField
      * @param qualifiedName
      *            the full qualified name of the attribute wanted
      */
-    public final void removeAttribute(String qualifiedName)
+    public final void removeAttribute(final String qualifiedName)
     {
         if (containsAttribute(qualifiedName))
         {

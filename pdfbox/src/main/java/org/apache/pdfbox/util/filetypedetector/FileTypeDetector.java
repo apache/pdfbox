@@ -93,12 +93,12 @@ public final class FileTypeDetector
             throw new IOException("Stream must support mark/reset");
         }
 
-        int maxByteCount = root.getMaxDepth();
+        final int maxByteCount = root.getMaxDepth();
 
         inputStream.mark(maxByteCount);
 
-        byte[] bytes = new byte[maxByteCount];
-        int bytesRead = inputStream.read(bytes);
+        final byte[] bytes = new byte[maxByteCount];
+        final int bytesRead = inputStream.read(bytes);
 
         if (bytesRead == -1)
         {

@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.type;
 
@@ -46,7 +46,7 @@ public class Attribute
      * @param value
      *            value given to this attribute
      */
-    public Attribute(String nsURI, String localName, String value)
+    public Attribute(final String nsURI, final String localName, final String value)
     {
         this.nsURI = nsURI;
         this.name = localName;
@@ -69,7 +69,7 @@ public class Attribute
      * @param lname
      *            the local name to set
      */
-    public void setName(String lname)
+    public void setName(final String lname)
     {
         name = lname;
     }
@@ -90,7 +90,7 @@ public class Attribute
      * @param nsURI
      *            the namespace URI to set
      */
-    public void setNsURI(String nsURI)
+    public void setNsURI(final String nsURI)
     {
         this.nsURI = nsURI;
     }
@@ -111,7 +111,7 @@ public class Attribute
      * @param value
      *            the value to set for this attribute
      */
-    public void setValue(String value)
+    public void setValue(final String value)
     {
         this.value = value;
     }

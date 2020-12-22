@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.action;
 
@@ -71,29 +71,29 @@ public class ActionManagerFactory
      * @return the list of actions from the given dictionary.
      * @throws ValidationException
      */
-    public final List<AbstractActionManager> getActionManagers(PreflightContext ctx, COSDictionary dictionary)
+    public final List<AbstractActionManager> getActionManagers(final PreflightContext ctx, final COSDictionary dictionary)
             throws ValidationException
     {
-        List<AbstractActionManager> result = new ArrayList<>(0);
-        Map<COSObjectKey, Boolean> alreadyCreated = new HashMap<>();
+        final List<AbstractActionManager> result = new ArrayList<>(0);
+        final Map<COSObjectKey, Boolean> alreadyCreated = new HashMap<>();
 
-        COSBase aDict = dictionary.getDictionaryObject(COSName.A);
+        final COSBase aDict = dictionary.getDictionaryObject(COSName.A);
         if (aDict != null)
         {
             callCreateAction(aDict, ctx, result, alreadyCreated);
         }
 
-        COSBase oaDict = dictionary.getDictionaryObject(COSName.OPEN_ACTION);
+        final COSBase oaDict = dictionary.getDictionaryObject(COSName.OPEN_ACTION);
         if (oaDict != null && !(oaDict instanceof COSArray))
         {
             callCreateAction(oaDict, ctx, result, alreadyCreated);
         }
         // else nothing to do because an array contains a Destination and not an Action.
 
-        COSDictionary aaDict = dictionary.getCOSDictionary(COSName.AA);
+        final COSDictionary aaDict = dictionary.getCOSDictionary(COSName.AA);
         if (aaDict != null)
         {
-            for (COSName name : aaDict.keySet())
+            for (final COSName name : aaDict.keySet())
             {
                 callCreateAction(aaDict.getDictionaryObject(name), ctx, result, name.getName(),
                         alreadyCreated);
@@ -116,8 +116,8 @@ public class ActionManagerFactory
      *            in an action which has a Next entry.
      * @throws ValidationException
      */
-    private void callCreateAction(COSBase aDict, PreflightContext ctx, List<AbstractActionManager> result,
-            Map<COSObjectKey, Boolean> alreadyCreated) throws ValidationException
+    private void callCreateAction(final COSBase aDict, final PreflightContext ctx, final List<AbstractActionManager> result,
+                                  final Map<COSObjectKey, Boolean> alreadyCreated) throws ValidationException
     {
         callCreateAction(aDict, ctx, result, null, alreadyCreated);
     }
@@ -142,16 +142,16 @@ public class ActionManagerFactory
      *            in an action which has a Next entry.
      * @throws ValidationException
      */
-    private void callCreateAction(COSBase aDict, PreflightContext ctx, List<AbstractActionManager> result,
-            String additionActionKey, Map<COSObjectKey, Boolean> alreadyCreated) throws ValidationException
+    private void callCreateAction(final COSBase aDict, final PreflightContext ctx, final List<AbstractActionManager> result,
+                                  final String additionActionKey, final Map<COSObjectKey, Boolean> alreadyCreated) throws ValidationException
     {
         if (aDict instanceof COSDictionary || aDict instanceof COSObject
                 && ((COSObject) aDict).getObject() instanceof COSDictionary)
         {
             if (aDict instanceof COSObject)
             {
-                COSObjectKey cok = new COSObjectKey((COSObject) aDict);
-                COSDictionary indirectDict = (COSDictionary) ((COSObject) aDict).getObject();
+                final COSObjectKey cok = new COSObjectKey((COSObject) aDict);
+                final COSDictionary indirectDict = (COSDictionary) ((COSObject) aDict).getObject();
                 if (!alreadyCreated.containsKey(cok))
                 {
                     result.add(createActionManager(ctx, indirectDict, additionActionKey));
@@ -179,18 +179,18 @@ public class ActionManagerFactory
      * @return the list of actions from the given dictionary.
      * @throws ValidationException
      */
-    public final List<AbstractActionManager> getNextActions(PreflightContext ctx, COSDictionary actionDictionary)
+    public final List<AbstractActionManager> getNextActions(final PreflightContext ctx, final COSDictionary actionDictionary)
             throws ValidationException
     {
-        List<AbstractActionManager> result = new ArrayList<>(0);
-        Map<COSObjectKey, Boolean> alreadyCreated = new HashMap<>();
+        final List<AbstractActionManager> result = new ArrayList<>(0);
+        final Map<COSObjectKey, Boolean> alreadyCreated = new HashMap<>();
 
-        COSBase nextDict = actionDictionary.getDictionaryObject(COSName.NEXT);
+        final COSBase nextDict = actionDictionary.getDictionaryObject(COSName.NEXT);
         if (nextDict != null)
         {
             if (nextDict instanceof COSArray)
             {
-                COSArray array = (COSArray) nextDict;
+                final COSArray array = (COSArray) nextDict;
                 // ---- Next may contains an array of Action dictionary
                 for (int i = 0; i < array.size(); ++i)
                 {
@@ -220,11 +220,11 @@ public class ActionManagerFactory
      * @return the ActionManager instance.
      * @throws ValidationException
      */
-    protected AbstractActionManager createActionManager(PreflightContext ctx, COSDictionary action, String aaKey)
+    protected AbstractActionManager createActionManager(final PreflightContext ctx, final COSDictionary action, final String aaKey)
             throws ValidationException
     {
 
-        String type = action.getNameAsString(COSName.TYPE);
+        final String type = action.getNameAsString(COSName.TYPE);
         if (type != null && !PDAction.TYPE.equals(type))
         {
             throw new ValidationException("The given dictionary isn't the dictionary of an Action");
@@ -232,7 +232,7 @@ public class ActionManagerFactory
 
         // ---- S is a mandatory fields. If S entry is missing, the return will
         // return the InvalidAction manager
-        String s = action.getNameAsString(COSName.S);
+        final String s = action.getNameAsString(COSName.S);
 
         // --- Here is authorized actions
         if (PDActionGoTo.SUB_TYPE.equals(s))

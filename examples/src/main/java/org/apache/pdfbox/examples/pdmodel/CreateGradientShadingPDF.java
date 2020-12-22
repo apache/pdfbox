@@ -57,25 +57,25 @@ public class CreateGradientShadingPDF
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void create(String file) throws IOException
+    public void create(final String file) throws IOException
     {
         try (PDDocument document = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             document.addPage(page);
 
             // type 2 (exponential) function with attributes
             // can be used by both shadings
-            COSDictionary fdict = new COSDictionary();
+            final COSDictionary fdict = new COSDictionary();
             fdict.setInt(COSName.FUNCTION_TYPE, 2);
-            COSArray domain = new COSArray();
+            final COSArray domain = new COSArray();
             domain.add(COSInteger.ZERO);
             domain.add(COSInteger.ONE);
-            COSArray c0 = new COSArray();
+            final COSArray c0 = new COSArray();
             c0.add(COSInteger.ONE);
             c0.add(COSInteger.ZERO);
             c0.add(COSInteger.ZERO);
-            COSArray c1 = new COSArray();
+            final COSArray c1 = new COSArray();
             c1.add(COSNumber.get("0.5"));
             c1.add(COSInteger.ONE);
             c1.add(COSNumber.get("0.5"));
@@ -83,13 +83,13 @@ public class CreateGradientShadingPDF
             fdict.setItem(COSName.C0, c0);
             fdict.setItem(COSName.C1, c1);
             fdict.setInt(COSName.N, 1);
-            PDFunctionType2 func = new PDFunctionType2(fdict);
+            final PDFunctionType2 func = new PDFunctionType2(fdict);
 
             // axial shading with attributes
-            PDShadingType2 axialShading = new PDShadingType2(new COSDictionary());
+            final PDShadingType2 axialShading = new PDShadingType2(new COSDictionary());
             axialShading.setColorSpace(PDDeviceRGB.INSTANCE);
             axialShading.setShadingType(PDShading.SHADING_TYPE2);
-            COSArray coords1 = new COSArray();
+            final COSArray coords1 = new COSArray();
             coords1.add(COSInteger.get(100));
             coords1.add(COSInteger.get(400));
             coords1.add(COSInteger.get(400));
@@ -98,10 +98,10 @@ public class CreateGradientShadingPDF
             axialShading.setFunction(func);
 
             // radial shading with attributes
-            PDShadingType3 radialShading = new PDShadingType3(new COSDictionary());
+            final PDShadingType3 radialShading = new PDShadingType3(new COSDictionary());
             radialShading.setColorSpace(PDDeviceRGB.INSTANCE);
             radialShading.setShadingType(PDShading.SHADING_TYPE3);
-            COSArray coords2 = new COSArray();
+            final COSArray coords2 = new COSArray();
             coords2.add(COSInteger.get(100));
             coords2.add(COSInteger.get(400));
             coords2.add(COSInteger.get(50)); // radius1
@@ -114,13 +114,13 @@ public class CreateGradientShadingPDF
             // Gouraud shading
             // See PDF 32000 specification,
             // 8.7.4.5.5 Type 4 Shadings (Free-Form Gouraud-Shaded Triangle Meshes)
-            PDShadingType4 gouraudShading = new PDShadingType4(document.getDocument().createCOSStream());
+            final PDShadingType4 gouraudShading = new PDShadingType4(document.getDocument().createCOSStream());
             gouraudShading.setShadingType(PDShading.SHADING_TYPE4);
             // we use multiple of 8, so that no padding is needed
             gouraudShading.setBitsPerFlag(8);
             gouraudShading.setBitsPerCoordinate(16);
             gouraudShading.setBitsPerComponent(8);
-            COSArray decodeArray = new COSArray();
+            final COSArray decodeArray = new COSArray();
             // coordinates x y map 16 bits 0..FFFF to 0..FFFF to make your life easy
             // so no calculation is needed, but you can only use integer coordinates
             // for real numbers, you'll need smaller bounds, e.g. 0xFFFF / 0xA = 0x1999
@@ -147,7 +147,7 @@ public class CreateGradientShadingPDF
 
             // fill the vertex stream
             try (OutputStream os = ((COSStream) gouraudShading.getCOSObject()).createOutputStream();
-                 MemoryCacheImageOutputStream mcos = new MemoryCacheImageOutputStream(os))
+                 final MemoryCacheImageOutputStream mcos = new MemoryCacheImageOutputStream(os))
             {
                 // Vertex 1, starts with flag1
                 // (flags always 0 for vertices of start triangle)
@@ -195,7 +195,7 @@ public class CreateGradientShadingPDF
         try (PDDocument document = Loader.loadPDF(new File(file)))
         {
             // render the PDF and save it into a PNG file
-            BufferedImage bim = new PDFRenderer(document).renderImageWithDPI(0, 100);
+            final BufferedImage bim = new PDFRenderer(document).renderImageWithDPI(0, 100);
             ImageIO.write(bim, "png", new File(file + ".png"));
         }
     }
@@ -207,7 +207,7 @@ public class CreateGradientShadingPDF
      *
      * @throws IOException If there is an error writing the document data.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 1)
         {
@@ -215,7 +215,7 @@ public class CreateGradientShadingPDF
         }
         else
         {
-            CreateGradientShadingPDF creator = new CreateGradientShadingPDF();
+            final CreateGradientShadingPDF creator = new CreateGradientShadingPDF();
             creator.create(args[0]);
         }
     }

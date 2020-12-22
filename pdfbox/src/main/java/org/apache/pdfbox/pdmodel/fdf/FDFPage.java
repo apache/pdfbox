@@ -47,7 +47,7 @@ public class FDFPage implements COSObjectable
      *
      * @param p The FDF page.
      */
-    public FDFPage(COSDictionary p)
+    public FDFPage(final COSDictionary p)
     {
         page = p;
     }
@@ -71,10 +71,10 @@ public class FDFPage implements COSObjectable
     public List<FDFTemplate> getTemplates()
     {
         List<FDFTemplate> retval = null;
-        COSArray array = (COSArray) page.getDictionaryObject(COSName.TEMPLATES);
+        final COSArray array = (COSArray) page.getDictionaryObject(COSName.TEMPLATES);
         if (array != null)
         {
-            List<FDFTemplate> objects = new ArrayList<>();
+            final List<FDFTemplate> objects = new ArrayList<>();
             for (int i = 0; i < array.size(); i++)
             {
                 objects.add(new FDFTemplate((COSDictionary) array.getObject(i)));
@@ -89,7 +89,7 @@ public class FDFPage implements COSObjectable
      *
      * @param templates A list of templates for this Page.
      */
-    public void setTemplates(List<FDFTemplate> templates)
+    public void setTemplates(final List<FDFTemplate> templates)
     {
         page.setItem(COSName.TEMPLATES, new COSArray(templates));
     }
@@ -102,7 +102,7 @@ public class FDFPage implements COSObjectable
     public FDFPageInfo getPageInfo()
     {
         FDFPageInfo retval = null;
-        COSDictionary dict = page.getCOSDictionary(COSName.INFO);
+        final COSDictionary dict = page.getCOSDictionary(COSName.INFO);
         if (dict != null)
         {
             retval = new FDFPageInfo(dict);
@@ -115,7 +115,7 @@ public class FDFPage implements COSObjectable
      *
      * @param info The new page info dictionary.
      */
-    public void setPageInfo(FDFPageInfo info)
+    public void setPageInfo(final FDFPageInfo info)
     {
         page.setItem(COSName.INFO, info);
     }

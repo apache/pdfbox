@@ -59,7 +59,7 @@ public class FDFAnnotationLink extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationLink(COSDictionary a)
+    public FDFAnnotationLink(final COSDictionary a)
     {
         super(a);
     }
@@ -71,22 +71,22 @@ public class FDFAnnotationLink extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationLink(Element element) throws IOException
+    public FDFAnnotationLink(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
 
         try
         {
-            NodeList uri = (NodeList) xpath.evaluate("OnActivation/Action/URI", element,
+            final NodeList uri = (NodeList) xpath.evaluate("OnActivation/Action/URI", element,
                     XPathConstants.NODESET);
             if (uri.getLength() > 0)
             {
-                Node namedItem = uri.item(0).getAttributes().getNamedItem("Name");
+                final Node namedItem = uri.item(0).getAttributes().getNamedItem("Name");
                 if (namedItem != null && namedItem.getNodeValue() != null)
                 {
-                    PDActionURI actionURI = new PDActionURI();
+                    final PDActionURI actionURI = new PDActionURI();
                     actionURI.setURI(namedItem.getNodeValue());
                     annot.setItem(COSName.A, actionURI);
                 }
@@ -94,7 +94,7 @@ public class FDFAnnotationLink extends FDFAnnotation
             // GoTo is more tricky, because because page destination needs page tree
             // to convert number into PDPage object
         }
-        catch (XPathExpressionException e)
+        catch (final XPathExpressionException e)
         {
             LOG.debug("Error while evaluating XPath expression", e);
         }

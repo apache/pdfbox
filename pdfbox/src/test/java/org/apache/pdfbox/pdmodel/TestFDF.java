@@ -54,13 +54,13 @@ class TestFDF
         checkFields("/org/apache/pdfbox/pdfparser/nocatalog.fdf");
     }
 
-    private void checkFields(String name) throws IOException, URISyntaxException
+    private void checkFields(final String name) throws IOException, URISyntaxException
     {
         try (FDFDocument fdf = Loader.loadFDF(new File(TestFDF.class.getResource(name).toURI())))
         {
             fdf.saveXFDF(new PrintWriter(new ByteArrayOutputStream()));
             
-            List<FDFField> fields = fdf.getCatalog().getFDF().getFields();
+            final List<FDFField> fields = fdf.getCatalog().getFDF().getFields();
             
             assertEquals(2, fields.size());
             assertEquals("Field1", fields.get(0).getPartialFieldName());
@@ -71,7 +71,7 @@ class TestFDF
             try (PDDocument pdf = Loader.loadPDF(new File(TestFDF.class
                     .getResource("/org/apache/pdfbox/pdfparser/SimpleForm2Fields.pdf").toURI())))
             {
-                PDAcroForm acroForm = pdf.getDocumentCatalog().getAcroForm();
+                final PDAcroForm acroForm = pdf.getDocumentCatalog().getAcroForm();
                 acroForm.importFDF(fdf);
                 assertEquals("Test1", acroForm.getField("Field1").getValueAsString());
                 assertEquals("Test2", acroForm.getField("Field2").getValueAsString());

@@ -56,7 +56,7 @@ class HandleDifferentDALevelsTest
         field = (PDTextField) acroForm.getField("MultipleAnnotations-DifferentLayout");
         field.setValue("different layout");
         
-        File file = new File(OUT_DIR, NAME_OF_PDF);
+        final File file = new File(OUT_DIR, NAME_OF_PDF);
         document.save(file);
         
     }
@@ -64,12 +64,12 @@ class HandleDifferentDALevelsTest
     @Test
     void checkSingleAnnotation() throws IOException
     {
-        PDTextField field = (PDTextField) acroForm.getField("SingleAnnotation");
-        String fieldFontSetting = getFontSettingFromDA(field);
-        List<PDAnnotationWidget> widgets = field.getWidgets();
-        for (PDAnnotationWidget widget : widgets)
+        final PDTextField field = (PDTextField) acroForm.getField("SingleAnnotation");
+        final String fieldFontSetting = getFontSettingFromDA(field);
+        final List<PDAnnotationWidget> widgets = field.getWidgets();
+        for (final PDAnnotationWidget widget : widgets)
         {
-            String contentAsString = new String(widget.getNormalAppearanceStream().getContentStream().toByteArray());
+            final String contentAsString = new String(widget.getNormalAppearanceStream().getContentStream().toByteArray());
             assertTrue(contentAsString.indexOf(fieldFontSetting) > 0);
         }
     }
@@ -77,12 +77,12 @@ class HandleDifferentDALevelsTest
     @Test
     void checkSameLayout() throws IOException
     {
-        PDTextField field = (PDTextField) acroForm.getField("MultipeAnnotations-SameLayout");
-        String fieldFontSetting = getFontSettingFromDA(field);
-        List<PDAnnotationWidget> widgets = field.getWidgets();
-        for (PDAnnotationWidget widget : widgets)
+        final PDTextField field = (PDTextField) acroForm.getField("MultipeAnnotations-SameLayout");
+        final String fieldFontSetting = getFontSettingFromDA(field);
+        final List<PDAnnotationWidget> widgets = field.getWidgets();
+        for (final PDAnnotationWidget widget : widgets)
         {
-            String contentAsString = new String(widget.getNormalAppearanceStream().getContentStream().toByteArray());
+            final String contentAsString = new String(widget.getNormalAppearanceStream().getContentStream().toByteArray());
             assertTrue(contentAsString.indexOf(fieldFontSetting) > 0, "font setting in content stream shall be " + fieldFontSetting);
         }
     }
@@ -91,14 +91,14 @@ class HandleDifferentDALevelsTest
     @Test
     void checkDifferentLayout() throws IOException
     {
-        PDTextField field = (PDTextField) acroForm.getField("MultipleAnnotations-DifferentLayout");
-        String fieldFontSetting = getFontSettingFromDA(field);
-        List<PDAnnotationWidget> widgets = field.getWidgets();
-        for (PDAnnotationWidget widget : widgets)
+        final PDTextField field = (PDTextField) acroForm.getField("MultipleAnnotations-DifferentLayout");
+        final String fieldFontSetting = getFontSettingFromDA(field);
+        final List<PDAnnotationWidget> widgets = field.getWidgets();
+        for (final PDAnnotationWidget widget : widgets)
         {
-            String widgetFontSetting = getFontSettingFromDA(widget);
-            String fontSetting = widgetFontSetting == null ? fieldFontSetting : widgetFontSetting;
-            String contentAsString = new String(widget.getNormalAppearanceStream().getContentStream().toByteArray());
+            final String widgetFontSetting = getFontSettingFromDA(widget);
+            final String fontSetting = widgetFontSetting == null ? fieldFontSetting : widgetFontSetting;
+            final String contentAsString = new String(widget.getNormalAppearanceStream().getContentStream().toByteArray());
             assertTrue(contentAsString.indexOf(fontSetting) > 0, "font setting in content stream shall be " + fontSetting);
         }
     }
@@ -109,16 +109,16 @@ class HandleDifferentDALevelsTest
         document.close();
     }
     
-    private String getFontSettingFromDA(PDTextField field)
+    private String getFontSettingFromDA(final PDTextField field)
     {
-        String defaultAppearance = field.getDefaultAppearance();
+        final String defaultAppearance = field.getDefaultAppearance();
         // get the font setting from the default appearance string
         return defaultAppearance.substring(0, defaultAppearance.lastIndexOf("Tf")+2);
     }
     
-    private String getFontSettingFromDA(PDAnnotationWidget widget)
+    private String getFontSettingFromDA(final PDAnnotationWidget widget)
     {
-        String defaultAppearance = widget.getCOSObject().getString(COSName.DA);
+        final String defaultAppearance = widget.getCOSObject().getString(COSName.DA);
         if (defaultAppearance != null)
         {
             return defaultAppearance.substring(0, defaultAppearance.lastIndexOf("Tf")+2);

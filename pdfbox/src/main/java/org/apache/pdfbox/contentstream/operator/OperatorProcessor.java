@@ -52,7 +52,7 @@ public abstract class OperatorProcessor
      * Sets the processing context.
      * @param context the processing context.
      */
-    public void setContext(PDFStreamEngine context)
+    public void setContext(final PDFStreamEngine context)
     {
         this.context = context;
     }
@@ -77,7 +77,7 @@ public abstract class OperatorProcessor
      * @param clazz The expected class.
      * @return the boolean
      */
-    public boolean checkArrayTypesClass(List<COSBase> operands, Class<?> clazz)
+    public boolean checkArrayTypesClass(final List<COSBase> operands, final Class<?> clazz)
     {
         return operands.stream().allMatch(clazz::isInstance);
     }

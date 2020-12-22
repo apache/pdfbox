@@ -36,7 +36,7 @@ public enum XReferenceType
      *
      * @param numericValue The numeric representation of this type.
      */
-    XReferenceType(int numericValue)
+    XReferenceType(final int numericValue)
     {
         this.numericValue = numericValue;
     }

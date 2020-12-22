@@ -78,14 +78,14 @@ class BidiTest
     @Test
     void testSorted() throws IOException
     {
-        File testFile = new File(IN_DIR, NAME_OF_PDF);
+        final File testFile = new File(IN_DIR, NAME_OF_PDF);
         doTestFile(testFile, outDir, false, true);
     }
 
     @Test
     void testNotSorted() throws IOException
     {
-        File testFile = new File(IN_DIR, NAME_OF_PDF);
+        final File testFile = new File(IN_DIR, NAME_OF_PDF);
         doTestFile(testFile, outDir, false, false);
     }
 
@@ -104,7 +104,7 @@ class BidiTest
      * @param bSort Whether or not the extracted text is sorted
      * @throws Exception when there is an exception
      */
-    private void doTestFile(File inFile, File outDir, boolean bLogResult, boolean bSort)
+    private void doTestFile(final File inFile, final File outDir, final boolean bLogResult, final boolean bSort)
     throws IOException
     {
         if(bSort)
@@ -124,11 +124,11 @@ class BidiTest
             }
         }
 
-        PDDocument document = Loader.loadPDF(inFile);
+        final PDDocument document = Loader.loadPDF(inFile);
         try
         {            
-            File outFile;
-            File expectedFile;
+            final File outFile;
+            final File expectedFile;
 
             if(bSort)
             {
@@ -141,10 +141,10 @@ class BidiTest
                 expectedFile = new File(inFile.getParentFile(), inFile.getName() + ".txt");
             }
 
-            OutputStream os = new FileOutputStream(outFile);
+            final OutputStream os = new FileOutputStream(outFile);
             try
             {
-                Writer writer = new OutputStreamWriter(os, ENCODING);
+                final Writer writer = new OutputStreamWriter(os, ENCODING);
                 try
                 {
                     //Allows for sorted tests 
@@ -176,9 +176,9 @@ class BidiTest
                 return;
             }
 
-            LineNumberReader expectedReader =
+            final LineNumberReader expectedReader =
                 new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile), ENCODING));
-            LineNumberReader actualReader =
+            final LineNumberReader actualReader =
                 new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), ENCODING));
 
             while (true)
@@ -241,8 +241,8 @@ class BidiTest
         {
             expected = expected.trim();
             actual = actual.trim();
-            char[] expectedArray = expected.toCharArray();
-            char[] actualArray = actual.toCharArray();
+            final char[] expectedArray = expected.toCharArray();
+            final char[] actualArray = actual.toCharArray();
             int expectedIndex = 0;
             int actualIndex = 0;
             while( expectedIndex<expectedArray.length && actualIndex<actualArray.length )
@@ -285,7 +285,7 @@ class BidiTest
     /**
      * If the current index is whitespace then skip any subsequent whitespace.
      */
-    private int skipWhitespace( char[] array, int index )
+    private int skipWhitespace(final char[] array, int index )
     {
         //if we are at a space character then skip all space
         //characters, but when all done rollback 1 because stringsEqual

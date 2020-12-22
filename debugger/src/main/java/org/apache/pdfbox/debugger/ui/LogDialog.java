@@ -49,7 +49,7 @@ public class LogDialog extends JDialog
     private int otherCount = 0;
     private int exceptionCount = 0;
 
-    private LogDialog(Frame owner, JLabel logLabel)
+    private LogDialog(final Frame owner, final JLabel logLabel)
     {
         super(owner);
         this.logLabel = logLabel;
@@ -61,7 +61,7 @@ public class LogDialog extends JDialog
         this.pack();
     }
 
-    public static void init(Frame owner, JLabel logLabel)
+    public static void init(final Frame owner, final JLabel logLabel)
     {
         instance = new LogDialog(owner, logLabel);
     }
@@ -71,12 +71,12 @@ public class LogDialog extends JDialog
         return instance;
     }
 
-    public void log(String name, String level, Object o, Throwable throwable)
+    public void log(final String name, final String level, final Object o, final Throwable throwable)
     {
-        StyledDocument doc = textPane.getStyledDocument();
+        final StyledDocument doc = textPane.getStyledDocument();
         
-        String levelText;
-        SimpleAttributeSet levelStyle = new SimpleAttributeSet();
+        final String levelText;
+        final SimpleAttributeSet levelStyle = new SimpleAttributeSet();
         switch (level)
         {
             case "fatal":
@@ -119,15 +119,15 @@ public class LogDialog extends JDialog
                 throw new Error(level);
         }
 
-        SimpleAttributeSet nameStyle = new SimpleAttributeSet();
+        final SimpleAttributeSet nameStyle = new SimpleAttributeSet();
         StyleConstants.setForeground(nameStyle, new Color(0x6A6A6A));
 
-        String shortName = name.substring(name.lastIndexOf('.') + 1);
+        final String shortName = name.substring(name.lastIndexOf('.') + 1);
         String message = o == null ? "(null)" : o.toString();
         
         if (throwable != null)
         {
-            StringWriter sw = new StringWriter();
+            final StringWriter sw = new StringWriter();
             throwable.printStackTrace(new PrintWriter(sw));
             message += "\n    " + sw.toString();
             exceptionCount++;
@@ -139,7 +139,7 @@ public class LogDialog extends JDialog
             doc.insertString(doc.getLength(), " [" + shortName + "]", nameStyle);
             doc.insertString(doc.getLength(), " " + message + "\n", null);
         }
-        catch (BadLocationException e)
+        catch (final BadLocationException e)
         {
             throw new Error(e);
         }
@@ -151,7 +151,7 @@ public class LogDialog extends JDialog
     
     private void updateStatusBar()
     {
-        List<String> infos = new ArrayList<>();
+        final List<String> infos = new ArrayList<>();
 
         if (exceptionCount > 0)
         {
@@ -179,7 +179,7 @@ public class LogDialog extends JDialog
         }
         
         String info = "";
-        for (String str : infos)
+        for (final String str : infos)
         {
             if (info.length() > 0)
             {

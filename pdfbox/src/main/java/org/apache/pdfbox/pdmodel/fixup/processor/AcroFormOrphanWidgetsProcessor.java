@@ -52,7 +52,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
     
     private static final Log LOG = LogFactory.getLog(AcroFormOrphanWidgetsProcessor.class);
 
-    public AcroFormOrphanWidgetsProcessor(PDDocument document)
+    public AcroFormOrphanWidgetsProcessor(final PDDocument document)
     { 
         super(document); 
     }
@@ -66,7 +66,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
          * is part of. So keep the null parameter otherwise this will end
          * in an endless recursive call
          */
-        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
+        final PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
 
         if (acroForm != null)
         {            
@@ -74,21 +74,21 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         } 
     }
 
-    private void resolveFieldsFromWidgets(PDAcroForm acroForm)
+    private void resolveFieldsFromWidgets(final PDAcroForm acroForm)
     {
-        Map<String, PDField> nonTerminalFieldsMap = new HashMap<>();
+        final Map<String, PDField> nonTerminalFieldsMap = new HashMap<>();
 
         LOG.debug("rebuilding fields from widgets");
 
-        List<PDField> fields = new ArrayList<>();
+        final List<PDField> fields = new ArrayList<>();
 
-        for (PDPage page : document.getPages())
+        for (final PDPage page : document.getPages())
         {
             try
             {
                 handleAnnotations(acroForm, fields, page.getAnnotations(), nonTerminalFieldsMap);
             }
-            catch (IOException ioe)
+            catch (final IOException ioe)
             {
                 LOG.debug("couldn't read annotations for page " + ioe.getMessage());
             }
@@ -97,7 +97,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         acroForm.setFields(fields);
 
         // ensure that PDVariableText fields have the neccesary resources
-        for (PDField field : acroForm.getFieldTree())
+        for (final PDField field : acroForm.getFieldTree())
         {
             if (field instanceof PDVariableText)
             {
@@ -106,20 +106,20 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         }
     }
 
-    private void handleAnnotations(PDAcroForm acroForm, List<PDField> fields, List<PDAnnotation> annotations, Map<String, PDField> nonTerminalFieldsMap)
+    private void handleAnnotations(final PDAcroForm acroForm, final List<PDField> fields, final List<PDAnnotation> annotations, final Map<String, PDField> nonTerminalFieldsMap)
     {
-        PDResources acroFormResources = acroForm.getDefaultResources();
+        final PDResources acroFormResources = acroForm.getDefaultResources();
 
-        for (PDAnnotation annot : annotations)
+        for (final PDAnnotation annot : annotations)
         {
             if (annot instanceof PDAnnotationWidget)
             {
                 addFontFromWidget(acroFormResources, annot);
 
-                COSDictionary parent = annot.getCOSObject().getCOSDictionary(COSName.PARENT);
+                final COSDictionary parent = annot.getCOSObject().getCOSDictionary(COSName.PARENT);
                 if (parent != null)
                 {
-                    PDField resolvedField = resolveNonRootField(acroForm, (PDAnnotationWidget) annot, nonTerminalFieldsMap);
+                    final PDField resolvedField = resolveNonRootField(acroForm, (PDAnnotationWidget) annot, nonTerminalFieldsMap);
                     if (resolvedField != null)
                     {
                         fields.add(resolvedField);
@@ -127,7 +127,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                 }
                 else
                 {
-                    PDField field = PDFieldFactory.createField(acroForm, annot.getCOSObject(), null);
+                    final PDField field = PDFieldFactory.createField(acroForm, annot.getCOSObject(), null);
                     if (field != null)
                     {
                         fields.add(field);
@@ -141,12 +141,12 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
      *  Add font resources from the widget to the AcroForm to make sure embedded fonts are being
      *  used and not added by ensureFontResources potentially using a fallback font
      */
-    private void addFontFromWidget(PDResources acroFormResources, PDAnnotation annotation)
+    private void addFontFromWidget(final PDResources acroFormResources, final PDAnnotation annotation)
     {
-        PDAppearanceStream normalAppearanceStream = annotation.getNormalAppearanceStream();
+        final PDAppearanceStream normalAppearanceStream = annotation.getNormalAppearanceStream();
         if (normalAppearanceStream != null && normalAppearanceStream.getResources() != null)    
         {
-            PDResources widgetResources = normalAppearanceStream.getResources();
+            final PDResources widgetResources = normalAppearanceStream.getResources();
             widgetResources.getFontNames().forEach(fontName -> {
                 if (!fontName.getName().startsWith("+"))
                 {
@@ -158,7 +158,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                             LOG.debug("qdded font resource to AcroForm from widget for font name " + fontName.getName());
                         }
                     }
-                    catch (IOException ioe)
+                    catch (final IOException ioe)
                     {
                         LOG.debug("unable to add font to AcroForm for font name " + fontName.getName());
                     }
@@ -175,7 +175,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
      *  Widgets having a /Parent entry are non root fields. Go up until the root node is found
      *  and handle from there.
      */
-    private PDField resolveNonRootField(PDAcroForm acroForm, PDAnnotationWidget widget, Map<String, PDField> nonTerminalFieldsMap)
+    private PDField resolveNonRootField(final PDAcroForm acroForm, final PDAnnotationWidget widget, final Map<String, PDField> nonTerminalFieldsMap)
     {
         COSDictionary parent = widget.getCOSObject().getCOSDictionary(COSName.PARENT);
         while (parent.containsKey(COSName.PARENT))
@@ -189,7 +189,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         
         if (nonTerminalFieldsMap.get(parent.getString(COSName.T)) == null)
         {
-            PDField field = PDFieldFactory.createField(acroForm, parent, null);
+            final PDField field = PDFieldFactory.createField(acroForm, parent, null);
             nonTerminalFieldsMap.put(field.getFullyQualifiedName(),field);
 
             return field;
@@ -209,21 +209,21 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
      *        font resources might be accepatble.
      *        In such case this must be implemented in PDDefaultAppearanceString too!
      */
-    private void ensureFontResources(PDResources defaultResources, PDVariableText field)
+    private void ensureFontResources(final PDResources defaultResources, final PDVariableText field)
     {
-        String daString = field.getDefaultAppearance();
+        final String daString = field.getDefaultAppearance();
         if (daString.startsWith("/") && daString.length() > 1)
         {
-            COSName fontName = COSName.getPDFName(daString.substring(1, daString.indexOf(" ")));
+            final COSName fontName = COSName.getPDFName(daString.substring(1, daString.indexOf(" ")));
             try{
                 if (defaultResources != null && defaultResources.getFont(fontName) == null)
                 {
                     LOG.debug("trying to add missing font resource for field " + field.getFullyQualifiedName());
-                    FontMapper mapper = FontMappers.instance();
-                    FontMapping<TrueTypeFont> fontMapping = mapper.getTrueTypeFont(fontName.getName() , null);
+                    final FontMapper mapper = FontMappers.instance();
+                    final FontMapping<TrueTypeFont> fontMapping = mapper.getTrueTypeFont(fontName.getName() , null);
                     if (fontMapping != null)
                     {
-                        PDType0Font pdFont = PDType0Font.load(document, fontMapping.getFont(), false);
+                        final PDType0Font pdFont = PDType0Font.load(document, fontMapping.getFont(), false);
                         LOG.debug("looked up font for " + fontName.getName() + " - found " + fontMapping.getFont().getName());
                         defaultResources.put(fontName, pdFont);
                     }
@@ -233,7 +233,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                     }
                 }
             }
-            catch (IOException ioe)
+            catch (final IOException ioe)
             {
                 LOG.debug("unable to handle font resources for field " + field.getFullyQualifiedName() + ": " + ioe.getMessage());
             }

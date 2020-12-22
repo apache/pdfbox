@@ -26,7 +26,7 @@ public class Ligature
     private final String successor;
     private final String liga;
 
-    public Ligature(String successor, String ligature)
+    public Ligature(final String successor, final String ligature)
     {
         this.successor = successor;
         this.liga = ligature;

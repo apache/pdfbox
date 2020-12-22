@@ -40,7 +40,7 @@ class TestIOUtils
     @Test
     void testPopulateBuffer() throws IOException
     {
-        byte[] data = "Hello World!".getBytes();
+        final byte[] data = "Hello World!".getBytes();
         byte[] buffer = new byte[data.length];
         long count = IOUtils.populateBuffer(new ByteArrayInputStream(data), buffer);
         assertEquals(12, count);
@@ -49,7 +49,7 @@ class TestIOUtils
         InputStream in = new ByteArrayInputStream(data);
         count = IOUtils.populateBuffer(in, buffer);
         assertEquals(10, count);
-        byte[] leftOver = IOUtils.toByteArray(in);
+        final byte[] leftOver = IOUtils.toByteArray(in);
         assertEquals(2, leftOver.length);
 
         buffer = new byte[data.length + 2]; //Buffer too big

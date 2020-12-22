@@ -41,7 +41,7 @@ public final class PDTextField extends PDVariableText
      *
      * @param acroForm The acroform.
      */
-    public PDTextField(PDAcroForm acroForm)
+    public PDTextField(final PDAcroForm acroForm)
     {
         super(acroForm);
         getCOSObject().setItem(COSName.FT, COSName.TX);
@@ -54,7 +54,7 @@ public final class PDTextField extends PDVariableText
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDTextField(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDTextField(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -72,7 +72,7 @@ public final class PDTextField extends PDVariableText
      *
      * @param multiline The value for the multiline.
      */
-    public void setMultiline(boolean multiline)
+    public void setMultiline(final boolean multiline)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_MULTILINE, multiline);
     }
@@ -90,7 +90,7 @@ public final class PDTextField extends PDVariableText
      *
      * @param password The value for the password.
      */
-    public void setPassword(boolean password)
+    public void setPassword(final boolean password)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_PASSWORD, password);
     }
@@ -108,7 +108,7 @@ public final class PDTextField extends PDVariableText
      *
      * @param fileSelect The value for the fileSelect.
      */
-    public void setFileSelect(boolean fileSelect)
+    public void setFileSelect(final boolean fileSelect)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_FILE_SELECT, fileSelect);
     }
@@ -126,7 +126,7 @@ public final class PDTextField extends PDVariableText
      *
      * @param doNotSpellCheck The value for the doNotSpellCheck.
      */
-    public void setDoNotSpellCheck(boolean doNotSpellCheck)
+    public void setDoNotSpellCheck(final boolean doNotSpellCheck)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck);
     }
@@ -144,7 +144,7 @@ public final class PDTextField extends PDVariableText
      *
      * @param doNotScroll The value for the doNotScroll.
      */
-    public void setDoNotScroll(boolean doNotScroll)
+    public void setDoNotScroll(final boolean doNotScroll)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_DO_NOT_SCROLL, doNotScroll);
     }
@@ -162,7 +162,7 @@ public final class PDTextField extends PDVariableText
      *
      * @param comb The value for the comb.
      */
-    public void setComb(boolean comb)
+    public void setComb(final boolean comb)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_COMB, comb);
     }
@@ -180,7 +180,7 @@ public final class PDTextField extends PDVariableText
      *
      * @param richText The value for the richText.
      */
-    public void setRichText(boolean richText)
+    public void setRichText(final boolean richText)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_RICH_TEXT, richText);
     }
@@ -200,7 +200,7 @@ public final class PDTextField extends PDVariableText
      * 
      * @param maxLen the maximum number of characters
      */
-    public void setMaxLen(int maxLen)
+    public void setMaxLen(final int maxLen)
     {
         getCOSObject().setInt(COSName.MAX_LEN, maxLen);
     }
@@ -212,7 +212,7 @@ public final class PDTextField extends PDVariableText
      * @throws IOException if the value could not be set
      */
     @Override
-    public void setValue(String value) throws IOException
+    public void setValue(final String value) throws IOException
     {
         getCOSObject().setString(COSName.V, value);
         applyChange();
@@ -223,7 +223,7 @@ public final class PDTextField extends PDVariableText
      *
      * @param value Plain text
      */
-    public void setDefaultValue(String value)
+    public void setDefaultValue(final String value)
     {
         getCOSObject().setString(COSName.DV, value);
     }
@@ -257,7 +257,7 @@ public final class PDTextField extends PDVariableText
     @Override
     void constructAppearances() throws IOException
     {
-        AppearanceGeneratorHelper apHelper;
+        final AppearanceGeneratorHelper apHelper;
         apHelper = new AppearanceGeneratorHelper(this);
         apHelper.setAppearanceValue(getValue());
     }

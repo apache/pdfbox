@@ -45,14 +45,14 @@ class TestEmbeddedFiles
         boolean ok = false;
         try
         {
-            PDDocument doc = Loader.loadPDF(TestEmbeddedFiles.class
+            final PDDocument doc = Loader.loadPDF(TestEmbeddedFiles.class
                     .getResourceAsStream(
                 "null_PDComplexFileSpecification.pdf"));
 
-            PDDocumentCatalog catalog = doc.getDocumentCatalog();
-            PDDocumentNameDictionary names = catalog.getNames();
+            final PDDocumentCatalog catalog = doc.getDocumentCatalog();
+            final PDDocumentNameDictionary names = catalog.getNames();
             assertEquals(2, names.getEmbeddedFiles().getNames().size(), "expected two files");
-            PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
+            final PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
 
             PDComplexFileSpecification spec = embeddedFiles.getNames().get("non-existent-file.docx");
 
@@ -67,7 +67,7 @@ class TestEmbeddedFiles
             assertEquals(17660, spec.getEmbeddedFile().getLength(), "existing file length");
             spec = embeddedFiles.getNames().get("non-existent-file.docx");
         }
-        catch (NullPointerException e)
+        catch (final NullPointerException e)
         {
             fail("null pointer exception");
         }
@@ -83,20 +83,20 @@ class TestEmbeddedFiles
         PDEmbeddedFile dosFile = null;
         PDEmbeddedFile unixFile = null;
 
-        PDDocument doc = Loader.loadPDF(
+        final PDDocument doc = Loader.loadPDF(
                 TestEmbeddedFiles.class
                 .getResourceAsStream("testPDF_multiFormatEmbFiles.pdf"));
 
-        PDDocumentCatalog catalog = doc.getDocumentCatalog();
-        PDDocumentNameDictionary names = catalog.getNames();
-        PDEmbeddedFilesNameTreeNode treeNode = names.getEmbeddedFiles();
-        List<PDNameTreeNode<PDComplexFileSpecification>> kids = treeNode.getKids();
-        for (PDNameTreeNode<PDComplexFileSpecification> kid : kids)
+        final PDDocumentCatalog catalog = doc.getDocumentCatalog();
+        final PDDocumentNameDictionary names = catalog.getNames();
+        final PDEmbeddedFilesNameTreeNode treeNode = names.getEmbeddedFiles();
+        final List<PDNameTreeNode<PDComplexFileSpecification>> kids = treeNode.getKids();
+        for (final PDNameTreeNode<PDComplexFileSpecification> kid : kids)
         {
-            Map<String, PDComplexFileSpecification> tmpNames = kid.getNames();
-            COSObjectable obj = tmpNames.get("My first attachment");
+            final Map<String, PDComplexFileSpecification> tmpNames = kid.getNames();
+            final COSObjectable obj = tmpNames.get("My first attachment");
             
-            PDComplexFileSpecification spec = (PDComplexFileSpecification) obj;
+            final PDComplexFileSpecification spec = (PDComplexFileSpecification) obj;
             nonOSFile = spec.getEmbeddedFile();
             macFile = spec.getEmbeddedFileMac();
             dosFile = spec.getEmbeddedFileDos();
@@ -114,10 +114,10 @@ class TestEmbeddedFiles
 
     }
 
-    private boolean byteArrayContainsLC(String target, byte[] bytes, String encoding)
+    private boolean byteArrayContainsLC(final String target, final byte[] bytes, final String encoding)
             throws UnsupportedEncodingException
     {
-        String s = new String(bytes, encoding);
+        final String s = new String(bytes, encoding);
         return s.toLowerCase().contains(target);
     }
 }

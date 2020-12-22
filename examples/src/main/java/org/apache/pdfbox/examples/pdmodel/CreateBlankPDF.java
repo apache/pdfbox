@@ -30,7 +30,7 @@ public final class CreateBlankPDF
     {        
     }
     
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 1)
         {
@@ -38,12 +38,12 @@ public final class CreateBlankPDF
             System.exit(1);
         }
 
-        String filename = args[0];
+        final String filename = args[0];
 
         try (PDDocument doc = new PDDocument())
         {
             // a valid PDF document requires at least one page
-            PDPage blankPage = new PDPage();
+            final PDPage blankPage = new PDPage();
             doc.addPage(blankPage);
             doc.save(filename);
         }

@@ -72,7 +72,7 @@ public final class PDIndexed extends PDSpecialColorSpace
      * @param indexedArray the array containing the indexed parameters
      * @throws java.io.IOException
      */
-    public PDIndexed(COSArray indexedArray) throws IOException
+    public PDIndexed(final COSArray indexedArray) throws IOException
     {
         this(indexedArray, null);
     }
@@ -83,7 +83,7 @@ public final class PDIndexed extends PDSpecialColorSpace
      * @param resources the resources, can be null. Allows to use its cache for the colorspace.
      * @throws java.io.IOException
      */
-    public PDIndexed(COSArray indexedArray, PDResources resources) throws IOException
+    public PDIndexed(final COSArray indexedArray, final PDResources resources) throws IOException
     {
         array = indexedArray;
         // don't call getObject(1), we want to pass a reference if possible
@@ -106,7 +106,7 @@ public final class PDIndexed extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
         return new float[] { 0, (float)Math.pow(2, bitsPerComponent) - 1 };
     }
@@ -122,23 +122,23 @@ public final class PDIndexed extends PDSpecialColorSpace
     //
     private void initRgbColorTable() throws IOException
     {
-        int numBaseComponents = baseColorSpace.getNumberOfComponents();
+        final int numBaseComponents = baseColorSpace.getNumberOfComponents();
 
         // convert the color table into a 1-row BufferedImage in the base color space,
         // using a writable raster for high performance
-        WritableRaster baseRaster;
+        final WritableRaster baseRaster;
         try
         {
             baseRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
                     actualMaxIndex + 1, 1, numBaseComponents, new Point(0, 0));
         }
-        catch (IllegalArgumentException ex)
+        catch (final IllegalArgumentException ex)
         {
             // PDFBOX-4503: when stream is empty or null
             throw new IOException(ex);
         }
 
-        int[] base = new int[numBaseComponents];
+        final int[] base = new int[numBaseComponents];
         for (int i = 0, n = actualMaxIndex; i <= n; i++)
         {
             for (int c = 0; c < numBaseComponents; c++)
@@ -149,12 +149,12 @@ public final class PDIndexed extends PDSpecialColorSpace
         }
 
         // convert the base image to RGB
-        BufferedImage rgbImage = baseColorSpace.toRGBImage(baseRaster);
-        WritableRaster rgbRaster = rgbImage.getRaster();
+        final BufferedImage rgbImage = baseColorSpace.toRGBImage(baseRaster);
+        final WritableRaster rgbRaster = rgbImage.getRaster();
 
         // build an RGB lookup table from the raster
         rgbColorTable = new int[actualMaxIndex + 1][3];
-        int[] nil = null;
+        final int[] nil = null;
 
         for (int i = 0, n = actualMaxIndex; i <= n; i++)
         {
@@ -166,7 +166,7 @@ public final class PDIndexed extends PDSpecialColorSpace
     // WARNING: this method is performance sensitive, modify with care!
     //
     @Override
-    public float[] toRGB(float[] value)
+    public float[] toRGB(final float[] value)
     {
         if (value.length > 1)
         {
@@ -179,7 +179,7 @@ public final class PDIndexed extends PDSpecialColorSpace
         index = Math.min(index, actualMaxIndex);
 
         // lookup rgb
-        int[] rgb = rgbColorTable[index];
+        final int[] rgb = rgbColorTable[index];
         return new float[] { rgb[0] / 255f, rgb[1] / 255f, rgb[2] / 255f };
     }
 
@@ -187,16 +187,16 @@ public final class PDIndexed extends PDSpecialColorSpace
     // WARNING: this method is performance sensitive, modify with care!
     //
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(final WritableRaster raster) throws IOException
     {
         // use lookup table
-        int width = raster.getWidth();
-        int height = raster.getHeight();
+        final int width = raster.getWidth();
+        final int height = raster.getHeight();
 
-        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        WritableRaster rgbRaster = rgbImage.getRaster();
+        final BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        final WritableRaster rgbRaster = rgbImage.getRaster();
 
-        int[] src = new int[1];
+        final int[] src = new int[1];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -204,7 +204,7 @@ public final class PDIndexed extends PDSpecialColorSpace
                 raster.getPixel(x, y, src);
 
                 // lookup
-                int index = Math.min(src[0], actualMaxIndex);
+                final int index = Math.min(src[0], actualMaxIndex);
                 rgbRaster.setPixel(x, y, rgbColorTable[index]);
             }
         }
@@ -213,21 +213,21 @@ public final class PDIndexed extends PDSpecialColorSpace
     }
 
     @Override
-    public BufferedImage toRawImage(WritableRaster raster)
+    public BufferedImage toRawImage(final WritableRaster raster)
     {
         // We can only convert sRGB index colorspaces, depending on the base colorspace
         if (baseColorSpace instanceof PDICCBased && ((PDICCBased) baseColorSpace).isSRGB())
         {
-            byte[] r = new byte[colorTable.length];
-            byte[] g = new byte[colorTable.length];
-            byte[] b = new byte[colorTable.length];
+            final byte[] r = new byte[colorTable.length];
+            final byte[] g = new byte[colorTable.length];
+            final byte[] b = new byte[colorTable.length];
             for (int i = 0; i < colorTable.length; i++)
             {
                 r[i] = (byte) ((int) (colorTable[i][0] * 255) & 0xFF);
                 g[i] = (byte) ((int) (colorTable[i][1] * 255) & 0xFF);
                 b[i] = (byte) ((int) (colorTable[i][2] * 255) & 0xFF);
             }
-            ColorModel colorModel = new IndexColorModel(8, colorTable.length, r, g, b);
+            final ColorModel colorModel = new IndexColorModel(8, colorTable.length, r, g, b);
             return new BufferedImage(colorModel, raster, false, null);
         }
 
@@ -255,7 +255,7 @@ public final class PDIndexed extends PDSpecialColorSpace
     {
         if (lookupData == null)
         {
-            COSBase lookupTable = array.getObject(3);
+            final COSBase lookupTable = array.getObject(3);
             if (lookupTable instanceof COSString)
             {
                 lookupData = ((COSString) lookupTable).getBytes();
@@ -283,7 +283,7 @@ public final class PDIndexed extends PDSpecialColorSpace
         readLookupData();
 
         int maxIndex = Math.min(getHival(), 255);
-        int numComponents = baseColorSpace.getNumberOfComponents();
+        final int numComponents = baseColorSpace.getNumberOfComponents();
 
         // some tables are too short
         if (lookupData.length / numComponents < maxIndex + 1)
@@ -307,7 +307,7 @@ public final class PDIndexed extends PDSpecialColorSpace
      * Sets the base color space.
      * @param base the base color space
      */
-    public void setBaseColorSpace(PDColorSpace base)
+    public void setBaseColorSpace(final PDColorSpace base)
     {
         array.set(1, base.getCOSObject());
         baseColorSpace = base;
@@ -317,7 +317,7 @@ public final class PDIndexed extends PDSpecialColorSpace
      * Sets the highest value that is allowed. This cannot be higher than 255.
      * @param high the highest value for the lookup table
      */
-    public void setHighValue(int high)
+    public void setHighValue(final int high)
     {
         array.set(2, high);
     }

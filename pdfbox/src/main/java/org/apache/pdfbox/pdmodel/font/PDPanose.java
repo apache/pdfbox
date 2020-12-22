@@ -29,7 +29,7 @@ public class PDPanose
 {
     private final byte[] bytes;
 
-    public PDPanose(byte[] bytes)
+    public PDPanose(final byte[] bytes)
     {
         this.bytes = bytes;
     }
@@ -52,7 +52,7 @@ public class PDPanose
      */
     public PDPanoseClassification getPanose()
     {
-        byte[] panose = Arrays.copyOfRange(bytes, 2, 12);
+        final byte[] panose = Arrays.copyOfRange(bytes, 2, 12);
         return new PDPanoseClassification(panose);
     }
 }

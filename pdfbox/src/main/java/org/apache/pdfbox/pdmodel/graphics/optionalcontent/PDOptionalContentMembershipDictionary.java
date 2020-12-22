@@ -43,7 +43,7 @@ public class PDOptionalContentMembershipDictionary extends PDPropertyList
      * Creates a new instance based on a given {@link COSDictionary}.
      * @param dict the dictionary
      */
-    public PDOptionalContentMembershipDictionary(COSDictionary dict)
+    public PDOptionalContentMembershipDictionary(final COSDictionary dict)
     {
         super(dict);
         if (!dict.getItem(COSName.TYPE).equals(COSName.OCMD))
@@ -60,18 +60,18 @@ public class PDOptionalContentMembershipDictionary extends PDPropertyList
      */
     public List<PDPropertyList> getOCGs()
     {
-        List<PDPropertyList> list = new ArrayList<>();
-        COSBase base = dict.getDictionaryObject(COSName.OCGS);
+        final List<PDPropertyList> list = new ArrayList<>();
+        final COSBase base = dict.getDictionaryObject(COSName.OCGS);
         if (base instanceof COSDictionary)
         {
             list.add(PDPropertyList.create((COSDictionary) base));
         }
         else if (base instanceof COSArray)
         {
-            COSArray ar = (COSArray) base;
+            final COSArray ar = (COSArray) base;
             for (int i = 0; i < ar.size(); ++i)
             {
-                COSBase elem = ar.getObject(i);
+                final COSBase elem = ar.getObject(i);
                 if (elem instanceof COSDictionary)
                 {
                     list.add(PDPropertyList.create((COSDictionary) elem));
@@ -86,10 +86,10 @@ public class PDOptionalContentMembershipDictionary extends PDPropertyList
      * 
      * @param ocgs list of optional content groups to set.
      */
-    public void setOCGs(List<PDPropertyList> ocgs)
+    public void setOCGs(final List<PDPropertyList> ocgs)
     {
-        COSArray ar = new COSArray();
-        for (PDPropertyList prop : ocgs)
+        final COSArray ar = new COSArray();
+        for (final PDPropertyList prop : ocgs)
         {
             ar.add(prop);
         }
@@ -110,7 +110,7 @@ public class PDOptionalContentMembershipDictionary extends PDPropertyList
      * Sets the visibility policy name. Valid names are AllOff, AllOn, AnyOff, AnyOn (default).
      * @param visibilityPolicy 
      */
-    public void setVisibilityPolicy(COSName visibilityPolicy)
+    public void setVisibilityPolicy(final COSName visibilityPolicy)
     {
         dict.setItem(COSName.P, visibilityPolicy);
     }

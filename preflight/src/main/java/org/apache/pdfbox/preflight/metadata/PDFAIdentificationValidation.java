@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.metadata;
 
@@ -52,9 +52,9 @@ public class PDFAIdentificationValidation
      * @return the list of validation errors.
      * @throws ValidationException
      */
-    public List<ValidationError> validatePDFAIdentifer(XMPMetadata metadata) throws ValidationException
+    public List<ValidationError> validatePDFAIdentifer(final XMPMetadata metadata) throws ValidationException
     {
-        List<ValidationError> ve = new ArrayList<>();
+        final List<ValidationError> ve = new ArrayList<>();
         PDFAIdentificationSchema id = metadata.getPDFIdentificationSchema();
         if (id == null)
         {
@@ -66,8 +66,8 @@ public class PDFAIdentificationValidation
         }
 
         // According to the PDF/A specification, the prefix must be pdfaid for this schema.
-        StructuredType stBasic = XMPBasicSchema.class.getAnnotation(StructuredType.class);
-        StructuredType stPdfaIdent = PDFAIdentificationSchema.class.getAnnotation(StructuredType.class);
+        final StructuredType stBasic = XMPBasicSchema.class.getAnnotation(StructuredType.class);
+        final StructuredType stPdfaIdent = PDFAIdentificationSchema.class.getAnnotation(StructuredType.class);
         if (!id.getPrefix().equals(stPdfaIdent.preferedPrefix()))
         {
             if (metadata.getSchema(stPdfaIdent.preferedPrefix(), stBasic.namespace()) == null)
@@ -94,16 +94,16 @@ public class PDFAIdentificationValidation
      * @param schema
      * @return the validation error.
      */
-    protected ValidationError unexpectedPrefixFoundError(String prefFound, String prefExpected, String schema)
+    protected ValidationError unexpectedPrefixFoundError(final String prefFound, final String prefExpected, final String schema)
     {
-        StringBuilder sb = new StringBuilder(80);
+        final StringBuilder sb = new StringBuilder(80);
         sb.append(schema).append(" found but prefix used is '").append(prefFound).append("', prefix '")
                 .append(prefExpected).append("' is expected.");
 
         return new ValidationError(ERROR_METADATA_WRONG_NS_PREFIX, sb.toString());
     }
 
-    protected void checkConformanceLevel(List<ValidationError> ve, String value)
+    protected void checkConformanceLevel(final List<ValidationError> ve, final String value)
     {
         if (value == null || !(value.equals("A") || value.equals("B")))
         {
@@ -112,7 +112,7 @@ public class PDFAIdentificationValidation
         }
     }
 
-    protected void checkPartNumber(List<ValidationError> ve, int value)
+    protected void checkPartNumber(final List<ValidationError> ve, final int value)
     {
         if (value != 1)
         {

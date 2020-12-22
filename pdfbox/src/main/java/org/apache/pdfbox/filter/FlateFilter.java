@@ -40,8 +40,8 @@ final class FlateFilter extends Filter
     private static final int BUFFER_SIZE = 0x4000;
 
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded,
+                               final COSDictionary parameters, final int index) throws IOException
     {
         final COSDictionary decodeParams = getDecodeParams(parameters, index);
 
@@ -49,7 +49,7 @@ final class FlateFilter extends Filter
         {
             decompress(encoded, Predictor.wrapPredictor(decoded, decodeParams));
         }
-        catch (DataFormatException e)
+        catch (final DataFormatException e)
         {
             // if the stream is corrupt a DataFormatException may occur
             LOG.error("FlateFilter: stop reading corrupt stream due to a DataFormatException");
@@ -62,9 +62,9 @@ final class FlateFilter extends Filter
 
     // Use Inflater instead of InflateInputStream to avoid an EOFException due to a probably
     // missing Z_STREAM_END, see PDFBOX-1232 for details
-    private void decompress(InputStream in, OutputStream out) throws IOException, DataFormatException 
+    private void decompress(final InputStream in, final OutputStream out) throws IOException, DataFormatException
     { 
-        byte[] buf = new byte[2048];
+        final byte[] buf = new byte[2048];
         // skip zlib header
         in.read();
         in.read();
@@ -72,9 +72,9 @@ final class FlateFilter extends Filter
         if (read > 0) 
         { 
             // use nowrap mode to bypass zlib-header and checksum to avoid a DataFormatException
-            Inflater inflater = new Inflater(true); 
+            final Inflater inflater = new Inflater(true);
             inflater.setInput(buf,0,read);
-            byte[] res = new byte[1024];
+            final byte[] res = new byte[1024];
             boolean dataWritten = false;
             try
             {
@@ -85,7 +85,7 @@ final class FlateFilter extends Filter
                     {
                         resRead = inflater.inflate(res);
                     }
-                    catch(DataFormatException exception)
+                    catch(final DataFormatException exception)
                     {
                         if (dataWritten)
                         {
@@ -122,18 +122,18 @@ final class FlateFilter extends Filter
     }
     
     @Override
-    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(final InputStream input, final OutputStream encoded, final COSDictionary parameters)
             throws IOException
     {
-        int compressionLevel = getCompressionLevel();
-        Deflater deflater = new Deflater(compressionLevel);
+        final int compressionLevel = getCompressionLevel();
+        final Deflater deflater = new Deflater(compressionLevel);
         try (DeflaterOutputStream out = new DeflaterOutputStream(encoded,deflater))
         {
             int amountRead;
-            int mayRead = input.available();
+            final int mayRead = input.available();
             if (mayRead > 0)
             {
-                byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
+                final byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
                 while ((amountRead = input.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
                 {
                     out.write(buffer, 0, amountRead);

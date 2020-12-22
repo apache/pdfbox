@@ -46,7 +46,7 @@ final class Version implements Callable<Integer>
      */
     public static String getVersion()
     {
-        String version = org.apache.pdfbox.util.Version.getVersion();
+        final String version = org.apache.pdfbox.util.Version.getVersion();
         if (version != null)
         {
             return version;
@@ -62,12 +62,12 @@ final class Version implements Callable<Integer>
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
         
-        int exitCode = new CommandLine(new Version()).execute(args);
+        final int exitCode = new CommandLine(new Version()).execute(args);
         System.exit(exitCode);
     }
 

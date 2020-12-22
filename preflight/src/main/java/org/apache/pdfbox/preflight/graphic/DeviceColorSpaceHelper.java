@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.graphic;
 
@@ -36,7 +36,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVAL
 public class DeviceColorSpaceHelper extends StandardColorSpaceHelper
 {
 
-    public DeviceColorSpaceHelper(PreflightContext _context, PDColorSpace _cs)
+    public DeviceColorSpaceHelper(final PreflightContext _context, final PDColorSpace _cs)
     {
         super(_context, _cs);
     }
@@ -46,7 +46,7 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper
      * and returns false.
      */
     @Override
-    protected void processPatternColorSpace(PDColorSpace colorSpace)
+    protected void processPatternColorSpace(final PDColorSpace colorSpace)
     {
         context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN,
                 "Pattern ColorSpace is forbidden"));
@@ -57,7 +57,7 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper
      * and returns false.
      */
     @Override
-    protected void processDeviceNColorSpace(PDColorSpace colorSpace)
+    protected void processDeviceNColorSpace(final PDColorSpace colorSpace)
     {
         context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN,
                 "DeviceN ColorSpace is forbidden"));
@@ -69,11 +69,11 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper
      * false.
      */
     @Override
-    protected void processIndexedColorSpace(PDColorSpace colorSpace)
+    protected void processIndexedColorSpace(final PDColorSpace colorSpace)
     {
-        PDIndexed indexed = (PDIndexed) colorSpace;
-        PDColorSpace baseColorSpace = indexed.getBaseColorSpace();
-        ColorSpaces colorSpaces = ColorSpaces.valueOf(baseColorSpace.getName());
+        final PDIndexed indexed = (PDIndexed) colorSpace;
+        final PDColorSpace baseColorSpace = indexed.getBaseColorSpace();
+        final ColorSpaces colorSpaces = ColorSpaces.valueOf(baseColorSpace.getName());
         switch (colorSpaces)
         {
         case Indexed:

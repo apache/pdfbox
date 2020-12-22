@@ -55,7 +55,7 @@ public class PublicKeyDecryptionMaterial extends DecryptionMaterial
      * @param pwd The password to extract the private key from the keystore.
      */
 
-    public PublicKeyDecryptionMaterial(KeyStore keystore, String a, String pwd)
+    public PublicKeyDecryptionMaterial(final KeyStore keystore, final String a, final String pwd)
     {
         keyStore = keystore;
         alias = a;
@@ -75,8 +75,8 @@ public class PublicKeyDecryptionMaterial extends DecryptionMaterial
     {
         if(keyStore.size() == 1)
         {
-            Enumeration<String> aliases = keyStore.aliases();
-            String keyStoreAlias = aliases.nextElement();
+            final Enumeration<String> aliases = keyStore.aliases();
+            final String keyStoreAlias = aliases.nextElement();
             return (X509Certificate)keyStore.getCertificate(keyStoreAlias);
         }
         else
@@ -111,8 +111,8 @@ public class PublicKeyDecryptionMaterial extends DecryptionMaterial
         {
             if(keyStore.size() == 1)
             {
-                Enumeration<String> aliases = keyStore.aliases();
-                String keyStoreAlias = aliases.nextElement();
+                final Enumeration<String> aliases = keyStore.aliases();
+                final String keyStoreAlias = aliases.nextElement();
                 return keyStore.getKey(keyStoreAlias, password.toCharArray());
             }
             else
@@ -124,11 +124,11 @@ public class PublicKeyDecryptionMaterial extends DecryptionMaterial
                 throw new KeyStoreException("the keystore does not contain the given alias");
             }
         }
-        catch(UnrecoverableKeyException ex)
+        catch(final UnrecoverableKeyException ex)
         {
             throw new KeyStoreException("the private key is not recoverable", ex);
         }
-        catch(NoSuchAlgorithmException ex)
+        catch(final NoSuchAlgorithmException ex)
         {
             throw new KeyStoreException("the algorithm necessary to recover the key is not available", ex);
         }

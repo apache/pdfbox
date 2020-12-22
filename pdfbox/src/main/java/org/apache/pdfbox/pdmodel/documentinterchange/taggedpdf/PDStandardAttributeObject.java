@@ -50,7 +50,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * 
      * @param dictionary the dictionary
      */
-    public PDStandardAttributeObject(COSDictionary dictionary)
+    public PDStandardAttributeObject(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -63,7 +63,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @return <code>true</code> if the attribute is specified,
      * <code>false</code> otherwise
      */
-    public boolean isSpecified(String name)
+    public boolean isSpecified(final String name)
     {
         return this.getCOSObject().getDictionaryObject(name) != null;
     }
@@ -75,7 +75,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @return the string attribute value
      */
-    protected String getString(String name)
+    protected String getString(final String name)
     {
         return this.getCOSObject().getString(name);
     }
@@ -86,11 +86,11 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @param value the string attribute value
      */
-    protected void setString(String name, String value)
+    protected void setString(final String name, final String value)
     {
-        COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
         this.getCOSObject().setString(name, value);
-        COSBase newBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase newBase = this.getCOSObject().getDictionaryObject(name);
         this.potentiallyNotifyChanged(oldBase, newBase);
     }
 
@@ -100,13 +100,13 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @return the array of strings
      */
-    protected String[] getArrayOfString(String name)
+    protected String[] getArrayOfString(final String name)
     {
-        COSBase v = this.getCOSObject().getDictionaryObject(name);
+        final COSBase v = this.getCOSObject().getDictionaryObject(name);
         if (v instanceof COSArray)
         {
-            COSArray array = (COSArray) v;
-            String[] strings = new String[array.size()];
+            final COSArray array = (COSArray) v;
+            final String[] strings = new String[array.size()];
             for (int i = 0; i < array.size(); i++)
             {
                 strings[i] = ((COSName) array.getObject(i)).getName();
@@ -122,16 +122,16 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @param values the array of strings
      */
-    protected void setArrayOfString(String name, String[] values)
+    protected void setArrayOfString(final String name, final String[] values)
     {
-        COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
-        COSArray array = new COSArray();
-        for (String value : values)
+        final COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
+        final COSArray array = new COSArray();
+        for (final String value : values)
         {
             array.add(new COSString(value));
         }
         this.getCOSObject().setItem(name, array);
-        COSBase newBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase newBase = this.getCOSObject().getDictionaryObject(name);
         this.potentiallyNotifyChanged(oldBase, newBase);
     }
 
@@ -141,7 +141,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @return the name value
      */
-    protected String getName(String name)
+    protected String getName(final String name)
     {
         return this.getCOSObject().getNameAsString(name);
     }
@@ -153,7 +153,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param defaultValue the default value
      * @return the name value
      */
-    protected String getName(String name, String defaultValue)
+    protected String getName(final String name, final String defaultValue)
     {
         return this.getCOSObject().getNameAsString(name, defaultValue);
     }
@@ -165,16 +165,16 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param defaultValue the default value
      * @return a String or array of Strings
      */
-    protected Object getNameOrArrayOfName(String name, String defaultValue)
+    protected Object getNameOrArrayOfName(final String name, final String defaultValue)
     {
-        COSBase v = this.getCOSObject().getDictionaryObject(name);
+        final COSBase v = this.getCOSObject().getDictionaryObject(name);
         if (v instanceof COSArray)
         {
-            COSArray array = (COSArray) v;
-            String[] names = new String[array.size()];
+            final COSArray array = (COSArray) v;
+            final String[] names = new String[array.size()];
             for (int i = 0; i < array.size(); i++)
             {
-                COSBase item = array.getObject(i);
+                final COSBase item = array.getObject(i);
                 if (item instanceof COSName)
                 {
                     names[i] = ((COSName) item).getName();
@@ -195,11 +195,11 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @param value the name value
      */
-    protected void setName(String name, String value)
+    protected void setName(final String name, final String value)
     {
-        COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
         this.getCOSObject().setName(name, value);
-        COSBase newBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase newBase = this.getCOSObject().getDictionaryObject(name);
         this.potentiallyNotifyChanged(oldBase, newBase);
     }
 
@@ -209,16 +209,16 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @param values the array of name values
      */
-    protected void setArrayOfName(String name, String[] values)
+    protected void setArrayOfName(final String name, final String[] values)
     {
-        COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
-        COSArray array = new COSArray();
-        for (String value : values)
+        final COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
+        final COSArray array = new COSArray();
+        for (final String value : values)
         {
             array.add(COSName.getPDFName(value));
         }
         this.getCOSObject().setItem(name, array);
-        COSBase newBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase newBase = this.getCOSObject().getDictionaryObject(name);
         this.potentiallyNotifyChanged(oldBase, newBase);
     }
 
@@ -229,9 +229,9 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param defaultValue the default name
      * @return a Float or a String
      */
-    protected Object getNumberOrName(String name, String defaultValue)
+    protected Object getNumberOrName(final String name, final String defaultValue)
     {
-        COSBase value = this.getCOSObject().getDictionaryObject(name);
+        final COSBase value = this.getCOSObject().getDictionaryObject(name);
         if (value instanceof COSNumber)
         {
             return ((COSNumber) value).floatValue();
@@ -250,7 +250,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param defaultValue the default value
      * @return the integer
      */
-    protected int getInteger(String name, int defaultValue)
+    protected int getInteger(final String name, final int defaultValue)
     {
         return this.getCOSObject().getInt(name, defaultValue);
     }
@@ -261,11 +261,11 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @param value the integer
      */
-    protected void setInteger(String name, int value)
+    protected void setInteger(final String name, final int value)
     {
-        COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
         this.getCOSObject().setInt(name, value);
-        COSBase newBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase newBase = this.getCOSObject().getDictionaryObject(name);
         this.potentiallyNotifyChanged(oldBase, newBase);
     }
 
@@ -276,7 +276,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param defaultValue the default value
      * @return the number value
      */
-    protected float getNumber(String name, float defaultValue)
+    protected float getNumber(final String name, final float defaultValue)
     {
         return this.getCOSObject().getFloat(name, defaultValue);
     }
@@ -287,7 +287,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @return the number value
      */
-    protected float getNumber(String name)
+    protected float getNumber(final String name)
     {
         return this.getCOSObject().getFloat(name);
     }
@@ -299,16 +299,16 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param defaultValue the default value
      * @return a Float or an array of floats
      */
-    protected Object getNumberOrArrayOfNumber(String name, float defaultValue)
+    protected Object getNumberOrArrayOfNumber(final String name, final float defaultValue)
     {
-        COSBase v = this.getCOSObject().getDictionaryObject(name);
+        final COSBase v = this.getCOSObject().getDictionaryObject(name);
         if (v instanceof COSArray)
         {
-            COSArray array = (COSArray) v;
-            float[] values = new float[array.size()];
+            final COSArray array = (COSArray) v;
+            final float[] values = new float[array.size()];
             for (int i = 0; i < array.size(); i++)
             {
-                COSBase item = array.getObject(i);
+                final COSBase item = array.getObject(i);
                 if (item instanceof COSNumber)
                 {
                     values[i] = ((COSNumber) item).floatValue();
@@ -333,11 +333,11 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @param value the float number
      */
-    protected void setNumber(String name, float value)
+    protected void setNumber(final String name, final float value)
     {
-        COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
         this.getCOSObject().setFloat(name, value);
-        COSBase newBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase newBase = this.getCOSObject().getDictionaryObject(name);
         this.potentiallyNotifyChanged(oldBase, newBase);
     }
 
@@ -347,11 +347,11 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @param value the integer number
      */
-    protected void setNumber(String name, int value)
+    protected void setNumber(final String name, final int value)
     {
-        COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
         this.getCOSObject().setInt(name, value);
-        COSBase newBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase newBase = this.getCOSObject().getDictionaryObject(name);
         this.potentiallyNotifyChanged(oldBase, newBase);
     }
 
@@ -361,16 +361,16 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @param values the float numbers
      */
-    protected void setArrayOfNumber(String name, float[] values)
+    protected void setArrayOfNumber(final String name, final float[] values)
     {
-        COSArray array = new COSArray();
-        for (float value : values)
+        final COSArray array = new COSArray();
+        for (final float value : values)
         {
             array.add(new COSFloat(value));
         }
-        COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
         this.getCOSObject().setItem(name, array);
-        COSBase newBase = this.getCOSObject().getDictionaryObject(name);
+        final COSBase newBase = this.getCOSObject().getDictionaryObject(name);
         this.potentiallyNotifyChanged(oldBase, newBase);
     }
 
@@ -380,9 +380,9 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @return the colour
      */
-    protected PDGamma getColor(String name)
+    protected PDGamma getColor(final String name)
     {
-        COSArray c = (COSArray) this.getCOSObject().getDictionaryObject(name);
+        final COSArray c = (COSArray) this.getCOSObject().getDictionaryObject(name);
         if (c != null)
         {
             return new PDGamma(c);
@@ -396,9 +396,9 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @return the single ({@link PDGamma}) or a ({@link PDFourColours})
      */
-    protected Object getColorOrFourColors(String name)
+    protected Object getColorOrFourColors(final String name)
     {
-        COSArray array =
+        final COSArray array =
             (COSArray) this.getCOSObject().getDictionaryObject(name);
         if (array == null)
         {
@@ -422,11 +422,11 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @param value the colour
      */
-    protected void setColor(String name, PDGamma value)
+    protected void setColor(final String name, final PDGamma value)
     {
-        COSBase oldValue = this.getCOSObject().getDictionaryObject(name);
+        final COSBase oldValue = this.getCOSObject().getDictionaryObject(name);
         this.getCOSObject().setItem(name, value);
-        COSBase newValue = value == null ? null : value.getCOSObject();
+        final COSBase newValue = value == null ? null : value.getCOSObject();
         this.potentiallyNotifyChanged(oldValue, newValue);
     }
 
@@ -436,11 +436,11 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      * @param name the attribute name
      * @param value the four colours
      */
-    protected void setFourColors(String name, PDFourColours value)
+    protected void setFourColors(final String name, final PDFourColours value)
     {
-        COSBase oldValue = this.getCOSObject().getDictionaryObject(name);
+        final COSBase oldValue = this.getCOSObject().getDictionaryObject(name);
         this.getCOSObject().setItem(name, value);
-        COSBase newValue = value == null ? null : value.getCOSObject();
+        final COSBase newValue = value == null ? null : value.getCOSObject();
         this.potentiallyNotifyChanged(oldValue, newValue);
     }
 

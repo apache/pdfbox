@@ -53,7 +53,7 @@ public class CreateSignedTimeStamp implements SignatureInterface
      * 
      * @param tsaUrl The url where TS-Request will be done.
      */
-    public CreateSignedTimeStamp(String tsaUrl)
+    public CreateSignedTimeStamp(final String tsaUrl)
     {
         this.tsaUrl = tsaUrl;
     }
@@ -64,7 +64,7 @@ public class CreateSignedTimeStamp implements SignatureInterface
      * @param file the PDF file to sign
      * @throws IOException if the file could not be read or written
      */
-    public void signDetached(File file) throws IOException
+    public void signDetached(final File file) throws IOException
     {
         signDetached(file, file);
     }
@@ -76,7 +76,7 @@ public class CreateSignedTimeStamp implements SignatureInterface
      * @param outFile output PDF file
      * @throws IOException if the input file could not be read
      */
-    public void signDetached(File inFile, File outFile) throws IOException
+    public void signDetached(final File inFile, final File outFile) throws IOException
     {
         if (inFile == null || !inFile.exists())
         {
@@ -85,7 +85,7 @@ public class CreateSignedTimeStamp implements SignatureInterface
 
         // sign
         try (PDDocument doc = Loader.loadPDF(inFile);
-             FileOutputStream fos = new FileOutputStream(outFile))
+             final FileOutputStream fos = new FileOutputStream(outFile))
         {
             signDetached(doc, fos);
         }
@@ -98,9 +98,9 @@ public class CreateSignedTimeStamp implements SignatureInterface
      * @param output Where the file will be written
      * @throws IOException
      */
-    public void signDetached(PDDocument document, OutputStream output) throws IOException
+    public void signDetached(final PDDocument document, final OutputStream output) throws IOException
     {
-        int accessPermissions = SigUtils.getMDPPermission(document);
+        final int accessPermissions = SigUtils.getMDPPermission(document);
         if (accessPermissions == 1)
         {
             throw new IllegalStateException(
@@ -108,7 +108,7 @@ public class CreateSignedTimeStamp implements SignatureInterface
         }
 
         // create signature dictionary
-        PDSignature signature = new PDSignature();
+        final PDSignature signature = new PDSignature();
         signature.setType(COSName.DOC_TIME_STAMP);
         signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
         signature.setSubFilter(COSName.getPDFName("ETSI.RFC3161"));
@@ -126,22 +126,22 @@ public class CreateSignedTimeStamp implements SignatureInterface
     }
 
     @Override
-    public byte[] sign(InputStream content) throws IOException
+    public byte[] sign(final InputStream content) throws IOException
     {
-        ValidationTimeStamp validation;
+        final ValidationTimeStamp validation;
         try
         {
             validation = new ValidationTimeStamp(tsaUrl);
             return validation.getTimeStampToken(content);
         }
-        catch (NoSuchAlgorithmException e)
+        catch (final NoSuchAlgorithmException e)
         {
             LOG.error("Hashing-Algorithm not found for TimeStamping", e);
         }
         return new byte[] {};
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 3)
         {
@@ -161,13 +161,13 @@ public class CreateSignedTimeStamp implements SignatureInterface
         }
 
         // sign PDF
-        CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsaUrl);
+        final CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsaUrl);
 
-        File inFile = new File(args[0]);
-        String name = inFile.getName();
-        String substring = name.substring(0, name.lastIndexOf('.'));
+        final File inFile = new File(args[0]);
+        final String name = inFile.getName();
+        final String substring = name.substring(0, name.lastIndexOf('.'));
 
-        File outFile = new File(inFile.getParent(), substring + "_timestamped.pdf");
+        final File outFile = new File(inFile.getParent(), substring + "_timestamped.pdf");
         signing.signDetached(inFile, outFile);
     }
 

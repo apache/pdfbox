@@ -29,7 +29,7 @@ public class FontMapping<T extends FontBoxFont>
     private final T font;
     private final boolean isFallback;
 
-    public FontMapping(T font, boolean isFallback)
+    public FontMapping(final T font, final boolean isFallback)
     {
         this.font = font;
         this.isFallback = isFallback;

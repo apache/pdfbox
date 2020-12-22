@@ -65,14 +65,14 @@ public enum RenderingMode
 
     private static final RenderingMode[] VALUES = RenderingMode.values();
 
-    public static RenderingMode fromInt(int value)
+    public static RenderingMode fromInt(final int value)
     {
         return VALUES[value];
     }
 
     private final int value;
 
-    RenderingMode(int value)
+    RenderingMode(final int value)
     {
         this.value = value;
     }

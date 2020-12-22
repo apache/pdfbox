@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.action;
 
@@ -50,7 +50,7 @@ public class HideAction extends AbstractActionManager
      * @param aaKey
      *            The name of the key which identify the action in a additional action dictionary.
      */
-    public HideAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
+    public HideAction(final ActionManagerFactory amFact, final COSDictionary adict, final PreflightContext ctx, final String aaKey)
     {
         super(amFact, adict, ctx, aaKey);
     }
@@ -63,7 +63,7 @@ public class HideAction extends AbstractActionManager
     @Override
     protected boolean innerValid()
     {
-        COSBase t = this.actionDictionary.getDictionaryObject(COSName.T);
+        final COSBase t = this.actionDictionary.getDictionaryObject(COSName.T);
         // ---- T entry is mandatory
         if (t == null)
         {
@@ -91,7 +91,7 @@ public class HideAction extends AbstractActionManager
          * representation of the document or is not documented in the PDF Reference is not permitted. This includes the
          * /Hide action which isn't specifically prohibited by PDF/A-1, but should have been.
          */
-        boolean h = this.actionDictionary.getBoolean(COSName.H, true);
+        final boolean h = this.actionDictionary.getBoolean(COSName.H, true);
         if (h)
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_HIDE_H_INVALID, "H entry is \"true\""));

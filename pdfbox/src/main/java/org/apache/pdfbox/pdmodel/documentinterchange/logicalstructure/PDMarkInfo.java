@@ -43,7 +43,7 @@ public class PDMarkInfo implements COSObjectable
      *
      * @param dic The existing dictionary.
      */
-    public PDMarkInfo( COSDictionary dic )
+    public PDMarkInfo(final COSDictionary dic )
     {
         dictionary = dic;
     }
@@ -74,7 +74,7 @@ public class PDMarkInfo implements COSObjectable
      *
      * @param value The new marked value.
      */
-    public void setMarked( boolean value )
+    public void setMarked(final boolean value )
     {
         dictionary.setBoolean( "Marked", value );
     }
@@ -94,7 +94,7 @@ public class PDMarkInfo implements COSObjectable
      *
      * @param userProps The new value for this property.
      */
-    public void setUserProperties( boolean userProps )
+    public void setUserProperties(final boolean userProps )
     {
         dictionary.setBoolean( "UserProperties", userProps );
     }
@@ -117,7 +117,7 @@ public class PDMarkInfo implements COSObjectable
      *
      * @param suspect The new "Suspects" value.
      */
-    public void setSuspect( boolean suspect )
+    public void setSuspect(final boolean suspect )
     {
         dictionary.setBoolean( "Suspects", false );
     }

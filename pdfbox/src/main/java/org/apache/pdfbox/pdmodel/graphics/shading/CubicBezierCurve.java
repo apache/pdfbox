@@ -37,7 +37,7 @@ class CubicBezierCurve
      * into 2^0 = 1 segments, if l = n, one cubic Bezier curve is divided into
      * 2^n segments
      */
-    CubicBezierCurve(Point2D[] ctrlPnts, int l)
+    CubicBezierCurve(final Point2D[] ctrlPnts, final int l)
     {
         controlPoints = ctrlPnts.clone();
         level = l;
@@ -61,18 +61,18 @@ class CubicBezierCurve
         {
             l = 0;
         }
-        int sz = (1 << l) + 1;
-        Point2D[] res = new Point2D[sz];
-        double step = (double) 1 / (sz - 1);
+        final int sz = (1 << l) + 1;
+        final Point2D[] res = new Point2D[sz];
+        final double step = (double) 1 / (sz - 1);
         double t = -step;
         for (int i = 0; i < sz; i++)
         {
             t += step;
-            double tmpX = (1 - t) * (1 - t) * (1 - t) * controlPoints[0].getX()
+            final double tmpX = (1 - t) * (1 - t) * (1 - t) * controlPoints[0].getX()
                     + 3 * t * (1 - t) * (1 - t) * controlPoints[1].getX()
                     + 3 * t * t * (1 - t) * controlPoints[2].getX()
                     + t * t * t * controlPoints[3].getX();
-            double tmpY = (1 - t) * (1 - t) * (1 - t) * controlPoints[0].getY()
+            final double tmpY = (1 - t) * (1 - t) * (1 - t) * controlPoints[0].getY()
                     + 3 * t * (1 - t) * (1 - t) * controlPoints[1].getY()
                     + 3 * t * t * (1 - t) * controlPoints[2].getY()
                     + t * t * t * controlPoints[3].getY();
@@ -94,8 +94,8 @@ class CubicBezierCurve
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
-        for (Point2D p : controlPoints)
+        final StringBuilder sb = new StringBuilder();
+        for (final Point2D p : controlPoints)
         {
             if (sb.length() > 0)
             {

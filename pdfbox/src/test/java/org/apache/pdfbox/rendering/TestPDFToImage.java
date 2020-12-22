@@ -74,7 +74,7 @@ public class TestPDFToImage
      *
      * @throws IOException If there is an error creating the test.
      */
-    public TestPDFToImage(String filename) throws IOException
+    public TestPDFToImage(final String filename) throws IOException
     {
         this.filename = filename;
     }
@@ -90,10 +90,10 @@ public class TestPDFToImage
      *
      * @return
      */
-    private BufferedImage createEmptyDiffImage(int minWidth, int minHeight, int maxWidth, int maxHeight)
+    private BufferedImage createEmptyDiffImage(final int minWidth, final int minHeight, final int maxWidth, final int maxHeight)
     {
-        BufferedImage bim3 = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
-        Graphics graphics = bim3.getGraphics();
+        final BufferedImage bim3 = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
+        final Graphics graphics = bim3.getGraphics();
         if (minWidth != maxWidth || minHeight != maxHeight)
         {
             graphics.setColor(Color.BLACK);
@@ -117,12 +117,12 @@ public class TestPDFToImage
      *
      * @throws IOException
      */
-    private BufferedImage diffImages(BufferedImage bim1, BufferedImage bim2) throws IOException
+    private BufferedImage diffImages(final BufferedImage bim1, final BufferedImage bim2) throws IOException
     {
-        int minWidth = Math.min(bim1.getWidth(), bim2.getWidth());
-        int minHeight = Math.min(bim1.getHeight(), bim2.getHeight());
-        int maxWidth = Math.max(bim1.getWidth(), bim2.getWidth());
-        int maxHeight = Math.max(bim1.getHeight(), bim2.getHeight());
+        final int minWidth = Math.min(bim1.getWidth(), bim2.getWidth());
+        final int minHeight = Math.min(bim1.getHeight(), bim2.getHeight());
+        final int maxWidth = Math.max(bim1.getWidth(), bim2.getWidth());
+        final int maxHeight = Math.max(bim1.getHeight(), bim2.getHeight());
         BufferedImage bim3 = null;
         if (minWidth != maxWidth || minHeight != maxHeight)
         {
@@ -132,8 +132,8 @@ public class TestPDFToImage
         {
             for (int y = 0; y < minHeight; ++y)
             {
-                int rgb1 = bim1.getRGB(x, y);
-                int rgb2 = bim2.getRGB(x, y);
+                final int rgb1 = bim1.getRGB(x, y);
+                final int rgb2 = bim2.getRGB(x, y);
                 if (rgb1 != rgb2
                         // don't bother about small differences
                         && (Math.abs((rgb1 & 0xFF) - (rgb2 & 0xFF)) > 3
@@ -144,9 +144,9 @@ public class TestPDFToImage
                     {
                         bim3 = createEmptyDiffImage(minWidth, minHeight, maxWidth, maxHeight);
                     }
-                    int r = Math.abs((rgb1 & 0xFF) - (rgb2 & 0xFF));
-                    int g = Math.abs((rgb1 & 0xFF00) - (rgb2 & 0xFF00));
-                    int b = Math.abs((rgb1 & 0xFF0000) - (rgb2 & 0xFF0000));
+                    final int r = Math.abs((rgb1 & 0xFF) - (rgb2 & 0xFF));
+                    final int g = Math.abs((rgb1 & 0xFF00) - (rgb2 & 0xFF00));
+                    final int b = Math.abs((rgb1 & 0xFF0000) - (rgb2 & 0xFF0000));
                     bim3.setRGB(x, y, 0xFFFFFF - (r | g | b));
                 }
                 else
@@ -171,7 +171,7 @@ public class TestPDFToImage
      * (all identical)
      * @throws IOException when there is an exception
      */
-    public boolean doTestFile(final File file, String inDir, String outDir) throws IOException
+    public boolean doTestFile(final File file, final String inDir, final String outDir) throws IOException
     {
         PDDocument document = null;
         boolean failed = false;
@@ -181,8 +181,8 @@ public class TestPDFToImage
         {
             new FileOutputStream(new File(outDir, file.getName() + ".parseerror")).close();
             document = Loader.loadPDF(file, (String) null);
-            String outputPrefix = outDir + '/' + file.getName() + "-";
-            int numPages = document.getNumberOfPages();
+            final String outputPrefix = outDir + '/' + file.getName() + "-";
+            final int numPages = document.getNumberOfPages();
             if (numPages < 1)
             {
                 failed = true;
@@ -194,12 +194,12 @@ public class TestPDFToImage
             }
 
             LOG.info("Rendering: " + file.getName());
-            PDFRenderer renderer = new PDFRenderer(document);
+            final PDFRenderer renderer = new PDFRenderer(document);
             for (int i = 0; i < numPages; i++)
             {
-                String fileName = outputPrefix + (i + 1) + ".png";
+                final String fileName = outputPrefix + (i + 1) + ".png";
                 new FileOutputStream(new File(fileName + ".rendererror")).close();
-                BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
+                final BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
                 new File(fileName + ".rendererror").delete();
                 LOG.info("Writing: " + fileName);
                 new FileOutputStream(new File(fileName + ".writeerror")).close();
@@ -209,7 +209,7 @@ public class TestPDFToImage
 
             // test to see whether file is destroyed in pdfbox
             new FileOutputStream(new File(outDir, file.getName() + ".saveerror")).close();
-            File tmpFile = File.createTempFile("pdfbox", ".pdf");
+            final File tmpFile = File.createTempFile("pdfbox", ".pdf");
             document.setAllSecurityToBeRemoved(true);
             document.save(tmpFile);
             new File(outDir, file.getName() + ".saveerror").delete();
@@ -218,7 +218,7 @@ public class TestPDFToImage
             new File(outDir, file.getName() + ".reloaderror").delete();
             tmpFile.delete();
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             failed = true;
             LOG.error("Error converting file " + file.getName());
@@ -239,10 +239,10 @@ public class TestPDFToImage
         {
             new File(outDir + file.getName() + ".cmperror").delete();
 
-            File[] outFiles = new File(outDir).listFiles(new FilenameFilter()
+            final File[] outFiles = new File(outDir).listFiles(new FilenameFilter()
             {
                 @Override
-                public boolean accept(File dir, String name)
+                public boolean accept(final File dir, final String name)
                 {
                     return (name.endsWith(".png")
                             && name.startsWith(file.getName(), 0))
@@ -254,10 +254,10 @@ public class TestPDFToImage
                 failed = true;
                 LOG.warn("*** TEST FAILURE *** Output missing for file: " + file.getName());
             }
-            for (File outFile : outFiles)
+            for (final File outFile : outFiles)
             {
                 new File(outFile.getAbsolutePath() + "-diff.png").delete(); // delete diff file from a previous run
-                File inFile = new File(inDir + '/' + outFile.getName());
+                final File inFile = new File(inDir + '/' + outFile.getName());
                 if (!inFile.exists())
                 {
                     failed = true;
@@ -267,7 +267,7 @@ public class TestPDFToImage
                 {
                     // different files might still have identical content
                     // save the difference (if any) into a diff image
-                    BufferedImage bim3 = diffImages(ImageIO.read(inFile), ImageIO.read(outFile));
+                    final BufferedImage bim3 = diffImages(ImageIO.read(inFile), ImageIO.read(outFile));
                     if (bim3 != null)
                     {
                         failed = true;
@@ -293,7 +293,7 @@ public class TestPDFToImage
                 }
             }
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             new FileOutputStream(new File(outDir, file.getName() + ".cmperror")).close();
             failed = true;
@@ -303,7 +303,7 @@ public class TestPDFToImage
         return !failed;
     }
 
-    private boolean filesAreIdentical(File left, File right) throws IOException
+    private boolean filesAreIdentical(final File left, final File right) throws IOException
     {
         //http://forum.java.sun.com/thread.jspa?threadID=688105&messageID=4003259
         //http://web.archive.org/web/20060515173719/http://forum.java.sun.com/thread.jspa?threadID=688105&messageID=4003259
@@ -321,12 +321,12 @@ public class TestPDFToImage
                 return false;
             }
 
-            FileInputStream lin = new FileInputStream(left);
-            FileInputStream rin = new FileInputStream(right);
+            final FileInputStream lin = new FileInputStream(left);
+            final FileInputStream rin = new FileInputStream(right);
             try
             {
-                byte[] lbuffer = new byte[4096];
-                byte[] rbuffer = new byte[lbuffer.length];
+                final byte[] lbuffer = new byte[4096];
+                final byte[] rbuffer = new byte[lbuffer.length];
                 int lcount;
                 while ((lcount = lin.read(lbuffer)) > 0)
                 {

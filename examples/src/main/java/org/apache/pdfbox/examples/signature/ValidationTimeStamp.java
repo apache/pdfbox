@@ -56,11 +56,11 @@ public class ValidationTimeStamp
      * @throws NoSuchAlgorithmException
      * @throws MalformedURLException
      */
-    public ValidationTimeStamp(String tsaUrl) throws NoSuchAlgorithmException, MalformedURLException
+    public ValidationTimeStamp(final String tsaUrl) throws NoSuchAlgorithmException, MalformedURLException
     {
         if (tsaUrl != null)
         {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
             this.tsaClient = new TSAClient(new URL(tsaUrl), null, null, digest);
         }
     }
@@ -72,7 +72,7 @@ public class ValidationTimeStamp
      * @return the byte[] of the timestamp token
      * @throws IOException
      */
-    public byte[] getTimeStampToken(InputStream content) throws IOException
+    public byte[] getTimeStampToken(final InputStream content) throws IOException
     {
         return tsaClient.getTimeStampToken(IOUtils.toByteArray(content));
     }
@@ -84,13 +84,13 @@ public class ValidationTimeStamp
      * @return CMSSignedData Extended CMS signed data
      * @throws IOException
      */
-    public CMSSignedData addSignedTimeStamp(CMSSignedData signedData)
+    public CMSSignedData addSignedTimeStamp(final CMSSignedData signedData)
             throws IOException
     {
-        SignerInformationStore signerStore = signedData.getSignerInfos();
-        List<SignerInformation> newSigners = new ArrayList<>();
+        final SignerInformationStore signerStore = signedData.getSignerInfos();
+        final List<SignerInformation> newSigners = new ArrayList<>();
 
-        for (SignerInformation signer : signerStore.getSigners())
+        for (final SignerInformation signer : signerStore.getSigners())
         {
             // This adds a timestamp to every signer (into his unsigned attributes) in the signature.
             newSigners.add(signTimeStamp(signer));
@@ -108,10 +108,10 @@ public class ValidationTimeStamp
      * @return information about SignerInformation
      * @throws IOException
      */
-    private SignerInformation signTimeStamp(SignerInformation signer)
+    private SignerInformation signTimeStamp(final SignerInformation signer)
             throws IOException
     {
-        AttributeTable unsignedAttributes = signer.getUnsignedAttributes();
+        final AttributeTable unsignedAttributes = signer.getUnsignedAttributes();
 
         ASN1EncodableVector vector = new ASN1EncodableVector();
         if (unsignedAttributes != null)
@@ -119,13 +119,13 @@ public class ValidationTimeStamp
             vector = unsignedAttributes.toASN1EncodableVector();
         }
 
-        byte[] token = tsaClient.getTimeStampToken(signer.getSignature());
-        ASN1ObjectIdentifier oid = PKCSObjectIdentifiers.id_aa_signatureTimeStampToken;
-        ASN1Encodable signatureTimeStamp = new Attribute(oid,
+        final byte[] token = tsaClient.getTimeStampToken(signer.getSignature());
+        final ASN1ObjectIdentifier oid = PKCSObjectIdentifiers.id_aa_signatureTimeStampToken;
+        final ASN1Encodable signatureTimeStamp = new Attribute(oid,
                 new DERSet(ASN1Primitive.fromByteArray(token)));
 
         vector.add(signatureTimeStamp);
-        Attributes signedAttributes = new Attributes(vector);
+        final Attributes signedAttributes = new Attributes(vector);
 
         // There is no other way changing the unsigned attributes of the signer information.
         // result is never null, new SignerInformation always returned, 

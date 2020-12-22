@@ -30,7 +30,7 @@ public class MissingImageReaderException extends IOException
      */
     private static final long serialVersionUID = 1L;
 
-    public MissingImageReaderException(String message)
+    public MissingImageReaderException(final String message)
     {
         super(message);
     }

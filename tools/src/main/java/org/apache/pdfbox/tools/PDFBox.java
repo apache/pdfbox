@@ -50,12 +50,12 @@ public final class PDFBox implements Runnable
      * 
      * @param args command line arguments
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        CommandLine cmd = new CommandLine(new PDFBox());
+        final CommandLine cmd = new CommandLine(new PDFBox());
         cmd.execute(args);
     
         if (args.length == 0) { cmd.usage(SYSOUT); }

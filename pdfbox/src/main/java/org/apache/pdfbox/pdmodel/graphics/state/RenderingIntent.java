@@ -44,9 +44,9 @@ public enum RenderingIntent
      */
     PERCEPTUAL("Perceptual");
 
-    public static RenderingIntent fromString(String value)
+    public static RenderingIntent fromString(final String value)
     {
-        for (RenderingIntent instance : RenderingIntent.values())
+        for (final RenderingIntent instance : RenderingIntent.values())
         {
             if (instance.value.equals(value))
             {
@@ -60,7 +60,7 @@ public enum RenderingIntent
 
     private final String value;
 
-    RenderingIntent(String value)
+    RenderingIntent(final String value)
     {
         this.value = value;
     }

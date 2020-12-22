@@ -34,7 +34,7 @@ public class StringPane
 
     private final JTabbedPane tabbedPane;
 
-    public StringPane(COSString cosString)
+    public StringPane(final COSString cosString)
     {
         tabbedPane = new JTabbedPane();
         tabbedPane.setPreferredSize(new Dimension(300, 500));
@@ -42,25 +42,25 @@ public class StringPane
         tabbedPane.addTab(HEX_TAB, createHexView(cosString));
     }
 
-    private JTextPane createTextView(COSString cosString)
+    private JTextPane createTextView(final COSString cosString)
     {
-        JTextPane textPane = new JTextPane();
+        final JTextPane textPane = new JTextPane();
         textPane.setText(getTextString(cosString));
         textPane.setEditable(false);
 
         return textPane;
     }
 
-    private JComponent createHexView(COSString cosString)
+    private JComponent createHexView(final COSString cosString)
     {
-        HexView hexView = new HexView(cosString.getBytes());
+        final HexView hexView = new HexView(cosString.getBytes());
         return hexView.getPane();
     }
 
-    private String getTextString(COSString cosString)
+    private String getTextString(final COSString cosString)
     {
         String text = cosString.getString();
-        for (char c : text.toCharArray())
+        for (final char c : text.toCharArray())
         {
             if (Character.isISOControl(c) && c != '\n' && c != '\r' && c != '\t')
             {

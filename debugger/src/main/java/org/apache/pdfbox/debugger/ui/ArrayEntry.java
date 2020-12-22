@@ -54,7 +54,7 @@ public class ArrayEntry
      *
      * @param val the new value for this entry.
      */
-    public void setValue(COSBase val)
+    public void setValue(final COSBase val)
     {
         this.value = val;
     }
@@ -64,7 +64,7 @@ public class ArrayEntry
      *
      * @param val the new value for this entry.
      */
-    public void setItem(COSBase val)
+    public void setItem(final COSBase val)
     {
         this.item = val;
     }
@@ -84,7 +84,7 @@ public class ArrayEntry
      *
      * @param i The new index value.
      */
-    public void setIndex(int i)
+    public void setIndex(final int i)
     {
         index = i;
     }

@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.xml;
 
@@ -58,12 +58,12 @@ public final class PdfaExtensionHelper
     {
     }
 
-    public static void validateNaming(XMPMetadata meta, Element description) throws XmpParsingException
+    public static void validateNaming(final XMPMetadata meta, final Element description) throws XmpParsingException
     {
-        NamedNodeMap nnm = description.getAttributes();
+        final NamedNodeMap nnm = description.getAttributes();
         for (int i = 0; i < nnm.getLength(); i++)
         {
-            Attr attr = (Attr) nnm.item(i);
+            final Attr attr = (Attr) nnm.item(i);
             checkNamespaceDeclaration(attr, PDFAExtensionSchema.class);
             checkNamespaceDeclaration(attr, PDFAFieldType.class);
             checkNamespaceDeclaration(attr, PDFAPropertyType.class);
@@ -72,13 +72,13 @@ public final class PdfaExtensionHelper
         }
     }
 
-    private static void checkNamespaceDeclaration(Attr attr, Class<? extends AbstractStructuredType> clz)
+    private static void checkNamespaceDeclaration(final Attr attr, final Class<? extends AbstractStructuredType> clz)
             throws XmpParsingException
     {
-        String prefix = attr.getLocalName();
-        String namespace = attr.getValue();
-        String cprefix = clz.getAnnotation(StructuredType.class).preferedPrefix();
-        String cnamespace = clz.getAnnotation(StructuredType.class).namespace();
+        final String prefix = attr.getLocalName();
+        final String namespace = attr.getValue();
+        final String cprefix = clz.getAnnotation(StructuredType.class).preferedPrefix();
+        final String cnamespace = clz.getAnnotation(StructuredType.class).namespace();
         // check extension
         if (cprefix.equals(prefix) && !cnamespace.equals(namespace))
         {
@@ -90,12 +90,12 @@ public final class PdfaExtensionHelper
         }
     }
 
-    public static void populateSchemaMapping(XMPMetadata meta) throws XmpParsingException
+    public static void populateSchemaMapping(final XMPMetadata meta) throws XmpParsingException
     {
-        List<XMPSchema> schems = meta.getAllSchemas();
-        TypeMapping tm = meta.getTypeMapping();
-        StructuredType stPdfaExt = PDFAExtensionSchema.class.getAnnotation(StructuredType.class);
-        for (XMPSchema xmpSchema : schems)
+        final List<XMPSchema> schems = meta.getAllSchemas();
+        final TypeMapping tm = meta.getTypeMapping();
+        final StructuredType stPdfaExt = PDFAExtensionSchema.class.getAnnotation(StructuredType.class);
+        for (final XMPSchema xmpSchema : schems)
         {
             if (xmpSchema.getNamespace().equals(stPdfaExt.namespace()))
             {
@@ -107,9 +107,9 @@ public final class PdfaExtensionHelper
                                     + "', should be '" + stPdfaExt.preferedPrefix() + "'");
                 }
                 // create schema and types
-                PDFAExtensionSchema pes = (PDFAExtensionSchema) xmpSchema;
-                ArrayProperty sp = pes.getSchemasProperty();
-                for (AbstractField af : sp.getAllProperties())
+                final PDFAExtensionSchema pes = (PDFAExtensionSchema) xmpSchema;
+                final ArrayProperty sp = pes.getSchemasProperty();
+                for (final AbstractField af : sp.getAllProperties())
                 {
                     if (af instanceof PDFASchemaType)
                     {
@@ -120,13 +120,13 @@ public final class PdfaExtensionHelper
         }
     }
 
-    private static void populatePDFASchemaType(XMPMetadata meta, PDFASchemaType st, TypeMapping tm)
+    private static void populatePDFASchemaType(final XMPMetadata meta, final PDFASchemaType st, final TypeMapping tm)
             throws XmpParsingException
     {
-        String namespaceUri = st.getNamespaceURI().trim();
-        String prefix = st.getPrefixValue();
-        ArrayProperty properties = st.getProperty();
-        ArrayProperty valueTypes = st.getValueType();
+        final String namespaceUri = st.getNamespaceURI().trim();
+        final String prefix = st.getPrefixValue();
+        final ArrayProperty properties = st.getProperty();
+        final ArrayProperty valueTypes = st.getValueType();
         XMPSchemaFactory xsf = tm.getSchemaFactory(namespaceUri);
         // retrieve namespaces
         if (xsf == null)
@@ -138,7 +138,7 @@ public final class PdfaExtensionHelper
         // populate value type
         if (valueTypes != null)
         {
-            for (AbstractField af2 : valueTypes.getAllProperties())
+            for (final AbstractField af2 : valueTypes.getAllProperties())
             {
                 if (af2 instanceof PDFATypeType)
                 {
@@ -152,7 +152,7 @@ public final class PdfaExtensionHelper
             throw new XmpParsingException(ErrorType.RequiredProperty,
                     "Missing pdfaSchema:property in type definition");
         }
-        for (AbstractField af2 : properties.getAllProperties())
+        for (final AbstractField af2 : properties.getAllProperties())
         {
             if (af2 instanceof PDFAPropertyType)
             {
@@ -161,13 +161,13 @@ public final class PdfaExtensionHelper
         }
     }
 
-    private static void populatePDFAPropertyType(PDFAPropertyType property, TypeMapping tm, XMPSchemaFactory xsf)
+    private static void populatePDFAPropertyType(final PDFAPropertyType property, final TypeMapping tm, final XMPSchemaFactory xsf)
             throws XmpParsingException
     {
-        String pname = property.getName();
-        String ptype = property.getValueType();
-        String pdescription = property.getDescription();
-        String pCategory = property.getCategory();
+        final String pname = property.getName();
+        final String ptype = property.getValueType();
+        final String pdescription = property.getDescription();
+        final String pCategory = property.getCategory();
         // check all mandatory fields are OK
         if (pname == null || ptype == null || pdescription == null || pCategory == null)
         {
@@ -176,7 +176,7 @@ public final class PdfaExtensionHelper
                     "Missing field in property definition");
         }
         // check ptype existence
-        PropertyType pt = transformValueType(tm, ptype);
+        final PropertyType pt = transformValueType(tm, ptype);
         if (pt == null)
         {
             throw new XmpParsingException(ErrorType.NoValueType, "Unknown property value type : " + ptype);
@@ -196,14 +196,14 @@ public final class PdfaExtensionHelper
         }
     }
 
-    private static void populatePDFAType(XMPMetadata meta, PDFATypeType type, TypeMapping tm)
+    private static void populatePDFAType(final XMPMetadata meta, final PDFATypeType type, final TypeMapping tm)
             throws XmpParsingException
     {
-        String ttype = type.getType();
-        String tns = type.getNamespaceURI();
-        String tprefix = type.getPrefixValue();
-        String tdescription = type.getDescription();
-        ArrayProperty fields = type.getFields();
+        final String ttype = type.getType();
+        final String tns = type.getNamespaceURI();
+        final String tprefix = type.getPrefixValue();
+        final String tdescription = type.getDescription();
+        final ArrayProperty fields = type.getFields();
         if (ttype == null || tns == null || tprefix == null || tdescription == null)
         {
             // all fields are mandatory
@@ -211,12 +211,12 @@ public final class PdfaExtensionHelper
                     "Missing field in type definition");
         }
         // create the structured type
-        DefinedStructuredType structuredType = new DefinedStructuredType(meta, tns, tprefix, null); // TODO
+        final DefinedStructuredType structuredType = new DefinedStructuredType(meta, tns, tprefix, null); // TODO
         // maybe a name exists
         if (fields != null)
         {
-            List<AbstractField> definedFields = fields.getAllProperties();
-            for (AbstractField af3 : definedFields)
+            final List<AbstractField> definedFields = fields.getAllProperties();
+            for (final AbstractField af3 : definedFields)
             {
                 if (af3 instanceof PDFAFieldType)
                 {
@@ -226,34 +226,34 @@ public final class PdfaExtensionHelper
             }
         }
         // add the structured type to list
-        PropertiesDescription pm = new PropertiesDescription();
+        final PropertiesDescription pm = new PropertiesDescription();
         structuredType.getDefinedProperties().forEach(pm::addNewProperty);
         tm.addToDefinedStructuredTypes(ttype, tns, pm);
     }
 
-    private static void populatePDFAFieldType(PDFAFieldType field, DefinedStructuredType structuredType)
+    private static void populatePDFAFieldType(final PDFAFieldType field, final DefinedStructuredType structuredType)
             throws XmpParsingException
     {
-        String fName = field.getName();
-        String fDescription = field.getDescription();
-        String fValueType = field.getValueType();
+        final String fName = field.getName();
+        final String fDescription = field.getDescription();
+        final String fValueType = field.getValueType();
         if (fName == null || fDescription == null || fValueType == null)
         {
             throw new XmpParsingException(ErrorType.RequiredProperty, "Missing field in field definition");
         }
         try
         {
-            Types fValue = Types.valueOf(fValueType);
+            final Types fValue = Types.valueOf(fValueType);
             structuredType.addProperty(fName, TypeMapping.createPropertyType(fValue, Cardinality.Simple));
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : " + fValueType, e);
             // TODO could fValueType be a structured type ?
         }
     }
 
-    private static PropertyType transformValueType(TypeMapping tm, String valueType)
+    private static PropertyType transformValueType(final TypeMapping tm, String valueType)
     {
         if ("Lang Alt".equals(valueType))
         {
@@ -268,11 +268,11 @@ public final class PdfaExtensionHelper
         {
             valueType = valueType.substring(OPEN_CHOICE.length());
         }
-        int pos = valueType.indexOf(' ');
+        final int pos = valueType.indexOf(' ');
         Cardinality card = Cardinality.Simple;
         if (pos > 0)
         {
-            String scard = valueType.substring(0, pos);
+            final String scard = valueType.substring(0, pos);
             switch (scard)
             {
                 case "seq":
@@ -288,13 +288,13 @@ public final class PdfaExtensionHelper
                     return null;
             }
         }
-        String vt = valueType.substring(pos + 1);
+        final String vt = valueType.substring(pos + 1);
         Types type = null;
         try
         {
             type = pos < 0 ? Types.valueOf(valueType) : Types.valueOf(vt);
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             if (tm.isDefinedType(vt))
             {

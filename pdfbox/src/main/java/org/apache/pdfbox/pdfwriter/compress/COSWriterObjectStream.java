@@ -52,7 +52,7 @@ public class COSWriterObjectStream extends COSStream
      *
      * @param compressionPool The compression pool an object stream shall be created for.
      */
-    public COSWriterObjectStream(COSWriterCompressionPool compressionPool)
+    public COSWriterObjectStream(final COSWriterCompressionPool compressionPool)
     {
         this.compressionPool = compressionPool;
         setItem(COSName.TYPE, COSName.OBJ_STM);
@@ -73,7 +73,7 @@ public class COSWriterObjectStream extends COSStream
      *
      * @param size The number of objects, that have been written to this object stream.
      */
-    public void setObjectCount(int size)
+    public void setObjectCount(final int size)
     {
         setInt(COSName.N, size);
     }
@@ -93,7 +93,7 @@ public class COSWriterObjectStream extends COSStream
      *
      * @param firstEntryOffset The byte offset of the first object contained in this object stream.
      */
-    public void setFirstEntryOffset(int firstEntryOffset)
+    public void setFirstEntryOffset(final int firstEntryOffset)
     {
         setInt(COSName.FIRST, firstEntryOffset);
     }
@@ -105,7 +105,7 @@ public class COSWriterObjectStream extends COSStream
      * @param key The {@link COSObjectKey}, that shall be used for indirect references to the {@link COSObject}.
      * @param object The {@link COSObject}, that shall be written to this object stream.
      */
-    public void prepareStreamObject(COSObjectKey key, COSBase object)
+    public void prepareStreamObject(final COSObjectKey key, final COSBase object)
     {
         if (key != null && object != null)
         {
@@ -147,21 +147,21 @@ public class COSWriterObjectStream extends COSStream
     {
         setObjectCount(preparedKeys.size());
         // Prepare the compressible objects for writing.
-        List<Long> objectNumbers = new ArrayList<>();
-        List<byte[]> objectsBuffer = new ArrayList<>();
+        final List<Long> objectNumbers = new ArrayList<>();
+        final List<byte[]> objectsBuffer = new ArrayList<>();
         for (int i = 0; i < getObjectCount(); i++)
         {
             try (ByteArrayOutputStream partialOutput = new ByteArrayOutputStream())
             {
                 objectNumbers.add(preparedKeys.get(i).getNumber());
-                COSBase base = preparedObjects.get(i);
+                final COSBase base = preparedObjects.get(i);
                 writeObject(partialOutput, base, true);
                 objectsBuffer.add(partialOutput.toByteArray());
             }
         }
 
         // Deduce the object stream byte offset map.
-        byte[] offsetsMapBuffer;
+        final byte[] offsetsMapBuffer;
         long nextObjectOffset = 0;
         try (ByteArrayOutputStream partialOutput = new ByteArrayOutputStream())
         {
@@ -183,7 +183,7 @@ public class COSWriterObjectStream extends COSStream
         {
             output.write(offsetsMapBuffer);
             setFirstEntryOffset(offsetsMapBuffer.length);
-            for (byte[] rawObject : objectsBuffer)
+            for (final byte[] rawObject : objectsBuffer)
             {
                 output.write(rawObject);
             }
@@ -200,7 +200,7 @@ public class COSWriterObjectStream extends COSStream
      * @param topLevel True, if the currently written object is a top level entry of this object stream.
      * @throws IOException Shall be thrown, when an exception occurred for the write operation.
      */
-    private void writeObject(OutputStream output, Object object, boolean topLevel)
+    private void writeObject(final OutputStream output, final Object object, final boolean topLevel)
             throws IOException
     {
         if (object == null)
@@ -216,7 +216,7 @@ public class COSWriterObjectStream extends COSStream
         {
             throw new IOException("Error: Unknown type in object stream:" + object);
         }
-        COSBase base = object instanceof COSObject ? ((COSObject) object).getObject()
+        final COSBase base = object instanceof COSObject ? ((COSObject) object).getObject()
                 : (COSBase) object;
         if (base == null)
         {
@@ -224,7 +224,7 @@ public class COSWriterObjectStream extends COSStream
         }
         if (!topLevel && this.compressionPool.contains(base))
         {
-            COSObjectKey key = this.compressionPool.getKey(base);
+            final COSObjectKey key = this.compressionPool.getKey(base);
             if (key == null)
             {
                 throw new IOException(
@@ -276,7 +276,7 @@ public class COSWriterObjectStream extends COSStream
      * @param output The stream, that shall be written to.
      * @param cosString The content, that shall be written.
      */
-    private void writeCOSString(OutputStream output, COSString cosString) throws IOException
+    private void writeCOSString(final OutputStream output, final COSString cosString) throws IOException
     {
         COSWriter.writeString(cosString, output);
         output.write(COSWriter.SPACE);
@@ -288,7 +288,7 @@ public class COSWriterObjectStream extends COSStream
      * @param output The stream, that shall be written to.
      * @param cosFloat The content, that shall be written.
      */
-    private void writeCOSFloat(OutputStream output, COSFloat cosFloat) throws IOException
+    private void writeCOSFloat(final OutputStream output, final COSFloat cosFloat) throws IOException
     {
         cosFloat.writePDF(output);
         output.write(COSWriter.SPACE);
@@ -300,7 +300,7 @@ public class COSWriterObjectStream extends COSStream
      * @param output The stream, that shall be written to.
      * @param cosInteger The content, that shall be written.
      */
-    private void writeCOSInteger(OutputStream output, COSInteger cosInteger) throws IOException
+    private void writeCOSInteger(final OutputStream output, final COSInteger cosInteger) throws IOException
     {
         cosInteger.writePDF(output);
         output.write(COSWriter.SPACE);
@@ -312,7 +312,7 @@ public class COSWriterObjectStream extends COSStream
      * @param output The stream, that shall be written to.
      * @param cosBoolean The content, that shall be written.
      */
-    private void writeCOSBoolean(OutputStream output, COSBoolean cosBoolean) throws IOException
+    private void writeCOSBoolean(final OutputStream output, final COSBoolean cosBoolean) throws IOException
     {
         cosBoolean.writePDF(output);
         output.write(COSWriter.SPACE);
@@ -324,7 +324,7 @@ public class COSWriterObjectStream extends COSStream
      * @param output The stream, that shall be written to.
      * @param cosName The content, that shall be written.
      */
-    private void writeCOSName(OutputStream output, COSName cosName) throws IOException
+    private void writeCOSName(final OutputStream output, final COSName cosName) throws IOException
     {
         cosName.writePDF(output);
         output.write(COSWriter.SPACE);
@@ -336,10 +336,10 @@ public class COSWriterObjectStream extends COSStream
      * @param output The stream, that shall be written to.
      * @param cosArray The content, that shall be written.
      */
-    private void writeCOSArray(OutputStream output, COSArray cosArray) throws IOException
+    private void writeCOSArray(final OutputStream output, final COSArray cosArray) throws IOException
     {
         output.write(COSWriter.ARRAY_OPEN);
-        for (COSBase value : cosArray.toList())
+        for (final COSBase value : cosArray.toList())
         {
             if (value == null)
             {
@@ -360,11 +360,11 @@ public class COSWriterObjectStream extends COSStream
      * @param output The stream, that shall be written to.
      * @param cosDictionary The content, that shall be written.
      */
-    private void writeCOSDictionary(OutputStream output, COSDictionary cosDictionary)
+    private void writeCOSDictionary(final OutputStream output, final COSDictionary cosDictionary)
             throws IOException
     {
         output.write(COSWriter.DICT_OPEN);
-        for (Map.Entry<COSName, COSBase> entry : cosDictionary.entrySet())
+        for (final Map.Entry<COSName, COSBase> entry : cosDictionary.entrySet())
         {
             if (entry.getValue() != null)
             {
@@ -382,7 +382,7 @@ public class COSWriterObjectStream extends COSStream
      * @param output The stream, that shall be written to.
      * @param indirectReference The content, that shall be written.
      */
-    private void writeObjectReference(OutputStream output, COSObjectKey indirectReference)
+    private void writeObjectReference(final OutputStream output, final COSObjectKey indirectReference)
             throws IOException
     {
         output.write(String.valueOf(indirectReference.getNumber())
@@ -400,7 +400,7 @@ public class COSWriterObjectStream extends COSStream
      *
      * @param output The stream, that shall be written to.
      */
-    private void writeCOSNull(OutputStream output) throws IOException
+    private void writeCOSNull(final OutputStream output) throws IOException
     {
         output.write("null".getBytes(StandardCharsets.ISO_8859_1));
         output.write(COSWriter.SPACE);
@@ -412,15 +412,15 @@ public class COSWriterObjectStream extends COSStream
      * @param output The stream, that shall be written to.
      * @param operator The content, that shall be written.
      */
-    private void writeOperator(OutputStream output, Operator operator) throws IOException
+    private void writeOperator(final OutputStream output, final Operator operator) throws IOException
     {
         if (operator.getName().equals(OperatorName.BEGIN_INLINE_IMAGE))
         {
             output.write(OperatorName.BEGIN_INLINE_IMAGE.getBytes(StandardCharsets.ISO_8859_1));
-            COSDictionary dic = operator.getImageParameters();
-            for (COSName key : dic.keySet())
+            final COSDictionary dic = operator.getImageParameters();
+            for (final COSName key : dic.keySet())
             {
-                Object value = dic.getDictionaryObject(key);
+                final Object value = dic.getDictionaryObject(key);
                 key.writePDF(output);
                 output.write(COSWriter.SPACE);
                 writeObject(output, value, false);

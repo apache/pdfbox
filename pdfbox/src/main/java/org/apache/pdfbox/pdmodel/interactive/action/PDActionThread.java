@@ -51,7 +51,7 @@ public class PDActionThread extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionThread(COSDictionary a)
+    public PDActionThread(final COSDictionary a)
     {
         super(a);
     }
@@ -68,7 +68,7 @@ public class PDActionThread extends PDAction
     /**
      * @param d The destination.
      */
-    public void setD(COSBase d)
+    public void setD(final COSBase d)
     {
         action.setItem(COSName.D, d);
     }
@@ -89,7 +89,7 @@ public class PDActionThread extends PDAction
      *
      * @param fs The file specification.
      */
-    public void setFile(PDFileSpecification fs)
+    public void setFile(final PDFileSpecification fs)
     {
         action.setItem(COSName.F, fs);
     }
@@ -106,7 +106,7 @@ public class PDActionThread extends PDAction
     /**
      * @param b The destination.
      */
-    public void setB(COSBase b)
+    public void setB(final COSBase b)
     {
         action.setItem(COSName.B, b);
     }

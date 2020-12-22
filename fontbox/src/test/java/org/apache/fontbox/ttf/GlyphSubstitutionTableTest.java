@@ -49,17 +49,17 @@ class GlyphSubstitutionTableTest
     void testGetGsubData() throws IOException
     {
         // given
-        MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
+        final MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
                 GlyphSubstitutionTableTest.class.getResourceAsStream("/ttf/Lohit-Bengali.ttf"));
         memoryTTFDataStream.seek(DATA_POSITION_FOR_GSUB_TABLE);
 
-        GlyphSubstitutionTable testClass = new GlyphSubstitutionTable(null);
+        final GlyphSubstitutionTable testClass = new GlyphSubstitutionTable(null);
 
         // when
         testClass.read(null, memoryTTFDataStream);
 
         // then
-        GsubData gsubData = testClass.getGsubData();
+        final GsubData gsubData = testClass.getGsubData();
         assertNotNull(gsubData);
         assertNotEquals(GsubData.NO_DATA_FOUND, gsubData);
         assertEquals(Language.BENGALI, gsubData.getLanguage());
@@ -67,31 +67,31 @@ class GlyphSubstitutionTableTest
 
         assertEquals(new HashSet<>(EXPECTED_FEATURE_NAMES), gsubData.getSupportedFeatures());
 
-        String templatePathToFile = "/gsub/lohit_bengali/bng2/%s.txt";
+        final String templatePathToFile = "/gsub/lohit_bengali/bng2/%s.txt";
 
-        for (String featureName : EXPECTED_FEATURE_NAMES)
+        for (final String featureName : EXPECTED_FEATURE_NAMES)
         {
             System.out.println("******* Testing feature: " + featureName);
-            Map<List<Integer>, Integer> expectedGsubTableRawData = getExpectedGsubTableRawData(
+            final Map<List<Integer>, Integer> expectedGsubTableRawData = getExpectedGsubTableRawData(
                     String.format(templatePathToFile, featureName));
-            ScriptFeature scriptFeature = new MapBackedScriptFeature(featureName,
+            final ScriptFeature scriptFeature = new MapBackedScriptFeature(featureName,
                     expectedGsubTableRawData);
             assertEquals(scriptFeature, gsubData.getFeature(featureName));
         }
 
     }
 
-    private Map<List<Integer>, Integer> getExpectedGsubTableRawData(String pathToResource)
+    private Map<List<Integer>, Integer> getExpectedGsubTableRawData(final String pathToResource)
             throws IOException
     {
-        Map<List<Integer>, Integer> gsubData = new HashMap<>();
+        final Map<List<Integer>, Integer> gsubData = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(TestTTFParser.class.getResourceAsStream(pathToResource)));)
+                new InputStreamReader(TestTTFParser.class.getResourceAsStream(pathToResource))))
         {
             while (true)
             {
-                String line = br.readLine();
+                final String line = br.readLine();
 
                 if (line == null)
                 {
@@ -107,20 +107,20 @@ class GlyphSubstitutionTableTest
                 {
                     continue;
                 }
-                String[] lineSplittedByKeyValue = line.split("=");
+                final String[] lineSplittedByKeyValue = line.split("=");
 
                 if (lineSplittedByKeyValue.length != 2)
                 {
                     throw new IllegalArgumentException("invalid format");
                 }
 
-                List<Integer> oldGlyphIds = new ArrayList<>();
-                for (String value : lineSplittedByKeyValue[0].split(","))
+                final List<Integer> oldGlyphIds = new ArrayList<>();
+                for (final String value : lineSplittedByKeyValue[0].split(","))
                 {
                     oldGlyphIds.add(Integer.valueOf(value));
                 }
 
-                Integer newGlyphId = Integer.valueOf(lineSplittedByKeyValue[1]);
+                final Integer newGlyphId = Integer.valueOf(lineSplittedByKeyValue[1]);
                 gsubData.put(oldGlyphIds, newGlyphId);
             }
         }

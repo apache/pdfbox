@@ -65,7 +65,7 @@ class TestPDPageContentStream
             page = new PDPage();
             doc.addPage(page);
 
-            try ( PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
+            try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
                 // pass a non-stroking color in CMYK color space
                 contentStream.setStrokingColor(0.5f, 0.6f, 0.7f, 0.8f);
@@ -144,9 +144,9 @@ class TestPDPageContentStream
     @Test
     void testMissingContentStream() throws IOException
     {
-        PDPage page = new PDPage();
-        PDFStreamParser parser = new PDFStreamParser(page);
-        List<Object> tokens = parser.parse();
+        final PDPage page = new PDPage();
+        final PDFStreamParser parser = new PDFStreamParser(page);
+        final List<Object> tokens = parser.parse();
         assertEquals(0, tokens.size());
     }
 
@@ -160,9 +160,9 @@ class TestPDPageContentStream
     {
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true);
+            final PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true);
             contentStream.close();
             contentStream.close();
         }

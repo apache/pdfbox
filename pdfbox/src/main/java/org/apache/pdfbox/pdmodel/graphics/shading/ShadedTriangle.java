@@ -55,7 +55,7 @@ class ShadedTriangle
      * @param p an array of the 3 vertices of a triangle
      * @param c an array of color corresponding the vertex array p
      */
-    ShadedTriangle(Point2D[] p, float[][] c)
+    ShadedTriangle(final Point2D[] p, final float[][] c)
     {
         corner = p.clone();
         color = c.clone();
@@ -66,17 +66,17 @@ class ShadedTriangle
         {
             if (overlaps(corner[1], corner[2]) && !overlaps(corner[0], corner[2]))
             {
-                Point p0 = new Point((int) Math.round(corner[0].getX()),
+                final Point p0 = new Point((int) Math.round(corner[0].getX()),
                         (int) Math.round(corner[0].getY()));
-                Point p1 = new Point((int) Math.round(corner[2].getX()),
+                final Point p1 = new Point((int) Math.round(corner[2].getX()),
                         (int) Math.round(corner[2].getY()));
                 line = new Line(p0, p1, color[0], color[2]);
             }
             else
             {
-                Point p0 = new Point((int) Math.round(corner[1].getX()),
+                final Point p0 = new Point((int) Math.round(corner[1].getX()),
                         (int) Math.round(corner[1].getY()));
-                Point p1 = new Point((int) Math.round(corner[2].getX()),
+                final Point p1 = new Point((int) Math.round(corner[2].getX()),
                         (int) Math.round(corner[2].getY()));
                 line = new Line(p0, p1, color[1], color[2]);
             }
@@ -98,12 +98,12 @@ class ShadedTriangle
      * @return number of unique points in the 3 vertices of a triangle, 3, 2 or
      * 1
      */
-    private int calcDeg(Point2D[] p)
+    private int calcDeg(final Point2D[] p)
     {
-        Set<Point> set = new HashSet<>();
-        for (Point2D itp : p)
+        final Set<Point> set = new HashSet<>();
+        for (final Point2D itp : p)
         {
-            Point np = new Point((int) Math.round(itp.getX() * 1000), (int) Math.round(itp.getY() * 1000));
+            final Point np = new Point((int) Math.round(itp.getX() * 1000), (int) Math.round(itp.getY() * 1000));
             set.add(np);
         }
         return set.size();
@@ -121,13 +121,13 @@ class ShadedTriangle
      */
     public int[] getBoundary()
     {
-        int[] boundary = new int[4];
-        int x0 = (int) Math.round(corner[0].getX());
-        int x1 = (int) Math.round(corner[1].getX());
-        int x2 = (int) Math.round(corner[2].getX());
-        int y0 = (int) Math.round(corner[0].getY());
-        int y1 = (int) Math.round(corner[1].getY());
-        int y2 = (int) Math.round(corner[2].getY());
+        final int[] boundary = new int[4];
+        final int x0 = (int) Math.round(corner[0].getX());
+        final int x1 = (int) Math.round(corner[1].getX());
+        final int x2 = (int) Math.round(corner[2].getX());
+        final int y0 = (int) Math.round(corner[0].getY());
+        final int y1 = (int) Math.round(corner[1].getY());
+        final int y2 = (int) Math.round(corner[2].getY());
 
         boundary[0] = Math.min(Math.min(x0, x1), x2);
         boundary[1] = Math.max(Math.max(x0, x1), x2);
@@ -153,7 +153,7 @@ class ShadedTriangle
      * @param p the target point
      * @return false if p is outside of this triangle, otherwise true
      */
-    public boolean contains(Point2D p)
+    public boolean contains(final Point2D p)
     {
         if (degree == 1)
         {
@@ -161,7 +161,7 @@ class ShadedTriangle
         }
         else if (degree == 2)
         {
-            Point tp = new Point((int) Math.round(p.getX()), (int) Math.round(p.getY()));
+            final Point tp = new Point((int) Math.round(p.getX()), (int) Math.round(p.getY()));
             return line.linePoints.contains(tp);
         }
 
@@ -169,7 +169,7 @@ class ShadedTriangle
          the following code judges whether a point is contained in a normal triangle, 
          taking the on edge case as contained
          */
-        double pv0 = edgeEquationValue(p, corner[1], corner[2]);
+        final double pv0 = edgeEquationValue(p, corner[1], corner[2]);
         /*
          if corner[0] and point p are on different sides of line from corner[1] to corner[2], 
          p is outside of the triangle
@@ -178,7 +178,7 @@ class ShadedTriangle
         {
             return false;
         }
-        double pv1 = edgeEquationValue(p, corner[2], corner[0]);
+        final double pv1 = edgeEquationValue(p, corner[2], corner[0]);
         /*
          if vertex corner[1] and point p are on different sides of line from corner[2] to corner[0], 
          p is outside of the triangle
@@ -187,7 +187,7 @@ class ShadedTriangle
         {
             return false;
         }
-        double pv2 = edgeEquationValue(p, corner[0], corner[1]);
+        final double pv2 = edgeEquationValue(p, corner[0], corner[1]);
         /*
          only left one case:
          if corner[1] and point p are on different sides of line from corner[2] to corner[0], 
@@ -200,7 +200,7 @@ class ShadedTriangle
      check whether two points overlaps each other, as points' coordinates are 
      of type double, the coordinates' accuracy used here is 0.001
      */
-    private boolean overlaps(Point2D p0, Point2D p1)
+    private boolean overlaps(final Point2D p0, final Point2D p1)
     {
         return Math.abs(p0.getX() - p1.getX()) < 0.001 && Math.abs(p0.getY() - p1.getY()) < 0.001;
     }
@@ -210,14 +210,14 @@ class ShadedTriangle
      let the rhs equals 0, calculate the lhs value by plugging the coordinate 
      of p in the lhs expression
      */
-    private double edgeEquationValue(Point2D p, Point2D p1, Point2D p2)
+    private double edgeEquationValue(final Point2D p, final Point2D p1, final Point2D p2)
     {
         return (p2.getY() - p1.getY()) * (p.getX() - p1.getX())
                 - (p2.getX() - p1.getX()) * (p.getY() - p1.getY());
     }
 
     // calculate the area of a triangle
-    private double getArea(Point2D a, Point2D b, Point2D c)
+    private double getArea(final Point2D a, final Point2D b, final Point2D c)
     {
         return Math.abs((c.getX() - b.getX()) * (c.getY() - a.getY())
                 - (c.getX() - a.getX()) * (c.getY() - b.getY())) / 2.0;
@@ -229,10 +229,10 @@ class ShadedTriangle
      * @param p the target point
      * @return an array denotes the point's color
      */
-    public float[] calcColor(Point2D p)
+    public float[] calcColor(final Point2D p)
     {
-        int numberOfColorComponents = color[0].length;
-        float[] pCol = new float[numberOfColorComponents];
+        final int numberOfColorComponents = color[0].length;
+        final float[] pCol = new float[numberOfColorComponents];
 
         switch (degree)
         {
@@ -245,12 +245,12 @@ class ShadedTriangle
                 break;
             case 2:
                 // linear interpolation
-                Point tp = new Point((int) Math.round(p.getX()), (int) Math.round(p.getY()));
+                final Point tp = new Point((int) Math.round(p.getX()), (int) Math.round(p.getY()));
                 return line.calcColor(tp);
             default:
-                float aw = (float) (getArea(p, corner[1], corner[2]) / area);
-                float bw = (float) (getArea(p, corner[2], corner[0]) / area);
-                float cw = (float) (getArea(p, corner[0], corner[1]) / area);
+                final float aw = (float) (getArea(p, corner[1], corner[2]) / area);
+                final float bw = (float) (getArea(p, corner[2], corner[0]) / area);
+                final float cw = (float) (getArea(p, corner[0], corner[1]) / area);
                 for (int i = 0; i < numberOfColorComponents; i++)
                 {
                     // barycentric interpolation

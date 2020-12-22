@@ -51,7 +51,7 @@ public class PDActionSound extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionSound(COSDictionary a)
+    public PDActionSound(final COSDictionary a)
     {
         super(a);
     }
@@ -61,7 +61,7 @@ public class PDActionSound extends PDAction
      * 
      * @param sound the sound object defining the sound that shall be played.
      */
-    public void setSound(COSStream sound)
+    public void setSound(final COSStream sound)
     {
         action.setItem(COSName.SOUND, sound);
     }
@@ -73,7 +73,7 @@ public class PDActionSound extends PDAction
      */
     public COSStream getSound()
     {
-        COSBase base = action.getDictionaryObject(COSName.SOUND);
+        final COSBase base = action.getDictionaryObject(COSName.SOUND);
         if (base instanceof COSStream)
         {
             return (COSStream) base;
@@ -88,7 +88,7 @@ public class PDActionSound extends PDAction
      * 
      * @throws IllegalArgumentException if the volume parameter is outside of the range −1.0 to 1.0.
      */
-    public void setVolume(float volume)
+    public void setVolume(final float volume)
     {
         if (volume < -1 || volume > 1)
         {
@@ -104,7 +104,7 @@ public class PDActionSound extends PDAction
      */
     public float getVolume()
     {
-        COSBase base = action.getDictionaryObject(COSName.VOLUME);
+        final COSBase base = action.getDictionaryObject(COSName.VOLUME);
         if (base instanceof COSNumber)
         {
             float volume = ((COSNumber) base).floatValue();
@@ -124,7 +124,7 @@ public class PDActionSound extends PDAction
      *
      * @param synchronous Whether to play the sound synchronously (true) or asynchronously (false).
      */
-    public void setSynchronous(boolean synchronous)
+    public void setSynchronous(final boolean synchronous)
     {
         action.setBoolean(COSName.SYNCHRONOUS, synchronous);
     }
@@ -139,7 +139,7 @@ public class PDActionSound extends PDAction
      */
     public boolean getSynchronous()
     {
-        COSBase base = action.getDictionaryObject(COSName.SYNCHRONOUS);
+        final COSBase base = action.getDictionaryObject(COSName.SYNCHRONOUS);
         if (base instanceof COSBoolean)
         {
             return ((COSBoolean) base).getValue();
@@ -152,7 +152,7 @@ public class PDActionSound extends PDAction
      *
      * @param repeat Whether to repeat the sound indefinitely.
      */
-    public void setRepeat(boolean repeat)
+    public void setRepeat(final boolean repeat)
     {
         action.setBoolean(COSName.REPEAT, repeat);
     }
@@ -164,7 +164,7 @@ public class PDActionSound extends PDAction
      */
     public boolean getRepeat()
     {
-        COSBase base = action.getDictionaryObject(COSName.REPEAT);
+        final COSBase base = action.getDictionaryObject(COSName.REPEAT);
         if (base instanceof COSBoolean)
         {
             return ((COSBoolean) base).getValue();
@@ -180,7 +180,7 @@ public class PDActionSound extends PDAction
      * @param mix whether to mix this sound with any other sound already playing.
      * (false).
      */
-    public void setMix(boolean mix)
+    public void setMix(final boolean mix)
     {
         action.setBoolean(COSName.MIX, mix);
     }
@@ -194,7 +194,7 @@ public class PDActionSound extends PDAction
      */
     public boolean getMix()
     {
-        COSBase base = action.getDictionaryObject(COSName.MIX);
+        final COSBase base = action.getDictionaryObject(COSName.MIX);
         if (base instanceof COSBoolean)
         {
             return ((COSBoolean) base).getValue();

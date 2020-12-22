@@ -35,20 +35,20 @@ class AnnotationBorder
 
     // return border info. BorderStyle must be provided as parameter because
     // method is not available in the base class
-    static AnnotationBorder getAnnotationBorder(PDAnnotation annotation,
-            PDBorderStyleDictionary borderStyle)
+    static AnnotationBorder getAnnotationBorder(final PDAnnotation annotation,
+                                                final PDBorderStyleDictionary borderStyle)
     {
-        AnnotationBorder ab = new AnnotationBorder();
+        final AnnotationBorder ab = new AnnotationBorder();
         if (borderStyle == null)
         {
-            COSArray border = annotation.getBorder();
+            final COSArray border = annotation.getBorder();
             if (border.size() >= 3 && border.getObject(2) instanceof COSNumber)
             {
                 ab.width = ((COSNumber) border.getObject(2)).floatValue();
             }
             if (border.size() > 3)
             {
-                COSBase base3 = border.getObject(3);
+                final COSBase base3 = border.getObject(3);
                 if (base3 instanceof COSArray)
                 {
                     ab.dashArray = ((COSArray) base3).toFloatArray();
@@ -70,7 +70,7 @@ class AnnotationBorder
         if (ab.dashArray != null)
         {
             boolean allZero = true;
-            for (float f : ab.dashArray)
+            for (final float f : ab.dashArray)
             {
                 if (Float.compare(f, 0) != 0)
                 {

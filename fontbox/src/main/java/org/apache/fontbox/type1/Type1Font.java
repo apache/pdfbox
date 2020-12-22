@@ -49,10 +49,10 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
      * 
      * @throws IOException if something went wrong
      */
-    public static Type1Font createWithPFB(InputStream pfbStream) throws IOException
+    public static Type1Font createWithPFB(final InputStream pfbStream) throws IOException
     {
-        PfbParser pfb = new PfbParser(pfbStream);
-        Type1Parser parser = new Type1Parser();
+        final PfbParser pfb = new PfbParser(pfbStream);
+        final Type1Parser parser = new Type1Parser();
         return parser.parse(pfb.getSegment1(), pfb.getSegment2());
     }
 
@@ -64,10 +64,10 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
      *
      * @throws IOException if something went wrong
      */
-    public static Type1Font createWithPFB(byte[] pfbBytes) throws IOException
+    public static Type1Font createWithPFB(final byte[] pfbBytes) throws IOException
     {
-        PfbParser pfb = new PfbParser(pfbBytes);
-        Type1Parser parser = new Type1Parser();
+        final PfbParser pfb = new PfbParser(pfbBytes);
+        final Type1Parser parser = new Type1Parser();
         return parser.parse(pfb.getSegment1(), pfb.getSegment2());
     }
 
@@ -79,9 +79,9 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
      * @return A new Type1Font instance
      * @throws IOException if something went wrong
      */
-    public static Type1Font createWithSegments(byte[] segment1, byte[] segment2) throws IOException
+    public static Type1Font createWithSegments(final byte[] segment1, final byte[] segment2) throws IOException
     {
-        Type1Parser parser = new Type1Parser();
+        final Type1Parser parser = new Type1Parser();
         return parser.parse(segment1, segment2);
     }
 
@@ -135,7 +135,7 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
     /**
      * Constructs a new Type1Font, called by Type1Parser.
      */
-    Type1Font(byte[] segment1, byte[] segment2)
+    Type1Font(final byte[] segment1, final byte[] segment2)
     {
         this.segment1 = segment1;
         this.segment2 = segment2;
@@ -168,25 +168,25 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
     }
 
     @Override
-    public GeneralPath getPath(String name) throws IOException
+    public GeneralPath getPath(final String name) throws IOException
     {
         return getType1CharString(name).getPath();
     }
 
     @Override
-    public float getWidth(String name) throws IOException
+    public float getWidth(final String name) throws IOException
     {
         return getType1CharString(name).getWidth();
     }
 
     @Override
-    public boolean hasGlyph(String name)
+    public boolean hasGlyph(final String name)
     {
         return charstrings.get(name) != null;
     }
 
     @Override
-    public Type1CharString getType1CharString(String name) throws IOException
+    public Type1CharString getType1CharString(final String name) throws IOException
     {
         Type1CharString type1 = charStringCache.get(name);
         if (type1 == null)
@@ -196,8 +196,8 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
             {
                 bytes = charstrings.get(".notdef");
             }
-            Type1CharStringParser parser = new Type1CharStringParser(fontName, name);
-            List<Object> sequence = parser.parse(bytes, subrs);
+            final Type1CharStringParser parser = new Type1CharStringParser(fontName, name);
+            final List<Object> sequence = parser.parse(bytes, subrs);
             type1 = new Type1CharString(this, fontName, name, sequence);
             charStringCache.put(name, type1);
         }

@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight;
 
@@ -53,7 +53,7 @@ public class ValidationResult
      * 
      * @param isValid
      */
-    public ValidationResult(boolean isValid)
+    public ValidationResult(final boolean isValid)
     {
         this.isValid = isValid;
     }
@@ -65,7 +65,7 @@ public class ValidationResult
      * @param error
      *            if error is null, no error is added to the list.
      */
-    public ValidationResult(ValidationError error)
+    public ValidationResult(final ValidationError error)
     {
         this.isValid = false;
         if (error != null)
@@ -81,7 +81,7 @@ public class ValidationResult
      * @param errors
      *            if error is null, no error is added to the list.
      */
-    public ValidationResult(List<ValidationError> errors)
+    public ValidationResult(final List<ValidationError> errors)
     {
         this.isValid = false;
         this.lErrors = errors;
@@ -93,7 +93,7 @@ public class ValidationResult
      * 
      * @param otherResult
      */
-    public void mergeResult(ValidationResult otherResult)
+    public void mergeResult(final ValidationResult otherResult)
     {
         if (otherResult != null)
         {
@@ -114,7 +114,7 @@ public class ValidationResult
      * @param xmpMetaData
      *            the xmpMetaData to set
      */
-    void setXmpMetaData(XMPMetadata xmpMetaData)
+    void setXmpMetaData(final XMPMetadata xmpMetaData)
     {
         this.xmpMetaData = xmpMetaData;
     }
@@ -132,7 +132,7 @@ public class ValidationResult
      * 
      * @param error
      */
-    public void addError(ValidationError error)
+    public void addError(final ValidationError error)
     {
         if (error != null)
         {
@@ -146,7 +146,7 @@ public class ValidationResult
      * 
      * @param errors
      */
-    public void addErrors(List<ValidationError> errors)
+    public void addErrors(final List<ValidationError> errors)
     {
         if (errors != null)
         {
@@ -238,7 +238,7 @@ public class ValidationResult
          *
          * @param pageNumber zero based page number or null if none is known.
          */
-        public void setPageNumber(Integer pageNumber)
+        public void setPageNumber(final Integer pageNumber)
         {
             this.pageNumber = pageNumber;
         }        
@@ -248,7 +248,7 @@ public class ValidationResult
          * 
          * @param errorCode
          */
-        public ValidationError(String errorCode)
+        public ValidationError(final String errorCode)
         {
             this.errorCode = errorCode;
             if (errorCode.startsWith(PreflightConstants.ERROR_SYNTAX_COMMON))
@@ -359,12 +359,12 @@ public class ValidationResult
          * @param details the error explanation
          * @param cause the error cause
          */
-        public ValidationError(String errorCode, String details, Throwable cause)
+        public ValidationError(final String errorCode, final String details, final Throwable cause)
         {
             this(errorCode);
             if (details != null)
             {
-                StringBuilder sb = new StringBuilder(this.details.length() + details.length() + 2);
+                final StringBuilder sb = new StringBuilder(this.details.length() + details.length() + 2);
                 sb.append(this.details).append(", ").append(details);
                 this.details = sb.length() > 400 ? sb.substring(0, 400) : sb.toString();
             }
@@ -379,7 +379,7 @@ public class ValidationResult
          * @param errorCode the error code
          * @param details the error explanation
          */
-        public ValidationError(String errorCode, String details)
+        public ValidationError(final String errorCode, final String details)
         {
             this(errorCode, details, null);
         }        
@@ -405,7 +405,7 @@ public class ValidationResult
          * 
          * @param details
          */
-        public void setDetails(String details)
+        public void setDetails(final String details)
         {
             this.details = details;
         }
@@ -415,7 +415,7 @@ public class ValidationResult
             return isWarning;
         }
 
-        public void setWarning(boolean isWarning)
+        public void setWarning(final boolean isWarning)
         {
             this.isWarning = isWarning;
         }
@@ -427,11 +427,11 @@ public class ValidationResult
         }
 
         @Override
-        public boolean equals(Object o)
+        public boolean equals(final Object o)
         {
             if (o instanceof ValidationError)
             {
-                ValidationError ve = (ValidationError) o;
+                final ValidationError ve = (ValidationError) o;
                 // check errorCode
                 if (!errorCode.equals(ve.errorCode))
                 {

@@ -40,13 +40,13 @@ public abstract class NativeFontDirFinder implements FontDirFinder
     @Override
     public List<File> find()
     {
-        List<File> fontDirList = new java.util.ArrayList<>();
-        String[] searchableDirectories = getSearchableDirectories();
+        final List<File> fontDirList = new java.util.ArrayList<>();
+        final String[] searchableDirectories = getSearchableDirectories();
         if (searchableDirectories != null)
         {
-            for (String searchableDirectorie : searchableDirectories)
+            for (final String searchableDirectorie : searchableDirectories)
             {
-                File fontDir = new File(searchableDirectorie);
+                final File fontDir = new File(searchableDirectorie);
                 try
                 {
                     if (fontDir.exists() && fontDir.canRead())
@@ -54,7 +54,7 @@ public abstract class NativeFontDirFinder implements FontDirFinder
                         fontDirList.add(fontDir);
                     }
                 }
-                catch (SecurityException e)
+                catch (final SecurityException e)
                 {
                     LOG.debug("Couldn't get native font directories - ignoring", e);
                     // should continue if this fails

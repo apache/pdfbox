@@ -29,27 +29,27 @@ import java.util.Comparator;
 public class TextPositionComparator implements Comparator<TextPosition>
 {
     @Override
-    public int compare(TextPosition pos1, TextPosition pos2)
+    public int compare(final TextPosition pos1, final TextPosition pos2)
     {
         // only compare text that is in the same direction
-        int cmp1 = Float.compare(pos1.getDir(), pos2.getDir());
+        final int cmp1 = Float.compare(pos1.getDir(), pos2.getDir());
         if (cmp1 != 0)
         {
             return cmp1;
         }
         
         // get the text direction adjusted coordinates
-        float x1 = pos1.getXDirAdj();
-        float x2 = pos2.getXDirAdj();
+        final float x1 = pos1.getXDirAdj();
+        final float x2 = pos2.getXDirAdj();
         
-        float pos1YBottom = pos1.getYDirAdj();
-        float pos2YBottom = pos2.getYDirAdj();
+        final float pos1YBottom = pos1.getYDirAdj();
+        final float pos2YBottom = pos2.getYDirAdj();
 
         // note that the coordinates have been adjusted so 0,0 is in upper left
-        float pos1YTop = pos1YBottom - pos1.getHeightDir();
-        float pos2YTop = pos2YBottom - pos2.getHeightDir();
+        final float pos1YTop = pos1YBottom - pos1.getHeightDir();
+        final float pos2YTop = pos2YBottom - pos2.getHeightDir();
 
-        float yDifference = Math.abs(pos1YBottom - pos2YBottom);
+        final float yDifference = Math.abs(pos1YBottom - pos2YBottom);
 
         // we will do a simple tolerance comparison
         if (yDifference < .1 ||

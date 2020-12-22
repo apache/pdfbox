@@ -65,7 +65,7 @@ public final class PDInlineImage implements PDImage
      * @param resources the current resources
      * @throws IOException if the stream cannot be decoded
      */
-    public PDInlineImage(COSDictionary parameters, byte[] data, PDResources resources)
+    public PDInlineImage(final COSDictionary parameters, final byte[] data, final PDResources resources)
             throws IOException
     {
         this.parameters = parameters;
@@ -73,7 +73,7 @@ public final class PDInlineImage implements PDImage
         this.rawData = data;
 
         DecodeResult decodeResult = null;
-        List<String> filters = getFilters();
+        final List<String> filters = getFilters();
         if (filters.isEmpty())
         {
             this.decodedData = data;
@@ -81,12 +81,12 @@ public final class PDInlineImage implements PDImage
         else
         {
             ByteArrayInputStream in = new ByteArrayInputStream(data);
-            ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
+            final ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
             for (int i = 0; i < filters.size(); i++)
             {
                 // TODO handling of abbreviated names belongs here, rather than in other classes
                 out.reset();
-                Filter filter = FilterFactory.INSTANCE.getFilter(filters.get(i));
+                final Filter filter = FilterFactory.INSTANCE.getFilter(filters.get(i));
                 decodeResult = filter.decode(in, out, parameters, i);
                 in = new ByteArrayInputStream(out.toByteArray());
             }
@@ -120,7 +120,7 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
-    public void setBitsPerComponent(int bitsPerComponent)
+    public void setBitsPerComponent(final int bitsPerComponent)
     {
         parameters.setInt(COSName.BPC, bitsPerComponent);
     }
@@ -128,7 +128,7 @@ public final class PDInlineImage implements PDImage
     @Override
     public PDColorSpace getColorSpace() throws IOException
     {
-        COSBase cs = parameters.getDictionaryObject(COSName.CS, COSName.COLORSPACE);
+        final COSBase cs = parameters.getDictionaryObject(COSName.CS, COSName.COLORSPACE);
         if (cs != null)
         {
             return createColorSpace(cs);
@@ -146,7 +146,7 @@ public final class PDInlineImage implements PDImage
     }
     
     // deliver the long name of a device colorspace, or the parameter
-    private COSBase toLongName(COSBase cs)
+    private COSBase toLongName(final COSBase cs)
     {
         if (COSName.RGB.equals(cs))
         {
@@ -163,7 +163,7 @@ public final class PDInlineImage implements PDImage
         return cs;
     }
     
-    private PDColorSpace createColorSpace(COSBase cs) throws IOException
+    private PDColorSpace createColorSpace(final COSBase cs) throws IOException
     {
         if (cs instanceof COSName)
         {
@@ -172,11 +172,11 @@ public final class PDInlineImage implements PDImage
 
         if (cs instanceof COSArray && ((COSArray) cs).size() > 1)
         {
-            COSArray srcArray = (COSArray) cs;
-            COSBase csType = srcArray.get(0);
+            final COSArray srcArray = (COSArray) cs;
+            final COSBase csType = srcArray.get(0);
             if (COSName.I.equals(csType) || COSName.INDEXED.equals(csType))
             {
-                COSArray dstArray = new COSArray();
+                final COSArray dstArray = new COSArray();
                 dstArray.addAll(srcArray);
                 dstArray.set(0, COSName.INDEXED);
                 dstArray.set(1, toLongName(srcArray.get(1)));
@@ -190,7 +190,7 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
-    public void setColorSpace(PDColorSpace colorSpace)
+    public void setColorSpace(final PDColorSpace colorSpace)
     {
         COSBase base = null;
         if (colorSpace != null)
@@ -207,7 +207,7 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
-    public void setHeight(int height)
+    public void setHeight(final int height)
     {
         parameters.setInt(COSName.H, height);
     }
@@ -219,7 +219,7 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
-    public void setWidth(int width)
+    public void setWidth(final int width)
     {
         parameters.setInt(COSName.W, width);
     }
@@ -231,7 +231,7 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
-    public void setInterpolate(boolean value)
+    public void setInterpolate(final boolean value)
     {
         parameters.setBoolean(COSName.I, value);
     }
@@ -243,10 +243,10 @@ public final class PDInlineImage implements PDImage
      */
     public List<String> getFilters()
     {
-        COSBase filters = parameters.getDictionaryObject(COSName.F, COSName.FILTER);
+        final COSBase filters = parameters.getDictionaryObject(COSName.F, COSName.FILTER);
         if (filters instanceof COSName)
         {
-            COSName name = (COSName) filters;
+            final COSName name = (COSName) filters;
             return Collections.singletonList(name.getName());
         }
         else if (filters instanceof COSArray)
@@ -261,14 +261,14 @@ public final class PDInlineImage implements PDImage
      *
      * @param filters the filters to apply to this stream.
      */
-    public void setFilters(List<String> filters)
+    public void setFilters(final List<String> filters)
     {
-        COSBase obj = COSArray.ofCOSNames(filters);
+        final COSBase obj = COSArray.ofCOSNames(filters);
         parameters.setItem(COSName.F, obj);
     }
 
     @Override
-    public void setDecode(COSArray decode)
+    public void setDecode(final COSArray decode)
     {
         parameters.setItem(COSName.D, decode);
     }
@@ -286,7 +286,7 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
-    public void setStencil(boolean isStencil)
+    public void setStencil(final boolean isStencil)
     {
         parameters.setBoolean(COSName.IM, isStencil);
     }
@@ -298,18 +298,18 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
-    public InputStream createInputStream(DecodeOptions options) throws IOException
+    public InputStream createInputStream(final DecodeOptions options) throws IOException
     {
         // Decode options are irrelevant for inline image, as the data is always buffered.
         return createInputStream();
     }
 
     @Override
-    public InputStream createInputStream(List<String> stopFilters) throws IOException
+    public InputStream createInputStream(final List<String> stopFilters) throws IOException
     {
-        List<String> filters = getFilters();
+        final List<String> filters = getFilters();
         ByteArrayInputStream in = new ByteArrayInputStream(rawData);
-        ByteArrayOutputStream out = new ByteArrayOutputStream(rawData.length);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(rawData.length);
         for (int i = 0; i < filters.size(); i++)
         {
             if (stopFilters.contains(filters.get(i)))
@@ -318,7 +318,7 @@ public final class PDInlineImage implements PDImage
             }
 
             // TODO handling of abbreviated names belongs here, rather than in other classes
-            Filter filter = FilterFactory.INSTANCE.getFilter(filters.get(i));
+            final Filter filter = FilterFactory.INSTANCE.getFilter(filters.get(i));
             out.reset();
             filter.decode(in, out, parameters, i);
             in = new ByteArrayInputStream(out.toByteArray());
@@ -347,7 +347,7 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
-    public BufferedImage getImage(Rectangle region, int subsampling) throws IOException
+    public BufferedImage getImage(final Rectangle region, final int subsampling) throws IOException
     {
         return SampledImageReader.getRGBImage(this, region, subsampling, null);
     }
@@ -365,7 +365,7 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
-    public BufferedImage getStencilImage(Paint paint) throws IOException
+    public BufferedImage getStencilImage(final Paint paint) throws IOException
     {
         if (!isStencil())
         {
@@ -382,7 +382,7 @@ public final class PDInlineImage implements PDImage
     @Override
     public String getSuffix()
     {
-        List<String> filters = getFilters();
+        final List<String> filters = getFilters();
 
         if (filters == null || filters.isEmpty())
         {

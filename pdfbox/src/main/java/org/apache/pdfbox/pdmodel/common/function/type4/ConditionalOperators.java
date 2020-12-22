@@ -34,11 +34,11 @@ class ConditionalOperators
     static class If implements Operator
     {
         @Override
-        public void execute(ExecutionContext context)
+        public void execute(final ExecutionContext context)
         {
-            Stack<Object> stack = context.getStack();
-            InstructionSequence proc = (InstructionSequence)stack.pop();
-            Boolean condition = (Boolean)stack.pop();
+            final Stack<Object> stack = context.getStack();
+            final InstructionSequence proc = (InstructionSequence)stack.pop();
+            final Boolean condition = (Boolean)stack.pop();
             if (condition)
             {
                 proc.execute(context);
@@ -51,12 +51,12 @@ class ConditionalOperators
     static class IfElse implements Operator
     {
         @Override
-        public void execute(ExecutionContext context)
+        public void execute(final ExecutionContext context)
         {
-            Stack<Object> stack = context.getStack();
-            InstructionSequence proc2 = (InstructionSequence)stack.pop();
-            InstructionSequence proc1 = (InstructionSequence)stack.pop();
-            Boolean condition = (Boolean)stack.pop();
+            final Stack<Object> stack = context.getStack();
+            final InstructionSequence proc2 = (InstructionSequence)stack.pop();
+            final InstructionSequence proc1 = (InstructionSequence)stack.pop();
+            final Boolean condition = (Boolean)stack.pop();
             if (condition)
             {
                 proc1.execute(context);

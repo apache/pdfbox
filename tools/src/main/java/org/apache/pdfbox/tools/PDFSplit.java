@@ -53,13 +53,13 @@ public final class PDFSplit implements Callable<Integer>
     private String password;
 
     @Option(names = "-split", description = "split after this many pages (default 1, if startPage and endPage are unset).")    
-    private int split = -1;
+    private final int split = -1;
 
     @Option(names = "-startPage", description = "start page.")    
-    private int startPage = -1;
+    private final int startPage = -1;
 
     @Option(names = "-endPage", description = "end page.")    
-    private int endPage = -1;
+    private final int endPage = -1;
 
     @Option(names = "-outputPrefix", description = "the filename prefix for split files.")    
     private String outputPrefix;
@@ -72,18 +72,18 @@ public final class PDFSplit implements Callable<Integer>
      *
      * @param args Command line arguments, should be one and a reference to a file.
      */
-    public static void main( String[] args )
+    public static void main(final String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new PDFSplit()).execute(args);
+        final int exitCode = new CommandLine(new PDFSplit()).execute(args);
         System.exit(exitCode);
     }
 
     public Integer call()
     {
-        Splitter splitter = new Splitter();
+        final Splitter splitter = new Splitter();
 
         if (outputPrefix == null)
         {
@@ -94,7 +94,7 @@ public final class PDFSplit implements Callable<Integer>
 
         try (PDDocument document = Loader.loadPDF(infile, password))
         {
-            int numberOfPages = document.getNumberOfPages();
+            final int numberOfPages = document.getNumberOfPages();
             boolean startEndPageSet = false;
             if (startPage != -1)
             {
@@ -135,7 +135,7 @@ public final class PDFSplit implements Callable<Integer>
                 }
             }
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             SYSERR.println( "Error splitting document: " + ioe.getMessage());
             return 4;
@@ -144,7 +144,7 @@ public final class PDFSplit implements Callable<Integer>
         {
             for( int i=0; documents != null && i<documents.size(); i++ )
             {
-                PDDocument doc = documents.get(i);
+                final PDDocument doc = documents.get(i);
                 IOUtils.closeQuietly(doc);
             }
         }

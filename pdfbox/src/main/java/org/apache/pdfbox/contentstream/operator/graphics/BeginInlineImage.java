@@ -33,13 +33,13 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 public final class BeginInlineImage extends GraphicsOperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (operator.getImageData() == null || operator.getImageData().length == 0)
         {
             return;
         }
-        PDImage image = new PDInlineImage(operator.getImageParameters(),
+        final PDImage image = new PDInlineImage(operator.getImageParameters(),
                                           operator.getImageData(),
                                           context.getResources());
         context.drawImage(image);

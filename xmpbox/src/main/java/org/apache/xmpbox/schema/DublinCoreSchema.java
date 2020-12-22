@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.schema;
 
@@ -95,7 +95,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param metadata
      *            The metadata to attach this schema
      */
-    public DublinCoreSchema(XMPMetadata metadata)
+    public DublinCoreSchema(final XMPMetadata metadata)
     {
         super(metadata);
     }
@@ -108,7 +108,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param ownPrefix
      *            The prefix to assign
      */
-    public DublinCoreSchema(XMPMetadata metadata, String ownPrefix)
+    public DublinCoreSchema(final XMPMetadata metadata, final String ownPrefix)
     {
         super(metadata, ownPrefix);
     }
@@ -119,12 +119,12 @@ public class DublinCoreSchema extends XMPSchema
      * @param properName
      *            Value to set
      */
-    public void addContributor(String properName)
+    public void addContributor(final String properName)
     {
         addQualifiedBagValue(CONTRIBUTOR, properName);
     }
 
-    public void removeContributor(String properName)
+    public void removeContributor(final String properName)
     {
         removeUnqualifiedBagValue(CONTRIBUTOR, properName);
     }
@@ -135,7 +135,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param text
      *            Value to set
      */
-    public void setCoverage(String text)
+    public void setCoverage(final String text)
     {
         addProperty(createTextType(COVERAGE, text));
     }
@@ -146,7 +146,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param text
      *            Property to set
      */
-    public void setCoverageProperty(TextType text)
+    public void setCoverageProperty(final TextType text)
     {
         addProperty(text);
     }
@@ -156,12 +156,12 @@ public class DublinCoreSchema extends XMPSchema
      *
      * @param properName Value to add
      */
-    public void addCreator(String properName)
+    public void addCreator(final String properName)
     {
         addUnqualifiedSequenceValue(CREATOR, properName);
     }
 
-    public void removeCreator(String name)
+    public void removeCreator(final String name)
     {
         removeUnqualifiedSequenceValue(CREATOR, name);
     }
@@ -172,12 +172,12 @@ public class DublinCoreSchema extends XMPSchema
      * @param date
      *            Value to add
      */
-    public void addDate(Calendar date)
+    public void addDate(final Calendar date)
     {
         addUnqualifiedSequenceDateValue(DATE, date);
     }
 
-    public void removeDate(Calendar date)
+    public void removeDate(final Calendar date)
     {
         removeUnqualifiedSequenceDateValue(DATE, date);
     }
@@ -190,7 +190,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param value
      *            Value to add
      */
-    public void addDescription(String lang, String value)
+    public void addDescription(final String lang, final String value)
     {
         setUnqualifiedLanguagePropertyValue(DESCRIPTION, lang, value);
     }
@@ -201,7 +201,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param value
      *            The description of this resource.
      */
-    public void setDescription(String value)
+    public void setDescription(final String value)
     {
         addDescription(null, value);
     }
@@ -212,7 +212,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param mimeType
      *            Value to set
      */
-    public void setFormat(String mimeType)
+    public void setFormat(final String mimeType)
     {
         addProperty(createTextType(FORMAT, mimeType));
     }
@@ -223,7 +223,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param text
      *            Value to set
      */
-    public void setIdentifier(String text)
+    public void setIdentifier(final String text)
     {
         addProperty(createTextType(IDENTIFIER, text));
     }
@@ -234,7 +234,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param text
      *            Property to set
      */
-    public void setIdentifierProperty(TextType text)
+    public void setIdentifierProperty(final TextType text)
     {
         addProperty(text);
     }
@@ -245,12 +245,12 @@ public class DublinCoreSchema extends XMPSchema
      * @param locale
      *            Value to set
      */
-    public void addLanguage(String locale)
+    public void addLanguage(final String locale)
     {
         addQualifiedBagValue(LANGUAGE, locale);
     }
 
-    public void removeLanguage(String locale)
+    public void removeLanguage(final String locale)
     {
         removeUnqualifiedBagValue(LANGUAGE, locale);
     }
@@ -261,12 +261,12 @@ public class DublinCoreSchema extends XMPSchema
      * @param properName
      *            Value to add
      */
-    public void addPublisher(String properName)
+    public void addPublisher(final String properName)
     {
         addQualifiedBagValue(PUBLISHER, properName);
     }
 
-    public void removePublisher(String name)
+    public void removePublisher(final String name)
     {
         removeUnqualifiedBagValue(PUBLISHER, name);
     }
@@ -277,12 +277,12 @@ public class DublinCoreSchema extends XMPSchema
      * @param text
      *            Value to set
      */
-    public void addRelation(String text)
+    public void addRelation(final String text)
     {
         addQualifiedBagValue(RELATION, text);
     }
 
-    public void removeRelation(String text)
+    public void removeRelation(final String text)
     {
         removeUnqualifiedBagValue(RELATION, text);
     }
@@ -295,7 +295,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param value
      *            Value to set
      */
-    public void addRights(String lang, String value)
+    public void addRights(final String lang, final String value)
     {
         setUnqualifiedLanguagePropertyValue(RIGHTS, lang, value);
     }
@@ -306,7 +306,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param text
      *            Value to set
      */
-    public void setSource(String text)
+    public void setSource(final String text)
     {
         addProperty(createTextType(SOURCE, text));
     }
@@ -317,7 +317,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param text
      *            Property to set
      */
-    public void setSourceProperty(TextType text)
+    public void setSourceProperty(final TextType text)
     {
         addProperty(text);
     }
@@ -328,7 +328,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param text
      *            Property to set
      */
-    public void setFormatProperty(MIMEType text)
+    public void setFormatProperty(final MIMEType text)
     {
         addProperty(text);
     }
@@ -339,12 +339,12 @@ public class DublinCoreSchema extends XMPSchema
      * @param text
      *            Value to add
      */
-    public void addSubject(String text)
+    public void addSubject(final String text)
     {
         addQualifiedBagValue(SUBJECT, text);
     }
 
-    public void removeSubject(String text)
+    public void removeSubject(final String text)
     {
         removeUnqualifiedBagValue(SUBJECT, text);
     }
@@ -357,7 +357,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param value
      *            Value to set
      */
-    public void setTitle(String lang, String value)
+    public void setTitle(final String lang, final String value)
     {
         setUnqualifiedLanguagePropertyValue(TITLE, lang, value);
     }
@@ -367,7 +367,7 @@ public class DublinCoreSchema extends XMPSchema
      * 
      * @param value Value to set
      */
-    public void setTitle(String value)
+    public void setTitle(final String value)
     {
         setTitle(null, value);
     }
@@ -380,7 +380,7 @@ public class DublinCoreSchema extends XMPSchema
      * @see DublinCoreSchema#setTitle(String)
      * 
      */
-    public void addTitle(String lang, String value)
+    public void addTitle(final String lang, final String value)
     {
         setTitle(lang, value);
     }
@@ -391,7 +391,7 @@ public class DublinCoreSchema extends XMPSchema
      * @param type
      *            Value to set
      */
-    public void addType(String type)
+    public void addType(final String type)
     {
         addQualifiedBagValue(TYPE, type);
     }
@@ -434,7 +434,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public String getCoverage()
     {
-        TextType tt = (TextType) getProperty(COVERAGE);
+        final TextType tt = (TextType) getProperty(COVERAGE);
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -508,7 +508,7 @@ public class DublinCoreSchema extends XMPSchema
      * @throws BadFieldValueException BadFieldValueException If the description property is not a
      * multi-lingual property.
      */
-    public String getDescription(String lang) throws BadFieldValueException
+    public String getDescription(final String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(DESCRIPTION, lang);
     }
@@ -541,7 +541,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public String getFormat()
     {
-        TextType tt = (TextType) getProperty(FORMAT);
+        final TextType tt = (TextType) getProperty(FORMAT);
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -562,7 +562,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public String getIdentifier()
     {
-        TextType tt = (TextType) getProperty(IDENTIFIER);
+        final TextType tt = (TextType) getProperty(IDENTIFIER);
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -654,7 +654,7 @@ public class DublinCoreSchema extends XMPSchema
      * @return The rights value for specified language or null if it doesn't exist.
      * @throws BadFieldValueException If the Rights property is not a multi-lingual property.
      */
-    public String getRights(String lang) throws BadFieldValueException
+    public String getRights(final String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(RIGHTS, lang);
     }
@@ -688,7 +688,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public String getSource()
     {
-        TextType tt = (TextType) getProperty(SOURCE);
+        final TextType tt = (TextType) getProperty(SOURCE);
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -740,7 +740,7 @@ public class DublinCoreSchema extends XMPSchema
      * @return the title value for specified language
      * @throws BadFieldValueException If the Title property is not a multi-lingual property.
      */
-    public String getTitle(String lang) throws BadFieldValueException
+    public String getTitle(final String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(TITLE, lang);
     }
@@ -776,7 +776,7 @@ public class DublinCoreSchema extends XMPSchema
         return getUnqualifiedBagValueList(TYPE);
     }
 
-    public void removeType(String type)
+    public void removeType(final String type)
     {
         removeUnqualifiedBagValue(TYPE, type);
     }

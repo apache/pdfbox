@@ -47,7 +47,7 @@ public class PDCryptFilterDictionary implements COSObjectable
      * creates a new crypt filter dictionary from the low level dictionary provided.
      * @param d the low level dictionary that will be managed by the newly created object
      */
-    public PDCryptFilterDictionary(COSDictionary d)
+    public PDCryptFilterDictionary(final COSDictionary d)
     {
         cryptFilterDictionary = d;
     }
@@ -68,7 +68,7 @@ public class PDCryptFilterDictionary implements COSObjectable
      *
      * @param length The new key length.
      */
-    public void setLength(int length)
+    public void setLength(final int length)
     {
         cryptFilterDictionary.setInt(COSName.LENGTH, length);
     }
@@ -91,7 +91,7 @@ public class PDCryptFilterDictionary implements COSObjectable
      * @param cfm name of the crypt filter method.
      *
      */
-    public void setCryptFilterMethod(COSName cfm)
+    public void setCryptFilterMethod(final COSName cfm)
     {
         cryptFilterDictionary.setItem( COSName.CFM, cfm );
     }

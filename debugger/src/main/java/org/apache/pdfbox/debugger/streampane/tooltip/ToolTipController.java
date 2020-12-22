@@ -47,14 +47,14 @@ public class ToolTipController
      * Constructor.
      * @param resources PDResources instance.
      */
-    public ToolTipController(PDResources resources)
+    public ToolTipController(final PDResources resources)
     {
         this.resources = resources;
     }
 
-    static List<String> getWords(String str)
+    static List<String> getWords(final String str)
     {
-        List<String> words = new ArrayList<>();
+        final List<String> words = new ArrayList<>();
         for (String string : str.trim().split(" "))
         {
             string = string.trim();
@@ -73,20 +73,20 @@ public class ToolTipController
      * @param textComponent JTextComponent instance.
      * @return Tooltip text or null if there isn't any tooltip.
      */
-    public String getToolTip(int offset, JTextComponent textComponent)
+    public String getToolTip(final int offset, final JTextComponent textComponent)
     {
         this.textComponent = textComponent;
 
-        String word = getWord(offset);
+        final String word = getWord(offset);
         if (word == null)
         {
             return null;
         }
 
-        String rowText = getRowText(offset);
+        final String rowText = getRowText(offset);
 
-        ToolTip toolTip;
-        String colorSpaceName;
+        final ToolTip toolTip;
+        final String colorSpaceName;
         switch (word)
         {
             case OperatorName.SET_FONT_AND_SIZE:
@@ -126,7 +126,7 @@ public class ToolTipController
         return null;
     }
 
-    private String findColorSpace(int offset, String colorSpaceType)
+    private String findColorSpace(int offset, final String colorSpaceType)
     {
         try
         {
@@ -145,43 +145,43 @@ public class ToolTipController
                 }
             }
         }
-        catch (BadLocationException e)
+        catch (final BadLocationException e)
         {
             LOG.error(e, e);
         }
         return null;
     }
 
-    private boolean isColorSpace(String colorSpaceType, String rowText)
+    private boolean isColorSpace(final String colorSpaceType, final String rowText)
     {
-        List<String> words = getWords(rowText);
+        final List<String> words = getWords(rowText);
         return words.size() == 2 && words.get(1).equals(colorSpaceType);
     }
 
-    private String getWord(int offset)
+    private String getWord(final int offset)
     {
         try
         {
-            int start = Utilities.getWordStart(textComponent, offset);
-            int end = Utilities.getWordEnd(textComponent, offset);
+            final int start = Utilities.getWordStart(textComponent, offset);
+            final int end = Utilities.getWordEnd(textComponent, offset);
             return textComponent.getDocument().getText(start, end - start + 1).trim();
         }
-        catch (BadLocationException e)
+        catch (final BadLocationException e)
         {
             LOG.error(e, e);
         }
         return null;
     }
 
-    private String getRowText(int offset)
+    private String getRowText(final int offset)
     {
         try
         {
-            int rowStart = Utilities.getRowStart(textComponent, offset);
-            int rowEnd = Utilities.getRowEnd(textComponent, offset);
+            final int rowStart = Utilities.getRowStart(textComponent, offset);
+            final int rowEnd = Utilities.getRowEnd(textComponent, offset);
             return textComponent.getDocument().getText(rowStart, rowEnd - rowStart + 1);
         }
-        catch (BadLocationException e)
+        catch (final BadLocationException e)
         {
             LOG.error(e, e);
         }

@@ -58,7 +58,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public static final String FRACTIONAL_DISPLAY_TRUNCATE = "T";
 
-    private COSDictionary numberFormatDictionary;
+    private final COSDictionary numberFormatDictionary;
 
     /**
      * Constructor.
@@ -74,7 +74,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * 
      * @param dictionary the corresponding dictionary
      */
-    public PDNumberFormatDictionary(COSDictionary dictionary)
+    public PDNumberFormatDictionary(final COSDictionary dictionary)
     {
         this.numberFormatDictionary = dictionary;
     }
@@ -116,7 +116,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * 
      * @param units the label for the units
      */
-    public void setUnits(String units)
+    public void setUnits(final String units)
     {
         this.getCOSObject().setString("U", units);
     }
@@ -136,7 +136,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * 
      * @param conversionFactor the conversion factor
      */
-    public void setConversionFactor(float conversionFactor)
+    public void setConversionFactor(final float conversionFactor)
     {
         this.getCOSObject().setFloat("C", conversionFactor);
     }
@@ -156,7 +156,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * Allowed values are "D", "F", "R" and "T"
      * @param fractionalDisplay the manner to display a fractional value
      */
-    public void setFractionalDisplay(String fractionalDisplay)
+    public void setFractionalDisplay(final String fractionalDisplay)
     {
         if ((fractionalDisplay == null)
             || FRACTIONAL_DISPLAY_DECIMAL.equals(fractionalDisplay)
@@ -187,7 +187,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * 
      * @param denominator the precision or denominator
      */
-    public void setDenominator(int denominator)
+    public void setDenominator(final int denominator)
     {
         this.getCOSObject().setInt("D", denominator);
     }
@@ -207,7 +207,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * The denominator may not be reduced/truncated if true
      * @param fd fd
      */
-    public void setFD(boolean fd)
+    public void setFD(final boolean fd)
     {
         this.getCOSObject().setBoolean("FD", fd);
     }
@@ -227,7 +227,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * 
      * @param thousandsSeparator thousands separator
      */
-    public void setThousandsSeparator(String thousandsSeparator)
+    public void setThousandsSeparator(final String thousandsSeparator)
     {
         this.getCOSObject().setString("RT", thousandsSeparator);
     }
@@ -247,7 +247,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * 
      * @param decimalSeparator decimal separator
      */
-    public void setDecimalSeparator(String decimalSeparator)
+    public void setDecimalSeparator(final String decimalSeparator)
     {
         this.getCOSObject().setString("RD", decimalSeparator);
     }
@@ -265,7 +265,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * This will set the text to be concatenated to the left of the label specified by U.
      * @param labelPrefixString label prefix
      */
-    public void setLabelPrefixString(String labelPrefixString)
+    public void setLabelPrefixString(final String labelPrefixString)
     {
         this.getCOSObject().setString("PS", labelPrefixString);
     }
@@ -285,7 +285,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * 
      * @param labelSuffixString label suffix
      */
-    public void setLabelSuffixString(String labelSuffixString)
+    public void setLabelSuffixString(final String labelSuffixString)
     {
         this.getCOSObject().setString("SS", labelSuffixString);
     }
@@ -306,7 +306,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      * 
      * @param labelPositionToValue label position 
      */
-    public void setLabelPositionToValue(String labelPositionToValue)
+    public void setLabelPositionToValue(final String labelPositionToValue)
     {
         if ((labelPositionToValue == null)
             || LABEL_PREFIX_TO_VALUE.equals(labelPositionToValue)

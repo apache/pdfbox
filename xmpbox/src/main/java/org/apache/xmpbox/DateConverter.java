@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox;
 
@@ -112,7 +112,7 @@ public final class DateConverter
                 {
                     throw new IOException("Error: Invalid date format '" + date + "'");
                 }
-                int year = Integer.parseInt(date.substring(0, 4));
+                final int year = Integer.parseInt(date.substring(0, 4));
                 if (date.length() >= 6)
                 {
                     month = Integer.parseInt(date.substring(4, 6));
@@ -146,7 +146,7 @@ public final class DateConverter
 
                 if (date.length() >= (timeZonePos + 1))
                 {
-                    char sign = date.charAt(timeZonePos);
+                    final char sign = date.charAt(timeZonePos);
                     if (sign == 'Z')
                     {
                         zone = new SimpleTimeZone(0, "Unknown");
@@ -197,7 +197,7 @@ public final class DateConverter
                 retval.clear();
                 retval.set(year, month - 1, day, hour, minute, second);
             }
-            catch (NumberFormatException e)
+            catch (final NumberFormatException e)
             {
 
                 // remove the arbitrary : in the timezone. SimpleDateFormat
@@ -213,11 +213,11 @@ public final class DateConverter
                 {
                     try
                     {
-                        Date utilDate = POTENTIAL_FORMATS[i].parse(date);
+                        final Date utilDate = POTENTIAL_FORMATS[i].parse(date);
                         retval = new GregorianCalendar();
                         retval.setTime(utilDate);
                     }
-                    catch (ParseException pe)
+                    catch (final ParseException pe)
                     {
                         // ignore and move to next potential format
                     }
@@ -239,7 +239,7 @@ public final class DateConverter
      *
      * @param tz the time zone to update.
      */
-    private static void updateZoneId(TimeZone tz)
+    private static void updateZoneId(final TimeZone tz)
     {
         int offset = tz.getRawOffset();
         char pm = '+';
@@ -248,8 +248,8 @@ public final class DateConverter
             pm = '-';
             offset = -offset;
         }
-        int hh = offset / 3600000;
-        int mm = offset % 3600000 / 60000;
+        final int hh = offset / 3600000;
+        final int mm = offset % 3600000 / 60000;
         if (offset == 0)
         {
             tz.setID("GMT");
@@ -275,7 +275,7 @@ public final class DateConverter
      *            The date to convert.
      * @return The date represented as an ISO 8601 string.
      */
-    public static String toISO8601(Calendar cal)
+    public static String toISO8601(final Calendar cal)
     {
         return toISO8601(cal, false);
     }
@@ -287,9 +287,9 @@ public final class DateConverter
      * @param printMillis Print Milliseconds.
      * @return The date represented as an ISO 8601 string.
      */
-    public static String toISO8601(Calendar cal, boolean printMillis)
+    public static String toISO8601(final Calendar cal, final boolean printMillis)
     {
-        StringBuilder retval = new StringBuilder();
+        final StringBuilder retval = new StringBuilder();
 
         retval.append(cal.get(Calendar.YEAR));
         retval.append("-");
@@ -320,8 +320,8 @@ public final class DateConverter
         }
         timeZone = Math.abs(timeZone);
         // milliseconds/1000 = seconds; seconds / 60 = minutes; minutes/60 = hours
-        int hours = timeZone / 1000 / 60 / 60;
-        int minutes = (timeZone - (hours * 1000 * 60 * 60)) / 1000 / 60;
+        final int hours = timeZone / 1000 / 60 / 60;
+        final int minutes = (timeZone - (hours * 1000 * 60 * 60)) / 1000 / 60;
         if (hours < 10)
         {
             retval.append("0");
@@ -342,13 +342,13 @@ public final class DateConverter
      * @param dateString
      * @return the Calendar instance.
      */
-    private static Calendar fromISO8601(String dateString)
+    private static Calendar fromISO8601(final String dateString)
     {
         // Pattern to test for a time zone string
-        Pattern timeZonePattern = Pattern.compile(
+        final Pattern timeZonePattern = Pattern.compile(
                     "[\\d-]*T?[\\d-\\.]([A-Z]{1,4})$|(.*\\d*)([A-Z][a-z]+\\/[A-Z][a-z]+)$"
                 );
-        Matcher timeZoneMatcher = timeZonePattern.matcher(dateString);
+        final Matcher timeZoneMatcher = timeZonePattern.matcher(dateString);
         
         String timeZoneString = null;
         
@@ -366,29 +366,29 @@ public final class DateConverter
         if (timeZoneString != null)
         {
             // can't use parseDateTime immediately, first do handling for time that has no seconds
-            int teeIndex = dateString.indexOf('T');
-            int tzIndex = dateString.indexOf(timeZoneString);
+            final int teeIndex = dateString.indexOf('T');
+            final int tzIndex = dateString.indexOf(timeZoneString);
             String toParse = dateString.substring(0, tzIndex);
             if (tzIndex - teeIndex == 6)
             {
                 toParse = dateString.substring(0, tzIndex) + ":00";
             }
-            Calendar cal = javax.xml.bind.DatatypeConverter.parseDateTime(toParse);
+            final Calendar cal = javax.xml.bind.DatatypeConverter.parseDateTime(toParse);
 
-            TimeZone z = TimeZone.getTimeZone(timeZoneString);
+            final TimeZone z = TimeZone.getTimeZone(timeZoneString);
             cal.setTimeZone(z);            
             return cal;
         }
         else
         {
             // can't use parseDateTime immediately, first do handling for time that has no seconds
-            int teeIndex = dateString.indexOf('T');
+            final int teeIndex = dateString.indexOf('T');
             if (teeIndex == -1)
             {
                 return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
             }
             int plusIndex = dateString.indexOf('+', teeIndex + 1);
-            int minusIndex = dateString.indexOf('-', teeIndex + 1);
+            final int minusIndex = dateString.indexOf('-', teeIndex + 1);
             if (plusIndex == -1 && minusIndex == -1)
             {
                 return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
@@ -396,7 +396,7 @@ public final class DateConverter
             plusIndex = Math.max(plusIndex, minusIndex);
             if (plusIndex - teeIndex == 6)
             {
-                String toParse = dateString.substring(0, plusIndex) + ":00" + dateString.substring(plusIndex);
+                final String toParse = dateString.substring(0, plusIndex) + ":00" + dateString.substring(plusIndex);
                 return javax.xml.bind.DatatypeConverter.parseDateTime(toParse);
             }
             return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);

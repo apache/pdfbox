@@ -28,7 +28,7 @@ public class KernPair
     private final float x;
     private final float y;
 
-    public KernPair(String firstKernCharacter, String secondKernCharacter, float x, float y)
+    public KernPair(final String firstKernCharacter, final String secondKernCharacter, final float x, final float y)
     {
         this.firstKernCharacter = firstKernCharacter;
         this.secondKernCharacter = secondKernCharacter;

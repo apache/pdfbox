@@ -60,7 +60,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param dic The storage dictionary.
      */
-    public PDOutlineItem( COSDictionary dic )
+    public PDOutlineItem(final COSDictionary dic )
     {
         super( dic );
     }
@@ -72,12 +72,12 @@ public final class PDOutlineItem extends PDOutlineNode
      * @throws IllegalArgumentException if the given sibling node is part of a list 
      * (i.e. if it has a previous or a next sibling)
      */
-    public void insertSiblingAfter(PDOutlineItem newSibling)
+    public void insertSiblingAfter(final PDOutlineItem newSibling)
     {
         requireSingleNode(newSibling);
-        PDOutlineNode parent = getParent();
+        final PDOutlineNode parent = getParent();
         newSibling.setParent(parent);
-        PDOutlineItem next = getNextSibling();
+        final PDOutlineItem next = getNextSibling();
         setNextSibling(newSibling);
         newSibling.setPreviousSibling(this);
         if (next != null)
@@ -99,12 +99,12 @@ public final class PDOutlineItem extends PDOutlineNode
      * @throws IllegalArgumentException if the given sibling node is part of a list 
      * (i.e. if it has a previous or a next sibling)
      */
-    public void insertSiblingBefore(PDOutlineItem newSibling)
+    public void insertSiblingBefore(final PDOutlineItem newSibling)
     {
         requireSingleNode(newSibling);
-        PDOutlineNode parent = getParent();
+        final PDOutlineNode parent = getParent();
         newSibling.setParent(parent);
-        PDOutlineItem previous = getPreviousSibling();
+        final PDOutlineItem previous = getPreviousSibling();
         setPreviousSibling(newSibling);
         newSibling.setNextSibling(this);
         if (previous != null)
@@ -134,7 +134,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param outlineNode The new previous sibling.
      */
-    void setPreviousSibling(PDOutlineNode outlineNode)
+    void setPreviousSibling(final PDOutlineNode outlineNode)
     {
         getCOSObject().setItem(COSName.PREV, outlineNode);
     }
@@ -152,7 +152,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param outlineNode The new next sibling.
      */
-    void setNextSibling(PDOutlineNode outlineNode)
+    void setNextSibling(final PDOutlineNode outlineNode)
     {
         getCOSObject().setItem(COSName.NEXT, outlineNode);
     }
@@ -172,7 +172,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param title The new title for this node.
      */
-    public void setTitle(String title)
+    public void setTitle(final String title)
     {
         getCOSObject().setString(COSName.TITLE, title);
     }
@@ -193,7 +193,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param dest The new page destination for this node.
      */
-    public void setDestination(PDDestination dest)
+    public void setDestination(final PDDestination dest)
     {
         getCOSObject().setItem(COSName.DEST, dest);
     }
@@ -203,7 +203,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param page The page to refer to.
      */
-    public void setDestination(PDPage page)
+    public void setDestination(final PDPage page)
     {
         PDPageXYZDestination dest = null;
         if( page != null )
@@ -225,12 +225,12 @@ public final class PDOutlineItem extends PDOutlineNode
      * anything.
      * @throws IOException If there is an error when trying to find the page.
      */
-    public PDPage findDestinationPage(PDDocument doc) throws IOException
+    public PDPage findDestinationPage(final PDDocument doc) throws IOException
     {
         PDDestination dest = getDestination();
         if (dest == null)
         {
-            PDAction outlineAction = getAction();
+            final PDAction outlineAction = getAction();
             if (outlineAction instanceof PDActionGoTo)
             {
                 dest = ((PDActionGoTo) outlineAction).getDestination();
@@ -264,7 +264,7 @@ public final class PDOutlineItem extends PDOutlineNode
         {
             // Malformed PDF: local destinations must have a page object,
             // not a page number, these are meant for remote destinations.
-            int pageNumber = pageDestination.getPageNumber();
+            final int pageNumber = pageDestination.getPageNumber();
             if (pageNumber != -1)
             {
                 page = doc.getPage(pageNumber);
@@ -288,7 +288,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param action The new action for this node.
      */
-    public void setAction( PDAction action )
+    public void setAction(final PDAction action )
     {
         getCOSObject().setItem(COSName.A, action);
     }
@@ -301,7 +301,7 @@ public final class PDOutlineItem extends PDOutlineNode
     public PDStructureElement getStructureElement()
     {
         PDStructureElement se = null;
-        COSDictionary dic = (COSDictionary) getCOSObject().getDictionaryObject(COSName.SE);
+        final COSDictionary dic = (COSDictionary) getCOSObject().getDictionaryObject(COSName.SE);
         if( dic != null )
         {
             se = new PDStructureElement( dic );
@@ -314,7 +314,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param structureElement The new structure element for this node.
      */
-    public void setStructureElement( PDStructureElement structureElement )
+    public void setStructureElement(final PDStructureElement structureElement )
     {
         getCOSObject().setItem(COSName.SE, structureElement);
     }
@@ -342,7 +342,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param textColor The text color for this node.
      */
-    public void setTextColor( PDColor textColor )
+    public void setTextColor(final PDColor textColor )
     {
         getCOSObject().setItem( COSName.C, textColor.toCOSArray() );
     }
@@ -352,9 +352,9 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param textColor The text color for this node.
      */
-    public void setTextColor( Color textColor )
+    public void setTextColor(final Color textColor )
     {
-        COSArray array = new COSArray();
+        final COSArray array = new COSArray();
         array.add( new COSFloat( textColor.getRed()/255f));
         array.add( new COSFloat( textColor.getGreen()/255f));
         array.add( new COSFloat( textColor.getBlue()/255f));
@@ -376,7 +376,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param italic The new italic flag.
      */
-    public void setItalic( boolean italic )
+    public void setItalic(final boolean italic )
     {
         getCOSObject().setFlag( COSName.F, ITALIC_FLAG, italic );
     }
@@ -396,7 +396,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param bold The new bold flag.
      */
-    public void setBold( boolean bold )
+    public void setBold(final boolean bold )
     {
         getCOSObject().setFlag( COSName.F, BOLD_FLAG, bold );
     }

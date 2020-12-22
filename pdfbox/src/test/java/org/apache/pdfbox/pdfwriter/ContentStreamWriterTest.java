@@ -81,28 +81,28 @@ class ContentStreamWriterTest
     @Test
     void testPDFBox4750() throws IOException
     {
-        String filename = "PDFBOX-4750.pdf";
-        File file = new File("target/pdfs", filename);
+        final String filename = "PDFBOX-4750.pdf";
+        final File file = new File("target/pdfs", filename);
         try (PDDocument doc = Loader.loadPDF(file))
         {
-            PDFRenderer r = new PDFRenderer(doc);
+            final PDFRenderer r = new PDFRenderer(doc);
             for (int i = 0; i < doc.getNumberOfPages(); ++i)
             {
-                BufferedImage bim1 = r.renderImageWithDPI(i, 96);
+                final BufferedImage bim1 = r.renderImageWithDPI(i, 96);
                 ImageIO.write(bim1, "png", new File(testDirIn, filename + "-" + (i + 1) + ".png"));
-                PDPage page = doc.getPage(i);
-                PDStream newContent = new PDStream(doc);
+                final PDPage page = doc.getPage(i);
+                final PDStream newContent = new PDStream(doc);
                 try (OutputStream os = newContent.createOutputStream(COSName.FLATE_DECODE))
                 {
-                    PDFStreamParser parser = new PDFStreamParser(page);
-                    ContentStreamWriter tokenWriter = new ContentStreamWriter(os);
+                    final PDFStreamParser parser = new PDFStreamParser(page);
+                    final ContentStreamWriter tokenWriter = new ContentStreamWriter(os);
                     tokenWriter.writeTokens(parser.parse());
                 }
                 page.setContents(newContent);
             }
             doc.save(new File(testDirIn, filename));
         }
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        final TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
         if (!testPDFToImage.doTestFile(new File(testDirIn, filename), testDirIn.getAbsolutePath(), testDirOut.getAbsolutePath()))
         {
             fail("Rendering failed or is not identical, see in " + testDirOut);

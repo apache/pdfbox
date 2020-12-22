@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.type;
 
@@ -52,7 +52,7 @@ public class DateType extends AbstractSimpleProperty
      * @param value
      *            The value to set for this property
      */
-    public DateType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    public DateType(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String propertyName, final Object value)
     {
         super(metadata, namespaceURI, prefix, propertyName, value);
     }
@@ -62,7 +62,7 @@ public class DateType extends AbstractSimpleProperty
      *
      * @param value the new Calendar element value
      */
-    private void setValueFromCalendar(Calendar value)
+    private void setValueFromCalendar(final Calendar value)
     {
         dateValue = value;
     }
@@ -85,7 +85,7 @@ public class DateType extends AbstractSimpleProperty
      *            Object value to check
      * @return True if types are compatibles
      */
-    private boolean isGoodType(Object value)
+    private boolean isGoodType(final Object value)
     {
         if (value instanceof Calendar)
         {
@@ -98,7 +98,7 @@ public class DateType extends AbstractSimpleProperty
                 DateConverter.toCalendar((String) value);
                 return true;
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 return false;
             }
@@ -113,7 +113,7 @@ public class DateType extends AbstractSimpleProperty
      *            The value to set
      */
     @Override
-    public void setValue(Object value)
+    public void setValue(final Object value)
     {
         if (!isGoodType(value))
         {
@@ -155,13 +155,13 @@ public class DateType extends AbstractSimpleProperty
      * @param value
      *            The String value
      */
-    private void setValueFromString(String value)
+    private void setValueFromString(final String value)
     {
         try
         {
             setValueFromCalendar(DateConverter.toCalendar(value));
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             // SHOULD NEVER HAPPEN
             // STRING HAS BEEN CHECKED BEFORE

@@ -47,7 +47,7 @@ public class PDAnnotationHighlight extends PDAnnotationTextMarkup
      *
      * @param dict The annotations dictionary.
      */
-    public PDAnnotationHighlight(COSDictionary dict)
+    public PDAnnotationHighlight(final COSDictionary dict)
     {
         super(dict);
     }
@@ -57,7 +57,7 @@ public class PDAnnotationHighlight extends PDAnnotationTextMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -69,11 +69,11 @@ public class PDAnnotationHighlight extends PDAnnotationTextMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDHighlightAppearanceHandler appearanceHandler = new PDHighlightAppearanceHandler(this, document);
+            final PDHighlightAppearanceHandler appearanceHandler = new PDHighlightAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

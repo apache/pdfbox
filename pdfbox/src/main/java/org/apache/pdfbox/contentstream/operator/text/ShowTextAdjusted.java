@@ -33,13 +33,13 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class ShowTextAdjusted extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.isEmpty())
         {
             return;
         }
-        COSBase base = arguments.get(0);
+        final COSBase base = arguments.get(0);
         if (!(base instanceof COSArray))
         {
             return;
@@ -49,7 +49,7 @@ public class ShowTextAdjusted extends OperatorProcessor
             // ignore: outside of BT...ET
             return;
         }
-        COSArray array = (COSArray) base;
+        final COSArray array = (COSArray) base;
         context.showTextStrings(array);
     }
 

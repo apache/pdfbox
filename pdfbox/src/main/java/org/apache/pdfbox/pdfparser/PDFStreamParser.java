@@ -55,7 +55,7 @@ public class PDFStreamParser extends BaseParser
      * @param pdContentstream The content stream to parse.
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFStreamParser(PDContentStream pdContentstream) throws IOException
+    public PDFStreamParser(final PDContentStream pdContentstream) throws IOException
     {
         super(pdContentstream.getContentsForRandomAccess());
     }
@@ -66,7 +66,7 @@ public class PDFStreamParser extends BaseParser
      * @param bytes the bytes to parse.
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFStreamParser(byte[] bytes) throws IOException
+    public PDFStreamParser(final byte[] bytes) throws IOException
     {
         super(new RandomAccessReadBuffer(bytes));
     }
@@ -79,7 +79,7 @@ public class PDFStreamParser extends BaseParser
      */
     public List<Object> parse() throws IOException
     {
-        List<Object> streamObjects = new ArrayList<>(100);
+        final List<Object> streamObjects = new ArrayList<>(100);
         Object token;
         while( (token = parseNextToken()) != null )
         {
@@ -135,7 +135,7 @@ public class PDFStreamParser extends BaseParser
                 return parseCOSName();
             case 'n':   
                 // null
-                String nullString = readString();
+                final String nullString = readString();
                 if( nullString.equals( "null") )
                 {
                     return COSNull.NULL;
@@ -146,7 +146,7 @@ public class PDFStreamParser extends BaseParser
                 }
             case 't':
             case 'f':
-                String next = readString();
+                final String next = readString();
                 if( next.equals( "true" ) )
                 {
                     return COSBoolean.TRUE;
@@ -160,7 +160,7 @@ public class PDFStreamParser extends BaseParser
                     return Operator.getOperator(next);
                 }
             case 'R':
-                String line = readString();
+                final String line = readString();
                 if( line.equals( "R" ) )
                 {
                     return new COSObject(null);
@@ -184,7 +184,7 @@ public class PDFStreamParser extends BaseParser
             case '.':
                 /* We will be filling buf with the rest of the number.  Only
                  * allow 1 "." and "-" and "+" at start of number. */
-                StringBuilder buf = new StringBuilder();
+                final StringBuilder buf = new StringBuilder();
                 buf.append( c );
                 source.read();
                 
@@ -212,22 +212,22 @@ public class PDFStreamParser extends BaseParser
                 }
                 return COSNumber.get(buf.toString());
             case 'B':
-                String nextOperator = readString();
-                Operator beginImageOP = Operator.getOperator(nextOperator);
+                final String nextOperator = readString();
+                final Operator beginImageOP = Operator.getOperator(nextOperator);
                 if (nextOperator.equals(OperatorName.BEGIN_INLINE_IMAGE))
                 {
-                    COSDictionary imageParams = new COSDictionary();
+                    final COSDictionary imageParams = new COSDictionary();
                     beginImageOP.setImageParameters( imageParams );
                     Object nextToken = null;
                     while( (nextToken = parseNextToken()) instanceof COSName )
                     {
-                        Object value = parseNextToken();
+                        final Object value = parseNextToken();
                         imageParams.setItem( (COSName)nextToken, (COSBase)value );
                     }
                     //final token will be the image data, maybe??
                     if (nextToken instanceof Operator)
                     {
-                        Operator imageData = (Operator) nextToken;
+                        final Operator imageData = (Operator) nextToken;
                         if (imageData.getImageData() == null || imageData.getImageData().length == 0)
                         {
                             LOG.warn("empty inline image at stream offset " + source.getPosition());
@@ -238,13 +238,13 @@ public class PDFStreamParser extends BaseParser
                 return beginImageOP;
             case 'I':
                 //Special case for ID operator
-                String id = Character.toString((char) source.read()) + (char) source.read();
+                final String id = Character.toString((char) source.read()) + (char) source.read();
                 if (!id.equals(OperatorName.BEGIN_INLINE_IMAGE_DATA))
                 {
                     throw new IOException( "Error: Expected operator 'ID' actual='" + id +
                             "' at stream offset " + source.getPosition());
                 }
-                ByteArrayOutputStream imageData = new ByteArrayOutputStream();
+                final ByteArrayOutputStream imageData = new ByteArrayOutputStream();
                 if( isWhitespace() )
                 {
                     //pull off the whitespace character
@@ -267,7 +267,7 @@ public class PDFStreamParser extends BaseParser
                     currentByte = source.read();
                 }
                 // the EI operator isn't unread, as it won't be processed anyway
-                Operator beginImageDataOP = Operator
+                final Operator beginImageDataOP = Operator
                         .getOperator(OperatorName.BEGIN_INLINE_IMAGE_DATA);
                 // save the image data to the operator, so that it can be accessed later
                 beginImageDataOP.setImageData(imageData.toByteArray());
@@ -281,7 +281,7 @@ public class PDFStreamParser extends BaseParser
                 return COSNull.NULL;
             default:
                 // we must be an operator
-                String operator = readOperator();
+                final String operator = readOperator();
                 if (operator.trim().length() > 0)
                 {
                     return Operator.getOperator(operator);
@@ -333,7 +333,7 @@ public class PDFStreamParser extends BaseParser
             if (endOpIdx != -1 && startOpIdx != -1)
             {
                 // usually, the operator here is Q, sometimes EMC (PDFBOX-2376), S (PDFBOX-3784).
-                String s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
+                final String s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
                 if (!"Q".equals(s) && !"EMC".equals(s) && !"S".equals(s))
                 {
                     noBinData = false;
@@ -376,7 +376,7 @@ public class PDFStreamParser extends BaseParser
 
         //average string size is around 2 and the normal string buffer size is
         //about 16 so lets save some space.
-        StringBuilder buffer = new StringBuilder(4);
+        final StringBuilder buffer = new StringBuilder(4);
         int nextChar = source.peek();
         while(
             nextChar != -1 && // EOF
@@ -389,7 +389,7 @@ public class PDFStreamParser extends BaseParser
             (nextChar < '0' ||
              nextChar > '9' ) )
         {
-            char currentChar = (char) source.read();
+            final char currentChar = (char) source.read();
             nextChar = source.peek();
             buffer.append( currentChar );
             // Type3 Glyph description has operators with a number in the name
@@ -403,7 +403,7 @@ public class PDFStreamParser extends BaseParser
     }
     
     
-    private boolean isSpaceOrReturn( int c )
+    private boolean isSpaceOrReturn(final int c )
     {
         return c == 10 || c == 13 || c == 32;
     }

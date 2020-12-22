@@ -232,7 +232,7 @@ public class ZapfDingbatsEncoding extends Encoding
      */
     public ZapfDingbatsEncoding()
     {
-        for (Object[] encodingEntry : ZAPFDINGBATS_ENCODING_TABLE)
+        for (final Object[] encodingEntry : ZAPFDINGBATS_ENCODING_TABLE)
         {
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }

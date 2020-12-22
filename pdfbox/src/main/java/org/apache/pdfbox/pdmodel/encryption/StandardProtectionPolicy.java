@@ -49,8 +49,8 @@ public final class StandardProtectionPolicy extends ProtectionPolicy
      * @param userPassword The users's password.
      * @param permissions The access permissions given to the user.
      */
-    public StandardProtectionPolicy(String ownerPassword, String userPassword,
-                                    AccessPermission permissions)
+    public StandardProtectionPolicy(final String ownerPassword, final String userPassword,
+                                    final AccessPermission permissions)
     {
         this.ownerPassword = ownerPassword;
         this.userPassword = userPassword;
@@ -70,7 +70,7 @@ public final class StandardProtectionPolicy extends ProtectionPolicy
      * Sets the access permissions
      * @param permissions the new access permissions
      */
-    public void setPermissions(AccessPermission permissions)
+    public void setPermissions(final AccessPermission permissions)
     {
         this.permissions = permissions;
     }
@@ -88,7 +88,7 @@ public final class StandardProtectionPolicy extends ProtectionPolicy
      * Sets the owner password
      * @param ownerPassword the new owner password
      */
-    public void setOwnerPassword(String ownerPassword)
+    public void setOwnerPassword(final String ownerPassword)
     {
         this.ownerPassword = ownerPassword;
     }
@@ -106,7 +106,7 @@ public final class StandardProtectionPolicy extends ProtectionPolicy
      * Sets the user password.
      * @param userPassword the new user password
      */
-    public void setUserPassword(String userPassword)
+    public void setUserPassword(final String userPassword)
     {
         this.userPassword = userPassword;
     }

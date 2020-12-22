@@ -73,18 +73,18 @@ class TestImageIOUtils
      * @param resources
      * @throws IOException 
      */
-    void checkSaveResources(PDResources resources) throws IOException
+    void checkSaveResources(final PDResources resources) throws IOException
     {
         if (resources == null)
         {
             return;
         }
-        for (COSName name : resources.getXObjectNames())
+        for (final COSName name : resources.getXObjectNames())
         {
-            PDXObject xobject = resources.getXObject(name);
+            final PDXObject xobject = resources.getXObject(name);
             if (xobject instanceof PDImageXObject)
             {
-                PDImageXObject imageObject = (PDImageXObject) xobject;
+                final PDImageXObject imageObject = (PDImageXObject) xobject;
                 String suffix = imageObject.getSuffix();
                 if (suffix != null)
                 {
@@ -97,7 +97,7 @@ class TestImageIOUtils
                         // jbig2 usually not available
                         suffix = "PNG";
                     }
-                    boolean writeOK = ImageIOUtil.writeImage(imageObject.getImage(), suffix,
+                    final boolean writeOK = ImageIOUtil.writeImage(imageObject.getImage(), suffix,
                             new ByteArrayOutputStream());
                     assertTrue(writeOK);
                 }
@@ -116,13 +116,13 @@ class TestImageIOUtils
      * @param outDir Name of the output directory
      * @throws IOException when there is an exception
      */
-    private void doTestFile(File file, String outDir) throws IOException
+    private void doTestFile(final File file, final String outDir) throws IOException
     {
         PDDocument document = null;
         LOG.info("Preparing to convert " + file.getName());
         try
         {
-            float dpi = 36; // low DPI so that rendering is FAST
+            final float dpi = 36; // low DPI so that rendering is FAST
             document = Loader.loadPDF(file);
 
             // Save image resources of first page
@@ -195,10 +195,10 @@ class TestImageIOUtils
      * @param image the image that is to be checked
      * @throws IOException if something goes wrong
      */
-    private void checkImageFileSizeAndContent(String filename, BufferedImage image)
+    private void checkImageFileSizeAndContent(final String filename, final BufferedImage image)
             throws IOException
     {
-        BufferedImage newImage = ImageIO.read(new File(filename));
+        final BufferedImage newImage = ImageIO.read(new File(filename));
         assertNotNull(newImage, "File '" + filename + "' could not be read");
         checkNotBlank(filename, newImage);
         checkBufferedImageSize(filename, image, newImage);
@@ -221,28 +221,28 @@ class TestImageIOUtils
      * @param image the image that is to be checked
      * @throws IOException if something goes wrong
      */
-    private void checkImageFileSize(String filename, BufferedImage image)
+    private void checkImageFileSize(final String filename, final BufferedImage image)
             throws IOException
     {
-        BufferedImage newImage = ImageIO.read(new File(filename));
+        final BufferedImage newImage = ImageIO.read(new File(filename));
         assertNotNull(newImage, "File '" + filename + "' could not be read");
         checkNotBlank(filename, newImage);
         checkBufferedImageSize(filename, image, newImage);
     }
 
-    private void checkBufferedImageSize(String filename,
-            BufferedImage image, BufferedImage newImage) throws IOException
+    private void checkBufferedImageSize(final String filename,
+                                        final BufferedImage image, final BufferedImage newImage) throws IOException
     {
         assertEquals(image.getHeight(), newImage.getHeight(), "File '" + filename + "' has different height after read");
         assertEquals(image.getWidth(), newImage.getWidth(), "File '" + filename + "' has different width after read");
     }
 
-    private void checkNotBlank(String filename, BufferedImage newImage)
+    private void checkNotBlank(final String filename, final BufferedImage newImage)
     {
         // http://stackoverflow.com/a/5253698/535646
-        Set<Integer> colors = new HashSet<>();
-        int w = newImage.getWidth();
-        int h = newImage.getHeight();
+        final Set<Integer> colors = new HashSet<>();
+        final int w = newImage.getWidth();
+        final int h = newImage.getHeight();
         for (int x = 0; x < w; x++)
         {
             for (int y = 0; y < h; y++)
@@ -253,18 +253,18 @@ class TestImageIOUtils
         assertFalse(colors.size() < 2, "File '" + filename + "' has less than two colors");
     }
 
-    private void writeImage(PDDocument document, String imageFormat, String outputPrefix,
-            ImageType imageType, float dpi, float compressionQuality,
-            String compressionType) throws IOException
+    private void writeImage(final PDDocument document, final String imageFormat, final String outputPrefix,
+                            final ImageType imageType, final float dpi, final float compressionQuality,
+                            final String compressionType) throws IOException
     {
-        PDFRenderer renderer = new PDFRenderer(document);
-        BufferedImage image = renderer.renderImageWithDPI(0, dpi, imageType);
-        String fileName = outputPrefix + 1;
+        final PDFRenderer renderer = new PDFRenderer(document);
+        final BufferedImage image = renderer.renderImageWithDPI(0, dpi, imageType);
+        final String fileName = outputPrefix + 1;
         LOG.info("Writing: " + fileName + "." + imageFormat);
         System.out.println("  " + fileName + "." + imageFormat); // for Maven (keep me!)
         try (OutputStream os = new FileOutputStream(fileName + "." + imageFormat))
         {
-            boolean res = ImageIOUtil.writeImage(image, imageFormat, os,
+            final boolean res = ImageIOUtil.writeImage(image, imageFormat, os,
                     Math.round(dpi), compressionQuality, compressionType);
             assertTrue(res, "ImageIOUtil.writeImage() failed for file " + fileName);
         }
@@ -289,8 +289,8 @@ class TestImageIOUtils
     @Test
     void testRenderImage() throws Exception
     {
-        String inDir = "src/test/resources/input/ImageIOUtil";
-        String outDir = "target/test-output/ImageIOUtil/";
+        final String inDir = "src/test/resources/input/ImageIOUtil";
+        final String outDir = "target/test-output/ImageIOUtil/";
 
         new File(outDir).mkdirs();
         if (!new File(outDir).exists())
@@ -298,10 +298,10 @@ class TestImageIOUtils
             throw new IOException("could not create output directory");
         }
 
-        File[] testFiles = new File(inDir).listFiles(
+        final File[] testFiles = new File(inDir).listFiles(
                 (dir, name) -> (name.endsWith(".pdf") || name.endsWith(".ai")));
 
-        for (File file : testFiles)
+        for (final File file : testFiles)
         {
             doTestFile(file, outDir);
         }
@@ -317,29 +317,29 @@ class TestImageIOUtils
      *
      * @throws IOException if something goes wrong
      */
-    private void checkResolution(String filename, int expectedResolution)
+    private void checkResolution(final String filename, final int expectedResolution)
             throws IOException
     {
         assertNotEquals(0, new File(filename).length(), "Empty file " + filename);
-        String suffix = filename.substring(filename.lastIndexOf('.') + 1);
+        final String suffix = filename.substring(filename.lastIndexOf('.') + 1);
         if ("BMP".equalsIgnoreCase(suffix))
         {
             // BMP reader doesn't work
             checkBmpResolution(filename, expectedResolution);
             return;
         }
-        Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix(suffix);
+        final Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix(suffix);
         assertTrue(readers.hasNext(), "No image reader found for suffix " + suffix);
-        ImageReader reader = (ImageReader) readers.next();
+        final ImageReader reader = (ImageReader) readers.next();
         try (ImageInputStream iis = ImageIO.createImageInputStream(new File(filename)))
         {
             assertNotNull(iis, "No ImageInputStream created for file " + filename);
             reader.setInput(iis);
-            IIOMetadata imageMetadata = reader.getImageMetadata(0);
-            Element root = (Element) imageMetadata.getAsTree(STANDARD_METADATA_FORMAT);
-            NodeList dimensionNodes = root.getElementsByTagName("Dimension");
+            final IIOMetadata imageMetadata = reader.getImageMetadata(0);
+            final Element root = (Element) imageMetadata.getAsTree(STANDARD_METADATA_FORMAT);
+            final NodeList dimensionNodes = root.getElementsByTagName("Dimension");
             assertTrue(dimensionNodes.getLength() > 0, "No resolution found in image file " + filename);
-            Element dimensionElement = (Element) dimensionNodes.item(0);
+            final Element dimensionElement = (Element) dimensionNodes.item(0);
 
             NodeList pixelSizeNodes = dimensionElement.getElementsByTagName("HorizontalPixelSize");
             assertTrue(pixelSizeNodes.getLength() > 0, "No X resolution found in image file " + filename);
@@ -366,7 +366,7 @@ class TestImageIOUtils
      *
      * @throws IOException if something goes wrong
      */
-    private void checkBmpResolution(String filename, int expectedResolution)
+    private void checkBmpResolution(final String filename, final int expectedResolution)
             throws FileNotFoundException, IOException
     {
         // BMP format explained here:
@@ -374,7 +374,7 @@ class TestImageIOUtils
         // we skip 38 bytes and then read two 4 byte-integers and reverse the bytes
         try (DataInputStream dis = new DataInputStream(new FileInputStream(new File(filename))))
         {
-            int skipped = dis.skipBytes(38);
+            final int skipped = dis.skipBytes(38);
             assertEquals(38, skipped, "Can't skip 38 bytes in image file " + filename);
             int pixelsPerMeter = Integer.reverseBytes(dis.readInt());
             int actualResolution = (int) Math.round(pixelsPerMeter / 100.0 * 2.54);
@@ -393,26 +393,26 @@ class TestImageIOUtils
      *
      * @throws IOException if something goes wrong
      */
-    void checkTiffCompression(String filename, String expectedCompression) throws IOException
+    void checkTiffCompression(final String filename, final String expectedCompression) throws IOException
     {
-        Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tiff");
-        ImageReader reader = (ImageReader) readers.next();
+        final Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tiff");
+        final ImageReader reader = (ImageReader) readers.next();
         try (ImageInputStream iis = ImageIO.createImageInputStream(new File(filename)))
         {
             reader.setInput(iis);
-            IIOMetadata imageMetadata = reader.getImageMetadata(0);
-            Element root = (Element) imageMetadata.getAsTree(STANDARD_METADATA_FORMAT);
-            Element comprElement = (Element) root.getElementsByTagName("Compression").item(0);
-            Node comprTypeNode = comprElement.getElementsByTagName("CompressionTypeName").item(0);
-            String actualCompression = comprTypeNode.getAttributes().getNamedItem("value").getNodeValue();
+            final IIOMetadata imageMetadata = reader.getImageMetadata(0);
+            final Element root = (Element) imageMetadata.getAsTree(STANDARD_METADATA_FORMAT);
+            final Element comprElement = (Element) root.getElementsByTagName("Compression").item(0);
+            final Node comprTypeNode = comprElement.getElementsByTagName("CompressionTypeName").item(0);
+            final String actualCompression = comprTypeNode.getAttributes().getNamedItem("value").getNodeValue();
             assertEquals(expectedCompression, actualCompression, "Incorrect TIFF compression in file " + filename);
         }
         reader.dispose();
     }
 
-    private void checkFileTypeByContent(String filename, FileType fileType) throws IOException
+    private void checkFileTypeByContent(final String filename, final FileType fileType) throws IOException
     {
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(filename));
+        final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(filename));
         assertEquals(fileType, FileTypeDetector.detectFileType(bis));
         IOUtils.closeQuietly(bis);  
     }

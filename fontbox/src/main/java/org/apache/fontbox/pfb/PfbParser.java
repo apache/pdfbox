@@ -98,7 +98,7 @@ public class PfbParser
      */
     public PfbParser(final InputStream in) throws IOException 
     {
-        byte[] pfb = readPfbInput(in);
+        final byte[] pfb = readPfbInput(in);
         parsePfb(pfb);
     }
 
@@ -120,7 +120,7 @@ public class PfbParser
     private void parsePfb(final byte[] pfb) throws IOException 
     {
 
-        ByteArrayInputStream in = new ByteArrayInputStream(pfb);
+        final ByteArrayInputStream in = new ByteArrayInputStream(pfb);
         pfbdata = new byte[pfb.length - PFB_HEADER_LENGTH];
         lengths = new int[PFB_RECORDS.length];
         int pointer = 0;
@@ -145,7 +145,7 @@ public class PfbParser
             {
                 throw new EOFException("attempted to read past EOF");
             }
-            int got = in.read(pfbdata, pointer, size);
+            final int got = in.read(pfbdata, pointer, size);
             if (got < 0) 
             {
                 throw new EOFException();
@@ -163,8 +163,8 @@ public class PfbParser
     private byte[] readPfbInput(final InputStream in) throws IOException 
     {
         // copy into an array
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] tmpbuf = new byte[BUFFER_SIZE];
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final byte[] tmpbuf = new byte[BUFFER_SIZE];
         int amountRead = -1;
         while ((amountRead = in.read(tmpbuf)) != -1) 
         {

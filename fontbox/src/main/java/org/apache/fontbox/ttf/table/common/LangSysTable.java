@@ -31,8 +31,8 @@ public class LangSysTable
     private final int featureIndexCount;
     private final int[] featureIndices;
 
-    public LangSysTable(int lookupOrder, int requiredFeatureIndex, int featureIndexCount,
-            int[] featureIndices)
+    public LangSysTable(final int lookupOrder, final int requiredFeatureIndex, final int featureIndexCount,
+                        final int[] featureIndices)
     {
         this.lookupOrder = lookupOrder;
         this.requiredFeatureIndex = requiredFeatureIndex;

@@ -41,7 +41,7 @@ public final class RemoveFirstPage
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
         if( args.length != 2 )
         {

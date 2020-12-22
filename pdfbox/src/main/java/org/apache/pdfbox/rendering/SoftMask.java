@@ -69,7 +69,7 @@ class SoftMask implements Paint
      * null, black will be used.
      * @param transferFunction the transfer function, may be null.
      */
-    SoftMask(Paint paint, BufferedImage mask, Rectangle2D bboxDevice, PDColor backdropColor, PDFunction transferFunction)
+    SoftMask(final Paint paint, final BufferedImage mask, final Rectangle2D bboxDevice, final PDColor backdropColor, final PDFunction transferFunction)
     {
         this.paint = paint;
         this.mask = mask;
@@ -86,11 +86,11 @@ class SoftMask implements Paint
         {
             try
             {
-                Color color = new Color(backdropColor.toRGB());
+                final Color color = new Color(backdropColor.toRGB());
                 // http://stackoverflow.com/a/25463098/535646
                 bc = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
             }
-            catch (IOException ex)
+            catch (final IOException ex)
             {
                 // keep default
                 LOG.debug("Couldn't convert backdropColor to RGB - keeping default", ex);
@@ -99,11 +99,11 @@ class SoftMask implements Paint
     }
 
     @Override
-    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
-                                      Rectangle2D userBounds, AffineTransform xform,
-                                      RenderingHints hints)
+    public PaintContext createContext(final ColorModel cm, final Rectangle deviceBounds,
+                                      final Rectangle2D userBounds, final AffineTransform xform,
+                                      final RenderingHints hints)
     {
-        PaintContext ctx = paint.createContext(cm, deviceBounds, userBounds, xform, hints);
+        final PaintContext ctx = paint.createContext(cm, deviceBounds, userBounds, xform, hints);
         return new SoftPaintContext(ctx);
     }
 
@@ -117,7 +117,7 @@ class SoftMask implements Paint
     {
         private final PaintContext context;
 
-        SoftPaintContext(PaintContext context)
+        SoftPaintContext(final PaintContext context)
         {
             this.context = context;
         }
@@ -129,10 +129,10 @@ class SoftMask implements Paint
         }
 
         @Override
-        public Raster getRaster(int x1, int y1, int w, int h)
+        public Raster getRaster(int x1, int y1, final int w, final int h)
         {
-            Raster raster = context.getRaster(x1, y1, w, h);
-            ColorModel rasterCM = context.getColorModel();
+            final Raster raster = context.getRaster(x1, y1, w, h);
+            final ColorModel rasterCM = context.getColorModel();
             float[] input = null;
             Float[] map = null;
 
@@ -143,15 +143,15 @@ class SoftMask implements Paint
             }
 
             // buffer
-            WritableRaster output = getColorModel().createCompatibleWritableRaster(w, h);
+            final WritableRaster output = getColorModel().createCompatibleWritableRaster(w, h);
 
             // the soft mask has its own bbox
             x1 = x1 - (int)bboxDevice.getX();
             y1 = y1 - (int)bboxDevice.getY();
 
-            int[] gray = new int[4];
+            final int[] gray = new int[4];
             Object pixelInput = null;
-            int[] pixelOutput = new int[4];
+            final int[] pixelOutput = new int[4];
             for (int y = 0; y < h; y++)
             {
                 for (int x = 0; x < w; x++)
@@ -168,7 +168,7 @@ class SoftMask implements Paint
                     if (x1 + x >= 0 && y1 + y >= 0 && x1 + x < mask.getWidth() && y1 + y < mask.getHeight())
                     {
                         mask.getRaster().getPixel(x1 + x, y1 + y, gray);
-                        int g = gray[0];
+                        final int g = gray[0];
                         if (transferFunction != null)
                         {
                             // apply transfer function
@@ -183,12 +183,12 @@ class SoftMask implements Paint
                                 {
                                     // calculate and store in map
                                     input[0] = g / 255f;
-                                    float f = transferFunction.eval(input)[0];
+                                    final float f = transferFunction.eval(input)[0];
                                     map[g] = f;
                                     pixelOutput[3] = Math.round(pixelOutput[3] * f);
                                 }
                             }
-                            catch (IOException ex)
+                            catch (final IOException ex)
                             {
                                 // ignore exception, treat as outside
                                 LOG.debug("Couldn't apply transferFunction - treating as outside", ex);

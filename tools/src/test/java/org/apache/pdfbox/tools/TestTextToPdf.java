@@ -35,8 +35,8 @@ class TestTextToPdf
     @Test
     void testCreateEmptyPdf() throws Exception
     {
-        TextToPDF pdfCreator = new TextToPDF();
-        PDDocument pdfDoc;
+        final TextToPDF pdfCreator = new TextToPDF();
+        final PDDocument pdfDoc;
         try (StringReader reader = new StringReader(""))
         {
             pdfDoc = pdfCreator.createPDFFromText(reader);
@@ -44,7 +44,7 @@ class TestTextToPdf
 
         // In order for the PDF document to be openable by Adobe Reader, it needs
         // to have some pages in it. So we'll check that.
-        int pageCount = pdfDoc.getNumberOfPages();
+        final int pageCount = pdfDoc.getNumberOfPages();
         assertTrue(pageCount > 0, "All Pages was unexpectedly zero.");
         assertEquals(1, pageCount, "Wrong number of pages.");
         pdfDoc.close();

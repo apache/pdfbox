@@ -34,11 +34,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class BeginMarkedContentSequenceWithProperties extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         COSName tag = null;
         COSDictionary properties = null;
-        for (COSBase argument : arguments)
+        for (final COSBase argument : arguments)
         {
             if (argument instanceof COSName)
             {

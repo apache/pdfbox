@@ -61,7 +61,7 @@ public final class OpenTypeScript
 
     static
     {
-        Object[][] table = 
+        final Object[][] table =
         {
             {"Adlam", new String[] { "adlm" }},
             {"Ahom", new String[] { "ahom" }},
@@ -207,7 +207,7 @@ public final class OpenTypeScript
             {"Yi", new String[] { "yi  " }}
         };
         UNICODE_SCRIPT_TO_OPENTYPE_TAG_MAP = new HashMap<>(table.length);
-        for (Object[] array : table)
+        for (final Object[] array : table)
         {
             UNICODE_SCRIPT_TO_OPENTYPE_TAG_MAP.put((String) array[0], (String[]) array[1]);
         }
@@ -218,13 +218,13 @@ public final class OpenTypeScript
 
     static
     {
-        String path = "/org/apache/fontbox/unicode/Scripts.txt";
+        final String path = "/org/apache/fontbox/unicode/Scripts.txt";
         try (InputStream resourceAsStream = OpenTypeScript.class.getResourceAsStream(path);
-             InputStream input = new BufferedInputStream(resourceAsStream))
+             final InputStream input = new BufferedInputStream(resourceAsStream))
         {
             parseScriptsFile(input);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOG.warn("Could not parse Scripts.txt, mirroring char map will be empty: "
                     + e.getMessage(), e);
@@ -235,9 +235,9 @@ public final class OpenTypeScript
     {
     }
 
-    private static void parseScriptsFile(InputStream inputStream) throws IOException
+    private static void parseScriptsFile(final InputStream inputStream) throws IOException
     {
-        Map<int[], String> unicodeRanges = new TreeMap<>((o1, o2) -> Integer.compare(o1[0], o2[0]));
+        final Map<int[], String> unicodeRanges = new TreeMap<>((o1, o2) -> Integer.compare(o1[0], o2[0]));
         try (LineNumberReader rd = new LineNumberReader(new InputStreamReader(inputStream)))
         {
             int[] lastRange = { Integer.MIN_VALUE, Integer.MIN_VALUE };
@@ -251,7 +251,7 @@ public final class OpenTypeScript
                 }
                 
                 // ignore comments
-                int comment = s.indexOf('#');
+                final int comment = s.indexOf('#');
                 if (comment != -1)
                 {
                     s = s.substring(0, comment);
@@ -262,16 +262,16 @@ public final class OpenTypeScript
                     continue;
                 }
                 
-                StringTokenizer st = new StringTokenizer(s, ";");
-                int nFields = st.countTokens();
+                final StringTokenizer st = new StringTokenizer(s, ";");
+                final int nFields = st.countTokens();
                 if (nFields < 2)
                 {
                     continue;
                 }
-                String characters = st.nextToken().trim();
-                String script = st.nextToken().trim();
-                int[] range = new int[2];
-                int rangeDelim = characters.indexOf("..");
+                final String characters = st.nextToken().trim();
+                final String script = st.nextToken().trim();
+                final int[] range = new int[2];
+                final int rangeDelim = characters.indexOf("..");
                 if (rangeDelim == -1)
                 {
                     range[0] = range[1] = Integer.parseInt(characters, 16);
@@ -299,7 +299,7 @@ public final class OpenTypeScript
         unicodeRangeStarts = new int[unicodeRanges.size()];
         unicodeRangeScripts = new String[unicodeRanges.size()];
         int i = 0;
-        for (Entry<int[], String> e : unicodeRanges.entrySet())
+        for (final Entry<int[], String> e : unicodeRanges.entrySet())
         {
             unicodeRangeStarts[i] = e.getKey()[0];
             unicodeRangeScripts[i] = e.getValue();
@@ -313,10 +313,10 @@ public final class OpenTypeScript
      * @param codePoint
      * @return A Unicode script string, or {@code #UNKNOWN} if unknown
      */
-    private static String getUnicodeScript(int codePoint)
+    private static String getUnicodeScript(final int codePoint)
     {
         ensureValidCodePoint(codePoint);
-        int type = Character.getType(codePoint);
+        final int type = Character.getType(codePoint);
         if (type == Character.UNASSIGNED)
         {
             return UNKNOWN;
@@ -340,14 +340,14 @@ public final class OpenTypeScript
      * @param codePoint
      * @return An array of four-char script tags
      */
-    public static String[] getScriptTags(int codePoint)
+    public static String[] getScriptTags(final int codePoint)
     {
         ensureValidCodePoint(codePoint);
-        String unicode = getUnicodeScript(codePoint);
+        final String unicode = getUnicodeScript(codePoint);
         return UNICODE_SCRIPT_TO_OPENTYPE_TAG_MAP.get(unicode);
     }
 
-    private static void ensureValidCodePoint(int codePoint)
+    private static void ensureValidCodePoint(final int codePoint)
     {
         if (codePoint < Character.MIN_CODE_POINT || codePoint > Character.MAX_CODE_POINT)
         {

@@ -60,34 +60,34 @@ public final class Encrypt implements Callable<Integer>
     private String userPassword;
 
     @Option(names = "-certFile", paramLabel="certFile", description = "Path to X.509 certificate (repeat both if needed)")
-    private List<File> certFileList = new ArrayList<>();
+    private final List<File> certFileList = new ArrayList<>();
 
     @Option(names = "-canAssemble", description = "set the assemble permission (default: ${DEFAULT-VALUE})")
-    private boolean canAssembleDocument = true;
+    private final boolean canAssembleDocument = true;
 
     @Option(names = "-canExtractContent", description = "set the extraction permission (default: ${DEFAULT-VALUE})")
-    private boolean canExtractContent = true;
+    private final boolean canExtractContent = true;
 
     @Option(names = "-canExtractForAccessibility", description = "set the extraction permission (default: ${DEFAULT-VALUE})")
-    private boolean canExtractForAccessibility = true;
+    private final boolean canExtractForAccessibility = true;
 
     @Option(names = "-canFillInForm", description = "set the form fill in permission (default: ${DEFAULT-VALUE})")
-    private boolean canFillInForm = true;
+    private final boolean canFillInForm = true;
 
     @Option(names = "-canModify", description = "set the modify permission (default: ${DEFAULT-VALUE})")
-    private boolean canModify = true;
+    private final boolean canModify = true;
 
     @Option(names = "-canModifyAnnotations", description = "set the modify annots permission (default: ${DEFAULT-VALUE})")
-    private boolean canModifyAnnotations = true;
+    private final boolean canModifyAnnotations = true;
 
     @Option(names = "-canPrint", description = "set the print permission (default: ${DEFAULT-VALUE})")
-    private boolean canPrint = true;
+    private final boolean canPrint = true;
 
     @Option(names = "-canPrintDegraded", description = "set the print degraded permission (default: ${DEFAULT-VALUE})")
-    private boolean canPrintDegraded = true;
+    private final boolean canPrintDegraded = true;
 
     @Option(names = "-keyLength", description = "Key length in bits (valid values: 40, 128 or 256) (default: ${DEFAULT-VALUE})")
-    private int keyLength = 256;
+    private final int keyLength = 256;
 
     @Parameters(paramLabel = "inputfile", arity="1", description = "the PDF file to encyrpt.")
     private File infile;
@@ -110,18 +110,18 @@ public final class Encrypt implements Callable<Integer>
      * @throws IOException If there is an error decrypting the document.
      * @throws CertificateException If there is an error with a certificate.
      */
-    public static void main( String[] args )
+    public static void main(final String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new Encrypt()).execute(args);
+        final int exitCode = new CommandLine(new Encrypt()).execute(args);
         System.exit(exitCode);
     }
 
     public Integer call()
     {
-        AccessPermission ap = new AccessPermission();
+        final AccessPermission ap = new AccessPermission();
         ap.setCanAssembleDocument(canAssembleDocument);
         ap.setCanExtractContent(canExtractContent);
         ap.setCanExtractForAccessibility(canExtractForAccessibility);
@@ -142,17 +142,17 @@ public final class Encrypt implements Callable<Integer>
             {
                 if (!certFileList.isEmpty())
                 {
-                    PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
-                    PublicKeyRecipient recip = new PublicKeyRecipient();
+                    final PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
+                    final PublicKeyRecipient recip = new PublicKeyRecipient();
                     recip.setPermission(ap);
 
-                    CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                    final CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-                    for (File certFile : certFileList)
+                    for (final File certFile : certFileList)
                     {
                         try (InputStream inStream = new FileInputStream(certFile))
                         {
-                            X509Certificate certificate = (X509Certificate) cf.generateCertificate(inStream);
+                            final X509Certificate certificate = (X509Certificate) cf.generateCertificate(inStream);
                             recip.setX509(certificate);
                         }
                         ppp.addRecipient(recip);
@@ -164,7 +164,7 @@ public final class Encrypt implements Callable<Integer>
                 }
                 else
                 {
-                    StandardProtectionPolicy spp =
+                    final StandardProtectionPolicy spp =
                         new StandardProtectionPolicy(ownerPassword, userPassword, ap);
                     spp.setEncryptionKeyLength(keyLength);
                     document.protect(spp);
@@ -176,7 +176,7 @@ public final class Encrypt implements Callable<Integer>
                 SYSERR.println( "Error: Document is already encrypted." );
             }
         }
-        catch (IOException | CertificateException ex)
+        catch (final IOException | CertificateException ex)
         {
             SYSERR.println( "Error encrypting PDF: " + ex.getMessage());
             return 4;

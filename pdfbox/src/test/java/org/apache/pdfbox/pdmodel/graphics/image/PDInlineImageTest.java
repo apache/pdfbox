@@ -62,10 +62,10 @@ class PDInlineImageTest
     @Test
     void testInlineImage() throws IOException
     {
-        COSDictionary dict = new COSDictionary();
+        final COSDictionary dict = new COSDictionary();
         dict.setBoolean(COSName.IM, true);
-        int width = 31;
-        int height = 27;
+        final int width = 31;
+        final int height = 27;
         dict.setInt(COSName.W, width);
         dict.setInt(COSName.H, height);
         dict.setInt(COSName.BPC, 1);
@@ -79,43 +79,43 @@ class PDInlineImageTest
         }
         
         // draw a grid
-        int datalen = rowbytes * height;
-        byte[] data = new byte[datalen];
+        final int datalen = rowbytes * height;
+        final byte[] data = new byte[datalen];
         for (int i = 0; i < datalen; ++i)
         {
             data[i] = (i / 4 % 2 == 0) ? (byte) Integer.parseInt("10101010", 2) : 0;
         }
         
-        PDInlineImage inlineImage1 = new PDInlineImage(dict, data, null);
+        final PDInlineImage inlineImage1 = new PDInlineImage(dict, data, null);
         assertTrue(inlineImage1.isStencil());
         assertEquals(width, inlineImage1.getWidth());
         assertEquals(height, inlineImage1.getHeight());
         assertEquals(1, inlineImage1.getBitsPerComponent());
         
-        COSDictionary dict2 = new COSDictionary();
+        final COSDictionary dict2 = new COSDictionary();
         dict2.addAll(dict);
         // use decode array to revert in image2
-        COSArray decodeArray = new COSArray();
+        final COSArray decodeArray = new COSArray();
         decodeArray.add(COSInteger.ONE);
         decodeArray.add(COSInteger.ZERO);                
         dict2.setItem(COSName.DECODE, decodeArray);
      
-        PDInlineImage inlineImage2 = new PDInlineImage(dict2, data, null);
+        final PDInlineImage inlineImage2 = new PDInlineImage(dict2, data, null);
 
-        Paint paint = new Color(0, 0, 0);
-        BufferedImage stencilImage = inlineImage1.getStencilImage(paint);
+        final Paint paint = new Color(0, 0, 0);
+        final BufferedImage stencilImage = inlineImage1.getStencilImage(paint);
         assertEquals(width, stencilImage.getWidth());
         assertEquals(height, stencilImage.getHeight());
 
-        BufferedImage stencilImage2 = inlineImage2.getStencilImage(paint);
+        final BufferedImage stencilImage2 = inlineImage2.getStencilImage(paint);
         assertEquals(width, stencilImage2.getWidth());
         assertEquals(height, stencilImage2.getHeight());
         
-        BufferedImage image1 = inlineImage1.getImage();
+        final BufferedImage image1 = inlineImage1.getImage();
         assertEquals(width, image1.getWidth());
         assertEquals(height, image1.getHeight());
 
-        BufferedImage image2 = inlineImage2.getImage();
+        final BufferedImage image2 = inlineImage2.getImage();
         assertEquals(width, image2.getWidth());
         assertEquals(height, image2.getHeight());
 
@@ -123,7 +123,7 @@ class PDInlineImageTest
         boolean writeOk = ImageIO.write(image1, "png",
                 new FileOutputStream(new File(testResultsDir + "/inline-grid1.png")));
         assertTrue(writeOk);
-        BufferedImage bim1 = ImageIO.read(new File(testResultsDir + "/inline-grid1.png"));
+        final BufferedImage bim1 = ImageIO.read(new File(testResultsDir + "/inline-grid1.png"));
         assertNotNull(bim1);
         assertEquals(width, bim1.getWidth());
         assertEquals(height, bim1.getHeight());
@@ -131,7 +131,7 @@ class PDInlineImageTest
         writeOk = ImageIO.write(image2, "png",
                 new FileOutputStream(new File(testResultsDir + "/inline-grid2.png")));
         assertTrue(writeOk);
-        BufferedImage bim2 = ImageIO.read(new File(testResultsDir + "/inline-grid2.png"));
+        final BufferedImage bim2 = ImageIO.read(new File(testResultsDir + "/inline-grid2.png"));
         assertNotNull(bim2);
         assertEquals(width, bim2.getWidth());
         assertEquals(height, bim2.getHeight());
@@ -170,9 +170,9 @@ class PDInlineImageTest
         }        
 
         PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
+        final PDPage page = new PDPage();
         document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
+        final PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
         contentStream.drawImage(inlineImage1, 150, 400);
         contentStream.drawImage(inlineImage1, 150, 500, inlineImage1.getWidth() * 2, inlineImage1.getHeight() * 2);
         contentStream.drawImage(inlineImage1, 150, 600, inlineImage1.getWidth() * 4, inlineImage1.getHeight() * 4);
@@ -181,7 +181,7 @@ class PDInlineImageTest
         contentStream.drawImage(inlineImage2, 350, 600, inlineImage2.getWidth() * 4, inlineImage2.getHeight() * 4);
         contentStream.close();
 
-        File pdfFile = new File(testResultsDir, "inline.pdf");
+        final File pdfFile = new File(testResultsDir, "inline.pdf");
         document.save(pdfFile);
         document.close();
 

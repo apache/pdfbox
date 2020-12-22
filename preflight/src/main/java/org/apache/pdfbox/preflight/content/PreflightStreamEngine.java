@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.content;
 
@@ -107,7 +107,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
     protected PreflightContext context = null;
     protected PDPage processedPage = null;
 
-    public PreflightStreamEngine(PreflightContext context, PDPage page)
+    public PreflightStreamEngine(final PreflightContext context, final PDPage page)
     {
         this.context = context;
         this.processedPage = page;
@@ -221,7 +221,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @throws ContentStreamException
      *             ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY if the operand is invalid
      */
-    protected void validateRenderingIntent(Operator operator, List<COSBase> arguments) throws ContentStreamException
+    protected void validateRenderingIntent(final Operator operator, final List<COSBase> arguments) throws ContentStreamException
     {
         if (OperatorName.SET_RENDERINGINTENT.equals(operator.getName())
                 && arguments.get(0) instanceof COSName
@@ -237,11 +237,11 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * 
      * @param operator
      */
-    protected void validateNumberOfGraphicStates(Operator operator)
+    protected void validateNumberOfGraphicStates(final Operator operator)
     {
         if (OperatorName.SAVE.equals(operator.getName()))
         {
-            int numberOfGraphicStates = this.getGraphicsStackSize();
+            final int numberOfGraphicStates = this.getGraphicsStackSize();
             if (numberOfGraphicStates > MAX_GRAPHIC_STATES)
             {
                 registerError("Too many graphic states", ERROR_GRAPHIC_TOO_MANY_GRAPHIC_STATES);
@@ -254,13 +254,13 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * 
      * @param operator the InlinedImage object (BI to EI)
      */
-    protected void validateInlineImageFilter(Operator operator)
+    protected void validateInlineImageFilter(final Operator operator)
     {
-        COSDictionary dict = operator.getImageParameters();
+        final COSDictionary dict = operator.getImageParameters();
         /*
          * Search a Filter declaration in the InlinedImage dictionary. The LZWDecode Filter is forbidden.
          */
-        COSBase filter = dict.getDictionaryObject(COSName.F, COSName.FILTER);
+        final COSBase filter = dict.getDictionaryObject(COSName.F, COSName.FILTER);
         FilterHelper.isAuthorizedFilter(context,
                 filter instanceof COSName ? ((COSName) filter).getName() : null);
     }
@@ -272,9 +272,9 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operator the InlinedImage object (BI to EI)
      * @throws IOException
      */
-    protected void validateInlineImageColorSpace(Operator operator) throws IOException
+    protected void validateInlineImageColorSpace(final Operator operator) throws IOException
     {
-        COSDictionary dict = operator.getImageParameters();
+        final COSDictionary dict = operator.getImageParameters();
 
         COSBase csInlinedBase = dict.getDictionaryObject(COSName.CS, COSName.COLORSPACE);
         ColorSpaceHelper csHelper = null;
@@ -284,18 +284,18 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             {
                 // In InlinedImage only DeviceGray/RGB/CMYK and restricted Indexed
                 // color spaces are allowed.
-                String colorSpace = ((COSName) csInlinedBase).getName();
+                final String colorSpace = ((COSName) csInlinedBase).getName();
                 ColorSpaces cs = null;
 
                 try
                 {
                     cs = ColorSpaces.valueOf(colorSpace);
                 }
-                catch (IllegalArgumentException e)
+                catch (final IllegalArgumentException e)
                 {
                     // The color space is unknown. Try to access the resources dictionary,
                     // the color space can be a reference.
-                    PDColorSpace pdCS = this.getResources().getColorSpace(COSName.getPDFName(colorSpace));
+                    final PDColorSpace pdCS = this.getResources().getColorSpace(COSName.getPDFName(colorSpace));
                     if (pdCS != null)
                     {
                         cs = ColorSpaces.valueOf(pdCS.getName());
@@ -316,33 +316,33 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
                 csInlinedBase = toLongName(csInlinedBase);
                 if (csInlinedBase instanceof COSArray && ((COSArray) csInlinedBase).size() > 1)
                 {
-                    COSArray srcArray = (COSArray) csInlinedBase;
-                    COSBase csType = srcArray.get(0);
+                    final COSArray srcArray = (COSArray) csInlinedBase;
+                    final COSBase csType = srcArray.get(0);
                     if (COSName.I.equals(csType) || COSName.INDEXED.equals(csType))
                     {
-                        COSArray dstArray = new COSArray();
+                        final COSArray dstArray = new COSArray();
                         dstArray.addAll(srcArray);
                         dstArray.set(0, COSName.INDEXED);
                         dstArray.set(1, toLongName(srcArray.get(1)));
                         csInlinedBase = dstArray;
                     }
                 }                
-                PDColorSpace pdCS = PDColorSpace.create(csInlinedBase);
+                final PDColorSpace pdCS = PDColorSpace.create(csInlinedBase);
                 csHelper = getColorSpaceHelper(pdCS);
             }
             csHelper.validate();
         }
     }
 
-    private ColorSpaceHelper getColorSpaceHelper(PDColorSpace pdCS)
+    private ColorSpaceHelper getColorSpaceHelper(final PDColorSpace pdCS)
     {
-        PreflightConfiguration cfg = context.getConfig();
-        ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
+        final PreflightConfiguration cfg = context.getConfig();
+        final ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
         return csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
     }
     
     // deliver the long name of a device colorspace, or the parameter
-    private COSBase toLongName(COSBase cs)
+    private COSBase toLongName(final COSBase cs)
     {
         if (COSName.RGB.equals(cs))
         {
@@ -366,9 +366,9 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operation the color operator
      * @throws ContentStreamException
      */
-    protected void checkColorOperators(String operation) throws ContentStreamException
+    protected void checkColorOperators(final String operation) throws ContentStreamException
     {
-        PDColorSpace cs = getColorSpace(operation);
+        final PDColorSpace cs = getColorSpace(operation);
 
         if ((OperatorName.NON_STROKING_RGB.equals(operation)
                 || OperatorName.STROKING_COLOR_RGB.equals(operation))
@@ -409,15 +409,15 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operator an operator.
      * @throws ContentStreamException
      */
-    void validateDefaultColorSpace(Operator operator) throws ContentStreamException
+    void validateDefaultColorSpace(final Operator operator) throws ContentStreamException
     {
         boolean v = false;
-        String op = operator.getName();
+        final String op = operator.getName();
         if (OperatorName.SHOW_TEXT.equals(op) || OperatorName.SHOW_TEXT_ADJUSTED.equals(op)
                 || OperatorName.SHOW_TEXT_LINE.equals(op)
                 || OperatorName.SHOW_TEXT_LINE_AND_SPACE.equals(op))
         {
-            RenderingMode rm = getGraphicsState().getTextState().getRenderingMode();
+            final RenderingMode rm = getGraphicsState().getTextState().getRenderingMode();
             if (rm.isFill() && 
                     getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDDeviceGray)
             {
@@ -460,7 +460,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         }
     }
 
-    private boolean validColorSpace(PDColorSpace colorSpace, ColorSpaceType expectedIccType)
+    private boolean validColorSpace(final PDColorSpace colorSpace, final ColorSpaceType expectedIccType)
             throws ContentStreamException
     {
         if (colorSpace == null)
@@ -481,12 +481,12 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param expectedType
      * @return
      */
-    private boolean validColorSpaceDestOutputProfile(ColorSpaceType expectedType)
+    private boolean validColorSpaceDestOutputProfile(final ColorSpaceType expectedType)
             throws ContentStreamException
     {
         try
         {
-            ICCProfileWrapper profileWrapper = ICCProfileWrapper.getOrSearchICCProfile(context);
+            final ICCProfileWrapper profileWrapper = ICCProfileWrapper.getOrSearchICCProfile(context);
             if (profileWrapper == null)
             {
                 return false;
@@ -502,7 +502,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             }
 
         }
-        catch (ValidationException e)
+        catch (final ValidationException e)
         {
             throw new ContentStreamException(e);
         }
@@ -512,11 +512,11 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * Return true if the given ColorSpace is an independent device ColorSpace.
      * If the color space is an ICCBased, check the embedded profile color (RGB or CMYK)
      */
-    private boolean isDeviceIndependent(PDColorSpace cs, ColorSpaceType expectedIccType)
+    private boolean isDeviceIndependent(final PDColorSpace cs, final ColorSpaceType expectedIccType)
     {
         if (cs instanceof PDICCBased)
         {
-            int type = ((PDICCBased)cs).getColorSpaceType();
+            final int type = ((PDICCBased)cs).getColorSpaceType();
             switch (expectedIccType)
             {
                 case RGB: return type == ColorSpace.TYPE_RGB;
@@ -538,7 +538,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
     /*
      * Return the current color space used by the operation
      */
-    private PDColorSpace getColorSpace(String operation)
+    private PDColorSpace getColorSpace(final String operation)
     {
         if (getGraphicsState() == null)
         {
@@ -566,7 +566,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param arguments
      * @throws IOException
      */
-    protected void checkSetColorSpaceOperators(Operator operator, List<COSBase> arguments) throws IOException
+    protected void checkSetColorSpaceOperators(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (!OperatorName.STROKING_COLORSPACE.equals(operator.getName())
                 && !OperatorName.NON_STROKING_COLORSPACE.equals(operator.getName()))
@@ -574,7 +574,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             return;
         }
 
-        String colorSpaceName;
+        final String colorSpaceName;
         if (arguments.get(0) instanceof COSString)
         {
             colorSpaceName = (arguments.get(0)).toString();
@@ -597,17 +597,17 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         {
             cs = ColorSpaces.valueOf(colorSpaceName);
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             /*
              * The color space is unknown. Try to access the resources dictionary, the color space can be a reference.
              */
-            PDColorSpace pdCS = this.getResources().getColorSpace(COSName.getPDFName(colorSpaceName));
+            final PDColorSpace pdCS = this.getResources().getColorSpace(COSName.getPDFName(colorSpaceName));
             if (pdCS != null)
             {
                 cs = ColorSpaces.valueOf(pdCS.getName());
-                PreflightConfiguration cfg = context.getConfig();
-                ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
+                final PreflightConfiguration cfg = context.getConfig();
+                final ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
                 csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.NO_RESTRICTION);
             }
         }
@@ -620,9 +620,9 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
 
         if (csHelper == null)
         {
-            PDColorSpace pdCS = PDColorSpace.create(COSName.getPDFName(colorSpaceName));
-            PreflightConfiguration cfg = context.getConfig();
-            ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
+            final PDColorSpace pdCS = PDColorSpace.create(COSName.getPDFName(colorSpaceName));
+            final PreflightConfiguration cfg = context.getConfig();
+            final ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
             csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.NO_RESTRICTION);
         }
 
@@ -637,25 +637,25 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param errorCode
      *            the error code.
      */
-    protected void registerError(String msg, String errorCode)
+    protected void registerError(final String msg, final String errorCode)
     {
         registerError(msg, errorCode, null);
     }
 
-    public void registerError(String msg, String errorCode, Throwable cause)
+    public void registerError(final String msg, final String errorCode, final Throwable cause)
     {
         registerError(msg, errorCode, false, cause);
     }
     
-    protected void registerError(String msg, String errorCode, boolean warning)
+    protected void registerError(final String msg, final String errorCode, final boolean warning)
     {
         registerError(msg, errorCode, warning, null);
     }
 
-    public void registerError(String msg, String errorCode, boolean warning,
-            Throwable cause)
+    public void registerError(final String msg, final String errorCode, final boolean warning,
+                              final Throwable cause)
     {
-        ValidationError error = new ValidationError(errorCode, msg, cause);
+        final ValidationError error = new ValidationError(errorCode, msg, cause);
         error.setWarning(warning);
         this.context.addValidationError(error);
     }

@@ -1,23 +1,23 @@
-/*****************************************************************************
- * 
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.pdfbox.preflight.process;
 
@@ -33,12 +33,12 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 public abstract class AbstractProcess implements ValidationProcess
 {
 
-    protected void addValidationError(PreflightContext ctx, ValidationError error)
+    protected void addValidationError(final PreflightContext ctx, final ValidationError error)
     {
         ctx.addValidationError(error);
     }
 
-    protected void addValidationErrors(PreflightContext ctx, List<ValidationError> errors)
+    protected void addValidationErrors(final PreflightContext ctx, final List<ValidationError> errors)
     {
         errors.forEach(error -> addValidationError(ctx, error));
     }
@@ -47,9 +47,9 @@ public abstract class AbstractProcess implements ValidationProcess
      * PDFont loads embedded fonts in its constructor so we have to handle IOExceptions
      * from PDFont and translate them into validation errors.
      */
-    protected void addFontError(COSDictionary dictionary, PreflightContext context, IOException e)
+    protected void addFontError(final COSDictionary dictionary, final PreflightContext context, final IOException e)
     {
-        COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
+        final COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
         if (!COSName.FONT.equals(type))
         {
             addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_TYPE, "Expected 'Font' dictionary but found '" + type.getName() + "'"));
@@ -59,7 +59,7 @@ public abstract class AbstractProcess implements ValidationProcess
         {
             fontName = dictionary.getNameAsString(COSName.BASE_FONT);
         }
-        COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
+        final COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
         if (COSName.TYPE1.equals(subType))
         {
             addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_TYPE1_DAMAGED, "The FontFile can't be read for " + fontName + ": " + e.getMessage()));

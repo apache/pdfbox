@@ -34,23 +34,23 @@ class BitwiseOperators
     private abstract static class AbstractLogicalOperator implements Operator
     {
         @Override
-        public void execute(ExecutionContext context)
+        public void execute(final ExecutionContext context)
         {
-            Stack<Object> stack = context.getStack();
-            Object op2 = stack.pop();
-            Object op1 = stack.pop();
+            final Stack<Object> stack = context.getStack();
+            final Object op2 = stack.pop();
+            final Object op1 = stack.pop();
             if (op1 instanceof Boolean && op2 instanceof Boolean)
             {
-                boolean bool1 = (Boolean)op1;
-                boolean bool2 = (Boolean)op2;
-                boolean result = applyForBoolean(bool1, bool2);
+                final boolean bool1 = (Boolean)op1;
+                final boolean bool2 = (Boolean)op2;
+                final boolean result = applyForBoolean(bool1, bool2);
                 stack.push(result);
             }
             else if (op1 instanceof Integer && op2 instanceof Integer)
             {
-                int int1 = (Integer)op1;
-                int int2 = (Integer)op2;
-                int result = applyforInteger(int1, int2);
+                final int int1 = (Integer)op1;
+                final int int2 = (Integer)op2;
+                final int result = applyforInteger(int1, int2);
                 stack.push(result);
             }
             else
@@ -71,13 +71,13 @@ class BitwiseOperators
     {
 
         @Override
-        protected boolean applyForBoolean(boolean bool1, boolean bool2)
+        protected boolean applyForBoolean(final boolean bool1, final boolean bool2)
         {
             return bool1 && bool2;
         }
 
         @Override
-        protected int applyforInteger(int int1, int int2)
+        protected int applyforInteger(final int int1, final int int2)
         {
             return int1 & int2;
         }
@@ -87,19 +87,19 @@ class BitwiseOperators
     static class Bitshift implements Operator
     {
         @Override
-        public void execute(ExecutionContext context)
+        public void execute(final ExecutionContext context)
         {
-            Stack<Object> stack = context.getStack();
-            int shift = (Integer)stack.pop();
-            int int1 = (Integer)stack.pop();
+            final Stack<Object> stack = context.getStack();
+            final int shift = (Integer)stack.pop();
+            final int int1 = (Integer)stack.pop();
             if (shift < 0)
             {
-                int result = int1 >> Math.abs(shift);
+                final int result = int1 >> Math.abs(shift);
                 stack.push(result);
             }
             else
             {
-                int result = int1 << shift;
+                final int result = int1 << shift;
                 stack.push(result);
             }
         }
@@ -110,9 +110,9 @@ class BitwiseOperators
     static class False implements Operator
     {
         @Override
-        public void execute(ExecutionContext context)
+        public void execute(final ExecutionContext context)
         {
-            Stack<Object> stack = context.getStack();
+            final Stack<Object> stack = context.getStack();
             stack.push(Boolean.FALSE);
         }
 
@@ -122,20 +122,20 @@ class BitwiseOperators
     static class Not implements Operator
     {
         @Override
-        public void execute(ExecutionContext context)
+        public void execute(final ExecutionContext context)
         {
-            Stack<Object> stack = context.getStack();
-            Object op1 = stack.pop();
+            final Stack<Object> stack = context.getStack();
+            final Object op1 = stack.pop();
             if (op1 instanceof Boolean)
             {
-                boolean bool1 = (Boolean)op1;
-                boolean result = !bool1;
+                final boolean bool1 = (Boolean)op1;
+                final boolean result = !bool1;
                 stack.push(result);
             }
             else if (op1 instanceof Integer)
             {
-                int int1 = (Integer)op1;
-                int result = -int1;
+                final int int1 = (Integer)op1;
+                final int result = -int1;
                 stack.push(result);
             }
             else
@@ -151,13 +151,13 @@ class BitwiseOperators
     {
 
         @Override
-        protected boolean applyForBoolean(boolean bool1, boolean bool2)
+        protected boolean applyForBoolean(final boolean bool1, final boolean bool2)
         {
             return bool1 || bool2;
         }
 
         @Override
-        protected int applyforInteger(int int1, int int2)
+        protected int applyforInteger(final int int1, final int int2)
         {
             return int1 | int2;
         }
@@ -168,9 +168,9 @@ class BitwiseOperators
     static class True implements Operator
     {
         @Override
-        public void execute(ExecutionContext context)
+        public void execute(final ExecutionContext context)
         {
-            Stack<Object> stack = context.getStack();
+            final Stack<Object> stack = context.getStack();
             stack.push(Boolean.TRUE);
         }
 
@@ -181,13 +181,13 @@ class BitwiseOperators
     {
 
         @Override
-        protected boolean applyForBoolean(boolean bool1, boolean bool2)
+        protected boolean applyForBoolean(final boolean bool1, final boolean bool2)
         {
             return bool1 ^ bool2;
         }
 
         @Override
-        protected int applyforInteger(int int1, int int2)
+        protected int applyforInteger(final int int1, final int int2)
         {
             return int1 ^ int2;
         }

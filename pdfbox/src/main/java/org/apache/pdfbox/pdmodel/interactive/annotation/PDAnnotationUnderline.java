@@ -47,7 +47,7 @@ public class PDAnnotationUnderline extends PDAnnotationTextMarkup
      *
      * @param dict The annotations dictionary.
      */
-    public PDAnnotationUnderline(COSDictionary dict)
+    public PDAnnotationUnderline(final COSDictionary dict)
     {
         super(dict);
     }
@@ -57,7 +57,7 @@ public class PDAnnotationUnderline extends PDAnnotationTextMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -69,11 +69,11 @@ public class PDAnnotationUnderline extends PDAnnotationTextMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDUnderlineAppearanceHandler appearanceHandler = new PDUnderlineAppearanceHandler(this, document);
+            final PDUnderlineAppearanceHandler appearanceHandler = new PDUnderlineAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

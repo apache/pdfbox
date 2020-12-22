@@ -47,10 +47,10 @@ class TTFSubsetterTest
     @Test
     void testEmptySubset() throws IOException
     {
-        TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
-        TTFSubsetter ttfSubsetter = new TTFSubsetter(x);
+        final TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        final TTFSubsetter ttfSubsetter = new TTFSubsetter(x);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
         try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
         {
@@ -68,9 +68,9 @@ class TTFSubsetterTest
     @Test
     void testEmptySubset2() throws IOException
     {
-        TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        final TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
         // List copied from TrueTypeEmbedder.java
-        List<String> tables = new ArrayList<>();
+        final List<String> tables = new ArrayList<>();
         tables.add("head");
         tables.add("hhea");
         tables.add("loca");
@@ -81,9 +81,9 @@ class TTFSubsetterTest
         tables.add("hmtx");
         tables.add("fpgm");
         tables.add("gasp");
-        TTFSubsetter ttfSubsetter = new TTFSubsetter(x, tables);
+        final TTFSubsetter ttfSubsetter = new TTFSubsetter(x, tables);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
         try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
         {
@@ -101,10 +101,10 @@ class TTFSubsetterTest
     @Test
     void testNonEmptySubset() throws IOException
     {
-        TrueTypeFont full = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
-        TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
+        final TrueTypeFont full = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        final TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
         ttfSubsetter.add('a');
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
         try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
         {
@@ -131,10 +131,10 @@ class TTFSubsetterTest
     void testPDFBox3319() throws IOException
     {
         System.out.println("Searching for SimHei font...");
-        FontFileFinder fontFileFinder = new FontFileFinder();
-        List<URI> files = fontFileFinder.find();
+        final FontFileFinder fontFileFinder = new FontFileFinder();
+        final List<URI> files = fontFileFinder.find();
         File simhei = null;
-        for (URI uri : files)
+        for (final URI uri : files)
         {
             if (uri.getPath() != null && uri.getPath().toLowerCase(Locale.US).endsWith("simhei.ttf"))
             {
@@ -147,11 +147,11 @@ class TTFSubsetterTest
             return;
         }
         System.out.println("SimHei font found!");
-        TrueTypeFont full = new TTFParser().parse(simhei);
+        final TrueTypeFont full = new TTFParser().parse(simhei);
 
         // List copied from TrueTypeEmbedder.java
         // Without it, the test would fail because of missing post table in source font
-        List<String> tables = new ArrayList<>();
+        final List<String> tables = new ArrayList<>();
         tables.add("head");
         tables.add("hhea");
         tables.add("loca");
@@ -163,26 +163,26 @@ class TTFSubsetterTest
         tables.add("fpgm");
         tables.add("gasp");
         
-        TTFSubsetter ttfSubsetter = new TTFSubsetter(full, tables);
+        final TTFSubsetter ttfSubsetter = new TTFSubsetter(full, tables);
         
-        String chinese = "中国你好!";
+        final String chinese = "中国你好!";
         for (int offset = 0; offset < chinese.length();)
         {
-            int codePoint = chinese.codePointAt(offset);
+            final int codePoint = chinese.codePointAt(offset);
             ttfSubsetter.add(codePoint);
             offset += Character.charCount(codePoint);
         }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
         try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
         {
             assertEquals(6, subset.getNumberOfGlyphs());
 
-            for (Entry<Integer, Integer> entry : ttfSubsetter.getGIDMap().entrySet())
+            for (final Entry<Integer, Integer> entry : ttfSubsetter.getGIDMap().entrySet())
             {
-                Integer newGID = entry.getKey();
-                Integer oldGID = entry.getValue();
+                final Integer newGID = entry.getKey();
+                final Integer oldGID = entry.getValue();
                 assertEquals(full.getAdvanceWidth(oldGID), subset.getAdvanceWidth(newGID));
                 assertEquals(full.getHorizontalMetrics().getLeftSideBearing(oldGID),
                         subset.getHorizontalMetrics().getLeftSideBearing(newGID));
@@ -198,12 +198,12 @@ class TTFSubsetterTest
     @Test
     void testPDFBox3379() throws IOException
     {
-        TrueTypeFont full = new TTFParser().parse("target/pdfs/DejaVuSansMono.ttf");
-        TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
+        final TrueTypeFont full = new TTFParser().parse("target/pdfs/DejaVuSansMono.ttf");
+        final TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
         ttfSubsetter.add('A');
         ttfSubsetter.add(' ');
         ttfSubsetter.add('B');
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
         try (TrueTypeFont subset = new TTFParser().parse(new ByteArrayInputStream(baos.toByteArray())))
         {
@@ -212,8 +212,8 @@ class TTFSubsetterTest
             assertEquals(1, subset.nameToGID("space"));
             assertEquals(2, subset.nameToGID("A"));
             assertEquals(3, subset.nameToGID("B"));
-            String [] names = new String[]{"A","B","space"};
-            for (String name : names)
+            final String [] names = new String[]{"A","B","space"};
+            for (final String name : names)
             {
                 assertEquals(full.getAdvanceWidth(full.nameToGID(name)),
                         subset.getAdvanceWidth(subset.nameToGID(name)));
@@ -233,11 +233,11 @@ class TTFSubsetterTest
     void testPDFBox3757() throws IOException
     {
         final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
-        TrueTypeFont ttf = new TTFParser().parse(testFile);
-        TTFSubsetter ttfSubsetter = new TTFSubsetter(ttf);
+        final TrueTypeFont ttf = new TTFParser().parse(testFile);
+        final TTFSubsetter ttfSubsetter = new TTFSubsetter(ttf);
         ttfSubsetter.add('Ö');
         ttfSubsetter.add('\u200A');
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
         try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
         {
@@ -249,7 +249,7 @@ class TTFSubsetterTest
             assertEquals(3, subset.nameToGID("uni200A"));
             assertEquals(4, subset.nameToGID("dieresis.uc"));
             
-            PostScriptTable pst = subset.getPostScript();
+            final PostScriptTable pst = subset.getPostScript();
             assertEquals(".notdef", pst.getName(0));
             assertEquals("O", pst.getName(1));
             assertEquals("Odieresis", pst.getName(2));

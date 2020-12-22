@@ -39,7 +39,7 @@ public final class OTFParser extends TTFParser
      *
      * @param isEmbedded true if the font is embedded in PDF
      */
-    public OTFParser(boolean isEmbedded)
+    public OTFParser(final boolean isEmbedded)
     {
         this(isEmbedded, false);
     }
@@ -50,43 +50,43 @@ public final class OTFParser extends TTFParser
      * @param isEmbedded true if the font is embedded in PDF
      * @param parseOnDemand true if the tables of the font should be parsed on demand
      */
-    public OTFParser(boolean isEmbedded, boolean parseOnDemand)
+    public OTFParser(final boolean isEmbedded, final boolean parseOnDemand)
     {
         super(isEmbedded, parseOnDemand);
     }
 
     @Override
-    public OpenTypeFont parse(String file) throws IOException
+    public OpenTypeFont parse(final String file) throws IOException
     {
         return (OpenTypeFont)super.parse(file);
     }
 
     @Override
-    public OpenTypeFont parse(File file) throws IOException
+    public OpenTypeFont parse(final File file) throws IOException
     {
         return (OpenTypeFont)super.parse(file);
     }
 
     @Override
-    public OpenTypeFont parse(InputStream data) throws IOException
+    public OpenTypeFont parse(final InputStream data) throws IOException
     {
         return (OpenTypeFont)super.parse(data);
     }
 
     @Override
-    OpenTypeFont parse(TTFDataStream raf) throws IOException
+    OpenTypeFont parse(final TTFDataStream raf) throws IOException
     {
         return (OpenTypeFont)super.parse(raf);
     }
     
     @Override
-    OpenTypeFont newFont(TTFDataStream raf)
+    OpenTypeFont newFont(final TTFDataStream raf)
     {
         return new OpenTypeFont(raf);
     }
 
     @Override
-    protected TTFTable readTable(TrueTypeFont font, String tag)
+    protected TTFTable readTable(final TrueTypeFont font, final String tag)
     {
         // todo: this is a stub, a full implementation is needed
         switch (tag)

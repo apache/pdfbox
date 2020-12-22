@@ -47,7 +47,7 @@ public class PDActionImportData extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionImportData(COSDictionary a)
+    public PDActionImportData(final COSDictionary a)
     {
         super(a);
     }
@@ -68,7 +68,7 @@ public class PDActionImportData extends PDAction
      *
      * @param fs The file specification.
      */
-    public void setFile(PDFileSpecification fs)
+    public void setFile(final PDFileSpecification fs)
     {
         action.setItem(COSName.F, fs);
     }

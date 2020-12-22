@@ -32,7 +32,7 @@ public final class PDFormContentStream extends PDAbstractContentStream
      * 
      * @throws IOException If there is an error writing to the form contents.
      */
-    public PDFormContentStream(PDFormXObject form) throws IOException
+    public PDFormContentStream(final PDFormXObject form) throws IOException
     {
         super(null, form.getContentStream().createOutputStream(), form.getResources());
     }

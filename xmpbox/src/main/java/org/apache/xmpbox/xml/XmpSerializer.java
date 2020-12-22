@@ -1,22 +1,22 @@
-/*****************************************************************************
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * 
- ****************************************************************************/
+/*
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+ */
 
 package org.apache.xmpbox.xml;
 
@@ -56,7 +56,7 @@ public class XmpSerializer
     private final TransformerFactory transformerFactory;
     private final DocumentBuilder documentBuilder;
 
-    private boolean parseTypeResourceForLi = true;
+    private final boolean parseTypeResourceForLi = true;
 
     /**
      * Default constructor.
@@ -73,8 +73,8 @@ public class XmpSerializer
      * @param transformerFactory     transformer factory to be used
      * @param documentBuilderFactory document builder factory to be used
      */
-    public XmpSerializer(TransformerFactory transformerFactory,
-            DocumentBuilderFactory documentBuilderFactory)
+    public XmpSerializer(final TransformerFactory transformerFactory,
+                         final DocumentBuilderFactory documentBuilderFactory)
     {
         this.transformerFactory = transformerFactory;
         // xml init
@@ -82,19 +82,19 @@ public class XmpSerializer
         {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
         }
-        catch (ParserConfigurationException e)
+        catch (final ParserConfigurationException e)
         {
             // never happens, because we don't call builderFactory#setAttribute
             throw new RuntimeException(e);
         }
     }
 
-    public void serialize(XMPMetadata metadata, OutputStream os, boolean withXpacket) throws TransformerException
+    public void serialize(final XMPMetadata metadata, final OutputStream os, final boolean withXpacket) throws TransformerException
     {
-        Document doc = documentBuilder.newDocument();
+        final Document doc = documentBuilder.newDocument();
         // fill document
-        Element rdf = createRdfElement(doc, metadata, withXpacket);
-        for (XMPSchema schema : metadata.getAllSchemas())
+        final Element rdf = createRdfElement(doc, metadata, withXpacket);
+        for (final XMPSchema schema : metadata.getAllSchemas())
         {
             rdf.appendChild(serializeSchema(doc, schema));
         }
@@ -102,31 +102,31 @@ public class XmpSerializer
         save(doc, os, "UTF-8");
     }
 
-    protected Element serializeSchema(Document doc, XMPSchema schema)
+    protected Element serializeSchema(final Document doc, final XMPSchema schema)
     {
         // prepare schema
-        Element selem = doc.createElementNS(XmpConstants.RDF_NAMESPACE, "rdf:Description");
+        final Element selem = doc.createElementNS(XmpConstants.RDF_NAMESPACE, "rdf:Description");
         selem.setAttributeNS(XmpConstants.RDF_NAMESPACE, "rdf:about", schema.getAboutValue());
         selem.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:" + schema.getPrefix(), schema.getNamespace());
         // the other attributes
         fillElementWithAttributes(selem, schema);
         // the content
-        List<AbstractField> fields = schema.getAllProperties();
+        final List<AbstractField> fields = schema.getAllProperties();
         serializeFields(doc, selem, fields,schema.getPrefix(), null, true);
         // return created schema
         return selem;
     }
 
-    public void serializeFields(Document doc, Element parent, List<AbstractField> fields, String resourceNS, String prefix, boolean wrapWithProperty)
+    public void serializeFields(final Document doc, final Element parent, final List<AbstractField> fields, final String resourceNS, final String prefix, final boolean wrapWithProperty)
     {
-        for (AbstractField field : fields)
+        for (final AbstractField field : fields)
         {
 
             if (field instanceof AbstractSimpleProperty)
             {
-                AbstractSimpleProperty simple = (AbstractSimpleProperty) field;
+                final AbstractSimpleProperty simple = (AbstractSimpleProperty) field;
                 
-                String localPrefix;
+                final String localPrefix;
                 
                 if (prefix != null && !prefix.isEmpty())
                 {
@@ -137,10 +137,10 @@ public class XmpSerializer
                     localPrefix = simple.getPrefix();
                 }
                 
-                Element esimple = doc.createElement(localPrefix + ":" + simple.getPropertyName());
+                final Element esimple = doc.createElement(localPrefix + ":" + simple.getPropertyName());
                 esimple.setTextContent(simple.getStringValue());
-                List<Attribute> attributes = simple.getAllAttributes();
-                for (Attribute attribute : attributes)
+                final List<Attribute> attributes = simple.getAllAttributes();
+                for (final Attribute attribute : attributes)
                 {
                     esimple.setAttributeNS(attribute.getNamespace(), attribute.getName(), attribute.getValue());
                 }
@@ -148,35 +148,35 @@ public class XmpSerializer
             }
             else if (field instanceof ArrayProperty)
             {
-                ArrayProperty array = (ArrayProperty) field;
+                final ArrayProperty array = (ArrayProperty) field;
                 // property
-                Element asimple = doc.createElement(array.getPrefix() + ":" + array.getPropertyName());
+                final Element asimple = doc.createElement(array.getPrefix() + ":" + array.getPropertyName());
                 parent.appendChild(asimple);
                 // attributes
                 fillElementWithAttributes(asimple, array);
                 // the array definition
-                Element econtainer = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX + ":" + array.getArrayType());
+                final Element econtainer = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX + ":" + array.getArrayType());
                 asimple.appendChild(econtainer);
                 // for each element of the array
-                List<AbstractField> innerFields = array.getAllProperties();
+                final List<AbstractField> innerFields = array.getAllProperties();
                 serializeFields(doc, econtainer, innerFields,resourceNS, XmpConstants.DEFAULT_RDF_PREFIX, false);
             }
             else if (field instanceof AbstractStructuredType)
             {
-                AbstractStructuredType structured = (AbstractStructuredType) field;
-                List<AbstractField> innerFields = structured.getAllProperties();
+                final AbstractStructuredType structured = (AbstractStructuredType) field;
+                final List<AbstractField> innerFields = structured.getAllProperties();
                 // property name attribute
                 Element listParent = parent;
                 if (wrapWithProperty)
                 {
-                    Element nstructured = doc
+                    final Element nstructured = doc
                             .createElement(resourceNS + ":" + structured.getPropertyName());
                     parent.appendChild(nstructured);
                     listParent = nstructured;
                 }
 
                 // element li
-                Element estructured = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX + ":" + XmpConstants.LIST_NAME);
+                final Element estructured = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX + ":" + XmpConstants.LIST_NAME);
                 listParent.appendChild(estructured);
                 if (parseTypeResourceForLi)
                 {
@@ -187,7 +187,7 @@ public class XmpSerializer
                 else
                 {
                     // element description
-                    Element econtainer = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX + ":" + "Description");
+                    final Element econtainer = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX + ":" + "Description");
                     estructured.appendChild(econtainer);
                     // all properties
                     serializeFields(doc, econtainer, innerFields,resourceNS, null, true);
@@ -202,10 +202,10 @@ public class XmpSerializer
 
     }
 
-    private void fillElementWithAttributes(Element target, AbstractComplexProperty property)
+    private void fillElementWithAttributes(final Element target, final AbstractComplexProperty property)
     {
         // normalize the attributes list
-        List<Attribute> toSerialize = normalizeAttributes(property);        
+        final List<Attribute> toSerialize = normalizeAttributes(property);
 
         toSerialize.forEach(attribute ->
         {
@@ -231,18 +231,18 @@ public class XmpSerializer
      * @param property the property that needs to be inspected
      * @return the list of attributed for serializing
      */
-    private List<Attribute> normalizeAttributes(AbstractComplexProperty property)
+    private List<Attribute> normalizeAttributes(final AbstractComplexProperty property)
     {
-        List<Attribute> attributes = property.getAllAttributes();
+        final List<Attribute> attributes = property.getAllAttributes();
         
 
-        List<Attribute> toSerialize = new ArrayList<>();
-        List<AbstractField> fields = property.getAllProperties();
+        final List<Attribute> toSerialize = new ArrayList<>();
+        final List<AbstractField> fields = property.getAllProperties();
                 
-        for (Attribute attribute : attributes)
+        for (final Attribute attribute : attributes)
         {
             boolean matchesField = false;
-            for (AbstractField field : fields)
+            for (final AbstractField field : fields)
             {
                 if (attribute.getName().compareTo(field.getPropertyName()) == 0)
                 {
@@ -259,28 +259,28 @@ public class XmpSerializer
         
     }
 
-    protected Element createRdfElement(Document doc, XMPMetadata metadata, boolean withXpacket)
+    protected Element createRdfElement(final Document doc, final XMPMetadata metadata, final boolean withXpacket)
     {
         // starting xpacket
         if (withXpacket)
         {
-            ProcessingInstruction beginXPacket = doc.createProcessingInstruction("xpacket",
+            final ProcessingInstruction beginXPacket = doc.createProcessingInstruction("xpacket",
                     "begin=\"" + metadata.getXpacketBegin() + "\" id=\"" + metadata.getXpacketId() + "\"");
             doc.appendChild(beginXPacket);
         }
         // meta element
-        Element xmpmeta = doc.createElementNS("adobe:ns:meta/", "x:xmpmeta");
+        final Element xmpmeta = doc.createElementNS("adobe:ns:meta/", "x:xmpmeta");
         xmpmeta.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:x", "adobe:ns:meta/");
         doc.appendChild(xmpmeta);
         // ending xpacket
         if (withXpacket)
         {
-            ProcessingInstruction endXPacket = doc.createProcessingInstruction("xpacket",
+            final ProcessingInstruction endXPacket = doc.createProcessingInstruction("xpacket",
                     "end=\"" + metadata.getEndXPacket() + "\"");
             doc.appendChild(endXPacket);
         }
         // rdf element
-        Element rdf = doc.createElementNS(XmpConstants.RDF_NAMESPACE, "rdf:RDF");
+        final Element rdf = doc.createElementNS(XmpConstants.RDF_NAMESPACE, "rdf:RDF");
         // rdf.setAttributeNS(XMPSchema.NS_NAMESPACE, qualifiedName, value)
         xmpmeta.appendChild(rdf);
         // return the rdf element where all will be put
@@ -296,9 +296,9 @@ public class XmpSerializer
      * 
      * @throws TransformerException If there is an error while saving the XML.
      */
-    private void save(Node doc, OutputStream outStream, String encoding) throws TransformerException
+    private void save(final Node doc, final OutputStream outStream, final String encoding) throws TransformerException
     {
-        Transformer transformer = transformerFactory.newTransformer();
+        final Transformer transformer = transformerFactory.newTransformer();
         // human readable
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         // indent elements
@@ -307,8 +307,8 @@ public class XmpSerializer
         transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         // initialize StreamResult with File object to save to file
-        Result result = new StreamResult(outStream);
-        DOMSource source = new DOMSource(doc);
+        final Result result = new StreamResult(outStream);
+        final DOMSource source = new DOMSource(doc);
         // save
         transformer.transform(source, result);
     }

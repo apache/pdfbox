@@ -32,7 +32,6 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -64,30 +63,30 @@ class OverlayTest
         testRotatedOverlay(270);
     }
 
-    private void testRotatedOverlay(int rotation) throws IOException
+    private void testRotatedOverlay(final int rotation) throws IOException
     {
         // do the overlaying
-        PDDocument baseDocument = Loader.loadPDF(new File(IN_DIR, "OverlayTestBaseRot0.pdf"));
-        Overlay overlay = new Overlay();
+        final PDDocument baseDocument = Loader.loadPDF(new File(IN_DIR, "OverlayTestBaseRot0.pdf"));
+        final Overlay overlay = new Overlay();
         overlay.setInputPDF(baseDocument);
-        PDDocument overlayDocument = Loader.loadPDF(new File(IN_DIR, "rot" + rotation + ".pdf"));
+        final PDDocument overlayDocument = Loader.loadPDF(new File(IN_DIR, "rot" + rotation + ".pdf"));
         overlay.setDefaultOverlayPDF(overlayDocument);
-        PDDocument overlayedResultPDF = overlay.overlay(new HashMap<Integer, String>());
+        final PDDocument overlayedResultPDF = overlay.overlay(new HashMap<Integer, String>());
         overlayedResultPDF.save(new File(OUT_DIR, "Overlayed-with-rot" + rotation + ".pdf"));
         overlayedResultPDF.close();
         baseDocument.close();
         overlayDocument.close();
 
         // render model and result
-        File modelFile = new File(IN_DIR, "Overlayed-with-rot" + rotation + ".pdf");
-        File resultFile = new File(OUT_DIR, "Overlayed-with-rot" + rotation + ".pdf");
+        final File modelFile = new File(IN_DIR, "Overlayed-with-rot" + rotation + ".pdf");
+        final File resultFile = new File(OUT_DIR, "Overlayed-with-rot" + rotation + ".pdf");
 
-        PDDocument modelDocument = Loader.loadPDF(modelFile);
-        BufferedImage modelImage = new PDFRenderer(modelDocument).renderImage(0);
+        final PDDocument modelDocument = Loader.loadPDF(modelFile);
+        final BufferedImage modelImage = new PDFRenderer(modelDocument).renderImage(0);
         modelDocument.close();
 
-        PDDocument resultDocument = Loader.loadPDF(resultFile);
-        BufferedImage resultImage = new PDFRenderer(resultDocument).renderImage(0);
+        final PDDocument resultDocument = Loader.loadPDF(resultFile);
+        final BufferedImage resultImage = new PDFRenderer(resultDocument).renderImage(0);
         resultDocument.close();
 
         // compare images
@@ -95,8 +94,8 @@ class OverlayTest
         assertEquals(modelImage.getHeight(), resultImage.getHeight());
         assertEquals(modelImage.getType(), resultImage.getType());
 
-        DataBufferInt modelDataBuffer = (DataBufferInt) modelImage.getRaster().getDataBuffer();
-        DataBufferInt resultDataBuffer = (DataBufferInt) resultImage.getRaster().getDataBuffer();
+        final DataBufferInt modelDataBuffer = (DataBufferInt) modelImage.getRaster().getDataBuffer();
+        final DataBufferInt resultDataBuffer = (DataBufferInt) resultImage.getRaster().getDataBuffer();
 
         assertArrayEquals(modelDataBuffer.getData(), resultDataBuffer.getData());
     }
@@ -104,12 +103,12 @@ class OverlayTest
     // code used to create the base file
     private void createBaseFile() throws IOException
     {
-        PDDocument doc = new PDDocument();
-        PDPage page = new PDPage();
-        PDPageContentStream cs = new PDPageContentStream(doc, page);
-        float fontHeight = 12;
+        final PDDocument doc = new PDDocument();
+        final PDPage page = new PDPage();
+        final PDPageContentStream cs = new PDPageContentStream(doc, page);
+        final float fontHeight = 12;
         float y = page.getMediaBox().getHeight() - fontHeight * 2;
-        PDFont font = PDType1Font.HELVETICA;
+        final PDFont font = PDType1Font.HELVETICA;
         cs.setFont(font, fontHeight);
         cs.beginText();
         cs.setLeading(fontHeight * 2 + 1);

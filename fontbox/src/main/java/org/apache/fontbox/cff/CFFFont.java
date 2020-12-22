@@ -56,7 +56,7 @@ public abstract class CFFFont implements FontBoxFont
      *
      * @param name the name of the font
      */
-    void setName(String name)
+    void setName(final String name)
     {
         fontName = name;
     }
@@ -67,7 +67,7 @@ public abstract class CFFFont implements FontBoxFont
      * @param name the given key
      * @param value the given value
      */
-    public void addValueToTopDict(String name, Object value)
+    public void addValueToTopDict(final String name, final Object value)
     {
         if (value != null)
         {
@@ -97,7 +97,7 @@ public abstract class CFFFont implements FontBoxFont
     @Override
     public BoundingBox getFontBBox()
     {
-        List<Number> numbers = (List<Number>)topDict.get("FontBBox");
+        final List<Number> numbers = (List<Number>)topDict.get("FontBBox");
         return new BoundingBox(numbers);
     }
 
@@ -116,7 +116,7 @@ public abstract class CFFFont implements FontBoxFont
      * 
      * @param charset the given CFFCharset
      */
-    void setCharset(CFFCharset charset)
+    void setCharset(final CFFCharset charset)
     {
         this.charset = charset;
     }
@@ -134,7 +134,7 @@ public abstract class CFFFont implements FontBoxFont
     /**
      * Sets a byte source to re-read the CFF data in the future.
      */
-    final void setData(CFFParser.ByteSource source)
+    final void setData(final CFFParser.ByteSource source)
     {
         this.source = source;
     }
@@ -160,7 +160,7 @@ public abstract class CFFFont implements FontBoxFont
      * 
      * @param globalSubrIndexValue an list containing the global subroutines
      */
-    void setGlobalSubrIndex(byte[][] globalSubrIndexValue)
+    void setGlobalSubrIndex(final byte[][] globalSubrIndexValue)
     {
         globalSubrIndex = globalSubrIndexValue;
     }

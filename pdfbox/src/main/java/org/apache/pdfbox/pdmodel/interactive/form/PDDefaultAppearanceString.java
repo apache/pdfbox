@@ -71,7 +71,7 @@ class PDDefaultAppearanceString
      * @param defaultAppearance DA entry
      * @throws IOException If the DA could not be parsed
      */
-    PDDefaultAppearanceString(COSString defaultAppearance, PDResources defaultResources) throws IOException
+    PDDefaultAppearanceString(final COSString defaultAppearance, final PDResources defaultResources) throws IOException
     {
         if (defaultAppearance == null)
         {
@@ -93,10 +93,10 @@ class PDDefaultAppearanceString
      * @param content the content to parse.
      * @throws IOException if there is an error reading or parsing the content stream.
      */
-    private void processAppearanceStringOperators(byte[] content) throws IOException
+    private void processAppearanceStringOperators(final byte[] content) throws IOException
     {
         List<COSBase> arguments = new ArrayList<>();
-        PDFStreamParser parser = new PDFStreamParser(content);
+        final PDFStreamParser parser = new PDFStreamParser(content);
         Object token = parser.parseNextToken();
         while (token != null)
         {
@@ -124,7 +124,7 @@ class PDDefaultAppearanceString
      * @param operands The list of arguments.
      * @throws IOException If there is an error processing the operation.
      */
-    private void processOperator(Operator operator, List<COSBase> operands) throws IOException
+    private void processOperator(final Operator operator, final List<COSBase> operands) throws IOException
     {
         switch (operator.getName())
         {
@@ -147,15 +147,15 @@ class PDDefaultAppearanceString
      * @param operands the font name and size
      * @throws IOException in case there are missing operators or the font is not within the resources
      */
-    private void processSetFont(List<COSBase> operands) throws IOException
+    private void processSetFont(final List<COSBase> operands) throws IOException
     {
         if (operands.size() < 2)
         {
             throw new IOException("Missing operands for set font operator " + Arrays.toString(operands.toArray()));
         }
 
-        COSBase base0 = operands.get(0);
-        COSBase base1 = operands.get(1);
+        final COSBase base0 = operands.get(0);
+        final COSBase base1 = operands.get(1);
         if (!(base0 instanceof COSName))
         {
             return;
@@ -164,10 +164,10 @@ class PDDefaultAppearanceString
         {
             return;
         }
-        COSName fontName = (COSName) base0;
+        final COSName fontName = (COSName) base0;
         
-        PDFont font = defaultResources.getFont(fontName);
-        float fontSize = ((COSNumber) base1).floatValue();
+        final PDFont font = defaultResources.getFont(fontName);
+        final float fontSize = ((COSNumber) base1).floatValue();
         
         // todo: handle cases where font == null with special mapping logic (see PDFBOX-2661)
         if (font == null)
@@ -187,9 +187,9 @@ class PDDefaultAppearanceString
      * @param operands the color components
      * @throws IOException in case of the color components not matching
      */
-    private void processSetFontColor(List<COSBase> operands) throws IOException
+    private void processSetFontColor(final List<COSBase> operands) throws IOException
     {
-        PDColorSpace colorSpace;
+        final PDColorSpace colorSpace;
 
         switch (operands.size())
         {
@@ -205,7 +205,7 @@ class PDDefaultAppearanceString
             default:
                 throw new IOException("Missing operands for set non stroking color operator " + Arrays.toString(operands.toArray()));
         }
-        COSArray array = new COSArray();
+        final COSArray array = new COSArray();
         array.addAll(operands);
         setFontColor(new PDColor(array, colorSpace));
     }
@@ -225,7 +225,7 @@ class PDDefaultAppearanceString
      * 
      * @param fontName the font name to use for resource lookup
      */
-    void setFontName(COSName fontName)
+    void setFontName(final COSName fontName)
     {
         this.fontName = fontName;
     }
@@ -243,7 +243,7 @@ class PDDefaultAppearanceString
      * 
      * @param font the font to use.
      */
-    void setFont(PDFont font)
+    void setFont(final PDFont font)
     {
         this.font = font;
     }
@@ -261,7 +261,7 @@ class PDDefaultAppearanceString
      * 
      * @param fontSize the font size.
      */
-    void setFontSize(float fontSize)
+    void setFontSize(final float fontSize)
     {
         this.fontSize = fontSize;
     }
@@ -279,7 +279,7 @@ class PDDefaultAppearanceString
      * 
      * @param fontColor the fontColor to use.
      */
-    void setFontColor(PDColor fontColor)
+    void setFontColor(final PDColor fontColor)
     {
         this.fontColor = fontColor;
     }
@@ -291,7 +291,7 @@ class PDDefaultAppearanceString
      * @param zeroFontSize The calculated font size to use if the /DA string has a size 0
      * (autosize). Otherwise the size from the /DA string is used.
      */
-    void writeTo(PDAppearanceContentStream contents, float zeroFontSize) throws IOException
+    void writeTo(final PDAppearanceContentStream contents, final float zeroFontSize) throws IOException
     {
         float fontSize = getFontSize();
         if (Float.compare(fontSize, 0) == 0)
@@ -310,7 +310,7 @@ class PDDefaultAppearanceString
      * Copies any needed resources from the document’s DR dictionary into the stream’s Resources
      * dictionary. Resources with the same name shall be left intact.
      */
-    void copyNeededResourcesTo(PDAppearanceStream appearanceStream) throws IOException
+    void copyNeededResourcesTo(final PDAppearanceStream appearanceStream) throws IOException
     {
         // make sure we have resources
         PDResources streamResources = appearanceStream.getResources();

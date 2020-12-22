@@ -32,7 +32,7 @@ public final class PDPatternContentStream extends PDAbstractContentStream
      * 
      * @throws IOException If there is an error writing to the form contents.
      */
-    public PDPatternContentStream(PDTilingPattern pattern) throws IOException
+    public PDPatternContentStream(final PDTilingPattern pattern) throws IOException
     {
         super(null, pattern.getContentStream().createOutputStream(), pattern.getResources());
     }

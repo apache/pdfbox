@@ -51,7 +51,7 @@ public class PDActionGoTo extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionGoTo( COSDictionary a )
+    public PDActionGoTo(final COSDictionary a )
     {
         super( a );
     }
@@ -75,15 +75,15 @@ public class PDActionGoTo extends PDAction
      * 
      * @throws IllegalArgumentException if the destination is not a page dictionary object.
      */
-    public void setDestination( PDDestination d )
+    public void setDestination(final PDDestination d )
     {
         if (d instanceof PDPageDestination)
         {
-            PDPageDestination pageDest = (PDPageDestination) d;
-            COSArray destArray = pageDest.getCOSObject();
+            final PDPageDestination pageDest = (PDPageDestination) d;
+            final COSArray destArray = pageDest.getCOSObject();
             if (destArray.size() >= 1)
             {
-                COSBase page = destArray.getObject(0);
+                final COSBase page = destArray.getObject(0);
                 if (!(page instanceof COSDictionary))
                 {
                     throw new IllegalArgumentException("Destination of a GoTo action must be "

@@ -48,20 +48,20 @@ public class CreateLandscapePDF
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void doIt( String message, String  outfile ) throws IOException
+    public void doIt(final String message, final String  outfile ) throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
-            PDFont font = PDType1Font.HELVETICA;
-            PDPage page = new PDPage(PDRectangle.A4);
+            final PDFont font = PDType1Font.HELVETICA;
+            final PDPage page = new PDPage(PDRectangle.A4);
             page.setRotation(90);
             doc.addPage(page);
-            PDRectangle pageSize = page.getMediaBox();
-            float pageWidth = pageSize.getWidth();
-            float fontSize = 12;
-            float stringWidth = font.getStringWidth( message )*fontSize/1000f;
-            float startX = 100;
-            float startY = 100;
+            final PDRectangle pageSize = page.getMediaBox();
+            final float pageWidth = pageSize.getWidth();
+            final float fontSize = 12;
+            final float stringWidth = font.getStringWidth( message )*fontSize/1000f;
+            final float startX = 100;
+            final float startY = 100;
 
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
@@ -104,9 +104,9 @@ public class CreateLandscapePDF
      * 
      * @param args Command line arguments.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        CreateLandscapePDF app = new CreateLandscapePDF();
+        final CreateLandscapePDF app = new CreateLandscapePDF();
         if( args.length != 2 )
         {
             app.usage();
