@@ -64,6 +64,6 @@ public class ColorSpaceHelperFactory
      */
     public enum ColorSpaceRestriction
     {
-        NO_RESTRICTION, NO_PATTERN, ONLY_DEVICE;
+        NO_RESTRICTION, NO_PATTERN, ONLY_DEVICE
     }
 }
