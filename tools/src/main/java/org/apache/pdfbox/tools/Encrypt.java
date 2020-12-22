@@ -106,9 +106,6 @@ public final class Encrypt implements Callable<Integer>
      * This is the entry point for the application.
      *
      * @param args The command-line arguments.
-     *
-     * @throws IOException If there is an error decrypting the document.
-     * @throws CertificateException If there is an error with a certificate.
      */
     public static void main( String[] args )
     {
