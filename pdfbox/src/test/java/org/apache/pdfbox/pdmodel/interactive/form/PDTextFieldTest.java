@@ -44,7 +44,7 @@ class PDTextFieldTest
     @Test
     void createDefaultTextField()
     {
-        PDField textField = new PDTextField(acroForm);
+        final PDField textField = new PDTextField(acroForm);
         
         assertEquals(textField.getFieldType(), textField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals("Tx", textField.getFieldType());
@@ -53,12 +53,12 @@ class PDTextFieldTest
     @Test
     void createWidgetForGet()
     {
-        PDTextField textField = new PDTextField(acroForm);
+        final PDTextField textField = new PDTextField(acroForm);
 
         assertNull(textField.getCOSObject().getItem(COSName.TYPE));
         assertNull(textField.getCOSObject().getNameAsString(COSName.SUBTYPE));
         
-        PDAnnotationWidget widget = textField.getWidgets().get(0);
+        final PDAnnotationWidget widget = textField.getWidgets().get(0);
         
         assertEquals(COSName.ANNOT, textField.getCOSObject().getItem(COSName.TYPE));
         assertEquals(PDAnnotationWidget.SUB_TYPE, textField.getCOSObject().getNameAsString(COSName.SUBTYPE));

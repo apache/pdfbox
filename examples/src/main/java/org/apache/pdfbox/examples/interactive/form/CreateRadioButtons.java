@@ -50,13 +50,13 @@ public class CreateRadioButtons
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         try (PDDocument document = new PDDocument())
         {
-            PDPage page = new PDPage(PDRectangle.A4);
+            final PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
-            PDAcroForm acroForm = new PDAcroForm(document);
+            final PDAcroForm acroForm = new PDAcroForm(document);
 
             // if you want to see what Adobe does, activate this, open with Adobe
             // save the file, and then open it with PDFDebugger
@@ -64,35 +64,35 @@ public class CreateRadioButtons
             //acroForm.setNeedAppearances(true)
             
             document.getDocumentCatalog().setAcroForm(acroForm);
-            List<String> options = Arrays.asList("a", "b", "c");
-            PDRadioButton radioButton = new PDRadioButton(acroForm);
+            final List<String> options = Arrays.asList("a", "b", "c");
+            final PDRadioButton radioButton = new PDRadioButton(acroForm);
             radioButton.setPartialName("MyRadioButton");
             radioButton.setExportValues(options);
             
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics = new PDAppearanceCharacteristicsDictionary(new COSDictionary());
+            final PDAppearanceCharacteristicsDictionary appearanceCharacteristics = new PDAppearanceCharacteristicsDictionary(new COSDictionary());
             appearanceCharacteristics.setBorderColour(new PDColor(new float[] { 1, 0, 0 }, PDDeviceRGB.INSTANCE));
             appearanceCharacteristics.setBackground(new PDColor(new float[]{0, 1, 0.3f}, PDDeviceRGB.INSTANCE));
             // no caption => round
             // with caption => see checkbox example
 
-            List<PDAnnotationWidget> widgets = new ArrayList<>();
+            final List<PDAnnotationWidget> widgets = new ArrayList<>();
             for (int i = 0; i < options.size(); i++)
             {
-                PDAnnotationWidget widget = new PDAnnotationWidget();
+                final PDAnnotationWidget widget = new PDAnnotationWidget();
                 widget.setRectangle(new PDRectangle(30, PDRectangle.A4.getHeight() - 40 - i * 35, 30, 30));
                 widget.setAppearanceCharacteristics(appearanceCharacteristics);
-                PDBorderStyleDictionary borderStyleDictionary = new PDBorderStyleDictionary();
+                final PDBorderStyleDictionary borderStyleDictionary = new PDBorderStyleDictionary();
                 borderStyleDictionary.setWidth(2);
                 borderStyleDictionary.setStyle(PDBorderStyleDictionary.STYLE_SOLID);
                 widget.setBorderStyle(borderStyleDictionary);
                 widget.setPage(page);
                 
-                COSDictionary apNDict = new COSDictionary();
+                final COSDictionary apNDict = new COSDictionary();
                 apNDict.setItem(COSName.Off, createAppearanceStream(document, widget, false));
                 apNDict.setItem(options.get(i), createAppearanceStream(document, widget, true));
                 
-                PDAppearanceDictionary appearance = new PDAppearanceDictionary();
-                PDAppearanceEntry appearanceNEntry = new PDAppearanceEntry(apNDict);
+                final PDAppearanceDictionary appearance = new PDAppearanceDictionary();
+                final PDAppearanceEntry appearanceNEntry = new PDAppearanceEntry(apNDict);
                 appearance.setNormalAppearance(appearanceNEntry);
                 widget.setAppearance(appearance);
                 widget.setAppearanceState("Off"); // don't forget this, or button will be invisible
@@ -123,20 +123,20 @@ public class CreateRadioButtons
     }
 
     private static PDAppearanceStream createAppearanceStream(
-            final PDDocument document, PDAnnotationWidget widget, boolean on) throws IOException
+            final PDDocument document, final PDAnnotationWidget widget, final boolean on) throws IOException
     {
-        PDRectangle rect = widget.getRectangle();
-        PDAppearanceStream onAP = new PDAppearanceStream(document);
+        final PDRectangle rect = widget.getRectangle();
+        final PDAppearanceStream onAP = new PDAppearanceStream(document);
         onAP.setBBox(new PDRectangle(rect.getWidth(), rect.getHeight()));
         try (PDAppearanceContentStream onAPCS = new PDAppearanceContentStream(onAP))
         {
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
-            PDColor backgroundColor = appearanceCharacteristics.getBackground();
-            PDColor borderColor = appearanceCharacteristics.getBorderColour();
-            float lineWidth = getLineWidth(widget);
+            final PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
+            final PDColor backgroundColor = appearanceCharacteristics.getBackground();
+            final PDColor borderColor = appearanceCharacteristics.getBorderColour();
+            final float lineWidth = getLineWidth(widget);
             onAPCS.setBorderLine(lineWidth, widget.getBorderStyle(), widget.getBorder());
             onAPCS.setNonStrokingColor(backgroundColor);
-            float radius = Math.min(rect.getWidth() / 2, rect.getHeight() / 2);
+            final float radius = Math.min(rect.getWidth() / 2, rect.getHeight() / 2);
             drawCircle(onAPCS, rect.getWidth() / 2, rect.getHeight() / 2, radius);
             onAPCS.fill();
             onAPCS.setStrokingColor(borderColor);
@@ -152,9 +152,9 @@ public class CreateRadioButtons
         return onAP;
     }
 
-    static float getLineWidth(PDAnnotationWidget widget)
+    static float getLineWidth(final PDAnnotationWidget widget)
     {
-        PDBorderStyleDictionary bs = widget.getBorderStyle();
+        final PDBorderStyleDictionary bs = widget.getBorderStyle();
         if (bs != null)
         {
             return bs.getWidth();
@@ -162,10 +162,10 @@ public class CreateRadioButtons
         return 1;
     }
 
-    static void drawCircle(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
+    static void drawCircle(final PDAppearanceContentStream cs, final float x, final float y, final float r) throws IOException
     {
         // http://stackoverflow.com/a/2007782/535646
-        float magic = r * 0.551784f;
+        final float magic = r * 0.551784f;
         cs.moveTo(x, y + r);
         cs.curveTo(x + magic, y + r, x + r, y + magic, x + r, y);
         cs.curveTo(x + r, y - magic, x + magic, y - r, x, y - r);

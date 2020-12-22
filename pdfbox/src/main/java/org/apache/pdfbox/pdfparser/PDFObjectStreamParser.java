@@ -43,7 +43,7 @@ public class PDFObjectStreamParser extends BaseParser
      * @param document The document for the current parsing.
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFObjectStreamParser(COSStream stream, COSDocument document) throws IOException
+    public PDFObjectStreamParser(final COSStream stream, final COSDocument document) throws IOException
     {
         super(stream.createView());
         this.document = document;
@@ -69,16 +69,16 @@ public class PDFObjectStreamParser extends BaseParser
      * @return the parsed object or null if the object with the given number can't be found
      * @throws IOException if there is an error while parsing the stream
      */
-    public COSBase parseObject(long objectNumber) throws IOException
+    public COSBase parseObject(final long objectNumber) throws IOException
     {
         COSBase streamObject = null;
         try
         {
-            Integer objectOffset = privateReadObjectNumbers().get(objectNumber);
+            final Integer objectOffset = privateReadObjectNumbers().get(objectNumber);
             if (objectOffset != null) 
             {
                 // jump to the offset of the first object
-                long currentPosition = source.getPosition();
+                final long currentPosition = source.getPosition();
                 if (firstObject > 0 && currentPosition < firstObject)
                 {
                     source.skip(firstObject - (int) currentPosition);
@@ -98,11 +98,11 @@ public class PDFObjectStreamParser extends BaseParser
 
     private Map<Long, Integer> privateReadObjectNumbers() throws IOException
     {
-        Map<Long, Integer> objectNumbers = new HashMap<>(numberOfObjects);
+        final Map<Long, Integer> objectNumbers = new HashMap<>(numberOfObjects);
         for (int i = 0; i < numberOfObjects; i++)
         {
-            long objectNumber = readObjectNumber();
-            int offset = (int) readLong();
+            final long objectNumber = readObjectNumber();
+            final int offset = (int) readLong();
             objectNumbers.put(objectNumber, offset);
         }
         return objectNumbers;

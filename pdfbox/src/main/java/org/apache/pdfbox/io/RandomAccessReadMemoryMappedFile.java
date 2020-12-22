@@ -47,7 +47,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     /**
      * Default constructor.
      */
-    public RandomAccessReadMemoryMappedFile(String filename) throws IOException
+    public RandomAccessReadMemoryMappedFile(final String filename) throws IOException
     {
         this(new File(filename));
     }
@@ -55,7 +55,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     /**
      * Default constructor.
      */
-    public RandomAccessReadMemoryMappedFile(File file) throws IOException
+    public RandomAccessReadMemoryMappedFile(final File file) throws IOException
     {
         fileChannel = FileChannel.open(file.toPath(), EnumSet.of(StandardOpenOption.READ));
         size = fileChannel.size();
@@ -70,7 +70,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
         mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, size);
     }
 
-    private RandomAccessReadMemoryMappedFile(RandomAccessReadMemoryMappedFile parent)
+    private RandomAccessReadMemoryMappedFile(final RandomAccessReadMemoryMappedFile parent)
     {
         mappedByteBuffer = parent.mappedByteBuffer.duplicate();
         size = parent.size;
@@ -97,7 +97,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
      * {@inheritDoc}
      */
     @Override
-    public void seek(long position) throws IOException
+    public void seek(final long position) throws IOException
     {
         checkClosed();
         if (position < 0)
@@ -136,13 +136,13 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
      * {@inheritDoc}
      */
     @Override
-    public int read(byte[] b, int offset, int length) throws IOException
+    public int read(final byte[] b, final int offset, final int length) throws IOException
     {
         if (isEOF())
         {
             return -1;
         }
-        int remainingBytes = (int)size - mappedByteBuffer.position();
+        final int remainingBytes = (int)size - mappedByteBuffer.position();
         mappedByteBuffer.get(b, offset, Math.min(remainingBytes, length));
         return Math.min(remainingBytes, length);
     }
@@ -190,7 +190,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     }
 
     @Override
-    public RandomAccessReadView createView(long startPosition, long streamLength)
+    public RandomAccessReadView createView(final long startPosition, final long streamLength)
     {
         return new RandomAccessReadView(new RandomAccessReadMemoryMappedFile(this), startPosition,
                 streamLength, true);

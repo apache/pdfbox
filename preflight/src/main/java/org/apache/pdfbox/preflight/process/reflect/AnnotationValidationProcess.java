@@ -36,9 +36,9 @@ public class AnnotationValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
-        PreflightPath vPath = context.getValidationPath();
+        final PreflightPath vPath = context.getValidationPath();
         if (vPath.isEmpty()) 
         {
             return;
@@ -49,11 +49,11 @@ public class AnnotationValidationProcess extends AbstractProcess
         }
         else
         {
-            COSDictionary annotDict = (COSDictionary) vPath.peek();
+            final COSDictionary annotDict = (COSDictionary) vPath.peek();
 
-            PreflightConfiguration config = context.getConfig();
-            AnnotationValidatorFactory factory = config.getAnnotFact();
-            AnnotationValidator annotValidator = factory.getAnnotationValidator(context, annotDict);
+            final PreflightConfiguration config = context.getConfig();
+            final AnnotationValidatorFactory factory = config.getAnnotFact();
+            final AnnotationValidator annotValidator = factory.getAnnotationValidator(context, annotDict);
             if (annotValidator != null)
             {
                 annotValidator.validate();

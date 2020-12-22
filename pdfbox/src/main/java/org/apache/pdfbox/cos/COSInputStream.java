@@ -47,7 +47,7 @@ public final class COSInputStream extends FilterInputStream
      * @return Decoded stream.
      * @throws IOException If the stream could not be read.
      */
-    static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in)
+    static COSInputStream create(final List<Filter> filters, final COSDictionary parameters, final InputStream in)
             throws IOException
     {
         return create(filters, parameters, in, DecodeOptions.DEFAULT);
@@ -63,19 +63,19 @@ public final class COSInputStream extends FilterInputStream
      * @return Decoded stream.
      * @throws IOException If the stream could not be read.
      */
-    static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
-            DecodeOptions options) throws IOException
+    static COSInputStream create(final List<Filter> filters, final COSDictionary parameters, final InputStream in,
+                                 final DecodeOptions options) throws IOException
     {
-        List<DecodeResult> results = new ArrayList<>();
+        final List<DecodeResult> results = new ArrayList<>();
         InputStream input = in;
         if (!filters.isEmpty())
         {
-            Set<Filter> filterSet = new HashSet<>(filters);
+            final Set<Filter> filterSet = new HashSet<>(filters);
             if (filterSet.size() != filters.size())
             {
                 throw new IOException("Duplicate");
             }
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            final ByteArrayOutputStream output = new ByteArrayOutputStream();
             // apply filters
             for (int i = 0; i < filters.size(); i++)
             {
@@ -95,7 +95,7 @@ public final class COSInputStream extends FilterInputStream
      * @param input decoded stream
      * @param decodeResults results of decoding
      */
-    private COSInputStream(InputStream input, List<DecodeResult> decodeResults)
+    private COSInputStream(final InputStream input, final List<DecodeResult> decodeResults)
     {
         super(input);
         this.decodeResults = decodeResults;

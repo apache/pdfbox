@@ -48,7 +48,7 @@ final class ASCII85InputStream extends FilterInputStream
      *
      * @param is The input stream to actually read from.
      */
-    ASCII85InputStream(InputStream is)
+    ASCII85InputStream(final InputStream is)
     {
         super(is);
         index = 0;
@@ -79,7 +79,7 @@ final class ASCII85InputStream extends FilterInputStream
             byte z;
             do
             {
-                int zz = (byte) in.read();
+                final int zz = (byte) in.read();
                 if (zz == -1)
                 {
                     eof = true;
@@ -107,7 +107,7 @@ final class ASCII85InputStream extends FilterInputStream
                 {
                     do
                     {
-                        int zz = (byte) in.read();
+                        final int zz = (byte) in.read();
                         if (zz == -1)
                         {
                             eof = true;
@@ -177,7 +177,7 @@ final class ASCII85InputStream extends FilterInputStream
      * @throws IOException If there is an error reading data from the underlying stream.
      */
     @Override
-    public int read(byte[] data, int offset, int len) throws IOException
+    public int read(final byte[] data, final int offset, final int len) throws IOException
     {
         if (eof && index >= n)
         {
@@ -191,7 +191,7 @@ final class ASCII85InputStream extends FilterInputStream
             }
             else
             {
-                int t = read();
+                final int t = read();
                 if (t == -1)
                 {
                     return i;
@@ -235,7 +235,7 @@ final class ASCII85InputStream extends FilterInputStream
      * @return Always zero.
      */
     @Override
-    public long skip(long nValue)
+    public long skip(final long nValue)
     {
         return 0;
     }
@@ -257,7 +257,7 @@ final class ASCII85InputStream extends FilterInputStream
      * @param readlimit ignored.
      */
     @Override
-    public synchronized void mark(int readlimit)
+    public synchronized void mark(final int readlimit)
     {
     }
 

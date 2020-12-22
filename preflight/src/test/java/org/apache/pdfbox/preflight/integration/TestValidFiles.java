@@ -61,7 +61,7 @@ class TestValidFiles
     protected static Collection<File> stopIfExpected() throws Exception
     {
         // throw new Exception("Test badly configured");
-        List<File> ret = new ArrayList<>();
+        final List<File> ret = new ArrayList<>();
         ret.add(null);
         return ret;
     }
@@ -69,21 +69,21 @@ class TestValidFiles
     public static Collection<File> initializeParameters() throws Exception
     {
         // find isartor files
-        String isartor = System.getProperty(ISARTOR_FILES);
+        final String isartor = System.getProperty(ISARTOR_FILES);
         if (isartor == null || isartor.isEmpty())
         {
             staticLogger.warn(ISARTOR_FILES + " (where are isartor pdf files) is not defined.");
             return stopIfExpected();
         }
-        File root = new File(isartor);
+        final File root = new File(isartor);
         // load expected errors
         // prepare config
-        List<File> data = new ArrayList<>();
-        Collection<?> files = FileUtils.listFiles(root, new String[] { "pdf" }, true);
+        final List<File> data = new ArrayList<>();
+        final Collection<?> files = FileUtils.listFiles(root, new String[] { "pdf" }, true);
 
-        for (Object object : files)
+        for (final Object object : files)
         {
-            File file = (File) object;
+            final File file = (File) object;
             data.add(file);
         }
         return data;
@@ -92,7 +92,7 @@ class TestValidFiles
     @BeforeAll
     public static void beforeClass() throws Exception
     {
-        String irp = System.getProperty(RESULTS_FILE);
+        final String irp = System.getProperty(RESULTS_FILE);
         if (irp == null)
         {
             // no log file defined, use system.err
@@ -113,7 +113,7 @@ class TestValidFiles
 
     @ParameterizedTest
 	@MethodSource("initializeParameters")
-    void validate(File path) throws Exception
+    void validate(final File path) throws Exception
     {
         logger = LogFactory.getLog(path != null ? path.getName() : "dummy");
         if (path == null)
@@ -121,7 +121,7 @@ class TestValidFiles
             logger.warn("This is an empty test");
             return;
         }
-        ValidationResult result = PreflightParser.validate(path);
+        final ValidationResult result = PreflightParser.validate(path);
 
         assertFalse(result.isValid(), path + " : Isartor file should be invalid (" + path + ")");
         assertTrue(result.getErrorsList().size() > 0, path + " : Should find at least one error");

@@ -49,7 +49,7 @@ public class PDNonTerminalField extends PDField
      * 
      * @param acroForm The form that this field is part of.
      */
-    public PDNonTerminalField(PDAcroForm acroForm)
+    public PDNonTerminalField(final PDAcroForm acroForm)
     {
         super(acroForm);
     }
@@ -61,7 +61,7 @@ public class PDNonTerminalField extends PDField
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node to be created
      */
-    PDNonTerminalField(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDNonTerminalField(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -70,7 +70,7 @@ public class PDNonTerminalField extends PDField
     public int getFieldFlags()
     {
         int retval = 0;
-        COSInteger ff = (COSInteger) getCOSObject().getDictionaryObject(COSName.FF);
+        final COSInteger ff = (COSInteger) getCOSObject().getDictionaryObject(COSName.FF);
         if (ff != null)
         {
             retval = ff.intValue();
@@ -80,18 +80,18 @@ public class PDNonTerminalField extends PDField
     }
 
     @Override
-    void importFDF(FDFField fdfField) throws IOException
+    void importFDF(final FDFField fdfField) throws IOException
     {
         super.importFDF(fdfField);
         
-        List<FDFField> fdfKids = fdfField.getKids();
-        List<PDField> children = getChildren();
+        final List<FDFField> fdfKids = fdfField.getKids();
+        final List<PDField> children = getChildren();
         for (int i = 0; fdfKids != null && i < fdfKids.size(); i++)
         {
-            for (PDField pdChild : children)
+            for (final PDField pdChild : children)
             {
-                FDFField fdfChild = fdfKids.get(i);
-                String fdfName = fdfChild.getPartialFieldName();
+                final FDFField fdfChild = fdfKids.get(i);
+                final String fdfName = fdfChild.getPartialFieldName();
                 if (fdfName != null && fdfName.equals(pdChild.getPartialName()))
                 {
                     pdChild.importFDF(fdfChild);
@@ -103,13 +103,13 @@ public class PDNonTerminalField extends PDField
     @Override
     FDFField exportFDF() throws IOException
     {
-        FDFField fdfField = new FDFField();
+        final FDFField fdfField = new FDFField();
         fdfField.setPartialFieldName(getPartialName());
         fdfField.setValue(getValue());
 
-        List<PDField> children = getChildren();
-        List<FDFField> fdfChildren = new ArrayList<>();
-        for (PDField child : children)
+        final List<PDField> children = getChildren();
+        final List<FDFField> fdfChildren = new ArrayList<>();
+        for (final PDField child : children)
         {
             fdfChildren.add(child.exportFDF());
         }
@@ -129,15 +129,15 @@ public class PDNonTerminalField extends PDField
     {
         //TODO: why not return a COSArrayList like in PDPage.getAnnotations() ?
  
-        List<PDField> children = new ArrayList<>();
-        COSArray kids = getCOSObject().getCOSArray(COSName.KIDS);
+        final List<PDField> children = new ArrayList<>();
+        final COSArray kids = getCOSObject().getCOSArray(COSName.KIDS);
         if (kids == null)
         {
             return children;
         }
         for (int i = 0; i < kids.size(); i++)
         {
-            COSBase kid = kids.getObject(i);
+            final COSBase kid = kids.getObject(i);
             if (kid instanceof COSDictionary)
             {
                 if (kid.getCOSObject() == this.getCOSObject())
@@ -145,7 +145,7 @@ public class PDNonTerminalField extends PDField
                     LOG.warn("Child field is same object as parent");
                     continue;
                 }
-                PDField field = PDField.fromDictionary(getAcroForm(), (COSDictionary) kid, this);
+                final PDField field = PDField.fromDictionary(getAcroForm(), (COSDictionary) kid, this);
                 if (field != null)
                 {
                     children.add(field);
@@ -160,9 +160,9 @@ public class PDNonTerminalField extends PDField
      *
      * @param children The list of child fields.
      */
-    public void setChildren(List<PDField> children)
+    public void setChildren(final List<PDField> children)
     {
-        COSArray kidsArray = new COSArray(children);
+        final COSArray kidsArray = new COSArray(children);
         getCOSObject().setItem(COSName.KIDS, kidsArray);
     }
 
@@ -198,7 +198,7 @@ public class PDNonTerminalField extends PDField
     @Override
     public String getValueAsString()
     {
-        COSBase fieldValue = getCOSObject().getDictionaryObject(COSName.V);
+        final COSBase fieldValue = getCOSObject().getDictionaryObject(COSName.V);
         return fieldValue != null ? fieldValue.toString() : "";
     }
 
@@ -210,7 +210,7 @@ public class PDNonTerminalField extends PDField
      * the local value, without inheritance.
      * @param object
      */
-    public void setValue(COSBase object)
+    public void setValue(final COSBase object)
     {
         getCOSObject().setItem(COSName.V, object);
         // todo: propagate change event to children?
@@ -224,7 +224,7 @@ public class PDNonTerminalField extends PDField
      * @throws IOException if the value could not be set
      */
     @Override
-    public void setValue(String value) throws IOException
+    public void setValue(final String value) throws IOException
     {
         getCOSObject().setString(COSName.V, value);
         // todo: propagate change event to children?
@@ -251,7 +251,7 @@ public class PDNonTerminalField extends PDField
      * the local value, without inheritance.
      * @param value
      */
-    public void setDefaultValue(COSBase value)
+    public void setDefaultValue(final COSBase value)
     {
         getCOSObject().setItem(COSName.V, value);
     }
@@ -259,7 +259,7 @@ public class PDNonTerminalField extends PDField
     @Override
     public List<PDAnnotationWidget> getWidgets()
     {
-        List<PDAnnotationWidget> emptyList = Collections.emptyList();
+        final List<PDAnnotationWidget> emptyList = Collections.emptyList();
         return Collections.unmodifiableList(emptyList);
     }
 }

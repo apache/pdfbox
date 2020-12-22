@@ -62,7 +62,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
      * an existing, writable regular file and a new regular file of that name cannot be created, or
      * if some other error occurs while opening or creating the file.
      */
-    public BufferedRandomAccessFile(String filename, String mode, int bufsize)
+    public BufferedRandomAccessFile(final String filename, final String mode, final int bufsize)
             throws FileNotFoundException
     {
         super(filename, mode);
@@ -82,7 +82,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
      * an existing, writable regular file and a new regular file of that name cannot be created, or
      * if some other error occurs while opening or creating the file.
      */
-    public BufferedRandomAccessFile(File file, String mode, int bufsize)
+    public BufferedRandomAccessFile(final File file, final String mode, final int bufsize)
             throws FileNotFoundException
     {
         super(file, mode);
@@ -119,7 +119,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
      */
     private int fillBuffer() throws IOException
     {
-        int n = super.read(buffer, 0, BUFSIZE);
+        final int n = super.read(buffer, 0, BUFSIZE);
 
         if (n >= 0)
         {
@@ -146,7 +146,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
      * {@inheritDoc}
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException
+    public int read(final byte[] b, final int off, final int len) throws IOException
     {
         int curLen = len; // length of what is left to read (shrinks)
         int curOff = off; // offset where to put read data (grows)
@@ -154,7 +154,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
 
         while (true)
         {
-            int leftover = bufend - bufpos;
+            final int leftover = bufend - bufpos;
             if (curLen <= leftover)
             {
                 System.arraycopy(buffer, bufpos, b, curOff, curLen);
@@ -194,9 +194,9 @@ public class BufferedRandomAccessFile extends RandomAccessFile
      * {@inheritDoc}
      */
     @Override
-    public void seek(long pos) throws IOException
+    public void seek(final long pos) throws IOException
     {
-        int n = (int) (realpos - pos);
+        final int n = (int) (realpos - pos);
         if (n >= 0 && n <= bufend)
         {
             bufpos = bufend - n;

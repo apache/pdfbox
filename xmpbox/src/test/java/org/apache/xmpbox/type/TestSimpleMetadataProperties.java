@@ -103,7 +103,7 @@ class TestSimpleMetadataProperties
     @Test
     void testTextBadTypeDetection() throws Exception
     {
-        Calendar calendar = Calendar.getInstance();
+        final Calendar calendar = Calendar.getInstance();
         assertThrows(IllegalArgumentException.class, () -> {
 	        new TextType(parent, null, "test", "text", calendar);
 	    });   
@@ -117,16 +117,16 @@ class TestSimpleMetadataProperties
     @Test
     void testElementAndObjectSynchronization() throws Exception
     {
-        boolean boolv = true;
-        Calendar datev = Calendar.getInstance();
-        int integerv = 1;
-        float realv = Float.parseFloat("1.69");
-        String textv = "TEXTCONTENT";
-        BooleanType bool = parent.getTypeMapping().createBoolean(null, "test", "boolean", boolv);
-        DateType date = parent.getTypeMapping().createDate(null, "test", "date", datev);
-        IntegerType integer = parent.getTypeMapping().createInteger(null, "test", "integer", integerv);
-        RealType real = parent.getTypeMapping().createReal(null, "test", "real", realv);
-        TextType text = parent.getTypeMapping().createText(null, "test", "text", textv);
+        final boolean boolv = true;
+        final Calendar datev = Calendar.getInstance();
+        final int integerv = 1;
+        final float realv = Float.parseFloat("1.69");
+        final String textv = "TEXTCONTENT";
+        final BooleanType bool = parent.getTypeMapping().createBoolean(null, "test", "boolean", boolv);
+        final DateType date = parent.getTypeMapping().createDate(null, "test", "date", datev);
+        final IntegerType integer = parent.getTypeMapping().createInteger(null, "test", "integer", integerv);
+        final RealType real = parent.getTypeMapping().createReal(null, "test", "real", realv);
+        final TextType text = parent.getTypeMapping().createText(null, "test", "text", textv);
 
         assertEquals(boolv, bool.getValue());
         assertEquals(datev, date.getValue());
@@ -144,17 +144,17 @@ class TestSimpleMetadataProperties
     @Test
     void testCreationFromString() throws Exception
     {
-        String boolv = "False";
-        String datev = "2010-03-22T14:33:11+01:00";
-        String integerv = "10";
-        String realv = "1.92";
-        String textv = "text";
+        final String boolv = "False";
+        final String datev = "2010-03-22T14:33:11+01:00";
+        final String integerv = "10";
+        final String realv = "1.92";
+        final String textv = "text";
 
-        BooleanType bool = new BooleanType(parent, null, "test", "boolean", boolv);
-        DateType date = new DateType(parent, null, "test", "date", datev);
-        IntegerType integer = new IntegerType(parent, null, "test", "integer", integerv);
-        RealType real = new RealType(parent, null, "test", "real", realv);
-        TextType text = new TextType(parent, null, "test", "text", textv);
+        final BooleanType bool = new BooleanType(parent, null, "test", "boolean", boolv);
+        final DateType date = new DateType(parent, null, "test", "date", datev);
+        final IntegerType integer = new IntegerType(parent, null, "test", "integer", integerv);
+        final RealType real = new RealType(parent, null, "test", "real", realv);
+        final TextType text = new TextType(parent, null, "test", "text", textv);
 
         assertEquals(boolv, bool.getStringValue());
         assertEquals(datev, date.getStringValue());
@@ -171,12 +171,12 @@ class TestSimpleMetadataProperties
     @Test
     void testObjectCreationWithNamespace() throws Exception
     {
-        String ns = "http://www.test.org/pdfa/";
-        BooleanType bool = parent.getTypeMapping().createBoolean(ns, "test", "boolean", true);
-        DateType date = parent.getTypeMapping().createDate(ns, "test", "date", Calendar.getInstance());
-        IntegerType integer = parent.getTypeMapping().createInteger(ns, "test", "integer", 1);
-        RealType real = parent.getTypeMapping().createReal(ns, "test", "real", (float) 1.6);
-        TextType text = parent.getTypeMapping().createText(ns, "test", "text", "TEST");
+        final String ns = "http://www.test.org/pdfa/";
+        final BooleanType bool = parent.getTypeMapping().createBoolean(ns, "test", "boolean", true);
+        final DateType date = parent.getTypeMapping().createDate(ns, "test", "date", Calendar.getInstance());
+        final IntegerType integer = parent.getTypeMapping().createInteger(ns, "test", "integer", 1);
+        final RealType real = parent.getTypeMapping().createReal(ns, "test", "real", (float) 1.6);
+        final TextType text = parent.getTypeMapping().createText(ns, "test", "text", "TEST");
 
         assertEquals(ns, bool.getNamespace());
         assertEquals(ns, date.getNamespace());
@@ -194,7 +194,7 @@ class TestSimpleMetadataProperties
     @Test
     void testExceptionWithCause() throws Exception
     {
-        Throwable throwable = new Throwable();
+        final Throwable throwable = new Throwable();
         assertThrows(IllegalArgumentException.class, () -> {
 	        throw new IllegalArgumentException("TEST", throwable);
 	    });
@@ -209,9 +209,9 @@ class TestSimpleMetadataProperties
     void testAttribute() throws Exception
     {
 
-        IntegerType integer = new IntegerType(parent, null, "test", "integer", 1);
-        Attribute value = new Attribute("http://www.test.org/test/", "value1", "StringValue1");
-        Attribute value2 = new Attribute("http://www.test.org/test/", "value2", "StringValue2");
+        final IntegerType integer = new IntegerType(parent, null, "test", "integer", 1);
+        final Attribute value = new Attribute("http://www.test.org/test/", "value1", "StringValue1");
+        final Attribute value2 = new Attribute("http://www.test.org/test/", "value2", "StringValue2");
 
         integer.setAttribute(value);
 
@@ -229,12 +229,12 @@ class TestSimpleMetadataProperties
         assertFalse(integer.containsAttribute(value2.getName()));
 
         // Attribute with namespace Creation checking
-        Attribute valueNS = new Attribute("http://www.tefst2.org/test/", "value2", "StringValue.2");
+        final Attribute valueNS = new Attribute("http://www.tefst2.org/test/", "value2", "StringValue.2");
         integer.setAttribute(valueNS);
-        Attribute valueNS2 = new Attribute("http://www.test2.org/test/", "value2", "StringValueTwo");
+        final Attribute valueNS2 = new Attribute("http://www.test2.org/test/", "value2", "StringValueTwo");
         integer.setAttribute(valueNS2);
 
-        List<Attribute> atts = integer.getAllAttributes();
+        final List<Attribute> atts = integer.getAllAttributes();
         /*
          * for (Attribute attribute : atts) { System.out.println(attribute.getLocalName ()+" :"+attribute.getValue()); }
          */

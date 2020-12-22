@@ -90,7 +90,7 @@ public class StubOperator extends OperatorProcessor
     private static final List<String> CHECK_ARRAY_OPERANDS = Arrays.asList( //
             OperatorName.SHOW_TEXT_ADJUSTED);
 
-    public StubOperator(String name)
+    public StubOperator(final String name)
     {
         this.name = name;
     }
@@ -102,9 +102,9 @@ public class StubOperator extends OperatorProcessor
      * java.util.List)
      */
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
-        String opName = operator.getName();
+        final String opName = operator.getName();
         if (CHECK_NO_OPERANDS.contains(opName))
         {
             checkNoOperands(arguments);
@@ -152,7 +152,7 @@ public class StubOperator extends OperatorProcessor
      * @param arguments
      * @throws ContentStreamException
      */
-    private void checkNoOperands(List<COSBase> arguments) throws ContentStreamException
+    private void checkNoOperands(final List<COSBase> arguments) throws ContentStreamException
     {
         if (arguments != null && !arguments.isEmpty())
         {
@@ -167,7 +167,7 @@ public class StubOperator extends OperatorProcessor
      * @param length
      * @throws ContentStreamException
      */
-    private void checkStringOperands(List<COSBase> arguments, int length) throws ContentStreamException
+    private void checkStringOperands(final List<COSBase> arguments, final int length) throws ContentStreamException
     {
         if (arguments == null || arguments.isEmpty() || arguments.size() != length)
         {
@@ -176,7 +176,7 @@ public class StubOperator extends OperatorProcessor
 
         for (int i = 0; i < length; ++i)
         {
-            COSBase arg = arguments.get(i);
+            final COSBase arg = arguments.get(i);
             if (!(arg instanceof COSName) && !(arg instanceof COSString))
             {
                 throw createInvalidArgumentsError();
@@ -201,7 +201,7 @@ public class StubOperator extends OperatorProcessor
      * @param length
      * @throws ContentStreamException
      */
-    private void checkArrayOperands(List<COSBase> arguments, int length) throws ContentStreamException
+    private void checkArrayOperands(final List<COSBase> arguments, final int length) throws ContentStreamException
     {
         if (arguments == null || arguments.isEmpty() || arguments.size() != length)
         {
@@ -210,7 +210,7 @@ public class StubOperator extends OperatorProcessor
 
         for (int i = 0; i < length; ++i)
         {
-            COSBase arg = arguments.get(i);
+            final COSBase arg = arguments.get(i);
             if (!(arg instanceof COSArray))
             {
                 throw createInvalidArgumentsError();
@@ -234,14 +234,14 @@ public class StubOperator extends OperatorProcessor
      *            the expected size of the list
      * @throws ContentStreamException
      */
-    private void checkNumberOperands(List<COSBase> arguments, int length) throws ContentStreamException
+    private void checkNumberOperands(final List<COSBase> arguments, final int length) throws ContentStreamException
     {
         if (arguments == null || arguments.isEmpty() || arguments.size() != length)
         {
             throw createInvalidArgumentsError();
         }
 
-        for (COSBase arg : arguments)
+        for (final COSBase arg : arguments)
         {
             if (!(arg instanceof COSFloat) && !(arg instanceof COSInteger))
             {
@@ -270,14 +270,14 @@ public class StubOperator extends OperatorProcessor
      * @param arguments
      * @throws ContentStreamException
      */
-    private void checkTagAndPropertyOperands(List<COSBase> arguments) throws ContentStreamException
+    private void checkTagAndPropertyOperands(final List<COSBase> arguments) throws ContentStreamException
     {
         if (arguments == null || arguments.isEmpty() || arguments.size() != 2)
         {
             throw createInvalidArgumentsError();
         }
 
-        COSBase arg = arguments.get(0);
+        final COSBase arg = arguments.get(0);
         if (!(arg instanceof COSName) && !(arg instanceof COSString))
         {
             throw createInvalidArgumentsError();
@@ -293,7 +293,7 @@ public class StubOperator extends OperatorProcessor
             throw createLimitError(ERROR_SYNTAX_LITERAL_TOO_LONG, "A String operand is too long");
         }
 
-        COSBase arg2 = arguments.get(1);
+        final COSBase arg2 = arguments.get(1);
         if (!(arg2 instanceof COSName) && !(arg2 instanceof COSString) && !(arg2 instanceof COSDictionary))
         {
             throw createInvalidArgumentsError();
@@ -323,7 +323,7 @@ public class StubOperator extends OperatorProcessor
      */
     private ContentStreamException createInvalidArgumentsError()
     {
-        ContentStreamException ex = new ContentStreamException("Invalid arguments");
+        final ContentStreamException ex = new ContentStreamException("Invalid arguments");
         ex.setErrorCode(ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
         return ex;
     }
@@ -333,9 +333,9 @@ public class StubOperator extends OperatorProcessor
      * 
      * @return the ContentStreamException created.
      */
-    private ContentStreamException createLimitError(String errorCode, String details)
+    private ContentStreamException createLimitError(final String errorCode, final String details)
     {
-        ContentStreamException ex = new ContentStreamException(details);
+        final ContentStreamException ex = new ContentStreamException(details);
         ex.setErrorCode(errorCode);
         return ex;
     }

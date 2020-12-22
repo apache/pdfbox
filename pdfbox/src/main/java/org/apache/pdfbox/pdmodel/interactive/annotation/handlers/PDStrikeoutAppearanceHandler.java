@@ -33,12 +33,12 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDStrikeoutAppearanceHandler.class);
 
-    public PDStrikeoutAppearanceHandler(PDAnnotation annotation)
+    public PDStrikeoutAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDStrikeoutAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDStrikeoutAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -54,15 +54,15 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        PDAnnotationStrikeout annotation = (PDAnnotationStrikeout) getAnnotation();
-        PDRectangle rect = annotation.getRectangle();
-        float[] pathsArray = annotation.getQuadPoints();
+        final PDAnnotationStrikeout annotation = (PDAnnotationStrikeout) getAnnotation();
+        final PDRectangle rect = annotation.getRectangle();
+        final float[] pathsArray = annotation.getQuadPoints();
         if (pathsArray == null)
         {
             return;
         }
-        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
-        PDColor color = annotation.getColor();
+        final AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
+        final PDColor color = annotation.getColor();
         if (color == null || color.getComponents().length == 0)
         {
             return;
@@ -82,8 +82,8 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
         float maxY = Float.MIN_VALUE;
         for (int i = 0; i < pathsArray.length / 2; ++i)
         {
-            float x = pathsArray[i * 2];
-            float y = pathsArray[i * 2 + 1];
+            final float x = pathsArray[i * 2];
+            final float y = pathsArray[i * 2 + 1];
             minX = Math.min(minX, x);
             minY = Math.min(minY, y);
             maxX = Math.max(maxX, x);
@@ -115,7 +115,7 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
                 // and https://bugs.ghostscript.com/show_bug.cgi?id=693664
                 // do the math for diagonal annotations with this weird old trick:
                 // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
-                float len0 = (float) (Math.sqrt(Math.pow(pathsArray[i * 8] - pathsArray[i * 8 + 4], 2) + 
+                final float len0 = (float) (Math.sqrt(Math.pow(pathsArray[i * 8] - pathsArray[i * 8 + 4], 2) +
                                       Math.pow(pathsArray[i * 8 + 1] - pathsArray[i * 8 + 5], 2)));
                 float x0 = pathsArray[i * 8 + 4];
                 float y0 = pathsArray[i * 8 + 5];
@@ -125,7 +125,7 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
                     x0 += (pathsArray[i * 8] - pathsArray[i * 8 + 4]) / len0 * (len0 / 2 - ab.width);
                     y0 += (pathsArray[i * 8 + 1] - pathsArray[i * 8 + 5]) / len0 * (len0 / 2 - ab.width);
                 }
-                float len1 = (float) (Math.sqrt(Math.pow(pathsArray[i * 8 + 2] - pathsArray[i * 8 + 6], 2) + 
+                final float len1 = (float) (Math.sqrt(Math.pow(pathsArray[i * 8 + 2] - pathsArray[i * 8 + 6], 2) +
                                       Math.pow(pathsArray[i * 8 + 3] - pathsArray[i * 8 + 7], 2)));
                 float x1 = pathsArray[i * 8 + 6];
                 float y1 = pathsArray[i * 8 + 7];

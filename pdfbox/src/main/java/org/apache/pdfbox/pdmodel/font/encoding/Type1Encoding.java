@@ -32,11 +32,11 @@ public class Type1Encoding extends Encoding
      *
      * @param encoding FontBox encoding
      */
-    public static Type1Encoding fromFontBox(org.apache.fontbox.encoding.Encoding encoding)
+    public static Type1Encoding fromFontBox(final org.apache.fontbox.encoding.Encoding encoding)
     {
         // todo: could optimise this by looking for specific subclasses
-        Map<Integer,String> codeToName = encoding.getCodeToNameMap();
-        Type1Encoding enc = new Type1Encoding();
+        final Map<Integer,String> codeToName = encoding.getCodeToNameMap();
+        final Type1Encoding enc = new Type1Encoding();
         codeToName.forEach(enc::add);
         return enc;
     }
@@ -53,9 +53,9 @@ public class Type1Encoding extends Encoding
      *
      * @param fontMetrics AFM font metrics.
      */
-    public Type1Encoding(FontMetrics fontMetrics)
+    public Type1Encoding(final FontMetrics fontMetrics)
     {
-        for (CharMetric nextMetric : fontMetrics.getCharMetrics())
+        for (final CharMetric nextMetric : fontMetrics.getCharMetrics())
         {
             add(nextMetric.getCharacterCode(), nextMetric.getName());
         }

@@ -47,7 +47,7 @@ public class PDActionHide extends PDAction
      *
      * @param a the action dictionary
      */
-    public PDActionHide(COSDictionary a)
+    public PDActionHide(final COSDictionary a)
     {
         super(a);
     }
@@ -66,7 +66,7 @@ public class PDActionHide extends PDAction
     /**
      * @param t annotation or annotations
      */
-    public void setT(COSBase t)
+    public void setT(final COSBase t)
     {
         this.action.setItem(COSName.T, t);
     }
@@ -84,7 +84,7 @@ public class PDActionHide extends PDAction
     /**
      * @param h hide flag
      */
-    public void setH(boolean h)
+    public void setH(final boolean h)
     {
         this.action.setItem(COSName.H, COSBoolean.getBoolean(h));
     }

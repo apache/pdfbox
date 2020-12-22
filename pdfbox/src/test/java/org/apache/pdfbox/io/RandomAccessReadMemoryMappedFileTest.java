@@ -39,7 +39,7 @@ class RandomAccessReadMemoryMappedFileTest
     @Test
     void testPositionSkip() throws IOException, URISyntaxException
     {
-        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+        final RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
 
         assertEquals(0, randomAccessSource.getPosition());
@@ -53,7 +53,7 @@ class RandomAccessReadMemoryMappedFileTest
     @Test
     void testPositionRead() throws IOException, URISyntaxException
     {
-        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+        final RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
 
         assertEquals(0, randomAccessSource.getPosition());
@@ -70,7 +70,7 @@ class RandomAccessReadMemoryMappedFileTest
     @Test
     void testSeekEOF() throws IOException, URISyntaxException
     {
-        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+        final RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
 
         randomAccessSource.seek(3);
@@ -107,11 +107,11 @@ class RandomAccessReadMemoryMappedFileTest
     @Test
     void testPositionReadBytes() throws IOException, URISyntaxException
     {
-        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+        final RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
 
         assertEquals(0, randomAccessSource.getPosition());
-        byte[] buffer = new byte[4];
+        final byte[] buffer = new byte[4];
         randomAccessSource.read(buffer);
         assertEquals('0', buffer[0]);
         assertEquals('3', buffer[3]);
@@ -130,7 +130,7 @@ class RandomAccessReadMemoryMappedFileTest
     @Test
     void testPositionPeek() throws IOException, URISyntaxException
     {
-        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+        final RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
 
         assertEquals(0, randomAccessSource.getPosition());
@@ -146,13 +146,13 @@ class RandomAccessReadMemoryMappedFileTest
     @Test
     void testPositionUnreadBytes() throws IOException, URISyntaxException
     {
-        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+        final RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
 
         assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.read();
         randomAccessSource.read();
-        byte[] readBytes = new byte[6];
+        final byte[] readBytes = new byte[6];
         assertEquals(readBytes.length, randomAccessSource.read(readBytes));
         assertEquals(8, randomAccessSource.getPosition());
         randomAccessSource.rewind(readBytes.length);
@@ -170,12 +170,12 @@ class RandomAccessReadMemoryMappedFileTest
     @Test
     void testEmptyBuffer() throws IOException, URISyntaxException
     {
-        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+        final RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadEmptyFile.txt").toURI()));
 
         assertEquals(-1, randomAccessSource.read());
         assertEquals(-1, randomAccessSource.peek());
-        byte[] readBytes = new byte[6];
+        final byte[] readBytes = new byte[6];
         assertEquals(-1, randomAccessSource.read(readBytes));
         randomAccessSource.seek(0);
         assertEquals(0, randomAccessSource.getPosition());
@@ -201,12 +201,12 @@ class RandomAccessReadMemoryMappedFileTest
     {
         // This is a special test case for some unmapping issues limited to windows enviroments
         // see https://bugs.openjdk.java.net/browse/JDK-4724038
-        Path tempFile = Files.createTempFile("PDFBOX", "txt");
-        BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFile, StandardOpenOption.WRITE);
+        final Path tempFile = Files.createTempFile("PDFBOX", "txt");
+        final BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFile, StandardOpenOption.WRITE);
         bufferedWriter.write("Apache PDFBox test");
         bufferedWriter.close();
 
-        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+        final RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 tempFile.toFile());
         assertEquals(65, randomAccessSource.read());
         randomAccessSource.close();
@@ -217,10 +217,10 @@ class RandomAccessReadMemoryMappedFileTest
     @Test
     void testView() throws IOException, URISyntaxException
     {
-        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+        final RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
 
-        RandomAccessReadView view = randomAccessSource.createView(3, 10);
+        final RandomAccessReadView view = randomAccessSource.createView(3, 10);
         assertEquals(0, view.getPosition());
         assertEquals('3', view.read());
         assertEquals('4', view.read());

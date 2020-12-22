@@ -33,7 +33,7 @@ public final class ImageToPDF
     {
     }
     
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 2)
         {
@@ -41,8 +41,8 @@ public final class ImageToPDF
             System.exit(1);
         }
         
-        String imagePath = args[0];
-        String pdfPath = args[1];
+        final String imagePath = args[0];
+        final String pdfPath = args[1];
         
         if (!pdfPath.endsWith(".pdf"))
         {
@@ -52,13 +52,13 @@ public final class ImageToPDF
 
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
 
             // createFromFile is the easiest way with an image file
             // if you already have the image in a BufferedImage, 
             // call LosslessFactory.createFromImage() instead
-            PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, doc);
+            final PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, doc);
             
             // draw the image at full size at (x=20, y=20)
             try (PDPageContentStream contents = new PDPageContentStream(doc, page))

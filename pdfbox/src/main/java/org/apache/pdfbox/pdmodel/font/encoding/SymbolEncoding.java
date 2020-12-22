@@ -233,7 +233,7 @@ public class SymbolEncoding extends Encoding
      */
     public SymbolEncoding()
     {
-        for (Object[] encodingEntry : SYMBOL_ENCODING_TABLE)
+        for (final Object[] encodingEntry : SYMBOL_ENCODING_TABLE)
         {
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }

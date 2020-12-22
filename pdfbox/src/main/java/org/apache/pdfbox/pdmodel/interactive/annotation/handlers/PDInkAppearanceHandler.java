@@ -33,12 +33,12 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDInkAppearanceHandler.class);
 
-    public PDInkAppearanceHandler(PDAnnotation annotation)
+    public PDInkAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDInkAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDInkAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -54,10 +54,10 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        PDAnnotationInk ink = (PDAnnotationInk) getAnnotation();
+        final PDAnnotationInk ink = (PDAnnotationInk) getAnnotation();
         // PDF spec does not mention /Border for ink annotations, but it is used if /BS is not available
-        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(ink, ink.getBorderStyle());
-        PDColor color = ink.getColor();
+        final AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(ink, ink.getBorderStyle());
+        final PDColor color = ink.getColor();
         if (color == null || color.getComponents().length == 0 || Float.compare(ab.width, 0) == 0)
         {
             return;
@@ -74,16 +74,16 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
             }
             cs.setLineWidth(ab.width);
 
-            for (float[] pathArray : ink.getInkList())
+            for (final float[] pathArray : ink.getInkList())
             {
-                int nPoints = pathArray.length / 2;
+                final int nPoints = pathArray.length / 2;
 
                 // "When drawn, the points shall be connected by straight lines or curves 
                 // in an implementation-dependent way" - we do lines.
                 for (int i = 0; i < nPoints; ++i)
                 {
-                    float x = pathArray[i * 2];
-                    float y = pathArray[i * 2 + 1];
+                    final float x = pathArray[i * 2];
+                    final float y = pathArray[i * 2 + 1];
 
                     if (i == 0)
                     {

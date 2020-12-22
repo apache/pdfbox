@@ -52,7 +52,7 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
      *
      * @param array the COS array which represents this color space
      */
-    public PDCalGray(COSArray array)
+    public PDCalGray(final COSArray array)
     {
         super(array);
     }
@@ -70,7 +70,7 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
         return new float[] { 0, 1 };
     }
@@ -82,19 +82,19 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
     }
 
     @Override
-    public float[] toRGB(float[] value)
+    public float[] toRGB(final float[] value)
     {
         // see implementation of toRGB in PDCalRGB, and PDFBOX-2971
         if (isWhitePoint())
         {
-            float a = value[0];
+            final float a = value[0];
             float[] result = map1.get(a);
             if (result != null)
             {
                 return result.clone();
             }
-            float gamma = getGamma();
-            float powAG = (float) Math.pow(a, gamma);
+            final float gamma = getGamma();
+            final float powAG = (float) Math.pow(a, gamma);
             result = convXYZtoRGB(powAG, powAG, powAG);
             map1.put(a, result.clone());
             return result;
@@ -114,7 +114,7 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
     public float getGamma()
     {
         float retval = 1.0f;
-        COSNumber gamma = (COSNumber) dictionary.getDictionaryObject(COSName.GAMMA);
+        final COSNumber gamma = (COSNumber) dictionary.getDictionaryObject(COSName.GAMMA);
         if (gamma != null)
         {
             retval = gamma.floatValue();
@@ -127,7 +127,7 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
      *
      * @param value The new gamma value.
      */
-    public void setGamma(float value)
+    public void setGamma(final float value)
     {
         dictionary.setItem(COSName.GAMMA, new COSFloat(value));
     }

@@ -51,13 +51,13 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
      * @param encoding The PostScript encoding vector to be used for embedding.
      * @throws IOException if the TTF could not be read
      */
-    PDTrueTypeFontEmbedder(PDDocument document, COSDictionary dict, TrueTypeFont ttf,
-                           Encoding encoding) throws IOException
+    PDTrueTypeFontEmbedder(final PDDocument document, final COSDictionary dict, final TrueTypeFont ttf,
+                           final Encoding encoding) throws IOException
     {
         super(document, dict, ttf, false);
         dict.setItem(COSName.SUBTYPE, COSName.TRUE_TYPE);
         
-        GlyphList glyphList = GlyphList.getAdobeGlyphList();
+        final GlyphList glyphList = GlyphList.getAdobeGlyphList();
         this.fontEncoding = encoding;
         dict.setItem(COSName.ENCODING, encoding.getCOSObject());
         fontDescriptor.setSymbolic(false);
@@ -73,17 +73,17 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
     /**
      * Sets the glyph widths in the font dictionary.
      */
-    private void setWidths(COSDictionary font, GlyphList glyphList) throws IOException
+    private void setWidths(final COSDictionary font, final GlyphList glyphList) throws IOException
     {
-        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
-        HorizontalMetricsTable hmtx = ttf.getHorizontalMetrics();
+        final float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+        final HorizontalMetricsTable hmtx = ttf.getHorizontalMetrics();
 
-        Map<Integer, String> codeToName = getFontEncoding().getCodeToNameMap();
+        final Map<Integer, String> codeToName = getFontEncoding().getCodeToNameMap();
 
-        int firstChar = Collections.min(codeToName.keySet());
-        int lastChar = Collections.max(codeToName.keySet());
+        final int firstChar = Collections.min(codeToName.keySet());
+        final int lastChar = Collections.max(codeToName.keySet());
 
-        List<Integer> widths = new ArrayList<>(lastChar - firstChar + 1);
+        final List<Integer> widths = new ArrayList<>(lastChar - firstChar + 1);
         for (int i = 0; i < lastChar - firstChar + 1; i++)
         {
             widths.add(0);
@@ -91,16 +91,16 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
 
         // a character code is mapped to a glyph name via the provided font encoding
         // afterwards, the glyph name is translated to a glyph ID.
-        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
+        for (final Map.Entry<Integer, String> entry : codeToName.entrySet())
         {
-            int code = entry.getKey();
-            String name = entry.getValue();
+            final int code = entry.getKey();
+            final String name = entry.getValue();
 
             if (code >= firstChar && code <= lastChar)
             {
-                String uni = glyphList.toUnicode(name);
-                int charCode = uni.codePointAt(0);
-                int gid = cmapLookup.getGlyphId(charCode);
+                final String uni = glyphList.toUnicode(name);
+                final int charCode = uni.codePointAt(0);
+                final int gid = cmapLookup.getGlyphId(charCode);
                 widths.set(entry.getKey() - firstChar,
                            Math.round(hmtx.getAdvanceWidth(gid) * scaling));
             }
@@ -120,8 +120,8 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
     }
 
     @Override
-    protected void buildSubset(InputStream ttfSubset, String tag,
-                            Map<Integer, Integer> gidToCid) throws IOException
+    protected void buildSubset(final InputStream ttfSubset, final String tag,
+                               final Map<Integer, Integer> gidToCid) throws IOException
     {
         // use PDType0Font instead
         throw new UnsupportedOperationException();

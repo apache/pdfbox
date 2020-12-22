@@ -32,14 +32,14 @@ public class WindowPrefs
     private static final String KEY = "window_prefs_";
     private final Preferences pref;
 
-    public WindowPrefs(Class className)
+    public WindowPrefs(final Class className)
     {
         this.pref = Preferences.userNodeForPackage(className);
     }
 
-    public void setBounds(Rectangle rect)
+    public void setBounds(final Rectangle rect)
     {
-        Preferences node = pref.node(KEY);
+        final Preferences node = pref.node(KEY);
         node.putInt("X", rect.x);
         node.putInt("Y", rect.y);
         node.putInt("W", rect.width);
@@ -48,37 +48,37 @@ public class WindowPrefs
 
     public Rectangle getBounds()
     {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Preferences node = pref.node(KEY);
-        int x = node.getInt("X", screenSize.width / 4);
-        int y = node.getInt("Y", screenSize.height / 4);
-        int w = node.getInt("W", screenSize.width / 2);
-        int h = node.getInt("H", screenSize.height / 2);
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final Preferences node = pref.node(KEY);
+        final int x = node.getInt("X", screenSize.width / 4);
+        final int y = node.getInt("Y", screenSize.height / 4);
+        final int w = node.getInt("W", screenSize.width / 2);
+        final int h = node.getInt("H", screenSize.height / 2);
         return new Rectangle(x, y, w, h);
     }
 
-    public void setDividerLocation(int divider)
+    public void setDividerLocation(final int divider)
     {
-        Preferences node = pref.node(KEY);
+        final Preferences node = pref.node(KEY);
         node.putInt("DIV", divider);
     }
 
     public int getDividerLocation()
     {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Preferences node = pref.node(KEY);
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final Preferences node = pref.node(KEY);
         return node.getInt("DIV", screenSize.width / 8);
     }
 
-    public void setExtendedState(int extendedState)
+    public void setExtendedState(final int extendedState)
     {
-        Preferences node = pref.node(KEY);
+        final Preferences node = pref.node(KEY);
         node.putInt("EXTSTATE", extendedState);
     }
 
     public int getExtendedState()
     {
-        Preferences node = pref.node(KEY);
+        final Preferences node = pref.node(KEY);
         return node.getInt("EXTSTATE", Frame.NORMAL);
     }
 }

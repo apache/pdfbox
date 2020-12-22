@@ -73,7 +73,7 @@ public abstract class COSBase implements COSObjectable
      * 
      * @param direct set it true, for writing direct object
      */
-    public void setDirect(boolean direct)
+    public void setDirect(final boolean direct)
     {
       this.direct = direct;
     }
@@ -93,7 +93,7 @@ public abstract class COSBase implements COSObjectable
      * 
      * @param key the COSObjectKey of the indirect object
      */
-    public void setKey(COSObjectKey key)
+    public void setKey(final COSObjectKey key)
     {
         this.key = key;
     }

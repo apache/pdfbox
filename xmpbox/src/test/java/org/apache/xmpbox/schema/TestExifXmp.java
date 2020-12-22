@@ -40,13 +40,13 @@ class TestExifXmp
     @Test
     void testNonStrict() throws Exception
     {
-        InputStream is = this.getClass().getResourceAsStream("/validxmp/exif.xmp");
+        final InputStream is = this.getClass().getResourceAsStream("/validxmp/exif.xmp");
 
-        DomXmpParser builder = new DomXmpParser();
+        final DomXmpParser builder = new DomXmpParser();
         builder.setStrictParsing(false);
-        XMPMetadata rxmp = builder.parse(is);
-        ExifSchema schema = (ExifSchema)rxmp.getSchema(ExifSchema.class);
-        TextType ss = (TextType)schema.getProperty(ExifSchema.SPECTRAL_SENSITIVITY);
+        final XMPMetadata rxmp = builder.parse(is);
+        final ExifSchema schema = (ExifSchema)rxmp.getSchema(ExifSchema.class);
+        final TextType ss = (TextType)schema.getProperty(ExifSchema.SPECTRAL_SENSITIVITY);
         assertNotNull(ss);
         assertEquals("spectral sens value",ss.getValue());
     }
@@ -54,16 +54,16 @@ class TestExifXmp
     @Test
     void testGenerate() throws Exception
     {
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        TypeMapping tmapping = metadata.getTypeMapping();
-        ExifSchema exif = new ExifSchema(metadata);
+        final XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        final TypeMapping tmapping = metadata.getTypeMapping();
+        final ExifSchema exif = new ExifSchema(metadata);
         metadata.addSchema(exif);
-        OECFType oecf = new OECFType(metadata);
+        final OECFType oecf = new OECFType(metadata);
         oecf.addProperty(tmapping.createInteger(oecf.getNamespace(), oecf.getPrefix(), OECFType.COLUMNS, 14));
         oecf.setPropertyName(ExifSchema.OECF);
         exif.addProperty(oecf);
 
-        XmpSerializer serializer = new XmpSerializer();
+        final XmpSerializer serializer = new XmpSerializer();
 
         serializer.serialize(metadata, new ByteArrayOutputStream(), false);
     }

@@ -26,17 +26,17 @@ import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 
 public class TrueTypeContainer extends FontContainer<PDTrueTypeFont>
 {
-    public TrueTypeContainer(PDTrueTypeFont font)
+    public TrueTypeContainer(final PDTrueTypeFont font)
     {
         super(font);
     }
 
     @Override
-    public boolean hasGlyph(int code) throws IOException
+    public boolean hasGlyph(final int code) throws IOException
     {
         if (font.isEmbedded())
         {
-            int gid = font.codeToGID(code);
+            final int gid = font.codeToGID(code);
             return gid != 0;
         }
         return false;

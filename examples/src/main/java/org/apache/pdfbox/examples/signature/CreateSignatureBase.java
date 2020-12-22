@@ -60,20 +60,20 @@ public abstract class CreateSignatureBase implements SignatureInterface
      * @throws CertificateException if the certificate is not valid as signing time
      * @throws IOException if no certificate could be found
      */
-    public CreateSignatureBase(KeyStore keystore, char[] pin)
+    public CreateSignatureBase(final KeyStore keystore, final char[] pin)
             throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException
     {
         // grabs the first alias from the keystore and get the private key. An
         // alternative method or constructor could be used for setting a specific
         // alias that should be used.
-        Enumeration<String> aliases = keystore.aliases();
+        final Enumeration<String> aliases = keystore.aliases();
         String alias;
         Certificate cert = null;
         while (cert == null && aliases.hasMoreElements())
         {
             alias = aliases.nextElement();
             setPrivateKey((PrivateKey) keystore.getKey(alias, pin));
-            Certificate[] certChain = keystore.getCertificateChain(alias);
+            final Certificate[] certChain = keystore.getCertificateChain(alias);
             if (certChain != null)
             {
                 setCertificateChain(certChain);
@@ -94,7 +94,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
         }
     }
 
-    public final void setPrivateKey(PrivateKey privateKey)
+    public final void setPrivateKey(final PrivateKey privateKey)
     {
         this.privateKey = privateKey;
     }
@@ -109,7 +109,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
         return certificateChain;
     }
 
-    public void setTsaUrl(String tsaUrl)
+    public void setTsaUrl(final String tsaUrl)
     {
         this.tsaUrl = tsaUrl;
     }
@@ -130,21 +130,21 @@ public abstract class CreateSignatureBase implements SignatureInterface
      * @throws IOException
      */
     @Override
-    public byte[] sign(InputStream content) throws IOException
+    public byte[] sign(final InputStream content) throws IOException
     {
         // cannot be done private (interface)
         try
         {
-            CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
-            X509Certificate cert = (X509Certificate) certificateChain[0];
-            ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA256WithRSA").build(privateKey);
+            final CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
+            final X509Certificate cert = (X509Certificate) certificateChain[0];
+            final ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA256WithRSA").build(privateKey);
             gen.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(new JcaDigestCalculatorProviderBuilder().build()).build(sha1Signer, cert));
             gen.addCertificates(new JcaCertStore(Arrays.asList(certificateChain)));
-            CMSProcessableInputStream msg = new CMSProcessableInputStream(content);
+            final CMSProcessableInputStream msg = new CMSProcessableInputStream(content);
             CMSSignedData signedData = gen.generate(msg, false);
             if (tsaUrl != null && tsaUrl.length() > 0)
             {
-                ValidationTimeStamp validation = new ValidationTimeStamp(tsaUrl);
+                final ValidationTimeStamp validation = new ValidationTimeStamp(tsaUrl);
                 signedData = validation.addSignedTimeStamp(signedData);
             }
             return signedData.getEncoded();
@@ -163,7 +163,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
      * </p>
      * @param externalSigning {@code true} if external signing should be performed
      */
-    public void setExternalSigning(boolean externalSigning)
+    public void setExternalSigning(final boolean externalSigning)
     {
         this.externalSigning = externalSigning;
     }

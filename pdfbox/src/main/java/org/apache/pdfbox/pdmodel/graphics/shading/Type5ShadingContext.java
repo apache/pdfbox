@@ -53,8 +53,8 @@ class Type5ShadingContext extends GouraudShadingContext
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @throws IOException if something went wrong
      */
-    Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
-                               Matrix matrix, Rectangle deviceBounds) throws IOException
+    Type5ShadingContext(final PDShadingType5 shading, final ColorModel cm, final AffineTransform xform,
+                        final Matrix matrix, final Rectangle deviceBounds) throws IOException
     {
         super(shading, cm, xform, matrix);
 
@@ -65,38 +65,38 @@ class Type5ShadingContext extends GouraudShadingContext
     }
 
     @SuppressWarnings("squid:S1166")
-    private List<ShadedTriangle> collectTriangles(PDShadingType5 latticeTriangleShadingType,
-            AffineTransform xform, Matrix matrix) throws IOException
+    private List<ShadedTriangle> collectTriangles(final PDShadingType5 latticeTriangleShadingType,
+                                                  final AffineTransform xform, final Matrix matrix) throws IOException
     {
-        COSDictionary dict = latticeTriangleShadingType.getCOSObject();
+        final COSDictionary dict = latticeTriangleShadingType.getCOSObject();
         if (!(dict instanceof COSStream))
         {
             return Collections.emptyList();
         }
-        PDRange rangeX = latticeTriangleShadingType.getDecodeForParameter(0);
-        PDRange rangeY = latticeTriangleShadingType.getDecodeForParameter(1);
+        final PDRange rangeX = latticeTriangleShadingType.getDecodeForParameter(0);
+        final PDRange rangeY = latticeTriangleShadingType.getDecodeForParameter(1);
         if (Float.compare(rangeX.getMin(), rangeX.getMax()) == 0 ||
             Float.compare(rangeY.getMin(), rangeY.getMax()) == 0)
         {
             return Collections.emptyList();
         }
-        int numPerRow = latticeTriangleShadingType.getVerticesPerRow();
-        PDRange[] colRange = new PDRange[numberOfColorComponents];
+        final int numPerRow = latticeTriangleShadingType.getVerticesPerRow();
+        final PDRange[] colRange = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
             colRange[i] = latticeTriangleShadingType.getDecodeForParameter(2 + i);
         }
-        List<Vertex> vlist = new ArrayList<>();
-        long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
-        long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
-        COSStream cosStream = (COSStream) dict;
+        final List<Vertex> vlist = new ArrayList<>();
+        final long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
+        final long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
+        final COSStream cosStream = (COSStream) dict;
 
         try (ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream()))
         {
             boolean eof = false;
             while (!eof)
             {
-                Vertex p;
+                final Vertex p;
                 try
                 {
                     p = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform);
@@ -108,9 +108,9 @@ class Type5ShadingContext extends GouraudShadingContext
                 }
             }
         }
-        int rowNum = vlist.size() / numPerRow;
-        Vertex[][] latticeArray = new Vertex[rowNum][numPerRow];
-        List<ShadedTriangle> list = new ArrayList<>();
+        final int rowNum = vlist.size() / numPerRow;
+        final Vertex[][] latticeArray = new Vertex[rowNum][numPerRow];
+        final List<ShadedTriangle> list = new ArrayList<>();
         if (rowNum < 2)
         {
             // must have at least two rows; if not, return empty list

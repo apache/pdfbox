@@ -29,7 +29,7 @@ import org.apache.pdfbox.preflight.PreflightContext;
  */
 public class SquigglyAnnotationValidator extends MarkupAnnotationValidator
 {
-    protected SquigglyAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    protected SquigglyAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdMarkup = new PDAnnotationSquiggly(annotDictionary);

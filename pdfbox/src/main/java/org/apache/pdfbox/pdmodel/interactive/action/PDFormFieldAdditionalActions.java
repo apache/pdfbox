@@ -44,7 +44,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      *
      * @param a The action dictionary.
      */
-    public PDFormFieldAdditionalActions( COSDictionary a )
+    public PDFormFieldAdditionalActions(final COSDictionary a )
     {
         actions = a;
     }
@@ -70,7 +70,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getK()
     {
-        COSDictionary k = (COSDictionary) actions.getDictionaryObject(COSName.K);
+        final COSDictionary k = (COSDictionary) actions.getDictionaryObject(COSName.K);
         PDAction retval = null;
         if( k != null )
         {
@@ -87,7 +87,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      *
      * @param k The action to be performed.
      */
-    public void setK( PDAction k )
+    public void setK(final PDAction k )
     {
         actions.setItem(COSName.K, k);
     }
@@ -101,7 +101,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getF()
     {
-        COSDictionary f = (COSDictionary) actions.getDictionaryObject(COSName.F);
+        final COSDictionary f = (COSDictionary) actions.getDictionaryObject(COSName.F);
         PDAction retval = null;
         if( f != null )
         {
@@ -117,7 +117,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      *
      * @param f The action to be performed.
      */
-    public void setF( PDAction f )
+    public void setF(final PDAction f )
     {
         actions.setItem(COSName.F, f);
     }
@@ -132,7 +132,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getV()
     {
-        COSDictionary v = (COSDictionary) actions.getDictionaryObject(COSName.V);
+        final COSDictionary v = (COSDictionary) actions.getDictionaryObject(COSName.V);
         PDAction retval = null;
         if( v != null )
         {
@@ -149,7 +149,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      *
      * @param v The action to be performed.
      */
-    public void setV( PDAction v )
+    public void setV(final PDAction v )
     {
         actions.setItem(COSName.V, v);
     }
@@ -165,7 +165,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getC()
     {
-        COSDictionary c = (COSDictionary) actions.getDictionaryObject(COSName.C);
+        final COSDictionary c = (COSDictionary) actions.getDictionaryObject(COSName.C);
         PDAction retval = null;
         if( c != null )
         {
@@ -183,7 +183,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      *
      * @param c The action to be performed.
      */
-    public void setC( PDAction c )
+    public void setC(final PDAction c )
     {
         actions.setItem(COSName.C, c);
     }

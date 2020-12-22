@@ -41,7 +41,7 @@ class ASCIIPane extends JComponent implements HexModelChangeListener
      * Constructor.
      * @param model HexModel instance.
      */
-    ASCIIPane(HexModel model)
+    ASCIIPane(final HexModel model)
     {
         this.model = model;
         setPreferredSize(new Dimension(HexView.ASCII_PANE_WIDTH, HexView.CHAR_HEIGHT * (model.totalLine()+1)));
@@ -51,14 +51,14 @@ class ASCIIPane extends JComponent implements HexModelChangeListener
 
 
     @Override
-    protected void paintComponent(Graphics g)
+    protected void paintComponent(final Graphics g)
     {
         super.paintComponent(g);
 
-        Graphics2D g2d = (Graphics2D)g;
+        final Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHints(HexView.RENDERING_HINTS);
         
-        Rectangle bound = getVisibleRect();
+        final Rectangle bound = getVisibleRect();
 
         int x = HexView.LINE_INSET;
         int y = bound.y;
@@ -67,7 +67,7 @@ class ASCIIPane extends JComponent implements HexModelChangeListener
         {
             y += HexView.CHAR_HEIGHT - y%HexView.CHAR_HEIGHT;
         }
-        int firstLine = y/HexView.CHAR_HEIGHT;
+        final int firstLine = y/HexView.CHAR_HEIGHT;
 
         for (int line = firstLine; line < firstLine + bound.getHeight()/HexView.CHAR_HEIGHT; line++)
         {
@@ -81,7 +81,7 @@ class ASCIIPane extends JComponent implements HexModelChangeListener
             }
             else
             {
-                char[] chars = model.getLineChars(line);
+                final char[] chars = model.getLineChars(line);
                 g.drawChars(chars, 0, chars.length, x, y);
             }
             x = HexView.LINE_INSET;
@@ -95,10 +95,10 @@ class ASCIIPane extends JComponent implements HexModelChangeListener
      * @param x int. x axis value.
      * @param y int. y axis value.
      */
-    private void paintInSelected(Graphics g, int x, int y)
+    private void paintInSelected(final Graphics g, int x, final int y)
     {
         g.setFont(HexView.BOLD_FONT);
-        char[] content = model.getLineChars(selectedLine);
+        final char[] content = model.getLineChars(selectedLine);
         g.drawChars(content, 0, selectedIndexInLine - 0, x, y);
 
         g.setColor(HexView.SELECTED_COLOR);
@@ -112,7 +112,7 @@ class ASCIIPane extends JComponent implements HexModelChangeListener
     }
     
     @Override
-    public void hexModelChanged(HexModelChangedEvent event)
+    public void hexModelChanged(final HexModelChangedEvent event)
     {
         repaint();
     }
@@ -122,7 +122,7 @@ class ASCIIPane extends JComponent implements HexModelChangeListener
      * selected in hex pane.
      * @param index int.
      */
-    void setSelected(int index)
+    void setSelected(final int index)
     {
             selectedLine = HexModel.lineNumber(index);
             selectedIndexInLine = HexModel.elementIndexInLine(index);

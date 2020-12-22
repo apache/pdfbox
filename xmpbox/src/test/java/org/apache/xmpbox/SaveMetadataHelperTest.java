@@ -31,7 +31,7 @@ class SaveMetadataHelperTest
     @Test
     void testSchemaParsing() throws Exception
     {
-        DublinCoreSchema dc = new DublinCoreSchema(XMPMetadata.createXMPMetadata());
+        final DublinCoreSchema dc = new DublinCoreSchema(XMPMetadata.createXMPMetadata());
         dc.setCoverage("coverage");
         dc.addContributor("contributor1");
         dc.addContributor("contributor2");
@@ -41,15 +41,15 @@ class SaveMetadataHelperTest
     @Test
     void testMetadataParsing() throws Exception
     {
-        XMPMetadata meta = XMPMetadata.createXMPMetadata();
+        final XMPMetadata meta = XMPMetadata.createXMPMetadata();
 
-        DublinCoreSchema dc = meta.createAndAddDublinCoreSchema();
+        final DublinCoreSchema dc = meta.createAndAddDublinCoreSchema();
         dc.setCoverage("coverage");
         dc.addContributor("contributor1");
         dc.addContributor("contributor2");
         dc.addDescription("x-default", "Description");
 
-        AdobePDFSchema pdf = meta.createAndAddAdobePDFSchema();
+        final AdobePDFSchema pdf = meta.createAndAddAdobePDFSchema();
         pdf.setProducer("Producer");
         pdf.setPDFVersion("1.4");
 

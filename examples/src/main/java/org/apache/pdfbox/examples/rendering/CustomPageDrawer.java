@@ -53,15 +53,15 @@ import org.apache.pdfbox.util.Vector;
  */
 public class CustomPageDrawer
 {
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        File file = new File("src/main/resources/org/apache/pdfbox/examples/rendering/",
+        final File file = new File("src/main/resources/org/apache/pdfbox/examples/rendering/",
                              "custom-render-demo.pdf");
         
         try (PDDocument doc = Loader.loadPDF(file))
         {
-            PDFRenderer renderer = new MyPDFRenderer(doc);
-            BufferedImage image = renderer.renderImage(0);
+            final PDFRenderer renderer = new MyPDFRenderer(doc);
+            final BufferedImage image = renderer.renderImage(0);
             ImageIO.write(image, "PNG", new File("custom-render.png"));
         }
     }
@@ -71,13 +71,13 @@ public class CustomPageDrawer
      */
     private static class MyPDFRenderer extends PDFRenderer
     {
-        MyPDFRenderer(PDDocument document)
+        MyPDFRenderer(final PDDocument document)
         {
             super(document);
         }
 
         @Override
-        protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
+        protected PageDrawer createPageDrawer(final PageDrawerParameters parameters) throws IOException
         {
             return new MyPageDrawer(parameters);
         }
@@ -88,7 +88,7 @@ public class CustomPageDrawer
      */
     private static class MyPageDrawer extends PageDrawer
     {
-        MyPageDrawer(PageDrawerParameters parameters) throws IOException
+        MyPageDrawer(final PageDrawerParameters parameters) throws IOException
         {
             super(parameters);
         }
@@ -97,7 +97,7 @@ public class CustomPageDrawer
          * Color replacement.
          */
         @Override
-        protected Paint getPaint(PDColor color) throws IOException
+        protected Paint getPaint(final PDColor color) throws IOException
         {
             // if this is the non-stroking color, find red, ignoring alpha channel
             if (getGraphicsState().getNonStrokingColor() == color &&
@@ -113,22 +113,22 @@ public class CustomPageDrawer
          * Glyph bounding boxes.
          */
         @Override
-        protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code,
-                Vector displacement) throws IOException
+        protected void showGlyph(final Matrix textRenderingMatrix, final PDFont font, final int code,
+                                 final Vector displacement) throws IOException
         {
             // draw glyph
             super.showGlyph(textRenderingMatrix, font, code, displacement);
             
             // bbox in EM -> user units
             Shape bbox = new Rectangle2D.Float(0, 0, font.getWidth(code) / 1000, 1);
-            AffineTransform at = textRenderingMatrix.createAffineTransform();
+            final AffineTransform at = textRenderingMatrix.createAffineTransform();
             bbox = at.createTransformedShape(bbox);
             
             // save
-            Graphics2D graphics = getGraphics();
-            Color color = graphics.getColor();
-            Stroke stroke = graphics.getStroke();
-            Shape clip = graphics.getClip();
+            final Graphics2D graphics = getGraphics();
+            final Color color = graphics.getColor();
+            final Stroke stroke = graphics.getStroke();
+            final Shape clip = graphics.getClip();
 
             // draw
             graphics.setClip(graphics.getDeviceConfiguration().getBounds());
@@ -146,19 +146,19 @@ public class CustomPageDrawer
          * Filled path bounding boxes.
          */
         @Override
-        public void fillPath(int windingRule) throws IOException
+        public void fillPath(final int windingRule) throws IOException
         {
             // bbox in user units
-            Shape bbox = getLinePath().getBounds2D();
+            final Shape bbox = getLinePath().getBounds2D();
             
             // draw path (note that getLinePath() is now reset)
             super.fillPath(windingRule);
             
             // save
-            Graphics2D graphics = getGraphics();
-            Color color = graphics.getColor();
-            Stroke stroke = graphics.getStroke();
-            Shape clip = graphics.getClip();
+            final Graphics2D graphics = getGraphics();
+            final Color color = graphics.getColor();
+            final Stroke stroke = graphics.getStroke();
+            final Shape clip = graphics.getClip();
 
             // draw
             graphics.setClip(graphics.getDeviceConfiguration().getBounds());
@@ -176,7 +176,7 @@ public class CustomPageDrawer
          * Custom annotation rendering.
          */
         @Override
-        public void showAnnotation(PDAnnotation annotation) throws IOException
+        public void showAnnotation(final PDAnnotation annotation) throws IOException
         {
             // save
             saveGraphicsState();

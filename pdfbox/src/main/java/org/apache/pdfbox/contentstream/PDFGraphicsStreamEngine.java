@@ -102,7 +102,7 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
     /**
      * Constructor.
      */
-    protected PDFGraphicsStreamEngine(PDPage page)
+    protected PDFGraphicsStreamEngine(final PDPage page)
     {
         this.page = page;
 

@@ -33,12 +33,12 @@ public final class DecodeResult
     private final COSDictionary parameters;
     private PDJPXColorSpace colorSpace;
 
-    DecodeResult(COSDictionary parameters)
+    DecodeResult(final COSDictionary parameters)
     {
         this.parameters = parameters;
     }
 
-    DecodeResult(COSDictionary parameters, PDJPXColorSpace colorSpace)
+    DecodeResult(final COSDictionary parameters, final PDJPXColorSpace colorSpace)
     {
         this.parameters = parameters;
         this.colorSpace = colorSpace;
@@ -63,7 +63,7 @@ public final class DecodeResult
     }
 
     // Sets the JPX color space
-    void setColorSpace(PDJPXColorSpace colorSpace)
+    void setColorSpace(final PDJPXColorSpace colorSpace)
     {
         this.colorSpace = colorSpace;
     }

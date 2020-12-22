@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 public final class PDPattern extends PDSpecialColorSpace
 {
     /** A pattern which leaves no marks on the page. */
-    private static PDColor EMPTY_PATTERN = new PDColor(new float[] { }, null);
+    private static final PDColor EMPTY_PATTERN = new PDColor(new float[] { }, null);
     
     private final PDResources resources;
     private PDColorSpace underlyingColorSpace;
@@ -43,7 +43,7 @@ public final class PDPattern extends PDSpecialColorSpace
      * 
      * @param resources The current resources.
      */
-    public PDPattern(PDResources resources)
+    public PDPattern(final PDResources resources)
     {
         this.resources = resources;
         array = new COSArray();
@@ -56,7 +56,7 @@ public final class PDPattern extends PDSpecialColorSpace
      * @param resources The current resources.
      * @param colorSpace The underlying color space.
      */
-    public PDPattern(PDResources resources, PDColorSpace colorSpace)
+    public PDPattern(final PDResources resources, final PDColorSpace colorSpace)
     {
         this.resources = resources;
         this.underlyingColorSpace = colorSpace;
@@ -78,7 +78,7 @@ public final class PDPattern extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
         throw new UnsupportedOperationException();
     }
@@ -90,19 +90,19 @@ public final class PDPattern extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] toRGB(float[] value)
+    public float[] toRGB(final float[] value)
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(final WritableRaster raster) throws IOException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public BufferedImage toRawImage(WritableRaster raster) throws IOException
+    public BufferedImage toRawImage(final WritableRaster raster) throws IOException
     {
         throw new UnsupportedOperationException();
     }
@@ -114,9 +114,9 @@ public final class PDPattern extends PDSpecialColorSpace
      * @return pattern for the given color
      * @throws java.io.IOException if the pattern name was not found.
      */
-    public PDAbstractPattern getPattern(PDColor color) throws IOException
+    public PDAbstractPattern getPattern(final PDColor color) throws IOException
     {
-        PDAbstractPattern pattern = resources.getPattern(color.getPatternName());
+        final PDAbstractPattern pattern = resources.getPattern(color.getPatternName());
         if (pattern == null)
         {
             throw new IOException("pattern " + color.getPatternName() + " was not found");

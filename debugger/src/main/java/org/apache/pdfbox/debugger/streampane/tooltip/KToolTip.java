@@ -39,19 +39,19 @@ final class KToolTip extends ColorToolTip
      * Constructor.
      * @param rowText String instance.
      */
-    KToolTip(String rowText)
+    KToolTip(final String rowText)
     {
         createMarkUp(rowText);
     }
 
-    private void createMarkUp(String rowText)
+    private void createMarkUp(final String rowText)
     {
-        float[] colorValues = extractColorValues(rowText);
+        final float[] colorValues = extractColorValues(rowText);
         if (colorValues != null)
         {
             try
             {
-                float[] rgbValues = getICCColorSpace().toRGB(colorValues);
+                final float[] rgbValues = getICCColorSpace().toRGB(colorValues);
                 setToolTipText(getMarkUp(colorHexValue(new Color(rgbValues[0], rgbValues[1], rgbValues[2]))));
             }
             catch (IOException e)
@@ -64,7 +64,7 @@ final class KToolTip extends ColorToolTip
     ICC_ColorSpace getICCColorSpace() throws IOException
     {
         // loads the ICC color profile for CMYK
-        ICC_Profile iccProfile = getICCProfile();
+        final ICC_Profile iccProfile = getICCProfile();
         if (iccProfile == null)
         {
             throw new IOException("Default CMYK color profile could not be loaded");
@@ -80,9 +80,9 @@ final class KToolTip extends ColorToolTip
         // Instead, the "ISO Coated v2 300% (basICColor)" is used, which
         // is an open alternative to the "ISO Coated v2 300% (ECI)" profile.
 
-        String name = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
+        final String name = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
 
-        URL url = PDDeviceCMYK.class.getResource(name);
+        final URL url = PDDeviceCMYK.class.getResource(name);
         if (url == null)
         {
             throw new IOException("Error loading resource: " + name);

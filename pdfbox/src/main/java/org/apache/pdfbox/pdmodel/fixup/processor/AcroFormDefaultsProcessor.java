@@ -37,7 +37,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
  */
 public class AcroFormDefaultsProcessor extends AbstractProcessor
 {
-    public AcroFormDefaultsProcessor(PDDocument document)
+    public AcroFormDefaultsProcessor(final PDDocument document)
     { 
         super(document); 
     }
@@ -51,7 +51,7 @@ public class AcroFormDefaultsProcessor extends AbstractProcessor
          * is part of. So keep the null parameter otherwise this will end
          * in an endless recursive call
          */
-        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
+        final PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
         if (acroForm != null)
         {
             verifyOrCreateDefaults(acroForm);
@@ -66,7 +66,7 @@ public class AcroFormDefaultsProcessor extends AbstractProcessor
      * Adobe Reader / Adobe Acrobat
      *  
      */
-    private void verifyOrCreateDefaults(PDAcroForm acroForm)
+    private void verifyOrCreateDefaults(final PDAcroForm acroForm)
     {
         final String adobeDefaultAppearanceString = "/Helv 0 Tf 0 g ";
 

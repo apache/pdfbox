@@ -39,13 +39,13 @@ class SimpleFont extends FontPane
      * @param font PDSimpleFont instance.
      * @throws IOException If fails to parse unicode characters.
      */
-    SimpleFont(PDSimpleFont font) throws IOException
+    SimpleFont(final PDSimpleFont font) throws IOException
     {
-        Object[][] tableData = getGlyphs(font);
+        final Object[][] tableData = getGlyphs(font);
         
-        double[] yBounds = getYBounds(tableData, 3);
+        final double[] yBounds = getYBounds(tableData, 3);
 
-        Map<String, String> attributes = new LinkedHashMap<>();
+        final Map<String, String> attributes = new LinkedHashMap<>();
         attributes.put("Font", font.getName());
         attributes.put("Encoding", getEncodingName(font));
         attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
@@ -55,16 +55,16 @@ class SimpleFont extends FontPane
                 new String[] {"Code", "Glyph Name", "Unicode Character", "Glyph"}, yBounds);
     }
 
-    private Object[][] getGlyphs(PDSimpleFont font) throws IOException
+    private Object[][] getGlyphs(final PDSimpleFont font) throws IOException
     {
-        Object[][] glyphs = new Object[256][4];
+        final Object[][] glyphs = new Object[256][4];
 
         for (int index = 0; index <= 255; index++)
         {
             glyphs[index][0] = index;
             if (font.getEncoding().contains(index) || font.toUnicode(index) != null)
             {
-                String glyphName = font.getEncoding().getName(index);
+                final String glyphName = font.getEncoding().getName(index);
                 glyphs[index][1] = glyphName;
                 glyphs[index][2] = font.toUnicode(index);
                 if (font instanceof PDVectorFont)
@@ -88,7 +88,7 @@ class SimpleFont extends FontPane
         return glyphs;
     }
 
-    private String getEncodingName(PDSimpleFont font)
+    private String getEncodingName(final PDSimpleFont font)
     {
         return font.getEncoding().getClass().getSimpleName();
     }

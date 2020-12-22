@@ -43,7 +43,7 @@ public class TTFParser
      *  
      * @param isEmbedded true if the font is embedded in PDF
      */
-    public TTFParser(boolean isEmbedded)
+    public TTFParser(final boolean isEmbedded)
     {
         this(isEmbedded, false);
     }
@@ -54,7 +54,7 @@ public class TTFParser
      * @param isEmbedded true if the font is embedded in PDF
      * @param parseOnDemand true if the tables of the font should be parsed on demand
      */
-    public TTFParser(boolean isEmbedded, boolean parseOnDemand)
+    public TTFParser(final boolean isEmbedded, final boolean parseOnDemand)
     {
         this.isEmbedded = isEmbedded;
         parseOnDemandOnly = parseOnDemand;
@@ -67,7 +67,7 @@ public class TTFParser
      * @return A TrueType font.
      * @throws IOException If there is an error parsing the TrueType font.
      */
-    public TrueTypeFont parse(String ttfFile) throws IOException
+    public TrueTypeFont parse(final String ttfFile) throws IOException
     {
         return parse(new File(ttfFile));
     }
@@ -79,9 +79,9 @@ public class TTFParser
      * @return A TrueType font.
      * @throws IOException If there is an error parsing the TrueType font.
      */
-    public TrueTypeFont parse(File ttfFile) throws IOException
+    public TrueTypeFont parse(final File ttfFile) throws IOException
     {
-        RAFDataStream raf = new RAFDataStream(ttfFile, "r");
+        final RAFDataStream raf = new RAFDataStream(ttfFile, "r");
         try
         {
             return parse(raf);
@@ -101,7 +101,7 @@ public class TTFParser
      * @return A TrueType font.
      * @throws IOException If there is an error parsing the TrueType font.
      */
-    public TrueTypeFont parse(InputStream inputStream) throws IOException
+    public TrueTypeFont parse(final InputStream inputStream) throws IOException
     {
         return parse(new MemoryTTFDataStream(inputStream));
     }
@@ -113,7 +113,7 @@ public class TTFParser
      * @return A TrueType font.
      * @throws IOException If there is an error parsing the TrueType font.
      */
-    public TrueTypeFont parseEmbedded(InputStream inputStream) throws IOException
+    public TrueTypeFont parseEmbedded(final InputStream inputStream) throws IOException
     {
         this.isEmbedded = true;
         return parse(new MemoryTTFDataStream(inputStream));
@@ -126,17 +126,17 @@ public class TTFParser
      * @return A TrueType font.
      * @throws IOException If there is an error parsing the TrueType font.
      */
-    TrueTypeFont parse(TTFDataStream raf) throws IOException
+    TrueTypeFont parse(final TTFDataStream raf) throws IOException
     {
-        TrueTypeFont font = newFont(raf);
+        final TrueTypeFont font = newFont(raf);
         font.setVersion(raf.read32Fixed());
-        int numberOfTables = raf.readUnsignedShort();
-        int searchRange = raf.readUnsignedShort();
-        int entrySelector = raf.readUnsignedShort();
-        int rangeShift = raf.readUnsignedShort();
+        final int numberOfTables = raf.readUnsignedShort();
+        final int searchRange = raf.readUnsignedShort();
+        final int entrySelector = raf.readUnsignedShort();
+        final int rangeShift = raf.readUnsignedShort();
         for (int i = 0; i < numberOfTables; i++)
         {
-            TTFTable table = readTableDirectory(font, raf);
+            final TTFTable table = readTableDirectory(font, raf);
             
             // skip tables with zero length
             if (table != null)
@@ -153,7 +153,7 @@ public class TTFParser
         return font;
     }
 
-    TrueTypeFont newFont(TTFDataStream raf)
+    TrueTypeFont newFont(final TTFDataStream raf)
     {
         return new TrueTypeFont(raf);
     }
@@ -164,9 +164,9 @@ public class TTFParser
      * @param font the TrueTypeFont instance holding the parsed data.
      * @throws IOException If there is an error parsing the TrueType font.
      */
-    private void parseTables(TrueTypeFont font) throws IOException
+    private void parseTables(final TrueTypeFont font) throws IOException
     {
-        for (TTFTable table : font.getTables())
+        for (final TTFTable table : font.getTables())
         {
             if (!table.getInitialized())
             {
@@ -174,27 +174,27 @@ public class TTFParser
             }
         }
 
-        boolean isPostScript = allowCFF() && font.tables.containsKey(CFFTable.TAG);
+        final boolean isPostScript = allowCFF() && font.tables.containsKey(CFFTable.TAG);
         
-        HeaderTable head = font.getHeader();
+        final HeaderTable head = font.getHeader();
         if (head == null)
         {
             throw new IOException("head is mandatory");
         }
 
-        HorizontalHeaderTable hh = font.getHorizontalHeader();
+        final HorizontalHeaderTable hh = font.getHorizontalHeader();
         if (hh == null)
         {
             throw new IOException("hhead is mandatory");
         }
 
-        MaximumProfileTable maxp = font.getMaximumProfile();
+        final MaximumProfileTable maxp = font.getMaximumProfile();
         if (maxp == null)
         {
             throw new IOException("maxp is mandatory");
         }
 
-        PostScriptTable post = font.getPostScript();
+        final PostScriptTable post = font.getPostScript();
         if (post == null && !isEmbedded)
         {
             // in an embedded font this table is optional
@@ -203,7 +203,7 @@ public class TTFParser
 
         if (!isPostScript)
         {
-            IndexToLocationTable loc = font.getIndexToLocation();
+            final IndexToLocationTable loc = font.getIndexToLocation();
             if (loc == null)
             {
                 throw new IOException("loca is mandatory");
@@ -236,10 +236,10 @@ public class TTFParser
         return false;
     }
 
-    private TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
+    private TTFTable readTableDirectory(final TrueTypeFont font, final TTFDataStream raf) throws IOException
     {
-        TTFTable table;
-        String tag = raf.readString(4);
+        final TTFTable table;
+        final String tag = raf.readString(4);
         switch (tag)
         {
             case CmapTable.TAG:
@@ -308,7 +308,7 @@ public class TTFParser
         return table;
     }
 
-    protected TTFTable readTable(TrueTypeFont font, String tag)
+    protected TTFTable readTable(final TrueTypeFont font, final String tag)
     {
         // unknown table type but read it anyway.
         return new TTFTable(font);

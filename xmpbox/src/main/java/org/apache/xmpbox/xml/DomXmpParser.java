@@ -68,9 +68,9 @@ import org.xml.sax.SAXException;
 
 public class DomXmpParser
 {
-    private DocumentBuilder dBuilder;
+    private final DocumentBuilder dBuilder;
 
-    private NamespaceFinder nsFinder;
+    private final NamespaceFinder nsFinder;
 
     private boolean strictParsing = true;
 
@@ -78,7 +78,7 @@ public class DomXmpParser
     {
         try
         {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
             dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
@@ -101,18 +101,18 @@ public class DomXmpParser
         return strictParsing;
     }
 
-    public void setStrictParsing(boolean strictParsing)
+    public void setStrictParsing(final boolean strictParsing)
     {
         this.strictParsing = strictParsing;
     }
 
-    public XMPMetadata parse(byte[] xmp) throws XmpParsingException
+    public XMPMetadata parse(final byte[] xmp) throws XmpParsingException
     {
-        ByteArrayInputStream input = new ByteArrayInputStream(xmp);
+        final ByteArrayInputStream input = new ByteArrayInputStream(xmp);
         return parse(input);
     }
 
-    public XMPMetadata parse(InputStream input) throws XmpParsingException
+    public XMPMetadata parse(final InputStream input) throws XmpParsingException
     {
         Document document = null;
         try
@@ -177,12 +177,12 @@ public class DomXmpParser
         }
         // xpacket is OK and the is no more nodes
         // Now, parse the content of root
-        Element rdfRdf = findDescriptionsParent(root);
-        List<Element> descriptions = DomHelper.getElementChildren(rdfRdf);
-        List<Element> dataDescriptions = new ArrayList<>(descriptions.size());
-        for (Element description : descriptions)
+        final Element rdfRdf = findDescriptionsParent(root);
+        final List<Element> descriptions = DomHelper.getElementChildren(rdfRdf);
+        final List<Element> dataDescriptions = new ArrayList<>(descriptions.size());
+        for (final Element description : descriptions)
         {
-            Element first = DomHelper.getFirstChildElement(description);
+            final Element first = DomHelper.getFirstChildElement(description);
             if (first != null && "pdfaExtension".equals(first.getPrefix()))
             {
                 PdfaExtensionHelper.validateNaming(xmp, description);
@@ -196,7 +196,7 @@ public class DomXmpParser
         // find schema description
         PdfaExtensionHelper.populateSchemaMapping(xmp);
         // parse data description
-        for (Element description : dataDescriptions)
+        for (final Element description : dataDescriptions)
         {
             parseDescriptionRoot(xmp, description);
         }
@@ -204,18 +204,18 @@ public class DomXmpParser
         return xmp;
     }
 
-    private void parseDescriptionRoot(XMPMetadata xmp, Element description) throws XmpParsingException
+    private void parseDescriptionRoot(final XMPMetadata xmp, final Element description) throws XmpParsingException
     {
         nsFinder.push(description);
-        TypeMapping tm = xmp.getTypeMapping();
+        final TypeMapping tm = xmp.getTypeMapping();
         try
         {
-            List<Element> properties = DomHelper.getElementChildren(description);
+            final List<Element> properties = DomHelper.getElementChildren(description);
             // parse attributes as properties
-            NamedNodeMap nnm = description.getAttributes();
+            final NamedNodeMap nnm = description.getAttributes();
             for (int i = 0; i < nnm.getLength(); i++)
             {
-                Attr attr = (Attr) nnm.item(i);
+                final Attr attr = (Attr) nnm.item(i);
                 if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
                 {
                     // do nothing
@@ -246,10 +246,10 @@ public class DomXmpParser
         }
     }
 
-    private void parseDescriptionRootAttr(XMPMetadata xmp, Element description, Attr attr, TypeMapping tm)
+    private void parseDescriptionRootAttr(final XMPMetadata xmp, final Element description, final Attr attr, final TypeMapping tm)
             throws XmpSchemaException, XmpParsingException
     {
-        String namespace = attr.getNamespaceURI();
+        final String namespace = attr.getNamespaceURI();
         XMPSchema schema = xmp.getSchema(namespace);
         if (schema == null && tm.getSchemaFactory(namespace) != null)
         {
@@ -259,7 +259,7 @@ public class DomXmpParser
         // Only process when a schema was successfully found
         if( schema != null )
         {
-            ComplexPropertyContainer container = schema.getContainer();
+            final ComplexPropertyContainer container = schema.getContainer();
             PropertyType type = checkPropertyDefinition(xmp,
                     new QName(attr.getNamespaceURI(), attr.getLocalName()));
             
@@ -271,7 +271,7 @@ public class DomXmpParser
             
             try
             {
-                AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, schema.getPrefix(),
+                final AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, schema.getPrefix(),
                         attr.getLocalName(), attr.getValue(), type.type());
                 container.addProperty(sp);
             }
@@ -283,14 +283,14 @@ public class DomXmpParser
         }
     }
 
-    private void parseChildrenAsProperties(XMPMetadata xmp, List<Element> properties, TypeMapping tm, Element description)
+    private void parseChildrenAsProperties(final XMPMetadata xmp, final List<Element> properties, final TypeMapping tm, final Element description)
             throws XmpParsingException, XmpSchemaException
     {
         // parse children elements as properties
-        for (Element property : properties)
+        for (final Element property : properties)
         {
-            String namespace = property.getNamespaceURI();
-            PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(property));
+            final String namespace = property.getNamespaceURI();
+            final PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(property));
             // create the container
             if (!tm.isDefinedSchema(namespace))
             {
@@ -303,18 +303,18 @@ public class DomXmpParser
                 schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, property.getPrefix());
                 loadAttributes(schema, description);
             }
-            ComplexPropertyContainer container = schema.getContainer();
+            final ComplexPropertyContainer container = schema.getContainer();
             // create property
             createProperty(xmp, property, type, container);
         }
     }
 
-    private void createProperty(XMPMetadata xmp, Element property, PropertyType type, ComplexPropertyContainer container)
+    private void createProperty(final XMPMetadata xmp, final Element property, final PropertyType type, final ComplexPropertyContainer container)
             throws XmpParsingException
     {
-        String prefix = property.getPrefix();
-        String name = property.getLocalName();
-        String namespace = property.getNamespaceURI();
+        final String prefix = property.getPrefix();
+        final String name = property.getLocalName();
+        final String namespace = property.getNamespaceURI();
         // create property
         nsFinder.push(property);
         try
@@ -363,35 +363,35 @@ public class DomXmpParser
         }
     }
 
-    private void manageDefinedType(XMPMetadata xmp, Element property, String prefix, ComplexPropertyContainer container)
+    private void manageDefinedType(final XMPMetadata xmp, final Element property, final String prefix, final ComplexPropertyContainer container)
             throws XmpParsingException
     {
         if (DomHelper.isParseTypeResource(property))
         {
-            AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), property);
+            final AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), property);
             ast.setPrefix(prefix);
             container.addProperty(ast);
         }
         else
         {
-            Element inner = DomHelper.getFirstChildElement(property);
+            final Element inner = DomHelper.getFirstChildElement(property);
             if (inner == null)
             {
                 throw new XmpParsingException(ErrorType.Format, "property should contain child element : "
                         + property);
             }
-            AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
+            final AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
             ast.setPrefix(prefix);
             container.addProperty(ast);
         }
     }
 
-    private void manageStructuredType(XMPMetadata xmp, Element property, String prefix, ComplexPropertyContainer container)
+    private void manageStructuredType(final XMPMetadata xmp, final Element property, final String prefix, final ComplexPropertyContainer container)
             throws XmpParsingException
     {
         if (DomHelper.isParseTypeResource(property))
         {
-            AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), property);
+            final AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), property);
             if (ast != null)
             {
                 ast.setPrefix(prefix);
@@ -400,37 +400,37 @@ public class DomXmpParser
         }
         else
         {
-            Element inner = DomHelper.getFirstChildElement(property);
+            final Element inner = DomHelper.getFirstChildElement(property);
             if (inner != null)
             {
                 nsFinder.push(inner);
-                AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
+                final AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
                 ast.setPrefix(prefix);
                 container.addProperty(ast);
             }
         }
     }
 
-    private void manageSimpleType(XMPMetadata xmp, Element property, Types type, ComplexPropertyContainer container)
+    private void manageSimpleType(final XMPMetadata xmp, final Element property, final Types type, final ComplexPropertyContainer container)
     {
-        TypeMapping tm = xmp.getTypeMapping();
-        String prefix = property.getPrefix();
-        String name = property.getLocalName();
-        String namespace = property.getNamespaceURI();
-        AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, prefix, name, property.getTextContent(),
+        final TypeMapping tm = xmp.getTypeMapping();
+        final String prefix = property.getPrefix();
+        final String name = property.getLocalName();
+        final String namespace = property.getNamespaceURI();
+        final AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, prefix, name, property.getTextContent(),
                 type);
         loadAttributes(sp, property);
         container.addProperty(sp);
     }
 
-    private void manageArray(XMPMetadata xmp, Element property, PropertyType type, ComplexPropertyContainer container)
+    private void manageArray(final XMPMetadata xmp, final Element property, final PropertyType type, final ComplexPropertyContainer container)
             throws XmpParsingException
     {
-        TypeMapping tm = xmp.getTypeMapping();
-        String prefix = property.getPrefix();
-        String name = property.getLocalName();
-        String namespace = property.getNamespaceURI();
-        Element bagOrSeq = DomHelper.getUniqueElementChild(property);
+        final TypeMapping tm = xmp.getTypeMapping();
+        final String prefix = property.getPrefix();
+        final String name = property.getLocalName();
+        final String namespace = property.getNamespaceURI();
+        final Element bagOrSeq = DomHelper.getUniqueElementChild(property);
         // ensure this is the good type of array
         if (bagOrSeq == null)
         {
@@ -451,14 +451,14 @@ public class DomXmpParser
             throw new XmpParsingException(ErrorType.Format, "Invalid array type, expecting " + type.card()
                     + " and found " + bagOrSeq.getLocalName() + " [prefix="+prefix+"; name="+name+"]");
         }
-        ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, type.card());
+        final ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, type.card());
         container.addProperty(array);
-        List<Element> lis = DomHelper.getElementChildren(bagOrSeq);
+        final List<Element> lis = DomHelper.getElementChildren(bagOrSeq);
 
-        for (Element element : lis)
+        for (final Element element : lis)
         {
-            QName propertyQName = new QName(element.getLocalName());
-            AbstractField ast = parseLiElement(xmp, propertyQName, element, type.type());
+            final QName propertyQName = new QName(element.getLocalName());
+            final AbstractField ast = parseLiElement(xmp, propertyQName, element, type.type());
             if (ast != null)
             {
                 array.addProperty(ast);
@@ -466,25 +466,25 @@ public class DomXmpParser
         }
     }
 
-    private void manageLangAlt(XMPMetadata xmp, Element property, ComplexPropertyContainer container)
+    private void manageLangAlt(final XMPMetadata xmp, final Element property, final ComplexPropertyContainer container)
             throws XmpParsingException
     {
         manageArray(xmp, property, TypeMapping.createPropertyType(Types.LangAlt, Cardinality.Alt), container);
     }
 
-    private void parseDescriptionInner(XMPMetadata xmp, Element description, ComplexPropertyContainer parentContainer)
+    private void parseDescriptionInner(final XMPMetadata xmp, final Element description, final ComplexPropertyContainer parentContainer)
             throws XmpParsingException
     {
         nsFinder.push(description);
-        TypeMapping tm = xmp.getTypeMapping();
+        final TypeMapping tm = xmp.getTypeMapping();
         try
         {
-            List<Element> properties = DomHelper.getElementChildren(description);
-            for (Element property : properties)
+            final List<Element> properties = DomHelper.getElementChildren(description);
+            for (final Element property : properties)
             {
-                String name = property.getLocalName();
-                PropertyType dtype = checkPropertyDefinition(xmp, DomHelper.getQName(property));
-                PropertyType ptype = tm.getStructuredPropMapping(dtype.type()).getPropertyType(name);
+                final String name = property.getLocalName();
+                final PropertyType dtype = checkPropertyDefinition(xmp, DomHelper.getQName(property));
+                final PropertyType ptype = tm.getStructuredPropMapping(dtype.type()).getPropertyType(name);
                 // create property
                 createProperty(xmp, property, ptype, parentContainer);
             }
@@ -495,7 +495,7 @@ public class DomXmpParser
         }
     }
 
-    private AbstractField parseLiElement(XMPMetadata xmp, QName descriptor, Element liElement, Types type)
+    private AbstractField parseLiElement(final XMPMetadata xmp, final QName descriptor, final Element liElement, final Types type)
             throws XmpParsingException
     {
         if (DomHelper.isParseTypeResource(liElement))
@@ -503,7 +503,7 @@ public class DomXmpParser
             return parseLiDescription(xmp, descriptor, liElement);
         }
         // will find rdf:Description
-        Element liChild = DomHelper.getUniqueElementChild(liElement);
+        final Element liChild = DomHelper.getUniqueElementChild(liElement);
         if (liChild != null)
         {
             nsFinder.push(liChild);
@@ -512,11 +512,11 @@ public class DomXmpParser
         else
         {
             // no child
-            String text = liElement.getTextContent();
-            TypeMapping tm = xmp.getTypeMapping();
+            final String text = liElement.getTextContent();
+            final TypeMapping tm = xmp.getTypeMapping();
             if (type.isSimple())
             {
-                AbstractField af = tm.instanciateSimpleProperty(descriptor.getNamespaceURI(),
+                final AbstractField af = tm.instanciateSimpleProperty(descriptor.getNamespaceURI(),
                         descriptor.getPrefix(), descriptor.getLocalPart(), text, type);
                 loadAttributes(af, liElement);
                 return af;
@@ -524,7 +524,7 @@ public class DomXmpParser
             else
             {
                 // PDFBOX-4325: assume it is structured
-                AbstractField af;
+                final AbstractField af;
                 try
                 {
                     af = tm.instanciateStructuredType(type, descriptor.getLocalPart());
@@ -539,12 +539,12 @@ public class DomXmpParser
         }
     }
 
-    private void loadAttributes(AbstractField sp, Element element)
+    private void loadAttributes(final AbstractField sp, final Element element)
     {
-        NamedNodeMap nnm = element.getAttributes();
+        final NamedNodeMap nnm = element.getAttributes();
         for (int i = 0; i < nnm.getLength(); i++)
         {
-            Attr attr = (Attr) nnm.item(i);
+            final Attr attr = (Attr) nnm.item(i);
             if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
             {
                 // do nothing
@@ -560,32 +560,32 @@ public class DomXmpParser
             }
             else
             {
-                Attribute attribute = new Attribute(XMLConstants.XML_NS_URI, attr.getLocalName(), attr.getValue());
+                final Attribute attribute = new Attribute(XMLConstants.XML_NS_URI, attr.getLocalName(), attr.getValue());
                 sp.setAttribute(attribute);
             }
         }
     }
 
-    private AbstractStructuredType parseLiDescription(XMPMetadata xmp, QName descriptor, Element liElement)
+    private AbstractStructuredType parseLiDescription(final XMPMetadata xmp, final QName descriptor, final Element liElement)
             throws XmpParsingException
     {
-        TypeMapping tm = xmp.getTypeMapping();
-        List<Element> elements = DomHelper.getElementChildren(liElement);
+        final TypeMapping tm = xmp.getTypeMapping();
+        final List<Element> elements = DomHelper.getElementChildren(liElement);
         if (elements.isEmpty())
         {
             // The list is empty
             return null;
         }
         // Instantiate abstract structured type with hint from first element
-        Element first = elements.get(0);
-        PropertyType ctype = checkPropertyDefinition(xmp, DomHelper.getQName(first));
-        Types tt = ctype.type();
-        AbstractStructuredType ast = instanciateStructured(tm, tt, descriptor.getLocalPart(), first.getNamespaceURI());
+        final Element first = elements.get(0);
+        final PropertyType ctype = checkPropertyDefinition(xmp, DomHelper.getQName(first));
+        final Types tt = ctype.type();
+        final AbstractStructuredType ast = instanciateStructured(tm, tt, descriptor.getLocalPart(), first.getNamespaceURI());
 
         ast.setNamespace(descriptor.getNamespaceURI());
         ast.setPrefix(descriptor.getPrefix());
 
-        PropertiesDescription pm;
+        final PropertiesDescription pm;
         if (tt.isStructured())
         {
             pm = tm.getStructuredPropMapping(tt);
@@ -594,12 +594,12 @@ public class DomXmpParser
         {
             pm = tm.getDefinedDescriptionByNamespace(first.getNamespaceURI());
         }
-        for (Element element : elements)
+        for (final Element element : elements)
         {
-            String prefix = element.getPrefix();
-            String name = element.getLocalName();
-            String namespace = element.getNamespaceURI();
-            PropertyType type = pm.getPropertyType(name);
+            final String prefix = element.getPrefix();
+            final String name = element.getLocalName();
+            final String namespace = element.getNamespaceURI();
+            final PropertyType type = pm.getPropertyType(name);
             if (type == null)
             {
                 // not defined
@@ -608,13 +608,13 @@ public class DomXmpParser
             }
             else if (type.card().isArray())
             {
-                ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, type.card());
+                final ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, type.card());
                 ast.getContainer().addProperty(array);
-                Element bagOrSeq = DomHelper.getUniqueElementChild(element);
-                List<Element> lis = DomHelper.getElementChildren(bagOrSeq);
-                for (Element element2 : lis)
+                final Element bagOrSeq = DomHelper.getUniqueElementChild(element);
+                final List<Element> lis = DomHelper.getElementChildren(bagOrSeq);
+                for (final Element element2 : lis)
                 {
-                    AbstractField ast2 = parseLiElement(xmp, descriptor, element2, type.type());
+                    final AbstractField ast2 = parseLiElement(xmp, descriptor, element2, type.type());
                     if (ast2 != null)
                     {
                         array.addProperty(ast2);
@@ -623,7 +623,7 @@ public class DomXmpParser
             }
             else if (type.type().isSimple())
             {
-                AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, prefix, name,
+                final AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, prefix, name,
                         element.getTextContent(), type.type());
                 loadAttributes(sp, element);
                 ast.getContainer().addProperty(sp);
@@ -631,18 +631,18 @@ public class DomXmpParser
             else if (type.type().isStructured())
             {
                 // create a new structured type
-                AbstractStructuredType inner = instanciateStructured(tm, type.type(), name, null);
+                final AbstractStructuredType inner = instanciateStructured(tm, type.type(), name, null);
                 inner.setNamespace(namespace);
                 inner.setPrefix(prefix);
                 ast.getContainer().addProperty(inner);
-                ComplexPropertyContainer cpc = inner.getContainer();
+                final ComplexPropertyContainer cpc = inner.getContainer();
                 if (DomHelper.isParseTypeResource(element))
                 {
                     parseDescriptionInner(xmp, element, cpc);
                 }
                 else
                 {
-                    Element descElement = DomHelper.getFirstChildElement(element);
+                    final Element descElement = DomHelper.getFirstChildElement(element);
                     if (descElement != null)
                     {
                         parseDescriptionInner(xmp, descElement, cpc);
@@ -659,41 +659,41 @@ public class DomXmpParser
         return ast;
     }
 
-    private XMPMetadata parseInitialXpacket(ProcessingInstruction pi) throws XmpParsingException
+    private XMPMetadata parseInitialXpacket(final ProcessingInstruction pi) throws XmpParsingException
     {
         if (!"xpacket".equals(pi.getNodeName()))
         {
             throw new XmpParsingException(ErrorType.XpacketBadStart, "Bad processing instruction name : "
                     + pi.getNodeName());
         }
-        String data = pi.getData();
-        StringTokenizer tokens = new StringTokenizer(data, " ");
+        final String data = pi.getData();
+        final StringTokenizer tokens = new StringTokenizer(data, " ");
         String id = null;
         String begin = null;
         String bytes = null;
         String encoding = null;
         while (tokens.hasMoreTokens())
         {
-            String token = tokens.nextToken();
+            final String token = tokens.nextToken();
             if (!token.endsWith("\"") && !token.endsWith("\'"))
             {
                 throw new XmpParsingException(ErrorType.XpacketBadStart, "Cannot understand PI data part : '" + token
                         + "' in '" + data + "'");
             }
-            String quote = token.substring(token.length() - 1);
-            int pos = token.indexOf("=" + quote);
+            final String quote = token.substring(token.length() - 1);
+            final int pos = token.indexOf("=" + quote);
             if (pos <= 0)
             {
                 throw new XmpParsingException(ErrorType.XpacketBadStart, "Cannot understand PI data part : '" + token
                         + "' in '" + data + "'");
             }
-            String name = token.substring(0, pos);
+            final String name = token.substring(0, pos);
             if (token.length() - 1 < pos + 2)
             {
                 throw new XmpParsingException(ErrorType.XpacketBadStart, "Cannot understand PI data part : '" + token
                         + "' in '" + data + "'");
             }
-            String value = token.substring(pos + 2, token.length() - 1);
+            final String value = token.substring(pos + 2, token.length() - 1);
             switch (name)
             {
                 case "id":
@@ -716,15 +716,15 @@ public class DomXmpParser
         return XMPMetadata.createXMPMetadata(begin, id, bytes, encoding);
     }
 
-    private void parseEndPacket(XMPMetadata metadata, ProcessingInstruction pi) throws XmpParsingException
+    private void parseEndPacket(final XMPMetadata metadata, final ProcessingInstruction pi) throws XmpParsingException
     {
-        String xpackData = pi.getData();
+        final String xpackData = pi.getData();
         // end attribute must be present and placed in first
         // xmp spec says Other unrecognized attributes can follow, but
         // should be ignored
         if (xpackData.startsWith("end="))
         {
-            char end = xpackData.charAt(5);
+            final char end = xpackData.charAt(5);
             // check value (5 for end='X')
             if (end != 'r' && end != 'w')
             {
@@ -744,12 +744,12 @@ public class DomXmpParser
         }
     }
 
-    private Element findDescriptionsParent(Element root) throws XmpParsingException
+    private Element findDescriptionsParent(final Element root) throws XmpParsingException
     {
         // always <x:xmpmeta xmlns:x="adobe:ns:meta/">
         expectNaming(root, "adobe:ns:meta/", "x", "xmpmeta");
         // should only have one child
-        NodeList nl = root.getChildNodes();
+        final NodeList nl = root.getChildNodes();
         if (nl.getLength() == 0)
         {
             // empty description
@@ -765,7 +765,7 @@ public class DomXmpParser
             // should be an element
             throw new XmpParsingException(ErrorType.Format, "x:xmpmeta does not contains rdf:RDF element");
         } // else let's parse
-        Element rdfRdf = (Element) root.getFirstChild();
+        final Element rdfRdf = (Element) root.getFirstChild();
         // always <rdf:RDF
         // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
         expectNaming(rdfRdf, XmpConstants.RDF_NAMESPACE, XmpConstants.DEFAULT_RDF_PREFIX,
@@ -774,7 +774,7 @@ public class DomXmpParser
         return rdfRdf;
     }
 
-    private void expectNaming(Element element, String ns, String prefix, String ln) throws XmpParsingException
+    private void expectNaming(final Element element, final String ns, final String prefix, final String ln) throws XmpParsingException
     {
         if ((ns != null) && !(ns.equals(element.getNamespaceURI())))
         {
@@ -799,12 +799,12 @@ public class DomXmpParser
      * @param root
      *            the first node of an element or document to clear
      */
-    private void removeComments(Node root)
+    private void removeComments(final Node root)
     {
     	// will hold the nodes which are to be deleted
-    	List<Node> forDeletion = new ArrayList<>();
+    	final List<Node> forDeletion = new ArrayList<>();
     	
-    	NodeList nl = root.getChildNodes();
+    	final NodeList nl = root.getChildNodes();
     	
         if (nl.getLength()<=1) 
         {
@@ -814,7 +814,7 @@ public class DomXmpParser
         
         for (int i = 0; i < nl.getLength(); i++) 
         {
-            Node node = nl.item(i);
+            final Node node = nl.item(i);
             if (node instanceof Comment)
             {
                 // comments to be deleted
@@ -840,8 +840,8 @@ public class DomXmpParser
         forDeletion.forEach(root::removeChild);
     }
 
-    private AbstractStructuredType instanciateStructured(TypeMapping tm, Types type, String name,
-            String structuredNamespace) throws XmpParsingException
+    private AbstractStructuredType instanciateStructured(final TypeMapping tm, final Types type, final String name,
+                                                         final String structuredNamespace) throws XmpParsingException
     {
         try
         {
@@ -864,9 +864,9 @@ public class DomXmpParser
         }
     }
 
-    private PropertyType checkPropertyDefinition(XMPMetadata xmp, QName prop) throws XmpParsingException
+    private PropertyType checkPropertyDefinition(final XMPMetadata xmp, final QName prop) throws XmpParsingException
     {
-        TypeMapping tm = xmp.getTypeMapping();
+        final TypeMapping tm = xmp.getTypeMapping();
         // test if namespace is set in xml
         if (!nsFinder.containsNamespace(prop.getNamespaceURI()))
         {
@@ -874,7 +874,7 @@ public class DomXmpParser
                     + prop.getNamespaceURI());
         }
         // test if namespace is defined
-        String nsuri = prop.getNamespaceURI();
+        final String nsuri = prop.getNamespaceURI();
         if (!tm.isDefinedNamespace(nsuri))
         {
             throw new XmpParsingException(ErrorType.NoSchema, "Cannot find a definition for the namespace "
@@ -894,13 +894,13 @@ public class DomXmpParser
     {
         private final Deque<Map<String, String>> stack = new ArrayDeque<>();
 
-        protected void push(Element description)
+        protected void push(final Element description)
         {
-            NamedNodeMap nnm = description.getAttributes();
-            Map<String, String> map = new HashMap<>(nnm.getLength());
+            final NamedNodeMap nnm = description.getAttributes();
+            final Map<String, String> map = new HashMap<>(nnm.getLength());
             for (int j = 0; j < nnm.getLength(); j++)
             {
-                Attr no = (Attr) nnm.item(j);
+                final Attr no = (Attr) nnm.item(j);
                 // if ns definition add it
                 if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(no.getNamespaceURI()))
                 {
@@ -915,7 +915,7 @@ public class DomXmpParser
             return stack.pop();
         }
 
-        protected boolean containsNamespace(String namespace)
+        protected boolean containsNamespace(final String namespace)
         {
             return stack.stream().anyMatch(map -> map.containsValue(namespace));
         }

@@ -62,7 +62,7 @@ public class PDCIDFontType2 extends PDCIDFont
      * @param parent The parent font.
      * @throws IOException
      */
-    public PDCIDFontType2(COSDictionary fontDictionary, PDType0Font parent) throws IOException
+    public PDCIDFontType2(final COSDictionary fontDictionary, final PDType0Font parent) throws IOException
     {
         this(fontDictionary, parent, null);
     }
@@ -75,11 +75,11 @@ public class PDCIDFontType2 extends PDCIDFont
      * @param trueTypeFont The true type font used to create the parent font
      * @throws IOException
      */
-    public PDCIDFontType2(COSDictionary fontDictionary, PDType0Font parent, TrueTypeFont trueTypeFont) throws IOException
+    public PDCIDFontType2(final COSDictionary fontDictionary, final PDType0Font parent, final TrueTypeFont trueTypeFont) throws IOException
     {
         super(fontDictionary, parent);
 
-        PDFontDescriptor fd = getFontDescriptor();
+        final PDFontDescriptor fd = getFontDescriptor();
         if (trueTypeFont != null)
         {
             ttf = trueTypeFont;
@@ -110,8 +110,8 @@ public class PDCIDFontType2 extends PDCIDFont
                 try
                 {
                     // embedded OTF or TTF
-                    OTFParser otfParser = new OTFParser(true);
-                    OpenTypeFont otf = otfParser.parse(stream.createInputStream());
+                    final OTFParser otfParser = new OTFParser(true);
+                    final OpenTypeFont otf = otfParser.parse(stream.createInputStream());
                     ttfFont = otf;
     
                     if (otf.isPostScript())
@@ -142,9 +142,9 @@ public class PDCIDFontType2 extends PDCIDFont
 
     private TrueTypeFont findFontOrSubstitute() throws IOException
     {
-        TrueTypeFont ttfFont;
+        final TrueTypeFont ttfFont;
 
-        CIDFontMapping mapping = FontMappers.instance()
+        final CIDFontMapping mapping = FontMappers.instance()
                 .getCIDFont(getBaseFont(), getFontDescriptor(),
                         getCIDSystemInfo());
         if (mapping.isCIDFont())
@@ -187,7 +187,7 @@ public class PDCIDFontType2 extends PDCIDFont
     {
         if (getFontDescriptor() != null)
         {
-            PDRectangle bbox = getFontDescriptor().getFontBoundingBox();
+            final PDRectangle bbox = getFontDescriptor().getFontBoundingBox();
             if (bbox != null &&
                     (Float.compare(bbox.getLowerLeftX(), 0) != 0 || 
                      Float.compare(bbox.getLowerLeftY(), 0) != 0 ||
@@ -202,14 +202,14 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     @Override
-    public int codeToCID(int code)
+    public int codeToCID(final int code)
     {
-        CMap cMap = parent.getCMap();
+        final CMap cMap = parent.getCMap();
 
         // Acrobat allows bad PDFs to use Unicode CMaps here instead of CID CMaps, see PDFBOX-1283
         if (!cMap.hasCIDMappings() && cMap.hasUnicodeMappings())
         {
-            String unicode = cMap.toUnicode(code);
+            final String unicode = cMap.toUnicode(code);
             if (unicode != null)
             {
                 return unicode.codePointAt(0); // actually: code -> CID
@@ -227,7 +227,7 @@ public class PDCIDFontType2 extends PDCIDFont
      * @throws IOException
      */
     @Override
-    public int codeToGID(int code) throws IOException
+    public int codeToGID(final int code) throws IOException
     {
         if (!isEmbedded)
         {
@@ -240,7 +240,7 @@ public class PDCIDFontType2 extends PDCIDFont
             {
                 // Acrobat allows non-embedded GIDs - todo: can we find a test PDF for this?
                 LOG.warn("Using non-embedded GIDs in font " + getName());
-                int cid = codeToCID(code);
+                final int cid = codeToCID(code);
                 if (cid < cid2gid.length)
                 {
                     return cid2gid[cid];
@@ -253,7 +253,7 @@ public class PDCIDFontType2 extends PDCIDFont
             else
             {
                 // fallback to the ToUnicode CMap, test with PDFBOX-1422 and PDFBOX-2560
-                String unicode = parent.toUnicode(code);
+                final String unicode = parent.toUnicode(code);
                 if (unicode == null)
                 {
                     if (!noMapping.contains(code))
@@ -281,7 +281,7 @@ public class PDCIDFontType2 extends PDCIDFont
             // a CIDToGIDMap entry that maps CIDs to the glyph indices for the appropriate glyph
             // descriptions in that font program.
 
-            int cid = codeToCID(code);
+            final int cid = codeToCID(code);
             if (cid2gid != null)
             {
                 // use CIDToGIDMap
@@ -311,7 +311,7 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     @Override
-    public float getHeight(int code) throws IOException
+    public float getHeight(final int code) throws IOException
     {
         // todo: really we want the BBox, (for text extraction:)
         return (ttf.getHorizontalHeader().getAscender() + -ttf.getHorizontalHeader().getDescender())
@@ -319,11 +319,11 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     @Override
-    public float getWidthFromFont(int code) throws IOException
+    public float getWidthFromFont(final int code) throws IOException
     {
-        int gid = codeToGID(code);
+        final int gid = codeToGID(code);
         int width = ttf.getAdvanceWidth(gid);
-        int unitsPerEM = ttf.getUnitsPerEm();
+        final int unitsPerEM = ttf.getUnitsPerEm();
         if (unitsPerEM != 1000)
         {
             width *= 1000f / unitsPerEM;
@@ -332,7 +332,7 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     @Override
-    public byte[] encode(int unicode)
+    public byte[] encode(final int unicode)
     {
         int cid = -1;
         if (isEmbedded)
@@ -378,7 +378,7 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     @Override
-    public byte[] encodeGlyphId(int glyphId)
+    public byte[] encodeGlyphId(final int glyphId)
     {
         // CID is always 2-bytes (16-bit) for TrueType
         return new byte[] { (byte)(glyphId >> 8 & 0xff), (byte)(glyphId & 0xff) };
@@ -406,20 +406,20 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     @Override
-    public GeneralPath getPath(int code) throws IOException
+    public GeneralPath getPath(final int code) throws IOException
     {
         if (ttf instanceof OpenTypeFont && ((OpenTypeFont)ttf).isPostScript())
         {
             // we're not supposed to have CFF fonts inside PDCIDFontType2, but if we do,
             // then we treat their CIDs as GIDs, see PDFBOX-3344
-            int cid = codeToGID(code);
-            Type2CharString charstring = ((OpenTypeFont)ttf).getCFF().getFont().getType2CharString(cid);
+            final int cid = codeToGID(code);
+            final Type2CharString charstring = ((OpenTypeFont)ttf).getCFF().getFont().getType2CharString(cid);
             return charstring.getPath();
         }
         else
         {
-            int gid = codeToGID(code);
-            GlyphData glyph = ttf.getGlyph().getGlyph(gid);
+            final int gid = codeToGID(code);
+            final GlyphData glyph = ttf.getGlyph().getGlyph(gid);
             if (glyph != null)
             {
                 return glyph.getPath();
@@ -429,11 +429,11 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     @Override
-    public GeneralPath getNormalizedPath(int code) throws IOException
+    public GeneralPath getNormalizedPath(final int code) throws IOException
     {
-        boolean hasScaling = ttf.getUnitsPerEm() != 1000;
-        float scale = 1000f / ttf.getUnitsPerEm();
-        int gid = codeToGID(code);
+        final boolean hasScaling = ttf.getUnitsPerEm() != 1000;
+        final float scale = 1000f / ttf.getUnitsPerEm();
+        final int gid = codeToGID(code);
 
         GeneralPath path = getPath(code);
 
@@ -459,7 +459,7 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     @Override
-    public boolean hasGlyph(int code) throws IOException
+    public boolean hasGlyph(final int code) throws IOException
     {
         return codeToGID(code) != 0;
     }

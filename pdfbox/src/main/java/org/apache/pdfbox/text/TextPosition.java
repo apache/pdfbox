@@ -81,17 +81,17 @@ public final class TextPosition
      * @param fontSize The new font size.
      * @param fontSizeInPt The font size in pt units (see {@link #getFontSizeInPt()} for details).
      */
-    public TextPosition(int pageRotation, float pageWidth, float pageHeight, Matrix textMatrix,
-                        float endX, float endY, float maxHeight, float individualWidth,
-                        float spaceWidth, String unicode, int[] charCodes, PDFont font,
-                        float fontSize, int fontSizeInPt)
+    public TextPosition(final int pageRotation, final float pageWidth, final float pageHeight, final Matrix textMatrix,
+                        final float endX, final float endY, final float maxHeight, final float individualWidth,
+                        final float spaceWidth, final String unicode, final int[] charCodes, final PDFont font,
+                        final float fontSize, final int fontSizeInPt)
     {
         this.textMatrix = textMatrix;
 
         this.endX = endX;
         this.endY = endY;
 
-        int rotationAngle = pageRotation;
+        final int rotationAngle = pageRotation;
         this.rotation = rotationAngle;
 
         this.maxHeight = maxHeight;
@@ -124,7 +124,7 @@ public final class TextPosition
     // normalization.
     private static Map<Integer, String> createDiacritics()
     {
-        Map<Integer, String> map = new HashMap<>(31);
+        final Map<Integer, String> map = new HashMap<>(31);
         map.put(0x0060, "\u0300");
         map.put(0x02CB, "\u0300");
         map.put(0x0027, "\u0301");
@@ -210,10 +210,10 @@ public final class TextPosition
     {
         if (direction < 0)
         {
-            float a = textMatrix.getScaleY();
-            float b = textMatrix.getShearY();
-            float c = textMatrix.getShearX();
-            float d = textMatrix.getScaleX();
+            final float a = textMatrix.getScaleY();
+            final float b = textMatrix.getShearY();
+            final float c = textMatrix.getShearX();
+            final float d = textMatrix.getScaleX();
     
             // 12 0   left to right
             // 0 12
@@ -254,7 +254,7 @@ public final class TextPosition
      * @param rotation Rotation to apply (0, 90, 180, or 270).  0 will perform no adjustments.
      * @return X coordinate
      */
-    private float getXRot(float rotation)
+    private float getXRot(final float rotation)
     {
         if (Float.compare(rotation, 0) == 0)
         {
@@ -317,7 +317,7 @@ public final class TextPosition
      * @param rotation Rotation to apply to text to adjust the 0,0 location (0,90,180,270)
      * @return The y coordinate of the text
      */
-    private float getYLowerLeftRot(float rotation)
+    private float getYLowerLeftRot(final float rotation)
     {
         if (Float.compare(rotation, 0) == 0)
         {
@@ -369,7 +369,7 @@ public final class TextPosition
      */
     public float getYDirAdj()
     {
-        float dir = getDir();
+        final float dir = getDir();
         // some PDFBox code assumes that the 0,0 point is in upper left, not lower left
         if (Float.compare(dir, 0) == 0 || Float.compare(dir, 180) == 0)
         {
@@ -387,7 +387,7 @@ public final class TextPosition
      * @param rotation Rotation that was used to determine coordinates (0,90,180,270)
      * @return Width of text in display units
      */
-    private float getWidthRot(float rotation)
+    private float getWidthRot(final float rotation)
     {
         if (Float.compare(rotation, 90) == 0 || Float.compare(rotation, 270) == 0)
         {
@@ -529,14 +529,14 @@ public final class TextPosition
      * @param tp2 The other TestPosition to compare against
      * @return True if tp2 is contained in the bounding box of this text.
      */
-    public boolean contains(TextPosition tp2)
+    public boolean contains(final TextPosition tp2)
     {
-        double thisXstart = getXDirAdj();
-        double thisWidth = getWidthDirAdj();
-        double thisXend = thisXstart + thisWidth;
+        final double thisXstart = getXDirAdj();
+        final double thisWidth = getWidthDirAdj();
+        final double thisXend = thisXstart + thisWidth;
 
-        double tp2Xstart = tp2.getXDirAdj();
-        double tp2Xend = tp2Xstart + tp2.getWidthDirAdj();
+        final double tp2Xstart = tp2.getXDirAdj();
+        final double tp2Xend = tp2Xstart + tp2.getWidthDirAdj();
 
         // no X overlap at all so return as soon as possible
         if (tp2Xend <= thisXstart || tp2Xstart >= thisXend)
@@ -546,8 +546,8 @@ public final class TextPosition
 
         // no Y overlap at all so return as soon as possible. Note: 0.0 is in the upper left and
         // y-coordinate is top of TextPosition
-        double thisYstart = getYDirAdj();
-        double tp2Ystart = tp2.getYDirAdj();
+        final double thisYstart = getYDirAdj();
+        final double tp2Ystart = tp2.getYDirAdj();
         if (tp2Ystart + tp2.getHeightDir() < thisYstart ||
                 tp2Ystart > thisYstart + getHeightDir())
         {
@@ -558,14 +558,14 @@ public final class TextPosition
         // error in the regression test files
         else if (tp2Xstart > thisXstart && tp2Xend > thisXend)
         {
-            double overlap = thisXend - tp2Xstart;
-            double overlapPercent = overlap/thisWidth;
+            final double overlap = thisXend - tp2Xstart;
+            final double overlapPercent = overlap/thisWidth;
             return overlapPercent > .15;
         }
         else if (tp2Xstart < thisXstart && tp2Xend < thisXend)
         {
-            double overlap = tp2Xend - thisXstart;
-            double overlapPercent = overlap/thisWidth;
+            final double overlap = tp2Xend - thisXstart;
+            final double overlapPercent = overlap/thisWidth;
             return overlapPercent > .15;
         }
         return true;
@@ -579,19 +579,19 @@ public final class TextPosition
      *
      * @param diacritic TextPosition to merge into the current TextPosition.
      */
-    public void mergeDiacritic(TextPosition diacritic)
+    public void mergeDiacritic(final TextPosition diacritic)
     {
         if (diacritic.getUnicode().length() > 1)
         {
             return;
         }
 
-        float diacXStart = diacritic.getXDirAdj();
-        float diacXEnd = diacXStart + diacritic.widths[0];
+        final float diacXStart = diacritic.getXDirAdj();
+        final float diacXEnd = diacXStart + diacritic.widths[0];
 
         float currCharXStart = getXDirAdj();
 
-        int strLen = unicode.length();
+        final int strLen = unicode.length();
         boolean wasAdded = false;
 
         for (int i = 0; i < strLen && !wasAdded; i++)
@@ -602,7 +602,7 @@ public final class TextPosition
                         " is not supported yet and is ignored (PDFBOX-2831)");
                 break;
             }
-            float currCharXEnd = currCharXStart + widths[i];
+            final float currCharXEnd = currCharXStart + widths[i];
 
              // this is the case where there is an overlap of the diacritic character with the
              // current character and the previous character. If no previous character, just append
@@ -615,11 +615,11 @@ public final class TextPosition
                 }
                 else
                 {
-                    float distanceOverlapping1 = diacXEnd - currCharXStart;
-                    float percentage1 = distanceOverlapping1/widths[i];
+                    final float distanceOverlapping1 = diacXEnd - currCharXStart;
+                    final float percentage1 = distanceOverlapping1/widths[i];
 
-                    float distanceOverlapping2 = currCharXStart - diacXStart;
-                    float percentage2 = distanceOverlapping2/widths[i - 1];
+                    final float distanceOverlapping2 = currCharXStart - diacXStart;
+                    final float percentage2 = distanceOverlapping2/widths[i - 1];
 
                     if (percentage1 >= percentage2)
                     {
@@ -665,12 +665,12 @@ public final class TextPosition
      * @param i current character
      * @param diacritic The diacritic TextPosition
      */
-    private void insertDiacritic(int i, TextPosition diacritic)
+    private void insertDiacritic(final int i, final TextPosition diacritic)
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(unicode.substring(0, i));
 
-        float[] widths2 = new float[widths.length + 1];
+        final float[] widths2 = new float[widths.length + 1];
         System.arraycopy(widths, 0, widths2, 0, i);
 
         // Unicode combining diacritics always go after the base character, regardless of whether
@@ -695,10 +695,10 @@ public final class TextPosition
      * @param str String to normalize
      * @return Normalized string
      */
-    private String combineDiacritic(String str)
+    private String combineDiacritic(final String str)
     {
         // Unicode contains special combining forms of the diacritic characters which we want to use
-        int codePoint = str.codePointAt(0);
+        final int codePoint = str.codePointAt(0);
 
         // convert the characters not defined in the Unicode spec
         if (DIACRITICS.containsKey(codePoint))
@@ -716,7 +716,7 @@ public final class TextPosition
      */
     public boolean isDiacritic()
     {
-        String text = this.getUnicode();
+        final String text = this.getUnicode();
         if (text.length() != 1)
         {
             return false;
@@ -729,7 +729,7 @@ public final class TextPosition
             // Ignoring it as diacritic avoids trouble if it slightly overlaps with the next glyph.
             return false;
         }
-        int type = Character.getType(text.charAt(0));
+        final int type = Character.getType(text.charAt(0));
         return type == Character.NON_SPACING_MARK ||
                type == Character.MODIFIER_SYMBOL ||
                type == Character.MODIFIER_LETTER;
@@ -803,7 +803,7 @@ public final class TextPosition
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(final Object o)
     {
         if (this == o)
         {
@@ -814,7 +814,7 @@ public final class TextPosition
             return false;
         }
 
-        TextPosition that = (TextPosition) o;
+        final TextPosition that = (TextPosition) o;
 
         if (Float.compare(that.endX, endX) != 0)
         {

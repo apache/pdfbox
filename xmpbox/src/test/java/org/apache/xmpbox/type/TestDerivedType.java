@@ -74,19 +74,19 @@ class TestDerivedType
         );
     }
 
-    protected TextType instanciate(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
-            Object value) throws Exception
+    protected TextType instanciate(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String propertyName,
+                                   final Object value) throws Exception
     {
-        Object[] initargs = new Object[] { metadata, namespaceURI, prefix, propertyName, value };
+        final Object[] initargs = new Object[] { metadata, namespaceURI, prefix, propertyName, value };
         return constructor.newInstance(initargs);
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void test1(Class<? extends TextType> clz, String type) throws Exception
+    void test1(final Class<? extends TextType> clz, final String type) throws Exception
     {
         constructor = clz.getDeclaredConstructor(XMPMetadata.class, String.class, String.class, String.class, Object.class);
-        TextType element = instanciate(xmp, null, PREFIX, NAME, VALUE);
+        final TextType element = instanciate(xmp, null, PREFIX, NAME, VALUE);
         assertNull(element.getNamespace());
         assertTrue(element.getValue() instanceof String);
         assertEquals(VALUE, element.getValue());

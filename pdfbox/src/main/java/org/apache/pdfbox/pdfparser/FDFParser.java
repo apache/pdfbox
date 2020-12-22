@@ -38,7 +38,7 @@ public class FDFParser extends COSParser
      * 
      * @throws IOException If something went wrong.
      */
-    public FDFParser(RandomAccessRead source) throws IOException
+    public FDFParser(final RandomAccessRead source) throws IOException
     {
         super(source);
         init();
@@ -51,14 +51,14 @@ public class FDFParser extends COSParser
      * @return true if the dictionary is a FDF catalog
      */
     @Override
-    protected final boolean isCatalog(COSDictionary dictionary)
+    protected final boolean isCatalog(final COSDictionary dictionary)
     {
         return dictionary.containsKey(COSName.FDF);
     }
 
     private void init()
     {
-        String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
+        final String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
         if (eofLookupRangeStr != null)
         {
             try
@@ -83,9 +83,9 @@ public class FDFParser extends COSParser
      */
     private void initialParse() throws IOException
     {
-        COSDictionary trailer = retrieveTrailer();
+        final COSDictionary trailer = retrieveTrailer();
     
-        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
+        final COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
         if (root == null)
         {
             throw new IOException("Missing root object specification in trailer.");

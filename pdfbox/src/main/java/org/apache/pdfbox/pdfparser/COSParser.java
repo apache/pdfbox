@@ -169,7 +169,7 @@ public class COSParser extends BaseParser implements ICOSParser
      *
      * @param source input representing the pdf.
      */
-    public COSParser(RandomAccessRead source) throws IOException
+    public COSParser(final RandomAccessRead source) throws IOException
     {
         super(source);
         fileLen = source.length();
@@ -184,8 +184,8 @@ public class COSParser extends BaseParser implements ICOSParser
      * @param keyAlias alias to be used for decryption when using public key security
      * 
      */
-    public COSParser(RandomAccessRead source, String password, InputStream keyStore,
-            String keyAlias) throws IOException
+    public COSParser(final RandomAccessRead source, final String password, final InputStream keyStore,
+                     final String keyAlias) throws IOException
     {
         super(source);
         this.password = password;
@@ -209,7 +209,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * 
      * @param byteCount number of trailing bytes
      */
-    public void setEOFLookupRange(int byteCount)
+    public void setEOFLookupRange(final int byteCount)
     {
         if (byteCount > 15)
         {
@@ -231,7 +231,7 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             // parse startxref
             // TODO FDF files don't have a startxref value, so that rebuildTrailer is triggered
-            long startXRefOffset = getStartxrefOffset();
+            final long startXRefOffset = getStartxrefOffset();
             if (startXRefOffset > -1)
             {
                 trailer = parseXref(startXRefOffset);
@@ -296,7 +296,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return the trailer dictionary
      * @throws IOException if something went wrong
      */
-    private COSDictionary parseXref(long startXRefOffset) throws IOException
+    private COSDictionary parseXref(final long startXRefOffset) throws IOException
     {
         source.seek(startXRefOffset);
         long startXrefOffset = Math.max(0, parseStartXref());
@@ -309,7 +309,7 @@ public class COSParser extends BaseParser implements ICOSParser
         document.setStartXref(startXrefOffset);
         long prev = startXrefOffset;
         // ---- parse whole chain of xref tables/object streams using PREV reference
-        Set<Long> prevSet = new HashSet<>();
+        final Set<Long> prevSet = new HashSet<>();
         while (prev > 0)
         {
             // seek to xref table
@@ -327,7 +327,7 @@ public class COSParser extends BaseParser implements ICOSParser
                     throw new IOException("Expected trailer object at offset "
                             + source.getPosition());
                 }
-                COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
+                final COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
                 // check for a XRef stream, it may contain some object ids of compressed objects 
                 if(trailer.containsKey(COSName.XREF_STM))
                 {
@@ -395,7 +395,7 @@ public class COSParser extends BaseParser implements ICOSParser
                     if (fixedOffset > -1 && fixedOffset != prev)
                     {
                         prev = fixedOffset;
-                        COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
+                        final COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
                         trailer.setLong(COSName.PREV, prev);
                     }
                 }
@@ -408,7 +408,7 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         // ---- build valid xrefs out of the xref chain
         xrefTrailerResolver.setStartxref(startXrefOffset);
-        COSDictionary trailer = xrefTrailerResolver.getTrailer();
+        final COSDictionary trailer = xrefTrailerResolver.getTrailer();
         document.setTrailer(trailer);
         document.setIsXRefStream(XRefType.STREAM == xrefTrailerResolver.getXrefType());
         // check the offsets of all referenced objects
@@ -423,19 +423,19 @@ public class COSParser extends BaseParser implements ICOSParser
      * 
      * @return value of PREV item in dictionary or <code>-1</code> if no such item exists
      */
-    private long parseXrefObjStream(long objByteOffset, boolean isStandalone) throws IOException
+    private long parseXrefObjStream(final long objByteOffset, final boolean isStandalone) throws IOException
     {
         // ---- parse indirect object head
-        long objectNumber = readObjectNumber();
+        final long objectNumber = readObjectNumber();
 
         // remember the highest XRef object number to avoid it being reused in incremental saving
-        long currentHighestXRefObjectNumber = document.getHighestXRefObjectNumber();
+        final long currentHighestXRefObjectNumber = document.getHighestXRefObjectNumber();
         document.setHighestXRefObjectNumber(Math.max(currentHighestXRefObjectNumber, objectNumber));
 
         readGenerationNumber();
         readExpectedString(OBJ_MARKER, true);
 
-        COSDictionary dict = parseCOSDictionary();
+        final COSDictionary dict = parseCOSDictionary();
         try (COSStream xrefStream = parseCOSStream(dict))
         {
             parseXrefStream(xrefStream, objByteOffset, isStandalone);
@@ -566,7 +566,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @param lenient try to handle malformed PDFs.
      *
      */
-    protected void setLenient(boolean lenient)
+    protected void setLenient(final boolean lenient)
     {
         if (initialParseDone)
         {
@@ -576,10 +576,10 @@ public class COSParser extends BaseParser implements ICOSParser
     }
 
     @Override
-    public COSBase dereferenceCOSObject(COSObject obj) throws IOException
+    public COSBase dereferenceCOSObject(final COSObject obj) throws IOException
     {
-        long currentPos = source.getPosition();
-        COSBase parsedObj = parseObjectDynamically(obj.getObjectNumber(), obj.getGenerationNumber(),
+        final long currentPos = source.getPosition();
+        final COSBase parsedObj = parseObjectDynamically(obj.getObjectNumber(), obj.getGenerationNumber(),
                 false);
         if (currentPos > 0)
         {
@@ -589,7 +589,7 @@ public class COSParser extends BaseParser implements ICOSParser
     }
 
     @Override
-    public RandomAccessReadView createRandomAccessReadView(long startPosition, long streamLength)
+    public RandomAccessReadView createRandomAccessReadView(final long startPosition, final long streamLength)
             throws IOException
     {
         return source.createView(startPosition, streamLength);
@@ -608,16 +608,16 @@ public class COSParser extends BaseParser implements ICOSParser
      * 
      * @throws IOException If an IO error occurs.
      */
-    protected synchronized COSBase parseObjectDynamically(long objNr, int objGenNr,
-            boolean requireExistingNotCompressedObj) throws IOException
+    protected synchronized COSBase parseObjectDynamically(final long objNr, final int objGenNr,
+                                                          final boolean requireExistingNotCompressedObj) throws IOException
     {
         final COSObjectKey objKey = new COSObjectKey(objNr, objGenNr);
-        COSObject pdfObject = document.getObjectFromPool(objKey);
+        final COSObject pdfObject = document.getObjectFromPool(objKey);
         if (!pdfObject.isObjectNull())
         {
             return pdfObject.getObject();
         }
-        Long offsetOrObjstmObNr = getObjectOffset(objKey, requireExistingNotCompressedObj);
+        final Long offsetOrObjstmObNr = getObjectOffset(objKey, requireExistingNotCompressedObj);
         COSBase referencedObject = null;
         if (offsetOrObjstmObNr != null)
         {
@@ -643,7 +643,7 @@ public class COSParser extends BaseParser implements ICOSParser
         return referencedObject;
     }
 
-    private Long getObjectOffset(COSObjectKey objKey, boolean requireExistingNotCompressedObj)
+    private Long getObjectOffset(final COSObjectKey objKey, final boolean requireExistingNotCompressedObj)
             throws IOException
     {
         // read offset or object stream object number from xref table
@@ -652,7 +652,7 @@ public class COSParser extends BaseParser implements ICOSParser
         // maybe something is wrong with the xref table -> perform brute force search for all objects
         if (offsetOrObjstmObNr == null && isLenient)
         {
-            Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
+            final Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
             offsetOrObjstmObNr = bfCOSObjectKeyOffsets.get(objKey);
             if (offsetOrObjstmObNr != null)
             {
@@ -671,7 +671,7 @@ public class COSParser extends BaseParser implements ICOSParser
         return offsetOrObjstmObNr;
     }
 
-    private COSBase parseFileObject(Long offsetOrObjstmObNr, final COSObjectKey objKey)
+    private COSBase parseFileObject(final Long offsetOrObjstmObNr, final COSObjectKey objKey)
             throws IOException
     {
         // ---- go to object start
@@ -699,7 +699,7 @@ public class COSParser extends BaseParser implements ICOSParser
             source.rewind(endObjectKey.getBytes(StandardCharsets.ISO_8859_1).length);
             if (parsedObject instanceof COSDictionary)
             {
-                COSStream stream = parseCOSStream((COSDictionary) parsedObject);
+                final COSStream stream = parseCOSStream((COSDictionary) parsedObject);
 
                 if (securityHandler != null)
                 {
@@ -761,7 +761,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return the parsed object
      * @throws IOException if something went wrong when parsing the object
      */
-    protected COSBase parseObjectStreamObject(int objstmObjNr, COSObjectKey key) throws IOException
+    protected COSBase parseObjectStreamObject(final int objstmObjNr, final COSObjectKey key) throws IOException
     {
         final COSBase objstmBaseObj = parseObjectDynamically(objstmObjNr, 0, true);
         COSBase objectStreamObject = null;
@@ -811,8 +811,8 @@ public class COSParser extends BaseParser implements ICOSParser
         // length in referenced object
         if (lengthBaseObj instanceof COSObject)
         {
-            COSObject lengthObj = (COSObject) lengthBaseObj;
-            COSBase length = lengthObj.getObject();
+            final COSObject lengthObj = (COSObject) lengthBaseObj;
+            final COSBase length = lengthObj.getObject();
             if (length == null)
             {
                 throw new IOException("Length object content was not read.");
@@ -848,7 +848,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @throws IOException if an error occurred reading the stream, like problems with reading
      * length attribute, stream does not end with 'endstream' after data read, stream too short etc.
      */
-    protected COSStream parseCOSStream(COSDictionary dic) throws IOException
+    protected COSStream parseCOSStream(final COSDictionary dic) throws IOException
     {
         // read 'stream'; this was already tested in parseObjectsDynamically()
         readString(); 
@@ -858,7 +858,7 @@ public class COSParser extends BaseParser implements ICOSParser
         /*
          * This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
          */
-        COSNumber streamLengthObj = getLength(dic.getItem(COSName.LENGTH));
+        final COSNumber streamLengthObj = getLength(dic.getItem(COSName.LENGTH));
         if (streamLengthObj == null)
         {
             if (isLenient)
@@ -873,8 +873,8 @@ public class COSParser extends BaseParser implements ICOSParser
         }
 
 
-        long streamStartPosition = source.getPosition();
-        long streamLength;
+        final long streamStartPosition = source.getPosition();
+        final long streamLength;
         if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
         {
             streamLength = streamLengthObj.longValue();
@@ -885,7 +885,7 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             streamLength = readUntilEndStream(new EndstreamFilterStream());
         }
-        String endStream = readString();
+        final String endStream = readString();
         if (endStream.equals("endobj") && isLenient)
         {
             LOG.warn("stream ends with 'endobj' instead of 'endstream' at offset "
@@ -941,7 +941,7 @@ public class COSParser extends BaseParser implements ICOSParser
             int quickTestIdx;
         
             // iterate over buffer, trying to find keyword match
-            for ( int maxQuicktestIdx = bufSize - quickTestOffset; bIdx < bufSize; bIdx++ ) 
+            for (final int maxQuicktestIdx = bufSize - quickTestOffset; bIdx < bufSize; bIdx++ )
             {
                 // reduce compare operations by first test last character we would have to
                 // match if current one matches; if it is not a character from keywords
@@ -994,7 +994,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 } 
             }
             
-            int contentBytes = Math.max( 0, bIdx - charMatchCount );
+            final int contentBytes = Math.max( 0, bIdx - charMatchCount );
             
             // write buffer content until first matched char to output stream
             if ( contentBytes > 0 )
@@ -1017,11 +1017,11 @@ public class COSParser extends BaseParser implements ICOSParser
         return out.calculateLength();
     }
 
-    private boolean validateStreamLength(long streamLength) throws IOException
+    private boolean validateStreamLength(final long streamLength) throws IOException
     {
         boolean streamLengthIsValid = true;
-        long originOffset = source.getPosition();
-        long expectedEndOfStream = originOffset + streamLength;
+        final long originOffset = source.getPosition();
+        final long expectedEndOfStream = originOffset + streamLength;
         if (expectedEndOfStream > fileLen)
         {
             streamLengthIsValid = false;
@@ -1052,7 +1052,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return the revised offset
      * @throws IOException
      */
-    private long checkXRefOffset(long startXRefOffset) throws IOException
+    private long checkXRefOffset(final long startXRefOffset) throws IOException
     {
         // repair mode isn't available in non-lenient mode
         if (!isLenient)
@@ -1087,7 +1087,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return the revised offset
      * @throws IOException if something went wrong
      */
-    private boolean checkXRefStreamOffset(long startXRefOffset) throws IOException
+    private boolean checkXRefStreamOffset(final long startXRefOffset) throws IOException
     {
         // repair mode isn't available in non-lenient mode
         if (!isLenient || startXRefOffset == 0)
@@ -1096,7 +1096,7 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         // seek to offset-1 
         source.seek(startXRefOffset-1);
-        int nextValue = source.read();
+        final int nextValue = source.read();
         // the first character has to be a whitespace, and then a digit
         if (isWhitespace(nextValue))
         {
@@ -1110,7 +1110,7 @@ public class COSParser extends BaseParser implements ICOSParser
                     readGenerationNumber();
                     readExpectedString(OBJ_MARKER, true);
                     // check the dictionary to avoid false positives
-                    COSDictionary dict = parseCOSDictionary();
+                    final COSDictionary dict = parseCOSDictionary();
                     source.seek(startXRefOffset);
                     if ("XRef".equals(dict.getNameAsString(COSName.TYPE)))
                     {
@@ -1136,7 +1136,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * 
      * @throws IOException if something went wrong
      */
-    private long calculateXRefFixedOffset(long objectOffset) throws IOException
+    private long calculateXRefFixedOffset(final long objectOffset) throws IOException
     {
         if (objectOffset < 0)
         {
@@ -1144,7 +1144,7 @@ public class COSParser extends BaseParser implements ICOSParser
             return 0;
         }
         // start a brute force search for all xref tables and try to find the offset we are looking for
-        long newOffset = bfSearchForXRef(objectOffset);
+        final long newOffset = bfSearchForXRef(objectOffset);
         if (newOffset > -1)
         {
             LOG.debug("Fixed reference for xref table/stream " + objectOffset + " -> " + newOffset);
@@ -1154,16 +1154,16 @@ public class COSParser extends BaseParser implements ICOSParser
         return 0;
     }
 
-    private boolean validateXrefOffsets(Map<COSObjectKey, Long> xrefOffset) throws IOException
+    private boolean validateXrefOffsets(final Map<COSObjectKey, Long> xrefOffset) throws IOException
     {
         if (xrefOffset == null)
         {
             return true;
         }
-        for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
+        for (final Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
         {
-            COSObjectKey objectKey = objectEntry.getKey();
-            Long objectOffset = objectEntry.getValue();
+            final COSObjectKey objectKey = objectEntry.getKey();
+            final Long objectOffset = objectEntry.getValue();
             // a negative offset number represents an object number itself
             // see type 2 entry in xref stream
             if (objectOffset != null && objectOffset >= 0
@@ -1189,10 +1189,10 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             return;
         }
-        Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
+        final Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
         if (!validateXrefOffsets(xrefOffset))
         {
-            Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
+            final Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
             if (!bfCOSObjectKeyOffsets.isEmpty())
             {
                 LOG.debug("Replaced read xref table with the results of a brute force search");
@@ -1210,7 +1210,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return returns true if the given object can be dereferenced at the given offset
      * @throws IOException if something went wrong
      */
-    private boolean checkObjectKey(COSObjectKey objectKey, long offset) throws IOException
+    private boolean checkObjectKey(final COSObjectKey objectKey, final long offset) throws IOException
     {
         // there can't be any object at the very beginning of a pdf
         if (offset < MINIMUM_SEARCH_OFFSET)
@@ -1224,7 +1224,7 @@ public class COSParser extends BaseParser implements ICOSParser
             // try to read the given object/generation number
             if (objectKey.getNumber() == readObjectNumber())
             {
-                int genNumber = readGenerationNumber();
+                final int genNumber = readGenerationNumber();
                 if (genNumber == objectKey.getGeneration())
                 {
                     // finally try to read the object marker
@@ -1266,20 +1266,20 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     private Map<COSObjectKey, Long> bfSearchForObjects() throws IOException
     {
-        Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = new HashMap<>();
-        long lastEOFMarker = bfSearchForLastEOFMarker();
-        long originOffset = source.getPosition();
+        final Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = new HashMap<>();
+        final long lastEOFMarker = bfSearchForLastEOFMarker();
+        final long originOffset = source.getPosition();
         long currentOffset = MINIMUM_SEARCH_OFFSET;
         long lastObjectId = Long.MIN_VALUE;
         int lastGenID = Integer.MIN_VALUE;
         long lastObjOffset = Long.MIN_VALUE;
-        char[] endobjString = "ndo".toCharArray();
-        char[] endobjRemainingString = "bj".toCharArray();
+        final char[] endobjString = "ndo".toCharArray();
+        final char[] endobjRemainingString = "bj".toCharArray();
         boolean endOfObjFound = false;
         do
         {
             source.seek(currentOffset);
-            int nextChar = source.read();
+            final int nextChar = source.read();
             currentOffset++;
             if (isWhitespace(nextChar) && isString(OBJ_MARKER))
             {
@@ -1307,7 +1307,7 @@ public class COSParser extends BaseParser implements ICOSParser
                         if (objectIDFound)
                         {
                             source.read();
-                            long objectId = readObjectNumber();
+                            final long objectId = readObjectNumber();
                             if (lastObjOffset > 0)
                             {
                                 // add the former object ID only if there was a subsequent object ID
@@ -1359,26 +1359,26 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return the offset of the xref entry
      * @throws IOException if something went wrong
      */
-    private long bfSearchForXRef(long xrefOffset) throws IOException
+    private long bfSearchForXRef(final long xrefOffset) throws IOException
     {
         long newOffset = -1;
 
         // initialize bfSearchXRefTablesOffsets -> not null
-        List<Long> bfSearchXRefTablesOffsets = bfSearchForXRefTables();
+        final List<Long> bfSearchXRefTablesOffsets = bfSearchForXRefTables();
         // initialize bfSearchXRefStreamsOffsets -> not null
-        List<Long> bfSearchXRefStreamsOffsets = bfSearchForXRefStreams();
+        final List<Long> bfSearchXRefStreamsOffsets = bfSearchForXRefStreams();
 
         // TODO to be optimized, this won't work in every case
-        long newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
+        final long newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
         
         // TODO to be optimized, this won't work in every case
-        long newOffsetStream = searchNearestValue(bfSearchXRefStreamsOffsets, xrefOffset);
+        final long newOffsetStream = searchNearestValue(bfSearchXRefStreamsOffsets, xrefOffset);
 
         // choose the nearest value
         if (newOffsetTable > -1 && newOffsetStream > -1)
         {
-            long differenceTable = xrefOffset - newOffsetTable;
-            long differenceStream = xrefOffset - newOffsetStream;
+            final long differenceTable = xrefOffset - newOffsetTable;
+            final long differenceStream = xrefOffset - newOffsetStream;
             if (Math.abs(differenceTable) > Math.abs(differenceStream))
             {
                 newOffset = newOffsetStream;
@@ -1403,16 +1403,16 @@ public class COSParser extends BaseParser implements ICOSParser
         return newOffset;
     }
 
-    private long searchNearestValue(List<Long> values, long offset)
+    private long searchNearestValue(final List<Long> values, final long offset)
     {
         long newValue = -1;
         Long currentDifference = null;
         int currentOffsetIndex = -1;
-        int numberOfOffsets = values.size();
+        final int numberOfOffsets = values.size();
         // find the nearest value
         for (int i = 0; i < numberOfOffsets; i++)
         {
-            long newDifference = offset - values.get(i);
+            final long newDifference = offset - values.get(i);
             // find the nearest offset
             if (currentDifference == null
                     || (Math.abs(currentDifference) > Math.abs(newDifference)))
@@ -1433,10 +1433,10 @@ public class COSParser extends BaseParser implements ICOSParser
      * 
      * @throws IOException if something went wrong
      */
-    private boolean bfSearchForTrailer(COSDictionary trailer) throws IOException
+    private boolean bfSearchForTrailer(final COSDictionary trailer) throws IOException
     {
-        Map<String, COSDictionary> trailerDicts = new HashMap<>();
-        long originOffset = source.getPosition();
+        final Map<String, COSDictionary> trailerDicts = new HashMap<>();
+        final long originOffset = source.getPosition();
         source.seek(MINIMUM_SEARCH_OFFSET);
         // search for trailer marker
         long trailerOffset = findString(TRAILER_MARKER);
@@ -1447,22 +1447,22 @@ public class COSParser extends BaseParser implements ICOSParser
                 boolean rootFound = false;
                 boolean infoFound = false;
                 skipSpaces();
-                COSDictionary trailerDict = parseCOSDictionary();
-                StringBuilder trailerKeys = new StringBuilder();
-                COSObject rootObj = trailerDict.getCOSObject(COSName.ROOT);
+                final COSDictionary trailerDict = parseCOSDictionary();
+                final StringBuilder trailerKeys = new StringBuilder();
+                final COSObject rootObj = trailerDict.getCOSObject(COSName.ROOT);
                 if (rootObj != null)
                 {
-                    long objNumber = rootObj.getObjectNumber();
-                    int genNumber = rootObj.getGenerationNumber();
+                    final long objNumber = rootObj.getObjectNumber();
+                    final int genNumber = rootObj.getGenerationNumber();
                     trailerKeys.append(objNumber).append(" ");
                     trailerKeys.append(genNumber).append(" ");
                     rootFound = true;
                 }
-                COSObject infoObj = trailerDict.getCOSObject(COSName.INFO);
+                final COSObject infoObj = trailerDict.getCOSObject(COSName.INFO);
                 if (infoObj != null)
                 {
-                    long objNumber = infoObj.getObjectNumber();
-                    int genNumber = infoObj.getGenerationNumber();
+                    final long objNumber = infoObj.getObjectNumber();
+                    final int genNumber = infoObj.getGenerationNumber();
                     trailerKeys.append(objNumber).append(" ");
                     trailerKeys.append(genNumber).append(" ");
                     infoFound = true;
@@ -1481,11 +1481,11 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         source.seek(originOffset);
         // eliminate double entries
-        int trailerdictsSize = trailerDicts.size();
+        final int trailerdictsSize = trailerDicts.size();
         String firstEntry = null;
         if (trailerdictsSize > 0)
         {
-            String[] keys = new String[trailerdictsSize];
+            final String[] keys = new String[trailerdictsSize];
             trailerDicts.keySet().toArray(keys);
             firstEntry = keys[0];
             for (int i = 1; i < trailerdictsSize; i++)
@@ -1501,22 +1501,22 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             boolean rootFound = false;
             boolean infoFound = false;
-            COSDictionary trailerDict = trailerDicts.get(firstEntry);
-            COSBase rootObj = trailerDict.getItem(COSName.ROOT);
+            final COSDictionary trailerDict = trailerDicts.get(firstEntry);
+            final COSBase rootObj = trailerDict.getItem(COSName.ROOT);
             if (rootObj instanceof COSObject)
             {
                 // check if the dictionary can be dereferenced and is the one we are looking for
-                COSBase rootDict = ((COSObject) rootObj).getObject();
+                final COSBase rootDict = ((COSObject) rootObj).getObject();
                 if (rootDict instanceof COSDictionary && isCatalog((COSDictionary) rootDict))
                 {
                     rootFound = true;
                 }
             }
-            COSBase infoObj = trailerDict.getItem(COSName.INFO);
+            final COSBase infoObj = trailerDict.getItem(COSName.INFO);
             if (infoObj instanceof COSObject)
             {
                 // check if the dictionary can be dereferenced and is the one we are looking for
-                COSBase infoDict = ((COSObject) infoObj).getObject();
+                final COSBase infoDict = ((COSObject) infoObj).getObject();
                 if (infoDict instanceof COSDictionary && isInfo((COSDictionary) infoDict))
                 {
                     infoFound = true;
@@ -1528,12 +1528,12 @@ public class COSParser extends BaseParser implements ICOSParser
                 trailer.setItem(COSName.INFO, infoObj);
                 if (trailerDict.containsKey(COSName.ENCRYPT))
                 {
-                    COSBase encObj = trailerDict.getItem(COSName.ENCRYPT);
+                    final COSBase encObj = trailerDict.getItem(COSName.ENCRYPT);
                     if (encObj instanceof COSObject)
                     {
                         // check if the dictionary can be dereferenced
                         // TODO check if the dictionary is an encryption dictionary?
-                        COSBase encDict = ((COSObject) encObj).getObject();
+                        final COSBase encDict = ((COSObject) encObj).getObject();
                         if (encDict instanceof COSDictionary)
                         {
                             trailer.setItem(COSName.ENCRYPT, encObj);
@@ -1542,7 +1542,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 }
                 if (trailerDict.containsKey(COSName.ID))
                 {
-                    COSBase idObj = trailerDict.getItem(COSName.ID);
+                    final COSBase idObj = trailerDict.getItem(COSName.ID);
                     if (idObj instanceof COSArray)
                     {
                         trailer.setItem(COSName.ID, idObj);
@@ -1562,7 +1562,7 @@ public class COSParser extends BaseParser implements ICOSParser
     private long bfSearchForLastEOFMarker() throws IOException
     {
         long lastEOFMarker = -1;
-        long originOffset = source.getPosition();
+        final long originOffset = source.getPosition();
         source.seek(MINIMUM_SEARCH_OFFSET);
         long tempMarker = findString(EOF_MARKER);
         while (tempMarker != -1)
@@ -1605,10 +1605,10 @@ public class COSParser extends BaseParser implements ICOSParser
     private void bfSearchForObjStreams() throws IOException
     {
         // save origin offset
-        long originOffset = source.getPosition();
+        final long originOffset = source.getPosition();
 
-        Map<Long, COSObjectKey> bfSearchForObjStreamOffsets = bfSearchForObjStreamOffsets();
-        Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
+        final Map<Long, COSObjectKey> bfSearchForObjStreamOffsets = bfSearchForObjStreamOffsets();
+        final Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
         // log warning about skipped stream
         bfSearchForObjStreamOffsets.entrySet().stream() //
                 .filter(o -> bfCOSObjectOffsets.get(o.getValue()) == null) //
@@ -1616,38 +1616,38 @@ public class COSParser extends BaseParser implements ICOSParser
                         "Skipped incomplete object stream:" + o.getValue() + " at " + o.getKey()));
 
         // collect all stream offsets
-        List<Long> objStreamOffsets = bfSearchForObjStreamOffsets.entrySet().stream() //
+        final List<Long> objStreamOffsets = bfSearchForObjStreamOffsets.entrySet().stream() //
                 .filter(o -> bfCOSObjectOffsets.get(o.getValue()) != null) //
                 .filter(o -> o.getKey().equals(bfCOSObjectOffsets.get(o.getValue()))) //
                 .map(Map.Entry::getKey) //
                 .collect(Collectors.toList());
         // add all found compressed objects to the brute force search result
-        for (Long offset : objStreamOffsets)
+        for (final Long offset : objStreamOffsets)
         {
             source.seek(offset);
-            long stmObjNumber = readObjectNumber();
-            int stmGenNumber = readGenerationNumber();
+            final long stmObjNumber = readObjectNumber();
+            final int stmGenNumber = readGenerationNumber();
             readExpectedString(OBJ_MARKER, true);
             COSStream stream = null;
             try
             {
-                COSDictionary dict = parseCOSDictionary();
+                final COSDictionary dict = parseCOSDictionary();
                 stream = parseCOSStream(dict);
                 if (securityHandler != null)
                 {
                     securityHandler.decryptStream(stream, stmObjNumber, stmGenNumber);
                 }
-                PDFObjectStreamParser objStreamParser = new PDFObjectStreamParser(stream, document);
-                Map<Long, Integer> objectNumbers = objStreamParser.readObjectNumbers();
-                Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
-                for (Long objNumber : objectNumbers.keySet())
+                final PDFObjectStreamParser objStreamParser = new PDFObjectStreamParser(stream, document);
+                final Map<Long, Integer> objectNumbers = objStreamParser.readObjectNumbers();
+                final Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
+                for (final Long objNumber : objectNumbers.keySet())
                 {
-                    COSObjectKey objKey = new COSObjectKey(objNumber, 0);
+                    final COSObjectKey objKey = new COSObjectKey(objNumber, 0);
                     Long existingOffset = bfCOSObjectOffsets.get(objKey);
                     if (existingOffset != null && existingOffset < 0)
                     {
                         // translate stream object key to its offset
-                        COSObjectKey objStmKey = new COSObjectKey(Math.abs(existingOffset), 0);
+                        final COSObjectKey objStmKey = new COSObjectKey(Math.abs(existingOffset), 0);
                         existingOffset = bfCOSObjectOffsets.get(objStmKey);
                     }
                     if (existingOffset == null || offset > existingOffset)
@@ -1682,9 +1682,9 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     private Map<Long, COSObjectKey> bfSearchForObjStreamOffsets() throws IOException
     {
-        HashMap<Long, COSObjectKey> bfSearchObjStreamsOffsets = new HashMap<>();
+        final HashMap<Long, COSObjectKey> bfSearchObjStreamsOffsets = new HashMap<>();
         source.seek(MINIMUM_SEARCH_OFFSET);
-        char[] string = " obj".toCharArray();
+        final char[] string = " obj".toCharArray();
         // search for object stream marker
         long positionObjStream = findString(OBJ_STREAM);
         while (positionObjStream != -1)
@@ -1704,7 +1704,7 @@ public class COSParser extends BaseParser implements ICOSParser
                         {
                             long tempOffset = currentOffset - 1;
                             source.seek(tempOffset);
-                            int genID = source.peek();
+                            final int genID = source.peek();
                             // is the next char a digit?
                             if (isDigit(genID))
                             {
@@ -1723,9 +1723,9 @@ public class COSParser extends BaseParser implements ICOSParser
                                     {
                                         source.read();
                                         newOffset = source.getPosition();
-                                        long objNumber = readObjectNumber();
-                                        int genNumber = readGenerationNumber();
-                                        COSObjectKey streamObjectKey = new COSObjectKey(objNumber,
+                                        final long objNumber = readObjectNumber();
+                                        final int genNumber = readGenerationNumber();
+                                        final COSObjectKey streamObjectKey = new COSObjectKey(objNumber,
                                                 genNumber);
                                         bfSearchObjStreamsOffsets.put(newOffset, streamObjectKey);
                                     }
@@ -1756,7 +1756,7 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     private List<Long> bfSearchForXRefTables() throws IOException
     {
-        List<Long> bfSearchXRefTablesOffsets = new ArrayList<>();
+        final List<Long> bfSearchXRefTablesOffsets = new ArrayList<>();
         // a pdf may contain more than one xref entry
         source.seek(MINIMUM_SEARCH_OFFSET);
         // search for xref tables
@@ -1782,12 +1782,12 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     private List<Long> bfSearchForXRefStreams() throws IOException
     {
-        List<Long> bfSearchXRefStreamsOffsets = new ArrayList<>();
+        final List<Long> bfSearchXRefStreamsOffsets = new ArrayList<>();
         // a pdf may contain more than one /XRef entry
         source.seek(MINIMUM_SEARCH_OFFSET);
         // search for XRef streams
-        String objString = " obj";
-        char[] string = objString.toCharArray();
+        final String objString = " obj";
+        final char[] string = objString.toCharArray();
         long xrefOffset = findString(XREF_STREAM);
         while (xrefOffset != -1)
         {
@@ -1806,7 +1806,7 @@ public class COSParser extends BaseParser implements ICOSParser
                         {
                             long tempOffset = currentOffset - 1;
                             source.seek(tempOffset);
-                            int genID = source.peek();
+                            final int genID = source.peek();
                             // is the next char a digit?
                             if (isDigit(genID))
                             {
@@ -1860,14 +1860,14 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     private COSDictionary rebuildTrailer() throws IOException
     {
-        Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
+        final Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
         // reset trailer resolver
         xrefTrailerResolver.reset();
         // use the found objects to rebuild the trailer resolver
         xrefTrailerResolver.nextXrefObj(0, XRefType.TABLE);
         bfCOSObjectOffsets.forEach(xrefTrailerResolver::setXRef);
         xrefTrailerResolver.setStartxref(0);
-        COSDictionary trailer = xrefTrailerResolver.getTrailer();
+        final COSDictionary trailer = xrefTrailerResolver.getTrailer();
         document.setTrailer(trailer);
         boolean searchForObjStreamsDone = false;
         if (!bfSearchForTrailer(trailer) && !searchForTrailerItems(trailer))
@@ -1895,19 +1895,19 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return true if the root was found, false if not.
      * @throws java.io.IOException if the page tree root is null
      */
-    private boolean searchForTrailerItems(COSDictionary trailer) throws IOException
+    private boolean searchForTrailerItems(final COSDictionary trailer) throws IOException
     {
         boolean rootFound = false;
-        for (COSObjectKey key : getBFCOSObjectOffsets().keySet())
+        for (final COSObjectKey key : getBFCOSObjectOffsets().keySet())
         {
-            COSObject cosObject = document.getObjectFromPool(key);
-            COSBase baseObject = cosObject.getObject();
+            final COSObject cosObject = document.getObjectFromPool(key);
+            final COSBase baseObject = cosObject.getObject();
 
             if (!(baseObject instanceof COSDictionary))
             {
                 continue;
             }
-            COSDictionary dictionary = (COSDictionary) baseObject;
+            final COSDictionary dictionary = (COSDictionary) baseObject;
             // document catalog
             if (isCatalog(dictionary))
             {
@@ -1931,12 +1931,12 @@ public class COSParser extends BaseParser implements ICOSParser
      * @param root the root dictionary of the pdf
      * @throws java.io.IOException if the page tree root is null
      */
-    protected void checkPages(COSDictionary root) throws IOException
+    protected void checkPages(final COSDictionary root) throws IOException
     {
         if (trailerWasRebuild)
         {
             // check if all page objects are dereferenced
-            COSBase pages = root.getDictionaryObject(COSName.PAGES);
+            final COSBase pages = root.getDictionaryObject(COSName.PAGES);
             if (pages instanceof COSDictionary)
             {
                 checkPagesDictionary((COSDictionary) pages, new HashSet<>());
@@ -1948,24 +1948,24 @@ public class COSParser extends BaseParser implements ICOSParser
         }
     }
 
-    private int checkPagesDictionary(COSDictionary pagesDict, Set<COSObject> set)
+    private int checkPagesDictionary(final COSDictionary pagesDict, final Set<COSObject> set)
     {
         // check for kids
-        COSBase kids = pagesDict.getDictionaryObject(COSName.KIDS);
+        final COSBase kids = pagesDict.getDictionaryObject(COSName.KIDS);
         int numberOfPages = 0;
         if (kids instanceof COSArray)
         {
-            COSArray kidsArray = (COSArray) kids;
-            List<? extends COSBase> kidsList = kidsArray.toList();
-            for (COSBase kid : kidsList)
+            final COSArray kidsArray = (COSArray) kids;
+            final List<? extends COSBase> kidsList = kidsArray.toList();
+            for (final COSBase kid : kidsList)
             {
                 if (!(kid instanceof COSObject) || set.contains((COSObject) kid))
                 {
                     kidsArray.remove(kid);
                     continue;
                 }
-                COSObject kidObject = (COSObject) kid;
-                COSBase kidBaseobject = kidObject.getObject();
+                final COSObject kidObject = (COSObject) kid;
+                final COSBase kidBaseobject = kidObject.getObject();
                 // object wasn't dereferenced -> remove it
                 if (kidBaseobject == null || kidBaseobject.equals(COSNull.NULL))
                 {
@@ -1974,8 +1974,8 @@ public class COSParser extends BaseParser implements ICOSParser
                 }
                 else if (kidBaseobject instanceof COSDictionary)
                 {
-                    COSDictionary kidDictionary = (COSDictionary) kidBaseobject;
-                    COSName type = kidDictionary.getCOSName(COSName.TYPE);
+                    final COSDictionary kidDictionary = (COSDictionary) kidBaseobject;
+                    final COSName type = kidDictionary.getCOSName(COSName.TYPE);
                     if (COSName.PAGES.equals(type))
                     {
                         // process nested pages dictionaries
@@ -2001,7 +2001,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @param dictionary
      * @return true if the given dictionary is a root dictionary
      */
-    protected boolean isCatalog(COSDictionary dictionary)
+    protected boolean isCatalog(final COSDictionary dictionary)
     {
         return COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE));
     }
@@ -2012,7 +2012,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @param dictionary
      * @return true if the given dictionary is an info dictionary
      */
-    private boolean isInfo(COSDictionary dictionary)
+    private boolean isInfo(final COSDictionary dictionary)
     {
         if (dictionary.containsKey(COSName.PARENT) || dictionary.containsKey(COSName.A)
                 || dictionary.containsKey(COSName.DEST))
@@ -2058,11 +2058,11 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return true if the bytes are in place, false if not
      * @throws IOException if something went wrong
      */
-    private boolean isString(byte[] string) throws IOException
+    private boolean isString(final byte[] string) throws IOException
     {
         boolean bytesMatching = true;
-        long originOffset = source.getPosition();
-        for (byte c : string)
+        final long originOffset = source.getPosition();
+        for (final byte c : string)
         {
             if (source.read() != c)
             {
@@ -2081,11 +2081,11 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return true if the bytes are in place, false if not
      * @throws IOException if something went wrong
      */
-    private boolean isString(char[] string) throws IOException
+    private boolean isString(final char[] string) throws IOException
     {
         boolean bytesMatching = true;
-        long originOffset = source.getPosition();
-        for (char c : string)
+        final long originOffset = source.getPosition();
+        for (final char c : string)
         {
             if (source.read() != c)
             {
@@ -2106,10 +2106,10 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return the start position of the found string
      * @throws IOException if something went wrong
      */
-    private long findString(char[] string) throws IOException
+    private long findString(final char[] string) throws IOException
     {
         long position = -1L;
-        int stringLength = string.length;
+        final int stringLength = string.length;
         int counter = 0;
         int readChar = source.read();
         while (readChar != -1)
@@ -2145,7 +2145,7 @@ public class COSParser extends BaseParser implements ICOSParser
     private boolean parseTrailer() throws IOException
     {
         // parse the last trailer.
-        long trailerOffset = source.getPosition();
+        final long trailerOffset = source.getPosition();
         // PDFBOX-1739 skip extra xref entries in RegisSTAR documents
         if (isLenient)
         {
@@ -2167,8 +2167,8 @@ public class COSParser extends BaseParser implements ICOSParser
             return false;
         }
         //read "trailer"
-        long currentOffset = source.getPosition();
-        String nextLine = readLine();
+        final long currentOffset = source.getPosition();
+        final String nextLine = readLine();
         if( !nextLine.trim().equals( "trailer" ) )
         {
             // in some cases the EOL is missing and the trailer immediately
@@ -2178,7 +2178,7 @@ public class COSParser extends BaseParser implements ICOSParser
             if (nextLine.startsWith("trailer"))
             {
                 // we can't just unread a portion of the read data as we don't know if the EOL consist of 1 or 2 bytes
-                int len = "trailer".length();
+                final int len = "trailer".length();
                 // jump back right after "trailer"
                 source.seek(currentOffset + len);
             }
@@ -2193,7 +2193,7 @@ public class COSParser extends BaseParser implements ICOSParser
         // Acrobat reader can also deal with this.
         skipSpaces();
     
-        COSDictionary parsedTrailer = parseCOSDictionary();
+        final COSDictionary parsedTrailer = parseCOSDictionary();
         xrefTrailerResolver.setTrailer( parsedTrailer );
     
         skipSpaces();
@@ -2222,7 +2222,7 @@ public class COSParser extends BaseParser implements ICOSParser
         return parseHeader(FDF_HEADER, FDF_DEFAULT_VERSION);
     }
 
-    private boolean parseHeader(String headerMarker, String defaultVersion) throws IOException
+    private boolean parseHeader(final String headerMarker, final String defaultVersion) throws IOException
     {
         // read first line
         String header = readLine();
@@ -2250,7 +2250,7 @@ public class COSParser extends BaseParser implements ICOSParser
     
         //sometimes there is some garbage in the header before the header
         //actually starts, so lets try to find the header first.
-        int headerStart = header.indexOf( headerMarker );
+        final int headerStart = header.indexOf( headerMarker );
     
         // greater than zero because if it is zero then there is no point of trimming
         if ( headerStart > 0 )
@@ -2270,7 +2270,7 @@ public class COSParser extends BaseParser implements ICOSParser
             }
             else
             {
-                String headerGarbage = header.substring(headerMarker.length() + 3, header.length()) + "\n";
+                final String headerGarbage = header.substring(headerMarker.length() + 3, header.length()) + "\n";
                 header = header.substring(0, headerMarker.length() + 3);
                 source.rewind(headerGarbage.getBytes(StandardCharsets.ISO_8859_1).length);
             }
@@ -2278,7 +2278,7 @@ public class COSParser extends BaseParser implements ICOSParser
         float headerVersion = -1;
         try
         {
-            String[] headerParts = header.split("-");
+            final String[] headerParts = header.split("-");
             if (headerParts.length == 2)
             {
                 headerVersion = Float.parseFloat(headerParts[1]);
@@ -2312,21 +2312,21 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return false on parsing error
      * @throws IOException If an IO error occurs.
      */
-    protected boolean parseXrefTable(long startByteOffset) throws IOException
+    protected boolean parseXrefTable(final long startByteOffset) throws IOException
     {
         if(source.peek() != 'x')
         {
             return false;
         }
-        String xref = readString();
+        final String xref = readString();
         if( !xref.trim().equals( "xref" ) )
         {
             return false;
         }
         
         // check for trailer after xref
-        String str = readString();
-        byte[] b = str.getBytes(StandardCharsets.ISO_8859_1);
+        final String str = readString();
+        final byte[] b = str.getBytes(StandardCharsets.ISO_8859_1);
         source.rewind(b.length);
         
         // signal start of new XRef
@@ -2397,16 +2397,16 @@ public class COSParser extends BaseParser implements ICOSParser
                 {
                     try
                     {
-                        long currOffset = Long.parseLong(splitString[0]);
+                        final long currOffset = Long.parseLong(splitString[0]);
                         // skip 0 offsets
                         if (currOffset > 0)
                         {
-                            int currGenID = Integer.parseInt(splitString[1]);
-                            COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
+                            final int currGenID = Integer.parseInt(splitString[1]);
+                            final COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
                             xrefTrailerResolver.setXRef(objKey, currOffset);
                         }
                     }
-                    catch(NumberFormatException e)
+                    catch(final NumberFormatException e)
                     {
                         throw new IOException(e);
                     }
@@ -2435,7 +2435,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @param isStandalone should be set to true if the stream is not part of a hybrid xref table
      * @throws IOException if there is an error parsing the stream
      */
-    private void parseXrefStream(COSStream stream, long objByteOffset, boolean isStandalone) throws IOException
+    private void parseXrefStream(final COSStream stream, final long objByteOffset, final boolean isStandalone) throws IOException
     {
         // the cross reference stream of a hybrid xref table will be added to the existing one
         // and we must not override the offset and the trailer
@@ -2444,7 +2444,7 @@ public class COSParser extends BaseParser implements ICOSParser
             xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
             xrefTrailerResolver.setTrailer( stream );
         }        
-        PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, document);
+        final PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, document);
         parser.parse(xrefTrailerResolver);
     }
 
@@ -2494,7 +2494,7 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             return;
         }
-        COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
+        final COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
         if (trailerEncryptItem == null || trailerEncryptItem instanceof COSNull)
         {
             return;
@@ -2503,10 +2503,10 @@ public class COSParser extends BaseParser implements ICOSParser
         try
         {
             encryption = new PDEncryption(document.getEncryptionDictionary());
-            DecryptionMaterial decryptionMaterial;
+            final DecryptionMaterial decryptionMaterial;
             if (keyStoreInputStream != null)
             {
-                KeyStore ks = KeyStore.getInstance("PKCS12");
+                final KeyStore ks = KeyStore.getInstance("PKCS12");
                 ks.load(keyStoreInputStream, password.toCharArray());
                 decryptionMaterial = new PublicKeyDecryptionMaterial(ks, keyAlias, password);
             }

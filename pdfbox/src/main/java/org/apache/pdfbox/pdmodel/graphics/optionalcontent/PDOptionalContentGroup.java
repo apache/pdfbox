@@ -30,7 +30,7 @@ public class PDOptionalContentGroup extends PDPropertyList
      * Creates a new optional content group (OCG).
      * @param name the name of the content group
      */
-    public PDOptionalContentGroup(String name)
+    public PDOptionalContentGroup(final String name)
     {
         this.dict.setItem(COSName.TYPE, COSName.OCG);
         setName(name);
@@ -40,7 +40,7 @@ public class PDOptionalContentGroup extends PDPropertyList
      * Creates a new instance based on a given {@link COSDictionary}.
      * @param dict the dictionary
      */
-    public PDOptionalContentGroup(COSDictionary dict)
+    public PDOptionalContentGroup(final COSDictionary dict)
     {
         super(dict);
         if (!dict.getItem(COSName.TYPE).equals(COSName.OCG))
@@ -63,7 +63,7 @@ public class PDOptionalContentGroup extends PDPropertyList
 
         private final COSName name;
 
-        private RenderState(COSName value)
+        private RenderState(final COSName value)
         {
             this.name = value;
         }
@@ -74,7 +74,7 @@ public class PDOptionalContentGroup extends PDPropertyList
          * @param state the state name
          * @return the state enum value
          */
-        public static RenderState valueOf(COSName state)
+        public static RenderState valueOf(final COSName state)
         {
             if (state == null)
             {
@@ -108,7 +108,7 @@ public class PDOptionalContentGroup extends PDPropertyList
      * Sets the name of the optional content group.
      * @param name the name
      */
-    public final void setName(String name)
+    public final void setName(final String name)
     {
         dict.setString(COSName.NAME, name);
     }
@@ -118,26 +118,26 @@ public class PDOptionalContentGroup extends PDPropertyList
      * @param destination to be rendered
      * @return state or null if undefined
      */
-    public RenderState getRenderState(RenderDestination destination)
+    public RenderState getRenderState(final RenderDestination destination)
     {
         COSName state = null;
-        COSDictionary usage = (COSDictionary) dict.getDictionaryObject("Usage");
+        final COSDictionary usage = (COSDictionary) dict.getDictionaryObject("Usage");
         if (usage != null)
         {
             if (RenderDestination.PRINT.equals(destination))
             {
-                COSDictionary print = (COSDictionary) usage.getDictionaryObject("Print");
+                final COSDictionary print = (COSDictionary) usage.getDictionaryObject("Print");
                 state = print == null ? null : (COSName) print.getDictionaryObject("PrintState");
             }
             else if (RenderDestination.VIEW.equals(destination))
             {
-                COSDictionary view = (COSDictionary) usage.getDictionaryObject("View");
+                final COSDictionary view = (COSDictionary) usage.getDictionaryObject("View");
                 state = view == null ? null : (COSName) view.getDictionaryObject("ViewState");
             }
             // Fallback to export
             if (state == null)
             {
-                COSDictionary export = (COSDictionary) usage.getDictionaryObject("Export");
+                final COSDictionary export = (COSDictionary) usage.getDictionaryObject("Export");
                 state = export == null ? null : (COSName) export.getDictionaryObject("ExportState");
             }
         }

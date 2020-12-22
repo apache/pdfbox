@@ -35,14 +35,14 @@ class TestCOSUpdateInfo
     void testIsSetNeedToBeUpdate()
     {
         // COSDictionary
-        COSUpdateInfo testCOSDictionary = new COSDictionary();
+        final COSUpdateInfo testCOSDictionary = new COSDictionary();
         testCOSDictionary.setNeedToBeUpdated(true);
         assertTrue(testCOSDictionary.isNeedToBeUpdated());
         testCOSDictionary.setNeedToBeUpdated(false);
         assertFalse(testCOSDictionary.isNeedToBeUpdated());
 
         // COSObject
-        COSUpdateInfo testCOSObject;
+        final COSUpdateInfo testCOSObject;
         testCOSObject = new COSObject(null);
         testCOSObject.setNeedToBeUpdated(true);
         assertTrue(testCOSObject.isNeedToBeUpdated());

@@ -107,7 +107,7 @@ public class TextToPDF implements Callable<Integer>
 
         final PDRectangle pageSize;
 
-        private PageSizes(PDRectangle pageSize)
+        private PageSizes(final PDRectangle pageSize)
         {
             this.pageSize = pageSize;
         }
@@ -138,7 +138,7 @@ public class TextToPDF implements Callable<Integer>
         final String displayName;
         final PDFont font;
 
-        private Standard14Fonts(String displayName, PDFont font)
+        private Standard14Fonts(final String displayName, final PDFont font)
         {
             this.displayName = displayName;
             this.font = font;
@@ -163,12 +163,12 @@ public class TextToPDF implements Callable<Integer>
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new TextToPDF()).execute(args);
+        final int exitCode = new CommandLine(new TextToPDF()).execute(args);
         System.exit(exitCode);
     }
 
@@ -213,9 +213,9 @@ public class TextToPDF implements Callable<Integer>
      *
      * @throws IOException If there is an error writing the data.
      */
-    public PDDocument createPDFFromText( Reader text ) throws IOException
+    public PDDocument createPDFFromText(final Reader text ) throws IOException
     {
-        PDDocument doc = new PDDocument();
+        final PDDocument doc = new PDDocument();
         createPDFFromText(doc, text);
         return doc;
     }
@@ -228,7 +228,7 @@ public class TextToPDF implements Callable<Integer>
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void createPDFFromText( PDDocument doc, Reader text ) throws IOException
+    public void createPDFFromText(final PDDocument doc, final Reader text ) throws IOException
     {
         try
         {
@@ -243,12 +243,12 @@ public class TextToPDF implements Callable<Integer>
 
             //calculate font height and increase by a factor.
             height = height*fontSize*LINE_HEIGHT_FACTOR;
-            BufferedReader data = new BufferedReader( text );
+            final BufferedReader data = new BufferedReader( text );
             String nextLine;
             PDPage page = new PDPage(actualMediaBox);
             PDPageContentStream contentStream = null;
             float y = -1;
-            float maxStringLength = page.getMediaBox().getWidth() - 2*margin;
+            final float maxStringLength = page.getMediaBox().getWidth() - 2*margin;
 
             // There is a special case of creating a PDF document from an empty string.
             boolean textIsEmpty = true;
@@ -261,16 +261,17 @@ public class TextToPDF implements Callable<Integer>
                 // the text.
                 textIsEmpty = false;
 
-                String[] lineWords = nextLine.replaceAll("[\\n\\r]+$", "").split(" ");
+                final String[] lineWords = nextLine.replaceAll("[\\n\\r]+$", "").split(" ");
                 int lineIndex = 0;
                 while( lineIndex < lineWords.length )
                 {
-                    StringBuilder nextLineToDraw = new StringBuilder();
+                    final StringBuilder nextLineToDraw = new StringBuilder();
                     float lengthIfUsingNextWord = 0;
                     boolean ff = false;
                     do
                     {
-                        String word1, word2 = "";
+                        final String word1;
+                        String word2 = "";
                         int indexFF = lineWords[lineIndex].indexOf('\f');
                         if (indexFF == -1)
                         {
@@ -315,7 +316,7 @@ public class TextToPDF implements Callable<Integer>
                                 nextWord = nextWord.substring(0, indexFF);
                             }
                             
-                            String lineWithNextWord = nextLineToDraw.toString() + " " + nextWord;
+                            final String lineWithNextWord = nextLineToDraw.toString() + " " + nextWord;
                             lengthIfUsingNextWord =
                                 (font.getStringWidth( lineWithNextWord )/FONTSCALE) * fontSize;
                         }
@@ -376,7 +377,7 @@ public class TextToPDF implements Callable<Integer>
                 contentStream.close();
             }
         }
-        catch( IOException io )
+        catch( final IOException io )
         {
             if( doc != null )
             {
@@ -396,7 +397,7 @@ public class TextToPDF implements Callable<Integer>
     /**
      * @param aFont The font to set.
      */
-    public void setFont(PDFont aFont)
+    public void setFont(final PDFont aFont)
     {
         this.font = aFont;
     }
@@ -410,7 +411,7 @@ public class TextToPDF implements Callable<Integer>
     /**
      * @param aFontSize The fontSize to set.
      */
-    public void setFontSize(int aFontSize)
+    public void setFontSize(final int aFontSize)
     {
         this.fontSize = aFontSize;
     }
@@ -430,7 +431,7 @@ public class TextToPDF implements Callable<Integer>
      *
      * @param mediaBox
      */
-    public void setMediaBox(PDRectangle mediaBox)
+    public void setMediaBox(final PDRectangle mediaBox)
     {
         this.mediaBox = mediaBox;
     }
@@ -450,7 +451,7 @@ public class TextToPDF implements Callable<Integer>
      *
      * @param landscape
      */
-    public void setLandscape(boolean landscape)
+    public void setLandscape(final boolean landscape)
     {
         this.landscape = landscape;
     }

@@ -73,7 +73,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
      * @param filename
      * @throws IOException If there is an error loading the properties.
      */
-    public DrawPrintTextLocations(PDDocument document, String filename) throws IOException
+    public DrawPrintTextLocations(final PDDocument document, final String filename) throws IOException
     {
         this.document = document; // must initialize here, base class initializes too late
         this.filename = filename;
@@ -86,7 +86,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 1)
         {
@@ -96,7 +96,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
         {
             try (PDDocument document = Loader.loadPDF(new File(args[0])))
             {
-                DrawPrintTextLocations stripper = new DrawPrintTextLocations(document, args[0]);
+                final DrawPrintTextLocations stripper = new DrawPrintTextLocations(document, args[0]);
                 stripper.setSortByPosition(true);
 
                 for (int page = 0; page < document.getNumberOfPages(); ++page)
@@ -108,7 +108,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
     }
 
     @Override
-    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
+    protected void showGlyph(final Matrix textRenderingMatrix, final PDFont font, final int code, final Vector displacement)
             throws IOException
     {
         super.showGlyph(textRenderingMatrix, font, code, displacement);
@@ -131,22 +131,22 @@ public class DrawPrintTextLocations extends PDFTextStripper
     }
 
     // this calculates the real (except for type 3 fonts) individual glyph bounds
-    private Shape calculateGlyphBounds(Matrix textRenderingMatrix, PDFont font, int code) throws IOException
+    private Shape calculateGlyphBounds(final Matrix textRenderingMatrix, final PDFont font, final int code) throws IOException
     {
         GeneralPath path = null;
-        AffineTransform at = textRenderingMatrix.createAffineTransform();
+        final AffineTransform at = textRenderingMatrix.createAffineTransform();
         at.concatenate(font.getFontMatrix().createAffineTransform());
         if (font instanceof PDType3Font)
         {
             // It is difficult to calculate the real individual glyph bounds for type 3 fonts
             // because these are not vector fonts, the content stream could contain almost anything
             // that is found in page content streams.
-            PDType3Font t3Font = (PDType3Font) font;
-            PDType3CharProc charProc = t3Font.getCharProc(code);
+            final PDType3Font t3Font = (PDType3Font) font;
+            final PDType3CharProc charProc = t3Font.getCharProc(code);
             if (charProc != null)
             {
-                BoundingBox fontBBox = t3Font.getBoundingBox();
-                PDRectangle glyphBBox = charProc.getGlyphBBox();
+                final BoundingBox fontBBox = t3Font.getBoundingBox();
+                final PDRectangle glyphBBox = charProc.getGlyphBBox();
                 if (glyphBBox != null)
                 {
                     // PDFBOX-3850: glyph bbox could be larger than the font bbox
@@ -160,21 +160,21 @@ public class DrawPrintTextLocations extends PDFTextStripper
         }
         else if (font instanceof PDVectorFont)
         {
-            PDVectorFont vectorFont = (PDVectorFont) font;
+            final PDVectorFont vectorFont = (PDVectorFont) font;
             path = vectorFont.getPath(code);
 
             if (font instanceof PDTrueTypeFont)
             {
-                PDTrueTypeFont ttFont = (PDTrueTypeFont) font;
-                int unitsPerEm = ttFont.getTrueTypeFont().getHeader().getUnitsPerEm();
+                final PDTrueTypeFont ttFont = (PDTrueTypeFont) font;
+                final int unitsPerEm = ttFont.getTrueTypeFont().getHeader().getUnitsPerEm();
                 at.scale(1000d / unitsPerEm, 1000d / unitsPerEm);
             }
             if (font instanceof PDType0Font)
             {
-                PDType0Font t0font = (PDType0Font) font;
+                final PDType0Font t0font = (PDType0Font) font;
                 if (t0font.getDescendantFont() instanceof PDCIDFontType2)
                 {
-                    int unitsPerEm = ((PDCIDFontType2) t0font.getDescendantFont()).getTrueTypeFont().getHeader().getUnitsPerEm();
+                    final int unitsPerEm = ((PDCIDFontType2) t0font.getDescendantFont()).getTrueTypeFont().getHeader().getUnitsPerEm();
                     at.scale(1000d / unitsPerEm, 1000d / unitsPerEm);
                 }
             }
@@ -191,12 +191,12 @@ public class DrawPrintTextLocations extends PDFTextStripper
         return at.createTransformedShape(path.getBounds2D());
     }
 
-    private void stripPage(int page) throws IOException
+    private void stripPage(final int page) throws IOException
     {
-        PDFRenderer pdfRenderer = new PDFRenderer(document);
-        BufferedImage image = pdfRenderer.renderImage(page, SCALE);
-        PDPage pdPage = document.getPage(page);
-        PDRectangle cropBox = pdPage.getCropBox();
+        final PDFRenderer pdfRenderer = new PDFRenderer(document);
+        final BufferedImage image = pdfRenderer.renderImage(page, SCALE);
+        final PDPage pdPage = document.getPage(page);
+        final PDRectangle cropBox = pdPage.getCropBox();
 
         // flip y-axis
         flipAT = new AffineTransform();
@@ -205,10 +205,10 @@ public class DrawPrintTextLocations extends PDFTextStripper
 
         // page may be rotated
         rotateAT = new AffineTransform();
-        int rotation = pdPage.getRotation();
+        final int rotation = pdPage.getRotation();
         if (rotation != 0)
         {
-            PDRectangle mediaBox = pdPage.getMediaBox();
+            final PDRectangle mediaBox = pdPage.getMediaBox();
             switch (rotation)
             {
                 case 90:
@@ -236,19 +236,19 @@ public class DrawPrintTextLocations extends PDFTextStripper
         setStartPage(page + 1);
         setEndPage(page + 1);
 
-        Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
+        final Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
         writeText(document, dummy);
         
         // beads in green
         g2d.setStroke(new BasicStroke(0.4f));
-        List<PDThreadBead> pageArticles = pdPage.getThreadBeads();
-        for (PDThreadBead bead : pageArticles)
+        final List<PDThreadBead> pageArticles = pdPage.getThreadBeads();
+        for (final PDThreadBead bead : pageArticles)
         {
             if (bead == null)
             {
                 continue;
             }
-            PDRectangle r = bead.getRectangle();
+            final PDRectangle r = bead.getRectangle();
             Shape s = r.toGeneralPath().createTransformedShape(transAT);
             s = flipAT.createTransformedShape(s);
             s = rotateAT.createTransformedShape(s);
@@ -259,7 +259,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
         g2d.dispose();
 
         String imageFilename = filename;
-        int pt = imageFilename.lastIndexOf('.');
+        final int pt = imageFilename.lastIndexOf('.');
         imageFilename = imageFilename.substring(0, pt) + "-marked-" + (page + 1) + ".png";
         ImageIO.write(image, "png", new File(imageFilename));
     }
@@ -268,9 +268,9 @@ public class DrawPrintTextLocations extends PDFTextStripper
      * Override the default functionality of PDFTextStripper.
      */
     @Override
-    protected void writeString(String string, List<TextPosition> textPositions) throws IOException
+    protected void writeString(final String string, final List<TextPosition> textPositions) throws IOException
     {
-        for (TextPosition text : textPositions)
+        for (final TextPosition text : textPositions)
         {
             System.out.println("String[" + text.getXDirAdj() + ","
                     + text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale="
@@ -280,7 +280,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
 
             // glyph space -> user space
             // note: text.getTextMatrix() is *not* the Text Matrix, it's the Text Rendering Matrix
-            AffineTransform at = text.getTextMatrix().createAffineTransform();
+            final AffineTransform at = text.getTextMatrix().createAffineTransform();
 
             // in red:
             // show rectangles with the "height" (not a real height, but used for text extraction 
@@ -297,11 +297,11 @@ public class DrawPrintTextLocations extends PDFTextStripper
             // in blue:
             // show rectangle with the real vertical bounds, based on the font bounding box y values
             // usually, the height is identical to what you see when marking text in Adobe Reader
-            PDFont font = text.getFont();
-            BoundingBox bbox = font.getBoundingBox();
+            final PDFont font = text.getFont();
+            final BoundingBox bbox = font.getBoundingBox();
 
             // advance width, bbox height (glyph space)
-            float xadvance = font.getWidth(text.getCharacterCodes()[0]); // todo: should iterate all chars
+            final float xadvance = font.getWidth(text.getCharacterCodes()[0]); // todo: should iterate all chars
             rect = new Rectangle2D.Float(0, bbox.getLowerLeftY(), xadvance, bbox.getHeight());
             
             if (font instanceof PDType3Font)

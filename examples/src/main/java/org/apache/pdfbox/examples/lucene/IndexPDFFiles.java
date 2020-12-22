@@ -54,9 +54,9 @@ public final class IndexPDFFiles
      * @param args command line arguments
      * 
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
-        String usage = "java org.apache.pdfbox.lucene.IndexPDFFiles"
+        final String usage = "java org.apache.pdfbox.lucene.IndexPDFFiles"
                 + " [-index INDEX_PATH] [-docs DOCS_PATH] [-update]\n\n"
                 + "This indexes all PDF documents in DOCS_PATH, creating a Lucene index"
                 + "in INDEX_PATH that can be searched with SearchFiles";
@@ -97,15 +97,15 @@ public final class IndexPDFFiles
             System.exit(1);
         }
 
-        Date start = new Date();
+        final Date start = new Date();
         try
         {
             System.out.println("Indexing to directory '" + indexPath + "'...");
 
             try (Directory dir = FSDirectory.open(new File(indexPath).toPath()))
             {
-                Analyzer analyzer = new StandardAnalyzer();
-                IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+                final Analyzer analyzer = new StandardAnalyzer();
+                final IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
                 if (create)
                 {
                     // Create a new index in the directory, removing any
@@ -123,7 +123,7 @@ public final class IndexPDFFiles
                 // size to the JVM (eg add -Xmx512m or -Xmx1g):
                 //
                 // iwc.setRAMBufferSizeMB(256.0);
-                try (final IndexWriter writer = new IndexWriter(dir, iwc))
+                try (IndexWriter writer = new IndexWriter(dir, iwc))
                 {
                     indexDocs(writer, docDir);
                     
@@ -137,7 +137,7 @@ public final class IndexPDFFiles
                 }
             }
 
-            Date end = new Date();
+            final Date end = new Date();
             System.out.println(end.getTime() - start.getTime() + " total milliseconds");
 
         }
@@ -161,18 +161,18 @@ public final class IndexPDFFiles
      * @param file The file to index, or the directory to recurse into to find files to index
      * @throws IOException If there is a low-level I/O error
      */
-    static void indexDocs(IndexWriter writer, File file) throws IOException
+    static void indexDocs(final IndexWriter writer, final File file) throws IOException
     {
         // do not try to index files that cannot be read
         if (file.canRead())
         {
             if (file.isDirectory())
             {
-                String[] files = file.list();
+                final String[] files = file.list();
                 // an IO error could occur
                 if (files != null)
                 {
-                    for (String fileName : files)
+                    for (final String fileName : files)
                     {
                         indexDocs(writer, new File(file, fileName));
                     }
@@ -181,7 +181,7 @@ public final class IndexPDFFiles
             else
             {
 
-                FileInputStream fis;
+                final FileInputStream fis;
                 try
                 {
                     fis = new FileInputStream(file);
@@ -196,8 +196,8 @@ public final class IndexPDFFiles
                 try
                 {
 
-                    String path = file.getName().toUpperCase();
-                    Document doc;
+                    final String path = file.getName().toUpperCase();
+                    final Document doc;
                     if (path.toLowerCase().endsWith(".pdf"))
                     {
                         System.out.println("Indexing PDF document: " + file);

@@ -67,7 +67,7 @@ public final class RotationMenu extends MenuBase
      * Set the rotation selection.
      * @param selection String instance.
      */
-    public void setRotationSelection(String selection)
+    public void setRotationSelection(final String selection)
     {
         switch (selection)
         {
@@ -88,7 +88,7 @@ public final class RotationMenu extends MenuBase
         }
     }
 
-    public static boolean isRotationMenu(String actionCommand)
+    public static boolean isRotationMenu(final String actionCommand)
     {
         return ROTATE_0_DEGREES.equals(actionCommand) || ROTATE_90_DEGREES.equals(actionCommand) ||
                 ROTATE_180_DEGREES.equals(actionCommand) || ROTATE_270_DEGREES.equals(actionCommand);
@@ -111,7 +111,7 @@ public final class RotationMenu extends MenuBase
         return 0;
     }
 
-    public static int getRotationDegrees(String actionCommand)
+    public static int getRotationDegrees(final String actionCommand)
     {
         switch (actionCommand)
         {
@@ -130,7 +130,7 @@ public final class RotationMenu extends MenuBase
 
     private JMenu createRotationMenu()
     {
-        JMenu menu = new JMenu();
+        final JMenu menu = new JMenu();
         menu.setText("Rotation");
 
         rotate0Item = new JRadioButtonMenuItem();
@@ -139,7 +139,7 @@ public final class RotationMenu extends MenuBase
         rotate270Item = new JRadioButtonMenuItem();
         rotate0Item.setSelected(true);
 
-        ButtonGroup bg = new ButtonGroup();
+        final ButtonGroup bg = new ButtonGroup();
         bg.add(rotate0Item);
         bg.add(rotate90Item);
         bg.add(rotate180Item);

@@ -40,9 +40,9 @@ public final class PageDrawerParameters
     /**
      * Package-private constructor.
      */
-    PageDrawerParameters(PDFRenderer renderer, PDPage page, boolean subsamplingAllowed,
-                         RenderDestination destination, RenderingHints renderingHints,
-                         float imageDownscalingOptimizationThreshold)
+    PageDrawerParameters(final PDFRenderer renderer, final PDPage page, final boolean subsamplingAllowed,
+                         final RenderDestination destination, final RenderingHints renderingHints,
+                         final float imageDownscalingOptimizationThreshold)
     {
         this.renderer = renderer;
         this.page = page;

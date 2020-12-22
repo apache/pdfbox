@@ -155,7 +155,7 @@ class TestSynchronizedMetadataValidation
         {
             ve = sync.validateMetadataSynchronization(doc, metadata);
             // Test Detection of an Empty XMP (without any schemas)
-            for (ValidationError valid : ve)
+            for (final ValidationError valid : ve)
             {
                 assertEquals(PreflightConstants.ERROR_METADATA_MISMATCH, valid.getErrorCode());
             }
@@ -222,7 +222,7 @@ class TestSynchronizedMetadataValidation
     {
         // building temporary XMP metadata
 
-        DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
+        final DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
 
         // AUTHOR
         dico.setAuthor("dicoAuthor");
@@ -261,9 +261,9 @@ class TestSynchronizedMetadataValidation
     {
         // building temporary XMP metadata
 
-        DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
-        AdobePDFSchema pdf = metadata.createAndAddAdobePDFSchema();
-        XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
+        final DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
+        final AdobePDFSchema pdf = metadata.createAndAddAdobePDFSchema();
+        final XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
 
         // Writing info in XMP and Document Information dictionary
         // TITLE
@@ -288,11 +288,11 @@ class TestSynchronizedMetadataValidation
         pdf.setProducer("XMPProducer");
         // CREATION DATE
         dico.setCreationDate(Calendar.getInstance());
-        GregorianCalendar XMPCreate = new GregorianCalendar(2008, 11, 05);
+        final GregorianCalendar XMPCreate = new GregorianCalendar(2008, 11, 05);
         xmp.setCreateDate(XMPCreate);
         // MODIFY DATE
         dico.setModificationDate(Calendar.getInstance());
-        GregorianCalendar XMPModify = new GregorianCalendar(2009, 10, 15);
+        final GregorianCalendar XMPModify = new GregorianCalendar(2009, 10, 15);
         xmp.setModifyDate(XMPModify);
 
         // Launching synchronization test
@@ -319,9 +319,9 @@ class TestSynchronizedMetadataValidation
     {
         // building temporary XMP metadata
 
-        DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
-        AdobePDFSchema pdf = metadata.createAndAddAdobePDFSchema();
-        XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
+        final DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
+        final AdobePDFSchema pdf = metadata.createAndAddAdobePDFSchema();
+        final XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
 
         // Writing info in XMP and Document Information dictionary
         // TITLE
@@ -344,11 +344,11 @@ class TestSynchronizedMetadataValidation
         pdf.setProducer("XMPProducer");
         // CREATION DATE
         dico.setCreationDate(Calendar.getInstance());
-        GregorianCalendar XMPCreate = new GregorianCalendar(2008, 11, 05);
+        final GregorianCalendar XMPCreate = new GregorianCalendar(2008, 11, 05);
         xmp.setCreateDate(XMPCreate);
         // MODIFY DATE
         dico.setModificationDate(Calendar.getInstance());
-        GregorianCalendar XMPModify = new GregorianCalendar(2009, 10, 15);
+        final GregorianCalendar XMPModify = new GregorianCalendar(2009, 10, 15);
         xmp.setModifyDate(XMPModify);
 
         // Launching synchronization test
@@ -376,9 +376,9 @@ class TestSynchronizedMetadataValidation
         initValues();
 
         // building temporary XMP metadata
-        DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
-        XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
-        AdobePDFSchema pdf = metadata.createAndAddAdobePDFSchema();
+        final DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
+        final XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
+        final AdobePDFSchema pdf = metadata.createAndAddAdobePDFSchema();
         // Writing info in XMP and Document Information dictionary
         // TITLE
         dico.setTitle(title);
@@ -426,7 +426,7 @@ class TestSynchronizedMetadataValidation
     @Test
     void checkSchemaAccessException() throws Exception
     {
-        Throwable cause = new Throwable();
+        final Throwable cause = new Throwable();
         assertSame(cause, sync.schemaAccessException("test", cause).getCause());
     }
 
@@ -441,11 +441,11 @@ class TestSynchronizedMetadataValidation
         initValues();
 
         // building temporary XMP metadata
-        DublinCoreSchema dc = new DublinCoreSchema(metadata, "dctest");
+        final DublinCoreSchema dc = new DublinCoreSchema(metadata, "dctest");
         metadata.addSchema(dc);
-        XMPBasicSchema xmp = new XMPBasicSchema(metadata, "xmptest");
+        final XMPBasicSchema xmp = new XMPBasicSchema(metadata, "xmptest");
         metadata.addSchema(xmp);
-        AdobePDFSchema pdf = new AdobePDFSchema(metadata, "pdftest");
+        final AdobePDFSchema pdf = new AdobePDFSchema(metadata, "pdftest");
         metadata.addSchema(pdf);
 
         // Writing info in XMP and Document Information dictionary
@@ -478,7 +478,7 @@ class TestSynchronizedMetadataValidation
         try
         {
             ve = sync.validateMetadataSynchronization(doc, metadata);
-            for (ValidationError valid : ve)
+            for (final ValidationError valid : ve)
             {
                 assertEquals(PreflightConstants.ERROR_METADATA_WRONG_NS_PREFIX, valid.getErrorCode());
             }
@@ -501,14 +501,14 @@ class TestSynchronizedMetadataValidation
         initValues();
 
         // building temporary XMP metadata
-        DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
-        DublinCoreSchema dc2 = new DublinCoreSchema(metadata, "dctest");
+        final DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
+        final DublinCoreSchema dc2 = new DublinCoreSchema(metadata, "dctest");
         metadata.addSchema(dc2);
-        XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
-        XMPBasicSchema xmp2 = new XMPBasicSchema(metadata, "xmptest");
+        final XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
+        final XMPBasicSchema xmp2 = new XMPBasicSchema(metadata, "xmptest");
         metadata.addSchema(xmp2);
-        AdobePDFSchema pdf = metadata.createAndAddAdobePDFSchema();
-        AdobePDFSchema pdf2 = new AdobePDFSchema(metadata, "pdftest");
+        final AdobePDFSchema pdf = metadata.createAndAddAdobePDFSchema();
+        final AdobePDFSchema pdf2 = new AdobePDFSchema(metadata, "pdftest");
         metadata.addSchema(pdf2);
 
         // write some temp info in 'false' schemas
@@ -565,10 +565,10 @@ class TestSynchronizedMetadataValidation
     {
         initValues();
 
-        Calendar cal1 = org.apache.pdfbox.util.DateConverter.toCalendar("20180817115837+02'00'");
-        Calendar cal2 = org.apache.xmpbox.DateConverter.toCalendar("2018-08-17T09:58:37Z");
+        final Calendar cal1 = org.apache.pdfbox.util.DateConverter.toCalendar("20180817115837+02'00'");
+        final Calendar cal2 = org.apache.xmpbox.DateConverter.toCalendar("2018-08-17T09:58:37Z");
 
-        XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
+        final XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
 
         dico.setCreationDate(cal1);
         xmp.setCreateDate(cal2);

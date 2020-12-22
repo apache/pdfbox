@@ -52,22 +52,22 @@ public final class PDFMerger implements Callable<Integer>
      *
      * @param args Command line arguments, should be at least 3.
      */
-    public static void main( String[] args )
+    public static void main(final String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new PDFMerger()).execute(args);
+        final int exitCode = new CommandLine(new PDFMerger()).execute(args);
         System.exit(exitCode);
     }
 
     public Integer call()
     {
-        PDFMergerUtility merger = new PDFMergerUtility();
+        final PDFMergerUtility merger = new PDFMergerUtility();
 
         try
         {
-            for (File infile : infiles)
+            for (final File infile : infiles)
             {
                 merger.addSource(infile);
             }

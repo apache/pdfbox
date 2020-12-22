@@ -56,7 +56,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationFreeText(COSDictionary a)
+    public FDFAnnotationFreeText(final COSDictionary a)
     {
         super(a);
     }
@@ -68,14 +68,14 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationFreeText(Element element) throws IOException
+    public FDFAnnotationFreeText(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
 
         setJustification(element.getAttribute("justification"));
         
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
         try
         {
             setDefaultAppearance(xpath.evaluate("defaultappearance", element));
@@ -86,30 +86,30 @@ public class FDFAnnotationFreeText extends FDFAnnotation
             LOG.debug("Error while evaluating XPath expression", ex);
         }
         initCallout(element);
-        String rotation = element.getAttribute("rotation");
+        final String rotation = element.getAttribute("rotation");
         if (rotation != null && !rotation.isEmpty())
         {
             setRotation(Integer.parseInt(rotation));
         }
         initFringe(element);
-        String lineEndingStyle = element.getAttribute("head");
+        final String lineEndingStyle = element.getAttribute("head");
         if (lineEndingStyle != null && !lineEndingStyle.isEmpty())
         {
             setLineEndingStyle(lineEndingStyle);
         }
     }
 
-    private void initFringe(Element element) throws IOException
+    private void initFringe(final Element element) throws IOException
     {
-        String fringe = element.getAttribute("fringe");
+        final String fringe = element.getAttribute("fringe");
         if (fringe != null && !fringe.isEmpty())
         {
-            String[] fringeValues = fringe.split(",");
+            final String[] fringeValues = fringe.split(",");
             if (fringeValues.length != 4)
             {
                 throw new IOException("Error: wrong amount of numbers in attribute 'fringe'");
             }
-            PDRectangle rect = new PDRectangle();
+            final PDRectangle rect = new PDRectangle();
             rect.setLowerLeftX(Float.parseFloat(fringeValues[0]));
             rect.setLowerLeftY(Float.parseFloat(fringeValues[1]));
             rect.setUpperRightX(Float.parseFloat(fringeValues[2]));
@@ -118,13 +118,13 @@ public class FDFAnnotationFreeText extends FDFAnnotation
         }
     }
 
-    private void initCallout(Element element)
+    private void initCallout(final Element element)
     {
-        String callout = element.getAttribute("callout");
+        final String callout = element.getAttribute("callout");
         if (callout != null && !callout.isEmpty())
         {
-            String[] calloutValues = callout.split(",");
-            float[] values = new float[calloutValues.length];
+            final String[] calloutValues = callout.split(",");
+            final float[] values = new float[calloutValues.length];
             for (int i = 0; i < calloutValues.length; i++)
             {
                 values[i] = Float.parseFloat(calloutValues[i]);
@@ -141,9 +141,9 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      * ending coordinates of the line in default user space, Four numbers [ x1 y1 x2 y2 ] represent
      * the starting and ending coordinates of the line.
      */
-    public final void setCallout(float[] callout)
+    public final void setCallout(final float[] callout)
     {
-        COSArray newCallout = new COSArray();
+        final COSArray newCallout = new COSArray();
         newCallout.setFloatArray(callout);
         annot.setItem(COSName.CL, newCallout);
     }
@@ -158,7 +158,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      */
     public float[] getCallout()
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.CL);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.CL);
         if (array != null)
         {
             return array.toFloatArray();
@@ -174,7 +174,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      * 
      * @param justification The quadding of the text.
      */
-    public final void setJustification(String justification)
+    public final void setJustification(final String justification)
     {
         int quadding = 0;
         if ("centered".equals(justification))
@@ -203,7 +203,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      * 
      * @param rotation The number of degrees of clockwise rotation.
      */
-    public final void setRotation(int rotation)
+    public final void setRotation(final int rotation)
     {
         annot.setInt(COSName.ROTATE, rotation);
     }
@@ -223,7 +223,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      *
      * @param appearance The new default appearance string.
      */
-    public final void setDefaultAppearance(String appearance)
+    public final void setDefaultAppearance(final String appearance)
     {
         annot.setString(COSName.DA, appearance);
     }
@@ -244,7 +244,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      *
      * @param style The new default style string.
      */
-    public final void setDefaultStyle(String style)
+    public final void setDefaultStyle(final String style)
     {
         annot.setString(COSName.DS, style);
     }
@@ -266,7 +266,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      *
      * @param fringe the fringe
      */
-    public final void setFringe(PDRectangle fringe)
+    public final void setFringe(final PDRectangle fringe)
     {
         annot.setItem(COSName.RD, fringe);
     }
@@ -279,7 +279,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      */
     public PDRectangle getFringe()
     {
-        COSArray rd = (COSArray) annot.getDictionaryObject(COSName.RD);
+        final COSArray rd = (COSArray) annot.getDictionaryObject(COSName.RD);
         if (rd != null)
         {
             return new PDRectangle(rd);
@@ -295,7 +295,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      *
      * @param style The new style.
      */
-    public final void setLineEndingStyle(String style)
+    public final void setLineEndingStyle(final String style)
     {
         annot.setName(COSName.LE, style);
     }

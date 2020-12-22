@@ -60,7 +60,7 @@ public final class COSString extends COSBase
      *
      * @param bytes The raw bytes of the PDF text string or byte string.
      */
-    public COSString(byte[] bytes)
+    public COSString(final byte[] bytes)
     {
         setValue(bytes);
     }
@@ -70,11 +70,11 @@ public final class COSString extends COSBase
      *
      * @param text The string value of the object.
      */
-    public COSString(String text)
+    public COSString(final String text)
     {
         // check whether the string uses only characters available in PDFDocEncoding
         boolean isOnlyPDFDocEncoding = true;
-        for (char c : text.toCharArray())
+        for (final char c : text.toCharArray())
         {
             if (!PDFDocEncoding.containsChar(c))
             {
@@ -91,7 +91,7 @@ public final class COSString extends COSBase
         else
         {
             // UTF-16BE encoded string with a leading byte order marker
-            byte[] data = text.getBytes(StandardCharsets.UTF_16BE);
+            final byte[] data = text.getBytes(StandardCharsets.UTF_16BE);
             bytes = new byte[data.length + 2];
             bytes[0] = (byte) 0xFE;
             bytes[1] = (byte) 0xFF;
@@ -106,10 +106,10 @@ public final class COSString extends COSBase
      * @return A cos string with the hex characters converted to their actual bytes.
      * @throws IOException If there is an error with the hex string.
      */
-    public static COSString parseHex(String hex) throws IOException
+    public static COSString parseHex(final String hex) throws IOException
     {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        StringBuilder hexBuffer = new StringBuilder(hex.trim());
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        final StringBuilder hexBuffer = new StringBuilder(hex.trim());
 
         // if odd number then the last hex digit is assumed to be 0
         if (hexBuffer.length() % 2 != 0)
@@ -117,7 +117,7 @@ public final class COSString extends COSBase
             hexBuffer.append('0');
         }
 
-        int length = hexBuffer.length();
+        final int length = hexBuffer.length();
         for (int i = 0; i < length; i += 2)
         {
             try
@@ -146,7 +146,7 @@ public final class COSString extends COSBase
      *
      * @param value The raw bytes of the PDF text string or byte string.
      */
-    public void setValue(byte[] value)
+    public void setValue(final byte[] value)
     {
         bytes = value.clone();
     }
@@ -157,7 +157,7 @@ public final class COSString extends COSBase
      *
      * @param value True to force hex.
      */
-    public void setForceHexForm(boolean value)
+    public void setForceHexForm(final boolean value)
     {
         this.forceHexForm = value;
     }
@@ -229,17 +229,17 @@ public final class COSString extends COSBase
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public Object accept(final ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromString(this);
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(final Object obj)
     {
         if (obj instanceof COSString)
         {
-            COSString strObj = (COSString) obj;
+            final COSString strObj = (COSString) obj;
             return getString().equals(strObj.getString()) &&
                    forceHexForm == strObj.forceHexForm;
         }
@@ -249,7 +249,7 @@ public final class COSString extends COSBase
     @Override
     public int hashCode()
     {
-        int result = Arrays.hashCode(bytes);
+        final int result = Arrays.hashCode(bytes);
         return result + (forceHexForm ? 17 : 0);
     }
 

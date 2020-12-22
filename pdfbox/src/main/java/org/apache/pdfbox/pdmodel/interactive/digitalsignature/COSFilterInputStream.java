@@ -39,13 +39,13 @@ public class COSFilterInputStream extends FilterInputStream
   private final int[] byteRange;
   private long position = 0;
   
-  public COSFilterInputStream(InputStream in, int[] byteRange)
+  public COSFilterInputStream(final InputStream in, final int[] byteRange)
   {
     super(in);
     this.byteRange = byteRange;
   }
 
-  public COSFilterInputStream(byte[] in, int[] byteRange)
+  public COSFilterInputStream(final byte[] in, final int[] byteRange)
   {
     super(new ByteArrayInputStream(in));
     this.byteRange = byteRange;
@@ -55,7 +55,7 @@ public class COSFilterInputStream extends FilterInputStream
   public int read() throws IOException
   {
     nextAvailable();
-    int i = super.read();
+    final int i = super.read();
     if (i>-1)
     {
       ++position;
@@ -64,13 +64,13 @@ public class COSFilterInputStream extends FilterInputStream
   }
   
   @Override
-  public int read(byte[] b) throws IOException
+  public int read(final byte[] b) throws IOException
   {
     return read(b,0,b.length);
   }
   
   @Override
-  public int read(byte[] b, int off, int len) throws IOException
+  public int read(final byte[] b, final int off, final int len) throws IOException
   {
     if (len == 0)
     {
@@ -97,7 +97,7 @@ public class COSFilterInputStream extends FilterInputStream
             b[off + i] = (byte)c;
         }
     }
-    catch (IOException ee) 
+    catch (IOException ee)
     {
       LOG.debug("An exception occurred while trying to fill byte[] - ignoring", ee);
     }
@@ -106,7 +106,7 @@ public class COSFilterInputStream extends FilterInputStream
 
   private boolean inRange()
   {
-    long pos = position;
+    final long pos = position;
     for (int i = 0; i<byteRange.length/2;++i)
     {
       if(byteRange[i*2] <= pos &&  byteRange[i*2]+byteRange[i*2+1]>pos)

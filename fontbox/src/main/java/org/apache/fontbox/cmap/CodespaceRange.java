@@ -38,7 +38,7 @@ public class CodespaceRange
      * @param startBytes
      * @param endBytes
      */
-    public CodespaceRange(byte[] startBytes, byte[] endBytes)
+    public CodespaceRange(final byte[] startBytes, final byte[] endBytes)
     {
         byte[] correctedStartBytes = startBytes;
         if (startBytes.length != endBytes.length && startBytes.length == 1 && startBytes[0] == 0)
@@ -73,7 +73,7 @@ public class CodespaceRange
     /**
      * Returns true if the given code bytes match this codespace range.
      */
-    public boolean matches(byte[] code)
+    public boolean matches(final byte[] code)
     {
         return isFullMatch(code, code.length);
     }
@@ -81,7 +81,7 @@ public class CodespaceRange
     /**
      * Returns true if the given number of code bytes match this codespace range.
      */
-    public boolean isFullMatch(byte[] code, int codeLen)
+    public boolean isFullMatch(final byte[] code, final int codeLen)
     {
         // code must be the same length as the bounding codes
         if (codeLength != codeLen)
@@ -90,7 +90,7 @@ public class CodespaceRange
         }
         for (int i = 0; i < codeLength; i++)
         {
-            int codeAsInt = code[i] & 0xFF;
+            final int codeAsInt = code[i] & 0xFF;
             if (codeAsInt < start[i] || codeAsInt > end[i])
             {
                 return false;

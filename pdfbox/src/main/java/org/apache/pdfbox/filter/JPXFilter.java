@@ -55,24 +55,24 @@ public final class JPXFilter extends Filter
      * {@inheritDoc}
      */
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary
-            parameters, int index, DecodeOptions options) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded, final COSDictionary
+            parameters, final int index, final DecodeOptions options) throws IOException
     {
-        DecodeResult result = new DecodeResult(new COSDictionary());
+        final DecodeResult result = new DecodeResult(new COSDictionary());
         result.getParameters().addAll(parameters);
-        BufferedImage image = readJPX(encoded, options, result);
+        final BufferedImage image = readJPX(encoded, options, result);
 
-        Raster raster = image.getRaster();
+        final Raster raster = image.getRaster();
         switch (raster.getDataBuffer().getDataType())
         {
             case DataBuffer.TYPE_BYTE:
-                DataBufferByte byteBuffer = (DataBufferByte) raster.getDataBuffer();
+                final DataBufferByte byteBuffer = (DataBufferByte) raster.getDataBuffer();
                 decoded.write(byteBuffer.getData());
                 return result;
 
             case DataBuffer.TYPE_USHORT:
-                DataBufferUShort wordBuffer = (DataBufferUShort) raster.getDataBuffer();
-                for (short w : wordBuffer.getData())
+                final DataBufferUShort wordBuffer = (DataBufferUShort) raster.getDataBuffer();
+                for (final short w : wordBuffer.getData())
                 {
                     decoded.write(w >> 8);
                     decoded.write(w);
@@ -82,7 +82,7 @@ public final class JPXFilter extends Filter
             case DataBuffer.TYPE_INT:
                 // not yet used (as of October 2018) but works as fallback
                 // if we decide to convert to BufferedImage.TYPE_INT_RGB
-                int[] ar = new int[raster.getNumBands()];
+                final int[] ar = new int[raster.getNumBands()];
                 for (int y = 0; y < image.getHeight(); ++y)
                 {
                     for (int x = 0; x < image.getWidth(); ++x)
@@ -102,27 +102,27 @@ public final class JPXFilter extends Filter
     }
 
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                               COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded,
+                               final COSDictionary parameters, final int index) throws IOException
     {
         return decode(encoded, decoded, parameters, index, DecodeOptions.DEFAULT);
     }
 
     // try to read using JAI Image I/O
-    private BufferedImage readJPX(InputStream input, DecodeOptions options, DecodeResult result) throws IOException
+    private BufferedImage readJPX(final InputStream input, final DecodeOptions options, final DecodeResult result) throws IOException
     {
-        ImageReader reader = findImageReader("JPEG2000", "Java Advanced Imaging (JAI) Image I/O Tools are not installed");
+        final ImageReader reader = findImageReader("JPEG2000", "Java Advanced Imaging (JAI) Image I/O Tools are not installed");
         // PDFBOX-4121: ImageIO.createImageInputStream() is much slower
         try (ImageInputStream iis = new MemoryCacheImageInputStream(input))
         {
             reader.setInput(iis, true, true);
-            ImageReadParam irp = reader.getDefaultReadParam();
+            final ImageReadParam irp = reader.getDefaultReadParam();
             irp.setSourceRegion(options.getSourceRegion());
             irp.setSourceSubsampling(options.getSubsamplingX(), options.getSubsamplingY(),
                     options.getSubsamplingOffsetX(), options.getSubsamplingOffsetY());
             options.setFilterSubsampled(true);
 
-            BufferedImage image;
+            final BufferedImage image;
             try
             {
                 image = reader.read(0, irp);
@@ -133,13 +133,13 @@ public final class JPXFilter extends Filter
                 throw new IOException("Could not read JPEG 2000 (JPX) image", e);
             }
 
-            COSDictionary parameters = result.getParameters();
+            final COSDictionary parameters = result.getParameters();
 
             // "If the image stream uses the JPXDecode filter, this entry is optional
             // and shall be ignored if present"
             //
             // note that indexed color spaces make the BPC logic tricky, see PDFBOX-2204
-            int bpc = image.getColorModel().getPixelSize() / image.getRaster().getNumBands();
+            final int bpc = image.getColorModel().getPixelSize() / image.getRaster().getNumBands();
             parameters.setInt(COSName.BITS_PER_COMPONENT, bpc);
 
             // "Decode shall be ignored, except in the case where the image is treated as a mask"
@@ -184,7 +184,7 @@ public final class JPXFilter extends Filter
      * {@inheritDoc}
      */
     @Override
-    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(final InputStream input, final OutputStream encoded, final COSDictionary parameters)
             throws IOException
     {
         throw new UnsupportedOperationException("JPX encoding not implemented");

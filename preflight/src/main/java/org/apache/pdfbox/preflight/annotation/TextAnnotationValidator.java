@@ -38,7 +38,7 @@ public class TextAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationText pdText = null;
 
-    public TextAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public TextAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdText = new PDAnnotationText(annotDictionary);

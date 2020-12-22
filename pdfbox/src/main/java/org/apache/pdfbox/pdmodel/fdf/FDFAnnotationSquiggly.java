@@ -48,7 +48,7 @@ public class FDFAnnotationSquiggly extends FDFAnnotationTextMarkup
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationSquiggly(COSDictionary a)
+    public FDFAnnotationSquiggly(final COSDictionary a)
     {
         super(a);
     }
@@ -60,7 +60,7 @@ public class FDFAnnotationSquiggly extends FDFAnnotationTextMarkup
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationSquiggly(Element element) throws IOException
+    public FDFAnnotationSquiggly(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);

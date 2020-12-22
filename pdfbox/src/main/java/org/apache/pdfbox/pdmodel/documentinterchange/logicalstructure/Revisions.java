@@ -62,7 +62,7 @@ public class Revisions<T>
      * @return the object
      * @throws IndexOutOfBoundsException if the index is out of range
      */
-    public T getObject(int index)
+    public T getObject(final int index)
     {
         return this.getObjects().get(index);
     }
@@ -74,7 +74,7 @@ public class Revisions<T>
      * @return the revision number
      * @throws IndexOutOfBoundsException if the index is out of range
      */
-    public int getRevisionNumber(int index)
+    public int getRevisionNumber(final int index)
     {
         return this.getRevisionNumbers().get(index);
     }
@@ -85,7 +85,7 @@ public class Revisions<T>
      * @param object the object
      * @param revisionNumber the revision number
      */
-    public void addObject(T object, int revisionNumber)
+    public void addObject(final T object, final int revisionNumber)
     {
         this.getObjects().add(object);
         this.getRevisionNumbers().add(revisionNumber);
@@ -97,9 +97,9 @@ public class Revisions<T>
      * @param object the object
      * @param revisionNumber the revision number
      */
-    protected void setRevisionNumber(T object, int revisionNumber)
+    protected void setRevisionNumber(final T object, final int revisionNumber)
     {
-        int index = this.getObjects().indexOf(object);
+        final int index = this.getObjects().indexOf(object);
         if (index > -1)
         {
             this.getRevisionNumbers().set(index, revisionNumber);
@@ -122,7 +122,7 @@ public class Revisions<T>
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < this.getObjects().size(); i++)
         {
             if (i > 0)

@@ -53,7 +53,7 @@ public class CreateEmbeddedTimeStamp
     private PDSignature signature;
     private byte[] changedEncodedSignature;
 
-    public CreateEmbeddedTimeStamp(String tsaUrl)
+    public CreateEmbeddedTimeStamp(final String tsaUrl)
     {
         this.tsaUrl = tsaUrl;
     }
@@ -64,7 +64,7 @@ public class CreateEmbeddedTimeStamp
      * @param file the PDF file to sign and to overwrite
      * @throws IOException
      */
-    public void embedTimeStamp(File file) throws IOException
+    public void embedTimeStamp(final File file) throws IOException
     {
         embedTimeStamp(file, file);
     }
@@ -76,7 +76,7 @@ public class CreateEmbeddedTimeStamp
      * @param outFile Where the changed document will be saved
      * @throws IOException
      */
-    public void embedTimeStamp(File inFile, File outFile) throws IOException
+    public void embedTimeStamp(final File inFile, final File outFile) throws IOException
     {
         if (inFile == null || !inFile.exists())
         {
@@ -98,11 +98,11 @@ public class CreateEmbeddedTimeStamp
      * @param outFile Where the new file will be written to
      * @throws IOException
      */
-    private void processTimeStamping(File inFile, File outFile) throws IOException
+    private void processTimeStamping(final File inFile, final File outFile) throws IOException
     {
         try
         {
-            byte[] documentBytes = Files.readAllBytes(inFile.toPath());
+            final byte[] documentBytes = Files.readAllBytes(inFile.toPath());
             processRelevantSignatures(documentBytes);
 
             if (changedEncodedSignature == null)
@@ -128,7 +128,7 @@ public class CreateEmbeddedTimeStamp
      * @throws CMSException
      * @throws NoSuchAlgorithmException
      */
-    private void processRelevantSignatures(byte[] documentBytes)
+    private void processRelevantSignatures(final byte[] documentBytes)
             throws IOException, CMSException, NoSuchAlgorithmException
     {
         signature = SigUtils.getLastRelevantSignature(document);
@@ -137,19 +137,19 @@ public class CreateEmbeddedTimeStamp
             return;
         }
 
-        byte[] sigBlock = signature.getContents(documentBytes);
+        final byte[] sigBlock = signature.getContents(documentBytes);
         CMSSignedData signedData = new CMSSignedData(sigBlock);
 
         System.out.println("INFO: Byte Range: " + Arrays.toString(signature.getByteRange()));
 
         if (tsaUrl != null && tsaUrl.length() > 0)
         {
-            ValidationTimeStamp validation = new ValidationTimeStamp(tsaUrl);
+            final ValidationTimeStamp validation = new ValidationTimeStamp(tsaUrl);
             signedData = validation.addSignedTimeStamp(signedData);
         }
 
-        byte[] newEncoded = Hex.getBytes(signedData.getEncoded());
-        int maxSize = signature.getByteRange()[2] - signature.getByteRange()[1];
+        final byte[] newEncoded = Hex.getBytes(signedData.getEncoded());
+        final int maxSize = signature.getByteRange()[2] - signature.getByteRange()[1];
         System.out.println(
                 "INFO: New Signature has Size: " + newEncoded.length + " maxSize: " + maxSize);
 
@@ -172,19 +172,19 @@ public class CreateEmbeddedTimeStamp
      * @param output target, where the file will be written
      * @throws IOException
      */
-    private void embedNewSignatureIntoDocument(byte[] docBytes, OutputStream output)
+    private void embedNewSignatureIntoDocument(final byte[] docBytes, final OutputStream output)
             throws IOException
     {
-        int[] byteRange = signature.getByteRange();
+        final int[] byteRange = signature.getByteRange();
         output.write(docBytes, byteRange[0], byteRange[1] + 1);
         output.write(changedEncodedSignature);
-        int addingLength = byteRange[2] - byteRange[1] - 2 - changedEncodedSignature.length;
-        byte[] zeroes = Hex.getBytes(new byte[(addingLength + 1) / 2]);
+        final int addingLength = byteRange[2] - byteRange[1] - 2 - changedEncodedSignature.length;
+        final byte[] zeroes = Hex.getBytes(new byte[(addingLength + 1) / 2]);
         output.write(zeroes);
         output.write(docBytes, byteRange[2] - 1, byteRange[3] + 1);
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 3)
         {
@@ -207,16 +207,16 @@ public class CreateEmbeddedTimeStamp
             }
         }
 
-        File inFile = new File(args[0]);
+        final File inFile = new File(args[0]);
         System.out.println("Input File: " + args[0]);
-        String name = inFile.getName();
-        String substring = name.substring(0, name.lastIndexOf('.'));
+        final String name = inFile.getName();
+        final String substring = name.substring(0, name.lastIndexOf('.'));
 
-        File outFile = new File(inFile.getParent(), substring + "_eTs.pdf");
+        final File outFile = new File(inFile.getParent(), substring + "_eTs.pdf");
         System.out.println("Output File: " + outFile.getAbsolutePath());
 
         // Embed TimeStamp
-        CreateEmbeddedTimeStamp signing = new CreateEmbeddedTimeStamp(tsaUrl);
+        final CreateEmbeddedTimeStamp signing = new CreateEmbeddedTimeStamp(tsaUrl);
         signing.embedTimeStamp(inFile, outFile);
     }
 

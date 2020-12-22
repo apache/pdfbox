@@ -97,7 +97,7 @@ public class PDSignature implements COSObjectable
      *
      * @param dict The signature dictionary.
      */
-    public PDSignature(COSDictionary dict)
+    public PDSignature(final COSDictionary dict)
     {
         dictionary = dict;
     }
@@ -118,7 +118,7 @@ public class PDSignature implements COSObjectable
      *
      * @param type is the dictionary type.
      */
-    public void setType(COSName type)
+    public void setType(final COSName type)
     {
         dictionary.setItem(COSName.TYPE, type);
     }
@@ -128,7 +128,7 @@ public class PDSignature implements COSObjectable
      *
      * @param filter the filter to be used
      */
-    public void setFilter(COSName filter)
+    public void setFilter(final COSName filter)
     {
         dictionary.setItem(COSName.FILTER, filter);
     }
@@ -138,7 +138,7 @@ public class PDSignature implements COSObjectable
      *
      * @param subfilter the subfilter that shall be used.
      */
-    public void setSubFilter(COSName subfilter)
+    public void setSubFilter(final COSName subfilter)
     {
         dictionary.setItem(COSName.SUB_FILTER, subfilter);
     }
@@ -150,7 +150,7 @@ public class PDSignature implements COSObjectable
      *
      * @param name the name to be used
      */
-    public void setName(String name)
+    public void setName(final String name)
     {
         dictionary.setString(COSName.NAME, name);
     }
@@ -160,7 +160,7 @@ public class PDSignature implements COSObjectable
      *
      * @param location the location to be used
      */
-    public void setLocation(String location)
+    public void setLocation(final String location)
     {
         dictionary.setString(COSName.LOCATION, location);
     }
@@ -170,7 +170,7 @@ public class PDSignature implements COSObjectable
      *
      * @param reason the reason to be used
      */
-    public void setReason(String reason)
+    public void setReason(final String reason)
     {
         dictionary.setString(COSName.REASON, reason);
     }
@@ -181,7 +181,7 @@ public class PDSignature implements COSObjectable
      *
      * @param contactInfo the contact info to be used
      */
-    public void setContactInfo(String contactInfo)
+    public void setContactInfo(final String contactInfo)
     {
         dictionary.setString(COSName.CONTACT_INFO, contactInfo);
     }
@@ -191,7 +191,7 @@ public class PDSignature implements COSObjectable
      *
      * @param cal the date to be used as sign date
      */
-    public void setSignDate(Calendar cal)
+    public void setSignDate(final Calendar cal)
     {
         dictionary.setDate(COSName.M, cal);
     }
@@ -273,14 +273,14 @@ public class PDSignature implements COSObjectable
      *
      * @param range the byte range to be used
      */
-    public void setByteRange(int[] range)
+    public void setByteRange(final int[] range)
     {
         if (range.length!=4)
         {
             return;
         }
-        COSArray ary = new COSArray();
-        for ( int i : range )
+        final COSArray ary = new COSArray();
+        for ( final int i : range )
         {
             ary.add(COSInteger.get(i));
         }
@@ -296,8 +296,8 @@ public class PDSignature implements COSObjectable
      */
     public int[] getByteRange()
     {
-        COSArray byteRange = (COSArray)dictionary.getDictionaryObject(COSName.BYTERANGE);
-        int[] ary = new int[byteRange.size()];
+        final COSArray byteRange = (COSArray)dictionary.getDictionaryObject(COSName.BYTERANGE);
+        final int[] ary = new int[byteRange.size()];
         for (int i = 0; i<ary.length;++i)
         {
             ary[i] = byteRange.getInt(i);
@@ -313,7 +313,7 @@ public class PDSignature implements COSObjectable
      */
     public byte[] getContents()
     {
-        COSBase base = dictionary.getDictionaryObject(COSName.CONTENTS);
+        final COSBase base = dictionary.getDictionaryObject(COSName.CONTENTS);
         if (base instanceof COSString)
         {
             return ((COSString) base).getBytes();
@@ -328,11 +328,11 @@ public class PDSignature implements COSObjectable
      * @return a byte array containing the signature
      * @throws IOException if the pdfFile can't be read
      */
-    public byte[] getContents(InputStream pdfFile) throws IOException
+    public byte[] getContents(final InputStream pdfFile) throws IOException
     {
-        int[] byteRange = getByteRange();
-        int begin = byteRange[0]+byteRange[1]+1;
-        int len = byteRange[2]-begin;
+        final int[] byteRange = getByteRange();
+        final int begin = byteRange[0]+byteRange[1]+1;
+        final int len = byteRange[2]-begin;
 
         return getConvertedContents(new COSFilterInputStream(pdfFile,new int[] {begin,len}));
     }
@@ -344,19 +344,19 @@ public class PDSignature implements COSObjectable
      * @return a byte array containing the signature
      * @throws IOException if the pdfFile can't be read
      */
-    public byte[] getContents(byte[] pdfFile) throws IOException
+    public byte[] getContents(final byte[] pdfFile) throws IOException
     {
-        int[] byteRange = getByteRange();
-        int begin = byteRange[0]+byteRange[1]+1;
-        int len = byteRange[2]-begin-1;
+        final int[] byteRange = getByteRange();
+        final int begin = byteRange[0]+byteRange[1]+1;
+        final int len = byteRange[2]-begin-1;
 
         return getConvertedContents(new ByteArrayInputStream(pdfFile, begin, len));
     }
 
-    private byte[] getConvertedContents(InputStream is) throws IOException
+    private byte[] getConvertedContents(final InputStream is) throws IOException
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-        byte[] buffer = new byte[1024];
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        final byte[] buffer = new byte[1024];
         int readLen;
         while ((readLen = is.read(buffer)) != -1)
         {
@@ -385,9 +385,9 @@ public class PDSignature implements COSObjectable
      *
      * @param bytes contents to be used
      */
-    public void setContents(byte[] bytes)
+    public void setContents(final byte[] bytes)
     {
-        COSString string = new COSString(bytes);
+        final COSString string = new COSString(bytes);
         string.setForceHexForm(true);
         dictionary.setItem(COSName.CONTENTS, string);
     }
@@ -403,7 +403,7 @@ public class PDSignature implements COSObjectable
      * @return a byte array containing only the signed part of the content
      * @throws IOException if the pdfFile can't be read
      */
-    public byte[] getSignedContent(InputStream pdfFile) throws IOException
+    public byte[] getSignedContent(final InputStream pdfFile) throws IOException
     {
         try (COSFilterInputStream fis = new COSFilterInputStream(pdfFile, getByteRange()))
         {
@@ -422,7 +422,7 @@ public class PDSignature implements COSObjectable
      * @return a byte array containing only the signed part of the content
      * @throws IOException if the pdfFile can't be read
      */
-    public byte[] getSignedContent(byte[] pdfFile) throws IOException
+    public byte[] getSignedContent(final byte[] pdfFile) throws IOException
     {
         try (COSFilterInputStream fis = new COSFilterInputStream(pdfFile, getByteRange()))
         {
@@ -438,7 +438,7 @@ public class PDSignature implements COSObjectable
     public PDPropBuild getPropBuild()
     {
         PDPropBuild propBuild = null;
-        COSDictionary propBuildDic = dictionary.getCOSDictionary(COSName.PROP_BUILD);
+        final COSDictionary propBuildDic = dictionary.getCOSDictionary(COSName.PROP_BUILD);
         if (propBuildDic != null)
         {
             propBuild = new PDPropBuild(propBuildDic);
@@ -451,7 +451,7 @@ public class PDSignature implements COSObjectable
      *
      * @param propBuild the prop build
      */
-    public void setPropBuild(PDPropBuild propBuild)
+    public void setPropBuild(final PDPropBuild propBuild)
     {
         dictionary.setItem(COSName.PROP_BUILD, propBuild);
     }

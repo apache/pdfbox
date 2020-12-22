@@ -41,7 +41,7 @@ public class XmpSchemaException extends Exception
      * @param message
      *            a description of the encountered problem
      */
-    public XmpSchemaException(String message)
+    public XmpSchemaException(final String message)
     {
         super(message);
     }
@@ -54,7 +54,7 @@ public class XmpSchemaException extends Exception
      * @param cause
      *            the cause of the exception
      */
-    public XmpSchemaException(String message, Throwable cause)
+    public XmpSchemaException(final String message, final Throwable cause)
     {
         super(message, cause);
     }

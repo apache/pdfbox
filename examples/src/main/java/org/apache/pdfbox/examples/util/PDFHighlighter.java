@@ -72,7 +72,7 @@ public class PDFHighlighter extends PDFTextStripper
      *
      * @throws IOException If there is an error reading from the PDF, or writing to the XML.
      */
-    public void generateXMLHighlight(PDDocument pdDocument, String highlightWord, Writer xmlOutput ) throws IOException
+    public void generateXMLHighlight(final PDDocument pdDocument, final String highlightWord, final Writer xmlOutput ) throws IOException
     {
         generateXMLHighlight( pdDocument, new String[] { highlightWord }, xmlOutput );
     }
@@ -86,7 +86,7 @@ public class PDFHighlighter extends PDFTextStripper
      *
      * @throws IOException If there is an error reading from the PDF, or writing to the XML.
      */
-    public void generateXMLHighlight(PDDocument pdDocument, String[] sWords, Writer xmlOutput ) throws IOException
+    public void generateXMLHighlight(final PDDocument pdDocument, final String[] sWords, final Writer xmlOutput ) throws IOException
     {
         highlighterOutput = xmlOutput;
         searchedWords = sWords;
@@ -103,7 +103,7 @@ public class PDFHighlighter extends PDFTextStripper
      * {@inheritDoc}
      */
     @Override
-    protected void endPage( PDPage pdPage ) throws IOException
+    protected void endPage(final PDPage pdPage ) throws IOException
     {
         textWriter.flush();
 
@@ -115,14 +115,14 @@ public class PDFHighlighter extends PDFTextStripper
         {
             page = page.replaceAll("a[0-9]{1,3}", ".");
         }
-        for (String searchedWord : searchedWords)
+        for (final String searchedWord : searchedWords)
         {
-            Pattern pattern = Pattern.compile(searchedWord, Pattern.CASE_INSENSITIVE);
-            Matcher matcher = pattern.matcher(page);
+            final Pattern pattern = Pattern.compile(searchedWord, Pattern.CASE_INSENSITIVE);
+            final Matcher matcher = pattern.matcher(page);
             while( matcher.find() )
             {
-                int begin = matcher.start();
-                int end = matcher.end();
+                final int begin = matcher.start();
+                final int end = matcher.end();
                 highlighterOutput.write("    <loc " +
                         "pg=" + (getCurrentPageNo()-1)
                         + " pos=" + begin
@@ -139,14 +139,14 @@ public class PDFHighlighter extends PDFTextStripper
      *
      * @throws IOException If there is an error generating the highlight file.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        PDFHighlighter xmlExtractor = new PDFHighlighter();
+        final PDFHighlighter xmlExtractor = new PDFHighlighter();
         if (args.length < 2)
         {
             usage();
         }
-        String[] highlightStrings = new String[args.length - 1];
+        final String[] highlightStrings = new String[args.length - 1];
         System.arraycopy(args, 1, highlightStrings, 0, highlightStrings.length);
         try (PDDocument doc = Loader.loadPDF(new File(args[0])))
         {

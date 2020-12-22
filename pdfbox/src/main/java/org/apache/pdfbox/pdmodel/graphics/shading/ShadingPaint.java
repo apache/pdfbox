@@ -31,7 +31,7 @@ public abstract class ShadingPaint<T extends PDShading> implements Paint
     protected final T shading;
     protected final Matrix matrix;
 
-    ShadingPaint(T shading, Matrix matrix)
+    ShadingPaint(final T shading, final Matrix matrix)
     {
         this.shading = shading;
         this.matrix = matrix;

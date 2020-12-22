@@ -72,7 +72,7 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
                 return;
             }
             // loads the ICC color profile for CMYK
-            ICC_Profile iccProfile = getICCProfile();
+            final ICC_Profile iccProfile = getICCProfile();
             if (iccProfile == null)
             {
                 throw new IOException("Default CMYK color profile could not be loaded");
@@ -95,10 +95,10 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
         // Instead, the "ISO Coated v2 300% (basICColor)" is used, which
         // is an open alternative to the "ISO Coated v2 300% (ECI)" profile.
 
-        String name = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
+        final String name = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
 
         try (InputStream resourceAsStream = PDDeviceCMYK.class.getResourceAsStream(name);
-             InputStream is = new BufferedInputStream(resourceAsStream))
+             final InputStream is = new BufferedInputStream(resourceAsStream))
         {
             return ICC_Profile.getInstance(is);
         }
@@ -117,7 +117,7 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
         return new float[] { 0, 1, 0, 1, 0, 1, 0, 1 };
     }
@@ -129,14 +129,14 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     }
 
     @Override
-    public float[] toRGB(float[] value) throws IOException
+    public float[] toRGB(final float[] value) throws IOException
     {
         init();
         return awtColorSpace.toRGB(value);
     }
 
     @Override
-    public BufferedImage toRawImage(WritableRaster raster) throws IOException
+    public BufferedImage toRawImage(final WritableRaster raster) throws IOException
     {
         // Device CMYK is not specified, as its the colors of whatever device you use.
         // The user should fallback to the RGB image
@@ -144,28 +144,28 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     }
 
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(final WritableRaster raster) throws IOException
     {
         init();
         return toRGBImageAWT(raster, awtColorSpace);
     }
 
     @Override
-    protected BufferedImage toRGBImageAWT(WritableRaster raster, ColorSpace colorSpace)
+    protected BufferedImage toRGBImageAWT(final WritableRaster raster, final ColorSpace colorSpace)
     {
         if (usePureJavaCMYKConversion)
         {
-            BufferedImage dest = new BufferedImage(raster.getWidth(), raster.getHeight(),
+            final BufferedImage dest = new BufferedImage(raster.getWidth(), raster.getHeight(),
                     BufferedImage.TYPE_INT_RGB);
-            ColorSpace destCS = dest.getColorModel().getColorSpace();
-            WritableRaster destRaster = dest.getRaster();
-            float[] srcValues = new float[4];
-            float[] lastValues = new float[] { -1.0f, -1.0f, -1.0f, -1.0f };
+            final ColorSpace destCS = dest.getColorModel().getColorSpace();
+            final WritableRaster destRaster = dest.getRaster();
+            final float[] srcValues = new float[4];
+            final float[] lastValues = new float[] { -1.0f, -1.0f, -1.0f, -1.0f };
             float[] destValues = new float[3];
-            int width = raster.getWidth();
-            int startX = raster.getMinX();
-            int height = raster.getHeight();
-            int startY = raster.getMinY();
+            final int width = raster.getWidth();
+            final int startX = raster.getMinX();
+            final int height = raster.getHeight();
+            final int startY = raster.getMinY();
             for (int x = startX; x < width + startX; x++)
             {
                 for (int y = startY; y < height + startY; y++)

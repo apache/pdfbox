@@ -62,10 +62,10 @@ public class LZWFilter extends Filter
      * {@inheritDoc}
      */
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-            COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded,
+                               final COSDictionary parameters, final int index) throws IOException
     {
-        COSDictionary decodeParams = getDecodeParams(parameters, index);
+        final COSDictionary decodeParams = getDecodeParams(parameters, index);
         int earlyChange = decodeParams.getInt(COSName.EARLY_CHANGE, 1);
 
         if (earlyChange != 0 && earlyChange != 1)
@@ -77,7 +77,7 @@ public class LZWFilter extends Filter
         return new DecodeResult(parameters);
     }
 
-    private void doLZWDecode(InputStream encoded, OutputStream decoded, int earlyChange) throws IOException
+    private void doLZWDecode(final InputStream encoded, final OutputStream decoded, final int earlyChange) throws IOException
     {
         List<byte[]> codeTable = new ArrayList<>();
         int chunk = 9;
@@ -100,13 +100,13 @@ public class LZWFilter extends Filter
                     if (nextCommand < codeTable.size())
                     {
                         byte[] data = codeTable.get((int) nextCommand);
-                        byte firstByte = data[0];
+                        final byte firstByte = data[0];
                         decoded.write(data);
                         if (prevCommand != -1)
                         {
                             checkIndexBounds(codeTable, prevCommand, in);
                             data = codeTable.get((int) prevCommand);
-                            byte[] newData = Arrays.copyOf(data, data.length + 1);
+                            final byte[] newData = Arrays.copyOf(data, data.length + 1);
                             newData[data.length] = firstByte;
                             codeTable.add(newData);
                         }
@@ -114,8 +114,8 @@ public class LZWFilter extends Filter
                     else
                     {
                         checkIndexBounds(codeTable, prevCommand, in);
-                        byte[] data = codeTable.get((int) prevCommand);
-                        byte[] newData = Arrays.copyOf(data, data.length + 1);
+                        final byte[] data = codeTable.get((int) prevCommand);
+                        final byte[] newData = Arrays.copyOf(data, data.length + 1);
                         newData[data.length] = data[0];
                         decoded.write(newData);
                         codeTable.add(newData);
@@ -133,7 +133,7 @@ public class LZWFilter extends Filter
         decoded.flush();
     }
 
-    private void checkIndexBounds(List<byte[]> codeTable, long index, MemoryCacheImageInputStream in)
+    private void checkIndexBounds(final List<byte[]> codeTable, final long index, final MemoryCacheImageInputStream in)
             throws IOException
     {
         if (index < 0)
@@ -153,7 +153,7 @@ public class LZWFilter extends Filter
      * {@inheritDoc}
      */
     @Override
-    protected void encode(InputStream rawData, OutputStream encoded, COSDictionary parameters)
+    protected void encode(final InputStream rawData, final OutputStream encoded, final COSDictionary parameters)
             throws IOException
     {
         List<byte[]> codeTable = createCodeTable();
@@ -167,7 +167,7 @@ public class LZWFilter extends Filter
             int r;
             while ((r = rawData.read()) != -1)
             {
-                byte by = (byte) r;
+                final byte by = (byte) r;
                 if (inputPattern == null)
                 {
                     inputPattern = new byte[] { by };
@@ -177,7 +177,7 @@ public class LZWFilter extends Filter
                 {
                     inputPattern = Arrays.copyOf(inputPattern, inputPattern.length + 1);
                     inputPattern[inputPattern.length - 1] = by;
-                    int newFoundCode = findPatternCode(codeTable, inputPattern);
+                    final int newFoundCode = findPatternCode(codeTable, inputPattern);
                     if (newFoundCode == -1)
                     {
                         // use previous
@@ -233,7 +233,7 @@ public class LZWFilter extends Filter
      * @return The index of the longest matching pattern or -1 if nothing is
      * found.
      */
-    private int findPatternCode(List<byte[]> codeTable, byte[] pattern)
+    private int findPatternCode(final List<byte[]> codeTable, final byte[] pattern)
     {
         int foundCode = -1;
         int foundLen = 0;
@@ -253,7 +253,7 @@ public class LZWFilter extends Filter
                     return -1;
                 }
             }
-            byte[] tryPattern = codeTable.get(i);
+            final byte[] tryPattern = codeTable.get(i);
             if ((foundCode != -1 || tryPattern.length > foundLen) && Arrays.equals(tryPattern, pattern))
             {
                 foundCode = i;
@@ -269,7 +269,7 @@ public class LZWFilter extends Filter
      */
     private List<byte[]> createCodeTable()
     {
-        List<byte[]> codeTable = new ArrayList<>(4096);
+        final List<byte[]> codeTable = new ArrayList<>(4096);
         for (int i = 0; i < 256; ++i)
         {
             codeTable.add(new byte[] { (byte) (i & 0xFF) });
@@ -287,7 +287,7 @@ public class LZWFilter extends Filter
      *
      * @return a value between 9 and 12
      */
-    private int calculateChunk(int tabSize, int earlyChange)
+    private int calculateChunk(final int tabSize, final int earlyChange)
     {
         if (tabSize >= 2048 - earlyChange)
         {

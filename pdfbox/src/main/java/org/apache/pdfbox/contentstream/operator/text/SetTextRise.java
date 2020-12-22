@@ -34,18 +34,18 @@ import java.io.IOException;
 public class SetTextRise extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.isEmpty())
         {
             return;
         }
-        COSBase base = arguments.get(0);
+        final COSBase base = arguments.get(0);
         if (!(base instanceof COSNumber))
         {
             return;
         }
-        COSNumber rise = (COSNumber) base;
+        final COSNumber rise = (COSNumber) base;
         context.getGraphicsState().getTextState().setRise( rise.floatValue() );
     }
 

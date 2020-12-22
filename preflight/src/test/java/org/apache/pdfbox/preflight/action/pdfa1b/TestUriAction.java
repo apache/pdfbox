@@ -35,7 +35,7 @@ class TestUriAction extends AbstractTestAction
 
     protected PDActionURI createAction()
     {
-        PDActionURI action = new PDActionURI();
+        final PDActionURI action = new PDActionURI();
         action.setURI("http://www.apache.org");
         return action;
     }
@@ -43,21 +43,21 @@ class TestUriAction extends AbstractTestAction
     @Test
     void test() throws Exception
     {
-        PDAction action = createAction();
+        final PDAction action = createAction();
         valid(action, true);
     }
 
     @Test
     void testMissingURI() throws Exception
     {
-        PDActionURI action = new PDActionURI();
+        final PDActionURI action = new PDActionURI();
         valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
     }
 
     @Test
     void testInvalidURI() throws Exception
     {
-        PDActionURI action = new PDActionURI();
+        final PDActionURI action = new PDActionURI();
         action.getCOSObject().setBoolean(COSName.URI, true);
         valid(action, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
     }
@@ -65,7 +65,7 @@ class TestUriAction extends AbstractTestAction
     @Test
     void testNextValid() throws Exception
     {
-        PDActionURI action = createAction();
+        final PDActionURI action = createAction();
         action.setNext(Arrays.asList(createAction()));
         valid(action, true);
     }
@@ -73,7 +73,7 @@ class TestUriAction extends AbstractTestAction
     @Test
     void testNextInvalid() throws Exception
     {
-        PDActionURI action = createAction();
+        final PDActionURI action = createAction();
         action.setNext(Arrays.asList(new PDActionJavaScript()));
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }

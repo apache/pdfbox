@@ -40,7 +40,7 @@ public class DataInput
      * Constructor.
      * @param buffer the buffer to be read
      */
-    public DataInput(byte[] buffer)
+    public DataInput(final byte[] buffer)
     {
         inputBuffer = buffer;
     }
@@ -67,7 +67,7 @@ public class DataInput
      * Sets the current position to the given value.
      * @param position the given position
      */
-    public void setPosition(int position)
+    public void setPosition(final int position)
     {
         bufferPosition = position;
     }
@@ -91,7 +91,7 @@ public class DataInput
     {
         try
         {
-            byte value = inputBuffer[bufferPosition];
+            final byte value = inputBuffer[bufferPosition];
             bufferPosition++;
             return value;
         } 
@@ -109,7 +109,7 @@ public class DataInput
      */
     public int readUnsignedByte() throws IOException
     {
-        int b = read();
+        final int b = read();
         if (b < 0)
         {
             throw new EOFException();
@@ -122,9 +122,9 @@ public class DataInput
      * @return the unsigned byte as int
      * @throws IOException if an error occurs during reading
      */
-    public int peekUnsignedByte(int offset) throws IOException
+    public int peekUnsignedByte(final int offset) throws IOException
     {
-        int b = peek(offset);
+        final int b = peek(offset);
         if (b < 0)
         {
             throw new EOFException();
@@ -149,8 +149,8 @@ public class DataInput
      */
     public int readUnsignedShort() throws IOException
     {
-        int b1 = read();
-        int b2 = read();
+        final int b1 = read();
+        final int b2 = read();
         if ((b1 | b2) < 0)
         {
             throw new EOFException();
@@ -165,10 +165,10 @@ public class DataInput
      */
     public int readInt() throws IOException
     {
-        int b1 = read();
-        int b2 = read();
-        int b3 = read();
-        int b4 = read();
+        final int b1 = read();
+        final int b2 = read();
+        final int b3 = read();
+        final int b4 = read();
         if ((b1 | b2 | b3 | b4) < 0)
         {
             throw new EOFException();
@@ -182,7 +182,7 @@ public class DataInput
      * @return an array with containing the bytes from the buffer 
      * @throws IOException if an error occurs during reading
      */
-    public byte[] readBytes(int length) throws IOException
+    public byte[] readBytes(final int length) throws IOException
     {
         if (length < 0)
         {
@@ -192,7 +192,7 @@ public class DataInput
         {
             throw new EOFException(); 
         }
-        byte[] bytes = new byte[length];
+        final byte[] bytes = new byte[length];
         System.arraycopy(inputBuffer, bufferPosition, bytes, 0, length);
         bufferPosition += length;
         return bytes;
@@ -202,7 +202,7 @@ public class DataInput
     {
         try
         {
-            int value = inputBuffer[bufferPosition] & 0xff;
+            final int value = inputBuffer[bufferPosition] & 0xff;
             bufferPosition++;
             return value;
         } 
@@ -213,7 +213,7 @@ public class DataInput
         }
     }
 
-    private int peek(int offset)
+    private int peek(final int offset)
     {
         try
         {

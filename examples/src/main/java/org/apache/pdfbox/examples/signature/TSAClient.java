@@ -61,7 +61,7 @@ public class TSAClient
      * @param password password of TSA
      * @param digest the message digest to use
      */
-    public TSAClient(URL url, String username, String password, MessageDigest digest)
+    public TSAClient(final URL url, final String username, final String password, final MessageDigest digest)
     {
         this.url = url;
         this.username = username;
@@ -76,25 +76,25 @@ public class TSAClient
      * @throws IOException if there was an error with the connection or data from the TSA server,
      *                     or if the time stamp response could not be validated
      */
-    public byte[] getTimeStampToken(byte[] messageImprint) throws IOException
+    public byte[] getTimeStampToken(final byte[] messageImprint) throws IOException
     {
         digest.reset();
-        byte[] hash = digest.digest(messageImprint);
+        final byte[] hash = digest.digest(messageImprint);
 
         // 32-bit cryptographic nonce
-        SecureRandom random = new SecureRandom();
-        int nonce = random.nextInt();
+        final SecureRandom random = new SecureRandom();
+        final int nonce = random.nextInt();
 
         // generate TSA request
-        TimeStampRequestGenerator tsaGenerator = new TimeStampRequestGenerator();
+        final TimeStampRequestGenerator tsaGenerator = new TimeStampRequestGenerator();
         tsaGenerator.setCertReq(true);
-        ASN1ObjectIdentifier oid = ALGORITHM_OID_FINDER.find(digest.getAlgorithm()).getAlgorithm();
-        TimeStampRequest request = tsaGenerator.generate(oid, hash, BigInteger.valueOf(nonce));
+        final ASN1ObjectIdentifier oid = ALGORITHM_OID_FINDER.find(digest.getAlgorithm()).getAlgorithm();
+        final TimeStampRequest request = tsaGenerator.generate(oid, hash, BigInteger.valueOf(nonce));
 
         // get TSA response
-        byte[] tsaResponse = getTSAResponse(request.getEncoded());
+        final byte[] tsaResponse = getTSAResponse(request.getEncoded());
 
-        TimeStampResponse response;
+        final TimeStampResponse response;
         try
         {
             response = new TimeStampResponse(tsaResponse);
@@ -105,7 +105,7 @@ public class TSAClient
             throw new IOException(e);
         }
         
-        TimeStampToken token = response.getTimeStampToken();
+        final TimeStampToken token = response.getTimeStampToken();
         if (token == null)
         {
             // https://www.ietf.org/rfc/rfc3161.html#section-2.4.2
@@ -119,12 +119,12 @@ public class TSAClient
 
     // gets response data for the given encoded TimeStampRequest data
     // throws IOException if a connection to the TSA cannot be established
-    private byte[] getTSAResponse(byte[] request) throws IOException
+    private byte[] getTSAResponse(final byte[] request) throws IOException
     {
         LOG.debug("Opening connection to TSA server");
 
         // todo: support proxy servers
-        URLConnection connection = url.openConnection();
+        final URLConnection connection = url.openConnection();
         connection.setDoOutput(true);
         connection.setDoInput(true);
         connection.setRequestProperty("Content-Type", "application/timestamp-query");
@@ -144,7 +144,7 @@ public class TSAClient
 
         LOG.debug("Waiting for response from TSA server");
 
-        byte[] response;
+        final byte[] response;
         try (InputStream input = connection.getInputStream())
         {
             response = IOUtils.toByteArray(input);

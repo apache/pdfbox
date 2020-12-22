@@ -37,7 +37,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      *
      * @param subType the subtype the annotation represents.
      */
-    protected PDAnnotationSquareCircle(String subType)
+    protected PDAnnotationSquareCircle(final String subType)
     {
         setSubtype(subType);
     }
@@ -47,7 +47,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      *
      * @param dict The annotations dictionary.
      */
-    protected PDAnnotationSquareCircle(COSDictionary dict)
+    protected PDAnnotationSquareCircle(final COSDictionary dict)
     {
         super(dict);
     }
@@ -61,7 +61,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * @param ic color in the DeviceRGB color space.
      *
      */
-    public void setInteriorColor(PDColor ic)
+    public void setInteriorColor(final PDColor ic)
     {
         getCOSObject().setItem(COSName.IC, ic.toCOSArray());
     }
@@ -83,7 +83,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * @param be The border effect dictionary to set.
      *
      */
-    public void setBorderEffect(PDBorderEffectDictionary be)
+    public void setBorderEffect(final PDBorderEffectDictionary be)
     {
         getCOSObject().setItem(COSName.BE, be);
     }
@@ -96,7 +96,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.BE);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.BE);
         if (base instanceof COSDictionary)
         {
             return new PDBorderEffectDictionary((COSDictionary) base);
@@ -112,7 +112,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * @param rd the rectangle difference
      *
      */
-    public void setRectDifference(PDRectangle rd)
+    public void setRectDifference(final PDRectangle rd)
     {
         getCOSObject().setItem(COSName.RD, rd);
     }
@@ -126,7 +126,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDRectangle getRectDifference()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.RD);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.RD);
         if (base instanceof COSArray)
         {
             return new PDRectangle((COSArray) base);
@@ -143,7 +143,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      *
      * @param difference from the annotations /Rect entry
      */
-    public void setRectDifferences(float difference)
+    public void setRectDifferences(final float difference)
     {
         setRectDifferences(difference, difference, difference, difference);
     }
@@ -158,9 +158,9 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * @param differenceBottom bottom difference from the annotations /Rect entry
      * 
      */
-    public void setRectDifferences(float differenceLeft, float differenceTop, float differenceRight, float differenceBottom)
+    public void setRectDifferences(final float differenceLeft, final float differenceTop, final float differenceRight, final float differenceBottom)
     {
-        COSArray margins = new COSArray();
+        final COSArray margins = new COSArray();
         margins.add(new COSFloat(differenceLeft));
         margins.add(new COSFloat(differenceTop));
         margins.add(new COSFloat(differenceRight));
@@ -176,7 +176,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public float[] getRectDifferences()
     {
-        COSBase margin = getCOSObject().getItem(COSName.RD);
+        final COSBase margin = getCOSObject().getItem(COSName.RD);
         if (margin instanceof COSArray)
         {
             return ((COSArray) margin).toFloatArray();

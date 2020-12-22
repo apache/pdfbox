@@ -31,7 +31,7 @@ abstract class MenuBase
 {
     private JMenu menu = null;
 
-    final void setMenu(JMenu menu)
+    final void setMenu(final JMenu menu)
     {
         this.menu = menu;
     }
@@ -51,7 +51,7 @@ abstract class MenuBase
      *
      * @param isEnable boolean instance.
      */
-    public void setEnableMenu(boolean isEnable)
+    public void setEnableMenu(final boolean isEnable)
     {
         menu.setEnabled(isEnable);
     }
@@ -61,19 +61,19 @@ abstract class MenuBase
      *
      * @param listener ActionListener.
      */
-    public void addMenuListeners(ActionListener listener)
+    public void addMenuListeners(final ActionListener listener)
     {
-        for (Component comp : menu.getMenuComponents())
+        for (final Component comp : menu.getMenuComponents())
         {
-            JMenuItem menuItem = (JMenuItem) comp;
+            final JMenuItem menuItem = (JMenuItem) comp;
             removeActionListeners(menuItem);
             menuItem.addActionListener(listener);
         }
     }
 
-    private void removeActionListeners(JMenuItem menuItem)
+    private void removeActionListeners(final JMenuItem menuItem)
     {
-        for (ActionListener listener : menuItem.getActionListeners())
+        for (final ActionListener listener : menuItem.getActionListeners())
         {
             menuItem.removeActionListener(listener);
         }

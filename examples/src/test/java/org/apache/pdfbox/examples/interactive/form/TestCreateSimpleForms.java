@@ -65,8 +65,8 @@ class TestCreateSimpleForms
         try (PDDocument doc = Loader.loadPDF(new File("target/SimpleForm.pdf")))
         {
             new PDFRenderer(doc).renderImage(0);
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-            PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
             assertEquals("Sample field content", textBox.getValue());
             try
             {
@@ -77,7 +77,7 @@ class TestCreateSimpleForms
             {
                 assertTrue(ex.getMessage().contains("U+0141 ('Lslash') is not available"));
             }
-            PDFont font = getFontFromWidgetResources(textBox, "Helv");
+            final PDFont font = getFontFromWidgetResources(textBox, "Helv");
             assertEquals("Helvetica", font.getName());
             assertTrue(font.isStandard14());
         }
@@ -90,12 +90,12 @@ class TestCreateSimpleForms
 
         try (PDDocument doc = Loader.loadPDF(new File("target/SimpleForm.pdf")))
         {
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-            PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
-            PDAnnotationWidget widget = textBox.getWidgets().get(0);
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
-            PDColor borderColour = appearanceCharacteristics.getBorderColour();
-            PDColor backgroundColour = appearanceCharacteristics.getBackground();
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
+            final PDAnnotationWidget widget = textBox.getWidgets().get(0);
+            final PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
+            final PDColor borderColour = appearanceCharacteristics.getBorderColour();
+            final PDColor backgroundColour = appearanceCharacteristics.getBackground();
             assertEquals(PDDeviceRGB.INSTANCE, borderColour.getColorSpace());
             assertEquals(PDDeviceRGB.INSTANCE, backgroundColour.getColorSpace());
             assertArrayEquals(new float[] { 0, 1, 0 }, borderColour.getComponents(), 0);
@@ -107,11 +107,11 @@ class TestCreateSimpleForms
         try (PDDocument doc = Loader.loadPDF(new File("target/AddBorderToField.pdf")))
         {
             new PDFRenderer(doc).renderImage(0);
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-            PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
-            PDAnnotationWidget widget = textBox.getWidgets().get(0);
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
-            PDColor borderColour = appearanceCharacteristics.getBorderColour();
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
+            final PDAnnotationWidget widget = textBox.getWidgets().get(0);
+            final PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
+            final PDColor borderColour = appearanceCharacteristics.getBorderColour();
             assertEquals(PDDeviceRGB.INSTANCE, borderColour.getColorSpace());
             assertArrayEquals(new float[] { 1, 0, 0 }, borderColour.getComponents(), 0);
         }
@@ -129,11 +129,11 @@ class TestCreateSimpleForms
         try (PDDocument doc = Loader.loadPDF(new File("target/SimpleFormWithEmbeddedFont.pdf")))
         {
             new PDFRenderer(doc).renderImage(0);
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-            PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
             assertEquals("Sample field İ", textBox.getValue());
             textBox.setValue("Łódź");
-            PDFont font = getFontFromWidgetResources(textBox, "F1");
+            final PDFont font = getFontFromWidgetResources(textBox, "F1");
             assertEquals("LiberationSans", font.getName());
         }
     }
@@ -153,27 +153,27 @@ class TestCreateSimpleForms
             assertEquals(2, doc.getNumberOfPages());
             new PDFRenderer(doc).renderImage(0);
             new PDFRenderer(doc).renderImage(1);
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-            PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
             assertEquals("Sample field", textBox.getValue());
-            List<PDAnnotationWidget> widgets = textBox.getWidgets();
+            final List<PDAnnotationWidget> widgets = textBox.getWidgets();
             assertEquals(2, widgets.size());
-            PDAnnotationWidget w1 = widgets.get(0);
-            PDAnnotationWidget w2 = widgets.get(1);
-            PDPage page1 = w1.getPage();
-            PDPage page2 = w2.getPage();
+            final PDAnnotationWidget w1 = widgets.get(0);
+            final PDAnnotationWidget w2 = widgets.get(1);
+            final PDPage page1 = w1.getPage();
+            final PDPage page2 = w2.getPage();
             assertNotEquals(page1.getCOSObject(), page2.getCOSObject());
             assertEquals(page1, doc.getPage(0));
             assertEquals(page2, doc.getPage(1));
             assertEquals(page1.getAnnotations().get(0), w1);
             assertEquals(page2.getAnnotations().get(0), w2);
             assertNotEquals(w1, w2);
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics1 = w1.getAppearanceCharacteristics();
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics2 = w2.getAppearanceCharacteristics();
-            PDColor backgroundColor1 = appearanceCharacteristics1.getBackground();
-            PDColor backgroundColor2 = appearanceCharacteristics2.getBackground();
-            PDColor borderColour1 = appearanceCharacteristics1.getBorderColour();
-            PDColor borderColour2 = appearanceCharacteristics2.getBorderColour();
+            final PDAppearanceCharacteristicsDictionary appearanceCharacteristics1 = w1.getAppearanceCharacteristics();
+            final PDAppearanceCharacteristicsDictionary appearanceCharacteristics2 = w2.getAppearanceCharacteristics();
+            final PDColor backgroundColor1 = appearanceCharacteristics1.getBackground();
+            final PDColor backgroundColor2 = appearanceCharacteristics2.getBackground();
+            final PDColor borderColour1 = appearanceCharacteristics1.getBorderColour();
+            final PDColor borderColour2 = appearanceCharacteristics2.getBorderColour();
             assertEquals(PDDeviceRGB.INSTANCE, backgroundColor1.getColorSpace());
             assertEquals(PDDeviceRGB.INSTANCE, backgroundColor2.getColorSpace());
             assertEquals(PDDeviceRGB.INSTANCE, borderColour1.getColorSpace());
@@ -192,8 +192,8 @@ class TestCreateSimpleForms
         try (PDDocument doc = Loader.loadPDF(new File("target/CheckBoxSample.pdf")))
         {
             new PDFRenderer(doc).renderImage(0);
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-            PDCheckBox checkbox = (PDCheckBox) acroForm.getField("MyCheckBox");
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDCheckBox checkbox = (PDCheckBox) acroForm.getField("MyCheckBox");
             assertEquals("Yes", checkbox.getOnValue());
             assertEquals("Off", checkbox.getValue());
             checkbox.check();
@@ -203,8 +203,8 @@ class TestCreateSimpleForms
         try (PDDocument doc = Loader.loadPDF(new File("target/CheckBoxSample-modified.pdf")))
         {
             new PDFRenderer(doc).renderImage(0);
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-            PDCheckBox checkbox = (PDCheckBox) acroForm.getField("MyCheckBox");
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDCheckBox checkbox = (PDCheckBox) acroForm.getField("MyCheckBox");
             assertEquals("Yes", checkbox.getValue());
         }
     }
@@ -216,8 +216,8 @@ class TestCreateSimpleForms
         try (PDDocument doc = Loader.loadPDF(new File("target/RadioButtonsSample.pdf")))
         {
             new PDFRenderer(doc).renderImage(0);
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-            PDRadioButton radioButton = (PDRadioButton) acroForm.getField("MyRadioButton");
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDRadioButton radioButton = (PDRadioButton) acroForm.getField("MyRadioButton");
             assertEquals(3, radioButton.getWidgets().size());
             assertEquals("c", radioButton.getValue());
             assertEquals(1, radioButton.getSelectedExportValues().size());
@@ -232,8 +232,8 @@ class TestCreateSimpleForms
         try (PDDocument doc = Loader.loadPDF(new File("target/RadioButtonsSample-modified.pdf")))
         {
             new PDFRenderer(doc).renderImage(0);
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-            PDRadioButton radioButton = (PDRadioButton) acroForm.getField("MyRadioButton");
+            final PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            final PDRadioButton radioButton = (PDRadioButton) acroForm.getField("MyRadioButton");
             assertEquals("b", radioButton.getValue());
             assertEquals(1, radioButton.getSelectedExportValues().size());
             assertEquals("b", radioButton.getSelectedExportValues().get(0));
@@ -241,13 +241,13 @@ class TestCreateSimpleForms
         }
     }
 
-    private PDFont getFontFromWidgetResources(PDTextField textBox, String fontResourceName) throws IOException
+    private PDFont getFontFromWidgetResources(final PDTextField textBox, final String fontResourceName) throws IOException
     {
-        PDAnnotationWidget widget = textBox.getWidgets().get(0);
-        PDAppearanceDictionary appearance = widget.getAppearance();
-        PDAppearanceEntry normalAppearance = appearance.getNormalAppearance();
-        PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
-        PDResources resources = appearanceStream.getResources();
+        final PDAnnotationWidget widget = textBox.getWidgets().get(0);
+        final PDAppearanceDictionary appearance = widget.getAppearance();
+        final PDAppearanceEntry normalAppearance = appearance.getNormalAppearance();
+        final PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
+        final PDResources resources = appearanceStream.getResources();
         return resources.getFont(COSName.getPDFName(fontResourceName));
     }
 }

@@ -82,7 +82,7 @@ public class NameRecord
     /**
      * @param stringLengthValue The stringLength to set.
      */
-    public void setStringLength(int stringLengthValue)
+    public void setStringLength(final int stringLengthValue)
     {
         this.stringLength = stringLengthValue;
     }
@@ -96,7 +96,7 @@ public class NameRecord
     /**
      * @param stringOffsetValue The stringOffset to set.
      */
-    public void setStringOffset(int stringOffsetValue)
+    public void setStringOffset(final int stringOffsetValue)
     {
         this.stringOffset = stringOffsetValue;
     }
@@ -111,7 +111,7 @@ public class NameRecord
     /**
      * @param languageIdValue The languageId to set.
      */
-    public void setLanguageId(int languageIdValue)
+    public void setLanguageId(final int languageIdValue)
     {
         this.languageId = languageIdValue;
     }
@@ -125,7 +125,7 @@ public class NameRecord
     /**
      * @param nameIdValue The nameId to set.
      */
-    public void setNameId(int nameIdValue)
+    public void setNameId(final int nameIdValue)
     {
         this.nameId = nameIdValue;
     }
@@ -139,7 +139,7 @@ public class NameRecord
     /**
      * @param platformEncodingIdValue The platformEncodingId to set.
      */
-    public void setPlatformEncodingId(int platformEncodingIdValue)
+    public void setPlatformEncodingId(final int platformEncodingIdValue)
     {
         this.platformEncodingId = platformEncodingIdValue;
     }
@@ -153,7 +153,7 @@ public class NameRecord
     /**
      * @param platformIdValue The platformId to set.
      */
-    public void setPlatformId(int platformIdValue)
+    public void setPlatformId(final int platformIdValue)
     {
         this.platformId = platformIdValue;
     }
@@ -165,7 +165,7 @@ public class NameRecord
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
+    void initData(final TrueTypeFont ttf, final TTFDataStream data ) throws IOException
     {
         platformId = data.readUnsignedShort();
         platformEncodingId = data.readUnsignedShort();
@@ -199,7 +199,7 @@ public class NameRecord
     /**
      * @param stringValue The string to set.
      */
-    public void setString(String stringValue)
+    public void setString(final String stringValue)
     {
         this.string = stringValue;
     }

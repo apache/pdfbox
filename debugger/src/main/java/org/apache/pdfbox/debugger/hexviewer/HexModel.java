@@ -35,11 +35,11 @@ class HexModel implements HexChangeListener
      * Constructor
      * @param bytes Byte array.
      */
-    HexModel(byte[] bytes)
+    HexModel(final byte[] bytes)
     {
         data = new ArrayList<>(bytes.length);
 
-        for (byte b: bytes)
+        for (final byte b: bytes)
         {
             data.add(b);
         }
@@ -52,7 +52,7 @@ class HexModel implements HexChangeListener
      * @param index int.
      * @return byte instance
      */
-    public byte getByte(int index)
+    public byte getByte(final int index)
     {
         return data.get(index);
     }
@@ -62,11 +62,11 @@ class HexModel implements HexChangeListener
      * @param lineNumber int. The line number of the characters. Line counting starts from 1.
      * @return A char array.
      */
-    public char[] getLineChars(int lineNumber)
+    public char[] getLineChars(final int lineNumber)
     {
         int start = (lineNumber-1) * 16;
-        int length = data.size() - start < 16 ? data.size() - start:16;
-        char[] chars = new char[length];
+        final int length = data.size() - start < 16 ? data.size() - start:16;
+        final char[] chars = new char[length];
 
         for (int i = 0; i < chars.length; i++)
         {
@@ -81,11 +81,11 @@ class HexModel implements HexChangeListener
         return chars;
     }
 
-    public byte[] getBytesForLine(int lineNumber)
+    public byte[] getBytesForLine(final int lineNumber)
     {
         int index = (lineNumber-1) * 16;
-        int length = Math.min(data.size() - index, 16);
-        byte[] bytes = new byte[length];
+        final int length = Math.min(data.size() - index, 16);
+        final byte[] bytes = new byte[length];
 
         for (int i = 0; i < bytes.length; i++)
         {
@@ -113,28 +113,28 @@ class HexModel implements HexChangeListener
         return size() % 16 != 0 ? size()/16 + 1 : size()/16;
     }
 
-    public static int lineNumber(int index)
+    public static int lineNumber(final int index)
     {
-        int elementNo = index + 1;
+        final int elementNo = index + 1;
         return elementNo % 16 != 0 ? elementNo/16 + 1 : elementNo/16;
     }
 
-    public static int elementIndexInLine(int index)
+    public static int elementIndexInLine(final int index)
     {
         return index%16;
     }
 
-    private static boolean isAsciiPrintable(char ch)
+    private static boolean isAsciiPrintable(final char ch)
     {
         return ch >= 32 && ch < 127;
     }
 
-    public void addHexModelChangeListener(HexModelChangeListener listener)
+    public void addHexModelChangeListener(final HexModelChangeListener listener)
     {
         modelChangeListeners.add(listener);
     }
 
-    public void updateModel(int index, byte value)
+    public void updateModel(final int index, final byte value)
     {
         if (!data.get(index).equals(value))
         {
@@ -144,9 +144,9 @@ class HexModel implements HexChangeListener
     }
 
     @Override
-    public void hexChanged(HexChangedEvent event)
+    public void hexChanged(final HexChangedEvent event)
     {
-        int index = event.getByteIndex();
+        final int index = event.getByteIndex();
         if (index != -1 && getByte(index) != event.getNewValue())
         {
             data.set(index, event.getNewValue());
@@ -154,7 +154,7 @@ class HexModel implements HexChangeListener
         fireModelChanged(index);
     }
 
-    private void fireModelChanged(int index)
+    private void fireModelChanged(final int index)
     {
         modelChangeListeners.forEach(listener ->
                 listener.hexModelChanged(new HexModelChangedEvent(index, HexModelChangedEvent.SINGLE_CHANGE)));

@@ -30,7 +30,7 @@ public class Composite
     private final String name;
     private final List<CompositePart> parts = new ArrayList<>();
 
-    public Composite(String name)
+    public Composite(final String name)
     {
         this.name = name;
     }
@@ -48,7 +48,7 @@ public class Composite
      *
      * @param part The composite part to add.
      */
-    public void addPart( CompositePart part )
+    public void addPart(final CompositePart part )
     {
         parts.add( part );
     }

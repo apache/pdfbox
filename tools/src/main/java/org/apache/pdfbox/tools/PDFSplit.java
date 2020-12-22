@@ -72,18 +72,18 @@ public final class PDFSplit implements Callable<Integer>
      *
      * @param args Command line arguments, should be one and a reference to a file.
      */
-    public static void main( String[] args )
+    public static void main(final String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new PDFSplit()).execute(args);
+        final int exitCode = new CommandLine(new PDFSplit()).execute(args);
         System.exit(exitCode);
     }
 
     public Integer call()
     {
-        Splitter splitter = new Splitter();
+        final Splitter splitter = new Splitter();
 
         if (outputPrefix == null)
         {
@@ -94,7 +94,7 @@ public final class PDFSplit implements Callable<Integer>
 
         try (PDDocument document = Loader.loadPDF(infile, password))
         {
-            int numberOfPages = document.getNumberOfPages();
+            final int numberOfPages = document.getNumberOfPages();
             boolean startEndPageSet = false;
             if (startPage != -1)
             {
@@ -144,7 +144,7 @@ public final class PDFSplit implements Callable<Integer>
         {
             for( int i=0; documents != null && i<documents.size(); i++ )
             {
-                PDDocument doc = documents.get(i);
+                final PDDocument doc = documents.get(i);
                 IOUtils.closeQuietly(doc);
             }
         }

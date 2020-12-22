@@ -29,9 +29,9 @@ import org.junit.jupiter.api.Test;
 class TestForbiddenAction extends AbstractTestAction
 {
 
-    protected COSDictionary createAction(String type)
+    protected COSDictionary createAction(final String type)
     {
-        COSDictionary action = new COSDictionary();
+        final COSDictionary action = new COSDictionary();
         action.setItem(COSName.TYPE, COSName.getPDFName("Action"));
         action.setItem(COSName.S, COSName.getPDFName(type));
         return action;
@@ -40,42 +40,42 @@ class TestForbiddenAction extends AbstractTestAction
     @Test
     void testLaunch() throws Exception
     {
-        COSDictionary action = createAction("Launch");
+        final COSDictionary action = createAction("Launch");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 
     @Test
     void testSound() throws Exception
     {
-        COSDictionary action = createAction("Sound");
+        final COSDictionary action = createAction("Sound");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 
     @Test
     void testMovie() throws Exception
     {
-        COSDictionary action = createAction("Movie");
+        final COSDictionary action = createAction("Movie");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 
     @Test
     void testImportData() throws Exception
     {
-        COSDictionary action = createAction("ImportData");
+        final COSDictionary action = createAction("ImportData");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 
     @Test
     void testResetForm() throws Exception
     {
-        COSDictionary action = createAction("ResetForm");
+        final COSDictionary action = createAction("ResetForm");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 
     @Test
     void testJS() throws Exception
     {
-        COSDictionary action = createAction("JavaScript");
+        final COSDictionary action = createAction("JavaScript");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 }

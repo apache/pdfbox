@@ -43,22 +43,22 @@ class TestTTFParser
     @Test
     void testPostTable() throws IOException
     {
-        InputStream input = PDFont.class.getResourceAsStream(
+        final InputStream input = PDFont.class.getResourceAsStream(
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
         assertNotNull(input);
 
-        TTFParser parser = new TTFParser();
-        TrueTypeFont font = parser.parse(input);
+        final TTFParser parser = new TTFParser();
+        final TrueTypeFont font = parser.parse(input);
 
-        CmapTable cmapTable = font.getCmap();
+        final CmapTable cmapTable = font.getCmap();
         assertNotNull(cmapTable);
 
-        CmapSubtable[] cmaps = cmapTable.getCmaps();
+        final CmapSubtable[] cmaps = cmapTable.getCmaps();
         assertNotNull(cmaps);
 
         CmapSubtable cmap = null;
 
-        for (CmapSubtable e : cmaps)
+        for (final CmapSubtable e : cmaps)
         {
             if (e.getPlatformId() == NameRecord.PLATFORM_WINDOWS
                     && e.getPlatformEncodingId() == NameRecord.ENCODING_WINDOWS_UNICODE_BMP)
@@ -70,10 +70,10 @@ class TestTTFParser
 
         assertNotNull(cmap);
 
-        PostScriptTable post = font.getPostScript();
+        final PostScriptTable post = font.getPostScript();
         assertNotNull(post);
 
-        String[] glyphNames = font.getPostScript().getGlyphNames();
+        final String[] glyphNames = font.getPostScript().getGlyphNames();
         assertNotNull(glyphNames);
 
         // test a WGL4 (Macintosh standard) name

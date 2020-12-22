@@ -62,7 +62,7 @@ public class FDFAnnotationInk extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationInk(COSDictionary a)
+    public FDFAnnotationInk(final COSDictionary a)
     {
         super(a);
     }
@@ -74,29 +74,29 @@ public class FDFAnnotationInk extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationInk(Element element) throws IOException
+    public FDFAnnotationInk(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
 
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
         try
         {
-            NodeList gestures = (NodeList) xpath.evaluate("inklist/gesture", element,
+            final NodeList gestures = (NodeList) xpath.evaluate("inklist/gesture", element,
                     XPathConstants.NODESET);
             if (gestures.getLength() == 0)
             {
                 throw new IOException("Error: missing element 'gesture'");
             }
-            List<float[]> inklist = new ArrayList<>();
+            final List<float[]> inklist = new ArrayList<>();
             for (int i = 0; i < gestures.getLength(); i++)
             {
-                Node node = gestures.item(i);
+                final Node node = gestures.item(i);
                 if (node instanceof Element)
                 {
-                    String gesture = node.getFirstChild().getNodeValue();
-                    String[] gestureValues = gesture.split(",|;");
-                    float[] values = new float[gestureValues.length];
+                    final String gesture = node.getFirstChild().getNodeValue();
+                    final String[] gestureValues = gesture.split(",|;");
+                    final float[] values = new float[gestureValues.length];
                     for (int j = 0; j < gestureValues.length; j++)
                     {
                         values[j] = Float.parseFloat(gestureValues[j]);
@@ -120,12 +120,12 @@ public class FDFAnnotationInk extends FDFAnnotation
      * 
      * @param inklist the List of arrays representing the paths.
      */
-    public final void setInkList(List<float[]> inklist)
+    public final void setInkList(final List<float[]> inklist)
     {
-        COSArray newInklist = new COSArray();
-        for (float[] array : inklist)
+        final COSArray newInklist = new COSArray();
+        for (final float[] array : inklist)
         {
-            COSArray newArray = new COSArray();
+            final COSArray newArray = new COSArray();
             newArray.setFloatArray(array);
             newInklist.add(newArray);
         }
@@ -140,11 +140,11 @@ public class FDFAnnotationInk extends FDFAnnotation
      */
     public List<float[]> getInkList()
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.INKLIST);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.INKLIST);
         if (array != null)
         {
-            List<float[]> retval = new ArrayList<>();
-            for (COSBase entry : array)
+            final List<float[]> retval = new ArrayList<>();
+            for (final COSBase entry : array)
             {
                 retval.add(((COSArray) entry).toFloatArray());
             }

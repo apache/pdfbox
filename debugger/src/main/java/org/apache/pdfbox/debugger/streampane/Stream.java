@@ -59,7 +59,7 @@ public class Stream
      * @param cosStream COSStream instance.
      * @param isThumb boolean instance says if the stream is thumbnail image.
      */
-    Stream(COSStream cosStream, boolean isThumb)
+    Stream(final COSStream cosStream, final boolean isThumb)
     {
         this.strm = cosStream;
         this.isThumb = isThumb;
@@ -105,15 +105,15 @@ public class Stream
      */
     private String getFilteredLabel()
     {
-        StringBuilder sb = new StringBuilder();
-        COSBase base = strm.getFilters();
+        final StringBuilder sb = new StringBuilder();
+        final COSBase base = strm.getFilters();
         if (base instanceof COSName)
         {
             sb.append(((COSName) base).getName());
         }
         else if (base instanceof COSArray)
         {
-            COSArray filterArray = (COSArray) base;
+            final COSArray filterArray = (COSArray) base;
             for (int i = 0; i < filterArray.size(); i++)
             {
                 if (i > 0)
@@ -132,7 +132,7 @@ public class Stream
      * @param key is an instance of String which tells which version of stream should be returned.
      * @return an InputStream.
      */
-    public InputStream getStream(String key)
+    public InputStream getStream(final String key)
     {
         try
         {
@@ -162,11 +162,11 @@ public class Stream
      * @param resources PDResources for the XObject.
      * @return A BufferedImage.
      */
-    public BufferedImage getImage(PDResources resources)
+    public BufferedImage getImage(final PDResources resources)
     {
         try
         {
-            PDImageXObject imageXObject;
+            final PDImageXObject imageXObject;
             if (isThumb)
             {
                 imageXObject = PDImageXObject.createThumbnail(strm);
@@ -184,9 +184,9 @@ public class Stream
         return null;
     }
 
-    private Map<String, List<String>> createFilterList(COSStream stream)
+    private Map<String, List<String>> createFilterList(final COSStream stream)
     {
-        Map<String, List<String>> filterList = new LinkedHashMap<>();
+        final Map<String, List<String>> filterList = new LinkedHashMap<>();
 
         if (isImage)
         {
@@ -194,9 +194,9 @@ public class Stream
         }
 
         filterList.put(DECODED, null);
-        PDStream pdStream = new PDStream(stream);
+        final PDStream pdStream = new PDStream(stream);
 
-        int filtersSize = pdStream.getFilters().size();
+        final int filtersSize = pdStream.getFilters().size();
 
         for (int i = filtersSize - 1; i >= 1; i--)
         {
@@ -209,9 +209,9 @@ public class Stream
 
     private String getPartialStreamCommand(final int indexOfStopFilter)
     {
-        List<COSName> availableFilters = new PDStream(strm).getFilters();
+        final List<COSName> availableFilters = new PDStream(strm).getFilters();
 
-        StringBuilder nameListBuilder = new StringBuilder();
+        final StringBuilder nameListBuilder = new StringBuilder();
         for (int i = indexOfStopFilter; i < availableFilters.size(); i++)
         {
             nameListBuilder.append(availableFilters.get(i).getName()).append(" & ");
@@ -223,7 +223,7 @@ public class Stream
 
     private List<String> getStopFilterList(final int stopFilterIndex)
     {
-        List<COSName> availableFilters = new PDStream(strm).getFilters();
+        final List<COSName> availableFilters = new PDStream(strm).getFilters();
 
         final List<String> stopFilters = new ArrayList<>(1);
         stopFilters.add(availableFilters.get(stopFilterIndex).getName());
@@ -231,7 +231,7 @@ public class Stream
         return stopFilters;
     }
 
-    private boolean isImageStream(COSDictionary dic, boolean isThumb)
+    private boolean isImageStream(final COSDictionary dic, final boolean isThumb)
     {
         if (isThumb)
         {
@@ -240,7 +240,7 @@ public class Stream
         return dic.containsKey(COSName.SUBTYPE) && dic.getCOSName(COSName.SUBTYPE).equals(COSName.IMAGE);
     }
     
-    private boolean isXmlMetadataStream(COSDictionary dic)
+    private boolean isXmlMetadataStream(final COSDictionary dic)
     {
         return dic.containsKey(COSName.SUBTYPE) && dic.getCOSName(COSName.SUBTYPE).equals(COSName.getPDFName("XML"));
     }

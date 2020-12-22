@@ -28,7 +28,7 @@ public class AcroFormGenerateAppearancesProcessor extends AbstractProcessor
     
     private static final Log LOG = LogFactory.getLog(AcroFormGenerateAppearancesProcessor.class);
 
-    public AcroFormGenerateAppearancesProcessor(PDDocument document)
+    public AcroFormGenerateAppearancesProcessor(final PDDocument document)
     { 
         super(document); 
     }
@@ -42,7 +42,7 @@ public class AcroFormGenerateAppearancesProcessor extends AbstractProcessor
          * is part of. So keep the null parameter otherwise this will end
          * in an endless recursive call
          */
-        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
+        final PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
 
         if (acroForm != null)
         {            

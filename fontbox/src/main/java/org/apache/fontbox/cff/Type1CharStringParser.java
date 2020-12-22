@@ -55,7 +55,7 @@ public class Type1CharStringParser
      * @param fontName font name
      * @param glyphName glyph name
      */
-    public Type1CharStringParser(String fontName, String glyphName)
+    public Type1CharStringParser(final String fontName, final String glyphName)
     {
         this.fontName = fontName;
         this.glyphName = glyphName;
@@ -69,17 +69,17 @@ public class Type1CharStringParser
      * @return the Type1 sequence
      * @throws IOException if an error occurs during reading
      */
-    public List<Object> parse(byte[] bytes, List<byte[]> subrs) throws IOException
+    public List<Object> parse(final byte[] bytes, final List<byte[]> subrs) throws IOException
     {
         return parse(bytes, subrs, new ArrayList<>());
     }
 
-    private List<Object> parse(byte[] bytes, List<byte[]> subrs, List<Object> sequence) throws IOException
+    private List<Object> parse(final byte[] bytes, final List<byte[]> subrs, final List<Object> sequence) throws IOException
     {
-        DataInput input = new DataInput(bytes);
+        final DataInput input = new DataInput(bytes);
         while (input.hasRemaining())
         {
-            int b0 = input.readUnsignedByte();
+            final int b0 = input.readUnsignedByte();
             if (b0 == CALLSUBR)
             {
                 processCallSubr(subrs, sequence);
@@ -104,23 +104,23 @@ public class Type1CharStringParser
         return sequence;
     }
 
-    private void processCallSubr(List<byte[]> subrs, List<Object> sequence) throws IOException
+    private void processCallSubr(final List<byte[]> subrs, final List<Object> sequence) throws IOException
     {
         // callsubr command
-        Object obj = sequence.remove(sequence.size() - 1);
+        final Object obj = sequence.remove(sequence.size() - 1);
         if (!(obj instanceof Integer))
         {
             LOG.warn("Parameter " + obj + " for CALLSUBR is ignored, integer expected in glyph '"
                     + glyphName + "' of font " + fontName);
             return;
         }
-        Integer operand = (Integer) obj;
+        final Integer operand = (Integer) obj;
 
         if (operand >= 0 && operand < subrs.size())
         {
-            byte[] subrBytes = subrs.get(operand);
+            final byte[] subrBytes = subrs.get(operand);
             parse(subrBytes, subrs, sequence);
-            Object lastItem = sequence.get(sequence.size() - 1);
+            final Object lastItem = sequence.get(sequence.size() - 1);
             if (lastItem instanceof CharStringCommand
                     && Type1KeyWord.RET == ((CharStringCommand) lastItem).getType1KeyWord())
             {
@@ -139,16 +139,16 @@ public class Type1CharStringParser
         }
     }
 
-    private void processCallOtherSubr(DataInput input, List<Object> sequence) throws IOException
+    private void processCallOtherSubr(final DataInput input, final List<Object> sequence) throws IOException
     {
         // callothersubr command (needed in order to expand Subrs)
         input.readByte();
 
-        Integer othersubrNum = (Integer) sequence.remove(sequence.size() - 1);
-        Integer numArgs = (Integer) sequence.remove(sequence.size() - 1);
+        final Integer othersubrNum = (Integer) sequence.remove(sequence.size() - 1);
+        final Integer numArgs = (Integer) sequence.remove(sequence.size() - 1);
 
         // othersubrs 0-3 have their own semantics
-        Deque<Integer> results = new ArrayDeque<>();
+        final Deque<Integer> results = new ArrayDeque<>();
         switch (othersubrNum)
         {
         case 0:
@@ -194,36 +194,36 @@ public class Type1CharStringParser
 
     // this method is a workaround for the fact that Type1CharStringParser assumes that subrs and
     // othersubrs can be unrolled without executing the 'div' operator, which isn't true
-    private static Integer removeInteger(List<Object> sequence) throws IOException
+    private static Integer removeInteger(final List<Object> sequence) throws IOException
     {
-        Object item = sequence.remove(sequence.size() - 1);
+        final Object item = sequence.remove(sequence.size() - 1);
         if (item instanceof Integer)
         {
             return (Integer)item;
         }
-        CharStringCommand command = (CharStringCommand) item;
+        final CharStringCommand command = (CharStringCommand) item;
 
         // div
         if (Type1KeyWord.DIV == command.getType1KeyWord())
         {
-            int a = (Integer) sequence.remove(sequence.size() - 1);
-            int b = (Integer) sequence.remove(sequence.size() - 1);
+            final int a = (Integer) sequence.remove(sequence.size() - 1);
+            final int b = (Integer) sequence.remove(sequence.size() - 1);
             return b / a;
         }
         throw new IOException("Unexpected char string command: " + command.getKey());
     }
 
-    private CharStringCommand readCommand(DataInput input, int b0) throws IOException
+    private CharStringCommand readCommand(final DataInput input, final int b0) throws IOException
     {
         if (b0 == 12)
         {
-            int b1 = input.readUnsignedByte();
+            final int b1 = input.readUnsignedByte();
             return new CharStringCommand(b0, b1);
         }
         return new CharStringCommand(b0);
     }
 
-    private Integer readNumber(DataInput input, int b0) throws IOException
+    private Integer readNumber(final DataInput input, final int b0) throws IOException
     {
         if (b0 >= 32 && b0 <= 246)
         {
@@ -231,12 +231,12 @@ public class Type1CharStringParser
         } 
         else if (b0 >= 247 && b0 <= 250)
         {
-            int b1 = input.readUnsignedByte();
+            final int b1 = input.readUnsignedByte();
             return (b0 - 247) * 256 + b1 + 108;
         } 
         else if (b0 >= 251 && b0 <= 254)
         {
-            int b1 = input.readUnsignedByte();
+            final int b1 = input.readUnsignedByte();
             return -(b0 - 251) * 256 - b1 - 108;
         } 
         else if (b0 == 255)

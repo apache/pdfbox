@@ -43,10 +43,10 @@ public class RDFAboutAttributeConcordanceValidation
      * @throws DifferentRDFAboutException
      * @throws ValidationException
      */
-    public void validateRDFAboutAttributes(XMPMetadata metadata) throws ValidationException, DifferentRDFAboutException
+    public void validateRDFAboutAttributes(final XMPMetadata metadata) throws ValidationException, DifferentRDFAboutException
     {
 
-        List<XMPSchema> schemas = metadata.getAllSchemas();
+        final List<XMPSchema> schemas = metadata.getAllSchemas();
         if (schemas.isEmpty())
         {
             throw new ValidationException("No schema found in the given metadata representation");
@@ -55,10 +55,10 @@ public class RDFAboutAttributeConcordanceValidation
         String about = schemas.get(0).getAboutValue();
 
         // rdf:description must have an rdf:about attribute
-        for (XMPSchema xmpSchema : schemas)
+        for (final XMPSchema xmpSchema : schemas)
         {
             // each rdf:Description must have the same rdf:about (or an empty one)
-            String schemaAboutValue = xmpSchema.getAboutValue();
+            final String schemaAboutValue = xmpSchema.getAboutValue();
             if (!("".equals(schemaAboutValue) || "".equals(about) || about.equals(schemaAboutValue)))
             {
                 throw new DifferentRDFAboutException();

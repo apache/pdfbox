@@ -90,9 +90,9 @@ class PDFStreamParserTest
     }
 
     // checks whether there are two operators, one inline image and the named operator
-    private void testInlineImage2ops(String s, String imageDataString, String opName) throws IOException
+    private void testInlineImage2ops(final String s, final String imageDataString, final String opName) throws IOException
     {
-        List<Object> tokens = parseTokenString(s);
+        final List<Object> tokens = parseTokenString(s);
 
         assertEquals(2, tokens.size());
 
@@ -104,9 +104,9 @@ class PDFStreamParserTest
     }
 
     // checks whether there is one operator, one inline image
-    private void testInlineImage1op(String s, String imageDataString) throws IOException
+    private void testInlineImage1op(final String s, final String imageDataString) throws IOException
     {
-        List<Object> tokens = parseTokenString(s);
+        final List<Object> tokens = parseTokenString(s);
 
         assertEquals(1, tokens.size());
 
@@ -116,9 +116,9 @@ class PDFStreamParserTest
     }
 
     // parse string and return list of tokens
-    private List<Object> parseTokenString(String s) throws IOException
+    private List<Object> parseTokenString(final String s) throws IOException
     {
-        PDFStreamParser pdfStreamParser = new PDFStreamParser(s.getBytes());
+        final PDFStreamParser pdfStreamParser = new PDFStreamParser(s.getBytes());
         return pdfStreamParser.parse();
     }
 

@@ -296,8 +296,8 @@ public class StandardStructureTypes
 
     static
     {
-        Field[] fields = StandardStructureTypes.class.getFields();
-        for (Field field : fields)
+        final Field[] fields = StandardStructureTypes.class.getFields();
+        for (final Field field : fields)
         {
             if (Modifier.isFinal(field.getModifiers()))
             {

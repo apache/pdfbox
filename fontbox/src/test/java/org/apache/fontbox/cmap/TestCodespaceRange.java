@@ -36,14 +36,14 @@ class TestCodespaceRange
     @Test
     void testCodeLength()
     {
-        byte[] startBytes1 = new byte[] { 0x00 };
-        byte[] endBytes1 = new byte[] { 0x20 };
-        CodespaceRange range1 = new CodespaceRange(startBytes1, endBytes1);
+        final byte[] startBytes1 = new byte[] { 0x00 };
+        final byte[] endBytes1 = new byte[] { 0x20 };
+        final CodespaceRange range1 = new CodespaceRange(startBytes1, endBytes1);
         assertEquals(1, range1.getCodeLength());
 
-        byte[] startBytes2 = new byte[] { 0x00, 0x00 };
-        byte[] endBytes2 = new byte[] { 0x01, 0x20 };
-        CodespaceRange range2 = new CodespaceRange(startBytes2, endBytes2);
+        final byte[] startBytes2 = new byte[] { 0x00, 0x00 };
+        final byte[] endBytes2 = new byte[] { 0x01, 0x20 };
+        final CodespaceRange range2 = new CodespaceRange(startBytes2, endBytes2);
         assertEquals(2, range2.getCodeLength());
     }
 
@@ -54,13 +54,13 @@ class TestCodespaceRange
     void testConstructor()
     {
         // PDFBOX-4923 "1 begincodespacerange <00> <ffff> endcodespacerange" case is accepted
-        byte[] startBytes1 = new byte[] { 0x00 };
-        byte[] endBytes2 = new byte[] { -1, -1 };
+        final byte[] startBytes1 = new byte[] { 0x00 };
+        final byte[] endBytes2 = new byte[] { -1, -1 };
         new CodespaceRange(startBytes1, endBytes2);
 
         // other cases of different lengths are not
-        byte[] startBytes3 = new byte[] { 0x01 };
-        byte[] endBytes4 = new byte[] { 0x01, 0x20 };
+        final byte[] startBytes3 = new byte[] { 0x01 };
+        final byte[] endBytes4 = new byte[] { 0x01, 0x20 };
         try
         {
             new CodespaceRange(startBytes3, endBytes4);
@@ -75,9 +75,9 @@ class TestCodespaceRange
     @Test
     void testMatches()
     {
-        byte[] startBytes1 = new byte[] { 0x00 };
-        byte[] endBytes1 = new byte[] { (byte) 0xA0 };
-        CodespaceRange range1 = new CodespaceRange(startBytes1, endBytes1);
+        final byte[] startBytes1 = new byte[] { 0x00 };
+        final byte[] endBytes1 = new byte[] { (byte) 0xA0 };
+        final CodespaceRange range1 = new CodespaceRange(startBytes1, endBytes1);
         // check start and end value
         assertTrue(range1.matches(new byte[] { 0x00 }));
         assertTrue(range1.matches(new byte[] { (byte) 0xA0 }));
@@ -90,9 +90,9 @@ class TestCodespaceRange
         // check any value with a different code length
         assertFalse(range1.matches(new byte[] { 0x00, 0x10 }));
 
-        byte[] startBytes2 = new byte[] { (byte) 0x81, 0x40 };
-        byte[] endBytes2 = new byte[] { (byte) 0x9F, (byte) 0xFC };
-        CodespaceRange range2 = new CodespaceRange(startBytes2, endBytes2);
+        final byte[] startBytes2 = new byte[] { (byte) 0x81, 0x40 };
+        final byte[] endBytes2 = new byte[] { (byte) 0x9F, (byte) 0xFC };
+        final CodespaceRange range2 = new CodespaceRange(startBytes2, endBytes2);
         // check lower start and end value
         assertTrue(range2.matches(new byte[] { (byte) 0x81, 0x40 }));
         assertTrue(range2.matches(new byte[] { (byte) 0x81, (byte) 0xFC }));

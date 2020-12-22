@@ -45,7 +45,7 @@ public class TraversedCOSElement
      *
      * @param currentObject The initial {@link COSBase}, with which the structure traversal shall begin.
      */
-    public TraversedCOSElement(COSBase currentObject)
+    public TraversedCOSElement(final COSBase currentObject)
     {
         this(new ArrayList<>(), null, currentObject);
     }
@@ -58,8 +58,8 @@ public class TraversedCOSElement
      * @param parent The parent node, that does contain this node.
      * @param currentObject The initial {@link COSBase}, with which the structure traversal shall begin.
      */
-    private TraversedCOSElement(List<COSBase> allObjects, TraversedCOSElement parent,
-            COSBase currentObject)
+    private TraversedCOSElement(final List<COSBase> allObjects, final TraversedCOSElement parent,
+                                final COSBase currentObject)
     {
         this.parent = parent;
         this.currentObject = currentObject;
@@ -72,14 +72,14 @@ public class TraversedCOSElement
      * @param element The element, that shall be traversed.
      * @return The resulting traversal node, that has been created.
      */
-    public TraversedCOSElement appendTraversedElement(COSBase element)
+    public TraversedCOSElement appendTraversedElement(final COSBase element)
     {
         if (element == null)
         {
             return this;
         }
         allObjects.add(element);
-        TraversedCOSElement traversedElement = new TraversedCOSElement(allObjects, this, element);
+        final TraversedCOSElement traversedElement = new TraversedCOSElement(allObjects, this, element);
         traversedElement.setPartOfStreamDictionary(
                 isPartOfStreamDictionary() || getCurrentBaseObject() instanceof COSStream);
         this.traversedChildren.add(traversedElement);
@@ -130,7 +130,7 @@ public class TraversedCOSElement
 
     public List<TraversedCOSElement> getTraversedElements()
     {
-        List<TraversedCOSElement> ancestry = parent == null ? new ArrayList<>()
+        final List<TraversedCOSElement> ancestry = parent == null ? new ArrayList<>()
                 : parent.getTraversedElements();
         ancestry.add(this);
         return ancestry;
@@ -142,9 +142,9 @@ public class TraversedCOSElement
      * @param object The {@link COSBase}, that shall be found.
      * @return The traversal node representing the searched {@link COSBase} or null, if such a node can not be found.
      */
-    public TraversedCOSElement findAtCurrentPosition(COSBase object)
+    public TraversedCOSElement findAtCurrentPosition(final COSBase object)
     {
-        for (TraversedCOSElement child : traversedChildren)
+        for (final TraversedCOSElement child : traversedChildren)
         {
             if (child.getCurrentObject() == object)
             {
@@ -179,7 +179,7 @@ public class TraversedCOSElement
      *
      * @param partOfStreamDictionary True, if the given traversal node shall be marked as a part of a {@link COSStream}
      */
-    public void setPartOfStreamDictionary(boolean partOfStreamDictionary)
+    public void setPartOfStreamDictionary(final boolean partOfStreamDictionary)
     {
         this.partOfStreamDictionary = partOfStreamDictionary;
     }

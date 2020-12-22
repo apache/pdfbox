@@ -30,7 +30,7 @@ import org.apache.pdfbox.preflight.PreflightContext;
  */
 public class CircleAnnotationValidator extends SquareCircleAnnotationValidator
 {
-    public CircleAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public CircleAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, new PDAnnotationCircle(annotDictionary));
     }

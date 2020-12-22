@@ -56,8 +56,8 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @throws IOException if something went wrong
      */
-    protected GouraudShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
-                                    Matrix matrix) throws IOException
+    protected GouraudShadingContext(final PDShading shading, final ColorModel colorModel, final AffineTransform xform,
+                                    final Matrix matrix) throws IOException
     {
         super(shading, colorModel, xform, matrix);
     }
@@ -75,22 +75,22 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
      * @return a new vertex with the flag and the interpolated values
      * @throws IOException if something went wrong
      */
-    protected Vertex readVertex(ImageInputStream input, long maxSrcCoord, long maxSrcColor,
-                                PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab,
-                                Matrix matrix, AffineTransform xform) throws IOException
+    protected Vertex readVertex(final ImageInputStream input, final long maxSrcCoord, final long maxSrcColor,
+                                final PDRange rangeX, final PDRange rangeY, final PDRange[] colRangeTab,
+                                final Matrix matrix, final AffineTransform xform) throws IOException
     {
-        float[] colorComponentTab = new float[numberOfColorComponents];
-        long x = input.readBits(bitsPerCoordinate);
-        long y = input.readBits(bitsPerCoordinate);
-        float dstX = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
-        float dstY = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
+        final float[] colorComponentTab = new float[numberOfColorComponents];
+        final long x = input.readBits(bitsPerCoordinate);
+        final long y = input.readBits(bitsPerCoordinate);
+        final float dstX = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
+        final float dstY = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
         LOG.debug("coord: " + String.format("[%06X,%06X] -> [%f,%f]", x, y, dstX, dstY));
-        Point2D p = matrix.transformPoint(dstX, dstY);
+        final Point2D p = matrix.transformPoint(dstX, dstY);
         xform.transform(p, p);
 
         for (int n = 0; n < numberOfColorComponents; ++n)
         {
-            int color = (int) input.readBits(bitsPerColorComponent);
+            final int color = (int) input.readBits(bitsPerColorComponent);
             colorComponentTab[n] = interpolate(color, maxSrcColor, colRangeTab[n].getMin(),
                     colRangeTab[n].getMax());
             LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color)
@@ -100,7 +100,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
         // "Each set of vertex data shall occupy a whole number of bytes.
         // If the total number of bits required is not divisible by 8, the last data byte
         // for each vertex is padded at the end with extra bits, which shall be ignored."
-        int bitOffset = input.getBitOffset();
+        final int bitOffset = input.getBitOffset();
         if (bitOffset != 0)
         {
             input.readBits(8 - bitOffset);
@@ -109,15 +109,15 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
         return new Vertex(p, colorComponentTab);
     }
 
-    final void setTriangleList(List<ShadedTriangle> triangleList)
+    final void setTriangleList(final List<ShadedTriangle> triangleList)
     {
         this.triangleList = triangleList;
     }
 
     @Override
-    protected Map<Point, Integer> calcPixelTable(Rectangle deviceBounds) throws IOException
+    protected Map<Point, Integer> calcPixelTable(final Rectangle deviceBounds) throws IOException
     {
-        Map<Point, Integer> map = new HashMap<>();
+        final Map<Point, Integer> map = new HashMap<>();
         super.calcPixelTable(triangleList, map, deviceBounds);
         return map;
     }
@@ -138,7 +138,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
      * @param dstMax max dst value
      * @return interpolated value
      */
-    private float interpolate(float src, long srcMax, float dstMin, float dstMax)
+    private float interpolate(final float src, final long srcMax, final float dstMin, final float dstMax)
     {
         return dstMin + (src * (dstMax - dstMin) / srcMax);
     }

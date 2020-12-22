@@ -34,7 +34,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class SetFlatness extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (operands.isEmpty())
         {
@@ -44,7 +44,7 @@ public class SetFlatness extends OperatorProcessor
         {
             return;
         }
-        COSNumber value = (COSNumber) operands.get(0);
+        final COSNumber value = (COSNumber) operands.get(0);
         context.getGraphicsState().setFlatness(value.floatValue());
     }
 

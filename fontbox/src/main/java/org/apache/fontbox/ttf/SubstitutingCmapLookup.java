@@ -29,8 +29,8 @@ public class SubstitutingCmapLookup implements CmapLookup
     private final GlyphSubstitutionTable gsub;
     private final List<String> enabledFeatures;
 
-    public SubstitutingCmapLookup(CmapSubtable cmap, GlyphSubstitutionTable gsub,
-            List<String> enabledFeatures)
+    public SubstitutingCmapLookup(final CmapSubtable cmap, final GlyphSubstitutionTable gsub,
+                                  final List<String> enabledFeatures)
     {
         this.cmap = cmap;
         this.gsub = gsub;
@@ -38,15 +38,15 @@ public class SubstitutingCmapLookup implements CmapLookup
     }
 
     @Override
-    public int getGlyphId(int characterCode)
+    public int getGlyphId(final int characterCode)
     {
-        int gid = cmap.getGlyphId(characterCode);
-        String[] scriptTags = OpenTypeScript.getScriptTags(characterCode);
+        final int gid = cmap.getGlyphId(characterCode);
+        final String[] scriptTags = OpenTypeScript.getScriptTags(characterCode);
         return gsub.getSubstitution(gid, scriptTags, enabledFeatures);
     }
 
     @Override
-    public List<Integer> getCharCodes(int gid)
+    public List<Integer> getCharCodes(final int gid)
     {
         return cmap.getCharCodes(gsub.getUnsubstitution(gid));
     }

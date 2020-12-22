@@ -45,7 +45,7 @@ public final class PDFPageable extends Book
      *
      * @param document the document to print
      */
-    public PDFPageable(PDDocument document)
+    public PDFPageable(final PDDocument document)
     {
         this(document, Orientation.AUTO, false, 0);
     }
@@ -56,7 +56,7 @@ public final class PDFPageable extends Book
      * @param document the document to print
      * @param orientation page orientation policy
      */
-    public PDFPageable(PDDocument document, Orientation orientation)
+    public PDFPageable(final PDDocument document, final Orientation orientation)
     {
         this(document, orientation, false, 0);
     }
@@ -69,7 +69,7 @@ public final class PDFPageable extends Book
      * @param orientation page orientation policy
      * @param showPageBorder true if page borders are to be printed
      */
-    public PDFPageable(PDDocument document, Orientation orientation, boolean showPageBorder)
+    public PDFPageable(final PDDocument document, final Orientation orientation, final boolean showPageBorder)
     {
         this(document, orientation, showPageBorder, 0);
     }
@@ -83,8 +83,8 @@ public final class PDFPageable extends Book
      * @param showPageBorder true if page borders are to be printed
      * @param dpi if non-zero then the image will be rasterized at the given DPI
      */
-    public PDFPageable(PDDocument document, Orientation orientation, boolean showPageBorder,
-                       float dpi)
+    public PDFPageable(final PDDocument document, final Orientation orientation, final boolean showPageBorder,
+                       final float dpi)
     {
         this.document = document;
         this.orientation = orientation;
@@ -109,7 +109,7 @@ public final class PDFPageable extends Book
      *
      * @param renderingHints
      */
-    public void setRenderingHints(RenderingHints renderingHints)
+    public void setRenderingHints(final RenderingHints renderingHints)
     {
         this.renderingHints = renderingHints;
     }
@@ -137,7 +137,7 @@ public final class PDFPageable extends Book
      *
      * @param subsamplingAllowed The new value indicating if subsampling is allowed.
      */
-    public void setSubsamplingAllowed(boolean subsamplingAllowed)
+    public void setSubsamplingAllowed(final boolean subsamplingAllowed)
     {
         this.subsamplingAllowed = subsamplingAllowed;
     }
@@ -154,11 +154,11 @@ public final class PDFPageable extends Book
      * Returns the actual physical size of the pages in the PDF file. May not fit the local printer.
      */
     @Override
-    public PageFormat getPageFormat(int pageIndex)
+    public PageFormat getPageFormat(final int pageIndex)
     {
-        PDPage page = document.getPage(pageIndex);
-        PDRectangle mediaBox = PDFPrintable.getRotatedMediaBox(page);
-        PDRectangle cropBox = PDFPrintable.getRotatedCropBox(page);
+        final PDPage page = document.getPage(pageIndex);
+        final PDRectangle mediaBox = PDFPrintable.getRotatedMediaBox(page);
+        final PDRectangle cropBox = PDFPrintable.getRotatedCropBox(page);
         
         // Java does not seem to understand landscape paper sizes, i.e. where width > height, it
         // always crops the imageable area as if the page were in portrait. I suspect that this is
@@ -166,8 +166,8 @@ public final class PDFPageable extends Book
         //
         // As a workaround, we normalise all Page(s) to be portrait, then flag them as landscape in
         // the PageFormat.
-        Paper paper;
-        boolean isLandscape;
+        final Paper paper;
+        final boolean isLandscape;
         if (mediaBox.getWidth() > mediaBox.getHeight())
         {
             // rotate
@@ -186,7 +186,7 @@ public final class PDFPageable extends Book
             isLandscape = false;
         }
 
-        PageFormat format = new PageFormat();
+        final PageFormat format = new PageFormat();
         format.setPaper(paper);
         
         // auto portrait/landscape
@@ -209,13 +209,13 @@ public final class PDFPageable extends Book
     }
     
     @Override
-    public Printable getPrintable(int i)
+    public Printable getPrintable(final int i)
     {
         if (i >= getNumberOfPages())
         {
             throw new IndexOutOfBoundsException(i + " >= " + getNumberOfPages());
         }
-        PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
+        final PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
         printable.setSubsamplingAllowed(subsamplingAllowed);
         printable.setRenderingHints(renderingHints);
         return printable;

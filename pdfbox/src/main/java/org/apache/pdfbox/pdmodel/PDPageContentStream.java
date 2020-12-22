@@ -86,7 +86,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param sourcePage The page to write the contents to.
      * @throws IOException If there is an error writing to the page contents.
      */
-    public PDPageContentStream(PDDocument document, PDPage sourcePage) throws IOException
+    public PDPageContentStream(final PDDocument document, final PDPage sourcePage) throws IOException
     {
         this(document, sourcePage, AppendMode.OVERWRITE, true, false);
         if (sourcePageHadContents)
@@ -107,8 +107,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param compress Tell if the content stream should compress the page contents.
      * @throws IOException If there is an error writing to the page contents.
      */
-    public PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
-                               boolean compress) throws IOException
+    public PDPageContentStream(final PDDocument document, final PDPage sourcePage, final AppendMode appendContent,
+                               final boolean compress) throws IOException
     {
         this(document, sourcePage, appendContent, compress, false);
     }
@@ -126,16 +126,16 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * properties (e.g. scaling, rotation).
      * @throws IOException If there is an error writing to the page contents.
      */
-    public PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
-                               boolean compress, boolean resetContext) throws IOException
+    public PDPageContentStream(final PDDocument document, final PDPage sourcePage, final AppendMode appendContent,
+                               final boolean compress, final boolean resetContext) throws IOException
     {
         this(document, sourcePage, appendContent, compress, resetContext, new PDStream(document),
                 sourcePage.getResources() != null ? sourcePage.getResources() : new PDResources());
     }
 
-    private PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
-                                boolean compress, boolean resetContext,PDStream stream,
-                                PDResources resources) throws IOException
+    private PDPageContentStream(final PDDocument document, final PDPage sourcePage, final AppendMode appendContent,
+                                final boolean compress, final boolean resetContext, final PDStream stream,
+                                final PDResources resources) throws IOException
     {
         super(document, stream.createOutputStream(compress ? COSName.FLATE_DECODE : null), resources);
 
@@ -149,8 +149,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         if (!appendContent.isOverwrite() && sourcePage.hasContents())
         {
             // Add new stream to contents array
-            COSBase contents = sourcePage.getCOSObject().getDictionaryObject(COSName.CONTENTS);
-            COSArray array;
+            final COSBase contents = sourcePage.getCOSObject().getDictionaryObject(COSName.CONTENTS);
+            final COSArray array;
             if (contents instanceof COSArray)
             {
                 // If contents is already an array, a new stream is simply appended to it
@@ -176,7 +176,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             if (resetContext)
             {
                 // create a new stream to prefix existing stream
-                PDStream prefixStream = new PDStream(document);
+                final PDStream prefixStream = new PDStream(document);
 
                 // save the pre-append graphics state
                 try (OutputStream prefixOut = prefixStream.createOutputStream())
@@ -215,7 +215,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param appearance The appearance stream to write to.
      * @throws IOException If there is an error writing to the page contents.
      */
-    public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance) throws IOException
+    public PDPageContentStream(final PDDocument doc, final PDAppearanceStream appearance) throws IOException
     {
         this (doc, appearance, appearance.getStream().createOutputStream()); 
     }
@@ -227,7 +227,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param appearance The appearance stream to add to.
      * @param outputStream The appearances output stream to write to.
      */
-    public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance, OutputStream outputStream)
+    public PDPageContentStream(final PDDocument doc, final PDAppearanceStream appearance, final OutputStream outputStream)
     {
         super(doc, outputStream, appearance.getResources());
     }
@@ -240,7 +240,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #showText} instead.
      */
     @Deprecated
-    public void drawString(String text) throws IOException
+    public void drawString(final String text) throws IOException
     {
         showText(text);
     }
@@ -254,7 +254,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #newLineAtOffset} instead.
      */
     @Deprecated
-    public void moveTextPositionByAmount(float tx, float ty) throws IOException
+    public void moveTextPositionByAmount(final float tx, final float ty) throws IOException
     {
         newLineAtOffset(tx, ty);
     }
@@ -272,7 +272,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
      */
     @Deprecated
-    public void setTextMatrix(double a, double b, double c, double d, double e, double f) throws IOException
+    public void setTextMatrix(final double a, final double b, final double c, final double d, final double e, final double f) throws IOException
     {
         setTextMatrix(new Matrix((float)a, (float)b, (float)c, (float)d, (float)e, (float)f));
     }
@@ -285,7 +285,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
      */
     @Deprecated
-    public void setTextMatrix(AffineTransform matrix) throws IOException
+    public void setTextMatrix(final AffineTransform matrix) throws IOException
     {
         setTextMatrix(new Matrix(matrix));
     }
@@ -301,7 +301,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
      */
     @Deprecated
-    public void setTextScaling(double sx, double sy, double tx, double ty) throws IOException
+    public void setTextScaling(final double sx, final double sy, final double tx, final double ty) throws IOException
     {
         setTextMatrix(new Matrix((float) sx, 0f, 0f, (float) sy, (float) tx, (float) ty));
     }
@@ -315,7 +315,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
      */
     @Deprecated
-    public void setTextTranslation(double tx, double ty) throws IOException
+    public void setTextTranslation(final double tx, final double ty) throws IOException
     {
         setTextMatrix(Matrix.getTranslateInstance((float) tx, (float) ty));
     }
@@ -330,7 +330,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
      */
     @Deprecated
-    public void setTextRotation(double angle, double tx, double ty) throws IOException
+    public void setTextRotation(final double angle, final double tx, final double ty) throws IOException
     {
         setTextMatrix(Matrix.getRotateInstance(angle, (float) tx, (float) ty));
     }
@@ -346,7 +346,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #drawImage(PDInlineImage, float, float)} instead.
      */
     @Deprecated
-    public void drawInlineImage(PDInlineImage inlineImage, float x, float y) throws IOException
+    public void drawInlineImage(final PDInlineImage inlineImage, final float x, final float y) throws IOException
     {
         drawImage(inlineImage, x, y, inlineImage.getWidth(), inlineImage.getHeight());
     }
@@ -364,7 +364,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #drawImage(PDInlineImage, float, float, float, float)} instead.
      */
     @Deprecated
-    public void drawInlineImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
+    public void drawInlineImage(final PDInlineImage inlineImage, final float x, final float y, final float width, final float height) throws IOException
     {
         drawImage(inlineImage, x, y, width, height);
     }
@@ -382,9 +382,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #drawImage} instead.
      */
     @Deprecated
-    public void drawXObject(PDXObject xobject, float x, float y, float width, float height) throws IOException
+    public void drawXObject(final PDXObject xobject, final float x, final float y, final float width, final float height) throws IOException
     {
-        AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
+        final AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
         drawXObject(xobject, transform);
     }
 
@@ -401,14 +401,14 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * {@link #transform(Matrix) transform(Matrix)} instead.
      */
     @Deprecated
-    public void drawXObject(PDXObject xobject, AffineTransform transform) throws IOException
+    public void drawXObject(final PDXObject xobject, final AffineTransform transform) throws IOException
     {
         if (inTextMode)
         {
             throw new IllegalStateException("Error: drawXObject is not allowed within a text block.");
         }
 
-        String xObjectPrefix;
+        final String xObjectPrefix;
         if (xobject instanceof PDImageXObject)
         {
             xObjectPrefix = "Im";
@@ -417,7 +417,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         {
             xObjectPrefix = "Form";
         }
-        COSName objMapping = resources.add(xobject, xObjectPrefix);
+        final COSName objMapping = resources.add(xobject, xObjectPrefix);
 
         saveGraphicsState();
         transform(new Matrix(transform));
@@ -440,7 +440,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #transform} instead.
      */
     @Deprecated
-    public void concatenate2CTM(double a, double b, double c, double d, double e, double f) throws IOException
+    public void concatenate2CTM(final double a, final double b, final double c, final double d, final double e, final double f) throws IOException
     {
         transform(new Matrix((float) a, (float) b, (float) c, (float) d, (float) e, (float) f));
     }
@@ -453,7 +453,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #transform} instead.
      */
     @Deprecated
-    public void concatenate2CTM(AffineTransform at) throws IOException
+    public void concatenate2CTM(final AffineTransform at) throws IOException
     {
         transform(new Matrix(at));
     }
@@ -470,7 +470,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #addRect} followed by {@link #fill()} instead.
      */
     @Deprecated
-    public void fillRect(float x, float y, float width, float height) throws IOException
+    public void fillRect(final float x, final float y, final float width, final float height) throws IOException
     {
         if (inTextMode)
         {
@@ -493,7 +493,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #curveTo} instead.
      */
     @Deprecated
-    public void addBezier312(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
+    public void addBezier312(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3) throws IOException
     {
         curveTo(x1, y1, x2, y2, x3, y3);
     }
@@ -510,7 +510,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #curveTo2} instead.
      */
     @Deprecated
-    public void addBezier32(float x2, float y2, float x3, float y3) throws IOException
+    public void addBezier32(final float x2, final float y2, final float x3, final float y3) throws IOException
     {
         curveTo2(x2, y2, x3, y3);
     }
@@ -527,7 +527,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #curveTo1} instead.
      */
     @Deprecated
-    public void addBezier31(float x1, float y1, float x3, float y3) throws IOException
+    public void addBezier31(final float x1, final float y1, final float x3, final float y3) throws IOException
     {
         curveTo1(x1, y1, x3, y3);
     }
@@ -545,7 +545,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * {@link #lineTo lineTo(xEnd,yEnd)}.
      */
     @Deprecated
-    public void addLine(float xStart, float yStart, float xEnd, float yEnd) throws IOException
+    public void addLine(final float xStart, final float yStart, final float xEnd, final float yEnd) throws IOException
     {
         if (inTextMode)
         {
@@ -568,7 +568,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * {@link #lineTo lineTo(xEnd,yEnd)} followed by {@link #stroke stroke()}.
      */
     @Deprecated
-    public void drawLine(float xStart, float yStart, float xEnd, float yEnd) throws IOException
+    public void drawLine(final float xStart, final float yStart, final float xEnd, final float yEnd) throws IOException
     {
         if (inTextMode)
         {
@@ -589,7 +589,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #moveTo} and {@link #lineTo} methods instead.
      */
     @Deprecated
-    public void addPolygon(float[] x, float[] y) throws IOException
+    public void addPolygon(final float[] x, final float[] y) throws IOException
     {
         if (inTextMode)
         {
@@ -622,7 +622,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #moveTo} and {@link #lineTo} methods instead.
      */
     @Deprecated
-    public void drawPolygon(float[] x, float[] y) throws IOException
+    public void drawPolygon(final float[] x, final float[] y) throws IOException
     {
         if (inTextMode)
         {
@@ -641,7 +641,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #moveTo} and {@link #lineTo} methods instead.
      */
     @Deprecated
-    public void fillPolygon(float[] x, float[] y) throws IOException
+    public void fillPolygon(final float[] x, final float[] y) throws IOException
     {
         if (inTextMode)
         {
@@ -660,7 +660,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #fill()} or {@link #fillEvenOdd} instead.
      */
     @Deprecated
-    public void fill(int windingRule) throws IOException
+    public void fill(final int windingRule) throws IOException
     {
         switch (windingRule)
         {
@@ -696,7 +696,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #clip()} or {@link #clipEvenOdd} instead.
      */
     @Deprecated
-    public void clipPath(int windingRule) throws IOException
+    public void clipPath(final int windingRule) throws IOException
     {
         if (inTextMode)
         {
@@ -724,7 +724,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #beginMarkedContent} instead.
      */
     @Deprecated
-    public void beginMarkedContentSequence(COSName tag) throws IOException
+    public void beginMarkedContentSequence(final COSName tag) throws IOException
     {
         beginMarkedContent(tag);
     }
@@ -739,7 +739,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #beginMarkedContent(COSName, PDPropertyList)} instead.
      */
     @Deprecated
-    public void beginMarkedContentSequence(COSName tag, COSName propsName) throws IOException
+    public void beginMarkedContentSequence(final COSName tag, final COSName propsName) throws IOException
     {
         writeOperand(tag);
         writeOperand(propsName);
@@ -766,7 +766,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
-    public void appendRawCommands(String commands) throws IOException
+    public void appendRawCommands(final String commands) throws IOException
     {
         write(commands);
     }
@@ -779,7 +779,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
-    public void appendRawCommands(byte[] commands) throws IOException
+    public void appendRawCommands(final byte[] commands) throws IOException
     {
         write(commands);
     }
@@ -792,7 +792,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
-    public void appendRawCommands(int data) throws IOException
+    public void appendRawCommands(final int data) throws IOException
     {
         writeOperand(data);
     }
@@ -805,7 +805,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
-    public void appendRawCommands(double data) throws IOException
+    public void appendRawCommands(final double data) throws IOException
     {
         writeOperand((float) data);
     }
@@ -818,7 +818,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
-    public void appendRawCommands(float data) throws IOException
+    public void appendRawCommands(final float data) throws IOException
     {
         writeOperand(data);
     }
@@ -831,7 +831,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
-    public void appendCOSName(COSName name) throws IOException
+    public void appendCOSName(final COSName name) throws IOException
     {
         writeOperand(name);
     }

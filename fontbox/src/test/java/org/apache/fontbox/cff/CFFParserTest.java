@@ -39,50 +39,44 @@ class CFFParserTest
     @Test
     void testDeltaLists() throws IOException
     {
-        List<CFFFont> fonts = readFont("target/pdfs/SourceSansProBold.otf");
-        CFFType1Font font = (CFFType1Font) fonts.get(0);
-        @SuppressWarnings("unchecked")
-        List<Number> blues = (List<Number>)font.getPrivateDict().get("BlueValues");
+        final List<CFFFont> fonts = readFont("target/pdfs/SourceSansProBold.otf");
+        final CFFType1Font font = (CFFType1Font) fonts.get(0);
+        @SuppressWarnings("unchecked") final List<Number> blues = (List<Number>)font.getPrivateDict().get("BlueValues");
 
         // Expected values found for this font
         assertNumberList("Blue values are different than expected: " + blues.toString(),                     
                 new int[]{-12, 0, 496, 508, 578, 590, 635, 647, 652, 664, 701, 713}, blues);
 
-        @SuppressWarnings("unchecked")
-        List<Number> otherBlues = (List<Number>)font.getPrivateDict().get("OtherBlues");
+        @SuppressWarnings("unchecked") final List<Number> otherBlues = (List<Number>)font.getPrivateDict().get("OtherBlues");
         assertNumberList("Other blues are different than expected: " + otherBlues.toString(),                     
                 new int[]{-196, -184}, otherBlues);
 
-        @SuppressWarnings("unchecked")
-        List<Number> familyBlues = (List<Number>)font.getPrivateDict().get("FamilyBlues");
+        @SuppressWarnings("unchecked") final List<Number> familyBlues = (List<Number>)font.getPrivateDict().get("FamilyBlues");
         assertNumberList("Other blues are different than expected: " + familyBlues.toString(),                     
                 new int[]{-12, 0, 486, 498, 574, 586, 638, 650, 656, 668, 712, 724}, familyBlues);
 
-        @SuppressWarnings("unchecked")
-        List<Number> familyOtherBlues = (List<Number>)font.getPrivateDict().get("FamilyOtherBlues");
+        @SuppressWarnings("unchecked") final List<Number> familyOtherBlues = (List<Number>)font.getPrivateDict().get("FamilyOtherBlues");
         assertNumberList("Other blues are different than expected: " + familyOtherBlues.toString(),                     
                 new int[]{-217, -205}, familyOtherBlues);
 
-        @SuppressWarnings("unchecked")
-        List<Number> stemSnapH = (List<Number>)font.getPrivateDict().get("StemSnapH");
+        @SuppressWarnings("unchecked") final List<Number> stemSnapH = (List<Number>)font.getPrivateDict().get("StemSnapH");
         assertNumberList("StemSnapH values are different than expected: " + stemSnapH.toString(),                     
                 new int[]{115}, stemSnapH);
 
-        @SuppressWarnings("unchecked")
-        List<Number> stemSnapV = (List<Number>)font.getPrivateDict().get("StemSnapV");
+        @SuppressWarnings("unchecked") final List<Number> stemSnapV = (List<Number>)font.getPrivateDict().get("StemSnapV");
         assertNumberList("StemSnapV values are different than expected: " + stemSnapV.toString(),                     
                 new int[]{146, 150}, stemSnapV);
     }
 
-    private List<CFFFont> readFont(String filename) throws IOException
+    private List<CFFFont> readFont(final String filename) throws IOException
     {
-        ByteArrayOutputStream content = new ByteArrayOutputStream();
+        final ByteArrayOutputStream content = new ByteArrayOutputStream();
         Files.copy(Paths.get(filename), content);
-        CFFParser parser = new CFFParser();
+        final CFFParser parser = new CFFParser();
         return parser.parse(content.toByteArray());
     }
 
-    private void assertNumberList(String message, int[] expected, List<Number> found)
+    private void assertNumberList(final String message, final int[] expected, final List<Number> found)
     {
         assertEquals(expected.length, found.size(), message);
         for (int i = 0; i < expected.length; i++)

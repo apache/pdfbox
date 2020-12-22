@@ -51,7 +51,7 @@ public class PrintTextLocations extends PDFTextStripper
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
         if( args.length != 1 )
         {
@@ -61,12 +61,12 @@ public class PrintTextLocations extends PDFTextStripper
         {
             try (PDDocument document = Loader.loadPDF(new File(args[0])))
             {
-                PDFTextStripper stripper = new PrintTextLocations();
+                final PDFTextStripper stripper = new PrintTextLocations();
                 stripper.setSortByPosition( true );
                 stripper.setStartPage( 0 );
                 stripper.setEndPage( document.getNumberOfPages() );
 
-                Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
+                final Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
                 stripper.writeText(document, dummy);
             }
         }
@@ -76,9 +76,9 @@ public class PrintTextLocations extends PDFTextStripper
      * Override the default functionality of PDFTextStripper.
      */
     @Override
-    protected void writeString(String string, List<TextPosition> textPositions) throws IOException
+    protected void writeString(final String string, final List<TextPosition> textPositions) throws IOException
     {
-        for (TextPosition text : textPositions)
+        for (final TextPosition text : textPositions)
         {
             System.out.println( "String[" + text.getXDirAdj() + "," +
                     text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale=" +

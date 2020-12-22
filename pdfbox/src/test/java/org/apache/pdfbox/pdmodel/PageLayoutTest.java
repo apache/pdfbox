@@ -32,11 +32,11 @@ class PageLayoutTest
     @Test
     void testValues()
     {
-        Set<PageLayout> pageLayoutSet = EnumSet.noneOf(PageLayout.class);
-        Set<String> stringSet = new HashSet<>();
-        for (PageLayout pl : PageLayout.values())
+        final Set<PageLayout> pageLayoutSet = EnumSet.noneOf(PageLayout.class);
+        final Set<String> stringSet = new HashSet<>();
+        for (final PageLayout pl : PageLayout.values())
         {
-            String s = pl.stringValue();
+            final String s = pl.stringValue();
             stringSet.add(s);
             pageLayoutSet.add(PageLayout.fromString(s));
         }

@@ -51,7 +51,7 @@ public class NamedAction extends AbstractActionManager
      * @param ctx the preflight context.
      * @param aaKey the name of the key which identify the action in a additional action dictionary.
      */
-    public NamedAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
+    public NamedAction(final ActionManagerFactory amFact, final COSDictionary adict, final PreflightContext ctx, final String aaKey)
     {
         super(amFact, adict, ctx, aaKey);
     }
@@ -64,7 +64,7 @@ public class NamedAction extends AbstractActionManager
     @Override
     protected boolean innerValid()
     {
-        String n = this.actionDictionary.getNameAsString(COSName.N);
+        final String n = this.actionDictionary.getNameAsString(COSName.N);
 
         // ---- N entry is mandatory
         if (n == null || n.isEmpty())

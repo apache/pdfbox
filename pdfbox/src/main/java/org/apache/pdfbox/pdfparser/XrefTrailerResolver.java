@@ -113,8 +113,8 @@ public class XrefTrailerResolver
         {
             return null;
         }
-        Set<Long> offsets = bytePosToXrefMap.keySet();
-        SortedSet<Long> sortedOffset = new TreeSet<>(offsets);
+        final Set<Long> offsets = bytePosToXrefMap.keySet();
+        final SortedSet<Long> sortedOffset = new TreeSet<>(offsets);
         return bytePosToXrefMap.get(sortedOffset.first()).trailer;
     }
     
@@ -129,8 +129,8 @@ public class XrefTrailerResolver
         {
             return null;
         }
-        Set<Long> offsets = bytePosToXrefMap.keySet();
-        SortedSet<Long> sortedOffset = new TreeSet<>(offsets);
+        final Set<Long> offsets = bytePosToXrefMap.keySet();
+        final SortedSet<Long> sortedOffset = new TreeSet<>(offsets);
         return bytePosToXrefMap.get(sortedOffset.last()).trailer;
     }
 
@@ -149,7 +149,7 @@ public class XrefTrailerResolver
      * @param startBytePos the offset to start at
      * @param type the type of the Xref object
      */
-    public void nextXrefObj( final long startBytePos, XRefType type )
+    public void nextXrefObj(final long startBytePos, final XRefType type )
     {
         curXrefTrailerObj = new XrefTrailerObj();
         bytePosToXrefMap.put(startBytePos, curXrefTrailerObj);
@@ -172,7 +172,7 @@ public class XrefTrailerResolver
      * @param objKey The objkey, with id and gen numbers
      * @param offset The byte offset in this file
      */
-    public void setXRef( COSObjectKey objKey, long offset )
+    public void setXRef(final COSObjectKey objKey, final long offset )
     {
         if ( curXrefTrailerObj == null )
         {
@@ -193,7 +193,7 @@ public class XrefTrailerResolver
      *
      * @param trailer the current document trailer dictionary
      */
-    public void setTrailer( COSDictionary trailer )
+    public void setTrailer(final COSDictionary trailer )
     {
         if ( curXrefTrailerObj == null )
         {
@@ -229,7 +229,7 @@ public class XrefTrailerResolver
      * @param startxrefBytePosValue starting position of the first XRef
      * 
      */
-    public void setStartxref( long startxrefBytePosValue )
+    public void setStartxref(final long startxrefBytePosValue )
     {
         if ( resolvedXrefTrailer != null )
         {
@@ -241,7 +241,7 @@ public class XrefTrailerResolver
         resolvedXrefTrailer.trailer = new COSDictionary();
 
         XrefTrailerObj curObj = bytePosToXrefMap.get( startxrefBytePosValue );
-        List<Long>  xrefSeqBytePos = new ArrayList<>();
+        final List<Long>  xrefSeqBytePos = new ArrayList<>();
 
         if ( curObj == null )
         {
@@ -261,7 +261,7 @@ public class XrefTrailerResolver
             xrefSeqBytePos.add( startxrefBytePosValue );
             while ( curObj.trailer != null )
             {
-                long prevBytePos = curObj.trailer.getLong( COSName.PREV, -1L );
+                final long prevBytePos = curObj.trailer.getLong( COSName.PREV, -1L );
                 if ( prevBytePos == -1 )
                 {
                     break;
@@ -286,7 +286,7 @@ public class XrefTrailerResolver
         }
 
         // merge used and sorted XRef/trailer
-        for ( Long bPos : xrefSeqBytePos )
+        for ( final Long bPos : xrefSeqBytePos )
         {
             curObj = bytePosToXrefMap.get( bPos );
             if ( curObj.trailer != null )
@@ -358,7 +358,7 @@ public class XrefTrailerResolver
      */
     protected void reset()
     {
-        for (XrefTrailerObj trailerObj : bytePosToXrefMap.values())
+        for (final XrefTrailerObj trailerObj : bytePosToXrefMap.values())
         {
             trailerObj.reset();
         }

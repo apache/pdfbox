@@ -43,7 +43,7 @@ class Type6ShadingPaint extends ShadingPaint<PDShadingType6>
      * @param shading the shading resources
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    Type6ShadingPaint(PDShadingType6 shading, Matrix matrix)
+    Type6ShadingPaint(final PDShadingType6 shading, final Matrix matrix)
     {
         super(shading, matrix);
     }
@@ -55,8 +55,8 @@ class Type6ShadingPaint extends ShadingPaint<PDShadingType6>
     }
 
     @Override
-    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
-            AffineTransform xform, RenderingHints hints)
+    public PaintContext createContext(final ColorModel cm, final Rectangle deviceBounds, final Rectangle2D userBounds,
+                                      final AffineTransform xform, final RenderingHints hints)
     {
         try
         {

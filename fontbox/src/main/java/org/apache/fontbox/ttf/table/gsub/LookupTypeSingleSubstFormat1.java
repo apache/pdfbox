@@ -35,15 +35,15 @@ public class LookupTypeSingleSubstFormat1 extends LookupSubTable
 {
     private final short deltaGlyphID;
 
-    public LookupTypeSingleSubstFormat1(int substFormat, CoverageTable coverageTable,
-            short deltaGlyphID)
+    public LookupTypeSingleSubstFormat1(final int substFormat, final CoverageTable coverageTable,
+                                        final short deltaGlyphID)
     {
         super(substFormat, coverageTable);
         this.deltaGlyphID = deltaGlyphID;
     }
 
     @Override
-    public int doSubstitution(int gid, int coverageIndex)
+    public int doSubstitution(final int gid, final int coverageIndex)
     {
         return coverageIndex < 0 ? gid : gid + deltaGlyphID;
     }

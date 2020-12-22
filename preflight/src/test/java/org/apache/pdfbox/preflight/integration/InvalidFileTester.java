@@ -61,27 +61,27 @@ public class InvalidFileTester
      * @param error expected error for this test
      * @throws Exception
      */
-    public InvalidFileTester(String resultKeyFile) throws Exception
+    public InvalidFileTester(final String resultKeyFile) throws Exception
     {
         this.logger = LogFactory.getLog(this.getClass());
         before(resultKeyFile);
     }
 
-    public final void validate(File path, String expectedError) throws Exception
+    public final void validate(final File path, final String expectedError) throws Exception
     {
         if (path == null)
         {
             logger.warn("This is an empty test");
             return;
         }
-        ValidationResult result = PreflightParser.validate(path);
+        final ValidationResult result = PreflightParser.validate(path);
         assertFalse(result.isValid(), path + " : Isartor file should be invalid (" + path + ")");
         assertTrue(result.getErrorsList().size() > 0, path + " : Should find at least one error");
         // could contain more than one error
         boolean found = false;
         if (expectedError != null)
         {
-            for (ValidationError error : result.getErrorsList())
+            for (final ValidationError error : result.getErrorsList())
             {
                 if (error.getErrorCode().equals(expectedError))
                 {
@@ -93,7 +93,7 @@ public class InvalidFileTester
                 }
                 if (outputResult != null)
                 {
-                    String log = path.getName().replace(".pdf", "") + "#" + error.getErrorCode()
+                    final String log = path.getName().replace(".pdf", "") + "#" + error.getErrorCode()
                             + "#" + error.getDetails() + "\n";
                     outputResult.write(log.getBytes());
                 }
@@ -109,10 +109,10 @@ public class InvalidFileTester
             }
             else if (!found)
             {
-                StringBuilder message = new StringBuilder(100);
+                final StringBuilder message = new StringBuilder(100);
                 message.append(path).append(" : Invalid error code returned. Expected ");
                 message.append(expectedError).append(", found ");
-                for (ValidationError error : result.getErrorsList())
+                for (final ValidationError error : result.getErrorsList())
                 {
                     message.append(error.getErrorCode()).append(" ");
                 }
@@ -126,9 +126,9 @@ public class InvalidFileTester
         }
     }
 
-    public void before(String resultKeyFile) throws Exception
+    public void before(final String resultKeyFile) throws Exception
     {
-        String irp = System.getProperty(resultKeyFile);
+        final String irp = System.getProperty(resultKeyFile);
 
         if (irp == null)
         {

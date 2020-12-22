@@ -42,19 +42,19 @@ public class PDEmbeddedFilesNameTreeNode extends PDNameTreeNode<PDComplexFileSpe
      *
      * @param dic The COS dictionary.
      */
-    public PDEmbeddedFilesNameTreeNode( COSDictionary dic )
+    public PDEmbeddedFilesNameTreeNode(final COSDictionary dic )
     {
         super(dic);
     }
 
     @Override
-    protected PDComplexFileSpecification convertCOSToPD( COSBase base ) throws IOException
+    protected PDComplexFileSpecification convertCOSToPD(final COSBase base ) throws IOException
     {
         return new PDComplexFileSpecification( (COSDictionary)base );
     }
 
     @Override
-    protected PDNameTreeNode<PDComplexFileSpecification> createChildNode( COSDictionary dic )
+    protected PDNameTreeNode<PDComplexFileSpecification> createChildNode(final COSDictionary dic )
     {
         return new PDEmbeddedFilesNameTreeNode(dic);
     }

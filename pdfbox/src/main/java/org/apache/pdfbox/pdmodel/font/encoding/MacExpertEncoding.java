@@ -209,7 +209,7 @@ public class MacExpertEncoding extends Encoding
      */
     public MacExpertEncoding()
     {
-        for (Object[] encodingEntry : MAC_EXPERT_ENCODING_TABLE)
+        for (final Object[] encodingEntry : MAC_EXPERT_ENCODING_TABLE)
         {
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }

@@ -46,7 +46,7 @@ public class SmallMap<K, V> implements Map<K, V>
     }
     
     /** Creates map filled with entries from provided map. */
-    public SmallMap(Map<? extends K, ? extends V> initMap)
+    public SmallMap(final Map<? extends K, ? extends V> initMap)
     {
         putAll(initMap);
     }
@@ -55,7 +55,7 @@ public class SmallMap<K, V> implements Map<K, V>
      * Returns index of key within map-array or <code>-1</code>
      * if key is not found (or key is <code>null</code>).
      */
-    private int findKey(Object key)
+    private int findKey(final Object key)
     {
         if (isEmpty() || (key==null))
         {
@@ -77,7 +77,7 @@ public class SmallMap<K, V> implements Map<K, V>
      * Returns index of value within map-array or <code>-1</code>
      * if value is not found (or value is <code>null</code>).
      */
-    private int findValue(Object value)
+    private int findValue(final Object value)
     {
         if (isEmpty() || (value==null))
         {
@@ -108,28 +108,28 @@ public class SmallMap<K, V> implements Map<K, V>
     }
 
     @Override
-    public boolean containsKey(Object key)
+    public boolean containsKey(final Object key)
     {
         return findKey(key) >= 0;
     }
 
     @Override
-    public boolean containsValue(Object value)
+    public boolean containsValue(final Object value)
     {
         return findValue(value) >= 0;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public V get(Object key)
+    public V get(final Object key)
     {
-        int kIdx = findKey(key);
+        final int kIdx = findKey(key);
         
         return kIdx < 0 ? null : (V) mapArr[kIdx+1];
     }
 
     @Override
-    public V put(K key, V value)
+    public V put(final K key, final V value)
     {
         if ((key == null) || (value == null))
         {
@@ -143,13 +143,13 @@ public class SmallMap<K, V> implements Map<K, V>
         }
         else
         {
-            int kIdx = findKey(key);
+            final int kIdx = findKey(key);
             
             if (kIdx < 0)
             {
                 // key unknown
-                int oldLen = mapArr.length;
-                Object[] newMapArr = new Object[oldLen+2];
+                final int oldLen = mapArr.length;
+                final Object[] newMapArr = new Object[oldLen+2];
                 System.arraycopy(mapArr, 0, newMapArr, 0, oldLen);
                 newMapArr[oldLen] = key;
                 newMapArr[oldLen+1] = value;
@@ -159,8 +159,7 @@ public class SmallMap<K, V> implements Map<K, V>
             else
             {
                 // key exists; replace value
-                @SuppressWarnings("unchecked")
-                V oldValue = (V) mapArr[kIdx+1];
+                @SuppressWarnings("unchecked") final V oldValue = (V) mapArr[kIdx+1];
                 mapArr[kIdx+1] = value;
                 return oldValue;
             }
@@ -168,9 +167,9 @@ public class SmallMap<K, V> implements Map<K, V>
     }
 
     @Override
-    public V remove(Object key)
+    public V remove(final Object key)
     {
-        int kIdx = findKey(key);
+        final int kIdx = findKey(key);
         
         if (kIdx < 0)
         {
@@ -178,9 +177,8 @@ public class SmallMap<K, V> implements Map<K, V>
             return null;
         }
 
-        @SuppressWarnings("unchecked")
-        V oldValue = (V) mapArr[kIdx+1];
-        int oldLen = mapArr.length;
+        @SuppressWarnings("unchecked") final V oldValue = (V) mapArr[kIdx+1];
+        final int oldLen = mapArr.length;
         
         if (oldLen == 2)
         {
@@ -189,7 +187,7 @@ public class SmallMap<K, V> implements Map<K, V>
         }
         else
         {
-            Object[] newMapArr = new Object[oldLen-2];
+            final Object[] newMapArr = new Object[oldLen-2];
             System.arraycopy(mapArr, 0, newMapArr, 0, kIdx);
             System.arraycopy(mapArr, kIdx+2, newMapArr, kIdx, oldLen - kIdx - 2);
             mapArr = newMapArr;
@@ -199,14 +197,14 @@ public class SmallMap<K, V> implements Map<K, V>
     }
 
     @Override
-    public final void putAll(Map<? extends K, ? extends V> otherMap)
+    public final void putAll(final Map<? extends K, ? extends V> otherMap)
     {
         if ((mapArr == null) || (mapArr.length == 0))
         {
             // existing map is empty
             mapArr = new Object[otherMap.size() << 1];
             int aIdx = 0;
-            for (Entry<? extends K, ? extends V> entry : otherMap.entrySet())
+            for (final Entry<? extends K, ? extends V> entry : otherMap.entrySet())
             {
                 if ((entry.getKey() == null) || (entry.getValue() == null))
                 {
@@ -219,21 +217,21 @@ public class SmallMap<K, V> implements Map<K, V>
         }
         else
         {
-            int oldLen = mapArr.length;
+            final int oldLen = mapArr.length;
             // first increase array size to hold all to put entries as if they have unknown keys
             // reduce after adding all to the required size
             Object[] newMapArr = new Object[oldLen+(otherMap.size() << 1)];
             System.arraycopy(mapArr, 0, newMapArr, 0, oldLen);
             
             int newIdx = oldLen;
-            for (Entry<? extends K, ? extends V> entry : otherMap.entrySet())
+            for (final Entry<? extends K, ? extends V> entry : otherMap.entrySet())
             {
                 if ((entry.getKey() == null) || (entry.getValue() == null))
                 {
                     throw new NullPointerException( "Key or value must not be null.");
                 }
                 
-                int existKeyIdx = findKey(entry.getKey());
+                final int existKeyIdx = findKey(entry.getKey());
                 
                 if (existKeyIdx >= 0)
                 {
@@ -250,7 +248,7 @@ public class SmallMap<K, V> implements Map<K, V>
 
             if (newIdx < newMapArr.length)
             {
-                Object[] reducedMapArr = new Object[newIdx];
+                final Object[] reducedMapArr = new Object[newIdx];
                 System.arraycopy(newMapArr, 0, reducedMapArr, 0, newIdx);
                 newMapArr = reducedMapArr;
             }
@@ -281,7 +279,7 @@ public class SmallMap<K, V> implements Map<K, V>
             return Collections.emptySet();
         }
         
-        Set<K> keys = new LinkedHashSet<>();
+        final Set<K> keys = new LinkedHashSet<>();
         for (int kIdx = 0; kIdx < mapArr.length; kIdx+=2)
         {
             keys.add((K)mapArr[kIdx]);
@@ -305,7 +303,7 @@ public class SmallMap<K, V> implements Map<K, V>
             return Collections.emptySet();
         }
         
-        List<V> values = new ArrayList<>(mapArr.length >> 1);
+        final List<V> values = new ArrayList<>(mapArr.length >> 1);
         for (int vIdx = 1; vIdx < mapArr.length; vIdx+=2)
         {
             values.add((V)mapArr[vIdx]);
@@ -317,7 +315,7 @@ public class SmallMap<K, V> implements Map<K, V>
     {
         private final int keyIdx;
         
-        SmallMapEntry(int keyInMapIdx)
+        SmallMapEntry(final int keyInMapIdx)
         {
             keyIdx = keyInMapIdx;
         }
@@ -337,14 +335,14 @@ public class SmallMap<K, V> implements Map<K, V>
         }
 
         @Override
-        public V setValue(V value)
+        public V setValue(final V value)
         {
             if (value == null)
             {
                 throw new NullPointerException( "Key or value must not be null.");
             }
 
-            V oldValue = getValue();
+            final V oldValue = getValue();
             mapArr[keyIdx+1] = value;
             return oldValue;
         }
@@ -356,14 +354,13 @@ public class SmallMap<K, V> implements Map<K, V>
         }
         
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(final Object obj)
         {
             if (!(obj instanceof SmallMap.SmallMapEntry))
             {
                 return false;
             }
-            @SuppressWarnings("unchecked")
-            SmallMapEntry other = (SmallMapEntry) obj;
+            @SuppressWarnings("unchecked") final SmallMapEntry other = (SmallMapEntry) obj;
             
             return getKey().equals(other.getKey()) && getValue().equals(other.getValue());
         }
@@ -377,7 +374,7 @@ public class SmallMap<K, V> implements Map<K, V>
             return Collections.emptySet();
         }
         
-        Set<java.util.Map.Entry<K, V>> entries = new LinkedHashSet<>();
+        final Set<java.util.Map.Entry<K, V>> entries = new LinkedHashSet<>();
         for (int kIdx = 0; kIdx < mapArr.length; kIdx+=2)
         {
             entries.add(new SmallMapEntry(kIdx));

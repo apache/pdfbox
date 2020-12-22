@@ -45,7 +45,7 @@ public final class CreatePDFA
     {
     }
     
-    public static void main(String[] args) throws IOException, TransformerException
+    public static void main(final String[] args) throws IOException, TransformerException
     {
         if (args.length != 3)
         {
@@ -54,17 +54,17 @@ public final class CreatePDFA
             System.exit(1);
         }
 
-        String file = args[0];
-        String message = args[1];
-        String fontfile = args[2];
+        final String file = args[0];
+        final String message = args[1];
+        final String fontfile = args[2];
 
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
 
             // load the font as this needs to be embedded
-            PDFont font = PDType0Font.load(doc, new File(fontfile));
+            final PDFont font = PDType0Font.load(doc, new File(fontfile));
 
             // A PDF/A file needs to have the font embedded if the font is used for text rendering
             // in rendering modes other than text rendering mode 3.
@@ -92,35 +92,35 @@ public final class CreatePDFA
             }
 
             // add XMP metadata
-            XMPMetadata xmp = XMPMetadata.createXMPMetadata();
+            final XMPMetadata xmp = XMPMetadata.createXMPMetadata();
             
             try
             {
-                DublinCoreSchema dc = xmp.createAndAddDublinCoreSchema();
+                final DublinCoreSchema dc = xmp.createAndAddDublinCoreSchema();
                 dc.setTitle(file);
                 
-                PDFAIdentificationSchema id = xmp.createAndAddPFAIdentificationSchema();
+                final PDFAIdentificationSchema id = xmp.createAndAddPFAIdentificationSchema();
                 id.setPart(1);
                 id.setConformance("B");
                 
-                XmpSerializer serializer = new XmpSerializer();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                final XmpSerializer serializer = new XmpSerializer();
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 serializer.serialize(xmp, baos, true);
 
-                PDMetadata metadata = new PDMetadata(doc);
+                final PDMetadata metadata = new PDMetadata(doc);
                 metadata.importXMPMetadata(baos.toByteArray());
                 doc.getDocumentCatalog().setMetadata(metadata);
             }
-            catch(BadFieldValueException e)
+            catch(final BadFieldValueException e)
             {
                 // won't happen here, as the provided value is valid
                 throw new IllegalArgumentException(e);
             }
 
             // sRGB output intent
-            InputStream colorProfile = CreatePDFA.class.getResourceAsStream(
+            final InputStream colorProfile = CreatePDFA.class.getResourceAsStream(
                     "/org/apache/pdfbox/resources/pdfa/sRGB.icc");
-            PDOutputIntent intent = new PDOutputIntent(doc, colorProfile);
+            final PDOutputIntent intent = new PDOutputIntent(doc, colorProfile);
             intent.setInfo("sRGB IEC61966-2.1");
             intent.setOutputCondition("sRGB IEC61966-2.1");
             intent.setOutputConditionIdentifier("sRGB IEC61966-2.1");

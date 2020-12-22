@@ -28,9 +28,9 @@ class TestMemoryTTFDataStream
     @Test
     void testEOF() throws IOException
     {
-        byte[] byteArray = new byte[10];
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        MemoryTTFDataStream dataStream = new MemoryTTFDataStream(inputStream);
+        final byte[] byteArray = new byte[10];
+        final ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+        final MemoryTTFDataStream dataStream = new MemoryTTFDataStream(inputStream);
         int value = dataStream.read();
         try
         {

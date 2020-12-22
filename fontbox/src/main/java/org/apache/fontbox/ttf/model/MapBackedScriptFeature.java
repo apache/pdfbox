@@ -34,7 +34,7 @@ public class MapBackedScriptFeature implements ScriptFeature
     private final String name;
     private final Map<List<Integer>, Integer> featureMap;
 
-    public MapBackedScriptFeature(String name, Map<List<Integer>, Integer> featureMap)
+    public MapBackedScriptFeature(final String name, final Map<List<Integer>, Integer> featureMap)
     {
         this.name = name;
         this.featureMap = featureMap;
@@ -53,13 +53,13 @@ public class MapBackedScriptFeature implements ScriptFeature
     }
 
     @Override
-    public boolean canReplaceGlyphs(List<Integer> glyphIds)
+    public boolean canReplaceGlyphs(final List<Integer> glyphIds)
     {
         return featureMap.containsKey(glyphIds);
     }
 
     @Override
-    public Integer getReplacementForGlyphs(List<Integer> glyphIds)
+    public Integer getReplacementForGlyphs(final List<Integer> glyphIds)
     {
         if (!canReplaceGlyphs(glyphIds))
         {
@@ -80,7 +80,7 @@ public class MapBackedScriptFeature implements ScriptFeature
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(final Object obj)
     {
         if (this == obj)
         {
@@ -94,7 +94,7 @@ public class MapBackedScriptFeature implements ScriptFeature
         {
             return false;
         }
-        MapBackedScriptFeature other = (MapBackedScriptFeature) obj;
+        final MapBackedScriptFeature other = (MapBackedScriptFeature) obj;
         if (featureMap == null)
         {
             if (other.featureMap != null)

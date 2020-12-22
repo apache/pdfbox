@@ -48,8 +48,8 @@ public class Type2CharString extends Type1CharString
      * @param defaultWidthX default width
      * @param nomWidthX nominal width
      */
-    public Type2CharString(Type1CharStringReader font, String fontName, String glyphName, int gid, List<Object> sequence,
-                           int defaultWidthX, int nomWidthX)
+    public Type2CharString(final Type1CharStringReader font, final String fontName, final String glyphName, final int gid, final List<Object> sequence,
+                           final int defaultWidthX, final int nomWidthX)
     {
         super(font, fontName, glyphName);
         this.gid = gid;
@@ -79,18 +79,18 @@ public class Type2CharString extends Type1CharString
      * Converts a sequence of Type 2 commands into a sequence of Type 1 commands.
      * @param sequence the Type 2 char string sequence
      */
-    private void convertType1ToType2(List<Object> sequence)
+    private void convertType1ToType2(final List<Object> sequence)
     {
         type1Sequence = new ArrayList<>();
         pathCount = 0;
-        CharStringHandler handler = Type2CharString.this::handleCommand;
+        final CharStringHandler handler = Type2CharString.this::handleCommand;
         handler.handleSequence(sequence);
     }
 
-    private List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
+    private List<Number> handleCommand(List<Number> numbers, final CharStringCommand command)
     {
         commandCount++;
-        Type2KeyWord type2KeyWord = command.getType2KeyWord();
+        final Type2KeyWord type2KeyWord = command.getType2KeyWord();
         if (type2KeyWord == null)
         {
             addCommand(numbers, command);
@@ -153,25 +153,25 @@ public class Type2CharString extends Type1CharString
             break;
         case HFLEX:
         {
-            List<Number> first = Arrays.asList(numbers.get(0), 0, numbers.get(1), numbers.get(2),
+            final List<Number> first = Arrays.asList(numbers.get(0), 0, numbers.get(1), numbers.get(2),
                     numbers.get(3), 0);
-            List<Number> second = Arrays.asList(numbers.get(4), 0, numbers.get(5),
+            final List<Number> second = Arrays.asList(numbers.get(4), 0, numbers.get(5),
                     -(numbers.get(2).floatValue()), numbers.get(6), 0);
             addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
             break;
         }
         case FLEX:
         {
-            List<Number> first = numbers.subList(0, 6);
-            List<Number> second = numbers.subList(6, 12);
+            final List<Number> first = numbers.subList(0, 6);
+            final List<Number> second = numbers.subList(6, 12);
             addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
             break;
         }
         case HFLEX1:
         {
-            List<Number> first = Arrays.asList(numbers.get(0), numbers.get(1), numbers.get(2),
+            final List<Number> first = Arrays.asList(numbers.get(0), numbers.get(1), numbers.get(2),
                     numbers.get(3), numbers.get(4), 0);
-            List<Number> second = Arrays.asList(numbers.get(5), 0, numbers.get(6), numbers.get(7),
+            final List<Number> second = Arrays.asList(numbers.get(5), 0, numbers.get(6), numbers.get(7),
                     numbers.get(8), 0);
             addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
             break;
@@ -185,8 +185,8 @@ public class Type2CharString extends Type1CharString
                 dx += numbers.get(i * 2).intValue();
                 dy += numbers.get(i * 2 + 1).intValue();
             }
-            List<Number> first = numbers.subList(0, 6);
-            List<Number> second = Arrays.asList(numbers.get(6), numbers.get(7), numbers.get(8),
+            final List<Number> first = numbers.subList(0, 6);
+            final List<Number> second = Arrays.asList(numbers.get(6), numbers.get(7), numbers.get(8),
                     numbers.get(9), (Math.abs(dx) > Math.abs(dy) ? numbers.get(10) : -dx),
                     (Math.abs(dx) > Math.abs(dy) ? -dy : numbers.get(10)));
             addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
@@ -231,7 +231,7 @@ public class Type2CharString extends Type1CharString
         return Collections.emptyList();
     }
 
-    private List<Number> clearStack(List<Number> numbers, boolean flag)
+    private List<Number> clearStack(List<Number> numbers, final boolean flag)
     {
         if (type1Sequence.isEmpty())
         {
@@ -253,7 +253,7 @@ public class Type2CharString extends Type1CharString
      * @param numbers  
      * @param horizontal 
      */
-    private void expandStemHints(List<Number> numbers, boolean horizontal)
+    private void expandStemHints(final List<Number> numbers, final boolean horizontal)
     {
         // TODO
     }
@@ -269,11 +269,11 @@ public class Type2CharString extends Type1CharString
 
     private void closePath()
     {
-        CharStringCommand command = pathCount > 0 ? (CharStringCommand) type1Sequence
+        final CharStringCommand command = pathCount > 0 ? (CharStringCommand) type1Sequence
                 .get(type1Sequence.size() - 1)
                 : null;
 
-        CharStringCommand closepathCommand = new CharStringCommand(9);
+        final CharStringCommand closepathCommand = new CharStringCommand(9);
         if (command != null && !closepathCommand.equals(command))
         {
             addCommand(Collections.<Number> emptyList(), closepathCommand);
@@ -295,7 +295,7 @@ public class Type2CharString extends Type1CharString
     {
         while (numbers.size() >= 4)
         {
-            boolean last = numbers.size() == 5;
+            final boolean last = numbers.size() == 5;
             if (horizontal)
             {
                 addCommand(Arrays.asList(numbers.get(0), 0,
@@ -315,11 +315,11 @@ public class Type2CharString extends Type1CharString
         }
     }
 
-    private void drawCurve(List<Number> numbers, boolean horizontal)
+    private void drawCurve(List<Number> numbers, final boolean horizontal)
     {
         while (numbers.size() >= 4)
         {
-            boolean first = numbers.size() % 4 == 1;
+            final boolean first = numbers.size() % 4 == 1;
 
             if (horizontal)
             {
@@ -340,20 +340,20 @@ public class Type2CharString extends Type1CharString
         }
     }
 
-    private void addCommandList(List<List<Number>> numbers, CharStringCommand command)
+    private void addCommandList(final List<List<Number>> numbers, final CharStringCommand command)
     {
         numbers.forEach(ns -> addCommand(ns, command));
     }
 
-    private void addCommand(List<Number> numbers, CharStringCommand command)
+    private void addCommand(final List<Number> numbers, final CharStringCommand command)
     {
         type1Sequence.addAll(numbers);
         type1Sequence.add(command);
     }
 
-    private static <E> List<List<E>> split(List<E> list, int size)
+    private static <E> List<List<E>> split(final List<E> list, final int size)
     {
-        List<List<E>> result = new ArrayList<>();
+        final List<List<E>> result = new ArrayList<>();
         for (int i = 0; i < list.size() / size; i++)
         {
             result.add(list.subList(i * size, (i + 1) * size));

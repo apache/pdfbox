@@ -47,21 +47,21 @@ public class BookmarkValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext ctx) throws ValidationException
+    public void validate(final PreflightContext ctx) throws ValidationException
     {
-        PDDocumentCatalog catalog = ctx.getDocument().getDocumentCatalog();
+        final PDDocumentCatalog catalog = ctx.getDocument().getDocumentCatalog();
         if (catalog != null)
         {
-            PDDocumentOutline outlineHierarchy = catalog.getDocumentOutline();
+            final PDDocumentOutline outlineHierarchy = catalog.getDocumentOutline();
             if (outlineHierarchy != null)
             {
-                COSDictionary dict = outlineHierarchy.getCOSObject();
+                final COSDictionary dict = outlineHierarchy.getCOSObject();
                 if (!checkIndirectObjects(ctx, dict))
                 {
                     return;
                 }
-                COSObject firstObj = toCOSObject(dict.getItem(COSName.FIRST));
-                COSObject lastObj = toCOSObject(dict.getItem(COSName.LAST));
+                final COSObject firstObj = toCOSObject(dict.getItem(COSName.FIRST));
+                final COSObject lastObj = toCOSObject(dict.getItem(COSName.LAST));
 
                 // Count entry is mandatory if there are childrens
                 if (!isCountEntryPresent(dict)
@@ -94,7 +94,7 @@ public class BookmarkValidationProcess extends AbstractProcess
      * @param outline the dictionary representing the document outline.
      * @return true if the Count entry is present.
      */
-    private boolean isCountEntryPresent(COSDictionary outline)
+    private boolean isCountEntryPresent(final COSDictionary outline)
     {
         return outline.getItem(COSName.COUNT) != null;
     }
@@ -106,9 +106,9 @@ public class BookmarkValidationProcess extends AbstractProcess
      * @param outline the dictionary representing the document outline.
      * @return true if the Count entry &gt; 0.
      */
-    private boolean isCountEntryPositive(COSDictionary outline)
+    private boolean isCountEntryPositive(final COSDictionary outline)
     {
-        COSBase countBase = outline.getDictionaryObject(COSName.COUNT);
+        final COSBase countBase = outline.getDictionaryObject(COSName.COUNT);
         return countBase instanceof COSInteger && ((COSInteger) countBase).intValue() > 0;
     }
 
@@ -123,12 +123,12 @@ public class BookmarkValidationProcess extends AbstractProcess
      * @return true if all items are valid in this level.
      * @throws ValidationException
      */
-    protected boolean exploreOutlineLevel(PreflightContext ctx, PDOutlineItem inputItem, 
-            COSObject firstObj, COSObject lastObj) throws ValidationException
+    protected boolean exploreOutlineLevel(final PreflightContext ctx, final PDOutlineItem inputItem,
+                                          final COSObject firstObj, final COSObject lastObj) throws ValidationException
     {
         PDOutlineItem currentItem = inputItem;
         COSObject currentObj = firstObj;
-        Set<COSObject> levelObjects = new HashSet<>();
+        final Set<COSObject> levelObjects = new HashSet<>();
         levelObjects.add(firstObj);
         boolean result = true;
 
@@ -143,7 +143,7 @@ public class BookmarkValidationProcess extends AbstractProcess
         
         while (currentItem != null)
         {
-            COSObject realPrevObject = currentObj;
+            final COSObject realPrevObject = currentObj;
             if (!validateItem(ctx, currentItem))
             {
                 result = false;
@@ -176,7 +176,7 @@ public class BookmarkValidationProcess extends AbstractProcess
             }
             else 
             {
-                COSObject prevObject = toCOSObject(currentItem.getCOSObject().getItem(COSName.PREV));
+                final COSObject prevObject = toCOSObject(currentItem.getCOSObject().getItem(COSName.PREV));
                 if (!realPrevObject.equals(prevObject))
                 {
                     addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
@@ -199,15 +199,15 @@ public class BookmarkValidationProcess extends AbstractProcess
      * @return the validation result.
      * @throws ValidationException
      */
-    protected boolean validateItem(PreflightContext ctx, PDOutlineItem inputItem) throws ValidationException
+    protected boolean validateItem(final PreflightContext ctx, final PDOutlineItem inputItem) throws ValidationException
     {
         boolean isValid = true;
         // Dest entry isn't permitted if the A entry is present
         // A entry isn't permitted if the Dest entry is present
         // If the A entry is present, the referenced actions is validated
-        COSDictionary dictionary = inputItem.getCOSObject();
-        COSBase dest = dictionary.getItem(COSName.DEST);
-        COSBase action = dictionary.getItem(COSName.A);
+        final COSDictionary dictionary = inputItem.getCOSObject();
+        final COSBase dest = dictionary.getItem(COSName.DEST);
+        final COSBase action = dictionary.getItem(COSName.A);
         
         if (!checkIndirectObjects(ctx, dictionary))
         {
@@ -230,7 +230,7 @@ public class BookmarkValidationProcess extends AbstractProcess
         // else no specific validation
 
         // check children
-        PDOutlineItem fChild = inputItem.getFirstChild();
+        final PDOutlineItem fChild = inputItem.getFirstChild();
         if (fChild != null)
         {
             if (!isCountEntryPresent(inputItem.getCOSObject()))
@@ -241,8 +241,8 @@ public class BookmarkValidationProcess extends AbstractProcess
             }
             else
             {
-                COSObject firstObj = toCOSObject(dictionary.getItem(COSName.FIRST));
-                COSObject lastObj = toCOSObject(dictionary.getItem(COSName.LAST));
+                final COSObject firstObj = toCOSObject(dictionary.getItem(COSName.FIRST));
+                final COSObject lastObj = toCOSObject(dictionary.getItem(COSName.LAST));
                 if ((firstObj == null && lastObj != null) || (firstObj != null && lastObj == null))
                 {
                     addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
@@ -259,7 +259,7 @@ public class BookmarkValidationProcess extends AbstractProcess
     }
 
     // verify that if certain named items exist, that they are indirect objects
-    private boolean checkIndirectObjects(PreflightContext ctx, COSDictionary dictionary)
+    private boolean checkIndirectObjects(final PreflightContext ctx, final COSDictionary dictionary)
     {
         // Parent, Prev, Next, First and Last must be indirect objects
         if (!checkIndirectObject(ctx, dictionary, COSName.PARENT))
@@ -282,9 +282,9 @@ public class BookmarkValidationProcess extends AbstractProcess
     }
 
     // verify that if the named item exists, that it is is an indirect object
-    private boolean checkIndirectObject(PreflightContext ctx, COSDictionary dictionary, COSName name)
+    private boolean checkIndirectObject(final PreflightContext ctx, final COSDictionary dictionary, final COSName name)
     {
-        COSBase item = dictionary.getItem(name);
+        final COSBase item = dictionary.getItem(name);
         if (item == null || item instanceof COSNull || item instanceof COSObject)
         {
             return true;
@@ -304,7 +304,7 @@ public class BookmarkValidationProcess extends AbstractProcess
      * @throws IllegalArgumentException if the parameter is not null, COSNull or
      * a COSObject.
      */
-    private COSObject toCOSObject(COSBase base)
+    private COSObject toCOSObject(final COSBase base)
     {
         if (base == null || base instanceof COSNull)
         {

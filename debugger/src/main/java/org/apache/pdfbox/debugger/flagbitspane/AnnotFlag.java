@@ -34,7 +34,7 @@ class AnnotFlag extends Flag
      * Constructor
      * @param annotDictionary COSDictionary instance
      */
-    AnnotFlag(COSDictionary annotDictionary)
+    AnnotFlag(final COSDictionary annotDictionary)
     {
         this.annotDictionary = annotDictionary;
     }
@@ -54,7 +54,7 @@ class AnnotFlag extends Flag
     @Override
     Object[][] getFlagBits()
     {
-        PDAnnotation annotation = new PDAnnotation(annotDictionary)
+        final PDAnnotation annotation = new PDAnnotation(annotDictionary)
         {
         };
         return new Object[][]{

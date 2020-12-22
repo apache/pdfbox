@@ -46,11 +46,11 @@ public class SecurityProvider
         {
             try
             {
-                Class<Provider> providerClass = (Class<Provider>) Class
+                final Class<Provider> providerClass = (Class<Provider>) Class
                         .forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
                 provider = providerClass.getDeclaredConstructor().newInstance();
             }
-            catch (ClassNotFoundException | InstantiationException | IllegalAccessException | 
+            catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                    NoSuchMethodException | SecurityException | IllegalArgumentException | 
                    InvocationTargetException ex)
             {
@@ -65,7 +65,7 @@ public class SecurityProvider
      * 
      * @param provider the security provider
      */
-    public static void setProvider(Provider provider)
+    public static void setProvider(final Provider provider)
     {
         SecurityProvider.provider = provider;
     }

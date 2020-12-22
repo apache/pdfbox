@@ -35,7 +35,7 @@ public class PopupAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationPopup pdPopup = null;
 
-    public PopupAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public PopupAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdPopup = new PDAnnotationPopup(annotDictionary);

@@ -34,7 +34,7 @@ class CoordinateColorPair
      * @param p point
      * @param c color
      */
-    CoordinateColorPair(Point2D p, float[] c)
+    CoordinateColorPair(final Point2D p, final float[] c)
     {
         coordinate = p;
         color = c.clone();

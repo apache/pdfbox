@@ -41,12 +41,12 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDLinkAppearanceHandler.class);
     
-    public PDLinkAppearanceHandler(PDAnnotation annotation)
+    public PDLinkAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDLinkAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDLinkAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -62,7 +62,7 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        PDAnnotationLink annotation = (PDAnnotationLink) getAnnotation();
+        final PDAnnotationLink annotation = (PDAnnotationLink) getAnnotation();
         if (annotation.getRectangle() == null)
         {
             // 660402-p1-AnnotationEmptyRect.pdf has /Rect entry with 0 elements
@@ -70,7 +70,7 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
         }
 
         // Adobe doesn't generate an appearance for a link annotation
-        float lineWidth = getLineWidth();
+        final float lineWidth = getLineWidth();
         try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
             PDColor color = annotation.getColor();
@@ -79,13 +79,13 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                 // spec is unclear, but black is what Adobe does
                 color = new PDColor(new float[] { 0 }, PDDeviceGray.INSTANCE);
             }
-            boolean hasStroke = contentStream.setStrokingColorOnDemand(color);
+            final boolean hasStroke = contentStream.setStrokingColorOnDemand(color);
 
             contentStream.setBorderLine(lineWidth, annotation.getBorderStyle(), annotation.getBorder());
 
             // Acrobat applies a padding to each side of the bbox so the line is completely within
             // the bbox.
-            PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
+            final PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
 
             float[] pathsArray = annotation.getQuadPoints();
 
@@ -93,7 +93,7 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
             {
                 // QuadPoints shall be ignored if any coordinate in the array lies outside
                 // the region specified by Rect.
-                PDRectangle rect = annotation.getRectangle();
+                final PDRectangle rect = annotation.getRectangle();
                 for (int i = 0; i < pathsArray.length / 2; ++i)
                 {
                     if (!rect.contains(pathsArray[i * 2], pathsArray[i * 2 + 1]))
@@ -179,19 +179,19 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
     // here and removed from the individual handlers.
     float getLineWidth()
     {
-        PDAnnotationLink annotation = (PDAnnotationLink) getAnnotation();
+        final PDAnnotationLink annotation = (PDAnnotationLink) getAnnotation();
 
-        PDBorderStyleDictionary bs = annotation.getBorderStyle();
+        final PDBorderStyleDictionary bs = annotation.getBorderStyle();
 
         if (bs != null)
         {
             return bs.getWidth();
         }
 
-        COSArray borderCharacteristics = annotation.getBorder();
+        final COSArray borderCharacteristics = annotation.getBorder();
         if (borderCharacteristics.size() >= 3)
         {
-            COSBase base = borderCharacteristics.getObject(2);
+            final COSBase base = borderCharacteristics.getObject(2);
             if (base instanceof COSNumber)
             {
                 return ((COSNumber) base).floatValue();

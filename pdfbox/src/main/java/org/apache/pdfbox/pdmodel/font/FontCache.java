@@ -35,7 +35,7 @@ public final class FontCache
     /**
      * Adds the given FontBox font to the cache.
      */
-    public void addFont(FontInfo info, FontBoxFont font)
+    public void addFont(final FontInfo info, final FontBoxFont font)
     {
         cache.put(info, new SoftReference<>(font));
     }
@@ -43,9 +43,9 @@ public final class FontCache
     /**
      * Returns the FontBox font associated with the given FontInfo.
      */
-    public FontBoxFont getFont(FontInfo info)
+    public FontBoxFont getFont(final FontInfo info)
     {
-        SoftReference<FontBoxFont> reference = cache.get(info);
+        final SoftReference<FontBoxFont> reference = cache.get(info);
         return reference != null ? reference.get() : null;
     }
 }

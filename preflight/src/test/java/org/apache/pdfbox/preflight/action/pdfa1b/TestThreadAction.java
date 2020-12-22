@@ -31,7 +31,7 @@ class TestThreadAction extends AbstractTestAction
 
     protected COSDictionary createSubmitAction()
     {
-        COSDictionary action = new COSDictionary();
+        final COSDictionary action = new COSDictionary();
         action.setItem(COSName.TYPE, COSName.getPDFName("Action"));
         action.setItem(COSName.S, COSName.getPDFName("Thread"));
         action.setInt(COSName.D, 1);
@@ -41,14 +41,14 @@ class TestThreadAction extends AbstractTestAction
     @Test
     void test() throws Exception
     {
-        COSDictionary action = createSubmitAction();
+        final COSDictionary action = createSubmitAction();
         valid(action, true);
     }
 
     @Test
     void testMissingD() throws Exception
     {
-        COSDictionary action = createSubmitAction();
+        final COSDictionary action = createSubmitAction();
         action.removeItem(COSName.D);
         valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
     }
@@ -56,7 +56,7 @@ class TestThreadAction extends AbstractTestAction
     @Test
     void testInvalidD() throws Exception
     {
-        COSDictionary action = createSubmitAction();
+        final COSDictionary action = createSubmitAction();
         action.setBoolean(COSName.D, false);
         valid(action, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
     }

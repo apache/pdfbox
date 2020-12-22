@@ -68,9 +68,9 @@ class COSArrayListTest
     @BeforeEach
     public void setUp() throws Exception {
         annotationsList = new ArrayList<>();
-        PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
-        PDAnnotationLink txtLink = new PDAnnotationLink();
-        PDAnnotationCircle aCircle = new PDAnnotationCircle();
+        final PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
+        final PDAnnotationLink txtLink = new PDAnnotationLink();
+        final PDAnnotationCircle aCircle = new PDAnnotationCircle();
 
         annotationsList.add(txtMark);
         annotationsList.add(txtLink);
@@ -113,10 +113,10 @@ class COSArrayListTest
     @Test
     void getFromList() throws Exception
     {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
+        final COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         for (int i = 0; i < cosArrayList.size(); i++) {
-            PDAnnotation annot = cosArrayList.get(i);
+            final PDAnnotation annot = cosArrayList.get(i);
             assertEquals(annotationsArray.get(i), annot.getCOSObject(),
                     "PDAnnotations cosObject at " + i + " shall be equal to index " + i
                             + " of COSArray");
@@ -134,16 +134,16 @@ class COSArrayListTest
      */
     // @Test
     public void addToList() throws Exception {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
+        final COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         // add new annotation
-        PDAnnotationSquare aSquare = new PDAnnotationSquare();
+        final PDAnnotationSquare aSquare = new PDAnnotationSquare();
         cosArrayList.add(aSquare);
 
         assertEquals(5, annotationsList.size(), "List size shall be 5");
         assertEquals(5, annotationsArray.size(), "COSArray size shall be 5");
 
-        PDAnnotation annot = annotationsList.get(4);
+        final PDAnnotation annot = annotationsList.get(4);
         assertEquals(4, annotationsArray.indexOf(annot.getCOSObject()),
                 "Added annotation shall be 4th entry in COSArray");
         assertEquals(annotationsArray, cosArrayList.toList(),
@@ -156,10 +156,10 @@ class COSArrayListTest
     @Test
     void removeFromListByIndex() throws Exception
     {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
+        final COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
-        int positionToRemove = 2;
-        PDAnnotation toBeRemoved = cosArrayList.get(positionToRemove);
+        final int positionToRemove = 2;
+        final PDAnnotation toBeRemoved = cosArrayList.get(positionToRemove);
 
         assertEquals(toBeRemoved, cosArrayList.remove(positionToRemove),
                 "Remove operation shall return the removed object");
@@ -179,10 +179,10 @@ class COSArrayListTest
     @Test
     void removeUniqueFromListByObject() throws Exception
     {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
+        final COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
-        int positionToRemove = 2;
-        PDAnnotation toBeRemoved = annotationsList.get(positionToRemove);
+        final int positionToRemove = 2;
+        final PDAnnotation toBeRemoved = annotationsList.get(positionToRemove);
 
         assertTrue(cosArrayList.remove(toBeRemoved), "Remove operation shall return true");
         assertEquals(3, cosArrayList.size(), "List size shall be 3");
@@ -212,12 +212,12 @@ class COSArrayListTest
     @Test
     void removeAllUniqueFromListByObject() throws Exception
     {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
+        final COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
-        int positionToRemove = 2;
-        PDAnnotation toBeRemoved = annotationsList.get(positionToRemove);
+        final int positionToRemove = 2;
+        final PDAnnotation toBeRemoved = annotationsList.get(positionToRemove);
 
-        List<PDAnnotation> toBeRemovedInstances = Collections.singletonList(toBeRemoved);
+        final List<PDAnnotation> toBeRemovedInstances = Collections.singletonList(toBeRemoved);
 
         assertTrue(cosArrayList.removeAll(toBeRemovedInstances),
                 "Remove operation shall return true");
@@ -235,10 +235,10 @@ class COSArrayListTest
     @Test
     void removeMultipleFromListByObject() throws Exception
     {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
+        final COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
-        int positionToRemove = 1;
-        PDAnnotation toBeRemoved = tbcAnnotationsList.get(positionToRemove);
+        final int positionToRemove = 1;
+        final PDAnnotation toBeRemoved = tbcAnnotationsList.get(positionToRemove);
 
         assertTrue(cosArrayList.remove(toBeRemoved), "Remove operation shall return true");
         assertEquals(3, cosArrayList.size(), "List size shall be 3");
@@ -256,12 +256,12 @@ class COSArrayListTest
     @Test
     void removeAllMultipleFromListByObject() throws Exception
     {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
+        final COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
-        int positionToRemove = 1;
-        PDAnnotation toBeRemoved = annotationsList.get(positionToRemove);
+        final int positionToRemove = 1;
+        final PDAnnotation toBeRemoved = annotationsList.get(positionToRemove);
 
-        List<PDAnnotation> toBeRemovedInstances = Collections.singletonList(toBeRemoved);
+        final List<PDAnnotation> toBeRemovedInstances = Collections.singletonList(toBeRemoved);
 
         assertTrue(cosArrayList.removeAll(toBeRemovedInstances),
                 "Remove operation shall return true");
@@ -277,9 +277,9 @@ class COSArrayListTest
     {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
-        AnnotationFilter annotsFilter = annotation -> !(annotation instanceof PDAnnotationLink);
+        final AnnotationFilter annotsFilter = annotation -> !(annotation instanceof PDAnnotationLink);
 
-        COSArrayList<PDAnnotation> cosArrayList = (COSArrayList<PDAnnotation>) pdPage.getAnnotations(annotsFilter);
+        final COSArrayList<PDAnnotation> cosArrayList = (COSArrayList<PDAnnotation>) pdPage.getAnnotations(annotsFilter);
 
         // this call should fail
         assertThrows(UnsupportedOperationException.class, () -> cosArrayList.remove(1));
@@ -290,13 +290,13 @@ class COSArrayListTest
     {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
-        AnnotationFilter annotsFilter = annotation -> !(annotation instanceof PDAnnotationLink);
+        final AnnotationFilter annotsFilter = annotation -> !(annotation instanceof PDAnnotationLink);
 
-        COSArrayList<PDAnnotation> cosArrayList = (COSArrayList<PDAnnotation>) pdPage.getAnnotations(annotsFilter);
+        final COSArrayList<PDAnnotation> cosArrayList = (COSArrayList<PDAnnotation>) pdPage.getAnnotations(annotsFilter);
 
         // remove object
-        int positionToRemove = 1;
-        PDAnnotation toBeRemoved = cosArrayList.get(positionToRemove);
+        final int positionToRemove = 1;
+        final PDAnnotation toBeRemoved = cosArrayList.get(positionToRemove);
 
         // this call should fail
         assertThrows(UnsupportedOperationException.class, () -> cosArrayList.remove(toBeRemoved));
@@ -308,12 +308,12 @@ class COSArrayListTest
 
         // generate test file
         try (PDDocument pdf = new PDDocument()) {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             pdf.addPage(page);
 
-            ArrayList<PDAnnotation> pageAnnots = new ArrayList<>();
-            PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
-            PDAnnotationLink txtLink = new PDAnnotationLink();
+            final ArrayList<PDAnnotation> pageAnnots = new ArrayList<>();
+            final PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
+            final PDAnnotationLink txtLink = new PDAnnotationLink();
 
             // enforce the COSDictionaries to be written directly into the COSArray
             txtMark.getCOSObject().getCOSObject().setDirect(true);
@@ -331,15 +331,15 @@ class COSArrayListTest
         }
 
         try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeSingleDirectObjectTest.pdf"))) {
-            PDPage page = pdf.getPage(0);
+            final PDPage page = pdf.getPage(0);
         
-            COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+            final COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
 
             assertEquals(4, annotations.size(), "There shall be 4 annotations retrieved");
             assertEquals(4, annotations.toList().size(),
                     "The size of the internal COSArray shall be 4");
 
-            PDAnnotation toBeRemoved = annotations.get(0);
+            final PDAnnotation toBeRemoved = annotations.get(0);
             annotations.remove(toBeRemoved);
 
             assertEquals(3, annotations.size(), "There shall be 3 annotations left");
@@ -354,12 +354,12 @@ class COSArrayListTest
 
         // generate test file
         try (PDDocument pdf = new PDDocument()) {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             pdf.addPage(page);
 
-            ArrayList<PDAnnotation> pageAnnots = new ArrayList<>();
-            PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
-            PDAnnotationLink txtLink = new PDAnnotationLink();
+            final ArrayList<PDAnnotation> pageAnnots = new ArrayList<>();
+            final PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
+            final PDAnnotationLink txtLink = new PDAnnotationLink();
 
             pageAnnots.add(txtMark);
             pageAnnots.add(txtMark);
@@ -373,15 +373,15 @@ class COSArrayListTest
         }
 
         try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeSingleIndirectObjectTest.pdf"))) {
-            PDPage page = pdf.getPage(0);
+            final PDPage page = pdf.getPage(0);
         
-            COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+            final COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
 
             assertEquals(4, annotations.size(), "There shall be 4 annotations retrieved");
             assertEquals(4, annotations.toList().size(),
                     "The size of the internal COSArray shall be 4");
 
-            PDAnnotation toBeRemoved = annotations.get(0);
+            final PDAnnotation toBeRemoved = annotations.get(0);
 
             annotations.remove(toBeRemoved);
 
@@ -397,12 +397,12 @@ class COSArrayListTest
 
         // generate test file
         try (PDDocument pdf = new PDDocument()) {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             pdf.addPage(page);
 
-            ArrayList<PDAnnotation> pageAnnots = new ArrayList<>();
-            PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
-            PDAnnotationLink txtLink = new PDAnnotationLink();
+            final ArrayList<PDAnnotation> pageAnnots = new ArrayList<>();
+            final PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
+            final PDAnnotationLink txtLink = new PDAnnotationLink();
 
             pageAnnots.add(txtMark);
             pageAnnots.add(txtMark);
@@ -416,15 +416,15 @@ class COSArrayListTest
         }
 
         try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeIndirectObjectTest.pdf"))) {
-            PDPage page = pdf.getPage(0);
+            final PDPage page = pdf.getPage(0);
         
-            COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+            final COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
 
             assertEquals(4, annotations.size(), "There shall be 4 annotations retrieved");
             assertEquals(4, annotations.toList().size(),
                     "The size of the internal COSArray shall be 4");
 
-            ArrayList<PDAnnotation> toBeRetained = new ArrayList<>();
+            final ArrayList<PDAnnotation> toBeRetained = new ArrayList<>();
             toBeRetained.add(annotations.get(0));
 
             annotations.retainAll(toBeRetained);

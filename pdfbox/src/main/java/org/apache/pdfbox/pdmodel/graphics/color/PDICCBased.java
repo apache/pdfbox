@@ -70,7 +70,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
 
     static
     {
-        String cmmProperty = System.getProperty("sun.java2d.cmm");
+        final String cmmProperty = System.getProperty("sun.java2d.cmm");
         boolean result = false;
         if ("sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty))
         {
@@ -92,7 +92,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      * Creates a new ICC color space with an empty stream.
      * @param doc the document to store the ICC data
      */
-    public PDICCBased(PDDocument doc)
+    public PDICCBased(final PDDocument doc)
     {
         array = new COSArray();
         array.add(COSName.ICCBASED);
@@ -107,7 +107,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      * @throws IOException if there is an error reading the ICC profile or if the parameter is
      * invalid.
      */
-    private PDICCBased(COSArray iccArray) throws IOException
+    private PDICCBased(final COSArray iccArray) throws IOException
     {
         useOnlyAlternateColorSpace = System
                 .getProperty("org.apache.pdfbox.rendering.UseAlternateInsteadOfICCColorSpace") != null;
@@ -125,10 +125,10 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      * @throws IOException if there is an error reading the ICC profile or if the parameter is
      * invalid.
      */
-    public static PDICCBased create(COSArray iccArray, PDResources resources) throws IOException
+    public static PDICCBased create(final COSArray iccArray, final PDResources resources) throws IOException
     {
         checkArray(iccArray);
-        COSBase base = iccArray.get(1);
+        final COSBase base = iccArray.get(1);
         COSObject indirect = null;
         if (base instanceof COSObject)
         {
@@ -136,13 +136,13 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         }
         if (indirect != null && resources != null && resources.getResourceCache() != null)
         {
-            PDColorSpace space = resources.getResourceCache().getColorSpace(indirect);
+            final PDColorSpace space = resources.getResourceCache().getColorSpace(indirect);
             if (space instanceof PDICCBased)
             {
                 return (PDICCBased) space;
             }
         }
-        PDICCBased space = new PDICCBased(iccArray);
+        final PDICCBased space = new PDICCBased(iccArray);
         if (indirect != null && resources != null && resources.getResourceCache() != null)
         {
             resources.getResourceCache().put(indirect, space);
@@ -150,7 +150,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         return space;
     }
 
-    private static void checkArray(COSArray iccArray) throws IOException
+    private static void checkArray(final COSArray iccArray) throws IOException
     {
         if (iccArray.size() < 2)
         {
@@ -216,7 +216,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 }
 
                 // set initial colour
-                float[] initial = new float[getNumberOfComponents()];
+                final float[] initial = new float[getNumberOfComponents()];
                 for (int c = 0; c < getNumberOfComponents(); c++)
                 {
                     initial[c] = Math.max(0, getRangeForComponent(c).getMin());
@@ -246,7 +246,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         }
     }
 
-    private void fallbackToAlternateColorSpace(Exception e) throws IOException
+    private void fallbackToAlternateColorSpace(final Exception e) throws IOException
     {
         awtColorSpace = null;
         alternateColorSpace = getAlternateColorSpace();
@@ -266,21 +266,21 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      * Returns true if the given profile represents sRGB.
      * (unreliable on the data of ColorSpace.CS_sRGB in openjdk)
      */
-    private boolean is_sRGB(ICC_Profile profile)
+    private boolean is_sRGB(final ICC_Profile profile)
     {
-        byte[] bytes = Arrays.copyOfRange(profile.getData(ICC_Profile.icSigHead),
+        final byte[] bytes = Arrays.copyOfRange(profile.getData(ICC_Profile.icSigHead),
                 ICC_Profile.icHdrModel, ICC_Profile.icHdrModel + 7);
-        String deviceModel = new String(bytes, StandardCharsets.US_ASCII).trim();
+        final String deviceModel = new String(bytes, StandardCharsets.US_ASCII).trim();
         return deviceModel.equals("sRGB");
     }
 
     // PDFBOX-4114: fix profile that has the wrong display class,
     // as done by Harald Kuhr in twelvemonkeys JPEGImageReader.ensureDisplayProfile()
-    private static ICC_Profile ensureDisplayProfile(ICC_Profile profile)
+    private static ICC_Profile ensureDisplayProfile(final ICC_Profile profile)
     {
         if (profile.getProfileClass() != ICC_Profile.CLASS_DISPLAY)
         {
-            byte[] profileData = profile.getData(); // Need to clone entire profile, due to a OpenJDK bug
+            final byte[] profileData = profile.getData(); // Need to clone entire profile, due to a OpenJDK bug
 
             if (profileData[ICC_Profile.icHdrRenderingIntent] == ICC_Profile.icPerceptual)
             {
@@ -292,7 +292,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         return profile;
     }
 
-    private static void intToBigEndian(int value, byte[] array, int index)
+    private static void intToBigEndian(final int value, final byte[] array, final int index)
     {
         array[index] = (byte) (value >> 24);
         array[index + 1] = (byte) (value >> 16);
@@ -301,7 +301,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     }
 
     @Override
-    public float[] toRGB(float[] value) throws IOException
+    public float[] toRGB(final float[] value) throws IOException
     {
         if (isRGB)
         {
@@ -319,20 +319,20 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         }
     }
 
-    private float[] clampColors(ICC_ColorSpace cs, float[] value)
+    private float[] clampColors(final ICC_ColorSpace cs, final float[] value)
     {
-        float[] result = new float[value.length];
+        final float[] result = new float[value.length];
         for (int i = 0; i < value.length; ++i)
         {
-            float minValue = cs.getMinValue(i);
-            float maxValue = cs.getMaxValue(i);
+            final float minValue = cs.getMinValue(i);
+            final float maxValue = cs.getMaxValue(i);
             result[i] = value[i] < minValue ? minValue : (value[i] > maxValue ? maxValue : value[i]);
         }
         return result;
     }
 
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(final WritableRaster raster) throws IOException
     {
         if (awtColorSpace != null)
         {
@@ -345,7 +345,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     }
 
     @Override
-    public BufferedImage toRawImage(WritableRaster raster) throws IOException
+    public BufferedImage toRawImage(final WritableRaster raster) throws IOException
     {
         if(awtColorSpace == null)
         {
@@ -364,7 +364,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             // PDFBOX-4801 correct wrong /N values
             if (iccProfile != null)
             {
-                int numIccComponents = iccProfile.getNumComponents();
+                final int numIccComponents = iccProfile.getNumComponents();
                 if (numIccComponents != numberOfComponents)
                 {
                     LOG.warn("Using " + numIccComponents + " components from ICC profile info instead of " +
@@ -377,12 +377,12 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
         if (awtColorSpace != null)
         {
-            int n = getNumberOfComponents();
-            float[] decode = new float[n * 2];
+            final int n = getNumberOfComponents();
+            final float[] decode = new float[n * 2];
             for (int i = 0; i < n; i++)
             {
                 decode[i * 2] = awtColorSpace.getMinValue(i);
@@ -410,13 +410,13 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      */
     public PDColorSpace getAlternateColorSpace() throws IOException
     {
-        COSBase alternate = stream.getCOSObject().getDictionaryObject(COSName.ALTERNATE);
-        COSArray alternateArray;
+        final COSBase alternate = stream.getCOSObject().getDictionaryObject(COSName.ALTERNATE);
+        final COSArray alternateArray;
         if(alternate == null)
         {
             alternateArray = new COSArray();
-            int numComponents = getNumberOfComponents();
-            COSName csName;
+            final int numComponents = getNumberOfComponents();
+            final COSName csName;
             switch (numComponents)
             {
                 case 1:
@@ -460,9 +460,9 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      * @param n the component number to get the range for
      * @return the range for this component
      */
-    public PDRange getRangeForComponent(int n)
+    public PDRange getRangeForComponent(final int n)
     {
-        COSArray rangeArray = (COSArray) stream.getCOSObject().getDictionaryObject(COSName.RANGE);
+        final COSArray rangeArray = (COSArray) stream.getCOSObject().getDictionaryObject(COSName.RANGE);
         if (rangeArray == null || rangeArray.size() < getNumberOfComponents() * 2)
         {
             return new PDRange(); // 0..1
@@ -515,7 +515,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      *
      * @param list the list of color space objects
      */
-    public void setAlternateColorSpaces(List<PDColorSpace> list)
+    public void setAlternateColorSpaces(final List<PDColorSpace> list)
     {
         COSArray altArray = null;
         if(list != null)
@@ -530,7 +530,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      * @param range the new range for the a component
      * @param n the component to set the range for
      */
-    public void setRangeForComponent(PDRange range, int n)
+    public void setRangeForComponent(final PDRange range, final int n)
     {
         COSArray rangeArray = (COSArray) stream.getCOSObject().getDictionaryObject(COSName.RANGE);
         if (rangeArray == null)
@@ -552,7 +552,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      * Sets the metadata stream that is associated with this color space.
      * @param metadata the new metadata stream
      */
-    public void setMetadata(COSStream metadata)
+    public void setMetadata(final COSStream metadata)
     {
         stream.getCOSObject().setItem(COSName.METADATA, metadata);
     }

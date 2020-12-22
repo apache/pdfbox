@@ -26,7 +26,7 @@ public abstract class FDSelect
      *
      * @param owner the owner of the FDSelect data.
      */
-    public FDSelect(CFFCIDFont owner)
+    public FDSelect(final CFFCIDFont owner)
     {
         this.owner = owner;
     }

@@ -136,7 +136,7 @@ class PDAcroFormFlattenTest
         // disabled as there is a minimal difference which can not be seen visually on ci-builds
         // "https://issues.apache.org/jira/secure/attachment/13012242/PDFBOX-4958.pdf,PDFBOX-4958-flattened.pdf"
     })
-    void testFlatten(String sourceUrl, String targetFileName) throws IOException {
+    void testFlatten(final String sourceUrl, final String targetFileName) throws IOException {
         flattenAndCompare(sourceUrl, targetFileName);
     }
 
@@ -145,12 +145,12 @@ class PDAcroFormFlattenTest
      *
      * @throws IOException
      */
-    private static void flattenAndCompare(String sourceUrl, String targetFileName) throws IOException
+    private static void flattenAndCompare(final String sourceUrl, final String targetFileName) throws IOException
     {
         generateSamples(sourceUrl,targetFileName);
 
-        File inputFile = new File(IN_DIR, targetFileName);
-        File outputFile = new File(OUT_DIR, targetFileName);
+        final File inputFile = new File(IN_DIR, targetFileName);
+        final File outputFile = new File(OUT_DIR, targetFileName);
 
         try (PDDocument testPdf = Loader.loadPDF(inputFile))
         {
@@ -161,7 +161,7 @@ class PDAcroFormFlattenTest
         }
 
         // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        final TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
         if (!testPDFToImage.doTestFile(outputFile, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             fail("Rendering of " + outputFile + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
@@ -180,22 +180,22 @@ class PDAcroFormFlattenTest
      *
      * @throws IOException
      */
-    private static void generateSamples(String sourceUrl, String targetFile) throws IOException
+    private static void generateSamples(final String sourceUrl, final String targetFile) throws IOException
     {
         getFromUrl(sourceUrl, targetFile);
 
-        File file = new File(IN_DIR,targetFile);
+        final File file = new File(IN_DIR,targetFile);
 
         try (PDDocument document = Loader.loadPDF(file, (String) null))
         {
-            String outputPrefix = IN_DIR.getAbsolutePath() + '/' + file.getName() + "-";
-            int numPages = document.getNumberOfPages();
+            final String outputPrefix = IN_DIR.getAbsolutePath() + '/' + file.getName() + "-";
+            final int numPages = document.getNumberOfPages();
 
-            PDFRenderer renderer = new PDFRenderer(document);
+            final PDFRenderer renderer = new PDFRenderer(document);
             for (int i = 0; i < numPages; i++)
             {
-                String fileName = outputPrefix + (i + 1) + ".png";
-                BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
+                final String fileName = outputPrefix + (i + 1) + ".png";
+                final BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
                 ImageIO.write(image, "PNG", new File(fileName));
             }
         }
@@ -206,7 +206,7 @@ class PDAcroFormFlattenTest
      *
      * @throws IOException
      */
-    private static void getFromUrl(String sourceUrl, String targetFile) throws IOException
+    private static void getFromUrl(final String sourceUrl, final String targetFile) throws IOException
     {
         try (InputStream is = new URL(sourceUrl).openStream())
         {
@@ -220,7 +220,7 @@ class PDAcroFormFlattenTest
      */
     private static void removeAllRenditions(final File inputFile)
     {
-        File[] testFiles = inputFile.getParentFile().listFiles(
+        final File[] testFiles = inputFile.getParentFile().listFiles(
                 (File dir, String name) -> 
                     (name.startsWith(inputFile.getName()) && name.toLowerCase().endsWith(".png")));
 

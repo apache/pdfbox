@@ -52,7 +52,7 @@ public class XObjFormValidator extends AbstractXObjValidator
      */
     PDFormXObject pdXObj = null;
 
-    public XObjFormValidator(PreflightContext context, PDFormXObject xobj)
+    public XObjFormValidator(final PreflightContext context, final PDFormXObject xobj)
     {
         super(context, xobj.getCOSObject());
         this.pdXObj = xobj;
@@ -81,8 +81,8 @@ public class XObjFormValidator extends AbstractXObjValidator
     @Override
     protected void checkMandatoryFields()
     {
-        boolean lastMod = this.xobject.getItem(COSName.LAST_MODIFIED) != null;
-        boolean pieceInfo = this.xobject.getItem("PieceInfo") != null;
+        final boolean lastMod = this.xobject.getItem(COSName.LAST_MODIFIED) != null;
+        final boolean pieceInfo = this.xobject.getItem("PieceInfo") != null;
         // type and subtype checked before to create the Validator.
         if (lastMod ^ pieceInfo)
         {
@@ -90,7 +90,7 @@ public class XObjFormValidator extends AbstractXObjValidator
             return;
         }
 
-        COSArray bbArray = this.xobject.getCOSArray(COSName.BBOX);
+        final COSArray bbArray = this.xobject.getCOSArray(COSName.BBOX);
         // ---- BBox is an Array (Rectangle)
         if (bbArray == null)
         {
@@ -104,8 +104,8 @@ public class XObjFormValidator extends AbstractXObjValidator
      */
     protected void validateXObjectContent() throws ValidationException
     {
-        PreflightPath vPath = context.getValidationPath();
-        PreflightContentStream csWrapper = new PreflightContentStream(context, vPath.getClosestPathElement(PDPage.class));
+        final PreflightPath vPath = context.getValidationPath();
+        final PreflightContentStream csWrapper = new PreflightContentStream(context, vPath.getClosestPathElement(PDPage.class));
         csWrapper.validateXObjContentStream(pdXObj);
     }
 
@@ -116,7 +116,7 @@ public class XObjFormValidator extends AbstractXObjValidator
      */
     protected void checkGroup()
     {
-        COSDictionary groupDictionary = this.xobject.getCOSDictionary(COSName.GROUP);
+        final COSDictionary groupDictionary = this.xobject.getCOSDictionary(COSName.GROUP);
         if (groupDictionary != null)
         {
             if (!COSName.GROUP.equals(groupDictionary.getCOSName(COSName.TYPE)))
@@ -126,7 +126,7 @@ public class XObjFormValidator extends AbstractXObjValidator
             } 
             else 
             {
-                COSName sVal = groupDictionary.getCOSName(COSName.S);
+                final COSName sVal = groupDictionary.getCOSName(COSName.S);
                 if (sVal == null || COSName.TRANSPARENCY.equals(sVal))
                 {
                     context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP, 
@@ -165,7 +165,7 @@ public class XObjFormValidator extends AbstractXObjValidator
 
     protected void validateXObjectResources() throws ValidationException
     {
-        PDResources resources = this.pdXObj.getResources();
+        final PDResources resources = this.pdXObj.getResources();
         if (resources != null)
         {
             ContextHelper.validateElement(context, resources, RESOURCES_PROCESS);

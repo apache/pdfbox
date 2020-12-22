@@ -37,9 +37,9 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 public abstract class SetColor extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
-        PDColorSpace colorSpace = getColorSpace();
+        final PDColorSpace colorSpace = getColorSpace();
         if (!(colorSpace instanceof PDPattern))
         {
             if (arguments.size() < colorSpace.getNumberOfComponents())
@@ -51,7 +51,7 @@ public abstract class SetColor extends OperatorProcessor
                 return;
             }
         }
-        COSArray array = new COSArray();
+        final COSArray array = new COSArray();
         array.addAll(arguments);
         setColor(new PDColor(array, colorSpace));
     }

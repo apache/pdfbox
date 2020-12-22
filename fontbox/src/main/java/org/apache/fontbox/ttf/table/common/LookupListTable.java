@@ -30,7 +30,7 @@ public class LookupListTable
     private final int lookupCount;
     private final LookupTable[] lookups;
 
-    public LookupListTable(int lookupCount, LookupTable[] lookups)
+    public LookupListTable(final int lookupCount, final LookupTable[] lookups)
     {
         this.lookupCount = lookupCount;
         this.lookups = lookups;

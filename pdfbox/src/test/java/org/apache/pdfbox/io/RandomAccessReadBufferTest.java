@@ -35,10 +35,10 @@ class RandomAccessReadBufferTest
     @Test
     void testPositionSkip() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
+        final RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.skip(5);
@@ -51,10 +51,10 @@ class RandomAccessReadBufferTest
     @Test
     void testPositionRead() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
+        final RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         assertEquals(0, randomAccessSource.getPosition());
         assertEquals(0, randomAccessSource.read());
@@ -70,10 +70,10 @@ class RandomAccessReadBufferTest
     @Test
     void testSeekEOF() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
+        final RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         randomAccessSource.seek(3);
         assertEquals(3, randomAccessSource.getPosition());
@@ -109,13 +109,13 @@ class RandomAccessReadBufferTest
     @Test
     void testPositionReadBytes() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
+        final RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         assertEquals(0, randomAccessSource.getPosition());
-        byte[] buffer = new byte[4];
+        final byte[] buffer = new byte[4];
         randomAccessSource.read(buffer);
         assertEquals(0, buffer[0]);
         assertEquals(3, buffer[3]);
@@ -134,10 +134,10 @@ class RandomAccessReadBufferTest
     @Test
     void testPositionPeek() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
+        final RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.skip(6);
@@ -152,15 +152,15 @@ class RandomAccessReadBufferTest
     @Test
     void testPositionUnreadBytes() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
+        final RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.read();
         randomAccessSource.read();
-        byte[] readBytes = new byte[6];
+        final byte[] readBytes = new byte[6];
         assertEquals(readBytes.length, randomAccessSource.read(readBytes));
         assertEquals(8, randomAccessSource.getPosition());
         randomAccessSource.rewind(readBytes.length);
@@ -178,12 +178,12 @@ class RandomAccessReadBufferTest
     @Test
     void testEmptyBuffer() throws IOException
     {
-        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(
+        final RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(
                 new ByteArrayOutputStream().toByteArray());
 
         assertEquals(-1, randomAccessSource.read());
         assertEquals(-1, randomAccessSource.peek());
-        byte[] readBytes = new byte[6];
+        final byte[] readBytes = new byte[6];
         assertEquals(-1, randomAccessSource.read(readBytes));
         randomAccessSource.seek(0);
         assertEquals(0, randomAccessSource.getPosition());
@@ -207,12 +207,12 @@ class RandomAccessReadBufferTest
     @Test
     void testView() throws IOException
     {
-        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        final byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
+        final RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
-        RandomAccessReadView view = randomAccessSource.createView(3, 5);
+        final RandomAccessReadView view = randomAccessSource.createView(3, 5);
         assertEquals(0, view.getPosition());
         assertEquals(3, view.read());
         assertEquals(4, view.read());

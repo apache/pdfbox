@@ -50,9 +50,9 @@ class XMPMetaDataTest
     @Test
     void testAddingSchem()
     {
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        String tmpNsURI = "http://www.test.org/schem/";
-        XMPSchema tmp = new XMPSchema(metadata, tmpNsURI, "test");
+        final XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        final String tmpNsURI = "http://www.test.org/schem/";
+        final XMPSchema tmp = new XMPSchema(metadata, tmpNsURI, "test");
         tmp.addQualifiedBagValue("BagContainer", "Value1");
         tmp.addQualifiedBagValue("BagContainer", "Value2");
         tmp.addQualifiedBagValue("BagContainer", "Value3");
@@ -63,7 +63,7 @@ class XMPMetaDataTest
 
         tmp.addProperty(metadata.getTypeMapping().createText(null, "test", "simpleProperty", "YEP"));
 
-        XMPSchema tmp2 = new XMPSchema(metadata, "http://www.space.org/schem/", "space", "space");
+        final XMPSchema tmp2 = new XMPSchema(metadata, "http://www.space.org/schem/", "space", "space");
         tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace1");
         tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace2");
         tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace3");
@@ -76,7 +76,7 @@ class XMPMetaDataTest
         assertEquals(tmp, metadata.getSchema(tmpNsURI));
         assertNull(metadata.getSchema("THIS URI NOT EXISTS !"));
 
-        List<XMPSchema> vals = metadata.getAllSchemas();
+        final List<XMPSchema> vals = metadata.getAllSchemas();
         assertTrue(vals.contains(tmp));
         assertTrue(vals.contains(tmp2));
     }
@@ -108,8 +108,11 @@ class XMPMetaDataTest
     @Test
     void testInitMetaDataWithInfo() throws Exception
     {
-        String xpacketBegin = "TESTBEG", xpacketId = "TESTID", xpacketBytes = "TESTBYTES", xpacketEncoding = "TESTENCOD";
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata(xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
+        final String xpacketBegin = "TESTBEG";
+        String xpacketId = "TESTID";
+        String xpacketBytes = "TESTBYTES";
+        final String xpacketEncoding = "TESTENCOD";
+        final XMPMetadata metadata = XMPMetadata.createXMPMetadata(xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
         assertEquals(xpacketBegin, metadata.getXpacketBegin());
         assertEquals(xpacketId, metadata.getXpacketId());
         assertEquals(xpacketBytes, metadata.getXpacketBytes());
@@ -128,7 +131,7 @@ class XMPMetaDataTest
     void testPDFBOX3257() throws IOException, XmpParsingException
     {
         // taken from file test-landscape2.pdf
-        String xmpmeta = "<?xpacket id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"
+        final String xmpmeta = "<?xpacket id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"
                 + "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 4.0-c316 44.253921, Sun Oct 01 2006 17:14:39\">\n"
                 + "   <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n"
                 + "      <rdf:Description rdf:about=\"\"\n"
@@ -172,19 +175,19 @@ class XMPMetaDataTest
                 + "   </rdf:RDF>\n"
                 + "</x:xmpmeta>\n"
                 + "<?xpacket end=\"w\"?>";
-        DomXmpParser xmpParser = new DomXmpParser();
+        final DomXmpParser xmpParser = new DomXmpParser();
         xmpParser.setStrictParsing(false);
         //IOUtils.copy(meta.createInputStream(),System.out);
-        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes());
-        XMPBasicSchema basicSchema = xmp.getXMPBasicSchema();
-        Calendar createDate1 = basicSchema.getCreateDate();
+        final XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes());
+        final XMPBasicSchema basicSchema = xmp.getXMPBasicSchema();
+        final Calendar createDate1 = basicSchema.getCreateDate();
         basicSchema.setCreateDate(new GregorianCalendar());
-        Calendar createDate2 = basicSchema.getCreateDate();
+        final Calendar createDate2 = basicSchema.getCreateDate();
         assertNotEquals(createDate1, createDate2, "CreateDate has not been set");
         
         // check that bugfix does not interfere with lists of properties with same name
-        DublinCoreSchema dublinCoreSchema = xmp.getDublinCoreSchema();
-        List<String> subjects = dublinCoreSchema.getSubjects();
+        final DublinCoreSchema dublinCoreSchema = xmp.getDublinCoreSchema();
+        final List<String> subjects = dublinCoreSchema.getSubjects();
         assertEquals(4, subjects.size());
     }
 

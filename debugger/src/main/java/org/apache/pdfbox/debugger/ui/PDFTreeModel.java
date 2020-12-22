@@ -59,7 +59,7 @@ public class PDFTreeModel implements TreeModel
      *
      * @param doc The document to display in the tree.
      */
-    public PDFTreeModel(PDDocument doc)
+    public PDFTreeModel(final PDDocument doc)
     {
         root = doc.getDocument().getTrailer();
     }
@@ -69,7 +69,7 @@ public class PDFTreeModel implements TreeModel
      *
      * @param docEntry The document to display in the tree.
      */
-    public PDFTreeModel(DocumentEntry docEntry)
+    public PDFTreeModel(final DocumentEntry docEntry)
     {
         root = docEntry;
     }
@@ -83,7 +83,7 @@ public class PDFTreeModel implements TreeModel
      *
      */
     @Override
-    public void addTreeModelListener(TreeModelListener l)
+    public void addTreeModelListener(final TreeModelListener l)
     {
         //required for interface
     }
@@ -102,12 +102,12 @@ public class PDFTreeModel implements TreeModel
      * parameter.
      */
     @Override
-    public Object getChild(Object parent, int index)
+    public Object getChild(final Object parent, final int index)
     {
         Object retval = null;
         if( parent instanceof COSArray )
         {
-            ArrayEntry entry = new ArrayEntry();
+            final ArrayEntry entry = new ArrayEntry();
             entry.setIndex( index );
             entry.setValue( ((COSArray)parent).getObject(index) );
             entry.setItem(((COSArray) parent).get(index));
@@ -115,12 +115,12 @@ public class PDFTreeModel implements TreeModel
         }
         else if( parent instanceof COSDictionary )
         {
-            COSDictionary dict = (COSDictionary)parent;
-            List<COSName> keys = new ArrayList<>(dict.keySet());
+            final COSDictionary dict = (COSDictionary)parent;
+            final List<COSName> keys = new ArrayList<>(dict.keySet());
             Collections.sort( keys );
-            COSName key = keys.get( index );
-            COSBase value = dict.getDictionaryObject(key);
-            MapEntry entry = new MapEntry();
+            final COSName key = keys.get( index );
+            final COSBase value = dict.getDictionaryObject(key);
+            final MapEntry entry = new MapEntry();
             entry.setKey( key );
             entry.setValue( value );
             entry.setItem(dict.getItem(key));
@@ -163,7 +163,7 @@ public class PDFTreeModel implements TreeModel
      *
      */
     @Override
-    public int getChildCount(Object parent)
+    public int getChildCount(final Object parent)
     {
         int retval = 0;
         if( parent instanceof COSArray )
@@ -208,17 +208,17 @@ public class PDFTreeModel implements TreeModel
      * @throws IllegalArgumentException if an unknown unknown COS type is passed as parent parameter.
      */
     @Override
-    public int getIndexOfChild(Object parent, Object child)
+    public int getIndexOfChild(final Object parent, final Object child)
     {
         int retval = -1;
         if( parent != null && child != null )
         {
             if( parent instanceof COSArray )
             {
-                COSArray array = (COSArray)parent;
+                final COSArray array = (COSArray)parent;
                 if( child instanceof ArrayEntry )
                 {
-                    ArrayEntry arrayEntry = (ArrayEntry)child;
+                    final ArrayEntry arrayEntry = (ArrayEntry)child;
                     retval = arrayEntry.getIndex();
                 }
                 else
@@ -228,9 +228,9 @@ public class PDFTreeModel implements TreeModel
             }
             else if( parent instanceof COSDictionary )
             {
-                MapEntry entry = (MapEntry)child;
-                COSDictionary dict = (COSDictionary)parent;
-                List<COSName> keys = new ArrayList<>(dict.keySet());
+                final MapEntry entry = (MapEntry)child;
+                final COSDictionary dict = (COSDictionary)parent;
+                final List<COSName> keys = new ArrayList<>(dict.keySet());
                 Collections.sort( keys );
                 for( int i=0; retval == -1 && i<keys.size(); i++ )
                 {
@@ -292,7 +292,7 @@ public class PDFTreeModel implements TreeModel
      *
      */
     @Override
-    public boolean isLeaf(Object node)
+    public boolean isLeaf(final Object node)
     {
         return !(node instanceof COSDictionary ||
                  node instanceof COSArray ||
@@ -313,7 +313,7 @@ public class PDFTreeModel implements TreeModel
      */
 
     @Override
-    public void removeTreeModelListener(TreeModelListener l)
+    public void removeTreeModelListener(final TreeModelListener l)
     {
         //required for interface
     }
@@ -328,7 +328,7 @@ public class PDFTreeModel implements TreeModel
      *
      */
     @Override
-    public void valueForPathChanged(TreePath path, Object newValue)
+    public void valueForPathChanged(final TreePath path, final Object newValue)
     {
         //required for interface
     }

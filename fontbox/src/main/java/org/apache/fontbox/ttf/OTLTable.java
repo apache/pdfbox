@@ -24,7 +24,7 @@ public class OTLTable extends TTFTable
 {
     // todo: this is a stub, a full implementation is needed
     
-    OTLTable(TrueTypeFont font)
+    OTLTable(final TrueTypeFont font)
     {
         super(font);
     }

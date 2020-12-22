@@ -43,7 +43,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationTextMarkup(COSDictionary a)
+    public FDFAnnotationTextMarkup(final COSDictionary a)
     {
         super(a);
     }
@@ -55,21 +55,21 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationTextMarkup(Element element) throws IOException
+    public FDFAnnotationTextMarkup(final Element element) throws IOException
     {
         super(element);
 
-        String coords = element.getAttribute("coords");
+        final String coords = element.getAttribute("coords");
         if (coords == null || coords.isEmpty())
         {
             throw new IOException("Error: missing attribute 'coords'");
         }
-        String[] coordsValues = coords.split(",");
+        final String[] coordsValues = coords.split(",");
         if (coordsValues.length < 8)
         {
             throw new IOException("Error: too little numbers in attribute 'coords'");
         }
-        float[] values = new float[coordsValues.length];
+        final float[] values = new float[coordsValues.length];
         for (int i = 0; i < coordsValues.length; i++)
         {
             values[i] = Float.parseFloat(coordsValues[i]);
@@ -85,9 +85,9 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
      *
      * @param coords an array of 8 􏰍 n numbers specifying the coordinates of n quadrilaterals.
      */
-    public void setCoords(float[] coords)
+    public void setCoords(final float[] coords)
     {
-        COSArray newQuadPoints = new COSArray();
+        final COSArray newQuadPoints = new COSArray();
         newQuadPoints.setFloatArray(coords);
         annot.setItem(COSName.QUADPOINTS, newQuadPoints);
     }
@@ -100,7 +100,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
      */
     public float[] getCoords()
     {
-        COSArray quadPoints = (COSArray) annot.getItem(COSName.QUADPOINTS);
+        final COSArray quadPoints = (COSArray) annot.getItem(COSName.QUADPOINTS);
         if (quadPoints != null)
         {
             return quadPoints.toFloatArray();

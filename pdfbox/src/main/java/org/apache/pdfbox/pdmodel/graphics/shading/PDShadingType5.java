@@ -32,7 +32,7 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
      *
      * @param shadingDictionary the dictionary for this shading
      */
-    public PDShadingType5(COSDictionary shadingDictionary)
+    public PDShadingType5(final COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -59,13 +59,13 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
      *
      * @param verticesPerRow the number of vertices per row
      */
-    public void setVerticesPerRow(int verticesPerRow)
+    public void setVerticesPerRow(final int verticesPerRow)
     {
         getCOSObject().setInt(COSName.VERTICES_PER_ROW, verticesPerRow);
     }
 
     @Override
-    public Paint toPaint(Matrix matrix)
+    public Paint toPaint(final Matrix matrix)
     {
         return new Type5ShadingPaint(this, matrix);
     }

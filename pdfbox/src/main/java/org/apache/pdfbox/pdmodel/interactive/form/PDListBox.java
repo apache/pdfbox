@@ -34,7 +34,7 @@ public final class PDListBox extends PDChoice
      *
      * @param acroForm The acroform.
      */
-    public PDListBox(PDAcroForm acroForm)
+    public PDListBox(final PDAcroForm acroForm)
     {
         super(acroForm);
     }
@@ -46,7 +46,7 @@ public final class PDListBox extends PDChoice
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDListBox(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDListBox(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -66,7 +66,7 @@ public final class PDListBox extends PDChoice
      *
      * @param topIndex the value for the top index, null will remove the value.
      */
-    public void setTopIndex(Integer topIndex)
+    public void setTopIndex(final Integer topIndex)
     {
         if (topIndex != null)
         {
@@ -81,7 +81,7 @@ public final class PDListBox extends PDChoice
     @Override
     void constructAppearances() throws IOException
     {
-        AppearanceGeneratorHelper apHelper;
+        final AppearanceGeneratorHelper apHelper;
         apHelper = new AppearanceGeneratorHelper(this);
         apHelper.setAppearanceValue("");
     }

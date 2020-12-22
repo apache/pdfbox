@@ -61,10 +61,10 @@ public class ImportFDF implements Callable<Integer>
      *
      * @throws IOException If there is an error setting the data in the field.
      */
-    public void importFDF( PDDocument pdfDocument, FDFDocument fdfDocument ) throws IOException
+    public void importFDF(final PDDocument pdfDocument, final FDFDocument fdfDocument ) throws IOException
     {
-        PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
-        PDAcroForm acroForm = docCatalog.getAcroForm();
+        final PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
+        final PDAcroForm acroForm = docCatalog.getAcroForm();
         if (acroForm == null)
         {
             return;
@@ -83,21 +83,21 @@ public class ImportFDF implements Callable<Integer>
      *
      * @param args command line arguments
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new ImportFDF()).execute(args);
+        final int exitCode = new CommandLine(new ImportFDF()).execute(args);
         System.exit(exitCode);
     }
 
     public Integer call()
     {
-        ImportFDF importer = new ImportFDF();
+        final ImportFDF importer = new ImportFDF();
 
         try (PDDocument pdf = Loader.loadPDF(infile);
-                FDFDocument fdf = Loader.loadFDF(fdffile))
+             final FDFDocument fdf = Loader.loadFDF(fdffile))
         {
             importer.importFDF( pdf, fdf );
 

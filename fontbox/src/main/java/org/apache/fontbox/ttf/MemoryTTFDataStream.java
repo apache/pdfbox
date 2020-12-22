@@ -38,11 +38,11 @@ class MemoryTTFDataStream extends TTFDataStream
      * @param is The stream to read from. It will be closed by this method.
      * @throws IOException If an error occurs while reading from the stream.
      */
-    MemoryTTFDataStream(InputStream is) throws IOException
+    MemoryTTFDataStream(final InputStream is) throws IOException
     {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream(is.available()))
         {
-            byte[] buffer = new byte[1024];
+            final byte[] buffer = new byte[1024];
             int amountRead;
             while ((amountRead = is.read(buffer)) != -1)
             {
@@ -75,10 +75,10 @@ class MemoryTTFDataStream extends TTFDataStream
      */
     public int readSignedInt() throws IOException
     {
-        int ch1 = read();
-        int ch2 = read();
-        int ch3 = read();
-        int ch4 = read();
+        final int ch1 = read();
+        final int ch2 = read();
+        final int ch3 = read();
+        final int ch4 = read();
         if( (ch1 | ch2 | ch3 | ch4) < 0)
         {
             throw new EOFException();
@@ -98,7 +98,7 @@ class MemoryTTFDataStream extends TTFDataStream
         {
             return -1;
         }
-        int retval = data[currentPosition];
+        final int retval = data[currentPosition];
         currentPosition++;
         return (retval+256)%256;
     }
@@ -112,8 +112,8 @@ class MemoryTTFDataStream extends TTFDataStream
     @Override
     public int readUnsignedShort() throws IOException
     {
-        int ch1 = this.read();
-        int ch2 = this.read();
+        final int ch1 = this.read();
+        final int ch2 = this.read();
         if ((ch1 | ch2) < 0)
         {
             throw new EOFException();
@@ -130,8 +130,8 @@ class MemoryTTFDataStream extends TTFDataStream
     @Override
     public short readSignedShort() throws IOException
     {
-        int ch1 = this.read();
-        int ch2 = this.read();
+        final int ch1 = this.read();
+        final int ch2 = this.read();
         if ((ch1 | ch2) < 0)
         {
             throw new EOFException();
@@ -156,7 +156,7 @@ class MemoryTTFDataStream extends TTFDataStream
      * @throws IOException If the seek position is negative or larger than MAXINT.
      */
     @Override
-    public void seek(long pos) throws IOException
+    public void seek(final long pos) throws IOException
     {
         if (pos < 0 || pos > Integer.MAX_VALUE)
         {
@@ -177,11 +177,11 @@ class MemoryTTFDataStream extends TTFDataStream
      * @throws IOException If there is an error reading from the stream.
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException
+    public int read(final byte[] b, final int off, final int len) throws IOException
     {
         if (currentPosition < data.length)
         {
-            int amountRead = Math.min( len, data.length-currentPosition );
+            final int amountRead = Math.min( len, data.length-currentPosition );
             System.arraycopy(data,currentPosition,b, off, amountRead );
             currentPosition+=amountRead;
             return amountRead;

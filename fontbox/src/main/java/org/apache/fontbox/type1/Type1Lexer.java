@@ -58,7 +58,7 @@ class Type1Lexer
      * @param bytes Header-less .pfb segment
      * @throws IOException
      */
-    Type1Lexer(byte[] bytes) throws IOException
+    Type1Lexer(final byte[] bytes) throws IOException
     {
         buffer = ByteBuffer.wrap(bytes);
         aheadToken = readToken(null);
@@ -70,7 +70,7 @@ class Type1Lexer
      */
     public Token nextToken() throws IOException
     {
-        Token curToken = aheadToken;
+        final Token curToken = aheadToken;
         //System.out.println(curToken); // for debugging
         aheadToken = readToken(curToken);
         return curToken;
@@ -97,7 +97,7 @@ class Type1Lexer
      * Reads a single token.
      * @param prevToken the previous token
      */
-    private Token readToken(Token prevToken) throws IOException
+    private Token readToken(final Token prevToken) throws IOException
     {
         boolean skip;
         do
@@ -105,7 +105,7 @@ class Type1Lexer
             skip = false;
             while (buffer.hasRemaining())
             {
-                char c = getChar();
+                final char c = getChar();
 
                 // delimiters
                 if (c == '%')
@@ -144,7 +144,7 @@ class Type1Lexer
                 }
                 else if (c == '<')
                 {
-                    char c2 = getChar();
+                    final char c2 = getChar();
                     if (c2 == c)
                     {
                         return new Token("<<", Token.START_DICT);
@@ -158,7 +158,7 @@ class Type1Lexer
                 }
                 else if (c == '>')
                 {
-                    char c2 = getChar();
+                    final char c2 = getChar();
                     if (c2 == c)
                     {
                         return new Token(">>", Token.END_DICT);
@@ -184,7 +184,7 @@ class Type1Lexer
                     buffer.position(buffer.position() -1);
 
                     // regular character: try parse as number
-                    Token number = tryReadNumber();
+                    final Token number = tryReadNumber();
                     if (number != null)
                     {
                         return number;
@@ -192,7 +192,7 @@ class Type1Lexer
                     else
                     {
                         // otherwise this must be a name
-                        String name = readRegular();
+                        final String name = readRegular();
                         if (name == null)
                         {
                             // the stream is corrupt
@@ -334,7 +334,7 @@ class Type1Lexer
         buffer.position(buffer.position() - 1);
         if (radix != null)
         {
-            Integer val = Integer.parseInt(sb.toString(), Integer.parseInt(radix.toString()));
+            final Integer val = Integer.parseInt(sb.toString(), Integer.parseInt(radix.toString()));
             return new Token(val.toString(), Token.INTEGER);
         }
         return new Token(sb.toString(), Token.REAL);
@@ -346,11 +346,11 @@ class Type1Lexer
      */
     private String readRegular()
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         while (buffer.hasRemaining())
         {
             buffer.mark();
-            char c = getChar();
+            final char c = getChar();
             if (Character.isWhitespace(c) ||
                 c == '(' || c == ')' ||
                 c == '<' || c == '>' ||
@@ -366,7 +366,7 @@ class Type1Lexer
                 sb.append(c);
             }
         }
-        String regular = sb.toString();
+        final String regular = sb.toString();
         if (regular.length() == 0)
         {
             return null;
@@ -379,10 +379,10 @@ class Type1Lexer
      */
     private String readComment()
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         while (buffer.hasRemaining())
         {
-            char c = getChar();
+            final char c = getChar();
             if (c == '\r' || c == '\n')
             {
                 break;
@@ -400,11 +400,11 @@ class Type1Lexer
      */
     private Token readString() throws IOException
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         while (buffer.hasRemaining())
         {
-            char c = getChar();
+            final char c = getChar();
 
             // string context
             switch (c)
@@ -424,7 +424,7 @@ class Type1Lexer
                     break;
                 case '\\':
                     // escapes: \n \r \t \b \f \\ \( \)
-                    char c1 = getChar();
+                    final char c1 = getChar();
                     switch (c1)
                     {
                         case 'n':
@@ -441,10 +441,10 @@ class Type1Lexer
                     // octal \ddd
                     if (Character.isDigit(c1))
                     {
-                        String num = String.valueOf(new char[] { c1, getChar(), getChar() });
+                        final String num = String.valueOf(new char[] { c1, getChar(), getChar() });
                         try
                         {
-                            Integer code = Integer.parseInt(num, 8);
+                            final Integer code = Integer.parseInt(num, 8);
                             sb.append((char) (int) code);
                         }
                         catch (NumberFormatException ex)
@@ -468,10 +468,10 @@ class Type1Lexer
     /**
      * Reads a binary CharString.
      */
-    private Token readCharString(int length)
+    private Token readCharString(final int length)
     {
         buffer.get(); // space
-        byte[] data = new byte[length];
+        final byte[] data = new byte[length];
         buffer.get(data);
         return new Token(data, Token.CHARSTRING);
     }

@@ -39,15 +39,15 @@ final class JPEGUtil
      *
      * @throws IIOInvalidTreeException if something goes wrong
      */
-    static void updateMetadata(IIOMetadata metadata, int dpi) throws IIOInvalidTreeException
+    static void updateMetadata(final IIOMetadata metadata, final int dpi) throws IIOInvalidTreeException
     {
         MetaUtil.debugLogMetadata(metadata, MetaUtil.JPEG_NATIVE_FORMAT);
 
         // https://svn.apache.org/viewvc/xmlgraphics/commons/trunk/src/java/org/apache/xmlgraphics/image/writer/imageio/ImageIOJPEGImageWriter.java
         // http://docs.oracle.com/javase/6/docs/api/javax/imageio/metadata/doc-files/jpeg_metadata.html
-        Element root = (Element) metadata.getAsTree(MetaUtil.JPEG_NATIVE_FORMAT);
-        NodeList jvarNodeList = root.getElementsByTagName("JPEGvariety");
-        Element jvarChild;
+        final Element root = (Element) metadata.getAsTree(MetaUtil.JPEG_NATIVE_FORMAT);
+        final NodeList jvarNodeList = root.getElementsByTagName("JPEGvariety");
+        final Element jvarChild;
         if (jvarNodeList.getLength() == 0)
         {
             jvarChild = new IIOMetadataNode("JPEGvariety");
@@ -58,8 +58,8 @@ final class JPEGUtil
             jvarChild = (Element) jvarNodeList.item(0);
         }
 
-        NodeList jfifNodeList = jvarChild.getElementsByTagName("app0JFIF");
-        Element jfifChild;
+        final NodeList jfifNodeList = jvarChild.getElementsByTagName("app0JFIF");
+        final Element jfifChild;
         if (jfifNodeList.getLength() == 0)
         {
             jfifChild = new IIOMetadataNode("app0JFIF");

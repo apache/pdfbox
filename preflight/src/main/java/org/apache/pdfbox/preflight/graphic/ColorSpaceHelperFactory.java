@@ -46,7 +46,7 @@ public class ColorSpaceHelperFactory
      *            the color space restriction
      * @return the ColorSpaceHelper instance. 
      */
-    public ColorSpaceHelper getColorSpaceHelper(PreflightContext context, PDColorSpace cs, ColorSpaceRestriction csr)
+    public ColorSpaceHelper getColorSpaceHelper(final PreflightContext context, final PDColorSpace cs, final ColorSpaceRestriction csr)
     {
         switch (csr)
         {

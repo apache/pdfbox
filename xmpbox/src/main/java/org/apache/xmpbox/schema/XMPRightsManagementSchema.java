@@ -65,7 +65,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param metadata
      *            The metadata to attach this schema
      */
-    public XMPRightsManagementSchema(XMPMetadata metadata)
+    public XMPRightsManagementSchema(final XMPMetadata metadata)
     {
         super(metadata);
     }
@@ -78,7 +78,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param ownPrefix
      *            The prefix to assign
      */
-    public XMPRightsManagementSchema(XMPMetadata metadata, String ownPrefix)
+    public XMPRightsManagementSchema(final XMPMetadata metadata, final String ownPrefix)
     {
         super(metadata, ownPrefix);
     }
@@ -89,12 +89,12 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param value
      *            value to add
      */
-    public void addOwner(String value)
+    public void addOwner(final String value)
     {
         addQualifiedBagValue(OWNER, value);
     }
 
-    public void removeOwner(String value)
+    public void removeOwner(final String value)
     {
         removeUnqualifiedBagValue(OWNER, value);
     }
@@ -125,9 +125,9 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param marked
      *            value to add
      */
-    public void setMarked(Boolean marked)
+    public void setMarked(final Boolean marked)
     {
-        BooleanType tt = (BooleanType) instanciateSimple(MARKED, marked ? BooleanType.TRUE : BooleanType.FALSE);
+        final BooleanType tt = (BooleanType) instanciateSimple(MARKED, marked ? BooleanType.TRUE : BooleanType.FALSE);
         setMarkedProperty(tt);
     }
 
@@ -137,7 +137,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param marked
      *            Marked property to set
      */
-    public void setMarkedProperty(BooleanType marked)
+    public void setMarkedProperty(final BooleanType marked)
     {
         addProperty(marked);
     }
@@ -159,7 +159,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      */
     public Boolean getMarked()
     {
-        BooleanType bt = ((BooleanType) getProperty(MARKED));
+        final BooleanType bt = ((BooleanType) getProperty(MARKED));
         return bt == null ? null : bt.getValue();
     }
 
@@ -171,7 +171,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param value
      *            value to set
      */
-    public void addUsageTerms(String lang, String value)
+    public void addUsageTerms(final String lang, final String value)
     {
         setUnqualifiedLanguagePropertyValue(USAGETERMS, lang, value);
     }
@@ -182,7 +182,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param terms
      *            The resource usage terms.
      */
-    public void setUsageTerms(String terms)
+    public void setUsageTerms(final String terms)
     {
         addUsageTerms(null, terms);
     }
@@ -216,7 +216,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @return value of specified language or null if it doesn't exist.
      * @throws BadFieldValueException If the UsageTerms property is not a multi-lingual property.
      */
-    public String getUsageTerms(String lang) throws BadFieldValueException
+    public String getUsageTerms(final String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(USAGETERMS, lang);
     }
@@ -249,7 +249,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      */
     public String getWebStatement()
     {
-        TextType tt = ((TextType) getProperty(WEBSTATEMENT));
+        final TextType tt = ((TextType) getProperty(WEBSTATEMENT));
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -259,9 +259,9 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param url
      *            WebStatemen url value to set
      */
-    public void setWebStatement(String url)
+    public void setWebStatement(final String url)
     {
-        URLType tt = (URLType) instanciateSimple(WEBSTATEMENT, url);
+        final URLType tt = (URLType) instanciateSimple(WEBSTATEMENT, url);
         setWebStatementProperty(tt);
     }
 
@@ -271,7 +271,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param url
      *            WebStatemen url property to set
      */
-    public void setWebStatementProperty(URLType url)
+    public void setWebStatementProperty(final URLType url)
     {
         addProperty(url);
     }
@@ -293,7 +293,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      */
     public String getCertificate()
     {
-        TextType tt = ((TextType) getProperty(CERTIFICATE));
+        final TextType tt = ((TextType) getProperty(CERTIFICATE));
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -303,9 +303,9 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param url
      *            certificate url value to set
      */
-    public void setCertificate(String url)
+    public void setCertificate(final String url)
     {
-        URLType tt = (URLType) instanciateSimple(CERTIFICATE, url);
+        final URLType tt = (URLType) instanciateSimple(CERTIFICATE, url);
         setCertificateProperty(tt);
     }
 
@@ -315,7 +315,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      * @param url
      *            certificate url property to set
      */
-    public void setCertificateProperty(URLType url)
+    public void setCertificateProperty(final URLType url)
     {
         addProperty(url);
     }

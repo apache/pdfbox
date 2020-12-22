@@ -75,9 +75,9 @@ class PNGConverterTest
                 "iCCP", "sBIT", "sRGB", "tEXt", "zTXt", "iTXt", "kBKG", "hIST", "pHYs", "sPLT",
                 "tIME" };
 
-        for (String chunkType : chunkTypes)
+        for (final String chunkType : chunkTypes)
         {
-            byte[] bytes = chunkType.getBytes();
+            final byte[] bytes = chunkType.getBytes();
             assertEquals(4, bytes.length);
             System.out.println(String.format("\tprivate static final int CHUNK_" + chunkType
                             + " = 0x%02X%02X%02X%02X; // %s: %d %d %d %d", (int) bytes[0] & 0xFF,
@@ -161,32 +161,32 @@ class PNGConverterTest
         checkImageConvertFail("png_gray_with_gama.png");
     }
 
-    private void checkImageConvertFail(String name) throws IOException
+    private void checkImageConvertFail(final String name) throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
-            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
-            PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
+            final byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
+            final PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertNull(pdImageXObject);
         }
     }
 
-    private void checkImageConvert(String name) throws IOException
+    private void checkImageConvert(final String name) throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
-            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
-            PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
+            final byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
+            final PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertNotNull(pdImageXObject);
             
             ICC_Profile imageProfile = null;
             if (pdImageXObject.getColorSpace() instanceof PDICCBased)
             {
                 // Make sure that ICC profile is a valid one
-                PDICCBased iccColorSpace = (PDICCBased) pdImageXObject.getColorSpace();
+                final PDICCBased iccColorSpace = (PDICCBased) pdImageXObject.getColorSpace();
                 imageProfile = ICC_Profile.getInstance(iccColorSpace.getPDStream().toByteArray());
             }
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
             {
@@ -198,7 +198,7 @@ class PNGConverterTest
                         pdImageXObject.getHeight());
             }
             doc.save(new File(parentDir, name + ".pdf"));
-            BufferedImage image = pdImageXObject.getImage();
+            final BufferedImage image = pdImageXObject.getImage();
 
             assertNotNull(pdImageXObject.getRawRaster());
             
@@ -212,7 +212,7 @@ class PNGConverterTest
             
             checkIdent(expectedImage, image);
 
-            BufferedImage rawImage = pdImageXObject.getRawImage();
+            final BufferedImage rawImage = pdImageXObject.getRawImage();
             if (rawImage != null)
             {
                 assertEquals(rawImage.getWidth(), pdImageXObject.getWidth());
@@ -223,25 +223,25 @@ class PNGConverterTest
         }
     }
 
-    public static BufferedImage getImageWithProfileData(BufferedImage sourceImage,
-             ICC_Profile realProfile)
+    public static BufferedImage getImageWithProfileData(final BufferedImage sourceImage,
+                                                        final ICC_Profile realProfile)
     {
-        Hashtable<String, Object> properties = new Hashtable<>();
-        String[] propertyNames = sourceImage.getPropertyNames();
+        final Hashtable<String, Object> properties = new Hashtable<>();
+        final String[] propertyNames = sourceImage.getPropertyNames();
         if (propertyNames != null)
         {
-            for (String propertyName : propertyNames)
+            for (final String propertyName : propertyNames)
             {
                 properties.put(propertyName, sourceImage.getProperty(propertyName));
             }
         }
-        ComponentColorModel oldColorModel = (ComponentColorModel) sourceImage.getColorModel();
-        boolean hasAlpha = oldColorModel.hasAlpha();
-        int transparency = oldColorModel.getTransparency();
-        boolean alphaPremultiplied = oldColorModel.isAlphaPremultiplied();
-        WritableRaster raster = sourceImage.getRaster();
-        int dataType = raster.getDataBuffer().getDataType();
-        int[] componentSize = oldColorModel.getComponentSize();
+        final ComponentColorModel oldColorModel = (ComponentColorModel) sourceImage.getColorModel();
+        final boolean hasAlpha = oldColorModel.hasAlpha();
+        final int transparency = oldColorModel.getTransparency();
+        final boolean alphaPremultiplied = oldColorModel.isAlphaPremultiplied();
+        final WritableRaster raster = sourceImage.getRaster();
+        final int dataType = raster.getDataBuffer().getDataType();
+        final int[] componentSize = oldColorModel.getComponentSize();
         final ColorModel colorModel = new ComponentColorModel(new ICC_ColorSpace(realProfile),
                 componentSize, hasAlpha, alphaPremultiplied, transparency, dataType);
         return new BufferedImage(colorModel, raster, sourceImage.isAlphaPremultiplied(),
@@ -252,15 +252,15 @@ class PNGConverterTest
     void testCheckConverterState()
     {
         assertFalse(PNGConverter.checkConverterState(null));
-        PNGConverter.PNGConverterState state = new PNGConverter.PNGConverterState();
+        final PNGConverter.PNGConverterState state = new PNGConverter.PNGConverterState();
         assertFalse(PNGConverter.checkConverterState(state));
 
-        PNGConverter.Chunk invalidChunk = new PNGConverter.Chunk();
+        final PNGConverter.Chunk invalidChunk = new PNGConverter.Chunk();
         invalidChunk.bytes = new byte[0];
         assertFalse(PNGConverter.checkChunkSane(invalidChunk));
 
         // Valid Dummy Chunk
-        PNGConverter.Chunk validChunk = new PNGConverter.Chunk();
+        final PNGConverter.Chunk validChunk = new PNGConverter.Chunk();
         validChunk.bytes = new byte[16];
         validChunk.start = 4;
         validChunk.length = 8;
@@ -315,7 +315,7 @@ class PNGConverterTest
     @Test
     void testChunkSane()
     {
-        PNGConverter.Chunk chunk = new PNGConverter.Chunk();
+        final PNGConverter.Chunk chunk = new PNGConverter.Chunk();
         assertTrue(PNGConverter.checkChunkSane(null));
         chunk.bytes = "IHDRsomedummyvaluesDummyValuesAtEnd".getBytes();
         chunk.length = 19;
@@ -338,7 +338,7 @@ class PNGConverterTest
     @Test
     void testCRCImpl()
     {
-        byte[] b1 = "Hello World!".getBytes();
+        final byte[] b1 = "Hello World!".getBytes();
         assertEquals(472456355, PNGConverter.crc(b1, 0, b1.length));
         assertEquals(-632335482, PNGConverter.crc(b1, 2, b1.length - 4));
     }
@@ -366,21 +366,21 @@ class PNGConverterTest
 
         try (PDDocument doc = new PDDocument())
         {
-            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream("929316.png"));
-            PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
+            final byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream("929316.png"));
+            final PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertEquals(COSName.PERCEPTUAL, pdImageXObject.getCOSObject().getItem(COSName.INTENT));
 
             // Check that this image gets an indexed colorspace with sRGB ICC based colorspace
-            PDIndexed indexedColorspace = (PDIndexed) pdImageXObject.getColorSpace();
+            final PDIndexed indexedColorspace = (PDIndexed) pdImageXObject.getColorSpace();
 
-            PDICCBased iccColorspace = (PDICCBased) indexedColorspace.getBaseColorSpace();
+            final PDICCBased iccColorspace = (PDICCBased) indexedColorspace.getBaseColorSpace();
             // validity of ICC CS is tested in checkImageConvert
 
             // should be an sRGB profile. Or at least, the data that is in ColorSpace.CS_sRGB and
             // that was assigned in PNGConvert.
             // (PDICCBased.is_sRGB() fails in openjdk on that data, maybe it is not a "real" sRGB)
-            ICC_Profile rgbProfile = ICC_Profile.getInstance(ColorSpace.CS_sRGB);
-            byte[] sRGB_bytes = rgbProfile.getData();
+            final ICC_Profile rgbProfile = ICC_Profile.getInstance(ColorSpace.CS_sRGB);
+            final byte[] sRGB_bytes = rgbProfile.getData();
             assertArrayEquals(sRGB_bytes, iccColorspace.getPDStream().toByteArray());
         }
     }

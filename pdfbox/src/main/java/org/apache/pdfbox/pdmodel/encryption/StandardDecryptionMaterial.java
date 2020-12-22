@@ -39,7 +39,7 @@ public class StandardDecryptionMaterial extends DecryptionMaterial
      *
      * @param pwd The password.
      */
-    public StandardDecryptionMaterial(String pwd)
+    public StandardDecryptionMaterial(final String pwd)
     {
         password = pwd;
     }

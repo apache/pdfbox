@@ -192,7 +192,7 @@ public class PDFDebugger extends JFrame
      * @param isPageMode true if pages are to be displayed, false if internal structure is to be
      * displayed.
      */
-    public PDFDebugger(boolean isPageMode)
+    public PDFDebugger(final boolean isPageMode)
     {
         this.isPageMode = isPageMode;
         loadConfiguration();
@@ -205,7 +205,7 @@ public class PDFDebugger extends JFrame
      * @param args the command line arguments
      * @throws Exception If anything goes wrong.
      */
-    public static void main(String[] args) throws Exception
+    public static void main(final String[] args) throws Exception
     {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         if (System.getProperty("apple.laf.useScreenMenuBar") == null)
@@ -267,7 +267,7 @@ public class PDFDebugger extends JFrame
 
         if (filename != null)
         {
-            File file = new File(filename);
+            final File file = new File(filename);
             if (file.exists())
             {
                 viewer.readPDFFile(filename, password);
@@ -281,7 +281,7 @@ public class PDFDebugger extends JFrame
         return this.isPageMode;
     }
     
-    public void setPageMode(boolean isPageMode)
+    public void setPageMode(final boolean isPageMode)
     {
         this.isPageMode = isPageMode;
     }
@@ -296,7 +296,7 @@ public class PDFDebugger extends JFrame
      */
     private static void usage()
     {
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [options] <inputfile>\n"
+        final String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [options] <inputfile>\n"
                 + "\nOptions:\n"
                 + "  -password <password> : Password to decrypt the document\n"
                 + "  -viewstructure       : activate structure mode on startup\n"
@@ -311,7 +311,7 @@ public class PDFDebugger extends JFrame
      */
     private void loadConfiguration()
     {
-        File file = new File("config.properties");
+        final File file = new File("config.properties");
         if (file.exists())
         {
             try
@@ -321,7 +321,7 @@ public class PDFDebugger extends JFrame
                     configuration.load(is);
                 }
             }
-            catch(IOException e)
+            catch(final IOException e)
             {
                 throw new RuntimeException(e);
             }
@@ -334,7 +334,7 @@ public class PDFDebugger extends JFrame
     private void initComponents()
     {
         jSplitPane = new javax.swing.JSplitPane();
-        JScrollPane jScrollPaneLeft = new JScrollPane();
+        final JScrollPane jScrollPaneLeft = new JScrollPane();
         tree = new Tree();
         jScrollPaneRight = new JScrollPane();
         jTextPane = new javax.swing.JTextPane();
@@ -347,14 +347,14 @@ public class PDFDebugger extends JFrame
         addWindowListener(new java.awt.event.WindowAdapter()
         {
             @Override
-            public void windowOpened(WindowEvent windowEvent)
+            public void windowOpened(final WindowEvent windowEvent)
             {
                 tree.requestFocusInWindow();
                 super.windowOpened(windowEvent);
             }
 
             @Override
-            public void windowClosing(WindowEvent evt)
+            public void windowClosing(final WindowEvent evt)
             {
                 exitMenuItemActionPerformed(null);
             }
@@ -375,7 +375,7 @@ public class PDFDebugger extends JFrame
 
         jSplitPane.setLeftComponent(jScrollPaneLeft);
 
-        JScrollPane documentScroller = new JScrollPane();
+        final JScrollPane documentScroller = new JScrollPane();
         documentScroller.setViewportView(documentPanel);
 
         statusPane = new TreeStatusPane(tree);
@@ -389,11 +389,11 @@ public class PDFDebugger extends JFrame
         getContentPane().add(statusBar, BorderLayout.SOUTH);
 
         // create menus
-        JMenuBar menuBar = new JMenuBar();
+        final JMenuBar menuBar = new JMenuBar();
         menuBar.add(createFileMenu());
         menuBar.add(createEditMenu());
         
-        ViewMenu viewMenu = ViewMenu.getInstance(this);
+        final ViewMenu viewMenu = ViewMenu.getInstance(this);
         menuBar.add(viewMenu.getMenu());
         setJMenuBar(menuBar);
 
@@ -404,19 +404,19 @@ public class PDFDebugger extends JFrame
         setTransferHandler(new TransferHandler()
         {
             @Override
-            public boolean canImport(TransferSupport transferSupport)
+            public boolean canImport(final TransferSupport transferSupport)
             {
                 return transferSupport.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
             }
 
             @Override
             @SuppressWarnings("unchecked")
-            public boolean importData(TransferSupport transferSupport)
+            public boolean importData(final TransferSupport transferSupport)
             {
                 try
                 {
-                    Transferable transferable = transferSupport.getTransferable();
-                    List<File> files = (List<File>) transferable.getTransferData(
+                    final Transferable transferable = transferSupport.getTransferable();
+                    final List<File> files = (List<File>) transferable.getTransferData(
                             DataFlavor.javaFileListFlavor);
                     readPDFFile(files.get(0), "");
                 }
@@ -449,11 +449,11 @@ public class PDFDebugger extends JFrame
         {
             try
             {
-                Method osxOpenFiles = getClass().getDeclaredMethod("osxOpenFiles", String.class);
+                final Method osxOpenFiles = getClass().getDeclaredMethod("osxOpenFiles", String.class);
                 osxOpenFiles.setAccessible(true);
                 OSXAdapter.setFileHandler(this, osxOpenFiles);
 
-                Method osxQuit = getClass().getDeclaredMethod("osxQuit");
+                final Method osxQuit = getClass().getDeclaredMethod("osxQuit");
                 osxQuit.setAccessible(true);
                 OSXAdapter.setQuitHandler(this, osxQuit);
             }
@@ -466,19 +466,19 @@ public class PDFDebugger extends JFrame
     
     private JMenu createFileMenu()
     {
-        JMenuItem openMenuItem = new JMenuItem("Open...");
+        final JMenuItem openMenuItem = new JMenuItem("Open...");
         openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, SHORCUT_KEY_MASK));
         openMenuItem.addActionListener(this::openMenuItemActionPerformed);
 
-        JMenu fileMenu = new JMenu("File");
+        final JMenu fileMenu = new JMenu("File");
         fileMenu.add(openMenuItem);
         fileMenu.setMnemonic('F');
 
-        JMenuItem openUrlMenuItem = new JMenuItem("Open URL...");
+        final JMenuItem openUrlMenuItem = new JMenuItem("Open URL...");
         openUrlMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, SHORCUT_KEY_MASK));
         openUrlMenuItem.addActionListener(evt ->
         {
-            String urlString = JOptionPane.showInputDialog("Enter an URL");
+            final String urlString = JOptionPane.showInputDialog("Enter an URL");
             if (urlString == null || urlString.isEmpty())
             {
                 return;
@@ -539,7 +539,7 @@ public class PDFDebugger extends JFrame
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
 
-        JMenuItem exitMenuItem = new JMenuItem("Exit");
+        final JMenuItem exitMenuItem = new JMenuItem("Exit");
         exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
         exitMenuItem.addActionListener(this::exitMenuItemActionPerformed);
 
@@ -554,22 +554,22 @@ public class PDFDebugger extends JFrame
     
     private JMenu createEditMenu()
     {
-        JMenu editMenu = new JMenu("Edit");
+        final JMenu editMenu = new JMenu("Edit");
         editMenu.setMnemonic('E');
         
-        JMenuItem cutMenuItem = new JMenuItem("Cut");
+        final JMenuItem cutMenuItem = new JMenuItem("Cut");
         cutMenuItem.setEnabled(false);
         editMenu.add(cutMenuItem);
 
-        JMenuItem copyMenuItem = new JMenuItem("Copy");
+        final JMenuItem copyMenuItem = new JMenuItem("Copy");
         copyMenuItem.setEnabled(false);
         editMenu.add(copyMenuItem);
 
-        JMenuItem pasteMenuItem = new JMenuItem("Paste");
+        final JMenuItem pasteMenuItem = new JMenuItem("Paste");
         pasteMenuItem.setEnabled(false);
         editMenu.add(pasteMenuItem);
 
-        JMenuItem deleteMenuItem = new JMenuItem("Delete");
+        final JMenuItem deleteMenuItem = new JMenuItem("Delete");
         deleteMenuItem.setEnabled(false);
         editMenu.add(deleteMenuItem);
         editMenu.addSeparator();
@@ -651,7 +651,7 @@ public class PDFDebugger extends JFrame
     /**
      * This method is called via reflection on Mac OS X.
      */
-    private void osxOpenFiles(String filename)
+    private void osxOpenFiles(final String filename)
     {
         try
         {
@@ -671,13 +671,13 @@ public class PDFDebugger extends JFrame
         exitMenuItemActionPerformed(null);
     }
 
-    private void openMenuItemActionPerformed(ActionEvent evt)
+    private void openMenuItemActionPerformed(final ActionEvent evt)
     {
         try
         {
             if (IS_MAC_OS)
             {
-                FileDialog openDialog = new FileDialog(this, "Open");
+                final FileDialog openDialog = new FileDialog(this, "Open");
                 openDialog.setFilenameFilter((dir, name) -> name.toLowerCase().endsWith(".pdf"));
                 openDialog.setVisible(true);
                 if (openDialog.getFile() != null)
@@ -687,11 +687,11 @@ public class PDFDebugger extends JFrame
             }
             else
             {
-                String[] extensions = new String[] {"pdf", "PDF"};
-                FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
-                FileOpenSaveDialog openDialog = new FileOpenSaveDialog(this, pdfFilter);
+                final String[] extensions = new String[] {"pdf", "PDF"};
+                final FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
+                final FileOpenSaveDialog openDialog = new FileOpenSaveDialog(this, pdfFilter);
 
-                File file = openDialog.openFile();
+                final File file = openDialog.openFile();
                 if (file != null)
                 {
                     readPDFFile(file, "");
@@ -704,14 +704,14 @@ public class PDFDebugger extends JFrame
         }
     }
 
-    private void jTree1ValueChanged(TreeSelectionEvent evt)
+    private void jTree1ValueChanged(final TreeSelectionEvent evt)
     {
-        TreePath path = tree.getSelectionPath();
+        final TreePath path = tree.getSelectionPath();
         if (path != null)
         {
             try
             {
-                Object selectedNode = path.getLastPathComponent();
+                final Object selectedNode = path.getLastPathComponent();
                 
                 statusBar.getStatusLabel().setText("");
                 
@@ -729,7 +729,7 @@ public class PDFDebugger extends JFrame
                 if (path.getParentPath() != null
                         && isFlagNode(selectedNode, path.getParentPath().getLastPathComponent()))
                 {
-                    Object parentNode = path.getParentPath().getLastPathComponent();
+                    final Object parentNode = path.getParentPath().getLastPathComponent();
                     showFlagPane(parentNode, selectedNode);
                     return;
                 }
@@ -769,10 +769,10 @@ public class PDFDebugger extends JFrame
 
         if (selectedNode instanceof COSArray && ((COSArray) selectedNode).size() > 0)
         {
-            COSBase arrayEntry = ((COSArray)selectedNode).get(0);
+            final COSBase arrayEntry = ((COSArray)selectedNode).get(0);
             if (arrayEntry instanceof COSName)
             {
-                COSName name = (COSName) arrayEntry;
+                final COSName name = (COSName) arrayEntry;
                 return SPECIALCOLORSPACES.contains(name);
             }
         }
@@ -785,10 +785,10 @@ public class PDFDebugger extends JFrame
 
         if (selectedNode instanceof COSArray && ((COSArray) selectedNode).size() > 0)
         {
-            COSBase arrayEntry = ((COSArray)selectedNode).get(0);
+            final COSBase arrayEntry = ((COSArray)selectedNode).get(0);
             if (arrayEntry instanceof COSName)
             {
-                COSName name = (COSName) arrayEntry;
+                final COSName name = (COSName) arrayEntry;
                 return OTHERCOLORSPACES.contains(name);
             }
         }
@@ -801,8 +801,8 @@ public class PDFDebugger extends JFrame
 
         if (selectedNode instanceof COSDictionary)
         {
-            COSDictionary dict = (COSDictionary) selectedNode;
-            COSBase typeItem = dict.getItem(COSName.TYPE);
+            final COSDictionary dict = (COSDictionary) selectedNode;
+            final COSBase typeItem = dict.getItem(COSName.TYPE);
             if (COSName.PAGE.equals(typeItem))
             {
                 return true;
@@ -815,11 +815,11 @@ public class PDFDebugger extends JFrame
         return false;
     }
 
-    private boolean isFlagNode(Object selectedNode, Object parentNode)
+    private boolean isFlagNode(final Object selectedNode, final Object parentNode)
     {
         if (selectedNode instanceof MapEntry)
         {
-            Object key = ((MapEntry) selectedNode).getKey();
+            final Object key = ((MapEntry) selectedNode).getKey();
             return (COSName.FLAGS.equals(key) && isFontDescriptor(parentNode)) || 
                     (COSName.F.equals(key) && isAnnot(parentNode)) || 
                     COSName.FF.equals(key) || 
@@ -830,38 +830,38 @@ public class PDFDebugger extends JFrame
         return false;
     }
 
-    private boolean isEncrypt(Object obj)
+    private boolean isEncrypt(final Object obj)
     {
         if (obj instanceof MapEntry)
         {
-            MapEntry entry = (MapEntry) obj;
+            final MapEntry entry = (MapEntry) obj;
             return COSName.ENCRYPT.equals(entry.getKey()) && entry.getValue() instanceof COSDictionary;
         }
         return false;
     }
 
-    private boolean isFontDescriptor(Object obj)
+    private boolean isFontDescriptor(final Object obj)
     {
-        Object underneathObject = getUnderneathObject(obj);
+        final Object underneathObject = getUnderneathObject(obj);
         return underneathObject instanceof COSDictionary &&
                 ((COSDictionary) underneathObject).containsKey(COSName.TYPE) &&
                 ((COSDictionary) underneathObject).getCOSName(COSName.TYPE).equals(COSName.FONT_DESC);
     }
 
-    private boolean isAnnot(Object obj)
+    private boolean isAnnot(final Object obj)
     {
-        Object underneathObject = getUnderneathObject(obj);
+        final Object underneathObject = getUnderneathObject(obj);
         return underneathObject instanceof COSDictionary &&
                 ((COSDictionary) underneathObject).containsKey(COSName.TYPE) &&
                 ((COSDictionary) underneathObject).getCOSName(COSName.TYPE).equals(COSName.ANNOT);
     }
 
-    private boolean isStream(Object selectedNode)
+    private boolean isStream(final Object selectedNode)
     {
         return getUnderneathObject(selectedNode) instanceof COSStream;
     }
 
-    private boolean isString(Object selectedNode)
+    private boolean isString(final Object selectedNode)
     {
         return getUnderneathObject(selectedNode) instanceof COSString;
     }
@@ -871,7 +871,7 @@ public class PDFDebugger extends JFrame
         selectedNode = getUnderneathObject(selectedNode);
         if (selectedNode instanceof COSDictionary)
         {
-            COSDictionary dic = (COSDictionary)selectedNode;
+            final COSDictionary dic = (COSDictionary)selectedNode;
             return dic.containsKey(COSName.TYPE) &&
                     dic.getCOSName(COSName.TYPE).equals(COSName.FONT) &&
                     !isCIDFont(dic);
@@ -879,7 +879,7 @@ public class PDFDebugger extends JFrame
         return false;
     }
 
-    private boolean isCIDFont(COSDictionary dic)
+    private boolean isCIDFont(final COSDictionary dic)
     {
         return dic.containsKey(COSName.SUBTYPE) &&
                 (dic.getCOSName(COSName.SUBTYPE).equals(COSName.CID_FONT_TYPE0)
@@ -896,11 +896,11 @@ public class PDFDebugger extends JFrame
 
         if (csNode instanceof COSArray && ((COSArray) csNode).size() > 0)
         {
-            COSArray array = (COSArray)csNode;
-            COSBase arrayEntry = array.get(0);
+            final COSArray array = (COSArray)csNode;
+            final COSBase arrayEntry = array.get(0);
             if (arrayEntry instanceof COSName)
             {
-                COSName csName = (COSName) arrayEntry;
+                final COSName csName = (COSName) arrayEntry;
                 if (csName.equals(COSName.SEPARATION))
                 {
                     replaceRightComponent(new CSSeparation(array).getPanel());
@@ -925,7 +925,7 @@ public class PDFDebugger extends JFrame
     {
         selectedNode = getUnderneathObject(selectedNode);
 
-        COSDictionary page;
+        final COSDictionary page;
         if (selectedNode instanceof COSDictionary)
         {
             page = (COSDictionary) selectedNode;
@@ -935,10 +935,10 @@ public class PDFDebugger extends JFrame
             page = ((PageEntry) selectedNode).getDict();
         }
 
-        COSBase typeItem = page.getItem(COSName.TYPE);
+        final COSBase typeItem = page.getItem(COSName.TYPE);
         if (COSName.PAGE.equals(typeItem))
         {
-            PagePane pagePane = new PagePane(document, page, statusBar.getStatusLabel());
+            final PagePane pagePane = new PagePane(document, page, statusBar.getStatusLabel());
             replaceRightComponent(new JScrollPane(pagePane.getPanel()));
         }
     }
@@ -950,33 +950,33 @@ public class PDFDebugger extends JFrame
         {
             selectedNode = ((MapEntry)selectedNode).getKey();
             selectedNode = getUnderneathObject(selectedNode);
-            FlagBitsPane flagBitsPane = new FlagBitsPane(document,
+            final FlagBitsPane flagBitsPane = new FlagBitsPane(document,
                     (COSDictionary) parentNode,
                     (COSName) selectedNode);
             replaceRightComponent(flagBitsPane.getPane());
         }
     }
 
-    private void showStream(COSStream stream, TreePath path) throws IOException
+    private void showStream(final COSStream stream, final TreePath path) throws IOException
     {
         boolean isContentStream = false;
         boolean isThumb = false;
 
-        COSName key = getNodeKey(path.getLastPathComponent());
-        COSName parentKey = getNodeKey(path.getParentPath().getLastPathComponent());
+        final COSName key = getNodeKey(path.getLastPathComponent());
+        final COSName parentKey = getNodeKey(path.getParentPath().getLastPathComponent());
         COSDictionary resourcesDic = null;
 
         if (COSName.CONTENTS.equals(key))
         {
-            Object pageObj = path.getParentPath().getLastPathComponent();
-            COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
+            final Object pageObj = path.getParentPath().getLastPathComponent();
+            final COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
             resourcesDic = (COSDictionary) page.getDictionaryObject(COSName.RESOURCES);
             isContentStream = true;
         }
         else if (COSName.CONTENTS.equals(parentKey) || COSName.CHAR_PROCS.equals(parentKey))
         {
-            Object pageObj = path.getParentPath().getParentPath().getLastPathComponent();
-            COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
+            final Object pageObj = path.getParentPath().getParentPath().getLastPathComponent();
+            final COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
             resourcesDic = (COSDictionary) page.getDictionaryObject(COSName.RESOURCES);
             isContentStream = true;
         }
@@ -997,20 +997,20 @@ public class PDFDebugger extends JFrame
         else if (COSName.IMAGE.equals((stream).getCOSName(COSName.SUBTYPE)))
         {
             // not to be used for /Thumb, even if it contains /Subtype /Image
-            Object resourcesObj = path.getParentPath().getParentPath().getLastPathComponent();
+            final Object resourcesObj = path.getParentPath().getParentPath().getLastPathComponent();
             resourcesDic = (COSDictionary) getUnderneathObject(resourcesObj);
         }
-        StreamPane streamPane = new StreamPane(stream, isContentStream, isThumb, resourcesDic);
+        final StreamPane streamPane = new StreamPane(stream, isContentStream, isThumb, resourcesDic);
         replaceRightComponent(streamPane.getPanel());
     }
 
-    private void showFont(Object selectedNode, TreePath path)
+    private void showFont(final Object selectedNode, final TreePath path)
     {
-        COSName fontName = getNodeKey(selectedNode);
-        COSDictionary resourceDic = (COSDictionary) getUnderneathObject(path.getParentPath().getParentPath().getLastPathComponent());
+        final COSName fontName = getNodeKey(selectedNode);
+        final COSDictionary resourceDic = (COSDictionary) getUnderneathObject(path.getParentPath().getParentPath().getLastPathComponent());
 
-        FontEncodingPaneController fontEncodingPaneController = new FontEncodingPaneController(fontName, resourceDic);
-        JPanel pane = fontEncodingPaneController.getPane();
+        final FontEncodingPaneController fontEncodingPaneController = new FontEncodingPaneController(fontName, resourceDic);
+        final JPanel pane = fontEncodingPaneController.getPane();
         if (pane == null)
         {
             // unsupported font type
@@ -1021,20 +1021,20 @@ public class PDFDebugger extends JFrame
     }
 
     // replace the right component while keeping divider position
-    private void replaceRightComponent(Component pane)
+    private void replaceRightComponent(final Component pane)
     {
-        int div = jSplitPane.getDividerLocation();
+        final int div = jSplitPane.getDividerLocation();
         jSplitPane.setRightComponent(pane);
         jSplitPane.setDividerLocation(div);
     }
 
-    private void showString(Object selectedNode)
+    private void showString(final Object selectedNode)
     {
-        COSString string = (COSString)getUnderneathObject(selectedNode);
+        final COSString string = (COSString)getUnderneathObject(selectedNode);
         replaceRightComponent(new StringPane(string).getPane());
     }
 
-    private COSName getNodeKey(Object selectedNode)
+    private COSName getNodeKey(final Object selectedNode)
     {
         if (selectedNode instanceof MapEntry)
         {
@@ -1065,7 +1065,7 @@ public class PDFDebugger extends JFrame
         return selectedNode;
     }
 
-    private String convertToString( Object selectedNode )
+    private String convertToString(final Object selectedNode )
     {
         String data = null;
         if(selectedNode instanceof COSBoolean)
@@ -1092,7 +1092,7 @@ public class PDFDebugger extends JFrame
         {
             String text = ((COSString) selectedNode).getString();
             // display unprintable strings as hex
-            for (char c : text.toCharArray())
+            for (final char c : text.toCharArray())
             {
                 if (Character.isISOControl(c))
                 {
@@ -1106,13 +1106,13 @@ public class PDFDebugger extends JFrame
         {
             try
             {
-                COSStream stream = (COSStream) selectedNode;
+                final COSStream stream = (COSStream) selectedNode;
                 try (InputStream in = stream.createInputStream())
                 {
                     data = new String(IOUtils.toByteArray(in));
                 }
             }
-            catch( IOException e )
+            catch( final IOException e )
             {
                 throw new RuntimeException(e);
             }
@@ -1128,7 +1128,7 @@ public class PDFDebugger extends JFrame
         return data;
     }
     
-    private void exitMenuItemActionPerformed(ActionEvent ignored)
+    private void exitMenuItemActionPerformed(final ActionEvent ignored)
     {
         if( document != null )
         {
@@ -1141,7 +1141,7 @@ public class PDFDebugger extends JFrame
                 }
                 recentFiles.close();
             }
-            catch( IOException e )
+            catch( final IOException e )
             {
                 throw new RuntimeException(e);
             }
@@ -1163,13 +1163,13 @@ public class PDFDebugger extends JFrame
         System.exit(0);
     }
 
-    private void printMenuItemActionPerformed(ActionEvent evt)
+    private void printMenuItemActionPerformed(final ActionEvent evt)
     {
         if (document == null)
         {
             return;
         }
-        AccessPermission ap = document.getCurrentAccessPermission();
+        final AccessPermission ap = document.getCurrentAccessPermission();
         if (!ap.canPrint())
         {
             JOptionPane.showMessageDialog(this, "You do not have permission to print");
@@ -1178,13 +1178,13 @@ public class PDFDebugger extends JFrame
 
         try
         {
-            PrinterJob job = PrinterJob.getPrinterJob();
+            final PrinterJob job = PrinterJob.getPrinterJob();
             job.setPageable(new PDFPageable(document));
-            PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
-            PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
+            final PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+            final PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
             if (vp != null && vp.getDuplex() != null)
             {
-                String dp = vp.getDuplex();
+                final String dp = vp.getDuplex();
                 if (PDViewerPreferences.DUPLEX.DuplexFlipLongEdge.toString().equals(dp))
                 {
                     pras.add(Sides.TWO_SIDED_LONG_EDGE);
@@ -1217,13 +1217,13 @@ public class PDFDebugger extends JFrame
         }
     }
 
-    private void readPDFFile(String filePath, String password) throws IOException
+    private void readPDFFile(final String filePath, final String password) throws IOException
     {
-        File file = new File(filePath);
+        final File file = new File(filePath);
         readPDFFile(file, password);
     }
     
-    private void readPDFFile(final File file, String password) throws IOException
+    private void readPDFFile(final File file, final String password) throws IOException
     {
         if( document != null )
         {
@@ -1237,7 +1237,7 @@ public class PDFDebugger extends JFrame
         recentFiles.removeFile(file.getPath());
         LogDialog.instance().clear();
         
-        DocumentOpener documentOpener = new DocumentOpener(password)
+        final DocumentOpener documentOpener = new DocumentOpener(password)
         {
             @Override
             PDDocument open() throws IOException
@@ -1263,7 +1263,7 @@ public class PDFDebugger extends JFrame
         addRecentFileItems();
     }
     
-    private void readPDFurl(final String urlString, String password) throws IOException
+    private void readPDFurl(final String urlString, final String password) throws IOException
     {
         if (document != null)
         {
@@ -1275,7 +1275,7 @@ public class PDFDebugger extends JFrame
         }
         currentFilePath = urlString;
         LogDialog.instance().clear();
-        DocumentOpener documentOpener = new DocumentOpener(password)
+        final DocumentOpener documentOpener = new DocumentOpener(password)
         {
             @Override
             PDDocument open() throws IOException
@@ -1302,13 +1302,13 @@ public class PDFDebugger extends JFrame
     
     public void initTree()
     {
-        TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
+        final TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
         statusPane.updateTreeStatus(treeStatus);
         
         if (isPageMode)
         {
-            File file = new File(currentFilePath);
-            DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
+            final File file = new File(currentFilePath);
+            final DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
             ZoomMenu.getInstance().resetZoom();
             RotationMenu.getInstance().setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
             ImageTypeMenu.getInstance().setImageTypeSelection(ImageTypeMenu.IMAGETYPE_RGB);
@@ -1331,7 +1331,7 @@ public class PDFDebugger extends JFrame
     {
         String password;
 
-        DocumentOpener(String password)
+        DocumentOpener(final String password)
         {
             this.password = password;
         }
@@ -1361,16 +1361,16 @@ public class PDFDebugger extends JFrame
                 catch (InvalidPasswordException ipe)
                 {
                     // https://stackoverflow.com/questions/8881213/joptionpane-to-get-password
-                    JPanel panel = new JPanel();
-                    JLabel label = new JLabel("Password:");
-                    JPasswordField pass = new JPasswordField(10);
+                    final JPanel panel = new JPanel();
+                    final JLabel label = new JLabel("Password:");
+                    final JPasswordField pass = new JPasswordField(10);
                     panel.add(label);
                     panel.add(pass);
-                    String[] options = new String[]
+                    final String[] options = new String[]
                     {
                         "OK", "Cancel"
                     };
-                    int option = JOptionPane.showOptionDialog(null, panel, "Enter password",
+                    final int option = JOptionPane.showOptionDialog(null, panel, "Enter password",
                             JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
                             null, options, "");
                     if (option == 0)
@@ -1386,12 +1386,12 @@ public class PDFDebugger extends JFrame
 
     private void addRecentFileItems()
     {
-        Action recentMenuAction = new AbstractAction()
+        final Action recentMenuAction = new AbstractAction()
         {
             @Override
-            public void actionPerformed(ActionEvent actionEvent)
+            public void actionPerformed(final ActionEvent actionEvent)
             {
-                String filePath = (String) ((JComponent) actionEvent.getSource()).getClientProperty("path");
+                final String filePath = (String) ((JComponent) actionEvent.getSource()).getClientProperty("path");
                 try
                 {
                     readPDFFile(filePath, "");
@@ -1405,12 +1405,12 @@ public class PDFDebugger extends JFrame
         if (!recentFiles.isEmpty())
         {
             recentFilesMenu.removeAll();
-            List<String> files = recentFiles.getFiles();
+            final List<String> files = recentFiles.getFiles();
             for (int i = files.size() - 1; i >= 0; i--)
             {
-                String path = files.get(i);
-                String name = new File(path).getName();
-                JMenuItem recentFileMenuItem = new JMenuItem(name);
+                final String path = files.get(i);
+                final String name = new File(path).getName();
+                final JMenuItem recentFileMenuItem = new JMenuItem(name);
                 recentFileMenuItem.putClientProperty("path", path);
                 recentFileMenuItem.addActionListener(recentMenuAction);
                 recentFilesMenu.add(recentFileMenuItem);
@@ -1426,9 +1426,9 @@ public class PDFDebugger extends JFrame
      * @param pageIndex 0-based page number.
      * @return a page label or null if not available.
      */
-    public static String getPageLabel(PDDocument document, int pageIndex)
+    public static String getPageLabel(final PDDocument document, final int pageIndex)
     {
-        PDPageLabels pageLabels;
+        final PDPageLabels pageLabels;
         try
         {
             pageLabels = document.getDocumentCatalog().getPageLabels();
@@ -1439,7 +1439,7 @@ public class PDFDebugger extends JFrame
         }
         if (pageLabels != null)
         {
-            String[] labels = pageLabels.getLabelsByPageIndices();
+            final String[] labels = pageLabels.getLabelsByPageIndices();
             if (labels[pageIndex] != null)
             {
                 return labels[pageIndex];

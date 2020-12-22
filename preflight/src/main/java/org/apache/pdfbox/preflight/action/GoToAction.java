@@ -44,7 +44,7 @@ public class GoToAction extends AbstractActionManager
      * @param ctx the preflight context.
      * @param aaKey the name of the key which identifies the action in an additional action dictionary.
      */
-    public GoToAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
+    public GoToAction(final ActionManagerFactory amFact, final COSDictionary adict, final PreflightContext ctx, final String aaKey)
     {
         super(amFact, adict, ctx, aaKey);
     }
@@ -57,7 +57,7 @@ public class GoToAction extends AbstractActionManager
     @Override
     protected boolean innerValid() throws ValidationException
     {
-        COSBase dest = this.actionDictionary.getItem(COSName.D);
+        final COSBase dest = this.actionDictionary.getItem(COSName.D);
 
         // ---- D entry is mandatory
         if (dest == null)

@@ -36,7 +36,7 @@ public class PDNamedDestination extends PDDestination
      *
      * @param dest The named destination.
      */
-    public PDNamedDestination( COSString dest )
+    public PDNamedDestination(final COSString dest )
     {
         namedDestination = dest;
     }
@@ -46,7 +46,7 @@ public class PDNamedDestination extends PDDestination
      *
      * @param dest The named destination.
      */
-    public PDNamedDestination( COSName dest )
+    public PDNamedDestination(final COSName dest )
     {
         namedDestination = dest;
     }
@@ -64,7 +64,7 @@ public class PDNamedDestination extends PDDestination
      *
      * @param dest The named destination.
      */
-    public PDNamedDestination( String dest )
+    public PDNamedDestination(final String dest )
     {
         namedDestination = new COSString( dest );
     }
@@ -107,7 +107,7 @@ public class PDNamedDestination extends PDDestination
      *
      * @throws IOException If there is an error setting the named destination.
      */
-    public void setNamedDestination( String dest ) throws IOException
+    public void setNamedDestination(final String dest ) throws IOException
     {
         if (dest == null)
         {

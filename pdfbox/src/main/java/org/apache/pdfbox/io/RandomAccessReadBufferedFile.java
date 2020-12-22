@@ -34,10 +34,10 @@ import java.util.Map;
  */
 public class RandomAccessReadBufferedFile implements RandomAccessRead
 {
-    private int pageSizeShift = 12;
-    private int pageSize = 1 << pageSizeShift;
-    private long pageOffsetMask = -1L << pageSizeShift;
-    private int maxCachedPages = 1000;
+    private final int pageSizeShift = 12;
+    private final int pageSize = 1 << pageSizeShift;
+    private final long pageOffsetMask = -1L << pageSizeShift;
+    private final int maxCachedPages = 1000;
 
     private ByteBuffer lastRemovedCachePage = null;
 
@@ -48,7 +48,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
         private static final long serialVersionUID = -6302488539257741101L;
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<Long, ByteBuffer> eldest)
+        protected boolean removeEldestEntry(final Map.Entry<Long, ByteBuffer> eldest)
         {
             final boolean doRemove = size() > maxCachedPages;
             if (doRemove)
@@ -75,7 +75,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
      * @param filename the filename of the file to be read.
      * @throws IOException if something went wrong while accessing the given file.
      */
-    public RandomAccessReadBufferedFile( String filename ) throws IOException 
+    public RandomAccessReadBufferedFile(final String filename ) throws IOException
     {
         this(new File(filename));
     }
@@ -86,7 +86,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
      * @param file the file to be read.
      * @throws IOException if something went wrong while accessing the given file.
      */
-    public RandomAccessReadBufferedFile( File file ) throws IOException 
+    public RandomAccessReadBufferedFile(final File file ) throws IOException
     {
         fileChannel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
         fileLength = file.length();
@@ -140,7 +140,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
      */
     private ByteBuffer readPage() throws IOException
     {
-        ByteBuffer page;
+        final ByteBuffer page;
 
         if ( lastRemovedCachePage != null )
         {
@@ -155,7 +155,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
         int readBytes = 0;
         while ( readBytes < pageSize )
         {
-            int curBytesRead = fileChannel.read(page);
+            final int curBytesRead = fileChannel.read(page);
             if (curBytesRead < 0)
             {
                 // EOF
@@ -186,7 +186,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     }
     
     @Override
-    public int read( byte[] b, int off, int len ) throws IOException
+    public int read(final byte[] b, final int off, final int len ) throws IOException
     {
         checkClosed();
         if ( fileOffset >= fileLength )
@@ -253,16 +253,16 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     }
 
     @Override
-    public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
+    public RandomAccessReadView createView(final long startPosition, final long streamLength) throws IOException
     {
         checkClosed();
         // support long values?
-        ByteBuffer byteBuffer = ByteBuffer.allocate((int) streamLength);
+        final ByteBuffer byteBuffer = ByteBuffer.allocate((int) streamLength);
         fileChannel.position(startPosition);
         int readBytes = 0;
         while (readBytes < streamLength)
         {
-            int curBytesRead = fileChannel.read(byteBuffer);
+            final int curBytesRead = fileChannel.read(byteBuffer);
             if (curBytesRead < 0)
             {
                 // EOF

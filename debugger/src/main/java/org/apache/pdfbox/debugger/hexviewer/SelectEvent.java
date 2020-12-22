@@ -40,7 +40,7 @@ class SelectEvent
      * @param ind index of present selection.
      * @param nav Type of navigation.
      */
-    SelectEvent(int ind, String nav)
+    SelectEvent(final int ind, final String nav)
     {
         hexIndex = ind;
         navigation = nav;

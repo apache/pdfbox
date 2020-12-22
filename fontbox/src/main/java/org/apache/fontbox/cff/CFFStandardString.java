@@ -32,7 +32,7 @@ public final class CFFStandardString
      * @param sid the given SID
      * @return the mapped string
      */
-    public static String getName(int sid)
+    public static String getName(final int sid)
     {
         return SID2STR[sid];
     }

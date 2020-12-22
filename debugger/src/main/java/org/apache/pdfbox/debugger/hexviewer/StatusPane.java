@@ -42,13 +42,13 @@ class StatusPane extends JPanel
 
     private void createView()
     {
-        JLabel line = new JLabel("Line:");
-        JLabel column = new JLabel("Column:");
+        final JLabel line = new JLabel("Line:");
+        final JLabel column = new JLabel("Column:");
         lineLabel = new JLabel("");
         lineLabel.setPreferredSize(new Dimension(100, HEIGHT));
         colLabel = new JLabel("");
         colLabel.setPreferredSize(new Dimension(100, HEIGHT));
-        JLabel index = new JLabel("Index:");
+        final JLabel index = new JLabel("Index:");
         indexLabel = new JLabel("");
 
         add(line);
@@ -59,7 +59,7 @@ class StatusPane extends JPanel
         add(indexLabel);
     }
 
-    void updateStatus(int index)
+    void updateStatus(final int index)
     {
         lineLabel.setText(String.valueOf(HexModel.lineNumber(index)));
         colLabel.setText(String.valueOf(HexModel.elementIndexInLine(index)+1));

@@ -43,7 +43,7 @@ public class COSObjectPool
      *
      * @param highestXRefObjectNumber The highest known object number.
      */
-    public COSObjectPool(long highestXRefObjectNumber)
+    public COSObjectPool(final long highestXRefObjectNumber)
     {
         this.highestXRefObjectNumber = Math.max(this.highestXRefObjectNumber,
                 highestXRefObjectNumber);
@@ -56,7 +56,7 @@ public class COSObjectPool
      * @param object The object, that shall be added.
      * @return The actual key, the object has been added for.
      */
-    public COSObjectKey put(COSObjectKey key, COSBase object)
+    public COSObjectKey put(final COSObjectKey key, final COSBase object)
     {
         if (object == null || contains(object))
         {
@@ -86,7 +86,7 @@ public class COSObjectPool
      * @return key The {@link COSObjectKey}, that matches the registered {@link COSBase}, or null if such an object is
      * not registered.
      */
-    public COSObjectKey getKey(COSBase object)
+    public COSObjectKey getKey(final COSBase object)
     {
         COSObjectKey key = null;
         if (object instanceof COSObject)
@@ -106,7 +106,7 @@ public class COSObjectPool
      * @param key The {@link COSObjectKey} that shall be checked for a registered {@link COSBase}.
      * @return True, if a {@link COSBase} is registered for the given {@link COSObjectKey}.
      */
-    public boolean contains(COSObjectKey key)
+    public boolean contains(final COSObjectKey key)
     {
         return keyPool.containsKey(key);
     }
@@ -119,7 +119,7 @@ public class COSObjectPool
      * @return The {@link COSBase}, that is registered for the given {@link COSObjectKey}, or null if no object is
      * registered for that key.
      */
-    public COSBase getObject(COSObjectKey key)
+    public COSBase getObject(final COSObjectKey key)
     {
         return keyPool.get(key);
     }
@@ -130,7 +130,7 @@ public class COSObjectPool
      * @param object The {@link COSBase} that shall be checked.
      * @return True, if such a {@link COSBase} is registered in this pool.
      */
-    public boolean contains(COSBase object)
+    public boolean contains(final COSBase object)
     {
         return (object instanceof COSObject
                 && objectPool.containsKey(((COSObject) object).getObject()))

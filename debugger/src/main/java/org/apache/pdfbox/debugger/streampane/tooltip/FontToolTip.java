@@ -39,15 +39,15 @@ final class FontToolTip implements ToolTip
      *                  the concern font.
      * @param rowText String instance of the tooltip row.
      */
-    FontToolTip(PDResources resources, String rowText)
+    FontToolTip(final PDResources resources, final String rowText)
     {
         initUI(extractFontReference(rowText), resources);
     }
 
-    private void initUI(String fontReferenceName, PDResources resources)
+    private void initUI(final String fontReferenceName, final PDResources resources)
     {
         PDFont font = null;
-        for (COSName name: resources.getFontNames())
+        for (final COSName name: resources.getFontNames())
         {
             if (name.getName().equals(fontReferenceName))
             {
@@ -67,7 +67,7 @@ final class FontToolTip implements ToolTip
         }
     }
 
-    private String extractFontReference(String rowText)
+    private String extractFontReference(final String rowText)
     {
         return rowText.trim().split(" ")[0].substring(1);
     }

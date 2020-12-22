@@ -89,7 +89,7 @@ public final class OverlayPDF implements Callable<Integer>
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new OverlayPDF()).execute(args);
+        final int exitCode = new CommandLine(new OverlayPDF()).execute(args);
         System.exit(exitCode);
     }
 
@@ -98,7 +98,7 @@ public final class OverlayPDF implements Callable<Integer>
     {
         int retcode = 0;
 
-        Overlay overlayer = new Overlay();
+        final Overlay overlayer = new Overlay();
         overlayer.setOverlayPosition(position);
 
         if (firstPageOverlay != null)

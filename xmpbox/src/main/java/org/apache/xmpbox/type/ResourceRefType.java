@@ -82,7 +82,7 @@ public class ResourceRefType extends AbstractStructuredType
      * @param metadata
      *            The metadata to attach to this property
      */
-    public ResourceRefType(XMPMetadata metadata)
+    public ResourceRefType(final XMPMetadata metadata)
     {
         super(metadata);
         addNamespace(getNamespace(), getPreferedPrefix());
@@ -91,7 +91,7 @@ public class ResourceRefType extends AbstractStructuredType
 
     public String getDocumentID()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(DOCUMENT_ID, URIType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(DOCUMENT_ID, URIType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -102,14 +102,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setDocumentID(String value)
+    public void setDocumentID(final String value)
     {
         addSimpleProperty(DOCUMENT_ID, value);
     }
 
     public String getFilePath()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(FILE_PATH, URIType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(FILE_PATH, URIType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -120,14 +120,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setFilePath(String value)
+    public void setFilePath(final String value)
     {
         addSimpleProperty(FILE_PATH, value);
     }
 
     public String getInstanceID()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(INSTANCE_ID, URIType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(INSTANCE_ID, URIType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -138,14 +138,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setInstanceID(String value)
+    public void setInstanceID(final String value)
     {
         addSimpleProperty(INSTANCE_ID, value);
     }
 
     public Calendar getLastModifyDate()
     {
-        DateType absProp = (DateType) getFirstEquivalentProperty(LAST_MODIFY_DATE, DateType.class);
+        final DateType absProp = (DateType) getFirstEquivalentProperty(LAST_MODIFY_DATE, DateType.class);
         if (absProp != null)
         {
             return absProp.getValue();
@@ -156,14 +156,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setLastModifyDate(Calendar value)
+    public void setLastModifyDate(final Calendar value)
     {
         addSimpleProperty(LAST_MODIFY_DATE, value);
     }
 
     public String getManageUI()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(MANAGE_UI, URIType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(MANAGE_UI, URIType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -174,14 +174,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setManageUI(String value)
+    public void setManageUI(final String value)
     {
         addSimpleProperty(MANAGE_UI, value);
     }
 
     public String getManageTo()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(MANAGE_TO, URIType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(MANAGE_TO, URIType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -192,14 +192,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setManageTo(String value)
+    public void setManageTo(final String value)
     {
         addSimpleProperty(MANAGE_TO, value);
     }
 
     public String getManager()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(MANAGER, AgentNameType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(MANAGER, AgentNameType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -210,14 +210,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setManager(String value)
+    public void setManager(final String value)
     {
         addSimpleProperty(MANAGER, value);
     }
 
     public String getManagerVariant()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(MANAGER_VARIANT, TextType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(MANAGER_VARIANT, TextType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -228,14 +228,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setManagerVariant(String value)
+    public void setManagerVariant(final String value)
     {
         addSimpleProperty(MANAGER_VARIANT, value);
     }
 
     public String getPartMapping()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(PART_MAPPING, TextType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(PART_MAPPING, TextType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -246,14 +246,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setPartMapping(String value)
+    public void setPartMapping(final String value)
     {
         addSimpleProperty(PART_MAPPING, value);
     }
 
     public String getRenditionParams()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(RENDITION_PARAMS, TextType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(RENDITION_PARAMS, TextType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -264,14 +264,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setRenditionParams(String value)
+    public void setRenditionParams(final String value)
     {
         addSimpleProperty(RENDITION_PARAMS, value);
     }
 
     public String getVersionID()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(VERSION_ID, TextType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(VERSION_ID, TextType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -282,14 +282,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setVersionID(String value)
+    public void setVersionID(final String value)
     {
         addSimpleProperty(VERSION_ID, value);
     }
 
     public String getMaskMarkers()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(MASK_MARKERS, ChoiceType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(MASK_MARKERS, ChoiceType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -300,14 +300,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setMaskMarkers(String value)
+    public void setMaskMarkers(final String value)
     {
         addSimpleProperty(MASK_MARKERS, value);
     }
 
     public String getRenditionClass()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(RENDITION_CLASS, RenditionClassType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(RENDITION_CLASS, RenditionClassType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -318,14 +318,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setRenditionClass(String value)
+    public void setRenditionClass(final String value)
     {
         addSimpleProperty(RENDITION_CLASS, value);
     }
 
     public String getFromPart()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(FROM_PART, PartType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(FROM_PART, PartType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -336,14 +336,14 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setFromPart(String value)
+    public void setFromPart(final String value)
     {
         addSimpleProperty(FROM_PART, value);
     }
 
     public String getToPart()
     {
-        TextType absProp = (TextType) getFirstEquivalentProperty(TO_PART, PartType.class);
+        final TextType absProp = (TextType) getFirstEquivalentProperty(TO_PART, PartType.class);
         if (absProp != null)
         {
             return absProp.getStringValue();
@@ -354,12 +354,12 @@ public class ResourceRefType extends AbstractStructuredType
         }
     }
 
-    public void setToPart(String value)
+    public void setToPart(final String value)
     {
         addSimpleProperty(TO_PART, value);
     }
 
-    public void addAlternatePath(String value)
+    public void addAlternatePath(final String value)
     {
         ArrayProperty seq = (ArrayProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ArrayProperty.class);
         if (seq == null)
@@ -368,8 +368,8 @@ public class ResourceRefType extends AbstractStructuredType
                     Cardinality.Seq);
             addProperty(seq);
         }
-        TypeMapping tm = getMetadata().getTypeMapping();
-        TextType tt = (TextType) tm.instanciateSimpleProperty(null, "rdf", "li", value, Types.Text);
+        final TypeMapping tm = getMetadata().getTypeMapping();
+        final TextType tt = (TextType) tm.instanciateSimpleProperty(null, "rdf", "li", value, Types.Text);
         seq.addProperty(tt);
     }
 
@@ -390,7 +390,7 @@ public class ResourceRefType extends AbstractStructuredType
      */
     public List<String> getAlternatePaths()
     {
-        ArrayProperty seq = (ArrayProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ArrayProperty.class);
+        final ArrayProperty seq = (ArrayProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ArrayProperty.class);
         if (seq != null)
         {
             return seq.getElementsAsString();

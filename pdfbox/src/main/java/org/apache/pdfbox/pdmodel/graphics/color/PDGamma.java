@@ -48,7 +48,7 @@ public final class PDGamma implements COSObjectable
      * Creates a new gamma from a COS array.
      * @param array the array containing the XYZ values
      */
-    public PDGamma(COSArray array)
+    public PDGamma(final COSArray array)
     {
         values = array;
     }
@@ -85,7 +85,7 @@ public final class PDGamma implements COSObjectable
      * Sets the r value of the tristimulus.
      * @param r the r value for the tristimulus
      */
-    public void setR(float r)
+    public void setR(final float r)
     {
         values.set(0, new COSFloat(r));
     }
@@ -103,7 +103,7 @@ public final class PDGamma implements COSObjectable
      * Sets the g value of the tristimulus.
      * @param g the g value for the tristimulus
      */
-    public void setG(float g)
+    public void setG(final float g)
     {
         values.set(1, new COSFloat(g));
     }
@@ -121,7 +121,7 @@ public final class PDGamma implements COSObjectable
      * Sets the b value of the tristimulus.
      * @param b he b value for the tristimulus
      */
-    public void setB(float b)
+    public void setB(final float b)
     {
         values.set(2, new COSFloat(b));
     }

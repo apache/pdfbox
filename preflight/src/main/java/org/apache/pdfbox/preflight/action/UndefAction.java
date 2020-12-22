@@ -49,7 +49,7 @@ public class UndefAction extends AbstractActionManager
      * @param name
      *            the action type
      */
-    public UndefAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey, String name)
+    public UndefAction(final ActionManagerFactory amFact, final COSDictionary adict, final PreflightContext ctx, final String aaKey, final String name)
     {
         super(amFact, adict, ctx, aaKey);
         this.actionName = name;

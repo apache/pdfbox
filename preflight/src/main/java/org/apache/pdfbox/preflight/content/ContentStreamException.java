@@ -27,17 +27,17 @@ public class ContentStreamException extends ValidationException
 {
     private String errorCode = "";
 
-    public ContentStreamException(String arg0, Throwable arg1)
+    public ContentStreamException(final String arg0, final Throwable arg1)
     {
         super(arg0);
     }
 
-    public ContentStreamException(String arg0)
+    public ContentStreamException(final String arg0)
     {
         super(arg0);
     }
 
-    public ContentStreamException(Throwable arg0)
+    public ContentStreamException(final Throwable arg0)
     {
         super(arg0.getMessage());
     }
@@ -47,7 +47,7 @@ public class ContentStreamException extends ValidationException
         return errorCode;
     }
 
-    public void setErrorCode(String errorCode)
+    public void setErrorCode(final String errorCode)
     {
         this.errorCode = errorCode;
     }

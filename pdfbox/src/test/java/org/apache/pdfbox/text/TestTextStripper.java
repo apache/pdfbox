@@ -154,8 +154,8 @@ class TestTextStripper
         {
             expected = expected.trim();
             actual = actual.trim();
-            char[] expectedArray = expected.toCharArray();
-            char[] actualArray = actual.toCharArray();
+            final char[] expectedArray = expected.toCharArray();
+            final char[] actualArray = actual.toCharArray();
             int expectedIndex = 0;
             int actualIndex = 0;
             while( expectedIndex<expectedArray.length && actualIndex<actualArray.length )
@@ -203,7 +203,7 @@ class TestTextStripper
     /**
      * If the current index is whitespace then skip any subsequent whitespace.
      */
-    private int skipWhitespace( char[] array, int index )
+    private int skipWhitespace(final char[] array, int index )
     {
         //if we are at a space character then skip all space
         //characters, but when all done rollback 1 because stringsEqual
@@ -228,7 +228,7 @@ class TestTextStripper
      * @param bSort Whether or not the extracted text is sorted
      * @throws Exception when there is an exception
      */
-    private void doTestFile(File inFile, File outDir, boolean bLogResult, boolean bSort)
+    private void doTestFile(final File inFile, final File outDir, final boolean bLogResult, final boolean bSort)
     throws Exception
     {
         if(bSort)
@@ -250,9 +250,9 @@ class TestTextStripper
 
         try (PDDocument document = Loader.loadPDF(inFile))
         {
-            File outFile;
-            File diffFile;
-            File expectedFile;
+            final File outFile;
+            final File diffFile;
+            final File expectedFile;
 
             if(bSort)
             {
@@ -303,14 +303,14 @@ class TestTextStripper
         }
     }
 
-    private void compareResult(File expectedFile, File outFile, File inFile, boolean bSort, File diffFile)
+    private void compareResult(final File expectedFile, final File outFile, final File inFile, final boolean bSort, final File diffFile)
             throws IOException
     {
         boolean localFail = false;
         
         try (LineNumberReader expectedReader =
                 new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile), ENCODING));
-                LineNumberReader actualReader =
+             final LineNumberReader actualReader =
                         new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), ENCODING)))
         {
             while (true)
@@ -353,11 +353,11 @@ class TestTextStripper
         else
         {
             // https://code.google.com/p/java-diff-utils/wiki/SampleUsage
-            List<String> original = fileToLines(expectedFile);
-            List<String> revised = fileToLines(outFile);
+            final List<String> original = fileToLines(expectedFile);
+            final List<String> revised = fileToLines(outFile);
             
             // Compute diff. Get the Patch object. Patch is the container for computed deltas.
-            Patch<String> patch = DiffUtils.diff(original, revised);
+            final Patch<String> patch = DiffUtils.diff(original, revised);
             
             try (PrintStream diffPS = new PrintStream(diffFile, ENCODING))
             {
@@ -365,21 +365,21 @@ class TestTextStripper
                 {
                     if (delta instanceof ChangeDelta)
                     {
-                        ChangeDelta cdelta = (ChangeDelta) delta;
+                        final ChangeDelta cdelta = (ChangeDelta) delta;
                         diffPS.println("Org: " + cdelta.getOriginal());
                         diffPS.println("New: " + cdelta.getRevised());
                         diffPS.println();
                     }
                     else if (delta instanceof DeleteDelta)
                     {
-                        DeleteDelta ddelta = (DeleteDelta) delta;
+                        final DeleteDelta ddelta = (DeleteDelta) delta;
                         diffPS.println("Org: " + ddelta.getOriginal());
                         diffPS.println("New: " + ddelta.getRevised());
                         diffPS.println();
                     }
                     else if (delta instanceof InsertDelta)
                     {
-                        InsertDelta idelta = (InsertDelta) delta;
+                        final InsertDelta idelta = (InsertDelta) delta;
                         diffPS.println("Org: " + idelta.getOriginal());
                         diffPS.println("New: " + idelta.getRevised());
                         diffPS.println();
@@ -394,9 +394,9 @@ class TestTextStripper
     }
     
     // Helper method for get the file content
-    private static List<String> fileToLines(File file) throws IOException
+    private static List<String> fileToLines(final File file) throws IOException
     {
-        List<String> lines = new LinkedList<>();
+        final List<String> lines = new LinkedList<>();
         String line;
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), ENCODING)))
@@ -410,13 +410,13 @@ class TestTextStripper
         return lines;
     }
 
-    private int findOutlineItemDestPageNum(PDDocument doc, PDOutlineItem oi) throws IOException
+    private int findOutlineItemDestPageNum(final PDDocument doc, final PDOutlineItem oi) throws IOException
     {
-        PDPageDestination pageDest = (PDPageDestination) oi.getDestination();
+        final PDPageDestination pageDest = (PDPageDestination) oi.getDestination();
         
         // two methods to get the page index, the result should be identical!
-        int indexOfPage = doc.getPages().indexOf(oi.findDestinationPage(doc));
-        int pageNum = pageDest.retrievePageNumber();
+        final int indexOfPage = doc.getPages().indexOf(oi.findDestinationPage(doc));
+        final int pageNum = pageDest.retrievePageNumber();
         assertEquals(indexOfPage, pageNum);
                 
         return pageNum;
@@ -437,25 +437,25 @@ class TestTextStripper
     @Test
     void testStripByOutlineItems() throws IOException, URISyntaxException
     {
-        PDDocument doc = Loader
+        final PDDocument doc = Loader
                 .loadPDF(new File(this.getClass().getResource("../pdmodel/with_outline.pdf").toURI()));
-        PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
-        Iterable<PDOutlineItem> children = outline.children();
-        Iterator<PDOutlineItem> it = children.iterator();
-        PDOutlineItem oi0 = it.next();
-        PDOutlineItem oi2 = it.next();
-        PDOutlineItem oi3 = it.next();
-        PDOutlineItem oi4 = it.next();
+        final PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
+        final Iterable<PDOutlineItem> children = outline.children();
+        final Iterator<PDOutlineItem> it = children.iterator();
+        final PDOutlineItem oi0 = it.next();
+        final PDOutlineItem oi2 = it.next();
+        final PDOutlineItem oi3 = it.next();
+        final PDOutlineItem oi4 = it.next();
 
         assertEquals(0, findOutlineItemDestPageNum(doc, oi0));
         assertEquals(2, findOutlineItemDestPageNum(doc, oi2));
         assertEquals(3, findOutlineItemDestPageNum(doc, oi3));
         assertEquals(4, findOutlineItemDestPageNum(doc, oi4));
 
-        String textFull = stripper.getText(doc);
+        final String textFull = stripper.getText(doc);
         assertFalse(textFull.isEmpty());
         
-        String expectedTextFull = 
+        final String expectedTextFull =
                 "First level 1\n"
                 + "First level 2\n"
                 + "Fist level 3\n"
@@ -477,11 +477,11 @@ class TestTextStripper
         // by their bookmarks
         stripper.setStartBookmark(oi2);
         stripper.setEndBookmark(oi3);
-        String textoi23 = stripper.getText(doc);
+        final String textoi23 = stripper.getText(doc);
         assertFalse(textoi23.isEmpty());
         assertNotEquals(textoi23, textFull);
         
-        String expectedTextoi23 = 
+        final String expectedTextoi23 =
                 "Second at level 1\n"
                 + "Second level 2\n"
                 + "Content\n"
@@ -497,7 +497,7 @@ class TestTextStripper
         stripper.setEndBookmark(null);
         stripper.setStartPage(3);
         stripper.setEndPage(4);
-        String textp34 = stripper.getText(doc);
+        final String textp34 = stripper.getText(doc);
         assertFalse(textp34.isEmpty());
         assertNotEquals(textoi23, textFull);
         assertEquals(textoi23, textp34);        
@@ -506,12 +506,12 @@ class TestTextStripper
         // by the bookmark
         stripper.setStartBookmark(oi2);
         stripper.setEndBookmark(oi2);
-        String textoi2 = stripper.getText(doc);
+        final String textoi2 = stripper.getText(doc);
         assertFalse(textoi2.isEmpty());
         assertNotEquals(textoi2, textoi23);
         assertNotEquals(textoi23, textFull);
         
-        String expectedTextoi2 = 
+        final String expectedTextoi2 =
                 "Second at level 1\n"
                 + "Second level 2\n"
                 + "Content\n";        
@@ -524,17 +524,17 @@ class TestTextStripper
         stripper.setEndBookmark(null);
         stripper.setStartPage(3);
         stripper.setEndPage(3);
-        String textp3 = stripper.getText(doc);
+        final String textp3 = stripper.getText(doc);
         assertFalse(textp3.isEmpty());
         assertNotEquals(textp3, textp34);
         assertNotEquals(textoi23, textFull);
         assertEquals(textoi2, textp3);
 
         // Test with orphan bookmark
-        PDOutlineItem oiOrphan = new PDOutlineItem();
+        final PDOutlineItem oiOrphan = new PDOutlineItem();
         stripper.setStartBookmark(oiOrphan);
         stripper.setEndBookmark(oiOrphan);
-        String textOiOrphan = stripper.getText(doc);
+        final String textOiOrphan = stripper.getText(doc);
         assertTrue(textOiOrphan.isEmpty());
     }
 
@@ -543,10 +543,10 @@ class TestTextStripper
      * @param inDir Input directory search for PDF files in.
      * @param outDir Output directory where the temp files will be created.
      */
-    private void doTestDir(File inDir, File outDir) throws Exception 
+    private void doTestDir(final File inDir, final File outDir) throws Exception
     {
-        File[] testFiles = inDir.listFiles((File dir, String name) -> name.endsWith(".pdf"));
-        for (File testFile : testFiles) 
+        final File[] testFiles = inDir.listFiles((File dir, String name) -> name.endsWith(".pdf"));
+        for (final File testFile : testFiles)
         {
             //Test without sorting
             doTestFile(testFile, outDir, false, false);
@@ -563,11 +563,11 @@ class TestTextStripper
     @Test
     void testExtract() throws Exception
     {
-        String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
-        File inDir = new File("src/test/resources/input");
-        File outDir = new File("target/test-output");
-        File inDirExt = new File("target/test-input-ext");
-        File outDirExt = new File("target/test-output-ext");
+        final String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
+        final File inDir = new File("src/test/resources/input");
+        final File outDir = new File("target/test-output");
+        final File inDirExt = new File("target/test-input-ext");
+        final File outDirExt = new File("target/test-output-ext");
 
             if ((filename == null) || (filename.length() == 0)) 
             {
@@ -594,12 +594,12 @@ class TestTextStripper
     @Test
     void testTabula() throws IOException
     {
-        File pdfFile = new File("src/test/resources/input","eu-001.pdf");
-        File outFile = new File("target/test-output","eu-001.pdf-tabula.txt");
-        File expectedOutFile = new File("src/test/resources/input","eu-001.pdf-tabula.txt");
-        File diffFile = new File("target/test-output","eu-001.pdf-tabula-diff.txt");
-        PDDocument tabulaDocument = Loader.loadPDF(pdfFile);
-        PDFTextStripper tabulaStripper = new PDFTabulaTextStripper();
+        final File pdfFile = new File("src/test/resources/input","eu-001.pdf");
+        final File outFile = new File("target/test-output","eu-001.pdf-tabula.txt");
+        final File expectedOutFile = new File("src/test/resources/input","eu-001.pdf-tabula.txt");
+        final File diffFile = new File("target/test-output","eu-001.pdf-tabula-diff.txt");
+        final PDDocument tabulaDocument = Loader.loadPDF(pdfFile);
+        final PDFTextStripper tabulaStripper = new PDFTabulaTextStripper();
 
         try (OutputStream os = new FileOutputStream(outFile))
         {
@@ -626,9 +626,9 @@ class TestTextStripper
         }
 
         @Override
-        protected float computeFontHeight(PDFont font) throws IOException
+        protected float computeFontHeight(final PDFont font) throws IOException
         {
-            BoundingBox bbox = font.getBoundingBox();
+            final BoundingBox bbox = font.getBoundingBox();
             if (bbox.getLowerLeftY() < Short.MIN_VALUE)
             {
                 // PDFBOX-2158 and PDFBOX-3130
@@ -639,10 +639,10 @@ class TestTextStripper
             float glyphHeight = bbox.getHeight() / 2;
 
             // sometimes the bbox has very high values, but CapHeight is OK
-            PDFontDescriptor fontDescriptor = font.getFontDescriptor();
+            final PDFontDescriptor fontDescriptor = font.getFontDescriptor();
             if (fontDescriptor != null)
             {
-                float capHeight = fontDescriptor.getCapHeight();
+                final float capHeight = fontDescriptor.getCapHeight();
                 if (Float.compare(capHeight, 0) != 0
                         && (capHeight < glyphHeight || Float.compare(glyphHeight, 0) == 0))
                 {
@@ -650,8 +650,8 @@ class TestTextStripper
                 }
                 // PDFBOX-3464, PDFBOX-448:
                 // sometimes even CapHeight has very high value, but Ascent and Descent are ok
-                float ascent = fontDescriptor.getAscent();
-                float descent = fontDescriptor.getDescent();
+                final float ascent = fontDescriptor.getAscent();
+                final float descent = fontDescriptor.getDescent();
                 if (ascent > 0 && descent < 0
                         && ((ascent - descent) / 2 < glyphHeight || Float.compare(glyphHeight, 0) == 0))
                 {
@@ -660,7 +660,7 @@ class TestTextStripper
             }
 
             // transformPoint from glyph space -> text space
-            float height;
+            final float height;
             if (font instanceof PDType3Font)
             {
                 height = font.getFontMatrix().transformPoint(0, glyphHeight).y;

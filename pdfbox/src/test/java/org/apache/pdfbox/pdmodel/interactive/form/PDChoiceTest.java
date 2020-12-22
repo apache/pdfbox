@@ -54,7 +54,7 @@ class PDChoiceTest
     @Test
     void createListBox()
     {
-        PDChoice choiceField = new PDListBox(acroForm);
+        final PDChoice choiceField = new PDListBox(acroForm);
         
         assertEquals(choiceField.getFieldType(), choiceField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals("Ch", choiceField.getFieldType());
@@ -64,7 +64,7 @@ class PDChoiceTest
     @Test
     void createComboBox()
     {
-        PDChoice choiceField = new PDComboBox(acroForm);
+        final PDChoice choiceField = new PDComboBox(acroForm);
         
         assertEquals(choiceField.getFieldType(), choiceField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals("Ch", choiceField.getFieldType());
@@ -74,8 +74,8 @@ class PDChoiceTest
     @Test
     void getOptionsFromStrings()
     {
-        PDChoice choiceField = new PDComboBox(acroForm);
-        COSArray choiceFieldOptions = new COSArray();
+        final PDChoice choiceField = new PDComboBox(acroForm);
+        final COSArray choiceFieldOptions = new COSArray();
         choiceFieldOptions.add(new COSString(" "));
         choiceFieldOptions.add(new COSString("A"));
         choiceFieldOptions.add(new COSString("B"));
@@ -90,8 +90,8 @@ class PDChoiceTest
     @Test
     void getOptionsFromCOSArray()
     {
-        PDChoice choiceField = new PDComboBox(acroForm);
-        COSArray choiceFieldOptions = new COSArray();
+        final PDChoice choiceField = new PDComboBox(acroForm);
+        final COSArray choiceFieldOptions = new COSArray();
 
         // add entry to options
         COSArray entry = new COSArray();
@@ -121,8 +121,8 @@ class PDChoiceTest
     @Test
     void getOptionsFromMixed()
     {
-        PDChoice choiceField = new PDComboBox(acroForm);
-        COSArray choiceFieldOptions = new COSArray();
+        final PDChoice choiceField = new PDComboBox(acroForm);
+        final COSArray choiceFieldOptions = new COSArray();
 
         // add string entry to options
         choiceFieldOptions.add(new COSString(" "));

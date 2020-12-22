@@ -37,7 +37,7 @@ public enum ColorSpaces
      */
     private final String label;
 
-    private ColorSpaces(String _label)
+    private ColorSpaces(final String _label)
     {
         label = _label;
     }

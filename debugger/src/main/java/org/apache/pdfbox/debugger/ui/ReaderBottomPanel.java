@@ -38,7 +38,7 @@ public class ReaderBottomPanel extends JPanel
     
     public ReaderBottomPanel()
     {
-        BorderLayout layout = new BorderLayout();
+        final BorderLayout layout = new BorderLayout();
         this.setLayout(layout);
         
         statusLabel = new JLabel();
@@ -50,9 +50,9 @@ public class ReaderBottomPanel extends JPanel
         logLabel.addMouseListener(new MouseAdapter()
         {
             @Override
-            public void mouseClicked(MouseEvent e)
+            public void mouseClicked(final MouseEvent e)
             {
-                Window viewer = LogDialog.instance().getOwner();
+                final Window viewer = LogDialog.instance().getOwner();
                 
                 // show the log window
                 LogDialog.instance().setSize(800, 400);

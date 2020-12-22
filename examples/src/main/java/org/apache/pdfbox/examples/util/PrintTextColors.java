@@ -81,7 +81,7 @@ public class PrintTextColors extends PDFTextStripper
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 1)
         {
@@ -91,26 +91,26 @@ public class PrintTextColors extends PDFTextStripper
         {
             try (PDDocument document = Loader.loadPDF(new File(args[0])))
             {
-                PDFTextStripper stripper = new PrintTextColors();
+                final PDFTextStripper stripper = new PrintTextColors();
                 stripper.setSortByPosition(true);
                 stripper.setStartPage(0);
                 stripper.setEndPage(document.getNumberOfPages());
 
-                Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
+                final Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
                 stripper.writeText(document, dummy);
             }
         }
     }
 
     @Override
-    protected void processTextPosition(TextPosition text)
+    protected void processTextPosition(final TextPosition text)
     {
         super.processTextPosition(text);
 
-        PDColor strokingColor = getGraphicsState().getStrokingColor();
-        PDColor nonStrokingColor = getGraphicsState().getNonStrokingColor();
-        String unicode = text.getUnicode();
-        RenderingMode renderingMode = getGraphicsState().getTextState().getRenderingMode();
+        final PDColor strokingColor = getGraphicsState().getStrokingColor();
+        final PDColor nonStrokingColor = getGraphicsState().getNonStrokingColor();
+        final String unicode = text.getUnicode();
+        final RenderingMode renderingMode = getGraphicsState().getTextState().getRenderingMode();
         System.out.println("Unicode:            " + unicode);
         System.out.println("Rendering mode:     " + renderingMode);
         System.out.println("Stroking color:     " + strokingColor);

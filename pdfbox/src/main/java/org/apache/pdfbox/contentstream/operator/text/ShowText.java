@@ -34,14 +34,14 @@ import java.io.IOException;
 public class ShowText extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.isEmpty())
         {
             // ignore ( )Tj
             return;
         }
-        COSBase base = arguments.get(0);
+        final COSBase base = arguments.get(0);
         if (!(base instanceof COSString))
         {
             // ignore
@@ -52,7 +52,7 @@ public class ShowText extends OperatorProcessor
             // ignore: outside of BT...ET
             return;
         }
-        COSString string = (COSString) base;
+        final COSString string = (COSString) base;
         context.showTextString(string.getBytes());
     }
 

@@ -44,18 +44,18 @@ class TilingPaintFactory
     private final Map<TilingPaintParameter, WeakReference<Paint>> weakCache
             = new WeakHashMap<>();
 
-    TilingPaintFactory(PageDrawer drawer)
+    TilingPaintFactory(final PageDrawer drawer)
     {
         this.drawer = drawer;
     }
 
-    Paint create(PDTilingPattern pattern, PDColorSpace colorSpace,
-            PDColor color, AffineTransform xform) throws IOException
+    Paint create(final PDTilingPattern pattern, final PDColorSpace colorSpace,
+                 final PDColor color, final AffineTransform xform) throws IOException
     {
         Paint paint = null;
-        TilingPaintParameter tilingPaintParameter
+        final TilingPaintParameter tilingPaintParameter
                 = new TilingPaintParameter(drawer.getInitialMatrix(), pattern.getCOSObject(), colorSpace, color, xform);
-        WeakReference<Paint> weakRef = weakCache.get(tilingPaintParameter);
+        final WeakReference<Paint> weakRef = weakCache.get(tilingPaintParameter);
         if (weakRef != null)
         {
             // PDFBOX-4058: additional WeakReference makes gc work better
@@ -79,8 +79,8 @@ class TilingPaintFactory
         private final PDColor color;
         private final AffineTransform xform;
 
-        private TilingPaintParameter(Matrix matrix, COSDictionary patternDict, PDColorSpace colorSpace,
-                PDColor color, AffineTransform xform)
+        private TilingPaintParameter(final Matrix matrix, final COSDictionary patternDict, final PDColorSpace colorSpace,
+                                     final PDColor color, final AffineTransform xform)
         {
             this.matrix = matrix.clone();
             this.patternDict = patternDict;
@@ -92,7 +92,7 @@ class TilingPaintFactory
         // this may not catch all equals, but at least those related to one resource dictionary.
         // it isn't needed to investigate further because matrix or transform would be different anyway.
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(final Object obj)
         {
             if (this == obj)
             {

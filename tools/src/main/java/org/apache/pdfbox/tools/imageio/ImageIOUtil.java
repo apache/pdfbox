@@ -74,11 +74,11 @@ public final class ImageIOUtil
      * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String filename,
-            int dpi) throws IOException
+    public static boolean writeImage(final BufferedImage image, final String filename,
+                                     final int dpi) throws IOException
     {
         float compressionQuality = 1f;
-        String formatName = filename.substring(filename.lastIndexOf('.') + 1);
+        final String formatName = filename.substring(filename.lastIndexOf('.') + 1);
         if ("png".equalsIgnoreCase(formatName))
         {
             // PDFBOX-4655: prevent huge PNG files on jdk11 / jdk12 / jjdk13
@@ -102,12 +102,12 @@ public final class ImageIOUtil
      * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String filename,
-            int dpi, float compressionQuality) throws IOException
+    public static boolean writeImage(final BufferedImage image, final String filename,
+                                     final int dpi, final float compressionQuality) throws IOException
     {
         try (OutputStream output = new BufferedOutputStream(new FileOutputStream(filename)))
         {
-            String formatName = filename.substring(filename.lastIndexOf('.') + 1);
+            final String formatName = filename.substring(filename.lastIndexOf('.') + 1);
             return writeImage(image, formatName, output, dpi, compressionQuality);
         }
     }
@@ -124,7 +124,7 @@ public final class ImageIOUtil
      * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String formatName, OutputStream output)
+    public static boolean writeImage(final BufferedImage image, final String formatName, final OutputStream output)
             throws IOException
     {
         return writeImage(image, formatName, output, 72);
@@ -143,8 +143,8 @@ public final class ImageIOUtil
      * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
-            int dpi) throws IOException
+    public static boolean writeImage(final BufferedImage image, final String formatName, final OutputStream output,
+                                     final int dpi) throws IOException
     {
         float compressionQuality = 1f;
         if ("png".equalsIgnoreCase(formatName))
@@ -173,8 +173,8 @@ public final class ImageIOUtil
      * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
-            int dpi, float compressionQuality) throws IOException
+    public static boolean writeImage(final BufferedImage image, final String formatName, final OutputStream output,
+                                     final int dpi, final float compressionQuality) throws IOException
     {
         return writeImage(image, formatName, output, dpi, compressionQuality, "");
     }
@@ -201,15 +201,15 @@ public final class ImageIOUtil
      * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
-            int dpi, float compressionQuality, String compressionType) throws IOException
+    public static boolean writeImage(final BufferedImage image, final String formatName, final OutputStream output,
+                                     final int dpi, final float compressionQuality, final String compressionType) throws IOException
     {
         ImageOutputStream imageOutput = null;
         ImageWriter writer = null;
         try
         {
             // find suitable image writer
-            Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName(formatName);
+            final Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName(formatName);
             ImageWriteParam param = null;
             IIOMetadata metadata = null;
             // Loop until we get the best driver, i.e. one that supports
@@ -296,13 +296,13 @@ public final class ImageIOUtil
             if (metadata != null && formatName.equalsIgnoreCase("png") && hasICCProfile(image))
             {
                 // add ICC profile
-                IIOMetadataNode iccp = new IIOMetadataNode("iCCP");
-                ICC_Profile profile = ((ICC_ColorSpace) image.getColorModel().getColorSpace())
+                final IIOMetadataNode iccp = new IIOMetadataNode("iCCP");
+                final ICC_Profile profile = ((ICC_ColorSpace) image.getColorModel().getColorSpace())
                         .getProfile();
                 iccp.setUserObject(getAsDeflatedBytes(profile));
                 iccp.setAttribute("profileName", "unknown");
                 iccp.setAttribute("compressionMethod", "deflate");
-                Node nativeTree = metadata.getAsTree(metadata.getNativeMetadataFormatName());
+                final Node nativeTree = metadata.getAsTree(metadata.getNativeMetadataFormatName());
                 nativeTree.appendChild(iccp);
                 metadata.mergeTree(metadata.getNativeMetadataFormatName(), nativeTree);
             }
@@ -331,9 +331,9 @@ public final class ImageIOUtil
      * @param image the image to analyse
      * @return true if this image has an ICC profile, that is different from sRGB.
      */
-    private static boolean hasICCProfile(BufferedImage image)
+    private static boolean hasICCProfile(final BufferedImage image)
     {
-        ColorSpace colorSpace = image.getColorModel().getColorSpace();
+        final ColorSpace colorSpace = image.getColorModel().getColorSpace();
         // We can only export ICC color spaces
         if (!(colorSpace instanceof ICC_ColorSpace))
         {
@@ -344,11 +344,11 @@ public final class ImageIOUtil
         return !colorSpace.isCS_sRGB() && colorSpace != ColorSpace.getInstance(ColorSpace.CS_GRAY);
     }
 
-    private static byte[] getAsDeflatedBytes(ICC_Profile profile) throws IOException
+    private static byte[] getAsDeflatedBytes(final ICC_Profile profile) throws IOException
     {
-        byte[] data = profile.getData();
+        final byte[] data = profile.getData();
 
-        ByteArrayOutputStream deflated = new ByteArrayOutputStream();
+        final ByteArrayOutputStream deflated = new ByteArrayOutputStream();
         try (DeflaterOutputStream deflater = new DeflaterOutputStream(deflated))
         {
             deflater.write(data);
@@ -365,30 +365,30 @@ public final class ImageIOUtil
      *
      * @return the existing or just created child node
      */
-    private static IIOMetadataNode getOrCreateChildNode(IIOMetadataNode parentNode, String name)
+    private static IIOMetadataNode getOrCreateChildNode(final IIOMetadataNode parentNode, final String name)
     {
-        NodeList nodeList = parentNode.getElementsByTagName(name);
+        final NodeList nodeList = parentNode.getElementsByTagName(name);
         if (nodeList.getLength() > 0)
         {
             return (IIOMetadataNode) nodeList.item(0);
         }
-        IIOMetadataNode childNode = new IIOMetadataNode(name);
+        final IIOMetadataNode childNode = new IIOMetadataNode(name);
         parentNode.appendChild(childNode);
         return childNode;
     }
 
     // sets the DPI metadata
-    private static void setDPI(IIOMetadata metadata, int dpi, String formatName)
+    private static void setDPI(final IIOMetadata metadata, final int dpi, final String formatName)
             throws IIOInvalidTreeException
     {
-        IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(MetaUtil.STANDARD_METADATA_FORMAT);
+        final IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(MetaUtil.STANDARD_METADATA_FORMAT);
 
-        IIOMetadataNode dimension = getOrCreateChildNode(root, "Dimension");
+        final IIOMetadataNode dimension = getOrCreateChildNode(root, "Dimension");
 
         // PNG writer doesn't conform to the spec which is
         // "The width of a pixel, in millimeters"
         // but instead counts the pixels per millimeter
-        float res = "PNG".equalsIgnoreCase(formatName)
+        final float res = "PNG".equalsIgnoreCase(formatName)
                     ? dpi / 25.4f
                     : 25.4f / dpi;
 

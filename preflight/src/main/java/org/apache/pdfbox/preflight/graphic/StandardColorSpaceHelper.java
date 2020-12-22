@@ -80,7 +80,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      */
     protected PDColorSpace pdcs = null;
 
-    protected StandardColorSpaceHelper(PreflightContext _context, PDColorSpace _cs)
+    protected StandardColorSpaceHelper(final PreflightContext _context, final PDColorSpace _cs)
     {
         this.context = _context;
         this.pdcs = _cs;
@@ -108,9 +108,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * 
      * @param colorSpace the color space object to check.
      */
-    protected final void processAllColorSpace(PDColorSpace colorSpace)
+    protected final void processAllColorSpace(final PDColorSpace colorSpace)
     {
-        ColorSpaces cs = ColorSpaces.valueOf(colorSpace.getName());
+        final ColorSpaces cs = ColorSpaces.valueOf(colorSpace.getName());
 
         switch (cs)
         {
@@ -157,7 +157,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * Method called by the processAllColorSpace if the ColorSpace to check is DeviceRGB.
      * 
      */
-    protected void processRGBColorSpace(PDColorSpace colorSpace)
+    protected void processRGBColorSpace(final PDColorSpace colorSpace)
     {
         if (!processDefaultColorSpace(colorSpace))
         {
@@ -178,7 +178,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * Method called by the processAllColorSpace if the ColorSpace to check is DeviceCYMK.
      * 
      */
-    protected void processCYMKColorSpace(PDColorSpace colorSpace)
+    protected void processCYMKColorSpace(final PDColorSpace colorSpace)
     {
         if (!processDefaultColorSpace(colorSpace))
         {
@@ -199,7 +199,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * Method called by the processAllColorSpace if the ColorSpace to check is a Pattern.
      * @param colorSpace 
      */
-    protected void processPatternColorSpace(PDColorSpace colorSpace)
+    protected void processPatternColorSpace(final PDColorSpace colorSpace)
     {
         if (iccpw == null)
         {
@@ -212,7 +212,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * Method called by the processAllColorSpace if the ColorSpace to check is DeviceGray.
      * 
      */
-    protected void processGrayColorSpace(PDColorSpace colorSpace)
+    protected void processGrayColorSpace(final PDColorSpace colorSpace)
     {
         if (!processDefaultColorSpace(colorSpace) && iccpw == null)
         {
@@ -226,7 +226,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * @param colorSpace 
      * 
      */
-    protected void processCalibratedColorSpace(PDColorSpace colorSpace)
+    protected void processCalibratedColorSpace(final PDColorSpace colorSpace)
     {
         // ---- OutputIntent isn't mandatory
     }
@@ -239,22 +239,22 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * @param colorSpace
      *            the color space object to check.
      */
-    protected void processICCBasedColorSpace(PDColorSpace colorSpace)
+    protected void processICCBasedColorSpace(final PDColorSpace colorSpace)
     {
-        PDICCBased iccBased = (PDICCBased) colorSpace;
+        final PDICCBased iccBased = (PDICCBased) colorSpace;
         try
         {
-            ICC_Profile iccp;
+            final ICC_Profile iccp;
             try (InputStream is = iccBased.getPDStream().createInputStream())
             {
                 // check that ICC profile loads (PDICCBased also does this, but catches the exception)
                 // PDFBOX-2819: load ICC profile as a stream, not as a byte array because of java error
                 iccp = ICC_Profile.getInstance(is);
             }
-            PDColorSpace altpdcs = iccBased.getAlternateColorSpace();
+            final PDColorSpace altpdcs = iccBased.getAlternateColorSpace();
             if (altpdcs != null)
             {
-                ColorSpaces altCsId = ColorSpaces.valueOf(altpdcs.getName());
+                final ColorSpaces altCsId = ColorSpaces.valueOf(altpdcs.getName());
                 if (altCsId == ColorSpaces.Pattern)
                 {
                     context.addValidationError(new ValidationError(
@@ -304,9 +304,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * @param colorSpace
      *            the color space object to check.
      */
-    protected void processDeviceNColorSpace(PDColorSpace colorSpace)
+    protected void processDeviceNColorSpace(final PDColorSpace colorSpace)
     {
-        PDDeviceN deviceN = (PDDeviceN) colorSpace;
+        final PDDeviceN deviceN = (PDDeviceN) colorSpace;
         try
         {
             if (iccpw == null)
@@ -316,15 +316,15 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 return;
             }
 
-            COSBase cosAlt = ((COSArray)colorSpace.getCOSObject()).getObject(2);
-            PDColorSpace altColor = PDColorSpace.create(cosAlt);
+            final COSBase cosAlt = ((COSArray)colorSpace.getCOSObject()).getObject(2);
+            final PDColorSpace altColor = PDColorSpace.create(cosAlt);
             if (altColor != null)
             {
                 processAllColorSpace(altColor);
             }
 
             int numberOfColorants = 0;
-            PDDeviceNAttributes attr = deviceN.getAttributes();
+            final PDDeviceNAttributes attr = deviceN.getAttributes();
             if (attr != null)
             {
                 final Map<String, PDSeparation> colorants = attr.getColorants();
@@ -332,13 +332,13 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 colorants.values().stream().
                         filter(Objects::nonNull).
                         forEachOrdered(this::processAllColorSpace);
-                PDDeviceNProcess process = attr.getProcess();
+                final PDDeviceNProcess process = attr.getProcess();
                 if (process != null)
                 {
                     processAllColorSpace(process.getColorSpace());
                 }
             }
-            int numberOfComponents = deviceN.getNumberOfComponents();
+            final int numberOfComponents = deviceN.getNumberOfComponents();
             if (numberOfColorants > MAX_DEVICE_N_LIMIT || numberOfComponents > MAX_DEVICE_N_LIMIT)
             {
                 context.addValidationError(new ValidationError(
@@ -361,11 +361,11 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * @param colorSpace
      *            the color space object to check.
      */
-    protected void processIndexedColorSpace(PDColorSpace colorSpace)
+    protected void processIndexedColorSpace(final PDColorSpace colorSpace)
     {
-        PDIndexed indexed = (PDIndexed) colorSpace;
-        PDColorSpace based = indexed.getBaseColorSpace();
-        ColorSpaces cs = ColorSpaces.valueOf(based.getName());
+        final PDIndexed indexed = (PDIndexed) colorSpace;
+        final PDColorSpace based = indexed.getBaseColorSpace();
+        final ColorSpaces cs = ColorSpaces.valueOf(based.getName());
         if (cs == ColorSpaces.Indexed || cs == ColorSpaces.I)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED,
@@ -389,15 +389,15 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * @param colorSpace
      *            the color space object to check.
      */
-    protected void processSeparationColorSpace(PDColorSpace colorSpace)
+    protected void processSeparationColorSpace(final PDColorSpace colorSpace)
     {
         try
         {
-            COSBase cosAlt = ((COSArray)colorSpace.getCOSObject()).getObject(2);
-            PDColorSpace altCol = PDColorSpace.create(cosAlt);
+            final COSBase cosAlt = ((COSArray)colorSpace.getCOSObject()).getObject(2);
+            final PDColorSpace altCol = PDColorSpace.create(cosAlt);
             if (altCol != null)
             {
-                ColorSpaces acs = ColorSpaces.valueOf(altCol.getName());
+                final ColorSpaces acs = ColorSpaces.valueOf(altCol.getName());
                 switch (acs)
                 {
                 case Separation:
@@ -427,13 +427,13 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * @param colorSpace
      * @return true if the default colorspace is a right one, false otherwise.
      */
-    protected boolean processDefaultColorSpace(PDColorSpace colorSpace)
+    protected boolean processDefaultColorSpace(final PDColorSpace colorSpace)
     {
         boolean result = false;
 
         // get default color space
-        PreflightPath vPath = context.getValidationPath();
-        PDResources resources = vPath.getClosestPathElement(PDResources.class);
+        final PreflightPath vPath = context.getValidationPath();
+        final PDResources resources = vPath.getClosestPathElement(PDResources.class);
         if (resources != null)
         {
             PDColorSpace defaultCS = null;
@@ -465,9 +465,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             if (defaultCS != null)
             {
                 // defaultCS is valid if the number of errors hasn't changed
-                int nbOfErrors = context.getDocument().getValidationErrors().size();
+                final int nbOfErrors = context.getDocument().getValidationErrors().size();
                 processAllColorSpace(defaultCS);
-                int newNbOfErrors = context.getDocument().getValidationErrors().size();
+                final int newNbOfErrors = context.getDocument().getValidationErrors().size();
                 result = (nbOfErrors == newNbOfErrors);
             }
 
@@ -476,9 +476,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         return result;
     }
 
-    private boolean validateICCProfileVersion(ICC_Profile iccp)
+    private boolean validateICCProfileVersion(final ICC_Profile iccp)
     {
-        PreflightConfiguration config = context.getConfig();
+        final PreflightConfiguration config = context.getConfig();
 
         // check the ICC Profile version (6.2.2)
         if (iccp.getMajorVersion() == 2)
@@ -488,7 +488,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 // in PDF 1.4, max version is 02h.40h (meaning V 3.5)
                 // see the ICCProfile specification (ICC.1:1998-09)page 13 - §6.1.3 :
                 // The current profile version number is "2.4.0" (encoded as 02400000h")
-                ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT,
+                final ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT,
                         "Invalid version of the ICCProfile");
                 error.setWarning(config.isLazyValidation());
                 context.addValidationError(error);
@@ -501,7 +501,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             // in PDF 1.4, max version is 02h.40h (meaning V 3.5)
             // see the ICCProfile specification (ICC.1:1998-09)page 13 - §6.1.3 :
             // The current profile version number is "2.4.0" (encoded as 02400000h"
-            ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT,
+            final ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT,
                     "Invalid version of the ICCProfile");
             error.setWarning(config.isLazyValidation());
             context.addValidationError(error);
@@ -511,23 +511,23 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         return true;
     }
 
-    private boolean validateICCProfileNEntry(COSStream stream, ICC_Profile iccp)
+    private boolean validateICCProfileNEntry(final COSStream stream, final ICC_Profile iccp)
     {
-        COSDictionary streamDict = (COSDictionary) stream.getCOSObject();
+        final COSDictionary streamDict = (COSDictionary) stream.getCOSObject();
         if (!streamDict.containsKey(COSName.N))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
                     "/N entry of ICC profile is mandatory"));
             return false;
         }
-        COSBase nValue = streamDict.getItem(COSName.N);
+        final COSBase nValue = streamDict.getItem(COSName.N);
         if (!(nValue instanceof COSNumber))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
                     "/N entry of ICC profile must be a number, but is " + nValue));
             return false;
         }
-        int nNumberValue = ((COSNumber) nValue).intValue();
+        final int nNumberValue = ((COSNumber) nValue).intValue();
         if (nNumberValue != 1 && nNumberValue != 3 && nNumberValue != 4)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
@@ -543,9 +543,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         return true;
     }
 
-    private void validateICCProfileAlternateEntry(PDICCBased iccBased) throws IOException
+    private void validateICCProfileAlternateEntry(final PDICCBased iccBased) throws IOException
     {
-        PDColorSpace altCS = iccBased.getAlternateColorSpace();
+        final PDColorSpace altCS = iccBased.getAlternateColorSpace();
         if (altCS != null && altCS.getNumberOfComponents() != iccBased.getNumberOfComponents())
         {
             // https://github.com/veraPDF/veraPDF-library/issues/773

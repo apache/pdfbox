@@ -80,7 +80,7 @@ class ControlCharacterTest
     @Test
     void characterNUL() throws IOException
     {
-        PDField field = acroForm.getField("pdfbox-nul");
+        final PDField field = acroForm.getField("pdfbox-nul");
         assertThrows(IllegalArgumentException.class, () -> {
             field.setValue("NUL\0NUL");
           });
@@ -93,11 +93,11 @@ class ControlCharacterTest
     @Test
     void characterTAB() throws IOException
     {
-        PDField field = acroForm.getField("pdfbox-tab");
+        final PDField field = acroForm.getField("pdfbox-tab");
     	field.setValue("TAB\tTAB");
 
-        List<String> pdfboxValues = getStringsFromStream(field);
-        for (String token : pdfboxValues)
+        final List<String> pdfboxValues = getStringsFromStream(field);
+        for (final String token : pdfboxValues)
         {
             assertEquals("TAB", token);
         }
@@ -117,13 +117,13 @@ class ControlCharacterTest
     }
     @ParameterizedTest
     @MethodSource("provideParameters")
-    void testCharacter(String nameSuffix, String value) throws IOException
+    void testCharacter(final String nameSuffix, final String value) throws IOException
     {
-        PDField field = acroForm.getField("pdfbox-" + nameSuffix);
+        final PDField field = acroForm.getField("pdfbox-" + nameSuffix);
         field.setValue(value);
 
-        List<String> pdfboxValues = getStringsFromStream(field);
-        List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-" + nameSuffix));
+        final List<String> pdfboxValues = getStringsFromStream(field);
+        final List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-" + nameSuffix));
 
         assertEquals(pdfboxValues, acrobatValues);
     }
@@ -134,13 +134,13 @@ class ControlCharacterTest
         document.close();
     }
     
-    private List<String> getStringsFromStream(PDField field) throws IOException
+    private List<String> getStringsFromStream(final PDField field) throws IOException
     {
-    	PDAnnotationWidget widget = field.getWidgets().get(0);
-        PDFStreamParser parser = new PDFStreamParser(
+    	final PDAnnotationWidget widget = field.getWidgets().get(0);
+        final PDFStreamParser parser = new PDFStreamParser(
                 widget.getNormalAppearanceStream());
     	
-        List<Object> tokens = parser.parse();
+        final List<Object> tokens = parser.parse();
     	
         // TODO: improve the string output to better match
         // trimming as Acrobat adds spaces to strings

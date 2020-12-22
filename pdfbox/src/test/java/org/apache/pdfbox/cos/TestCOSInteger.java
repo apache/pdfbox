@@ -60,9 +60,9 @@ class TestCOSInteger extends TestCOSNumber
         // Consistency
         for (int i = -1000; i < 3000; i += 200)
         {
-            COSInteger test1 = COSInteger.get(i);
-            COSInteger test2 = COSInteger.get(i);
-            COSInteger test3 = COSInteger.get(i);
+            final COSInteger test1 = COSInteger.get(i);
+            final COSInteger test2 = COSInteger.get(i);
+            final COSInteger test3 = COSInteger.get(i);
             // Reflexive (x == x)
             assertEquals(test1, test1);
             // Symmetric is preserved ( x==y then y===x)
@@ -73,7 +73,7 @@ class TestCOSInteger extends TestCOSNumber
             assertEquals(test2, test3);
             assertEquals(test1, test3);
 
-            COSInteger test4 = COSInteger.get(i + 1);
+            final COSInteger test4 = COSInteger.get(i + 1);
             assertNotEquals(test4, test1);
         }
     }
@@ -87,11 +87,11 @@ class TestCOSInteger extends TestCOSNumber
     {
         for (int i = -1000; i < 3000; i += 200)
         {
-            COSInteger test1 = COSInteger.get(i);
-            COSInteger test2 = COSInteger.get(i);
+            final COSInteger test1 = COSInteger.get(i);
+            final COSInteger test2 = COSInteger.get(i);
             assertEquals(test1.hashCode(), test2.hashCode());
             
-            COSInteger test3 = COSInteger.get(i + 1);
+            final COSInteger test3 = COSInteger.get(i + 1);
             assertNotSame(test3.hashCode(), test1.hashCode());
         }
     }
@@ -130,15 +130,15 @@ class TestCOSInteger extends TestCOSNumber
     @Test
     void testAccept()
     {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        COSWriter visitor = new COSWriter(outStream);
+        final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        final COSWriter visitor = new COSWriter(outStream);
         int index = 0;
         try
         {
             for (int i = -1000; i < 3000; i += 200)
             {
                 index = i;
-                COSInteger cosInt = COSInteger.get(i);
+                final COSInteger cosInt = COSInteger.get(i);
                 cosInt.accept(visitor);
                 testByteArrays(String.valueOf(i).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
                 outStream.reset();
@@ -156,14 +156,14 @@ class TestCOSInteger extends TestCOSNumber
     @Test
     void testWritePDF()
     {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         int index = 0;
         try
         {
             for (int i = -1000; i < 3000; i += 200)
             {
                 index = i;
-                COSInteger cosInt = COSInteger.get(i);
+                final COSInteger cosInt = COSInteger.get(i);
                 cosInt.writePDF(outStream);
                 testByteArrays(String.valueOf(i).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
                 outStream.reset();

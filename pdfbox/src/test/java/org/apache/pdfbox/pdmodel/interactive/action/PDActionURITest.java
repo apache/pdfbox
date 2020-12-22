@@ -35,7 +35,7 @@ class PDActionURITest
     @Test
     void testUTF8URI()
     {
-        PDActionURI actionURI = new PDActionURI();
+        final PDActionURI actionURI = new PDActionURI();
         assertNull(actionURI.getURI());
         actionURI.setURI("http://çµ„åŒ¶æ›¿ç¶Ž.com/");
         assertEquals("http://経営承継.com/", actionURI.getURI());
@@ -49,10 +49,10 @@ class PDActionURITest
     @Test
     void testUTF16BEURI() throws IOException
     {
-        PDActionURI actionURI = new PDActionURI();
+        final PDActionURI actionURI = new PDActionURI();
         
         // found in govdocs file 534948.pdf
-        COSString utf16URI = COSString.parseHex("FEFF0068007400740070003A002F002F00770077"
+        final COSString utf16URI = COSString.parseHex("FEFF0068007400740070003A002F002F00770077"
                 + "0077002E006E00610070002E006500640075002F0063006100740061006C006F006700"
                 + "2F00310031003100340030002E00680074006D006C");
         actionURI.getCOSObject().setItem(COSName.URI, utf16URI);
@@ -67,9 +67,9 @@ class PDActionURITest
     @Test
     void testUTF16LEURI() throws IOException
     {
-        PDActionURI actionURI = new PDActionURI();
+        final PDActionURI actionURI = new PDActionURI();
         
-        COSString utf16URI = COSString.parseHex("FFFE68007400740070003A00");
+        final COSString utf16URI = COSString.parseHex("FFFE68007400740070003A00");
         actionURI.getCOSObject().setItem(COSName.URI, utf16URI);
         assertEquals("http:", actionURI.getURI());
     }
@@ -77,7 +77,7 @@ class PDActionURITest
     @Test
     void testUTF7URI()
     {
-        PDActionURI actionURI = new PDActionURI();
+        final PDActionURI actionURI = new PDActionURI();
         actionURI.setURI("http://pdfbox.apache.org/");
         assertEquals("http://pdfbox.apache.org/", actionURI.getURI());
     }

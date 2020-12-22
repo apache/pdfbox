@@ -51,9 +51,9 @@ public class ShadingPatternValidationProcess extends AbstractProcess
     private static final Log LOGGER = LogFactory.getLog(ShadingPatternValidationProcess.class);
     
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
-        PreflightPath vPath = context.getValidationPath();
+        final PreflightPath vPath = context.getValidationPath();
         if (vPath.isEmpty())
         {
             return;
@@ -65,8 +65,8 @@ public class ShadingPatternValidationProcess extends AbstractProcess
         } 
         else 
         {
-            PDShading shadingResource = (PDShading) vPath.peek();
-            PDPage page = vPath.getClosestPathElement(PDPage.class);
+            final PDShading shadingResource = (PDShading) vPath.peek();
+            final PDPage page = vPath.getClosestPathElement(PDPage.class);
             checkColorSpace(context, page, shadingResource);
             checkGraphicState(context, page, shadingResource);
         }
@@ -83,15 +83,15 @@ public class ShadingPatternValidationProcess extends AbstractProcess
      * @param shadingRes the Shading pattern to check.
      * @throws ValidationException
      */
-    protected void checkColorSpace(PreflightContext context, PDPage page, PDShading shadingRes)
+    protected void checkColorSpace(final PreflightContext context, final PDPage page, final PDShading shadingRes)
             throws ValidationException
     {
         try
         {
-            PDColorSpace pColorSpace = shadingRes.getColorSpace();
-            PreflightConfiguration config = context.getConfig();
-            ColorSpaceHelperFactory csFact = config.getColorSpaceHelperFact();
-            ColorSpaceHelper csh = csFact.getColorSpaceHelper(context, pColorSpace, ColorSpaceRestriction.NO_PATTERN);
+            final PDColorSpace pColorSpace = shadingRes.getColorSpace();
+            final PreflightConfiguration config = context.getConfig();
+            final ColorSpaceHelperFactory csFact = config.getColorSpaceHelperFact();
+            final ColorSpaceHelper csh = csFact.getColorSpaceHelper(context, pColorSpace, ColorSpaceRestriction.NO_PATTERN);
             csh.validate();
         }
         catch (IOException e)
@@ -110,10 +110,10 @@ public class ShadingPatternValidationProcess extends AbstractProcess
      * @param shadingRes the Shading pattern to check.
      * @throws ValidationException
      */
-    protected void checkGraphicState(PreflightContext context, PDPage page, PDShading shadingRes)
+    protected void checkGraphicState(final PreflightContext context, final PDPage page, final PDShading shadingRes)
             throws ValidationException
     {
-        COSDictionary resources = (COSDictionary) shadingRes.getCOSObject()
+        final COSDictionary resources = (COSDictionary) shadingRes.getCOSObject()
                 .getDictionaryObject(COSName.EXT_G_STATE);
         if (resources != null)
         {

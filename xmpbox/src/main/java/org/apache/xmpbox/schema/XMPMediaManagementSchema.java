@@ -63,7 +63,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param metadata
      *            The metadata to attach this schema
      */
-    public XMPMediaManagementSchema(XMPMetadata metadata)
+    public XMPMediaManagementSchema(final XMPMetadata metadata)
     {
         super(metadata);
 
@@ -77,7 +77,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param ownPrefix
      *            The prefix to assign
      */
-    public XMPMediaManagementSchema(XMPMetadata metadata, String ownPrefix)
+    public XMPMediaManagementSchema(final XMPMetadata metadata, final String ownPrefix)
     {
         super(metadata, ownPrefix);
 
@@ -94,7 +94,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            ResourceRef property to set
      */
-    public void setDerivedFromProperty(ResourceRefType tt)
+    public void setDerivedFromProperty(final ResourceRefType tt)
     {
         addProperty(tt);
     }
@@ -121,9 +121,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param url
      *            DocumentId value to set
      */
-    public void setDocumentID(String url)
+    public void setDocumentID(final String url)
     {
-        URIType tt = (URIType) instanciateSimple(DOCUMENTID, url);
+        final URIType tt = (URIType) instanciateSimple(DOCUMENTID, url);
         setDocumentIDProperty(tt);
     }
 
@@ -133,7 +133,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            DocumentId Property to set
      */
-    public void setDocumentIDProperty(URIType tt)
+    public void setDocumentIDProperty(final URIType tt)
     {
         addProperty(tt);
     }
@@ -157,7 +157,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getDocumentID()
     {
-        TextType tt = getDocumentIDProperty();
+        final TextType tt = getDocumentIDProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -167,9 +167,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param url
      *            DocumentId value to set
      */
-    public void setLastURL(String url)
+    public void setLastURL(final String url)
     {
-        URLType tt = (URLType) instanciateSimple(LAST_URL, url);
+        final URLType tt = (URLType) instanciateSimple(LAST_URL, url);
         setLastURLProperty(tt);
     }
 
@@ -179,7 +179,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            DocumentId Property to set
      */
-    public void setLastURLProperty(URLType tt)
+    public void setLastURLProperty(final URLType tt)
     {
         addProperty(tt);
     }
@@ -203,7 +203,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getLastURL()
     {
-        URLType tt = getLastURLProperty();
+        final URLType tt = getLastURLProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -213,9 +213,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param url
      *            DocumentId value to set
      */
-    public void setSaveId(Integer url)
+    public void setSaveId(final Integer url)
     {
-        IntegerType tt = (IntegerType) instanciateSimple(SAVE_ID, url);
+        final IntegerType tt = (IntegerType) instanciateSimple(SAVE_ID, url);
         setSaveIDProperty(tt);
     }
 
@@ -225,7 +225,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            DocumentId Property to set
      */
-    public void setSaveIDProperty(IntegerType tt)
+    public void setSaveIDProperty(final IntegerType tt)
     {
         addProperty(tt);
     }
@@ -249,7 +249,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public Integer getSaveID()
     {
-        IntegerType tt = getSaveIDProperty();
+        final IntegerType tt = getSaveIDProperty();
         return tt != null ? tt.getValue() : null;
     }
 
@@ -265,9 +265,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param value
      *            Manager value to set
      */
-    public void setManager(String value)
+    public void setManager(final String value)
     {
-        AgentNameType tt = (AgentNameType) instanciateSimple(MANAGER, value);
+        final AgentNameType tt = (AgentNameType) instanciateSimple(MANAGER, value);
         setManagerProperty(tt);
     }
 
@@ -277,7 +277,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            Manager property to set
      */
-    public void setManagerProperty(AgentNameType tt)
+    public void setManagerProperty(final AgentNameType tt)
     {
         addProperty(tt);
     }
@@ -299,7 +299,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getManager()
     {
-        TextType tt = getManagerProperty();
+        final TextType tt = getManagerProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -315,9 +315,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param value
      *            ManageTo Value to set
      */
-    public void setManageTo(String value)
+    public void setManageTo(final String value)
     {
-        URIType tt = (URIType) instanciateSimple(MANAGETO, value);
+        final URIType tt = (URIType) instanciateSimple(MANAGETO, value);
         setManageToProperty(tt);
     }
 
@@ -327,7 +327,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            ManageTo property to set
      */
-    public void setManageToProperty(URIType tt)
+    public void setManageToProperty(final URIType tt)
     {
         addProperty(tt);
     }
@@ -349,7 +349,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getManageTo()
     {
-        TextType tt = getManageToProperty();
+        final TextType tt = getManageToProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -365,9 +365,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param value
      *            ManageUI value to set
      */
-    public void setManageUI(String value)
+    public void setManageUI(final String value)
     {
-        URIType tt = (URIType) instanciateSimple(MANAGEUI, value);
+        final URIType tt = (URIType) instanciateSimple(MANAGEUI, value);
         setManageUIProperty(tt);
     }
 
@@ -377,7 +377,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            ManageUI property to set
      */
-    public void setManageUIProperty(URIType tt)
+    public void setManageUIProperty(final URIType tt)
     {
         addProperty(tt);
     }
@@ -399,7 +399,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getManageUI()
     {
-        TextType tt = getManageUIProperty();
+        final TextType tt = getManageUIProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -415,9 +415,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param value
      *            ManagerVariant value to set
      */
-    public void setManagerVariant(String value)
+    public void setManagerVariant(final String value)
     {
-        TextType tt = (TextType) instanciateSimple(MANAGERVARIANT, value);
+        final TextType tt = (TextType) instanciateSimple(MANAGERVARIANT, value);
         setManagerVariantProperty(tt);
     }
 
@@ -427,7 +427,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            ManagerVariant Property to set
      */
-    public void setManagerVariantProperty(TextType tt)
+    public void setManagerVariantProperty(final TextType tt)
     {
         addProperty(tt);
     }
@@ -449,7 +449,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getManagerVariant()
     {
-        TextType tt = getManagerVariantProperty();
+        final TextType tt = getManagerVariantProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -465,9 +465,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param value
      *            InstanceId value to set
      */
-    public void setInstanceID(String value)
+    public void setInstanceID(final String value)
     {
-        URIType tt = (URIType) instanciateSimple(INSTANCEID, value);
+        final URIType tt = (URIType) instanciateSimple(INSTANCEID, value);
         setInstanceIDProperty(tt);
     }
 
@@ -477,7 +477,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            InstanceId property to set
      */
-    public void setInstanceIDProperty(URIType tt)
+    public void setInstanceIDProperty(final URIType tt)
     {
         addProperty(tt);
     }
@@ -499,7 +499,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getInstanceID()
     {
-        TextType tt = getInstanceIDProperty();
+        final TextType tt = getInstanceIDProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -515,7 +515,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param resourceRef
      *            ManageFrom Property to set
      */
-    public void setManagedFromProperty(ResourceRefType resourceRef)
+    public void setManagedFromProperty(final ResourceRefType resourceRef)
     {
         addProperty(resourceRef);
     }
@@ -542,9 +542,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param url
      *            OriginalDocumentId value to set
      */
-    public void setOriginalDocumentID(String url)
+    public void setOriginalDocumentID(final String url)
     {
-        TextType tt = (TextType) instanciateSimple(ORIGINALDOCUMENTID, url);
+        final TextType tt = (TextType) instanciateSimple(ORIGINALDOCUMENTID, url);
         setOriginalDocumentIDProperty(tt);
     }
 
@@ -554,7 +554,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            OriginalDocumentId property to set
      */
-    public void setOriginalDocumentIDProperty(TextType tt)
+    public void setOriginalDocumentIDProperty(final TextType tt)
     {
         addProperty(tt);
     }
@@ -576,7 +576,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getOriginalDocumentID()
     {
-        TextType tt = getOriginalDocumentIDProperty();
+        final TextType tt = getOriginalDocumentIDProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -592,9 +592,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param value
      *            renditionClass Value to set
      */
-    public void setRenditionClass(String value)
+    public void setRenditionClass(final String value)
     {
-        RenditionClassType tt = (RenditionClassType) instanciateSimple(RENDITIONCLASS, value);
+        final RenditionClassType tt = (RenditionClassType) instanciateSimple(RENDITIONCLASS, value);
         setRenditionClassProperty(tt);
     }
 
@@ -604,7 +604,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            renditionClass Property to set
      */
-    public void setRenditionClassProperty(RenditionClassType tt)
+    public void setRenditionClassProperty(final RenditionClassType tt)
     {
         addProperty(tt);
     }
@@ -626,7 +626,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getRenditionClass()
     {
-        TextType tt = getRenditionClassProperty();
+        final TextType tt = getRenditionClassProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -642,9 +642,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param url
      *            RenditionParams Value to set
      */
-    public void setRenditionParams(String url)
+    public void setRenditionParams(final String url)
     {
-        TextType tt = (TextType) instanciateSimple(RENDITIONPARAMS, url);
+        final TextType tt = (TextType) instanciateSimple(RENDITIONPARAMS, url);
         setRenditionParamsProperty(tt);
     }
 
@@ -654,7 +654,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            RenditionParams property to set
      */
-    public void setRenditionParamsProperty(TextType tt)
+    public void setRenditionParamsProperty(final TextType tt)
     {
         addProperty(tt);
     }
@@ -676,7 +676,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getRenditionParams()
     {
-        TextType tt = getRenditionParamsProperty();
+        final TextType tt = getRenditionParamsProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -692,9 +692,9 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param value
      *            VersionId value to set
      */
-    public void setVersionID(String value)
+    public void setVersionID(final String value)
     {
-        TextType tt = (TextType) instanciateSimple(VERSIONID, value);
+        final TextType tt = (TextType) instanciateSimple(VERSIONID, value);
         setVersionIDProperty(tt);
     }
 
@@ -704,7 +704,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param tt
      *            VersionId property to set
      */
-    public void setVersionIDProperty(TextType tt)
+    public void setVersionIDProperty(final TextType tt)
     {
         addProperty(tt);
     }
@@ -726,7 +726,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      */
     public String getVersionID()
     {
-        TextType tt = getVersionIDProperty();
+        final TextType tt = getVersionIDProperty();
         return tt != null ? tt.getStringValue() : null;
     }
 
@@ -736,7 +736,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     @PropertyType(type = Types.Version, card = Cardinality.Seq)
     public static final String VERSIONS = "Versions";
 
-    public void addVersions(String value)
+    public void addVersions(final String value)
     {
         addQualifiedBagValue(VERSIONS, value);
     }
@@ -768,7 +768,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param history
      *            History Value to add
      */
-    public void addHistory(String history)
+    public void addHistory(final String history)
     {
         addUnqualifiedSequenceValue(HISTORY, history);
     }
@@ -805,7 +805,7 @@ public class XMPMediaManagementSchema extends XMPSchema
      * @param ingredients
      *            Ingredients value to add
      */
-    public void addIngredients(String ingredients)
+    public void addIngredients(final String ingredients)
     {
         addQualifiedBagValue(INGREDIENTS, ingredients);
     }

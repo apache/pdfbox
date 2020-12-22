@@ -34,7 +34,7 @@ public abstract class AbstractXReference implements XReferenceEntry
      *
      * @param type The {@link XReferenceType} of the crossreference stream entry.
      */
-    protected AbstractXReference(XReferenceType type)
+    protected AbstractXReference(final XReferenceType type)
     {
         this.type = type;
     }
@@ -71,7 +71,7 @@ public abstract class AbstractXReference implements XReferenceEntry
      * the specified object.
      */
     @Override
-    public int compareTo(XReferenceEntry xReferenceEntry)
+    public int compareTo(final XReferenceEntry xReferenceEntry)
     {
         if (getReferencedKey() == null)
         {

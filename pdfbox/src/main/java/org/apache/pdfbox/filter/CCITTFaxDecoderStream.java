@@ -139,7 +139,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
         changesCurrentRowCount = 0;
 
         do {
-            int completeRun;
+            final int completeRun;
 
             if (white) {
                 completeRun = decodeRun(whiteRunTree);
@@ -163,7 +163,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
 
     private void decode2D() throws IOException {
         changesReferenceRowCount = changesCurrentRowCount;
-        int[] tmp = changesCurrentRow;
+        final int[] tmp = changesCurrentRow;
         changesCurrentRow = changesReferenceRow;
         changesReferenceRow = tmp;
 
@@ -195,7 +195,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
                             break;
 
                         case VALUE_PASSMODE:
-                            int pChangingElement = getNextChangingElement(index, white) + 1;
+                            final int pChangingElement = getNextChangingElement(index, white) + 1;
 
                             if (pChangingElement >= changesReferenceRowCount) {
                                 index = columns;
@@ -208,7 +208,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
 
                         default:
                             // Vertical mode (-3 to 3)
-                            int vChangingElement = getNextChangingElement(index, white);
+                            final int vChangingElement = getNextChangingElement(index, white);
 
                             if (vChangingElement >= changesReferenceRowCount || vChangingElement == -1) {
                                 index = columns + n.value;
@@ -367,7 +367,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
         Node n = tree.root;
 
         while (true) {
-            boolean bit = readBit();
+            final boolean bit = readBit();
             n = n.walk(bit);
 
             if (n == null) {
@@ -405,7 +405,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
             bufferPos = 0;
         }
 
-        boolean isSet;
+        final boolean isSet;
 
         if (fillOrder == TIFFExtension.FILL_LEFT_TO_RIGHT) {
             isSet = ((buffer >> (7 - bufferPos)) & 1) == 1;
@@ -441,7 +441,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) throws IOException {
         if (decodedLength < 0) {
             //TODO better? Math.min(off + len, b.length)
             Arrays.fill(b, off, off + len, (byte) 0x0);
@@ -457,7 +457,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
             }
         }
 
-        int read = Math.min(decodedLength - decodedPos, len);
+        final int read = Math.min(decodedLength - decodedPos, len);
         System.arraycopy(decodedRow, decodedPos, b, off, read);
         decodedPos += read;
 
@@ -465,7 +465,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     }
 
     @Override
-    public long skip(long n) throws IOException {
+    public long skip(final long n) throws IOException {
         if (decodedLength < 0) {
             return -1;
         }
@@ -478,7 +478,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
             }
         }
 
-        int skipped = (int) Math.min(decodedLength - decodedPos, n);
+        final int skipped = (int) Math.min(decodedLength - decodedPos, n);
         decodedPos += skipped;
 
         return skipped;
@@ -529,8 +529,8 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
             Node current = root;
 
             for (int i = 0; i < depth; i++) {
-                int bitPos = depth - 1 - i;
-                boolean isSet = ((path >> bitPos) & 1) == 1;
+                final int bitPos = depth - 1 - i;
+                final boolean isSet = ((path >> bitPos) & 1) == 1;
                 Node next = current.walk(isSet);
 
                 if (next == null) {
@@ -561,8 +561,8 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
             Node current = root;
 
             for (int i = 0; i < depth; i++) {
-                int bitPos = depth - 1 - i;
-                boolean isSet = ((path >> bitPos) & 1) == 1;
+                final int bitPos = depth - 1 - i;
+                final boolean isSet = ((path >> bitPos) & 1) == 1;
                 Node next = current.walk(isSet);
 
                 if (next == null) {

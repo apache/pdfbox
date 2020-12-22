@@ -34,31 +34,31 @@ public class EmbeddedVerticalFonts
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
+        final PDDocument document = new PDDocument();
+        final PDPage page = new PDPage();
         document.addPage(page);
 
         // The actual font file
         // Download: https://ipafont.ipa.go.jp/ipafont/ipag00303.zip
         // (free license: https://www.gnu.org/licenses/license-list.html#IPAFONT)
-        File ipafont = new File("ipag.ttf");
+        final File ipafont = new File("ipag.ttf");
 
         // You can also use a Windows 7 TrueType font collection, e.g. MingLiU:
         // TrueTypeFont ttf = new TrueTypeCollection(new File("C:/windows/fonts/mingliu.ttc")).getFontByName("MingLiU")
         // PDType0Font.loadVertical(document, ttf, true)
 
         // Load as horizontal
-        PDType0Font hfont = PDType0Font.load(document, ipafont);
+        final PDType0Font hfont = PDType0Font.load(document, ipafont);
 
         // Load as vertical
-        PDType0Font vfont = PDType0Font.loadVertical(document, ipafont);
+        final PDType0Font vfont = PDType0Font.loadVertical(document, ipafont);
 
         // Load as vertical, but disable vertical glyph substitution
         // (You will usually not want this because it doesn't look good!)
-        TrueTypeFont ttf = new TTFParser().parse(ipafont);
-        PDType0Font vfont2 = PDType0Font.loadVertical(document, ttf, true);
+        final TrueTypeFont ttf = new TTFParser().parse(ipafont);
+        final PDType0Font vfont2 = PDType0Font.loadVertical(document, ttf, true);
         ttf.disableGsubFeature("vrt2");
         ttf.disableGsubFeature("vert");
 

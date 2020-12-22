@@ -34,7 +34,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVAL
 public class NoPatternColorSpaceHelper extends StandardColorSpaceHelper
 {
 
-    public NoPatternColorSpaceHelper(PreflightContext _context, PDColorSpace _cs)
+    public NoPatternColorSpaceHelper(final PreflightContext _context, final PDColorSpace _cs)
     {
         super(_context, _cs);
     }
@@ -44,7 +44,7 @@ public class NoPatternColorSpaceHelper extends StandardColorSpaceHelper
      * and returns false.
      */
     @Override
-    protected void processPatternColorSpace(PDColorSpace colorSpace)
+    protected void processPatternColorSpace(final PDColorSpace colorSpace)
     {
         context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN,
                 "Pattern color space is forbidden"));

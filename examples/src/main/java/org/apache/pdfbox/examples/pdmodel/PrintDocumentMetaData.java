@@ -43,7 +43,7 @@ public class PrintDocumentMetaData
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
         if( args.length != 1 )
         {
@@ -53,7 +53,7 @@ public class PrintDocumentMetaData
         {
             try (PDDocument document = Loader.loadPDF(new File(args[0])))
             {
-                PrintDocumentMetaData meta = new PrintDocumentMetaData();
+                final PrintDocumentMetaData meta = new PrintDocumentMetaData();
                 meta.printMetadata( document );
             }
         }
@@ -74,11 +74,11 @@ public class PrintDocumentMetaData
      *
      * @throws IOException If there is an error getting the page count.
      */
-    public void printMetadata( PDDocument document ) throws IOException
+    public void printMetadata(final PDDocument document ) throws IOException
     {
-        PDDocumentInformation info = document.getDocumentInformation();
-        PDDocumentCatalog cat = document.getDocumentCatalog();
-        PDMetadata metadata = cat.getMetadata();
+        final PDDocumentInformation info = document.getDocumentInformation();
+        final PDDocumentCatalog cat = document.getDocumentCatalog();
+        final PDMetadata metadata = cat.getMetadata();
         System.out.println( "Page Count=" + document.getNumberOfPages() );
         System.out.println( "Title=" + info.getTitle() );
         System.out.println( "Author=" + info.getAuthor() );
@@ -91,7 +91,7 @@ public class PrintDocumentMetaData
         System.out.println( "Trapped=" + info.getTrapped() );
         if( metadata != null )
         {
-            String string =  new String( metadata.toByteArray(), StandardCharsets.ISO_8859_1 );
+            final String string =  new String( metadata.toByteArray(), StandardCharsets.ISO_8859_1 );
             System.out.println( "Metadata=" + string );
         }
     }
@@ -103,12 +103,12 @@ public class PrintDocumentMetaData
      *
      * @return A string representation of the date.
      */
-    private String formatDate( Calendar date )
+    private String formatDate(final Calendar date )
     {
         String retval = null;
         if( date != null )
         {
-            SimpleDateFormat formatter = new SimpleDateFormat();
+            final SimpleDateFormat formatter = new SimpleDateFormat();
             retval = formatter.format( date.getTime() );
         }
 

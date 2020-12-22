@@ -107,12 +107,12 @@ public final class ExtractImages implements Callable<Integer>
      *
      * @param args The command-line arguments.
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new ExtractImages()).execute(args);
+        final int exitCode = new CommandLine(new ExtractImages()).execute(args);
         System.exit(exitCode);
     }
 
@@ -120,7 +120,7 @@ public final class ExtractImages implements Callable<Integer>
     {
         try (PDDocument document = Loader.loadPDF(infile, password))
         {
-            AccessPermission ap = document.getCurrentAccessPermission();
+            final AccessPermission ap = document.getCurrentAccessPermission();
             if (!ap.canExtractContent())
             {
                 SYSERR.println("You do not have permission to extract images");
@@ -132,9 +132,9 @@ public final class ExtractImages implements Callable<Integer>
                 prefix = FilenameUtils.removeExtension(infile.getAbsolutePath());
             }
 
-            for (PDPage page : document.getPages())
+            for (final PDPage page : document.getPages())
             {
-                ImageGraphicsEngine extractor = new ImageGraphicsEngine(page);
+                final ImageGraphicsEngine extractor = new ImageGraphicsEngine(page);
                 extractor.run();
             }
         }
@@ -148,32 +148,32 @@ public final class ExtractImages implements Callable<Integer>
 
     private class ImageGraphicsEngine extends PDFGraphicsStreamEngine
     {
-        protected ImageGraphicsEngine(PDPage page)
+        protected ImageGraphicsEngine(final PDPage page)
         {
             super(page);
         }
 
         public void run() throws IOException
         {
-            PDPage page = getPage();
+            final PDPage page = getPage();
             processPage(page);
-            PDResources res = page.getResources();
+            final PDResources res = page.getResources();
             if (res == null)
             {
                 return;
             }
-            for (COSName name : res.getExtGStateNames())
+            for (final COSName name : res.getExtGStateNames())
             {
-                PDExtendedGraphicsState extGState = res.getExtGState(name);
+                final PDExtendedGraphicsState extGState = res.getExtGState(name);
                 if (extGState == null)
                 {
                     // can happen if key exists but no value 
                     continue;
                 }
-                PDSoftMask softMask = extGState.getSoftMask();
+                final PDSoftMask softMask = extGState.getSoftMask();
                 if (softMask != null)
                 {
-                    PDTransparencyGroup group = softMask.getGroup();
+                    final PDTransparencyGroup group = softMask.getGroup();
                     if (group != null)
                     {
                         // PDFBOX-4327: without this line NPEs will occur
@@ -186,7 +186,7 @@ public final class ExtractImages implements Callable<Integer>
         }
 
         @Override
-        public void drawImage(PDImage pdImage) throws IOException
+        public void drawImage(final PDImage pdImage) throws IOException
         {
             if (pdImage instanceof PDImageXObject)
             {
@@ -194,7 +194,7 @@ public final class ExtractImages implements Callable<Integer>
                 {
                     processColor(getGraphicsState().getNonStrokingColor());
                 }
-                PDImageXObject xobject = (PDImageXObject)pdImage;
+                final PDImageXObject xobject = (PDImageXObject)pdImage;
                 if (seen.contains(xobject.getCOSObject()))
                 {
                     // skip duplicate image
@@ -204,39 +204,39 @@ public final class ExtractImages implements Callable<Integer>
             }
 
             // save image
-            String name = prefix + "-" + imageCounter;
+            final String name = prefix + "-" + imageCounter;
             imageCounter++;
 
             write2file(pdImage, name, useDirectJPEG, noColorConvert);
         }
 
         @Override
-        public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3)
+        public void appendRectangle(final Point2D p0, final Point2D p1, final Point2D p2, final Point2D p3)
                 throws IOException
         {
             // Empty: add special handling if needed
         }
 
         @Override
-        public void clip(int windingRule) throws IOException
+        public void clip(final int windingRule) throws IOException
         {
             // Empty: add special handling if needed
         }
 
         @Override
-        public void moveTo(float x, float y) throws IOException
+        public void moveTo(final float x, final float y) throws IOException
         {
             // Empty: add special handling if needed
         }
 
         @Override
-        public void lineTo(float x, float y) throws IOException
+        public void lineTo(final float x, final float y) throws IOException
         {
             // Empty: add special handling if needed
         }
 
         @Override
-        public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3)
+        public void curveTo(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3)
                 throws IOException
         {
             // Empty: add special handling if needed
@@ -261,12 +261,12 @@ public final class ExtractImages implements Callable<Integer>
         }
 
         @Override
-        protected void showGlyph(Matrix textRenderingMatrix, 
-                                 PDFont font,
-                                 int code,
-                                 Vector displacement) throws IOException
+        protected void showGlyph(final Matrix textRenderingMatrix,
+                                 final PDFont font,
+                                 final int code,
+                                 final Vector displacement) throws IOException
         {
-            RenderingMode renderingMode = getGraphicsState().getTextState().getRenderingMode();
+            final RenderingMode renderingMode = getGraphicsState().getTextState().getRenderingMode();
             if (renderingMode.isFill())
             {
                 processColor(getGraphicsState().getNonStrokingColor());
@@ -284,30 +284,30 @@ public final class ExtractImages implements Callable<Integer>
         }
 
         @Override
-        public void fillPath(int windingRule) throws IOException
+        public void fillPath(final int windingRule) throws IOException
         {
             processColor(getGraphicsState().getNonStrokingColor());
         }
 
         @Override
-        public void fillAndStrokePath(int windingRule) throws IOException
+        public void fillAndStrokePath(final int windingRule) throws IOException
         {
             processColor(getGraphicsState().getNonStrokingColor());
         }
 
         @Override
-        public void shadingFill(COSName shadingName) throws IOException
+        public void shadingFill(final COSName shadingName) throws IOException
         {
             // Empty: add special handling if needed
         }
 
         // find out if it is a tiling pattern, then process that one
-        private void processColor(PDColor color) throws IOException
+        private void processColor(final PDColor color) throws IOException
         {
             if (color.getColorSpace() instanceof PDPattern)
             {
-                PDPattern pattern = (PDPattern) color.getColorSpace();
-                PDAbstractPattern abstractPattern = pattern.getPattern(color);
+                final PDPattern pattern = (PDPattern) color.getColorSpace();
+                final PDAbstractPattern abstractPattern = pattern.getPattern(color);
                 if (abstractPattern instanceof PDTilingPattern)
                 {
                     processTilingPattern((PDTilingPattern) abstractPattern, null, null);
@@ -327,8 +327,8 @@ public final class ExtractImages implements Callable<Integer>
          * possible.
          * @throws IOException When something is wrong with the corresponding file.
          */
-        private void write2file(PDImage pdImage, String prefix, boolean directJPEG,
-                boolean noColorConvert) throws IOException
+        private void write2file(final PDImage pdImage, final String prefix, final boolean directJPEG,
+                                final boolean noColorConvert) throws IOException
         {
             String suffix = pdImage.getSuffix();
             if (suffix == null || "jb2".equals(suffix))
@@ -351,10 +351,10 @@ public final class ExtractImages implements Callable<Integer>
             {
                 // We write the raw image if in any way possible.
                 // But we have no alpha information here.
-                BufferedImage image = pdImage.getRawImage();
+                final BufferedImage image = pdImage.getRawImage();
                 if (image != null)
                 {
-                    int elements = image.getRaster().getNumDataElements();
+                    final int elements = image.getRaster().getNumDataElements();
                     suffix = "png";
                     if (elements > 3)
                     {
@@ -378,20 +378,20 @@ public final class ExtractImages implements Callable<Integer>
 
                 if ("jpg".equals(suffix))
                 {
-                    String colorSpaceName = pdImage.getColorSpace().getName();
+                    final String colorSpaceName = pdImage.getColorSpace().getName();
                     if (directJPEG || 
                         (PDDeviceGray.INSTANCE.getName().equals(colorSpaceName) ||
                          PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName)))
                     {
                         // RGB or Gray colorspace: get and write the unmodified JPEG stream
-                        InputStream data = pdImage.createInputStream(JPEG);
+                        final InputStream data = pdImage.createInputStream(JPEG);
                         IOUtils.copy(data, imageOutput);
                         IOUtils.closeQuietly(data);
                     }
                     else
                     {
                         // for CMYK and other "unusual" colorspaces, the JPEG will be converted
-                        BufferedImage image = pdImage.getImage();
+                        final BufferedImage image = pdImage.getImage();
                         if (image != null)
                         {
                             ImageIOUtil.writeImage(image, suffix, imageOutput);
@@ -400,13 +400,13 @@ public final class ExtractImages implements Callable<Integer>
                 }
                 else if ("jp2".equals(suffix))
                 {
-                    String colorSpaceName = pdImage.getColorSpace().getName();
+                    final String colorSpaceName = pdImage.getColorSpace().getName();
                     if (directJPEG
                             || (PDDeviceGray.INSTANCE.getName().equals(colorSpaceName)
                             || PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName)))
                     {
                         // RGB or Gray colorspace: get and write the unmodified JPEG2000 stream
-                        InputStream data = pdImage.createInputStream(
+                        final InputStream data = pdImage.createInputStream(
                                 Arrays.asList(COSName.JPX_DECODE.getName()));
                         IOUtils.copy(data, imageOutput);
                         IOUtils.closeQuietly(data);
@@ -414,7 +414,7 @@ public final class ExtractImages implements Callable<Integer>
                     else
                     {
                         // for CMYK and other "unusual" colorspaces, the image will be converted
-                        BufferedImage image = pdImage.getImage();
+                        final BufferedImage image = pdImage.getImage();
                         if (image != null)
                         {
                             ImageIOUtil.writeImage(image, "jpeg2000", imageOutput);
@@ -423,7 +423,7 @@ public final class ExtractImages implements Callable<Integer>
                 }
                 else if ("tiff".equals(suffix) && pdImage.getColorSpace().equals(PDDeviceGray.INSTANCE))
                 {
-                    BufferedImage image = pdImage.getImage();
+                    final BufferedImage image = pdImage.getImage();
                     if (image == null)
                     {
                         return;
@@ -431,9 +431,9 @@ public final class ExtractImages implements Callable<Integer>
                     // CCITT compressed images can have a different colorspace, but this one is B/W
                     // This is a bitonal image, so copy to TYPE_BYTE_BINARY
                     // so that a G4 compressed TIFF image is created by ImageIOUtil.writeImage()
-                    int w = image.getWidth();
-                    int h = image.getHeight();
-                    BufferedImage bitonalImage = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_BINARY);
+                    final int w = image.getWidth();
+                    final int h = image.getHeight();
+                    final BufferedImage bitonalImage = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_BINARY);
                     // copy image the old fashioned way - ColorConvertOp is slower!
                     for (int y = 0; y < h; y++)
                     {
@@ -446,7 +446,7 @@ public final class ExtractImages implements Callable<Integer>
                 }
                 else
                 {
-                    BufferedImage image = pdImage.getImage();
+                    final BufferedImage image = pdImage.getImage();
                     if (image != null)
                     {
                         ImageIOUtil.writeImage(image, suffix, imageOutput);
@@ -456,11 +456,11 @@ public final class ExtractImages implements Callable<Integer>
             }
         }
 
-        private boolean hasMasks(PDImage pdImage) throws IOException
+        private boolean hasMasks(final PDImage pdImage) throws IOException
         {
             if (pdImage instanceof PDImageXObject)
             {
-                PDImageXObject ximg = (PDImageXObject) pdImage;
+                final PDImageXObject ximg = (PDImageXObject) pdImage;
                 return ximg.getMask() != null || ximg.getSoftMask() != null;
             }
             return false;

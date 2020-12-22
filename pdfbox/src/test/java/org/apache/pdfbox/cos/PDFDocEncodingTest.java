@@ -83,9 +83,9 @@ class PDFDocEncodingTest
     @Test
     void testDeviations()
     {
-        for (String deviation: deviations)
+        for (final String deviation: deviations)
         {
-            COSString cosString = new COSString(deviation);
+            final COSString cosString = new COSString(deviation);
             assertEquals(cosString.getString(), deviation);
         }
     }
@@ -101,9 +101,9 @@ class PDFDocEncodingTest
     {
         for (int i = 0; i < 256; i++)
         {
-            String hex = String.format("FEFF%04X", i);
-            COSString cs1 = COSString.parseHex(hex);
-            COSString cs2 = new COSString(cs1.getString());
+            final String hex = String.format("FEFF%04X", i);
+            final COSString cs1 = COSString.parseHex(hex);
+            final COSString cs2 = new COSString(cs1.getString());
             assertEquals(cs1, cs2);
         }
     }

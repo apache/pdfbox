@@ -79,7 +79,7 @@ public final class JPEGFactory
      * 
      * @throws IOException if the input stream cannot be read
      */
-    public static PDImageXObject createFromStream(PDDocument document, InputStream stream)
+    public static PDImageXObject createFromStream(final PDDocument document, final InputStream stream)
             throws IOException
     {
         return createFromByteArray(document, IOUtils.toByteArray(stream));
@@ -94,15 +94,15 @@ public final class JPEGFactory
      *
      * @throws IOException if the input stream cannot be read
      */
-    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray)
+    public static PDImageXObject createFromByteArray(final PDDocument document, final byte[] byteArray)
             throws IOException
     {
         // copy stream
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
+        final ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
 
-        Dimensions meta = retrieveDimensions(byteStream);
+        final Dimensions meta = retrieveDimensions(byteStream);
 
-        PDColorSpace colorSpace;
+        final PDColorSpace colorSpace;
         switch (meta.numComponents)
         {
             case 1:
@@ -120,12 +120,12 @@ public final class JPEGFactory
         }
 
         // create PDImageXObject from stream
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
+        final PDImageXObject pdImage = new PDImageXObject(document, byteStream,
                 COSName.DCT_DECODE, meta.width, meta.height, 8, colorSpace);
 
         if (colorSpace instanceof PDDeviceCMYK)
         {
-            COSArray decode = new COSArray();
+            final COSArray decode = new COSArray();
             decode.add(COSInteger.ONE);
             decode.add(COSInteger.ZERO);
             decode.add(COSInteger.ONE);
@@ -147,10 +147,10 @@ public final class JPEGFactory
         private int numComponents;
     }
 
-    private static Dimensions retrieveDimensions(ByteArrayInputStream stream) throws IOException
+    private static Dimensions retrieveDimensions(final ByteArrayInputStream stream) throws IOException
     {
         // find suitable image reader
-        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
+        final Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
         ImageReader reader = null;
         while (readers.hasNext())
         {
@@ -171,7 +171,7 @@ public final class JPEGFactory
         {
             reader.setInput(iis);
 
-            Dimensions meta = new Dimensions();
+            final Dimensions meta = new Dimensions();
             meta.width = reader.getWidth(0);
             meta.height = reader.getHeight(0);
             // PDFBOX-4691: get from image metadata (faster because no decoding)
@@ -191,7 +191,7 @@ public final class JPEGFactory
 
             // Old method: get from raster (slower)
             ImageIO.setUseCache(false);
-            Raster raster = reader.readRaster(0, null);
+            final Raster raster = reader.readRaster(0, null);
             meta.numComponents = raster.getNumDataElements();
             return meta;
         }
@@ -202,14 +202,14 @@ public final class JPEGFactory
         }
     }
 
-    private static int getNumComponentsFromImageMetadata(ImageReader reader) throws IOException
+    private static int getNumComponentsFromImageMetadata(final ImageReader reader) throws IOException
     {
-        IIOMetadata imageMetadata = reader.getImageMetadata(0);
+        final IIOMetadata imageMetadata = reader.getImageMetadata(0);
         if (imageMetadata == null)
         {
             return 0;
         }
-        Element root = (Element) imageMetadata.getAsTree("javax_imageio_jpeg_image_1.0");
+        final Element root = (Element) imageMetadata.getAsTree("javax_imageio_jpeg_image_1.0");
         if (root == null)
         {
             return 0;
@@ -217,8 +217,8 @@ public final class JPEGFactory
 
         try
         {
-            XPath xpath = XPathFactory.newInstance().newXPath();
-            String numScanComponents = xpath.evaluate("markerSequence/sos/@numScanComponents", root);
+            final XPath xpath = XPathFactory.newInstance().newXPath();
+            final String numScanComponents = xpath.evaluate("markerSequence/sos/@numScanComponents", root);
             if (numScanComponents.isEmpty())
             {
                 return 0;
@@ -244,7 +244,7 @@ public final class JPEGFactory
      * @return a new Image XObject
      * @throws IOException if the JPEG data cannot be written
      */
-    public static PDImageXObject createFromImage(PDDocument document, BufferedImage image)
+    public static PDImageXObject createFromImage(final PDDocument document, final BufferedImage image)
         throws IOException
     {
         return createFromImage(document, image, 0.75f);
@@ -266,8 +266,8 @@ public final class JPEGFactory
      * @return a new Image XObject
      * @throws IOException if the JPEG data cannot be written
      */
-    public static PDImageXObject createFromImage(PDDocument document, BufferedImage image,
-                                                 float quality) throws IOException
+    public static PDImageXObject createFromImage(final PDDocument document, final BufferedImage image,
+                                                 final float quality) throws IOException
     {
         return createFromImage(document, image, quality, 72);
     }
@@ -289,14 +289,14 @@ public final class JPEGFactory
      * @return a new Image XObject
      * @throws IOException if the JPEG data cannot be written
      */
-    public static PDImageXObject createFromImage(PDDocument document, BufferedImage image,
-                                                 float quality, int dpi) throws IOException
+    public static PDImageXObject createFromImage(final PDDocument document, final BufferedImage image,
+                                                 final float quality, final int dpi) throws IOException
     {
         return createJPEG(document, image, quality, dpi);
     }
     
     // returns the alpha channel of an image
-    private static BufferedImage getAlphaImage(BufferedImage image)
+    private static BufferedImage getAlphaImage(final BufferedImage image)
     {
         if (!image.getColorModel().hasAlpha())
         {
@@ -307,32 +307,32 @@ public final class JPEGFactory
             throw new UnsupportedOperationException("BITMASK Transparency JPEG compression is not" +
                     " useful, use LosslessImageFactory instead");
         }
-        WritableRaster alphaRaster = image.getAlphaRaster();
+        final WritableRaster alphaRaster = image.getAlphaRaster();
         if (alphaRaster == null)
         {
             // happens sometimes (PDFBOX-2654) despite colormodel claiming to have alpha
             return null;
         }
-        BufferedImage alphaImage = new BufferedImage(image.getWidth(), image.getHeight(),
+        final BufferedImage alphaImage = new BufferedImage(image.getWidth(), image.getHeight(),
                 BufferedImage.TYPE_BYTE_GRAY);
         alphaImage.setData(alphaRaster);
         return alphaImage;
     }
     
     // Creates an Image XObject from a BufferedImage using JAI Image I/O
-    private static PDImageXObject createJPEG(PDDocument document, BufferedImage image,
-                                             float quality, int dpi) throws IOException
+    private static PDImageXObject createJPEG(final PDDocument document, final BufferedImage image,
+                                             final float quality, final int dpi) throws IOException
     {
         // extract alpha channel (if any)
-        BufferedImage awtColorImage = getColorImage(image);
-        BufferedImage awtAlphaImage = getAlphaImage(image);
+        final BufferedImage awtColorImage = getColorImage(image);
+        final BufferedImage awtAlphaImage = getAlphaImage(image);
 
         // create XObject
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encodeImageToJPEGStream(awtColorImage, quality, dpi, baos);
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(baos.toByteArray());
+        final ByteArrayInputStream byteStream = new ByteArrayInputStream(baos.toByteArray());
         
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
+        final PDImageXObject pdImage = new PDImageXObject(document, byteStream,
                 COSName.DCT_DECODE, awtColorImage.getWidth(), awtColorImage.getHeight(), 
                 8,
                 getColorSpaceFromAWT(awtColorImage));
@@ -340,7 +340,7 @@ public final class JPEGFactory
         // alpha -> soft mask
         if (awtAlphaImage != null)
         {
-            PDImage xAlpha = JPEGFactory.createFromImage(document, awtAlphaImage, quality);
+            final PDImage xAlpha = JPEGFactory.createFromImage(document, awtAlphaImage, quality);
             pdImage.getCOSObject().setItem(COSName.SMASK, xAlpha);
         }
 
@@ -350,7 +350,7 @@ public final class JPEGFactory
     private static ImageWriter getJPEGImageWriter() throws IOException
     {
         ImageWriter writer = null;
-        Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("jpeg");
+        final Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("jpeg");
         while (writers.hasNext())
         {
             if (writer != null)
@@ -371,8 +371,8 @@ public final class JPEGFactory
         throw new IOException("No ImageWriter found for JPEG format");
     }
 
-    private static void encodeImageToJPEGStream(BufferedImage image, float quality, int dpi,
-                                                OutputStream out) throws IOException
+    private static void encodeImageToJPEGStream(final BufferedImage image, final float quality, final int dpi,
+                                                final OutputStream out) throws IOException
     {
         // encode to JPEG
         ImageOutputStream ios = null;
@@ -385,15 +385,15 @@ public final class JPEGFactory
             imageWriter.setOutput(ios);
 
             // add compression
-            ImageWriteParam jpegParam = imageWriter.getDefaultWriteParam();
+            final ImageWriteParam jpegParam = imageWriter.getDefaultWriteParam();
             jpegParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             jpegParam.setCompressionQuality(quality);
 
             // add metadata
-            ImageTypeSpecifier imageTypeSpecifier = new ImageTypeSpecifier(image);
-            IIOMetadata data = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
-            Element tree = (Element)data.getAsTree("javax_imageio_jpeg_image_1.0");
-            Element jfif = (Element)tree.getElementsByTagName("app0JFIF").item(0);
+            final ImageTypeSpecifier imageTypeSpecifier = new ImageTypeSpecifier(image);
+            final IIOMetadata data = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
+            final Element tree = (Element)data.getAsTree("javax_imageio_jpeg_image_1.0");
+            final Element jfif = (Element)tree.getElementsByTagName("app0JFIF").item(0);
             jfif.setAttribute("Xdensity", Integer.toString(dpi));
             jfif.setAttribute("Ydensity", Integer.toString(dpi));
             jfif.setAttribute("resUnits", "1"); // 1 = dots/inch
@@ -417,7 +417,7 @@ public final class JPEGFactory
     }
     
     // returns a PDColorSpace for a given BufferedImage
-    private static PDColorSpace getColorSpaceFromAWT(BufferedImage awtImage)
+    private static PDColorSpace getColorSpaceFromAWT(final BufferedImage awtImage)
     {
         if (awtImage.getColorModel().getNumComponents() == 1)
         {
@@ -425,7 +425,7 @@ public final class JPEGFactory
             return PDDeviceGray.INSTANCE;
         }
         
-        ColorSpace awtColorSpace = awtImage.getColorModel().getColorSpace();
+        final ColorSpace awtColorSpace = awtImage.getColorModel().getColorSpace();
         if (awtColorSpace instanceof ICC_ColorSpace && !awtColorSpace.isCS_sRGB())
         {
             throw new UnsupportedOperationException("ICC color spaces not implemented");
@@ -446,7 +446,7 @@ public final class JPEGFactory
     }
 
     // returns the color channels of an image
-    private static BufferedImage getColorImage(BufferedImage image)
+    private static BufferedImage getColorImage(final BufferedImage image)
     {
         if (!image.getColorModel().hasAlpha())
         {
@@ -463,7 +463,7 @@ public final class JPEGFactory
         // g.setComposite(AlphaComposite.Src) and g.drawImage()
         // didn't work properly for TYPE_4BYTE_ABGR.
         // alpha values of 0 result in a black dest pixel!!!
-        BufferedImage rgbImage = new BufferedImage(
+        final BufferedImage rgbImage = new BufferedImage(
                 image.getWidth(),
                 image.getHeight(),
                 BufferedImage.TYPE_3BYTE_BGR);

@@ -37,7 +37,7 @@ public class DimensionsType extends AbstractStructuredType
     @PropertyType(type = Types.Text)
     public static final String UNIT = "unit";
 
-    public DimensionsType(XMPMetadata metadata)
+    public DimensionsType(final XMPMetadata metadata)
     {
         super(metadata);
     }

@@ -102,7 +102,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param outputStream The appearances output stream to write to.
      * @param resources The resources to use
      */
-    PDAbstractContentStream(PDDocument document, OutputStream outputStream, PDResources resources)
+    PDAbstractContentStream(final PDDocument document, final OutputStream outputStream, final PDResources resources)
     {
         this.document = document;
         this.outputStream = outputStream;
@@ -118,7 +118,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @see NumberFormat#setMaximumFractionDigits(int)
      * @param fractionDigitsNumber
      */
-    protected void setMaximumFractionDigits(int fractionDigitsNumber)
+    protected void setMaximumFractionDigits(final int fractionDigitsNumber)
     {
         formatDecimal.setMaximumFractionDigits(fractionDigitsNumber);
     }
@@ -164,7 +164,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param fontSize The font size to draw the text.
      * @throws IOException If there is an error writing the font information.
      */
-    public void setFont(PDFont font, float fontSize) throws IOException
+    public void setFont(final PDFont font, final float fontSize) throws IOException
     {
         if (fontStack.isEmpty())
         {
@@ -192,11 +192,11 @@ abstract class PDAbstractContentStream implements Closeable
         // complex text layout
         if (font instanceof PDType0Font)
         {
-            PDType0Font pdType0Font = (PDType0Font) font;
-            GsubData gsubData = pdType0Font.getGsubData();
+            final PDType0Font pdType0Font = (PDType0Font) font;
+            final GsubData gsubData = pdType0Font.getGsubData();
             if (gsubData != GsubData.NO_DATA_FOUND)
             {
-                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(pdType0Font.getCmapLookup(),
+                final GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(pdType0Font.getCmapLookup(),
                         gsubData);
                 gsubWorkers.put((PDType0Font) font, gsubWorker);
             }
@@ -220,10 +220,10 @@ abstract class PDAbstractContentStream implements Closeable
      *
      * @throws IOException if an io exception occurs.
      */
-    public void showTextWithPositioning(Object[] textWithPositioningArray) throws IOException
+    public void showTextWithPositioning(final Object[] textWithPositioningArray) throws IOException
     {
         write("[");
-        for (Object obj : textWithPositioningArray)
+        for (final Object obj : textWithPositioningArray)
         {
             if (obj instanceof String)
             {
@@ -249,7 +249,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If an io exception occurs.
      * @throws IllegalArgumentException if a character isn't supported by the current font
      */
-    public void showText(String text) throws IOException
+    public void showText(final String text) throws IOException
     {
         showTextInternal(text);
         write(" ");
@@ -263,7 +263,7 @@ abstract class PDAbstractContentStream implements Closeable
      * 
      * @throws IOException If an io exception occurs.
      */
-    protected void showTextInternal(String text) throws IOException
+    protected void showTextInternal(final String text) throws IOException
     {
         if (!inTextMode)
         {
@@ -275,18 +275,18 @@ abstract class PDAbstractContentStream implements Closeable
             throw new IllegalStateException("Must call setFont() before showText()");
         }
 
-        PDFont font = fontStack.peek();
+        final PDFont font = fontStack.peek();
 
         // complex text layout
         byte[] encodedText = null;
         if (font instanceof PDType0Font)
         {
 
-            GsubWorker gsubWorker = gsubWorkers.get(font);
+            final GsubWorker gsubWorker = gsubWorkers.get(font);
             if (gsubWorker != null)
             {
-                PDType0Font pdType0Font = (PDType0Font) font;
-                Set<Integer> glyphIds = new HashSet<>();
+                final PDType0Font pdType0Font = (PDType0Font) font;
+                final Set<Integer> glyphIds = new HashSet<>();
                 encodedText = encodeForGsub(gsubWorker, glyphIds, pdType0Font, text);
                 if (pdType0Font.willBeSubset())
                 {
@@ -306,7 +306,7 @@ abstract class PDAbstractContentStream implements Closeable
             int offset = 0;
             while (offset < text.length())
             {
-                int codePoint = text.codePointAt(offset);
+                final int codePoint = text.codePointAt(offset);
                 font.addToSubset(codePoint);
                 offset += Character.charCount(codePoint);
             }
@@ -321,7 +321,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param leading The leading in unscaled text units.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void setLeading(float leading) throws IOException
+    public void setLeading(final float leading) throws IOException
     {
         writeOperand(leading);
         writeOperator(OperatorName.SET_TEXT_LEADING);
@@ -351,7 +351,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If there is an error writing to the stream.
      * @throws IllegalStateException If the method was not allowed to be called at this time.
      */
-    public void newLineAtOffset(float tx, float ty) throws IOException
+    public void newLineAtOffset(final float tx, final float ty) throws IOException
     {
         if (!inTextMode)
         {
@@ -370,7 +370,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If there is an error writing to the stream.
      * @throws IllegalStateException If the method was not allowed to be called at this time.
      */
-    public void setTextMatrix(Matrix matrix) throws IOException
+    public void setTextMatrix(final Matrix matrix) throws IOException
     {
         if (!inTextMode)
         {
@@ -389,7 +389,7 @@ abstract class PDAbstractContentStream implements Closeable
      *
      * @throws IOException If there is an error writing to the stream.
      */
-    public void drawImage(PDImageXObject image, float x, float y) throws IOException
+    public void drawImage(final PDImageXObject image, final float x, final float y) throws IOException
     {
         drawImage(image, x, y, image.getWidth(), image.getHeight());
     }
@@ -406,7 +406,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If there is an error writing to the stream.
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void drawImage(PDImageXObject image, float x, float y, float width, float height) throws IOException
+    public void drawImage(final PDImageXObject image, final float x, final float y, final float width, final float height) throws IOException
     {
         if (inTextMode)
         {
@@ -415,7 +415,7 @@ abstract class PDAbstractContentStream implements Closeable
 
         saveGraphicsState();
 
-        AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
+        final AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
         transform(new Matrix(transform));
 
         writeOperand(resources.add(image));
@@ -433,7 +433,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If there is an error writing to the stream.
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void drawImage(PDImageXObject image, Matrix matrix) throws IOException
+    public void drawImage(final PDImageXObject image, final Matrix matrix) throws IOException
     {
         if (inTextMode)
         {
@@ -442,7 +442,7 @@ abstract class PDAbstractContentStream implements Closeable
 
         saveGraphicsState();
 
-        AffineTransform transform = matrix.createAffineTransform();
+        final AffineTransform transform = matrix.createAffineTransform();
         transform(new Matrix(transform));
 
         writeOperand(resources.add(image));
@@ -460,7 +460,7 @@ abstract class PDAbstractContentStream implements Closeable
      *
      * @throws IOException If there is an error writing to the stream.
      */
-    public void drawImage(PDInlineImage inlineImage, float x, float y) throws IOException
+    public void drawImage(final PDInlineImage inlineImage, final float x, final float y) throws IOException
     {
         drawImage(inlineImage, x, y, inlineImage.getWidth(), inlineImage.getHeight());
     }
@@ -477,7 +477,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If there is an error writing to the stream.
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void drawImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
+    public void drawImage(final PDInlineImage inlineImage, final float x, final float y, final float width, final float height) throws IOException
     {
         if (inTextMode)
         {
@@ -488,7 +488,7 @@ abstract class PDAbstractContentStream implements Closeable
         transform(new Matrix(width, 0, 0, height, x, y));
 
         // create the image dictionary
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(OperatorName.BEGIN_INLINE_IMAGE);
 
         sb.append("\n /W ");
@@ -505,7 +505,7 @@ abstract class PDAbstractContentStream implements Closeable
         {
             sb.append("\n /D ");
             sb.append("[");
-            for (COSBase base : inlineImage.getDecode())
+            for (final COSBase base : inlineImage.getDecode())
             {
                 sb.append(((COSNumber) base).intValue());
                 sb.append(" ");
@@ -541,7 +541,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException if the content stream could not be written
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void drawForm(PDFormXObject form) throws IOException
+    public void drawForm(final PDFormXObject form) throws IOException
     {
         if (inTextMode)
         {
@@ -561,7 +561,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param matrix the transformation matrix
      * @throws IOException If there is an error writing to the stream.
      */
-    public void transform(Matrix matrix) throws IOException
+    public void transform(final Matrix matrix) throws IOException
     {
         if (inTextMode)
         {
@@ -624,7 +624,7 @@ abstract class PDAbstractContentStream implements Closeable
         writeOperator(OperatorName.RESTORE);
     }
 
-    protected COSName getName(PDColorSpace colorSpace)
+    protected COSName getName(final PDColorSpace colorSpace)
     {
         if (colorSpace instanceof PDDeviceGray ||
             colorSpace instanceof PDDeviceRGB ||
@@ -644,7 +644,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param color Color in a specific color space.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
-    public void setStrokingColor(PDColor color) throws IOException
+    public void setStrokingColor(final PDColor color) throws IOException
     {
         if (strokingColorSpaceStack.isEmpty() ||
             strokingColorSpaceStack.peek() != color.getColorSpace())
@@ -654,7 +654,7 @@ abstract class PDAbstractContentStream implements Closeable
             setStrokingColorSpaceStack(color.getColorSpace());
         }
 
-        for (float value : color.getComponents())
+        for (final float value : color.getComponents())
         {
             writeOperand(value);
         }
@@ -683,11 +683,11 @@ abstract class PDAbstractContentStream implements Closeable
      * @param color The color to set.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
-    public void setStrokingColor(Color color) throws IOException
+    public void setStrokingColor(final Color color) throws IOException
     {
-        float[] components = new float[] {
+        final float[] components = new float[] {
                 color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f };
-        PDColor pdColor = new PDColor(components, PDDeviceRGB.INSTANCE);
+        final PDColor pdColor = new PDColor(components, PDDeviceRGB.INSTANCE);
         setStrokingColor(pdColor);
     }
 
@@ -700,7 +700,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameters are invalid.
      */
-    public void setStrokingColor(float r, float g, float b) throws IOException
+    public void setStrokingColor(final float r, final float g, final float b) throws IOException
     {
         if (isOutsideOneInterval(r) || isOutsideOneInterval(g) || isOutsideOneInterval(b))
         {
@@ -724,7 +724,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameters are invalid.
      */
-    public void setStrokingColor(float c, float m, float y, float k) throws IOException
+    public void setStrokingColor(final float c, final float m, final float y, final float k) throws IOException
     {
         if (isOutsideOneInterval(c) || isOutsideOneInterval(m) || isOutsideOneInterval(y) || isOutsideOneInterval(k))
         {
@@ -746,7 +746,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameter is invalid.
      */
-    public void setStrokingColor(float g) throws IOException
+    public void setStrokingColor(final float g) throws IOException
     {
         if (isOutsideOneInterval(g))
         {
@@ -763,7 +763,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param color Color in a specific color space.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
-    public void setNonStrokingColor(PDColor color) throws IOException
+    public void setNonStrokingColor(final PDColor color) throws IOException
     {
         if (nonStrokingColorSpaceStack.isEmpty() ||
             nonStrokingColorSpaceStack.peek() != color.getColorSpace())
@@ -773,7 +773,7 @@ abstract class PDAbstractContentStream implements Closeable
             setNonStrokingColorSpaceStack(color.getColorSpace());
         }
 
-        for (float value : color.getComponents())
+        for (final float value : color.getComponents())
         {
             writeOperand(value);
         }
@@ -802,11 +802,11 @@ abstract class PDAbstractContentStream implements Closeable
      * @param color The color to set.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
-    public void setNonStrokingColor(Color color) throws IOException
+    public void setNonStrokingColor(final Color color) throws IOException
     {
-        float[] components = new float[] {
+        final float[] components = new float[] {
                 color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f };
-        PDColor pdColor = new PDColor(components, PDDeviceRGB.INSTANCE);
+        final PDColor pdColor = new PDColor(components, PDDeviceRGB.INSTANCE);
         setNonStrokingColor(pdColor);
     }
 
@@ -819,7 +819,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameters are invalid.
      */
-    public void setNonStrokingColor(float r, float g, float b) throws IOException
+    public void setNonStrokingColor(final float r, final float g, final float b) throws IOException
     {
         if (isOutsideOneInterval(r) || isOutsideOneInterval(g) || isOutsideOneInterval(b))
         {
@@ -842,7 +842,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
-    public void setNonStrokingColor(float c, float m, float y, float k) throws IOException
+    public void setNonStrokingColor(final float c, final float m, final float y, final float k) throws IOException
     {
         if (isOutsideOneInterval(c) || isOutsideOneInterval(m) || isOutsideOneInterval(y) || isOutsideOneInterval(k))
         {
@@ -864,7 +864,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameter is invalid.
      */
-    public void setNonStrokingColor(float g) throws IOException
+    public void setNonStrokingColor(final float g) throws IOException
     {
         if (isOutsideOneInterval(g))
         {
@@ -885,7 +885,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If the content stream could not be written.
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void addRect(float x, float y, float width, float height) throws IOException
+    public void addRect(final float x, final float y, final float width, final float height) throws IOException
     {
         if (inTextMode)
         {
@@ -911,7 +911,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If the content stream could not be written.
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
+    public void curveTo(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3) throws IOException
     {
         if (inTextMode)
         {
@@ -937,7 +937,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IllegalStateException If the method was called within a text block.
      * @throws IOException If the content stream could not be written.
      */
-    public void curveTo2(float x2, float y2, float x3, float y3) throws IOException
+    public void curveTo2(final float x2, final float y2, final float x3, final float y3) throws IOException
     {
         if (inTextMode)
         {
@@ -961,7 +961,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If the content stream could not be written.
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void curveTo1(float x1, float y1, float x3, float y3) throws IOException
+    public void curveTo1(final float x1, final float y1, final float x3, final float y3) throws IOException
     {
         if (inTextMode)
         {
@@ -982,7 +982,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If the content stream could not be written.
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void moveTo(float x, float y) throws IOException
+    public void moveTo(final float x, final float y) throws IOException
     {
         if (inTextMode)
         {
@@ -1001,7 +1001,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If the content stream could not be written.
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void lineTo(float x, float y) throws IOException
+    public void lineTo(final float x, final float y) throws IOException
     {
         if (inTextMode)
         {
@@ -1147,7 +1147,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If the content stream could not be written
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void shadingFill(PDShading shading) throws IOException
+    public void shadingFill(final PDShading shading) throws IOException
     {
         if (inTextMode)
         {
@@ -1216,7 +1216,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If the content stream could not be written
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void setLineWidth(float lineWidth) throws IOException
+    public void setLineWidth(final float lineWidth) throws IOException
     {
         if (inTextMode)
         {
@@ -1234,7 +1234,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IllegalStateException If the method was called within a text block.
      * @throws IllegalArgumentException If the parameter is not a valid line join style.
      */
-    public void setLineJoinStyle(int lineJoinStyle) throws IOException
+    public void setLineJoinStyle(final int lineJoinStyle) throws IOException
     {
         if (inTextMode)
         {
@@ -1259,7 +1259,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IllegalStateException If the method was called within a text block.
      * @throws IllegalArgumentException If the parameter is not a valid line cap style.
      */
-    public void setLineCapStyle(int lineCapStyle) throws IOException
+    public void setLineCapStyle(final int lineCapStyle) throws IOException
     {
         if (inTextMode)
         {
@@ -1284,14 +1284,14 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IOException If the content stream could not be written.
      * @throws IllegalStateException If the method was called within a text block.
      */
-    public void setLineDashPattern(float[] pattern, float phase) throws IOException
+    public void setLineDashPattern(final float[] pattern, final float phase) throws IOException
     {
         if (inTextMode)
         {
             throw new IllegalStateException("Error: setLineDashPattern is not allowed within a text block.");
         }
         write("[");
-        for (float value : pattern)
+        for (final float value : pattern)
         {
             writeOperand(value);
         }
@@ -1306,7 +1306,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param miterLimit the new miter limit.
      * @throws IOException If the content stream could not be written.
      */
-    public void setMiterLimit(float miterLimit) throws IOException
+    public void setMiterLimit(final float miterLimit) throws IOException
     {
         if (inTextMode)
         {
@@ -1326,7 +1326,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param tag the tag
      * @throws IOException If the content stream could not be written
      */
-    public void beginMarkedContent(COSName tag) throws IOException
+    public void beginMarkedContent(final COSName tag) throws IOException
     {
         writeOperand(tag);
         writeOperator(OperatorName.BEGIN_MARKED_CONTENT);
@@ -1340,7 +1340,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param propertyList property list
      * @throws IOException If the content stream could not be written
      */
-    public void beginMarkedContent(COSName tag, PDPropertyList propertyList) throws IOException
+    public void beginMarkedContent(final COSName tag, final PDPropertyList propertyList) throws IOException
     {
         writeOperand(tag);
         writeOperand(resources.add(propertyList));
@@ -1363,7 +1363,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param state The extended graphics state.
      * @throws IOException If the content stream could not be written.
      */
-    public void setGraphicsStateParameters(PDExtendedGraphicsState state) throws IOException
+    public void setGraphicsStateParameters(final PDExtendedGraphicsState state) throws IOException
     {
         writeOperand(resources.add(state));
         writeOperator(OperatorName.SET_GRAPHICS_STATE_PARAMS);
@@ -1377,7 +1377,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IllegalArgumentException If the comment contains a newline. This is not allowed,
      * because the next line could be ordinary PDF content.
      */
-    public void addComment(String comment) throws IOException
+    public void addComment(final String comment) throws IOException
     {
         if (comment.indexOf('\n') >= 0 || comment.indexOf('\r') >= 0)
         {
@@ -1394,13 +1394,13 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws java.io.IOException
      * @throws IllegalArgumentException if the parameter is not a finite number
      */
-    protected void writeOperand(float real) throws IOException
+    protected void writeOperand(final float real) throws IOException
     {
         if (!Float.isFinite(real))
         {
             throw new IllegalArgumentException(real + " is not a finite number");
         }
-        int byteCount = NumberFormatUtil.formatFloatFast(real, formatDecimal.getMaximumFractionDigits(), formatBuffer);
+        final int byteCount = NumberFormatUtil.formatFloatFast(real, formatDecimal.getMaximumFractionDigits(), formatBuffer);
 
         if (byteCount == -1)
         {
@@ -1419,7 +1419,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param integer
      * @throws java.io.IOException
      */
-    protected void writeOperand(int integer) throws IOException
+    protected void writeOperand(final int integer) throws IOException
     {
         write(formatDecimal.format(integer));
         outputStream.write(' ');
@@ -1430,7 +1430,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param name
      * @throws java.io.IOException
      */
-    protected void writeOperand(COSName name) throws IOException
+    protected void writeOperand(final COSName name) throws IOException
     {
         name.writePDF(outputStream);
         outputStream.write(' ');
@@ -1441,7 +1441,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param text
      * @throws java.io.IOException
      */
-    protected void writeOperator(String text) throws IOException
+    protected void writeOperator(final String text) throws IOException
     {
         outputStream.write(text.getBytes(StandardCharsets.US_ASCII));
         outputStream.write('\n');
@@ -1452,7 +1452,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param text
      * @throws java.io.IOException
      */
-    protected void write(String text) throws IOException
+    protected void write(final String text) throws IOException
     {
         outputStream.write(text.getBytes(StandardCharsets.US_ASCII));
     }
@@ -1462,7 +1462,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param data
      * @throws java.io.IOException
      */
-    protected void write(byte[] data) throws IOException
+    protected void write(final byte[] data) throws IOException
     {
         outputStream.write(data);
     }
@@ -1481,7 +1481,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param data
      * @throws java.io.IOException
      */
-    protected void writeBytes(byte[] data) throws IOException
+    protected void writeBytes(final byte[] data) throws IOException
     {
         outputStream.write(data);
     }
@@ -1489,11 +1489,11 @@ abstract class PDAbstractContentStream implements Closeable
     /**
      * Writes an AffineTransform to the content stream as an array.
      */
-    private void writeAffineTransform(AffineTransform transform) throws IOException
+    private void writeAffineTransform(final AffineTransform transform) throws IOException
     {
-        double[] values = new double[6];
+        final double[] values = new double[6];
         transform.getMatrix(values);
-        for (double v : values)
+        for (final double v : values)
         {
             writeOperand((float) v);
         }
@@ -1514,17 +1514,17 @@ abstract class PDAbstractContentStream implements Closeable
         outputStream.close();
     }
 
-    protected boolean isOutside255Interval(int val)
+    protected boolean isOutside255Interval(final int val)
     {
         return val < 0 || val > 255;
     }
 
-    private boolean isOutsideOneInterval(double val)
+    private boolean isOutsideOneInterval(final double val)
     {
         return val < 0 || val > 1;
     }
 
-    protected void setStrokingColorSpaceStack(PDColorSpace colorSpace)
+    protected void setStrokingColorSpaceStack(final PDColorSpace colorSpace)
     {
         if (strokingColorSpaceStack.isEmpty())
         {
@@ -1537,7 +1537,7 @@ abstract class PDAbstractContentStream implements Closeable
         }
     }
 
-    protected void setNonStrokingColorSpaceStack(PDColorSpace colorSpace)
+    protected void setNonStrokingColorSpaceStack(final PDColorSpace colorSpace)
     {
         if (nonStrokingColorSpaceStack.isEmpty())
         {
@@ -1557,7 +1557,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param spacing character spacing
      * @throws IOException If the content stream could not be written.
      */
-    public void setCharacterSpacing(float spacing) throws IOException
+    public void setCharacterSpacing(final float spacing) throws IOException
     {
         writeOperand(spacing);
         writeOperator(OperatorName.SET_CHAR_SPACING);
@@ -1576,7 +1576,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param spacing word spacing
      * @throws IOException If the content stream could not be written.
      */
-    public void setWordSpacing(float spacing) throws IOException
+    public void setWordSpacing(final float spacing) throws IOException
     {
         writeOperand(spacing);
         writeOperator(OperatorName.SET_WORD_SPACING);
@@ -1589,7 +1589,7 @@ abstract class PDAbstractContentStream implements Closeable
      * width).
      * @throws IOException If the content stream could not be written.
      */
-    public void setHorizontalScaling(float scale) throws IOException
+    public void setHorizontalScaling(final float scale) throws IOException
     {
         writeOperand(scale);
         writeOperator(OperatorName.SET_TEXT_HORIZONTAL_SCALING);
@@ -1602,7 +1602,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param rm The text rendering mode.
      * @throws IOException If the content stream could not be written.
      */
-    public void setRenderingMode(RenderingMode rm) throws IOException
+    public void setRenderingMode(final RenderingMode rm) throws IOException
     {
         writeOperand(rm.intValue());
         writeOperator(OperatorName.SET_TEXT_RENDERINGMODE);
@@ -1616,23 +1616,23 @@ abstract class PDAbstractContentStream implements Closeable
      * down from its default location. 0 restores the default location.
      * @throws IOException
      */
-    public void setTextRise(float rise) throws IOException
+    public void setTextRise(final float rise) throws IOException
     {
         writeOperand(rise);
         writeOperator(OperatorName.SET_TEXT_RISE);
     }
 
-    private byte[] encodeForGsub(GsubWorker gsubWorker,
-                                 Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
+    private byte[] encodeForGsub(final GsubWorker gsubWorker,
+                                 final Set<Integer> glyphIds, final PDType0Font font, final String text) throws IOException
     {
-        Pattern spaceRegex = Pattern.compile("\\s");
+        final Pattern spaceRegex = Pattern.compile("\\s");
 
         // break the entire chunk of text into words by splitting it with space
-        List<String> words = new CompoundCharacterTokenizer("\\s").tokenize(text);
+        final List<String> words = new CompoundCharacterTokenizer("\\s").tokenize(text);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        for (String word : words)
+        for (final String word : words)
         {
             if (spaceRegex.matcher(word).matches())
             {
@@ -1647,15 +1647,15 @@ abstract class PDAbstractContentStream implements Closeable
         return out.toByteArray();
     }
 
-    private List<Integer> applyGSUBRules(GsubWorker gsubWorker, ByteArrayOutputStream out, PDType0Font font, String word) throws IOException
+    private List<Integer> applyGSUBRules(final GsubWorker gsubWorker, final ByteArrayOutputStream out, final PDType0Font font, final String word) throws IOException
     {
-        List<Integer> originalGlyphIds = new ArrayList<>();
-        CmapLookup cmapLookup = font.getCmapLookup();
+        final List<Integer> originalGlyphIds = new ArrayList<>();
+        final CmapLookup cmapLookup = font.getCmapLookup();
 
         // convert characters into glyphIds
-        for (char unicodeChar : word.toCharArray())
+        for (final char unicodeChar : word.toCharArray())
         {
-            int glyphId = cmapLookup.getGlyphId(unicodeChar);
+            final int glyphId = cmapLookup.getGlyphId(unicodeChar);
             if (glyphId <= 0)
             {
                 throw new IllegalStateException(
@@ -1664,9 +1664,9 @@ abstract class PDAbstractContentStream implements Closeable
             originalGlyphIds.add(glyphId);
         }
 
-        List<Integer> glyphIdsAfterGsub = gsubWorker.applyTransforms(originalGlyphIds);
+        final List<Integer> glyphIdsAfterGsub = gsubWorker.applyTransforms(originalGlyphIds);
 
-        for (Integer glyphId : glyphIdsAfterGsub)
+        for (final Integer glyphId : glyphIdsAfterGsub)
         {
             out.write(font.encodeGlyphId(glyphId));
         }

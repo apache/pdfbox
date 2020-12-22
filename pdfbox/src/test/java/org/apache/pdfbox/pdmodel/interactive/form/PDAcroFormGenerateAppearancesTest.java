@@ -46,12 +46,12 @@ class PDAcroFormGenerateAppearancesTest
         // PDFBOX-5043 PaperMetaData
         "https://issues.apache.org/jira/secure/attachment/13016992/PDFBOX-3891-5.pdf"
     })
-    void testGetAcroForm(String sourceUrl) throws IOException
+    void testGetAcroForm(final String sourceUrl) throws IOException
     {
         try (InputStream is = new URL(sourceUrl).openStream();
-             PDDocument testPdf = Loader.loadPDF(is))
+             final PDDocument testPdf = Loader.loadPDF(is))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
 
             assertDoesNotThrow(() -> catalog.getAcroForm(), "Getting the AcroForm shall not throw an exception");
         }

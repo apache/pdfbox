@@ -50,7 +50,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      *
      * @param dict The annotations dictionary.
      */
-    public PDAnnotationPolygon(COSDictionary dict)
+    public PDAnnotationPolygon(final COSDictionary dict)
     {
         super(dict);
     }
@@ -63,7 +63,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      *
      * @param ic color.
      */
-    public void setInteriorColor(PDColor ic)
+    public void setInteriorColor(final PDColor ic)
     {
         getCOSObject().setItem(COSName.IC, ic.toCOSArray());
     }
@@ -85,7 +85,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      * @param be The border effect dictionary to set.
      *
      */
-    public void setBorderEffect(PDBorderEffectDictionary be)
+    public void setBorderEffect(final PDBorderEffectDictionary be)
     {
         getCOSObject().setItem(COSName.BE, be);
     }
@@ -98,7 +98,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSDictionary be = (COSDictionary) getCOSObject().getDictionaryObject(COSName.BE);
+        final COSDictionary be = (COSDictionary) getCOSObject().getDictionaryObject(COSName.BE);
         if (be != null)
         {
             return new PDBorderEffectDictionary(be);
@@ -117,7 +117,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      */
     public float[] getVertices()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.VERTICES);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.VERTICES);
         if (base instanceof COSArray)
         {
             return ((COSArray) base).toFloatArray();
@@ -132,9 +132,9 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      * @param points an array with the numbers that shall represent the alternating horizontal and
      * vertical coordinates.
      */
-    public void setVertices(float[] points)
+    public void setVertices(final float[] points)
     {
-        COSArray ar = new COSArray();
+        final COSArray ar = new COSArray();
         ar.setFloatArray(points);
         getCOSObject().setItem(COSName.VERTICES, ar);
     }
@@ -148,14 +148,14 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      */
     public float[][] getPath()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.PATH);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.PATH);
         if (base instanceof COSArray)
         {
-            COSArray array = (COSArray) base;
-            float[][] pathArray = new float[array.size()][];
+            final COSArray array = (COSArray) base;
+            final float[][] pathArray = new float[array.size()][];
             for (int i = 0; i < array.size(); ++i)
             {
-                COSBase base2 = array.getObject(i);
+                final COSBase base2 = array.getObject(i);
                 if (base2 instanceof COSArray)
                 {
                     pathArray[i] = ((COSArray) array.getObject(i)).toFloatArray();
@@ -175,7 +175,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -187,11 +187,11 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDPolygonAppearanceHandler appearanceHandler = new PDPolygonAppearanceHandler(this, document);
+            final PDPolygonAppearanceHandler appearanceHandler = new PDPolygonAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

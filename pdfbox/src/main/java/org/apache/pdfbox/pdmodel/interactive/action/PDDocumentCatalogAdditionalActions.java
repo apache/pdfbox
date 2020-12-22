@@ -43,7 +43,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      *
      * @param a The action dictionary.
      */
-    public PDDocumentCatalogAdditionalActions( COSDictionary a )
+    public PDDocumentCatalogAdditionalActions(final COSDictionary a )
     {
         actions = a;
     }
@@ -68,7 +68,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public PDAction getWC()
     {
-        COSDictionary wc = (COSDictionary)actions.getDictionaryObject( "WC" );
+        final COSDictionary wc = (COSDictionary)actions.getDictionaryObject( "WC" );
         PDAction retval = null;
         if( wc != null )
         {
@@ -84,7 +84,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      *
      * @param wc The action to be performed.
      */
-    public void setWC( PDAction wc )
+    public void setWC(final PDAction wc )
     {
         actions.setItem( "WC", wc );
     }
@@ -98,7 +98,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public PDAction getWS()
     {
-        COSDictionary ws = (COSDictionary)actions.getDictionaryObject( "WS" );
+        final COSDictionary ws = (COSDictionary)actions.getDictionaryObject( "WS" );
         PDAction retval = null;
         if( ws != null )
         {
@@ -114,7 +114,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      *
      * @param ws The action to be performed.
      */
-    public void setWS( PDAction ws )
+    public void setWS(final PDAction ws )
     {
         actions.setItem( "WS", ws );
     }
@@ -128,7 +128,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public PDAction getDS()
     {
-        COSDictionary ds = (COSDictionary)actions.getDictionaryObject( "DS" );
+        final COSDictionary ds = (COSDictionary)actions.getDictionaryObject( "DS" );
         PDAction retval = null;
         if( ds != null )
         {
@@ -144,7 +144,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      *
      * @param ds The action to be performed.
      */
-    public void setDS( PDAction ds )
+    public void setDS(final PDAction ds )
     {
         actions.setItem( "DS", ds );
     }
@@ -158,7 +158,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public PDAction getWP()
     {
-        COSDictionary wp = (COSDictionary)actions.getDictionaryObject( "WP" );
+        final COSDictionary wp = (COSDictionary)actions.getDictionaryObject( "WP" );
         PDAction retval = null;
         if( wp != null )
         {
@@ -174,7 +174,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      *
      * @param wp The action to be performed.
      */
-    public void setWP( PDAction wp )
+    public void setWP(final PDAction wp )
     {
         actions.setItem( "WP", wp );
     }
@@ -188,7 +188,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public PDAction getDP()
     {
-        COSDictionary dp = (COSDictionary)actions.getDictionaryObject( "DP" );
+        final COSDictionary dp = (COSDictionary)actions.getDictionaryObject( "DP" );
         PDAction retval = null;
         if( dp != null )
         {
@@ -204,7 +204,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      *
      * @param dp The action to be performed.
      */
-    public void setDP( PDAction dp )
+    public void setDP(final PDAction dp )
     {
         actions.setItem( "DP", dp );
     }

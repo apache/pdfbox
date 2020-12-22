@@ -40,7 +40,7 @@ public class LineAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationLine pdLine = null;
 
-    public LineAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public LineAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdLine = new PDAnnotationLine(annotDictionary);

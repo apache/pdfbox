@@ -56,7 +56,7 @@ public final class ReplaceURLs
      *
      * @throws IOException If there is an error during the process.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         PDDocument doc = null;
         try
@@ -69,23 +69,23 @@ public final class ReplaceURLs
             {
                 doc = Loader.loadPDF(new File(args[0]));
                 int pageNum = 0;
-                for( PDPage page : doc.getPages() )
+                for( final PDPage page : doc.getPages() )
                 {
                     pageNum++;
-                    List<PDAnnotation> annotations = page.getAnnotations();
+                    final List<PDAnnotation> annotations = page.getAnnotations();
 
-                    for (PDAnnotation annotation : annotations)
+                    for (final PDAnnotation annotation : annotations)
                     {
-                        PDAnnotation annot = annotation;
+                        final PDAnnotation annot = annotation;
                         if( annot instanceof PDAnnotationLink )
                         {
-                            PDAnnotationLink link = (PDAnnotationLink)annot;
-                            PDAction action = link.getAction();
+                            final PDAnnotationLink link = (PDAnnotationLink)annot;
+                            final PDAction action = link.getAction();
                             if( action instanceof PDActionURI )
                             {
-                                PDActionURI uri = (PDActionURI)action;
-                                String oldURI = uri.getURI();
-                                String newURI = "http://pdfbox.apache.org";
+                                final PDActionURI uri = (PDActionURI)action;
+                                final String oldURI = uri.getURI();
+                                final String newURI = "http://pdfbox.apache.org";
                                 System.out.println( "Page " + pageNum +": Replacing " + oldURI + " with " + newURI );
                                 uri.setURI( newURI );
                             }

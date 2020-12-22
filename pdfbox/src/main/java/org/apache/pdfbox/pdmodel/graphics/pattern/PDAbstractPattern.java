@@ -45,10 +45,10 @@ public abstract class PDAbstractPattern implements COSObjectable
      * @return the newly created pattern object
      * @throws IOException If we are unable to create the PDPattern object.
      */
-    public static PDAbstractPattern create(COSDictionary dictionary, ResourceCache resourceCache) throws IOException
+    public static PDAbstractPattern create(final COSDictionary dictionary, final ResourceCache resourceCache) throws IOException
     {
-        PDAbstractPattern pattern;
-        int patternType = dictionary.getInt(COSName.PATTERN_TYPE, 0);
+        final PDAbstractPattern pattern;
+        final int patternType = dictionary.getInt(COSName.PATTERN_TYPE, 0);
         switch (patternType)
         {
             case TYPE_TILING_PATTERN:
@@ -78,7 +78,7 @@ public abstract class PDAbstractPattern implements COSObjectable
      * Creates a new Pattern dictionary from the given COS dictionary.
      * @param dictionary The COSDictionary for this pattern.
      */
-    public PDAbstractPattern(COSDictionary dictionary)
+    public PDAbstractPattern(final COSDictionary dictionary)
     {
         patternDictionary = dictionary;
     }
@@ -97,7 +97,7 @@ public abstract class PDAbstractPattern implements COSObjectable
      * This will set the paint type.
      * @param paintType The new paint type.
      */
-    public void setPaintType(int paintType)
+    public void setPaintType(final int paintType)
     {
         patternDictionary.setInt(COSName.PAINT_TYPE, paintType);
     }
@@ -115,7 +115,7 @@ public abstract class PDAbstractPattern implements COSObjectable
      * This will set the pattern type.
      * @param patternType The new pattern type.
      */
-    public void setPatternType(int patternType)
+    public void setPatternType(final int patternType)
     {
         patternDictionary.setInt(COSName.PATTERN_TYPE, patternType);
     }
@@ -138,12 +138,12 @@ public abstract class PDAbstractPattern implements COSObjectable
      * Sets the optional Matrix entry for the Pattern.
      * @param transform the transformation matrix
      */
-    public void setMatrix(AffineTransform transform)
+    public void setMatrix(final AffineTransform transform)
     {
-        COSArray matrix = new COSArray();
-        double[] values = new double[6];
+        final COSArray matrix = new COSArray();
+        final double[] values = new double[6];
         transform.getMatrix(values);
-        for (double v : values)
+        for (final double v : values)
         {
             matrix.add(new COSFloat((float)v));
         }

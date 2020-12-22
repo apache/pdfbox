@@ -36,12 +36,12 @@ class TestValidDirectory
 {
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void validate(File target) throws Exception
+    void validate(final File target) throws Exception
     {
         if (target != null)
         {
             System.out.println(target);
-            ValidationResult result = PreflightParser.validate(target);
+            final ValidationResult result = PreflightParser.validate(target);
             assertTrue(result.isValid(), "Validation of " + target);
         }
     }
@@ -73,15 +73,15 @@ class TestValidDirectory
             // add null to signal that test can be skipped
             // needed for parameterized test as an empty list 
             // will lead to a PreconditionViolation
-            List<File> data = new ArrayList<>(1);
+            final List<File> data = new ArrayList<>(1);
             data.add(null);
             return data;
         }
         else
         {
-            File[] files = directory.listFiles();
-            List<File> data = new ArrayList<>(files.length);
-            for (File file : files)
+            final File[] files = directory.listFiles();
+            final List<File> data = new ArrayList<>(files.length);
+            for (final File file : files)
             {
                 if (file.isFile())
                 {

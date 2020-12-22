@@ -34,7 +34,7 @@ public class LigatureTable
     private final int componentCount;
     private final int[] componentGlyphIDs;
 
-    public LigatureTable(int ligatureGlyph, int componentCount, int[] componentGlyphIDs)
+    public LigatureTable(final int ligatureGlyph, final int componentCount, final int[] componentGlyphIDs)
     {
         this.ligatureGlyph = ligatureGlyph;
         this.componentCount = componentCount;

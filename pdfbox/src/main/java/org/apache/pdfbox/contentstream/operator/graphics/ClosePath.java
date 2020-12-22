@@ -35,7 +35,7 @@ public final class ClosePath extends GraphicsOperatorProcessor
     private static final Log LOG = LogFactory.getLog(ClosePath.class);
     
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (context.getCurrentPoint() == null)
         {

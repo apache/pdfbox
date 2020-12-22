@@ -34,7 +34,7 @@ public class LayerType extends AbstractStructuredType
     @PropertyType(type = Types.Text, card = Cardinality.Simple)
     public static final String LAYER_TEXT = "LayerText";
 
-    public LayerType(XMPMetadata metadata)
+    public LayerType(final XMPMetadata metadata)
     {
         super(metadata);
         setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "parseType", "Resource"));
@@ -47,7 +47,7 @@ public class LayerType extends AbstractStructuredType
      */
     public String getLayerName()
     {
-        AbstractField absProp = getFirstEquivalentProperty(LAYER_NAME, TextType.class);
+        final AbstractField absProp = getFirstEquivalentProperty(LAYER_NAME, TextType.class);
         if (absProp != null)
         {
             return ((TextType) absProp).getStringValue();
@@ -61,7 +61,7 @@ public class LayerType extends AbstractStructuredType
      * @param image
      *            the value of LayerName property to set
      */
-    public void setLayerName(String image)
+    public void setLayerName(final String image)
     {
         this.addProperty(createTextType(LAYER_NAME, image));
     }
@@ -73,7 +73,7 @@ public class LayerType extends AbstractStructuredType
      */
     public String getLayerText()
     {
-        AbstractField absProp = getFirstEquivalentProperty(LAYER_TEXT, TextType.class);
+        final AbstractField absProp = getFirstEquivalentProperty(LAYER_TEXT, TextType.class);
         if (absProp != null)
         {
             return ((TextType) absProp).getStringValue();
@@ -87,7 +87,7 @@ public class LayerType extends AbstractStructuredType
      * @param image
      *            the value of LayerText property to set
      */
-    public void setLayerText(String image)
+    public void setLayerText(final String image)
     {
         this.addProperty(createTextType(LAYER_TEXT, image));
     }

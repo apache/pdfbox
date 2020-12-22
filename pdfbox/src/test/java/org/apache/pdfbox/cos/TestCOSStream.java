@@ -42,8 +42,8 @@ class TestCOSStream
     @Test
     void testUncompressedStreamEncode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
-        COSStream stream = createStream(testString, null);
+        final byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
+        final COSStream stream = createStream(testString, null);
         validateEncoded(stream, testString);
     }
 
@@ -55,8 +55,8 @@ class TestCOSStream
     @Test
     void testUncompressedStreamDecode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
-        COSStream stream = createStream(testString, null);
+        final byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
+        final COSStream stream = createStream(testString, null);
         validateDecoded(stream, testString);
     }
 
@@ -68,9 +68,9 @@ class TestCOSStream
     @Test
     void testCompressedStream1Encode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
-        byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
-        COSStream stream = createStream(testString, COSName.FLATE_DECODE);
+        final byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
+        final byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
+        final COSStream stream = createStream(testString, COSName.FLATE_DECODE);
         validateEncoded(stream, testStringEncoded);
     }
 
@@ -82,9 +82,9 @@ class TestCOSStream
     @Test
     void testCompressedStream1Decode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
-        byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
-        COSStream stream = new COSStream();
+        final byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
+        final byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
+        final COSStream stream = new COSStream();
         
         try (OutputStream output = stream.createRawOutputStream())
         {
@@ -103,15 +103,15 @@ class TestCOSStream
     @Test
     void testCompressedStream2Encode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
+        final byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
         testStringEncoded = encodeData(testStringEncoded, COSName.ASCII85_DECODE);
         
-        COSArray filters = new COSArray();
+        final COSArray filters = new COSArray();
         filters.add(COSName.ASCII85_DECODE);
         filters.add(COSName.FLATE_DECODE);
         
-        COSStream stream = createStream(testString, filters);
+        final COSStream stream = createStream(testString, filters);
         validateEncoded(stream, testStringEncoded);
     }
 
@@ -123,12 +123,12 @@ class TestCOSStream
     @Test
     void testCompressedStream2Decode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
+        final byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
         testStringEncoded = encodeData(testStringEncoded, COSName.ASCII85_DECODE);
-        COSStream stream = new COSStream();
+        final COSStream stream = new COSStream();
         
-        COSArray filters = new COSArray();
+        final COSArray filters = new COSArray();
         filters.add(COSName.ASCII85_DECODE);
         filters.add(COSName.FLATE_DECODE);
         stream.setItem(COSName.FILTER, filters);
@@ -151,10 +151,10 @@ class TestCOSStream
     @Test
     void testCompressedStreamDoubleClose() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
-        byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
-        COSStream stream = new COSStream();
-        OutputStream output = stream.createOutputStream(COSName.FLATE_DECODE);
+        final byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
+        final byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
+        final COSStream stream = new COSStream();
+        final OutputStream output = stream.createOutputStream(COSName.FLATE_DECODE);
         output.write(testString);
         output.close();
         output.close();
@@ -164,7 +164,7 @@ class TestCOSStream
     @Test
     void testHasStreamData() throws IOException
     {
-        COSStream stream = new COSStream();
+        final COSStream stream = new COSStream();
         assertFalse(stream.hasData());
 
         try
@@ -176,26 +176,26 @@ class TestCOSStream
         {
         }
 
-        byte[] testString = "This is a test string to be used as input for TestCOSStream"
+        final byte[] testString = "This is a test string to be used as input for TestCOSStream"
                 .getBytes(StandardCharsets.US_ASCII);
-        OutputStream output = stream.createOutputStream();
+        final OutputStream output = stream.createOutputStream();
         output.write(testString);
         output.close();
         assertTrue(stream.hasData());
         stream.close();
     }
 
-    private byte[] encodeData(byte[] original, COSName filter) throws IOException
+    private byte[] encodeData(final byte[] original, final COSName filter) throws IOException
     {
-        Filter encodingFilter = FilterFactory.INSTANCE.getFilter(filter);
-        ByteArrayOutputStream encoded = new ByteArrayOutputStream();
+        final Filter encodingFilter = FilterFactory.INSTANCE.getFilter(filter);
+        final ByteArrayOutputStream encoded = new ByteArrayOutputStream();
         encodingFilter.encode(new ByteArrayInputStream(original), encoded, new COSDictionary(), 0);
         return encoded.toByteArray();
     }
 
-    private COSStream createStream(byte[] testString, COSBase filters) throws IOException
+    private COSStream createStream(final byte[] testString, final COSBase filters) throws IOException
     {
-        COSStream stream = new COSStream();
+        final COSStream stream = new COSStream();
         try (OutputStream output = stream.createOutputStream(filters))
         {
             output.write(testString);
@@ -203,16 +203,16 @@ class TestCOSStream
         return stream;
     }
 
-    private void validateEncoded(COSStream stream, byte[] expected) throws IOException
+    private void validateEncoded(final COSStream stream, final byte[] expected) throws IOException
     {
-        byte[] decoded = IOUtils.toByteArray(stream.createRawInputStream());
+        final byte[] decoded = IOUtils.toByteArray(stream.createRawInputStream());
         stream.close();
         assertTrue(Arrays.equals(expected, decoded), "Encoded data doesn't match input");
     }
 
-    private void validateDecoded(COSStream stream, byte[] expected) throws IOException
+    private void validateDecoded(final COSStream stream, final byte[] expected) throws IOException
     {
-        byte[] encoded = IOUtils.toByteArray(stream.createInputStream());
+        final byte[] encoded = IOUtils.toByteArray(stream.createInputStream());
         stream.close();
         assertTrue(Arrays.equals(expected, encoded), "Decoded data doesn't match input");
     }

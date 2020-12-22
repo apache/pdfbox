@@ -34,7 +34,7 @@ public interface GsubData
     {
 
         @Override
-        public boolean isFeatureSupported(String featureName)
+        public boolean isFeatureSupported(final String featureName)
         {
             throw new UnsupportedOperationException();
         }
@@ -46,7 +46,7 @@ public interface GsubData
         }
 
         @Override
-        public ScriptFeature getFeature(String featureName)
+        public ScriptFeature getFeature(final String featureName)
         {
             throw new UnsupportedOperationException();
         }

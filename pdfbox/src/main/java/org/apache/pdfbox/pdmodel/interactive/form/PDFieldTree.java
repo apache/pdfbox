@@ -43,7 +43,7 @@ public class PDFieldTree implements Iterable<PDField>
      *
      * @param acroForm the AcroForm containing the fields.
      */
-    public PDFieldTree(PDAcroForm acroForm)
+    public PDFieldTree(final PDAcroForm acroForm)
     {
         if (acroForm == null)
         {
@@ -73,10 +73,10 @@ public class PDFieldTree implements Iterable<PDField>
         private final Set<COSDictionary> set =
                 Collections.newSetFromMap(new IdentityHashMap<COSDictionary, Boolean>());
 
-        private FieldIterator(PDAcroForm form)
+        private FieldIterator(final PDAcroForm form)
         {
-            List<PDField> fields = form.getFields();
-            for (PDField field : fields)
+            final List<PDField> fields = form.getFields();
+            for (final PDField field : fields)
             {
                 enqueueKids(field);
             }
@@ -105,14 +105,14 @@ public class PDFieldTree implements Iterable<PDField>
             throw new UnsupportedOperationException();
         }
         
-        private void enqueueKids(PDField node)
+        private void enqueueKids(final PDField node)
         {
             queue.add(node);
             set.add(node.getCOSObject());
             if (node instanceof PDNonTerminalField)
             {
-                List<PDField> kids = ((PDNonTerminalField) node).getChildren();
-                for (PDField kid : kids)
+                final List<PDField> kids = ((PDNonTerminalField) node).getChildren();
+                for (final PDField kid : kids)
                 {
                     if (set.contains(kid.getCOSObject()))
                     {

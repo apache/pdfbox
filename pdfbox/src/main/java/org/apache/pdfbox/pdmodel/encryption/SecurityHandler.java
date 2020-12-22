@@ -125,7 +125,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @param protectionPolicy The protection policy.
      */
-    protected SecurityHandler(T_POLICY protectionPolicy)
+    protected SecurityHandler(final T_POLICY protectionPolicy)
     {
         this.protectionPolicy = protectionPolicy;
         keyLength = protectionPolicy.getEncryptionKeyLength();
@@ -136,7 +136,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @param decryptMetadata true if meta data has to be decrypted.
      */
-    protected void setDecryptMetadata(boolean decryptMetadata)
+    protected void setDecryptMetadata(final boolean decryptMetadata)
     {
         this.decryptMetadata = decryptMetadata;
     }
@@ -146,7 +146,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      * 
      * @param stringFilterName the string filter name.
      */
-    protected void setStringFilterName(COSName stringFilterName)
+    protected void setStringFilterName(final COSName stringFilterName)
     {
         this.stringFilterName = stringFilterName;
     }
@@ -156,7 +156,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      * 
      * @param streamFilterName the stream filter name.
      */
-    protected void setStreamFilterName(COSName streamFilterName)
+    protected void setStreamFilterName(final COSName streamFilterName)
     {
         this.streamFilterName = streamFilterName;
     }
@@ -166,7 +166,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      * 
      * @param customSecureRandom the custom SecureRandom for AES encryption
      */
-    public void setCustomSecureRandom(SecureRandom customSecureRandom)
+    public void setCustomSecureRandom(final SecureRandom customSecureRandom)
     {
         this.customSecureRandom = customSecureRandom;
     }
@@ -204,8 +204,8 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error reading the data.
      */
-    private void encryptData(long objectNumber, long genNumber, InputStream data,
-                            OutputStream output, boolean decrypt) throws IOException
+    private void encryptData(final long objectNumber, final long genNumber, final InputStream data,
+                             final OutputStream output, final boolean decrypt) throws IOException
     {
         // Determine whether we're using Algorithm 1 (for RC4 and AES-128), or 1.A (for AES-256)
         if (useAES && encryptionKey.length == 32)
@@ -214,7 +214,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         }
         else
         {
-            byte[] finalKey = calcFinalKey(objectNumber, genNumber);
+            final byte[] finalKey = calcFinalKey(objectNumber, genNumber);
 
             if (useAES)
             {
@@ -235,9 +235,9 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      * @param genNumber The data generation number.
      * @return the calculated key.
      */
-    private byte[] calcFinalKey(long objectNumber, long genNumber)
+    private byte[] calcFinalKey(final long objectNumber, final long genNumber)
     {
-        byte[] newKey = new byte[encryptionKey.length + 5];
+        final byte[] newKey = new byte[encryptionKey.length + 5];
         System.arraycopy(encryptionKey, 0, newKey, 0, encryptionKey.length);
         // PDF 1.4 reference pg 73
         // step 1
@@ -249,16 +249,16 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         newKey[newKey.length - 2] = (byte) (genNumber & 0xff);
         newKey[newKey.length - 1] = (byte) (genNumber >> 8 & 0xff);
         // step 3
-        MessageDigest md = MessageDigests.getMD5();
+        final MessageDigest md = MessageDigests.getMD5();
         md.update(newKey);
         if (useAES)
         {
             md.update(AES_SALT);
         }
-        byte[] digestedKey = md.digest();
+        final byte[] digestedKey = md.digest();
         // step 4
-        int length = Math.min(newKey.length, 16);
-        byte[] finalKey = new byte[length];
+        final int length = Math.min(newKey.length, 16);
+        final byte[] finalKey = new byte[length];
         System.arraycopy(digestedKey, 0, finalKey, 0, length);
         return finalKey;
     }
@@ -272,7 +272,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error reading the data.
      */
-    protected void encryptDataRC4(byte[] finalKey, InputStream input, OutputStream output)
+    protected void encryptDataRC4(final byte[] finalKey, final InputStream input, final OutputStream output)
             throws IOException
     {
         rc4.setKey(finalKey);
@@ -288,7 +288,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error reading the data.
      */
-    protected void encryptDataRC4(byte[] finalKey, byte[] input, OutputStream output) throws IOException
+    protected void encryptDataRC4(final byte[] finalKey, final byte[] input, final OutputStream output) throws IOException
     {
         rc4.setKey(finalKey);
         rc4.write(input, output);
@@ -305,10 +305,10 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error reading the data.
      */
-    private void encryptDataAESother(byte[] finalKey, InputStream data, OutputStream output, boolean decrypt)
+    private void encryptDataAESother(final byte[] finalKey, final InputStream data, final OutputStream output, final boolean decrypt)
             throws IOException
     {
-        byte[] iv = new byte[16];
+        final byte[] iv = new byte[16];
 
         if (!prepareAESInitializationVector(decrypt, iv, data, output))
         {
@@ -317,12 +317,12 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
 
         try
         {
-            Cipher decryptCipher = createCipher(finalKey, iv, decrypt);
-            byte[] buffer = new byte[256];
+            final Cipher decryptCipher = createCipher(finalKey, iv, decrypt);
+            final byte[] buffer = new byte[256];
             int n;
             while ((n = data.read(buffer)) != -1)
             {
-                byte[] dst = decryptCipher.update(buffer, 0, n);
+                final byte[] dst = decryptCipher.update(buffer, 0, n);
                 if (dst != null)
                 {
                     output.write(dst);
@@ -345,16 +345,16 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error reading the data.
      */
-    private void encryptDataAES256(InputStream data, OutputStream output, boolean decrypt) throws IOException
+    private void encryptDataAES256(final InputStream data, final OutputStream output, final boolean decrypt) throws IOException
     {
-        byte[] iv = new byte[16];
+        final byte[] iv = new byte[16];
 
         if (!prepareAESInitializationVector(decrypt, iv, data, output))
         {
             return;
         }
 
-        Cipher cipher;
+        final Cipher cipher;
         try
         {
             cipher = createCipher(this.encryptionKey, iv, decrypt);
@@ -380,22 +380,22 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         }
     }
 
-    private Cipher createCipher(byte[] key, byte[] iv, boolean decrypt) throws GeneralSecurityException
+    private Cipher createCipher(final byte[] key, final byte[] iv, final boolean decrypt) throws GeneralSecurityException
     {
-        @SuppressWarnings({"squid:S5542"}) // PKCS#5 padding is requested by PDF specification
+        @SuppressWarnings({"squid:S5542"}) final // PKCS#5 padding is requested by PDF specification
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        Key keySpec = new SecretKeySpec(key, "AES");
-        IvParameterSpec ips = new IvParameterSpec(iv);
+        final Key keySpec = new SecretKeySpec(key, "AES");
+        final IvParameterSpec ips = new IvParameterSpec(iv);
         cipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, keySpec, ips);
         return cipher;
     }
 
-    private boolean prepareAESInitializationVector(boolean decrypt, byte[] iv, InputStream data, OutputStream output) throws IOException
+    private boolean prepareAESInitializationVector(final boolean decrypt, final byte[] iv, final InputStream data, final OutputStream output) throws IOException
     {
         if (decrypt)
         {
             // read IV from stream
-            int ivSize = (int) IOUtils.populateBuffer(data, iv);
+            final int ivSize = (int) IOUtils.populateBuffer(data, iv);
             if (ivSize == -1)
             {
                 return false;
@@ -410,7 +410,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         else
         {
             // generate random IV and write to stream
-            SecureRandom rnd = getSecureRandom();
+            final SecureRandom rnd = getSecureRandom();
             rnd.nextBytes(iv);
             output.write(iv);
         }
@@ -440,7 +440,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error getting the stream data.
      */
-    public void decrypt(COSBase obj, long objNum, long genNum) throws IOException
+    public void decrypt(final COSBase obj, final long objNum, final long genNum) throws IOException
     {
         if (!(obj instanceof COSString || obj instanceof COSDictionary || obj instanceof COSArray))
         {
@@ -484,7 +484,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error getting the stream data.
      */
-    public void decryptStream(COSStream stream, long objNum, long genNum) throws IOException
+    public void decryptStream(final COSStream stream, final long objNum, final long genNum) throws IOException
     {
         // Stream encrypted with identity filter
         if (COSName.IDENTITY.equals(streamFilterName))
@@ -492,7 +492,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
             return;
         }
         
-        COSBase type = stream.getCOSName(COSName.TYPE);
+        final COSBase type = stream.getCOSName(COSName.TYPE);
         if (!decryptMetadata && COSName.METADATA.equals(type))
         {
             return;
@@ -504,12 +504,12 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         }
         if (COSName.METADATA.equals(type))
         {
-            byte[] buf;
+            final byte[] buf;
             // PDFBOX-3229 check case where metadata is not encrypted despite /EncryptMetadata missing
             try (InputStream is = stream.createRawInputStream())
             {
                 buf = new byte[10];
-                long isResult = IOUtils.populateBuffer(is, buf);
+                final long isResult = IOUtils.populateBuffer(is, buf);
 
                 if (Long.compare(isResult, buf.length) != 0)
                 {
@@ -524,8 +524,8 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
             }
         }
         decryptDictionary(stream, objNum, genNum);
-        byte[] encrypted = IOUtils.toByteArray(stream.createRawInputStream());
-        ByteArrayInputStream encryptedStream = new ByteArrayInputStream(encrypted);
+        final byte[] encrypted = IOUtils.toByteArray(stream.createRawInputStream());
+        final ByteArrayInputStream encryptedStream = new ByteArrayInputStream(encrypted);
         try (OutputStream output = stream.createRawOutputStream())
         {
             encryptData(objNum, genNum, encryptedStream, output, true /* decrypt */);
@@ -543,15 +543,15 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error getting the stream data.
      */
-    public void encryptStream(COSStream stream, long objNum, int genNum) throws IOException
+    public void encryptStream(final COSStream stream, final long objNum, final int genNum) throws IOException
     {
         // empty streams don't need to be encrypted
         if (!stream.hasData())
         {
             return;
         }
-        byte[] rawData = IOUtils.toByteArray(stream.createRawInputStream());
-        ByteArrayInputStream encryptedStream = new ByteArrayInputStream(rawData);
+        final byte[] rawData = IOUtils.toByteArray(stream.createRawInputStream());
+        final ByteArrayInputStream encryptedStream = new ByteArrayInputStream(rawData);
         try (OutputStream output = stream.createRawOutputStream())
         {
             encryptData(objNum, genNum, encryptedStream, output, false /* encrypt */);
@@ -567,27 +567,27 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error creating a new string.
      */
-    private void decryptDictionary(COSDictionary dictionary, long objNum, long genNum) throws IOException
+    private void decryptDictionary(final COSDictionary dictionary, final long objNum, final long genNum) throws IOException
     {
         if (dictionary.getItem(COSName.CF) != null)
         {
             // PDFBOX-2936: avoid orphan /CF dictionaries found in US govt "I-" files
             return;
         }
-        COSBase type = dictionary.getDictionaryObject(COSName.TYPE);
-        boolean isSignature = COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type) ||
+        final COSBase type = dictionary.getDictionaryObject(COSName.TYPE);
+        final boolean isSignature = COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type) ||
                 // PDFBOX-4466: /Type is optional, see
                 // https://ec.europa.eu/cefdigital/tracker/browse/DSS-1538
                 (dictionary.getDictionaryObject(COSName.CONTENTS) instanceof COSString && 
                  dictionary.getDictionaryObject(COSName.BYTERANGE) instanceof COSArray);
-        for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
+        for (final Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
         {
             if (isSignature && COSName.CONTENTS.equals(entry.getKey()))
             {
                 // do not decrypt the signature contents string
                 continue;
             }
-            COSBase value = entry.getValue();
+            final COSBase value = entry.getValue();
             // within a dictionary only the following kind of COS objects have to be decrypted
             if (value instanceof COSString || value instanceof COSArray || value instanceof COSDictionary)
             {
@@ -605,7 +605,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If an error occurs writing the new string.
      */
-    private void decryptString(COSString string, long objNum, long genNum) throws IOException
+    private void decryptString(final COSString string, final long objNum, final long genNum) throws IOException
     {
         // String encrypted with identity filter
         if (COSName.IDENTITY.equals(stringFilterName))
@@ -613,8 +613,8 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
             return;
         }
         
-        ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try
         {
             encryptData(objNum, genNum, data, outputStream, true /* decrypt */);
@@ -636,10 +636,10 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If an error occurs writing the new string.
      */
-    public void encryptString(COSString string, long objNum, int genNum) throws IOException
+    public void encryptString(final COSString string, final long objNum, final int genNum) throws IOException
     {
-        ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        final ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         encryptData(objNum, genNum, data, buffer, false /* encrypt */);
         string.setValue(buffer.toByteArray());
     }
@@ -653,7 +653,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error accessing the data.
      */
-    private void decryptArray(COSArray array, long objNum, long genNum) throws IOException
+    private void decryptArray(final COSArray array, final long objNum, final long genNum) throws IOException
     {
         for (int i = 0; i < array.size(); i++)
         {
@@ -675,7 +675,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @param keyLen  The keyLength to set.
      */
-    public void setKeyLength(int keyLen)
+    public void setKeyLength(final int keyLen)
     {
         this.keyLength = keyLen;
     }
@@ -685,7 +685,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @param currentAccessPermission The access permissions to be set.
      */
-    public void setCurrentAccessPermission(AccessPermission currentAccessPermission)
+    public void setCurrentAccessPermission(final AccessPermission currentAccessPermission)
     {
         this.currentAccessPermission = currentAccessPermission;
     }
@@ -717,7 +717,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      * @param aesValue if true AES will be used
      *
      */
-    public void setAES(boolean aesValue)
+    public void setAES(final boolean aesValue)
     {
         useAES = aesValue;
     }
@@ -746,7 +746,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      * Sets the {@link ProtectionPolicy} to the given value.
      * @param protectionPolicy The {@link ProtectionPolicy}, that shall be set.
      */
-    protected void setProtectionPolicy(T_POLICY protectionPolicy)
+    protected void setProtectionPolicy(final T_POLICY protectionPolicy)
     {
         this.protectionPolicy = protectionPolicy;
     }
@@ -766,7 +766,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @param encryptionKey The encryption key data to set.
      */
-    public void setEncryptionKey(byte[] encryptionKey)
+    public void setEncryptionKey(final byte[] encryptionKey)
     {
         this.encryptionKey = encryptionKey;
     }

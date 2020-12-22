@@ -44,7 +44,7 @@ public class GlyphData
      * @param leftSideBearing The left side bearing for this glyph.
      * @throws IOException If there is an error reading the data.
      */
-    void initData( GlyphTable glyphTable, TTFDataStream data, int leftSideBearing ) throws IOException
+    void initData(final GlyphTable glyphTable, final TTFDataStream data, final int leftSideBearing ) throws IOException
     {
         numberOfContours = data.readSignedShort();
         xMin = data.readSignedShort();
@@ -56,7 +56,7 @@ public class GlyphData
         if (numberOfContours >= 0) 
         {
             // create a simple glyph
-            short x0 = (short) (leftSideBearing - xMin);
+            final short x0 = (short) (leftSideBearing - xMin);
             glyphDescription = new GlyfSimpleDescript(numberOfContours, data, x0);
         }
         else 
@@ -77,7 +77,7 @@ public class GlyphData
     /**
      * @param boundingBoxValue The boundingBox to set.
      */
-    public void setBoundingBox(BoundingBox boundingBoxValue)
+    public void setBoundingBox(final BoundingBox boundingBoxValue)
     {
         this.boundingBox = boundingBoxValue;
     }
@@ -93,7 +93,7 @@ public class GlyphData
     /**
      * @param numberOfContoursValue The numberOfContours to set.
      */
-    public void setNumberOfContours(short numberOfContoursValue)
+    public void setNumberOfContours(final short numberOfContoursValue)
     {
         this.numberOfContours = numberOfContoursValue;
     }

@@ -42,9 +42,9 @@ public enum PageMode
     /** Attachments panel is visible. */
     USE_ATTACHMENTS("UseAttachments");
 
-    public static PageMode fromString(String value)
+    public static PageMode fromString(final String value)
     {
-        for (PageMode instance : PageMode.values())
+        for (final PageMode instance : PageMode.values())
         {
             if (instance.value.equals(value))
             {
@@ -56,7 +56,7 @@ public enum PageMode
 
     private final String value;
 
-    PageMode(String value)
+    PageMode(final String value)
     {
         this.value = value;
     }

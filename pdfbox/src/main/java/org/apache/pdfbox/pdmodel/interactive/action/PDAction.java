@@ -58,7 +58,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @param a The action dictionary.
      */
-    public PDAction( COSDictionary a )
+    public PDAction(final COSDictionary a )
     {
         action = a;
     }
@@ -91,7 +91,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @param type The new Type for the PDF object.
      */
-    protected final void setType(String type)
+    protected final void setType(final String type)
     {
        action.setName(COSName.TYPE, type );
     }
@@ -111,7 +111,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @param s The new type of action.
      */
-    protected final void setSubType(String s)
+    protected final void setSubType(final String s)
     {
         action.setName(COSName.S, s);
     }
@@ -126,16 +126,16 @@ public abstract class PDAction implements PDDestinationOrAction
     public List<PDAction> getNext()
     {
         List<PDAction> retval = null;
-        COSBase next = action.getDictionaryObject(COSName.NEXT);
+        final COSBase next = action.getDictionaryObject(COSName.NEXT);
         if( next instanceof COSDictionary )
         {
-            PDAction pdAction = PDActionFactory.createAction( (COSDictionary) next );
+            final PDAction pdAction = PDActionFactory.createAction( (COSDictionary) next );
             retval = new COSArrayList<>(pdAction, next, action, COSName.NEXT);
         }
         else if( next instanceof COSArray )
         {
-            COSArray array = (COSArray)next;
-            List<PDAction> actions = new ArrayList<>();
+            final COSArray array = (COSArray)next;
+            final List<PDAction> actions = new ArrayList<>();
             for( int i=0; i<array.size(); i++ )
             {
                 actions.add( PDActionFactory.createAction( (COSDictionary) array.getObject( i )));
@@ -153,7 +153,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @param next The Next action or sequence of actions.
      */
-    public void setNext(List<PDAction> next)
+    public void setNext(final List<PDAction> next)
     {
         action.setItem(COSName.NEXT, new COSArray(next));
     }

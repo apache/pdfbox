@@ -52,10 +52,10 @@ final class DCTFilter extends Filter
     private static final String ADOBE = "Adobe";
 
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary
-            parameters, int index, DecodeOptions options) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded, final COSDictionary
+            parameters, final int index, final DecodeOptions options) throws IOException
     {
-        ImageReader reader = findImageReader("JPEG", "a suitable JAI I/O image filter is not installed");
+        final ImageReader reader = findImageReader("JPEG", "a suitable JAI I/O image filter is not installed");
         try (ImageInputStream iis = ImageIO.createImageInputStream(encoded))
         {
 
@@ -66,13 +66,13 @@ final class DCTFilter extends Filter
             }
 
             reader.setInput(iis);
-            ImageReadParam irp = reader.getDefaultReadParam();
+            final ImageReadParam irp = reader.getDefaultReadParam();
             irp.setSourceSubsampling(options.getSubsamplingX(), options.getSubsamplingY(),
                     options.getSubsamplingOffsetX(), options.getSubsamplingOffsetY());
             irp.setSourceRegion(options.getSourceRegion());
             options.setFilterSubsampled(true);
 
-            String numChannels = getNumChannels(reader);
+            final String numChannels = getNumChannels(reader);
 
             // get the raster using horrible JAI workarounds
             ImageIO.setUseCache(false);
@@ -86,7 +86,7 @@ final class DCTFilter extends Filter
                 try
                 {
                     // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
-                    BufferedImage image = reader.read(0, irp);
+                    final BufferedImage image = reader.read(0, irp);
                     raster = image.getRaster();
                 }
                 catch (IIOException e)
@@ -119,7 +119,7 @@ final class DCTFilter extends Filter
                     LOG.debug("Couldn't read usíng getAdobeTransform() - using getAdobeTransformByBruteForce() as fallback", e);
                     transform = getAdobeTransformByBruteForce(iis);
                 }
-                int colorTransform = transform != null ? transform : 0;
+                final int colorTransform = transform != null ? transform : 0;
 
                 // 0 = Unknown (RGB or CMYK), 1 = YCbCr, 2 = YCCK
                 switch (colorTransform)
@@ -143,7 +143,7 @@ final class DCTFilter extends Filter
                 raster = fromBGRtoRGB(raster);
             }
 
-            DataBufferByte dataBuffer = (DataBufferByte)raster.getDataBuffer();
+            final DataBufferByte dataBuffer = (DataBufferByte)raster.getDataBuffer();
             decoded.write(dataBuffer.getData());
         }
         finally
@@ -154,21 +154,21 @@ final class DCTFilter extends Filter
     }
 
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                               COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded,
+                               final COSDictionary parameters, final int index) throws IOException
     {
         return decode(encoded, decoded, parameters, index, DecodeOptions.DEFAULT);
     }
 
     // reads the APP14 Adobe transform tag and returns its value, or 0 if unknown
-    private Integer getAdobeTransform(IIOMetadata metadata)
+    private Integer getAdobeTransform(final IIOMetadata metadata)
     {
-        Element tree = (Element)metadata.getAsTree("javax_imageio_jpeg_image_1.0");
-        Element markerSequence = (Element)tree.getElementsByTagName("markerSequence").item(0);
-        NodeList app14AdobeNodeList = markerSequence.getElementsByTagName("app14Adobe");
+        final Element tree = (Element)metadata.getAsTree("javax_imageio_jpeg_image_1.0");
+        final Element markerSequence = (Element)tree.getElementsByTagName("markerSequence").item(0);
+        final NodeList app14AdobeNodeList = markerSequence.getElementsByTagName("app14Adobe");
         if (app14AdobeNodeList != null && app14AdobeNodeList.getLength() > 0)
         {
-            Element adobe = (Element) app14AdobeNodeList.item(0);
+            final Element adobe = (Element) app14AdobeNodeList.item(0);
             return Integer.parseInt(adobe.getAttribute("transform"));
         }
         return 0;
@@ -176,7 +176,7 @@ final class DCTFilter extends Filter
         
     // See in https://github.com/haraldk/TwelveMonkeys
     // com.twelvemonkeys.imageio.plugins.jpeg.AdobeDCT class for structure of APP14 segment
-    private int getAdobeTransformByBruteForce(ImageInputStream iis) throws IOException
+    private int getAdobeTransformByBruteForce(final ImageInputStream iis) throws IOException
     {
         int a = 0;
         iis.seek(0);
@@ -192,18 +192,18 @@ final class DCTFilter extends Filter
                 }
                 // match
                 a = 0;
-                long afterAdobePos = iis.getStreamPosition();
+                final long afterAdobePos = iis.getStreamPosition();
                 iis.seek(iis.getStreamPosition() - 9);
-                int tag = iis.readUnsignedShort();
+                final int tag = iis.readUnsignedShort();
                 if (tag != 0xFFEE)
                 {
                     iis.seek(afterAdobePos);
                     continue;
                 }
-                int len = iis.readUnsignedShort();
+                final int len = iis.readUnsignedShort();
                 if (len >= POS_TRANSFORM + 1)
                 {
-                    byte[] app14 = new byte[Math.max(len, POS_TRANSFORM + 1)];
+                    final byte[] app14 = new byte[Math.max(len, POS_TRANSFORM + 1)];
                     if (iis.read(app14) >= POS_TRANSFORM + 1)
                     {
                         return app14[POS_TRANSFORM];
@@ -221,11 +221,11 @@ final class DCTFilter extends Filter
     // converts YCCK image to CMYK. YCCK is an equivalent encoding for
     // CMYK data, so no color management code is needed here, nor does the
     // PDF color space have to be consulted
-    private WritableRaster fromYCCKtoCMYK(Raster raster)
+    private WritableRaster fromYCCKtoCMYK(final Raster raster)
     {
-        WritableRaster writableRaster = raster.createCompatibleWritableRaster();
+        final WritableRaster writableRaster = raster.createCompatibleWritableRaster();
 
-        int[] value = new int[4];
+        final int[] value = new int[4];
         for (int y = 0, height = raster.getHeight(); y < height; y++)
         {
             for (int x = 0, width = raster.getWidth(); x < width; x++)
@@ -233,20 +233,20 @@ final class DCTFilter extends Filter
                 raster.getPixel(x, y, value);
 
                 // 4-channels 0..255
-                float Y = value[0];
-                float Cb = value[1];
-                float Cr = value[2];
-                float K = value[3];
+                final float Y = value[0];
+                final float Cb = value[1];
+                final float Cr = value[2];
+                final float K = value[3];
 
                 // YCCK to RGB, see http://software.intel.com/en-us/node/442744
-                int r = clamp(Y + 1.402f * Cr - 179.456f);
-                int g = clamp(Y - 0.34414f * Cb - 0.71414f * Cr + 135.45984f);
-                int b = clamp(Y + 1.772f * Cb - 226.816f);
+                final int r = clamp(Y + 1.402f * Cr - 179.456f);
+                final int g = clamp(Y - 0.34414f * Cb - 0.71414f * Cr + 135.45984f);
+                final int b = clamp(Y + 1.772f * Cb - 226.816f);
 
                 // naive RGB to CMYK
-                int cyan = 255 - r;
-                int magenta = 255 - g;
-                int yellow = 255 - b;
+                final int cyan = 255 - r;
+                final int magenta = 255 - g;
+                final int yellow = 255 - b;
 
                 // update new raster
                 value[0] = cyan;
@@ -259,11 +259,11 @@ final class DCTFilter extends Filter
         return writableRaster;
     }
 
-    private WritableRaster fromYCbCrtoCMYK(Raster raster)
+    private WritableRaster fromYCbCrtoCMYK(final Raster raster)
     {
-        WritableRaster writableRaster = raster.createCompatibleWritableRaster();
+        final WritableRaster writableRaster = raster.createCompatibleWritableRaster();
 
-        int[] value = new int[4];
+        final int[] value = new int[4];
         for (int y = 0, height = raster.getHeight(); y < height; y++)
         {
             for (int x = 0, width = raster.getWidth(); x < width; x++)
@@ -271,20 +271,20 @@ final class DCTFilter extends Filter
                 raster.getPixel(x, y, value);
 
                 // 4-channels 0..255
-                float Y = value[0];
-                float Cb = value[1];
-                float Cr = value[2];
-                float K = value[3];
+                final float Y = value[0];
+                final float Cb = value[1];
+                final float Cr = value[2];
+                final float K = value[3];
 
                 // YCbCr to RGB, see http://www.equasys.de/colorconversion.html
-                int r = clamp( (1.164f * (Y-16)) + (1.596f * (Cr - 128)) );
-                int g = clamp( (1.164f * (Y-16)) + (-0.392f * (Cb-128)) + (-0.813f * (Cr-128)));
-                int b = clamp( (1.164f * (Y-16)) + (2.017f * (Cb-128)));
+                final int r = clamp( (1.164f * (Y-16)) + (1.596f * (Cr - 128)) );
+                final int g = clamp( (1.164f * (Y-16)) + (-0.392f * (Cb-128)) + (-0.813f * (Cr-128)));
+                final int b = clamp( (1.164f * (Y-16)) + (2.017f * (Cb-128)));
 
                 // naive RGB to CMYK
-                int cyan = 255 - r;
-                int magenta = 255 - g;
-                int yellow = 255 - b;
+                final int cyan = 255 - r;
+                final int magenta = 255 - g;
+                final int yellow = 255 - b;
 
                 // update new raster
                 value[0] = cyan;
@@ -298,21 +298,21 @@ final class DCTFilter extends Filter
     }
 
     // converts from BGR to RGB
-    private WritableRaster fromBGRtoRGB(Raster raster)
+    private WritableRaster fromBGRtoRGB(final Raster raster)
     {
-        WritableRaster writableRaster = raster.createCompatibleWritableRaster();
+        final WritableRaster writableRaster = raster.createCompatibleWritableRaster();
 
-        int width = raster.getWidth();
-        int height = raster.getHeight();
-        int w3 = width * 3;
-        int[] tab = new int[w3];
+        final int width = raster.getWidth();
+        final int height = raster.getHeight();
+        final int w3 = width * 3;
+        final int[] tab = new int[w3];
         //BEWARE: handling the full image at a time is slower than one line at a time        
         for (int y = 0; y < height; y++)
         {
             raster.getPixels(0, y, width, 1, tab);
             for (int off = 0; off < w3; off += 3)
             {
-                int tmp = tab[off];
+                final int tmp = tab[off];
                 tab[off] = tab[off + 2];
                 tab[off + 2] = tmp;
             }
@@ -322,17 +322,17 @@ final class DCTFilter extends Filter
     }
     
     // returns the number of channels as a string, or an empty string if there is an error getting the meta data
-    private String getNumChannels(ImageReader reader)
+    private String getNumChannels(final ImageReader reader)
     {
         try
         {
-            IIOMetadata imageMetadata = reader.getImageMetadata(0);
+            final IIOMetadata imageMetadata = reader.getImageMetadata(0);
             if (imageMetadata == null)
             {
                 return "";
             }
-            IIOMetadataNode metaTree = (IIOMetadataNode) imageMetadata.getAsTree("javax_imageio_1.0");
-            Element numChannelsItem = (Element) metaTree.getElementsByTagName("NumChannels").item(0);
+            final IIOMetadataNode metaTree = (IIOMetadataNode) imageMetadata.getAsTree("javax_imageio_1.0");
+            final Element numChannelsItem = (Element) metaTree.getElementsByTagName("NumChannels").item(0);
             if (numChannelsItem == null)
             {
                 return "";
@@ -347,13 +347,13 @@ final class DCTFilter extends Filter
     }    
 
     // clamps value to 0-255 range
-    private int clamp(float value)
+    private int clamp(final float value)
     {
         return (int)((value < 0) ? 0 : ((value > 255) ? 255 : value));
     }
 
     @Override
-    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(final InputStream input, final OutputStream encoded, final COSDictionary parameters)
             throws IOException
     {
         throw new UnsupportedOperationException("DCTFilter encoding not implemented, use the JPEGFactory methods instead");

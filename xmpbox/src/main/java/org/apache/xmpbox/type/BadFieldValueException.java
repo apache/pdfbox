@@ -42,7 +42,7 @@ public class BadFieldValueException extends Exception
      * @param message
      *            a description of the encountered problem
      */
-    public BadFieldValueException(String message)
+    public BadFieldValueException(final String message)
     {
         super(message);
 
@@ -56,7 +56,7 @@ public class BadFieldValueException extends Exception
      * @param cause
      *            the cause of the exception
      */
-    public BadFieldValueException(String message, Throwable cause)
+    public BadFieldValueException(final String message, final Throwable cause)
     {
         super(message, cause);
 

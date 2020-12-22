@@ -48,7 +48,7 @@ public class HorizontalHeaderTable extends TTFTable
     private short metricDataFormat;
     private int numberOfHMetrics;
 
-    HorizontalHeaderTable(TrueTypeFont font)
+    HorizontalHeaderTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -61,7 +61,7 @@ public class HorizontalHeaderTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
         version = data.read32Fixed();
         ascender = data.readSignedShort();
@@ -93,7 +93,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param advanceWidthMaxValue The advanceWidthMax to set.
      */
-    public void setAdvanceWidthMax(int advanceWidthMaxValue)
+    public void setAdvanceWidthMax(final int advanceWidthMaxValue)
     {
         this.advanceWidthMax = advanceWidthMaxValue;
     }
@@ -107,7 +107,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param ascenderValue The ascender to set.
      */
-    public void setAscender(short ascenderValue)
+    public void setAscender(final short ascenderValue)
     {
         this.ascender = ascenderValue;
     }
@@ -121,7 +121,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param caretSlopeRiseValue The caretSlopeRise to set.
      */
-    public void setCaretSlopeRise(short caretSlopeRiseValue)
+    public void setCaretSlopeRise(final short caretSlopeRiseValue)
     {
         this.caretSlopeRise = caretSlopeRiseValue;
     }
@@ -135,7 +135,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param caretSlopeRunValue The caretSlopeRun to set.
      */
-    public void setCaretSlopeRun(short caretSlopeRunValue)
+    public void setCaretSlopeRun(final short caretSlopeRunValue)
     {
         this.caretSlopeRun = caretSlopeRunValue;
     }
@@ -149,7 +149,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param descenderValue The descender to set.
      */
-    public void setDescender(short descenderValue)
+    public void setDescender(final short descenderValue)
     {
         this.descender = descenderValue;
     }
@@ -163,7 +163,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param lineGapValue The lineGap to set.
      */
-    public void setLineGap(short lineGapValue)
+    public void setLineGap(final short lineGapValue)
     {
         this.lineGap = lineGapValue;
     }
@@ -177,7 +177,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param metricDataFormatValue The metricDataFormat to set.
      */
-    public void setMetricDataFormat(short metricDataFormatValue)
+    public void setMetricDataFormat(final short metricDataFormatValue)
     {
         this.metricDataFormat = metricDataFormatValue;
     }
@@ -191,7 +191,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param minLeftSideBearingValue The minLeftSideBearing to set.
      */
-    public void setMinLeftSideBearing(short minLeftSideBearingValue)
+    public void setMinLeftSideBearing(final short minLeftSideBearingValue)
     {
         this.minLeftSideBearing = minLeftSideBearingValue;
     }
@@ -205,7 +205,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param minRightSideBearingValue The minRightSideBearing to set.
      */
-    public void setMinRightSideBearing(short minRightSideBearingValue)
+    public void setMinRightSideBearing(final short minRightSideBearingValue)
     {
         this.minRightSideBearing = minRightSideBearingValue;
     }
@@ -219,7 +219,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param numberOfHMetricsValue The numberOfHMetrics to set.
      */
-    public void setNumberOfHMetrics(int numberOfHMetricsValue)
+    public void setNumberOfHMetrics(final int numberOfHMetricsValue)
     {
         this.numberOfHMetrics = numberOfHMetricsValue;
     }
@@ -233,7 +233,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param reserved1Value The reserved1 to set.
      */
-    public void setReserved1(short reserved1Value)
+    public void setReserved1(final short reserved1Value)
     {
         this.reserved1 = reserved1Value;
     }
@@ -247,7 +247,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param reserved2Value The reserved2 to set.
      */
-    public void setReserved2(short reserved2Value)
+    public void setReserved2(final short reserved2Value)
     {
         this.reserved2 = reserved2Value;
     }
@@ -261,7 +261,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param reserved3Value The reserved3 to set.
      */
-    public void setReserved3(short reserved3Value)
+    public void setReserved3(final short reserved3Value)
     {
         this.reserved3 = reserved3Value;
     }
@@ -275,7 +275,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param reserved4Value The reserved4 to set.
      */
-    public void setReserved4(short reserved4Value)
+    public void setReserved4(final short reserved4Value)
     {
         this.reserved4 = reserved4Value;
     }
@@ -289,7 +289,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param reserved5Value The reserved5 to set.
      */
-    public void setReserved5(short reserved5Value)
+    public void setReserved5(final short reserved5Value)
     {
         this.reserved5 = reserved5Value;
     }
@@ -303,7 +303,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param versionValue The version to set.
      */
-    public void setVersion(float versionValue)
+    public void setVersion(final float versionValue)
     {
         this.version = versionValue;
     }
@@ -317,7 +317,7 @@ public class HorizontalHeaderTable extends TTFTable
     /**
      * @param maxExtentValue The xMaxExtent to set.
      */
-    public void setXMaxExtent(short maxExtentValue)
+    public void setXMaxExtent(final short maxExtentValue)
     {
         xMaxExtent = maxExtentValue;
     }

@@ -48,7 +48,7 @@ public class IntegerType extends AbstractSimpleProperty
      * @param value
      *            The value to set
      */
-    public IntegerType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    public IntegerType(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String propertyName, final Object value)
     {
         super(metadata, namespaceURI, prefix, propertyName, value);
 
@@ -72,7 +72,7 @@ public class IntegerType extends AbstractSimpleProperty
      *            The value to set
      */
     @Override
-    public void setValue(Object value)
+    public void setValue(final Object value)
     {
         if (value instanceof Integer)
         {

@@ -46,9 +46,9 @@ public final class Version
     public static String getVersion()
     {
         try (InputStream resourceAsStream = Version.class.getResourceAsStream(PDFBOX_VERSION_PROPERTIES);
-             InputStream is = new BufferedInputStream(resourceAsStream))
+             final InputStream is = new BufferedInputStream(resourceAsStream))
         {
-            Properties properties = new Properties();
+            final Properties properties = new Properties();
             properties.load(is);
             return properties.getProperty("pdfbox.version", null);
         }

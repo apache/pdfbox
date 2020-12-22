@@ -133,7 +133,7 @@ public class Operators
      * @param operatorName the operator name
      * @return the operator (or null if there's no such operator
      */
-    public Operator getOperator(String operatorName)
+    public Operator getOperator(final String operatorName)
     {
         return this.operators.get(operatorName);
     }

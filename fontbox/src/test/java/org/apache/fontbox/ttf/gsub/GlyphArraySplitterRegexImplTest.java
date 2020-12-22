@@ -33,13 +33,13 @@ class GlyphArraySplitterRegexImplTest
     void testSplit_1()
     {
         // given
-        Set<List<Integer>> matchers = new HashSet<>(Arrays.asList(Arrays.asList(84, 93),
+        final Set<List<Integer>> matchers = new HashSet<>(Arrays.asList(Arrays.asList(84, 93),
                 Arrays.asList(102, 82), Arrays.asList(104, 87)));
-        GlyphArraySplitter testClass = new GlyphArraySplitterRegexImpl(matchers);
-        List<Integer> glyphIds = Arrays.asList(84, 112, 93, 104, 82, 61, 96, 102, 93, 104, 87, 110);
+        final GlyphArraySplitter testClass = new GlyphArraySplitterRegexImpl(matchers);
+        final List<Integer> glyphIds = Arrays.asList(84, 112, 93, 104, 82, 61, 96, 102, 93, 104, 87, 110);
 
         // when
-        List<List<Integer>> tokens = testClass.split(glyphIds);
+        final List<List<Integer>> tokens = testClass.split(glyphIds);
 
         // then
         assertEquals(Arrays.asList(Arrays.asList(84, 112, 93, 104, 82, 61, 96, 102, 93),
@@ -51,13 +51,13 @@ class GlyphArraySplitterRegexImplTest
     {
 
         // given
-        Set<List<Integer>> matchers = new HashSet<>(
+        final Set<List<Integer>> matchers = new HashSet<>(
                 Arrays.asList(Arrays.asList(67, 112, 96), Arrays.asList(74, 112, 76)));
-        GlyphArraySplitter testClass = new GlyphArraySplitterRegexImpl(matchers);
-        List<Integer> glyphIds = Arrays.asList(67, 112, 96, 103, 93, 108, 93);
+        final GlyphArraySplitter testClass = new GlyphArraySplitterRegexImpl(matchers);
+        final List<Integer> glyphIds = Arrays.asList(67, 112, 96, 103, 93, 108, 93);
 
         // when
-        List<List<Integer>> tokens = testClass.split(glyphIds);
+        final List<List<Integer>> tokens = testClass.split(glyphIds);
 
         // then
         assertEquals(Arrays.asList(Arrays.asList(67, 112, 96), Arrays.asList(103, 93, 108, 93)),
@@ -69,13 +69,13 @@ class GlyphArraySplitterRegexImplTest
     {
 
         // given
-        Set<List<Integer>> matchers = new HashSet<>(
+        final Set<List<Integer>> matchers = new HashSet<>(
                 Arrays.asList(Arrays.asList(67, 112, 96), Arrays.asList(74, 112, 76)));
-        GlyphArraySplitter testClass = new GlyphArraySplitterRegexImpl(matchers);
-        List<Integer> glyphIds = Arrays.asList(94, 67, 112, 96, 112, 91, 103);
+        final GlyphArraySplitter testClass = new GlyphArraySplitterRegexImpl(matchers);
+        final List<Integer> glyphIds = Arrays.asList(94, 67, 112, 96, 112, 91, 103);
 
         // when
-        List<List<Integer>> tokens = testClass.split(glyphIds);
+        final List<List<Integer>> tokens = testClass.split(glyphIds);
 
         // then
         assertEquals(Arrays.asList(Arrays.asList(94), Arrays.asList(67, 112, 96),
@@ -87,13 +87,13 @@ class GlyphArraySplitterRegexImplTest
     {
 
         // given
-        Set<List<Integer>> matchers = new HashSet<>(
+        final Set<List<Integer>> matchers = new HashSet<>(
                 Arrays.asList(Arrays.asList(67, 112), Arrays.asList(76, 112)));
-        GlyphArraySplitter testClass = new GlyphArraySplitterRegexImpl(matchers);
-        List<Integer> glyphIds = Arrays.asList(94, 167, 112, 91, 103);
+        final GlyphArraySplitter testClass = new GlyphArraySplitterRegexImpl(matchers);
+        final List<Integer> glyphIds = Arrays.asList(94, 167, 112, 91, 103);
 
         // when
-        List<List<Integer>> tokens = testClass.split(glyphIds);
+        final List<List<Integer>> tokens = testClass.split(glyphIds);
 
         // then
         assertEquals(Arrays.asList(Arrays.asList(94, 167, 112, 91, 103)), tokens);

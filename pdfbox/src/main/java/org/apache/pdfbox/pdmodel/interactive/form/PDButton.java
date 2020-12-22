@@ -61,7 +61,7 @@ public abstract class PDButton extends PDTerminalField
      *
      * @param acroForm The acroform.
      */
-    PDButton(PDAcroForm acroForm)
+    PDButton(final PDAcroForm acroForm)
     {
         super(acroForm);
         getCOSObject().setItem(COSName.FT, COSName.BTN);
@@ -74,7 +74,7 @@ public abstract class PDButton extends PDTerminalField
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDButton(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDButton(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -109,16 +109,16 @@ public abstract class PDButton extends PDTerminalField
      */
     public String getValue()
     {
-        COSBase value = getInheritableAttribute(COSName.V);
+        final COSBase value = getInheritableAttribute(COSName.V);
         if (value instanceof COSName)
         {
-            String stringValue = ((COSName)value).getName();
-            List<String> exportValues = getExportValues();
+            final String stringValue = ((COSName)value).getName();
+            final List<String> exportValues = getExportValues();
             if (!exportValues.isEmpty())
             {
                 try
                 {
-                    int idx = Integer.parseInt(stringValue, 10);
+                    final int idx = Integer.parseInt(stringValue, 10);
                     if (idx >= 0 && idx < exportValues.size())
                     {
                         return exportValues.get(idx);
@@ -147,7 +147,7 @@ public abstract class PDButton extends PDTerminalField
      * @throws IllegalArgumentException if the value is not a valid option.
      */
     @Override
-    public void setValue(String value) throws IOException
+    public void setValue(final String value) throws IOException
     {
         checkValue(value);
         
@@ -174,7 +174,7 @@ public abstract class PDButton extends PDTerminalField
      * @throws IOException if the value could not be set
      * @throws IllegalArgumentException if the index provided is not a valid index.
      */
-    public void setValue(int index) throws IOException
+    public void setValue(final int index) throws IOException
     {
         if (getExportValues().isEmpty() || index < 0 || index >= getExportValues().size())
         {
@@ -196,7 +196,7 @@ public abstract class PDButton extends PDTerminalField
      */
     public String getDefaultValue()
     {
-        COSBase value = getInheritableAttribute(COSName.DV);
+        final COSBase value = getInheritableAttribute(COSName.DV);
         if (value instanceof COSName)
         {
             return ((COSName)value).getName();
@@ -213,7 +213,7 @@ public abstract class PDButton extends PDTerminalField
      * @param value Name of option to select
      * @throws IllegalArgumentException if the value is not a valid option.
      */
-    public void setDefaultValue(String value)
+    public void setDefaultValue(final String value)
     {
         checkValue(value);        
         getCOSObject().setName(COSName.DV, value);
@@ -247,7 +247,7 @@ public abstract class PDButton extends PDTerminalField
      */
     public List<String> getExportValues()
     {
-        COSBase value = getInheritableAttribute(COSName.OPT);
+        final COSBase value = getInheritableAttribute(COSName.OPT);
         
         if (value instanceof COSString)
         {
@@ -266,9 +266,9 @@ public abstract class PDButton extends PDTerminalField
      * @see #getExportValues()
      * @param values List containing all possible export values. Supplying null or an empty list will remove the Opt entry.
      */
-    public void setExportValues(List<String> values)
+    public void setExportValues(final List<String> values)
     {
-        COSArray cosValues;
+        final COSArray cosValues;
         if (values != null && !values.isEmpty())
         {
             cosValues = COSArray.ofCOSStrings(values);
@@ -283,14 +283,14 @@ public abstract class PDButton extends PDTerminalField
     @Override
     void constructAppearances() throws IOException
     {
-        List<String> exportValues = getExportValues();
+        final List<String> exportValues = getExportValues();
         if (!exportValues.isEmpty())
         {
             // the value is the index value of the option. So we need to get that
             // and use it to set the value
             try
             {
-                int optionsIndex = Integer.parseInt(getValue());
+                final int optionsIndex = Integer.parseInt(getValue());
                 if (optionsIndex < exportValues.size())
                 {
                     updateByOption(exportValues.get(optionsIndex));
@@ -320,7 +320,7 @@ public abstract class PDButton extends PDTerminalField
     public Set<String> getOnValues()
     {
         // we need a set as the field can appear multiple times
-        Set<String> onValues = new LinkedHashSet<>();
+        final Set<String> onValues = new LinkedHashSet<>();
         
         if (!getExportValues().isEmpty())
         {
@@ -328,8 +328,8 @@ public abstract class PDButton extends PDTerminalField
             return onValues;
         }
         
-        List<PDAnnotationWidget> widgets = this.getWidgets();
-        for (PDAnnotationWidget widget : widgets)
+        final List<PDAnnotationWidget> widgets = this.getWidgets();
+        for (final PDAnnotationWidget widget : widgets)
         {
             onValues.add(getOnValueForWidget(widget));
         }        
@@ -339,9 +339,9 @@ public abstract class PDButton extends PDTerminalField
     /*
      * Get the on value for an individual widget by it's index.
      */
-    private String getOnValue(int index)
+    private String getOnValue(final int index)
     {
-        List<PDAnnotationWidget> widgets = this.getWidgets();
+        final List<PDAnnotationWidget> widgets = this.getWidgets();
         if (index < widgets.size())
         {
             return getOnValueForWidget(widgets.get(index));
@@ -352,16 +352,16 @@ public abstract class PDButton extends PDTerminalField
     /*
      * Get the on value for an individual widget.
      */
-    private String getOnValueForWidget(PDAnnotationWidget widget)
+    private String getOnValueForWidget(final PDAnnotationWidget widget)
     {
-        PDAppearanceDictionary apDictionary = widget.getAppearance();
+        final PDAppearanceDictionary apDictionary = widget.getAppearance();
         if (apDictionary != null) 
         {
-            PDAppearanceEntry normalAppearance = apDictionary.getNormalAppearance();
+            final PDAppearanceEntry normalAppearance = apDictionary.getNormalAppearance();
             if (normalAppearance != null)
             {
-                Set<COSName> entries = normalAppearance.getSubDictionary().keySet();
-                for (COSName entry : entries)
+                final Set<COSName> entries = normalAppearance.getSubDictionary().keySet();
+                for (final COSName entry : entries)
                 {
                     if (COSName.Off.compareTo(entry) != 0)
                     {
@@ -379,9 +379,9 @@ public abstract class PDButton extends PDTerminalField
      * @param value Name of radio button to select
      * @throws IllegalArgumentException if the value is not a valid option.
      */
-    void checkValue(String value)
+    void checkValue(final String value)
     {
-        Set<String> onValues = getOnValues();
+        final Set<String> onValues = getOnValues();
         if (COSName.Off.getName().compareTo(value) != 0 && !onValues.contains(value))
         {
             throw new IllegalArgumentException("value '" + value
@@ -390,17 +390,17 @@ public abstract class PDButton extends PDTerminalField
         }
     }
 
-    private void updateByValue(String value)
+    private void updateByValue(final String value)
     {
         getCOSObject().setName(COSName.V, value);
         // update the appearance state (AS)
-        for (PDAnnotationWidget widget : getWidgets())
+        for (final PDAnnotationWidget widget : getWidgets())
         {
             if (widget.getAppearance() == null)
             {
                 continue;
             }
-            PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
+            final PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
             if (appearanceEntry.getCOSObject().containsKey(value))
             {
                 widget.setAppearanceState(value);
@@ -412,10 +412,10 @@ public abstract class PDButton extends PDTerminalField
         }
     }
 
-    private void updateByOption(String value)
+    private void updateByOption(final String value)
     {
-        List<PDAnnotationWidget> widgets = getWidgets();
-        List<String> options = getExportValues();
+        final List<PDAnnotationWidget> widgets = getWidgets();
+        final List<String> options = getExportValues();
         
         if (widgets.size() != options.size())
         {
@@ -429,7 +429,7 @@ public abstract class PDButton extends PDTerminalField
         else
         {     
             // the value is the index of the matching option
-            int optionsIndex = options.indexOf(value);
+            final int optionsIndex = options.indexOf(value);
             
             // get the values the options are pointing to as
             // this might not be numerical

@@ -42,7 +42,7 @@ class TestPDDocumentInformation
         // This document has been selected for this test as it contains custom metadata.
         try (PDDocument doc = Loader.loadPDF(new File("src/test/resources/input/hello3.pdf")))
         {
-           PDDocumentInformation info = doc.getDocumentInformation();
+           final PDDocumentInformation info = doc.getDocumentInformation();
            
            assertEquals("Brian Carrier", info.getAuthor(), "Wrong author");
            assertNotNull(info.getCreationDate(), "Wrong creationDate");
@@ -53,12 +53,12 @@ class TestPDDocumentInformation
            assertNull(info.getSubject(), "Wrong subject");
            assertNull(info.getTrapped(), "Wrong trapped");
 
-           List<String> expectedMetadataKeys = Arrays.asList("CreationDate", "Author", "Creator",
+           final List<String> expectedMetadataKeys = Arrays.asList("CreationDate", "Author", "Creator",
                                                              "Producer", "ModDate", "Company",
                                                              "SourceModified", "Title");
            assertEquals(expectedMetadataKeys.size(), info.getMetadataKeys().size(),
                    "Wrong metadata key count");
-           for (String key : expectedMetadataKeys)
+           for (final String key : expectedMetadataKeys)
            {
                assertTrue(info.getMetadataKeys().contains(key), "Missing metadata key:" + key);
            }
@@ -82,7 +82,7 @@ class TestPDDocumentInformation
         try (PDDocument doc = Loader
                 .loadPDF(TestPDDocumentInformation.class.getResourceAsStream("PDFBOX-3068.pdf")))
         {
-            PDDocumentInformation documentInformation = doc.getDocumentInformation();
+            final PDDocumentInformation documentInformation = doc.getDocumentInformation();
             assertEquals("Title", documentInformation.getTitle());
         }
     }

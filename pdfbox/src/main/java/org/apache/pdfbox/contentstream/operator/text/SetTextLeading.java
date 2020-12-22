@@ -32,9 +32,9 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class SetTextLeading extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments)
+    public void process(final Operator operator, final List<COSBase> arguments)
     {
-        COSNumber leading = (COSNumber)arguments.get( 0 );
+        final COSNumber leading = (COSNumber)arguments.get( 0 );
         context.getGraphicsState().getTextState().setLeading( leading.floatValue() );
     }
 

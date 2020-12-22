@@ -52,7 +52,7 @@ public class ResourceEventType extends AbstractStructuredType
      * @param metadata
      *            The metadata to attach to this property
      */
-    public ResourceEventType(XMPMetadata metadata)
+    public ResourceEventType(final XMPMetadata metadata)
     {
         super(metadata);
         addNamespace(getNamespace(), getPreferedPrefix());
@@ -63,7 +63,7 @@ public class ResourceEventType extends AbstractStructuredType
         return getPropertyValueAsString(INSTANCE_ID);
     }
 
-    public void setInstanceID(String value)
+    public void setInstanceID(final String value)
     {
         addSimpleProperty(INSTANCE_ID, value);
     }
@@ -73,7 +73,7 @@ public class ResourceEventType extends AbstractStructuredType
         return getPropertyValueAsString(SOFTWARE_AGENT);
     }
 
-    public void setSoftwareAgent(String value)
+    public void setSoftwareAgent(final String value)
     {
         addSimpleProperty(SOFTWARE_AGENT, value);
     }
@@ -83,7 +83,7 @@ public class ResourceEventType extends AbstractStructuredType
         return getDatePropertyAsCalendar(WHEN);
     }
 
-    public void setWhen(Calendar value)
+    public void setWhen(final Calendar value)
     {
         addSimpleProperty(WHEN, value);
     }
@@ -93,7 +93,7 @@ public class ResourceEventType extends AbstractStructuredType
         return getPropertyValueAsString(ACTION);
     }
 
-    public void setAction(String value)
+    public void setAction(final String value)
     {
         addSimpleProperty(ACTION, value);
     }
@@ -103,7 +103,7 @@ public class ResourceEventType extends AbstractStructuredType
         return getPropertyValueAsString(CHANGED);
     }
 
-    public void setChanged(String value)
+    public void setChanged(final String value)
     {
         addSimpleProperty(CHANGED, value);
     }
@@ -113,7 +113,7 @@ public class ResourceEventType extends AbstractStructuredType
         return getPropertyValueAsString(PARAMETERS);
     }
 
-    public void setParameters(String value)
+    public void setParameters(final String value)
     {
         addSimpleProperty(PARAMETERS, value);
     }

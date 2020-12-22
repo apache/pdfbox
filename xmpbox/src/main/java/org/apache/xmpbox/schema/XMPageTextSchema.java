@@ -43,12 +43,12 @@ public class XMPageTextSchema extends XMPSchema
     public static final String N_PAGES = "NPages";
 
 
-    public XMPageTextSchema(XMPMetadata metadata)
+    public XMPageTextSchema(final XMPMetadata metadata)
     {
         super(metadata);
     }
 
-    public XMPageTextSchema(XMPMetadata metadata, String prefix)
+    public XMPageTextSchema(final XMPMetadata metadata, final String prefix)
     {
         super(metadata, prefix);
     }

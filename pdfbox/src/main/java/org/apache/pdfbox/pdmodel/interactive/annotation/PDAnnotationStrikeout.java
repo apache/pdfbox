@@ -47,7 +47,7 @@ public class PDAnnotationStrikeout extends PDAnnotationTextMarkup
      *
      * @param dict The annotations dictionary.
      */
-    public PDAnnotationStrikeout(COSDictionary dict)
+    public PDAnnotationStrikeout(final COSDictionary dict)
     {
         super(dict);
     }
@@ -57,7 +57,7 @@ public class PDAnnotationStrikeout extends PDAnnotationTextMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -69,11 +69,11 @@ public class PDAnnotationStrikeout extends PDAnnotationTextMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDStrikeoutAppearanceHandler appearanceHandler = new PDStrikeoutAppearanceHandler(this, document);
+            final PDStrikeoutAppearanceHandler appearanceHandler = new PDStrikeoutAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

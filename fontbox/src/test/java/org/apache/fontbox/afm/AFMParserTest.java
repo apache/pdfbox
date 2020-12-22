@@ -59,7 +59,7 @@ class AFMParserTest
     @Test
     void testEndFontMetrics() throws IOException
     {
-        AFMParser parser = new AFMParser(
+        final AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/NoEndFontMetrics.afm"));
         try
         {
@@ -76,7 +76,7 @@ class AFMParserTest
     @Test
     void testMalformedFloat() throws IOException
     {
-        AFMParser parser = new AFMParser(
+        final AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/MalformedFloat.afm"));
         try
         {
@@ -93,7 +93,7 @@ class AFMParserTest
     @Test
     void testMalformedInteger() throws IOException
     {
-        AFMParser parser = new AFMParser(
+        final AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/MalformedInteger.afm"));
         try
         {
@@ -110,7 +110,7 @@ class AFMParserTest
     @Test
     void testHelveticaFontMetrics() throws IOException
     {
-        AFMParser parser = new AFMParser(
+        final AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
         checkHelveticaFontMetrics(parser.parse());
     }
@@ -118,9 +118,9 @@ class AFMParserTest
     @Test
     void testHelveticaCharMetrics() throws IOException
     {
-        AFMParser parser = new AFMParser(
+        final AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
-        FontMetrics fontMetrics = parser.parse();
+        final FontMetrics fontMetrics = parser.parse();
 
         // char metrics
         checkHelveticaCharMetrics(fontMetrics.getCharMetrics());
@@ -129,12 +129,12 @@ class AFMParserTest
     @Test
     void testHelveticaKernPairs() throws IOException
     {
-        AFMParser parser = new AFMParser(
+        final AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
-        FontMetrics fontMetrics = parser.parse();
+        final FontMetrics fontMetrics = parser.parse();
 
         // KernPairs
-        List<KernPair> kernPairs = fontMetrics.getKernPairs();
+        final List<KernPair> kernPairs = fontMetrics.getKernPairs();
         assertEquals(2705, kernPairs.size());
         // check "KPX A Ucircumflex -50"
         checkKernPair(kernPairs, "A", "Ucircumflex", -50, 0);
@@ -151,7 +151,7 @@ class AFMParserTest
     @Test
     void testHelveticaFontMetricsReducedDataset() throws IOException
     {
-        AFMParser parser = new AFMParser(
+        final AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
         checkHelveticaFontMetrics(parser.parse(true));
     }
@@ -159,9 +159,9 @@ class AFMParserTest
     @Test
     void testHelveticaCharMetricsReducedDataset() throws IOException
     {
-        AFMParser parser = new AFMParser(
+        final AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
-        FontMetrics fontMetrics = parser.parse(true);
+        final FontMetrics fontMetrics = parser.parse(true);
 
         // char metrics
         checkHelveticaCharMetrics(fontMetrics.getCharMetrics());
@@ -170,9 +170,9 @@ class AFMParserTest
     @Test
     void testHelveticaKernPairsReducedDataset() throws IOException
     {
-        AFMParser parser = new AFMParser(
+        final AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
-        FontMetrics fontMetrics = parser.parse(true);
+        final FontMetrics fontMetrics = parser.parse(true);
 
         // KernPairs, empty due to reducedDataset == true
         assertTrue(fontMetrics.getKernPairs().isEmpty());
@@ -184,14 +184,14 @@ class AFMParserTest
         assertTrue(fontMetrics.getComposites().isEmpty());
     }
 
-    private void checkHelveticaCharMetrics(List<CharMetric> charMetrics)
+    private void checkHelveticaCharMetrics(final List<CharMetric> charMetrics)
     {
         assertEquals(315, charMetrics.size());
         // check "space" metrics
-        Optional<CharMetric> space = charMetrics.stream()//
+        final Optional<CharMetric> space = charMetrics.stream()//
                 .filter(c -> "space".equals(c.getName())).findFirst();
         assertTrue(space.isPresent());
-        CharMetric spaceCharMetric = space.get();
+        final CharMetric spaceCharMetric = space.get();
         assertEquals(278f, spaceCharMetric.getWx(), 0f);
         assertEquals(32, spaceCharMetric.getCharacterCode());
         checkBBox(spaceCharMetric.getBoundingBox(), 0, 0, 0, 0);
@@ -201,10 +201,10 @@ class AFMParserTest
         assertNull(spaceCharMetric.getW1());
         assertNull(spaceCharMetric.getVv());
         // check "ring" metrics
-        Optional<CharMetric> ring = charMetrics.stream()//
+        final Optional<CharMetric> ring = charMetrics.stream()//
                 .filter(c -> "ring".equals(c.getName())).findFirst();
         assertTrue(ring.isPresent());
-        CharMetric ringCharMetric = ring.get();
+        final CharMetric ringCharMetric = ring.get();
         assertEquals(333f, ringCharMetric.getWx(), 0f);
         assertEquals(202, ringCharMetric.getCharacterCode());
         checkBBox(ringCharMetric.getBoundingBox(), 75, 572, 259, 756);
@@ -215,7 +215,7 @@ class AFMParserTest
         assertNull(ringCharMetric.getVv());
     }
 
-    private void checkHelveticaFontMetrics(FontMetrics fontMetrics)
+    private void checkHelveticaFontMetrics(final FontMetrics fontMetrics)
     {
         assertEquals(4.1f, fontMetrics.getAFMVersion(), 0f);
         assertEquals("Helvetica", fontMetrics.getFontName());
@@ -241,7 +241,7 @@ class AFMParserTest
         assertEquals(-207f, fontMetrics.getDescender(), 0f);
         assertEquals(76f, fontMetrics.getStandardHorizontalWidth(), 0f);
         assertEquals(88f, fontMetrics.getStandardVerticalWidth(), 0f);
-        List<String> comments = fontMetrics.getComments();
+        final List<String> comments = fontMetrics.getComments();
         assertEquals(4, comments.size());
         assertEquals(
                 "Copyright (c) 1985, 1987, 1989, 1990, 1997 Adobe Systems Incorporated.  All Rights Reserved.",
@@ -254,7 +254,7 @@ class AFMParserTest
         assertFalse(fontMetrics.getIsFixedPitch());
     }
 
-    private void checkBBox(BoundingBox bBox, float lowerX, float lowerY, float upperX, float upperY)
+    private void checkBBox(final BoundingBox bBox, final float lowerX, final float lowerY, final float upperX, final float upperY)
     {
         assertNotNull(bBox);
         assertEquals(lowerX, bBox.getLowerLeftX(), 0f);
@@ -263,10 +263,10 @@ class AFMParserTest
         assertEquals(upperY, bBox.getUpperRightY(), 0f);
     }
 
-    private void checkKernPair(List<KernPair> kernPairs, String firstKernChar,
-            String secondKernChar, float x, float y)
+    private void checkKernPair(final List<KernPair> kernPairs, final String firstKernChar,
+                               final String secondKernChar, final float x, final float y)
     {
-        Optional<KernPair> kernPair = kernPairs.stream() //
+        final Optional<KernPair> kernPair = kernPairs.stream() //
                 .filter(k -> firstKernChar.equals(k.getFirstKernCharacter())) //
                 .filter(k -> secondKernChar.equals(k.getSecondKernCharacter())) //
                 .findFirst();

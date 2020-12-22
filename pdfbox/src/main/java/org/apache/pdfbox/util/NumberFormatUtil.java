@@ -72,7 +72,7 @@ public class NumberFormatUtil
      *
      * @return The number of bytes used in the buffer or {@code -1} if formatting failed
      */
-    public static int formatFloatFast(float value, int maxFractionDigits, byte[] asciiBuffer)
+    public static int formatFloatFast(final float value, final int maxFractionDigits, final byte[] asciiBuffer)
     {
         if (Float.isNaN(value) ||
                 Float.isInfinite(value) ||
@@ -127,14 +127,14 @@ public class NumberFormatUtil
      * @return The offset into the buffer which contains the first byte that was not filled by the
      * method
      */
-    private static int formatPositiveNumber(long number, int exp, boolean omitTrailingZeros, byte[] asciiBuffer, int startOffset)
+    private static int formatPositiveNumber(final long number, int exp, final boolean omitTrailingZeros, final byte[] asciiBuffer, final int startOffset)
     {
         int offset = startOffset;
         long remaining = number;
 
         while (remaining > Integer.MAX_VALUE && (!omitTrailingZeros || remaining > 0))
         {
-            long digit = remaining / POWER_OF_TENS[exp];
+            final long digit = remaining / POWER_OF_TENS[exp];
             remaining -= (digit * POWER_OF_TENS[exp]);
 
             asciiBuffer[offset++] = (byte) ('0' + digit);
@@ -145,7 +145,7 @@ public class NumberFormatUtil
         int remainingInt = (int) remaining;
         while (exp >= 0 && (!omitTrailingZeros || remainingInt > 0))
         {
-            int digit = remainingInt / POWER_OF_TENS_INT[exp];
+            final int digit = remainingInt / POWER_OF_TENS_INT[exp];
             remainingInt -= (digit * POWER_OF_TENS_INT[exp]);
 
             asciiBuffer[offset++] = (byte) ('0' + digit);
@@ -158,7 +158,7 @@ public class NumberFormatUtil
     /**
      * Returns the highest exponent of 10 where {@code 10^exp < number} for numbers > 0
      */
-    private static int getExponent(long number)
+    private static int getExponent(final long number)
     {
         for (int exp = 0; exp < (POWER_OF_TENS.length - 1); exp++)
         {

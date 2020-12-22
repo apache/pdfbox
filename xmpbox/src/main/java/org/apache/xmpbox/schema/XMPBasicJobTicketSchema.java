@@ -43,33 +43,33 @@ public class XMPBasicJobTicketSchema extends XMPSchema
 
     private ArrayProperty bagJobs;
 
-    public XMPBasicJobTicketSchema(XMPMetadata metadata)
+    public XMPBasicJobTicketSchema(final XMPMetadata metadata)
     {
         this(metadata, null);
     }
 
-    public XMPBasicJobTicketSchema(XMPMetadata metadata, String ownPrefix)
+    public XMPBasicJobTicketSchema(final XMPMetadata metadata, final String ownPrefix)
     {
         super(metadata, ownPrefix);
     }
 
-    public void addJob(String id, String name, String url)
+    public void addJob(final String id, final String name, final String url)
     {
         addJob(id, name, url, null);
     }
 
-    public void addJob(String id, String name, String url, String fieldPrefix)
+    public void addJob(final String id, final String name, final String url, final String fieldPrefix)
     {
-        JobType job = new JobType(getMetadata(), fieldPrefix);
+        final JobType job = new JobType(getMetadata(), fieldPrefix);
         job.setId(id);
         job.setName(name);
         job.setUrl(url);
         addJob(job);
     }
 
-    public void addJob(JobType job)
+    public void addJob(final JobType job)
     {
-        String prefix = getNamespacePrefix(job.getNamespace());
+        final String prefix = getNamespacePrefix(job.getNamespace());
         if (prefix != null)
         {
             // use same prefix for all jobs
@@ -92,11 +92,11 @@ public class XMPBasicJobTicketSchema extends XMPSchema
 
     public List<JobType> getJobs() throws BadFieldValueException
     {
-        List<AbstractField> tmp = getUnqualifiedArrayList(JOB_REF);
+        final List<AbstractField> tmp = getUnqualifiedArrayList(JOB_REF);
         if (tmp != null)
         {
-            List<JobType> layers = new ArrayList<>();
-            for (AbstractField abstractField : tmp)
+            final List<JobType> layers = new ArrayList<>();
+            for (final AbstractField abstractField : tmp)
             {
                 if (abstractField instanceof JobType)
                 {

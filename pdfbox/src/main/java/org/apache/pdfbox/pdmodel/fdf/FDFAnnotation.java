@@ -115,7 +115,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param a The FDF annotation.
      */
-    public FDFAnnotation(COSDictionary a)
+    public FDFAnnotation(final COSDictionary a)
     {
         annot = a;
     }
@@ -127,31 +127,31 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @throws IOException If there is an error extracting data from the element.
      */
-    public FDFAnnotation(Element element) throws IOException
+    public FDFAnnotation(final Element element) throws IOException
     {
         this();
 
-        String page = element.getAttribute("page");
+        final String page = element.getAttribute("page");
         if (page == null || page.isEmpty())
         {
             throw new IOException("Error: missing required attribute 'page'");
         }
         setPage(Integer.parseInt(page));
 
-        String color = element.getAttribute("color");
+        final String color = element.getAttribute("color");
         if (color != null && color.length() == 7 && color.charAt(0) == '#')
         {
-            int colorValue = Integer.parseInt(color.substring(1, 7), 16);
+            final int colorValue = Integer.parseInt(color.substring(1, 7), 16);
             setColor(new Color(colorValue));
         }
 
         setDate(element.getAttribute("date"));
 
-        String flags = element.getAttribute("flags");
+        final String flags = element.getAttribute("flags");
         if (flags != null)
         {
-            String[] flagTokens = flags.split(",");
-            for (String flagToken : flagTokens)
+            final String[] flagTokens = flags.split(",");
+            for (final String flagToken : flagTokens)
             {
                 switch (flagToken)
                 {
@@ -190,22 +190,22 @@ public abstract class FDFAnnotation implements COSObjectable
 
         setName(element.getAttribute("name"));
 
-        String rect = element.getAttribute("rect");
+        final String rect = element.getAttribute("rect");
         if (rect == null)
         {
             throw new IOException("Error: missing attribute 'rect'");
         }
-        String[] rectValues = rect.split(",");
+        final String[] rectValues = rect.split(",");
         if (rectValues.length != 4)
         {
             throw new IOException("Error: wrong amount of numbers in attribute 'rect'");
         }
-        float[] values = new float[4];
+        final float[] values = new float[4];
         for (int i = 0; i < 4; i++)
         {
             values[i] = Float.parseFloat(rectValues[i]);
         }
-        COSArray array = new COSArray();
+        final COSArray array = new COSArray();
         array.setFloatArray(values);
         setRectangle(new PDRectangle(array));
 
@@ -215,7 +215,7 @@ public abstract class FDFAnnotation implements COSObjectable
          * Set the markup annotation attributes
          */
         setCreationDate(DateConverter.toCalendar(element.getAttribute("creationdate")));
-        String opac = element.getAttribute("opacity");
+        final String opac = element.getAttribute("opacity");
         if (opac != null && !opac.isEmpty())
         {
             setOpacity(Float.parseFloat(opac));
@@ -230,7 +230,7 @@ public abstract class FDFAnnotation implements COSObjectable
         }
         setIntent(intent);
 
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
         try
         {
             setContents(xpath.evaluate("contents[1]", element));
@@ -242,7 +242,7 @@ public abstract class FDFAnnotation implements COSObjectable
 
         try
         {
-            Node richContents = (Node) xpath.evaluate("contents-richtext[1]", element,
+            final Node richContents = (Node) xpath.evaluate("contents-richtext[1]", element,
                     XPathConstants.NODE);
             if (richContents != null)
             {
@@ -255,15 +255,15 @@ public abstract class FDFAnnotation implements COSObjectable
             LOG.debug("Error while evaluating XPath expression for richtext contents", e);
         }
 
-        PDBorderStyleDictionary borderStyle = new PDBorderStyleDictionary();
-        String width = element.getAttribute("width");
+        final PDBorderStyleDictionary borderStyle = new PDBorderStyleDictionary();
+        final String width = element.getAttribute("width");
         if (width != null && !width.isEmpty())
         {
             borderStyle.setWidth(Float.parseFloat(width));
         }
         if (borderStyle.getWidth() > 0)
         {
-            String style = element.getAttribute("style");
+            final String style = element.getAttribute("style");
             if (style != null && !style.isEmpty())
             {
                 switch (style)
@@ -282,9 +282,9 @@ public abstract class FDFAnnotation implements COSObjectable
                         break;
                     case "cloudy":
                         borderStyle.setStyle("S");
-                        PDBorderEffectDictionary borderEffect = new PDBorderEffectDictionary();
+                        final PDBorderEffectDictionary borderEffect = new PDBorderEffectDictionary();
                         borderEffect.setStyle("C");
-                        String intensity = element.getAttribute("intensity");
+                        final String intensity = element.getAttribute("intensity");
                         if (intensity != null && !intensity.isEmpty())
                         {
                             borderEffect.setIntensity(Float.parseFloat(element
@@ -297,12 +297,12 @@ public abstract class FDFAnnotation implements COSObjectable
                         break;
                 }
             }
-            String dashes = element.getAttribute("dashes");
+            final String dashes = element.getAttribute("dashes");
             if (dashes != null && !dashes.isEmpty())
             {
-                String[] dashesValues = dashes.split(",");
-                COSArray dashPattern = new COSArray();
-                for (String dashesValue : dashesValues)
+                final String[] dashesValues = dashes.split(",");
+                final COSArray dashPattern = new COSArray();
+                for (final String dashesValue : dashesValues)
                 {
                     dashPattern.add(COSNumber.get(dashesValue));
                 }
@@ -319,7 +319,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @return A newly created FDFAnnotation
      */
-    public static FDFAnnotation create(COSDictionary fdfDic)
+    public static FDFAnnotation create(final COSDictionary fdfDic)
     {
         FDFAnnotation retval = null;
         if (fdfDic != null)
@@ -421,7 +421,7 @@ public abstract class FDFAnnotation implements COSObjectable
     public Integer getPage()
     {
         Integer retval = null;
-        COSNumber page = (COSNumber) annot.getDictionaryObject(COSName.PAGE);
+        final COSNumber page = (COSNumber) annot.getDictionaryObject(COSName.PAGE);
         if (page != null)
         {
             retval = page.intValue();
@@ -434,7 +434,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param page The page number.
      */
-    public final void setPage(int page)
+    public final void setPage(final int page)
     {
         annot.setInt(COSName.PAGE, page);
     }
@@ -447,10 +447,10 @@ public abstract class FDFAnnotation implements COSObjectable
     public Color getColor()
     {
         Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.C);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.C);
         if (array != null)
         {
-            float[] rgb = array.toFloatArray();
+            final float[] rgb = array.toFloatArray();
             if (rgb.length >= 3)
             {
                 retval = new Color(rgb[0], rgb[1], rgb[2]);
@@ -464,12 +464,12 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param c The annotation color.
      */
-    public final void setColor(Color c)
+    public final void setColor(final Color c)
     {
         COSArray color = null;
         if (c != null)
         {
-            float[] colors = c.getRGBColorComponents(null);
+            final float[] colors = c.getRGBColorComponents(null);
             color = new COSArray();
             color.setFloatArray(colors);
         }
@@ -491,7 +491,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param date The date to store in the FDF annotation.
      */
-    public final void setDate(String date)
+    public final void setDate(final String date)
     {
         annot.setString(COSName.M, date);
     }
@@ -511,7 +511,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param invisible The new invisible flag.
      */
-    public final void setInvisible(boolean invisible)
+    public final void setInvisible(final boolean invisible)
     {
         annot.setFlag(COSName.F, FLAG_INVISIBLE, invisible);
     }
@@ -531,7 +531,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param hidden The new hidden flag.
      */
-    public final void setHidden(boolean hidden)
+    public final void setHidden(final boolean hidden)
     {
         annot.setFlag(COSName.F, FLAG_HIDDEN, hidden);
     }
@@ -551,7 +551,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param printed The new printed flag.
      */
-    public final void setPrinted(boolean printed)
+    public final void setPrinted(final boolean printed)
     {
         annot.setFlag(COSName.F, FLAG_PRINTED, printed);
     }
@@ -571,7 +571,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param noZoom The new noZoom flag.
      */
-    public final void setNoZoom(boolean noZoom)
+    public final void setNoZoom(final boolean noZoom)
     {
         annot.setFlag(COSName.F, FLAG_NO_ZOOM, noZoom);
     }
@@ -591,7 +591,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param noRotate The new noRotate flag.
      */
-    public final void setNoRotate(boolean noRotate)
+    public final void setNoRotate(final boolean noRotate)
     {
         annot.setFlag(COSName.F, FLAG_NO_ROTATE, noRotate);
     }
@@ -611,7 +611,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param noView The new noView flag.
      */
-    public final void setNoView(boolean noView)
+    public final void setNoView(final boolean noView)
     {
         annot.setFlag(COSName.F, FLAG_NO_VIEW, noView);
     }
@@ -631,7 +631,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param readOnly The new readOnly flag.
      */
-    public final void setReadOnly(boolean readOnly)
+    public final void setReadOnly(final boolean readOnly)
     {
         annot.setFlag(COSName.F, FLAG_READ_ONLY, readOnly);
     }
@@ -651,7 +651,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param locked The new locked flag.
      */
-    public final void setLocked(boolean locked)
+    public final void setLocked(final boolean locked)
     {
         annot.setFlag(COSName.F, FLAG_LOCKED, locked);
     }
@@ -671,7 +671,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param toggleNoView The new toggleNoView flag.
      */
-    public final void setToggleNoView(boolean toggleNoView)
+    public final void setToggleNoView(final boolean toggleNoView)
     {
         annot.setFlag(COSName.F, FLAG_TOGGLE_NO_VIEW, toggleNoView);
     }
@@ -691,7 +691,7 @@ public abstract class FDFAnnotation implements COSObjectable
      * 
      * @param lockedContents The new LockedContents flag.
      */
-    public void setLockedContents(boolean lockedContents)
+    public void setLockedContents(final boolean lockedContents)
     {
         annot.setFlag(COSName.F, FLAG_LOCKED_CONTENTS, lockedContents);
     }
@@ -701,7 +701,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param name The unique annotation name.
      */
-    public final void setName(String name)
+    public final void setName(final String name)
     {
         annot.setString(COSName.NM, name);
     }
@@ -721,7 +721,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param rectangle The annotation rectangle.
      */
-    public final void setRectangle(PDRectangle rectangle)
+    public final void setRectangle(final PDRectangle rectangle)
     {
         annot.setItem(COSName.RECT, rectangle);
     }
@@ -734,7 +734,7 @@ public abstract class FDFAnnotation implements COSObjectable
     public PDRectangle getRectangle()
     {
         PDRectangle retval = null;
-        COSArray rectArray = (COSArray) annot.getDictionaryObject(COSName.RECT);
+        final COSArray rectArray = (COSArray) annot.getDictionaryObject(COSName.RECT);
         if (rectArray != null)
         {
             retval = new PDRectangle(rectArray);
@@ -747,7 +747,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param contents The annotation contents, or a description.
      */
-    public final void setContents(String contents)
+    public final void setContents(final String contents)
     {
         annot.setString(COSName.CONTENTS, contents);
     }
@@ -767,7 +767,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param title The annotation title.
      */
-    public final void setTitle(String title)
+    public final void setTitle(final String title)
     {
         annot.setString(COSName.T, title);
     }
@@ -799,7 +799,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param date The date the annotation was created.
      */
-    public final void setCreationDate(Calendar date)
+    public final void setCreationDate(final Calendar date)
     {
         annot.setDate(COSName.CREATION_DATE, date);
     }
@@ -809,7 +809,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param opacity The new opacity value.
      */
-    public final void setOpacity(float opacity)
+    public final void setOpacity(final float opacity)
     {
         annot.setFloat(COSName.CA, opacity);
     }
@@ -830,7 +830,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param subject The annotation subject.
      */
-    public final void setSubject(String subject)
+    public final void setSubject(final String subject)
     {
         annot.setString(COSName.SUBJ, subject);
     }
@@ -850,7 +850,7 @@ public abstract class FDFAnnotation implements COSObjectable
      * 
      * @param intent The annotation's intent.
      */
-    public final void setIntent(String intent)
+    public final void setIntent(final String intent)
     {
         annot.setName(COSName.IT, intent);
     }
@@ -880,7 +880,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param rc the rich text stream.
      */
-    public final void setRichContents(String rc)
+    public final void setRichContents(final String rc)
     {
         annot.setItem(COSName.RC, new COSString(rc));
     }
@@ -891,7 +891,7 @@ public abstract class FDFAnnotation implements COSObjectable
      * @param bs the border style dictionary to set.
      *
      */
-    public final void setBorderStyle(PDBorderStyleDictionary bs)
+    public final void setBorderStyle(final PDBorderStyleDictionary bs)
     {
         annot.setItem(COSName.BS, bs);
     }
@@ -904,7 +904,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSDictionary bs = (COSDictionary) annot.getDictionaryObject(COSName.BS);
+        final COSDictionary bs = (COSDictionary) annot.getDictionaryObject(COSName.BS);
         if (bs != null)
         {
             return new PDBorderStyleDictionary(bs);
@@ -922,7 +922,7 @@ public abstract class FDFAnnotation implements COSObjectable
      * @param be the border effect dictionary to set.
      *
      */
-    public final void setBorderEffect(PDBorderEffectDictionary be)
+    public final void setBorderEffect(final PDBorderEffectDictionary be)
     {
         annot.setItem(COSName.BE, be);
     }
@@ -935,7 +935,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSDictionary be = (COSDictionary) annot.getDictionaryObject(COSName.BE);
+        final COSDictionary be = (COSDictionary) annot.getDictionaryObject(COSName.BE);
         if (be != null)
         {
             return new PDBorderEffectDictionary(be);
@@ -954,7 +954,7 @@ public abstract class FDFAnnotation implements COSObjectable
      * @param base the potential text or text stream
      * @return the text stream
      */
-    protected final String getStringOrStream(COSBase base)
+    protected final String getStringOrStream(final COSBase base)
     {
         if (base == null)
         {
@@ -974,14 +974,14 @@ public abstract class FDFAnnotation implements COSObjectable
         }
     }
 
-    private String richContentsToString(Node node, boolean root)
+    private String richContentsToString(final Node node, final boolean root)
     {
         String subString = "";
 
-        NodeList nodelist = node.getChildNodes();
+        final NodeList nodelist = node.getChildNodes();
         for (int i = 0; i < nodelist.getLength(); i++)
         {
-            Node child = nodelist.item(i);
+            final Node child = nodelist.item(i);
             if (child instanceof Element)
             {
                 subString += richContentsToString(child, false);
@@ -1005,11 +1005,11 @@ public abstract class FDFAnnotation implements COSObjectable
             return subString;
         }
 
-        NamedNodeMap attributes = node.getAttributes();
-        StringBuilder builder = new StringBuilder();
+        final NamedNodeMap attributes = node.getAttributes();
+        final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < attributes.getLength(); i++)
         {
-            Node attribute = attributes.item(i);
+            final Node attribute = attributes.item(i);
             String attributeNodeValue = attribute.getNodeValue();
             if (attributeNodeValue!=null)
             {

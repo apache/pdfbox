@@ -86,7 +86,7 @@ public class PDRectangle implements COSObjectable
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
      */
-    public PDRectangle( float width, float height )
+    public PDRectangle(final float width, final float height )
     {
         this(0.0f, 0.0f, width, height);
     }
@@ -99,7 +99,7 @@ public class PDRectangle implements COSObjectable
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
      */
-    public PDRectangle( float x, float y, float width, float height )
+    public PDRectangle(final float x, final float y, final float width, final float height )
     {
         rectArray = new COSArray();
         rectArray.add( new COSFloat( x ) );
@@ -113,7 +113,7 @@ public class PDRectangle implements COSObjectable
      *
      * @param box the bounding box to be used for the rectangle
      */
-    public PDRectangle( BoundingBox box )
+    public PDRectangle(final BoundingBox box )
     {
         rectArray = new COSArray();
         rectArray.add( new COSFloat( box.getLowerLeftX() ) );
@@ -127,9 +127,9 @@ public class PDRectangle implements COSObjectable
      *
      * @param array An array of numbers as specified in the PDF Reference for a rectangle type.
      */
-    public PDRectangle( COSArray array )
+    public PDRectangle(final COSArray array )
     {
-        float[] values = Arrays.copyOf(array.toFloatArray(), 4);
+        final float[] values = Arrays.copyOf(array.toFloatArray(), 4);
         rectArray = new COSArray();
         // we have to start with the lower left corner
         rectArray.add( new COSFloat( Math.min(values[0],values[2] )) );
@@ -144,12 +144,12 @@ public class PDRectangle implements COSObjectable
      * @param y The y-coordinate to test.
      * @return True if the point is inside this rectangle.
      */
-    public boolean contains( float x, float y )
+    public boolean contains(final float x, final float y )
     {
-        float llx = getLowerLeftX();
-        float urx = getUpperRightX();
-        float lly = getLowerLeftY();
-        float ury = getUpperRightY();
+        final float llx = getLowerLeftX();
+        final float urx = getUpperRightX();
+        final float lly = getLowerLeftY();
+        final float ury = getUpperRightY();
         return x >= llx && x <= urx &&
                y >= lly && y <= ury;
     }
@@ -165,7 +165,7 @@ public class PDRectangle implements COSObjectable
      */
     public PDRectangle createRetranslatedRectangle()
     {
-        PDRectangle retval = new PDRectangle();
+        final PDRectangle retval = new PDRectangle();
         retval.setUpperRightX( getWidth() );
         retval.setUpperRightY( getHeight() );
         return retval;
@@ -196,7 +196,7 @@ public class PDRectangle implements COSObjectable
      *
      * @param value The lower left x.
      */
-    public void setLowerLeftX(float value)
+    public void setLowerLeftX(final float value)
     {
         rectArray.set(0, new COSFloat( value ) );
     }
@@ -216,7 +216,7 @@ public class PDRectangle implements COSObjectable
      *
      * @param value The lower left y.
      */
-    public void setLowerLeftY(float value)
+    public void setLowerLeftY(final float value)
     {
         rectArray.set(1, new COSFloat( value ) );
     }
@@ -236,7 +236,7 @@ public class PDRectangle implements COSObjectable
      *
      * @param value The upper right x .
      */
-    public void setUpperRightX(float value)
+    public void setUpperRightX(final float value)
     {
         rectArray.set(2, new COSFloat( value ) );
     }
@@ -256,7 +256,7 @@ public class PDRectangle implements COSObjectable
      *
      * @param value The upper right y.
      */
-    public void setUpperRightY(float value)
+    public void setUpperRightY(final float value)
     {
         rectArray.set(3, new COSFloat( value ) );
     }
@@ -287,19 +287,19 @@ public class PDRectangle implements COSObjectable
      * Returns a path which represents this rectangle having been transformed by the given matrix.
      * Note that the resulting path need not be rectangular.
      */
-    public GeneralPath transform(Matrix matrix)
+    public GeneralPath transform(final Matrix matrix)
     {
-        float x1 = getLowerLeftX();
-        float y1 = getLowerLeftY();
-        float x2 = getUpperRightX();
-        float y2 = getUpperRightY();
+        final float x1 = getLowerLeftX();
+        final float y1 = getLowerLeftY();
+        final float x2 = getUpperRightX();
+        final float y2 = getUpperRightY();
 
-        Point2D.Float p0 = matrix.transformPoint(x1, y1);
-        Point2D.Float p1 = matrix.transformPoint(x2, y1);
-        Point2D.Float p2 = matrix.transformPoint(x2, y2);
-        Point2D.Float p3 = matrix.transformPoint(x1, y2);
+        final Point2D.Float p0 = matrix.transformPoint(x1, y1);
+        final Point2D.Float p1 = matrix.transformPoint(x2, y1);
+        final Point2D.Float p2 = matrix.transformPoint(x2, y2);
+        final Point2D.Float p3 = matrix.transformPoint(x1, y2);
 
-        GeneralPath path = new GeneralPath();
+        final GeneralPath path = new GeneralPath();
         path.moveTo(p0.getX(), p0.getY());
         path.lineTo(p1.getX(), p1.getY());
         path.lineTo(p2.getX(), p2.getY());
@@ -325,11 +325,11 @@ public class PDRectangle implements COSObjectable
      */
     public GeneralPath toGeneralPath()
     {
-        float x1 = getLowerLeftX();
-        float y1 = getLowerLeftY();
-        float x2 = getUpperRightX();
-        float y2 = getUpperRightY();
-        GeneralPath path = new GeneralPath();
+        final float x1 = getLowerLeftX();
+        final float y1 = getLowerLeftY();
+        final float x2 = getUpperRightX();
+        final float y2 = getUpperRightY();
+        final GeneralPath path = new GeneralPath();
         path.moveTo(x1, y1);
         path.lineTo(x2, y1);
         path.lineTo(x2, y2);

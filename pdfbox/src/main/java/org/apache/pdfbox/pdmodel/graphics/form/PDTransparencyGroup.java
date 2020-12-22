@@ -33,7 +33,7 @@ public class PDTransparencyGroup extends PDFormXObject
      * Creates a Transparency Group for reading.
      * @param stream The XObject stream
      */
-    public PDTransparencyGroup(PDStream stream)
+    public PDTransparencyGroup(final PDStream stream)
     {
         super(stream);
     }
@@ -42,7 +42,7 @@ public class PDTransparencyGroup extends PDFormXObject
      * Creates a Transparency Group for reading.
      * @param stream The XObject stream
      */
-    public PDTransparencyGroup(COSStream stream, ResourceCache cache)
+    public PDTransparencyGroup(final COSStream stream, final ResourceCache cache)
     {
         super(stream, cache);
     }    
@@ -51,7 +51,7 @@ public class PDTransparencyGroup extends PDFormXObject
      * Creates a Transparency Group for writing, in the given document.
      * @param document The current document
      */
-    public PDTransparencyGroup(PDDocument document)
+    public PDTransparencyGroup(final PDDocument document)
     {
         super(document);
         // todo: set mandatory fields

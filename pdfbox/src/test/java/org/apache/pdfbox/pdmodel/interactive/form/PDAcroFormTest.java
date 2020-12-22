@@ -103,7 +103,7 @@ class PDAcroFormTest
     @Test
     void testFlatten() throws IOException
     {
-        File file = new File(OUT_DIR, "AlignmentTests-flattened.pdf");
+        final File file = new File(OUT_DIR, "AlignmentTests-flattened.pdf");
         try (PDDocument testPdf = Loader.loadPDF(new File(IN_DIR, "AlignmentTests.pdf")))
         {
             testPdf.getDocumentCatalog().getAcroForm().flatten();
@@ -111,7 +111,7 @@ class PDAcroFormTest
             testPdf.save(file);
         }
         // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        final TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
         if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             // don't fail, rendering is different on different systems, result must be viewed manually
@@ -128,13 +128,13 @@ class PDAcroFormTest
     @Test
     void testFlattenWidgetNoRef() throws IOException
     {
-        File file = new File(OUT_DIR, "AlignmentTests-flattened-noRef.pdf");
+        final File file = new File(OUT_DIR, "AlignmentTests-flattened-noRef.pdf");
 
         try (PDDocument testPdf = Loader.loadPDF(new File(IN_DIR, "AlignmentTests.pdf")))
         {
-            PDAcroForm acroFormToTest = testPdf.getDocumentCatalog().getAcroForm();
-            for (PDField field : acroFormToTest.getFieldTree()) {
-                for (PDAnnotationWidget widget : field.getWidgets()) {
+            final PDAcroForm acroFormToTest = testPdf.getDocumentCatalog().getAcroForm();
+            for (final PDField field : acroFormToTest.getFieldTree()) {
+                for (final PDAnnotationWidget widget : field.getWidgets()) {
                     widget.getCOSObject().removeItem(COSName.P);
                 }
             }
@@ -147,7 +147,7 @@ class PDAcroFormTest
             testPdf.save(file);
         }
         // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        final TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
         if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             // don't fail, rendering is different on different systems, result must be viewed manually
@@ -158,15 +158,15 @@ class PDAcroFormTest
     @Test
     void testFlattenSpecificFieldsOnly() throws IOException
     {
-        File file = new File(OUT_DIR, "AlignmentTests-flattened-specificFields.pdf");
+        final File file = new File(OUT_DIR, "AlignmentTests-flattened-specificFields.pdf");
         
-        List<PDField> fieldsToFlatten = new ArrayList<>();
+        final List<PDField> fieldsToFlatten = new ArrayList<>();
                 
         try (PDDocument testPdf = Loader.loadPDF(new File(IN_DIR, "AlignmentTests.pdf")))
         {
-            PDAcroForm acroFormToFlatten = testPdf.getDocumentCatalog().getAcroForm();
-            int numFieldsBeforeFlatten = acroFormToFlatten.getFields().size();
-            int numWidgetsBeforeFlatten = countWidgets(testPdf);
+            final PDAcroForm acroFormToFlatten = testPdf.getDocumentCatalog().getAcroForm();
+            final int numFieldsBeforeFlatten = acroFormToFlatten.getFields().size();
+            final int numWidgetsBeforeFlatten = countWidgets(testPdf);
             
             fieldsToFlatten.add(acroFormToFlatten.getField("AlignLeft-Border_Small-Filled"));
             fieldsToFlatten.add(acroFormToFlatten.getField("AlignLeft-Border_Medium-Filled"));
@@ -174,8 +174,8 @@ class PDAcroFormTest
             fieldsToFlatten.add(acroFormToFlatten.getField("AlignLeft-Border_Wide_Clipped-Filled"));
             
             acroFormToFlatten.flatten(fieldsToFlatten, true);
-            int numFieldsAfterFlatten = acroFormToFlatten.getFields().size();
-            int numWidgetsAfterFlatten = countWidgets(testPdf);
+            final int numFieldsAfterFlatten = acroFormToFlatten.getFields().size();
+            final int numWidgetsAfterFlatten = countWidgets(testPdf);
 
             assertEquals(numFieldsBeforeFlatten, numFieldsAfterFlatten + fieldsToFlatten.size());
             assertEquals(numWidgetsBeforeFlatten, numWidgetsAfterFlatten + fieldsToFlatten.size());
@@ -194,14 +194,14 @@ class PDAcroFormTest
     {
         try
         {
-            byte[] pdfBytes =  createAcroFormWithMissingResourceInformation();
+            final byte[] pdfBytes =  createAcroFormWithMissingResourceInformation();
             
             try (PDDocument pdfDocument = Loader.loadPDF(pdfBytes))
             {
                 // do a low level access to the AcroForm to avoid the generation of missing entries
-                PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
-                COSDictionary catalogDictionary = documentCatalog.getCOSObject();
-                COSDictionary acroFormDictionary = (COSDictionary) catalogDictionary.getDictionaryObject(COSName.ACRO_FORM);
+                final PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
+                final COSDictionary catalogDictionary = documentCatalog.getCOSObject();
+                final COSDictionary acroFormDictionary = (COSDictionary) catalogDictionary.getDictionaryObject(COSName.ACRO_FORM);
 
                 // ensure that the missing information has not been generated
                 assertNull(acroFormDictionary.getDictionaryObject(COSName.DA));
@@ -226,14 +226,14 @@ class PDAcroFormTest
     {
         try
         {
-            byte[] pdfBytes =  createAcroFormWithMissingResourceInformation();
+            final byte[] pdfBytes =  createAcroFormWithMissingResourceInformation();
 
             try (PDDocument pdfDocument = Loader.loadPDF(pdfBytes))
             {
-                PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
+                final PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
                 
                 // this call shall trigger the generation of missing information
-                PDAcroForm theAcroForm = documentCatalog.getAcroForm();
+                final PDAcroForm theAcroForm = documentCatalog.getAcroForm();
                 
                 // ensure that the missing information has been generated
                 // DA entry
@@ -241,7 +241,7 @@ class PDAcroFormTest
                 assertNotNull(theAcroForm.getDefaultResources());
                 
                 // DR entry
-                PDResources acroFormResources = theAcroForm.getDefaultResources();
+                final PDResources acroFormResources = theAcroForm.getDefaultResources();
                 assertNotNull(acroFormResources.getFont(COSName.getPDFName("Helv")));
                 assertEquals("Helvetica", acroFormResources.getFont(COSName.getPDFName("Helv")).getName());
                 assertNotNull(acroFormResources.getFont(COSName.getPDFName("ZaDb")));
@@ -265,14 +265,14 @@ class PDAcroFormTest
     {
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
 
-            PDAcroForm acroForm = new PDAcroForm(document);
+            final PDAcroForm acroForm = new PDAcroForm(document);
             doc.getDocumentCatalog().setAcroForm(acroForm);
             acroForm.setDefaultResources(new PDResources());
 
-            PDTextField textBox = new PDTextField(acroForm);
+            final PDTextField textBox = new PDTextField(acroForm);
             textBox.setPartialName("SampleField");
 
             // https://stackoverflow.com/questions/50609478/
@@ -280,8 +280,8 @@ class PDAcroFormTest
             textBox.setDefaultAppearance("/Helv 0 tf 0 g");
             acroForm.getFields().add(textBox);
 
-            PDAnnotationWidget widget = textBox.getWidgets().get(0);
-            PDRectangle rect = new PDRectangle(50, 750, 200, 20);
+            final PDAnnotationWidget widget = textBox.getWidgets().get(0);
+            final PDRectangle rect = new PDRectangle(50, 750, 200, 20);
             widget.setRectangle(rect);
             widget.setPage(page);
 
@@ -306,10 +306,10 @@ class PDAcroFormTest
     @Test
     void testAcroFormDefaultFonts() throws IOException
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage(PDRectangle.A4);
+            final PDPage page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
             PDAcroForm acroForm2 = new PDAcroForm(doc);
             doc.getDocumentCatalog().setAcroForm(acroForm2);
@@ -331,18 +331,18 @@ class PDAcroFormTest
             acroForm2 = doc.getDocumentCatalog().getAcroForm();
             defaultResources = acroForm2.getDefaultResources();
             
-            PDFont helv = defaultResources.getFont(COSName.HELV);
-            PDFont zadb = defaultResources.getFont(COSName.ZA_DB);
+            final PDFont helv = defaultResources.getFont(COSName.HELV);
+            final PDFont zadb = defaultResources.getFont(COSName.ZA_DB);
             assertNotNull(helv);
             assertNotNull(zadb);
             doc.save(baos);
         }
         try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
         {
-            PDAcroForm acroForm2 = doc.getDocumentCatalog().getAcroForm();
-            PDResources defaultResources = acroForm2.getDefaultResources();
-            PDFont helv = defaultResources.getFont(COSName.HELV);
-            PDFont zadb = defaultResources.getFont(COSName.ZA_DB);
+            final PDAcroForm acroForm2 = doc.getDocumentCatalog().getAcroForm();
+            final PDResources defaultResources = acroForm2.getDefaultResources();
+            final PDFont helv = defaultResources.getFont(COSName.HELV);
+            final PDFont zadb = defaultResources.getFont(COSName.ZA_DB);
             assertNotNull(helv);
             assertNotNull(zadb);
             // make sure that font wasn't overwritten
@@ -359,11 +359,11 @@ class PDAcroFormTest
     @Test
     void testIllegalFieldsDefinition() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12866226/D1790B.PDF";
+        final String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12866226/D1790B.PDF";
 
         try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
 
             assertDoesNotThrow(() -> catalog.getAcroForm(), "Getting the AcroForm shall not throw an exception");
         }
@@ -380,20 +380,20 @@ class PDAcroFormTest
     private byte[] createAcroFormWithMissingResourceInformation() throws IOException
     {
         try (PDDocument tmpDocument = new PDDocument();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream())
+             final ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             tmpDocument.addPage(page);
 
-            PDAcroForm newAcroForm = new PDAcroForm(document);
+            final PDAcroForm newAcroForm = new PDAcroForm(document);
             tmpDocument.getDocumentCatalog().setAcroForm(newAcroForm);
 
-            PDTextField textBox = new PDTextField(newAcroForm);
+            final PDTextField textBox = new PDTextField(newAcroForm);
             textBox.setPartialName("SampleField");
             newAcroForm.getFields().add(textBox);
 
-            PDAnnotationWidget widget = textBox.getWidgets().get(0);
-            PDRectangle rect = new PDRectangle(50, 750, 200, 20);
+            final PDAnnotationWidget widget = textBox.getWidgets().get(0);
+            final PDRectangle rect = new PDRectangle(50, 750, 200, 20);
             widget.setRectangle(rect);
             widget.setPage(page);
 
@@ -407,14 +407,14 @@ class PDAcroFormTest
         }
     }
     
-    private int countWidgets(PDDocument documentToTest)
+    private int countWidgets(final PDDocument documentToTest)
     {
         int count = 0;
-        for (PDPage page : documentToTest.getPages())
+        for (final PDPage page : documentToTest.getPages())
         {
             try
             {
-                for (PDAnnotation annotation : page.getAnnotations())
+                for (final PDAnnotation annotation : page.getAnnotations())
                 {
                     if (annotation instanceof PDAnnotationWidget)
                     {

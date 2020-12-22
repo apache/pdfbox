@@ -94,7 +94,7 @@ public class AddValidationInformation
      * @param outFile output PDF file
      * @throws IOException if the input file could not be read
      */
-    public void validateSignature(File inFile, File outFile) throws IOException
+    public void validateSignature(final File inFile, final File outFile) throws IOException
     {
         if (inFile == null || !inFile.exists())
         {
@@ -111,9 +111,9 @@ public class AddValidationInformation
         }
 
         try (PDDocument doc = Loader.loadPDF(inFile);
-             FileOutputStream fos = new FileOutputStream(outFile))
+             final FileOutputStream fos = new FileOutputStream(outFile))
         {
-            int accessPermissions = SigUtils.getMDPPermission(doc);
+            final int accessPermissions = SigUtils.getMDPPermission(doc);
             if (accessPermissions == 1)
             {
                 System.out.println("PDF is certified to forbid changes, "
@@ -134,13 +134,13 @@ public class AddValidationInformation
      * @param output where to write the changed document
      * @throws IOException
      */
-    private void doValidation(String filename, OutputStream output) throws IOException
+    private void doValidation(final String filename, final OutputStream output) throws IOException
     {
         certInformationHelper = new CertInformationCollector();
         CertSignatureInformation certInfo = null;
         try
         {
-            PDSignature signature = SigUtils.getLastRelevantSignature(document);
+            final PDSignature signature = SigUtils.getLastRelevantSignature(document);
             if (signature != null)
             {
                 certInfo = certInformationHelper.getLastCertInfo(signature, filename);
@@ -157,11 +157,11 @@ public class AddValidationInformation
                     "No Certificate information or signature found in the given document");
         }
 
-        PDDocumentCatalog docCatalog = document.getDocumentCatalog();
-        COSDictionary catalog = docCatalog.getCOSObject();
+        final PDDocumentCatalog docCatalog = document.getDocumentCatalog();
+        final COSDictionary catalog = docCatalog.getCOSObject();
         catalog.setNeedToBeUpdated(true);
 
-        COSDictionary dss = getOrCreateDictionaryEntry(COSDictionary.class, catalog, "DSS");
+        final COSDictionary dss = getOrCreateDictionaryEntry(COSDictionary.class, catalog, "DSS");
 
         addExtensions(docCatalog);
 
@@ -191,11 +191,11 @@ public class AddValidationInformation
      * @return a Element of given class, new or existing
      * @throws IOException when the type of the element is wrong
      */
-    private static <T extends COSBase & COSUpdateInfo> T getOrCreateDictionaryEntry(Class<T> clazz,
-            COSDictionary parent, String name) throws IOException
+    private static <T extends COSBase & COSUpdateInfo> T getOrCreateDictionaryEntry(final Class<T> clazz,
+                                                                                    final COSDictionary parent, final String name) throws IOException
     {
-        T result;
-        COSBase element = parent.getDictionaryObject(name);
+        final T result;
+        final COSBase element = parent.getDictionaryObject(name);
         if (element != null && clazz.isInstance(element))
         {
             result = clazz.cast(element);
@@ -229,9 +229,9 @@ public class AddValidationInformation
      * chains.
      * @throws IOException
      */
-    private void addRevocationData(CertSignatureInformation certInfo) throws IOException
+    private void addRevocationData(final CertSignatureInformation certInfo) throws IOException
     {
-        COSDictionary vri = new COSDictionary();
+        final COSDictionary vri = new COSDictionary();
         vriBase.setItem(certInfo.getSignatureHash(), vri);
 
         updateVRI(certInfo, vri);
@@ -252,7 +252,7 @@ public class AddValidationInformation
      * chains.
      * @throws IOException when failed to fetch an revocation data.
      */
-    private void addRevocationDataRecursive(CertSignatureInformation certInfo) throws IOException
+    private void addRevocationDataRecursive(final CertSignatureInformation certInfo) throws IOException
     {
         if (certInfo.isSelfSigned())
         {
@@ -301,7 +301,7 @@ public class AddValidationInformation
      * @return true when the OCSP data has successfully been fetched and added
      * @throws IOException when Certificate is revoked.
      */
-    private boolean fetchOcspData(CertSignatureInformation certInfo) throws IOException
+    private boolean fetchOcspData(final CertSignatureInformation certInfo) throws IOException
     {
         try
         {
@@ -326,7 +326,7 @@ public class AddValidationInformation
      * @throws IOException when failed to fetch, because no validation data could be fetched for
      * data.
      */
-    private void fetchCrlData(CertSignatureInformation certInfo) throws IOException
+    private void fetchCrlData(final CertSignatureInformation certInfo) throws IOException
     {
         try
         {
@@ -348,7 +348,7 @@ public class AddValidationInformation
      * @throws CertificateProccessingException
      * @throws RevokedCertificateException
      */
-    private void addOcspData(CertSignatureInformation certInfo) throws IOException, OCSPException,
+    private void addOcspData(final CertSignatureInformation certInfo) throws IOException, OCSPException,
             CertificateProccessingException, RevokedCertificateException
     {
         if (ocspChecked.contains(certInfo.getCertificate()))
@@ -356,18 +356,18 @@ public class AddValidationInformation
             // This certificate has been OCSP-checked before
             return;
         }
-        OcspHelper ocspHelper = new OcspHelper(
+        final OcspHelper ocspHelper = new OcspHelper(
                 certInfo.getCertificate(),
                 signDate.getTime(),
                 certInfo.getIssuerCertificate(),
                 new HashSet<>(certInformationHelper.getCertificateSet()),
                 certInfo.getOcspUrl());
-        OCSPResp ocspResp = ocspHelper.getResponseOcsp();
+        final OCSPResp ocspResp = ocspHelper.getResponseOcsp();
         ocspChecked.add(certInfo.getCertificate());
-        BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
-        X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
+        final BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
+        final X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
         certInformationHelper.addAllCertsFromHolders(basicResponse.getCerts());
-        byte[] signatureHash;
+        final byte[] signatureHash;
         try
         {
             signatureHash = MessageDigest.getInstance("SHA-1").digest(basicResponse.getSignature());
@@ -376,16 +376,16 @@ public class AddValidationInformation
         {
             throw new CertificateProccessingException(ex);
         }
-        String signatureHashHex = Hex.getString(signatureHash);
+        final String signatureHashHex = Hex.getString(signatureHash);
 
         if (!vriBase.containsKey(signatureHashHex))
         {
-            COSArray savedCorrespondingOCSPs = correspondingOCSPs;
-            COSArray savedCorrespondingCRLs = correspondingCRLs;
+            final COSArray savedCorrespondingOCSPs = correspondingOCSPs;
+            final COSArray savedCorrespondingCRLs = correspondingCRLs;
 
-            COSDictionary vri = new COSDictionary();
+            final COSDictionary vri = new COSDictionary();
             vriBase.setItem(signatureHashHex, vri);
-            CertSignatureInformation ocspCertInfo = certInformationHelper.getCertInfo(ocspResponderCertificate);
+            final CertSignatureInformation ocspCertInfo = certInformationHelper.getCertInfo(ocspResponderCertificate);
 
             updateVRI(ocspCertInfo, vri);
 
@@ -393,9 +393,9 @@ public class AddValidationInformation
             correspondingCRLs = savedCorrespondingCRLs;
         }
 
-        byte[] ocspData = ocspResp.getEncoded();
+        final byte[] ocspData = ocspResp.getEncoded();
 
-        COSStream ocspStream = writeDataToStream(ocspData);
+        final COSStream ocspStream = writeDataToStream(ocspData);
         ocsps.add(ocspStream);
         if (correspondingOCSPs != null)
         {
@@ -413,15 +413,15 @@ public class AddValidationInformation
      * @throws GeneralSecurityException
      * @throws CertificateVerificationException 
      */
-    private void addCrlRevocationInfo(CertSignatureInformation certInfo)
+    private void addCrlRevocationInfo(final CertSignatureInformation certInfo)
             throws IOException, RevokedCertificateException, GeneralSecurityException,
             CertificateVerificationException
     {
-        X509CRL crl = CRLVerifier.downloadCRLFromWeb(certInfo.getCrlUrl());
+        final X509CRL crl = CRLVerifier.downloadCRLFromWeb(certInfo.getCrlUrl());
         X509Certificate issuerCertificate = certInfo.getIssuerCertificate();
 
         // find the issuer certificate (usually issuer of signature certificate)
-        for (X509Certificate certificate : certInformationHelper.getCertificateSet())
+        for (final X509Certificate certificate : certInformationHelper.getCertificateSet())
         {
             if (certificate.getSubjectX500Principal().equals(crl.getIssuerX500Principal()))
             {
@@ -431,13 +431,13 @@ public class AddValidationInformation
         }
         crl.verify(issuerCertificate.getPublicKey(), SecurityProvider.getProvider().getName());
         CRLVerifier.checkRevocation(crl, certInfo.getCertificate(), signDate.getTime(), certInfo.getCrlUrl());
-        COSStream crlStream = writeDataToStream(crl.getEncoded());
+        final COSStream crlStream = writeDataToStream(crl.getEncoded());
         crls.add(crlStream);
         if (correspondingCRLs != null)
         {
             correspondingCRLs.add(crlStream);
 
-            byte[] signatureHash;
+            final byte[] signatureHash;
             try
             {
                 signatureHash = MessageDigest.getInstance("SHA-1").digest(crl.getSignature());
@@ -446,17 +446,17 @@ public class AddValidationInformation
             {
                 throw new CertificateVerificationException(ex.getMessage(), ex);
             }
-            String signatureHashHex = Hex.getString(signatureHash);
+            final String signatureHashHex = Hex.getString(signatureHash);
 
             if (!vriBase.containsKey(signatureHashHex))
             {
-                COSArray savedCorrespondingOCSPs = correspondingOCSPs;
-                COSArray savedCorrespondingCRLs = correspondingCRLs;
+                final COSArray savedCorrespondingOCSPs = correspondingOCSPs;
+                final COSArray savedCorrespondingCRLs = correspondingCRLs;
 
-                COSDictionary vri = new COSDictionary();
+                final COSDictionary vri = new COSDictionary();
                 vriBase.setItem(signatureHashHex, vri);
 
-                CertSignatureInformation crlCertInfo;
+                final CertSignatureInformation crlCertInfo;
                 try
                 {
                     crlCertInfo = certInformationHelper.getCertInfo(issuerCertificate);
@@ -475,7 +475,7 @@ public class AddValidationInformation
         foundRevocationInformation.add(certInfo.getCertificate());
     }
 
-    private void updateVRI(CertSignatureInformation certInfo, COSDictionary vri) throws IOException
+    private void updateVRI(final CertSignatureInformation certInfo, final COSDictionary vri) throws IOException
     {
         if (certInfo.getCertificate().getExtensionValue(OCSPObjectIdentifiers.id_pkix_ocsp_nocheck.getId()) == null)
         {
@@ -492,14 +492,14 @@ public class AddValidationInformation
             }
         }
 
-        COSArray correspondingCerts = new COSArray();
+        final COSArray correspondingCerts = new COSArray();
         CertSignatureInformation ci = certInfo;
         do
         {
-            X509Certificate cert = ci.getCertificate();
+            final X509Certificate cert = ci.getCertificate();
             try
             {
-                COSStream certStream = writeDataToStream(cert.getEncoded());
+                final COSStream certStream = writeDataToStream(cert.getEncoded());
                 correspondingCerts.add(certStream);
                 certs.add(certStream); // may lead to duplicate certificates. Important?
             }
@@ -531,9 +531,9 @@ public class AddValidationInformation
     {
         try
         {
-            for (X509Certificate cert : certInformationHelper.getCertificateSet())
+            for (final X509Certificate cert : certInformationHelper.getCertificateSet())
             {
-                COSStream stream = writeDataToStream(cert.getEncoded());
+                final COSStream stream = writeDataToStream(cert.getEncoded());
                 certs.add(stream);
             }
         }
@@ -550,9 +550,9 @@ public class AddValidationInformation
      * @return COSStream a COSStream object that can be added to the document
      * @throws IOException
      */
-    private COSStream writeDataToStream(byte[] data) throws IOException
+    private COSStream writeDataToStream(final byte[] data) throws IOException
     {
-        COSStream stream = document.getDocument().createCOSStream();
+        final COSStream stream = document.getDocument().createCOSStream();
         try (OutputStream os = stream.createOutputStream(COSName.FLATE_DECODE))
         {
             os.write(data);
@@ -566,13 +566,13 @@ public class AddValidationInformation
      *
      * @param catalog to add Extensions into
      */
-    private void addExtensions(PDDocumentCatalog catalog)
+    private void addExtensions(final PDDocumentCatalog catalog)
     {
-        COSDictionary dssExtensions = new COSDictionary();
+        final COSDictionary dssExtensions = new COSDictionary();
         dssExtensions.setDirect(true);
         catalog.getCOSObject().setItem("Extensions", dssExtensions);
 
-        COSDictionary adbeExtension = new COSDictionary();
+        final COSDictionary adbeExtension = new COSDictionary();
         adbeExtension.setDirect(true);
         dssExtensions.setItem("ADBE", adbeExtension);
 
@@ -582,7 +582,7 @@ public class AddValidationInformation
         catalog.setVersion("1.7");
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 1)
         {
@@ -594,13 +594,13 @@ public class AddValidationInformation
         Security.addProvider(SecurityProvider.getProvider());
 
         // add ocspInformation
-        AddValidationInformation addOcspInformation = new AddValidationInformation();
+        final AddValidationInformation addOcspInformation = new AddValidationInformation();
 
-        File inFile = new File(args[0]);
-        String name = inFile.getName();
-        String substring = name.substring(0, name.lastIndexOf('.'));
+        final File inFile = new File(args[0]);
+        final String name = inFile.getName();
+        final String substring = name.substring(0, name.lastIndexOf('.'));
 
-        File outFile = new File(inFile.getParent(), substring + "_LTV.pdf");
+        final File outFile = new File(inFile.getParent(), substring + "_LTV.pdf");
         addOcspInformation.validateSignature(inFile, outFile);
     }
 

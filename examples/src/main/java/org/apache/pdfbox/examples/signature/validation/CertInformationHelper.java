@@ -47,11 +47,11 @@ public class CertInformationHelper
      * @param content to be hashed
      * @return SHA-1 hash String
      */
-    protected static String getSha1Hash(byte[] content)
+    protected static String getSha1Hash(final byte[] content)
     {
         try
         {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            final MessageDigest md = MessageDigest.getInstance("SHA-1");
             return Hex.getString(md.digest(content));
         }
         catch (NoSuchAlgorithmException e)
@@ -69,28 +69,28 @@ public class CertInformationHelper
      * @param certInfo where to put the found values
      * @throws IOException when there is a problem with the extensionValue
      */
-    protected static void getAuthorityInfoExtensionValue(byte[] extensionValue,
-            CertSignatureInformation certInfo) throws IOException
+    protected static void getAuthorityInfoExtensionValue(final byte[] extensionValue,
+                                                         final CertSignatureInformation certInfo) throws IOException
     {
-        ASN1Sequence asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(extensionValue);
-        Enumeration<?> objects = asn1Seq.getObjects();
+        final ASN1Sequence asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(extensionValue);
+        final Enumeration<?> objects = asn1Seq.getObjects();
         while (objects.hasMoreElements())
         {
             // AccessDescription
-            ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
-            ASN1Encodable oid = obj.getObjectAt(0);
+            final ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
+            final ASN1Encodable oid = obj.getObjectAt(0);
             // accessLocation
-            ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
+            final ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
 
             if (X509ObjectIdentifiers.id_ad_ocsp.equals(oid)
                     && location.getTagNo() == GeneralName.uniformResourceIdentifier)
             {
-                ASN1OctetString url = (ASN1OctetString) location.getObject();
+                final ASN1OctetString url = (ASN1OctetString) location.getObject();
                 certInfo.setOcspUrl(new String(url.getOctets()));
             }
             else if (X509ObjectIdentifiers.id_ad_caIssuers.equals(oid))
             {
-                ASN1OctetString uri = (ASN1OctetString) location.getObject();
+                final ASN1OctetString uri = (ASN1OctetString) location.getObject();
                 certInfo.setIssuerUrl(new String(uri.getOctets()));
             }
         }
@@ -104,17 +104,17 @@ public class CertInformationHelper
      * @return first CRL- URL or null
      * @throws IOException when there is a problem with the extensionValue
      */
-    protected static String getCrlUrlFromExtensionValue(byte[] extensionValue) throws IOException
+    protected static String getCrlUrlFromExtensionValue(final byte[] extensionValue) throws IOException
     {
-        ASN1Sequence asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(extensionValue);
-        Enumeration<?> objects = asn1Seq.getObjects();
+        final ASN1Sequence asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(extensionValue);
+        final Enumeration<?> objects = asn1Seq.getObjects();
 
         while (objects.hasMoreElements())
         {
-            Object obj = objects.nextElement();
+            final Object obj = objects.nextElement();
             if (obj instanceof ASN1Sequence)
             {
-                String url = extractCrlUrlFromSequence((ASN1Sequence) obj);
+                final String url = extractCrlUrlFromSequence((ASN1Sequence) obj);
                 if (url != null)
                 {
                     return url;
@@ -124,7 +124,7 @@ public class CertInformationHelper
         return null;
     }
 
-    private static String extractCrlUrlFromSequence(ASN1Sequence sequence)
+    private static String extractCrlUrlFromSequence(final ASN1Sequence sequence)
     {
         ASN1TaggedObject taggedObject = (ASN1TaggedObject) sequence.getObjectAt(0);
         taggedObject = (ASN1TaggedObject) taggedObject.getObject();
@@ -135,7 +135,7 @@ public class CertInformationHelper
         else if (taggedObject.getObject() instanceof ASN1Sequence)
         {
             // multiple URLs (we take the first)
-            ASN1Sequence seq = (ASN1Sequence) taggedObject.getObject();
+            final ASN1Sequence seq = (ASN1Sequence) taggedObject.getObject();
             if (seq.getObjectAt(0) instanceof ASN1TaggedObject)
             {
                 taggedObject = (ASN1TaggedObject) seq.getObjectAt(0);
@@ -151,8 +151,8 @@ public class CertInformationHelper
         }
         if (taggedObject.getObject() instanceof ASN1OctetString)
         {
-            ASN1OctetString uri = (ASN1OctetString) taggedObject.getObject();
-            String url = new String(uri.getOctets());
+            final ASN1OctetString uri = (ASN1OctetString) taggedObject.getObject();
+            final String url = new String(uri.getOctets());
 
             // return first http(s)-Url for crl
             if (url.startsWith("http"))

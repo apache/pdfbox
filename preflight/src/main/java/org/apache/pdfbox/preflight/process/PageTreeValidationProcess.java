@@ -39,12 +39,12 @@ public class PageTreeValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
-        PDDocumentCatalog catalog = context.getDocument().getDocumentCatalog();
+        final PDDocumentCatalog catalog = context.getDocument().getDocumentCatalog();
         if (catalog != null)
         {
-            COSDictionary catalogDict = catalog.getCOSObject();
+            final COSDictionary catalogDict = catalog.getCOSObject();
             if (!(catalogDict.getDictionaryObject(COSName.PAGES) instanceof COSDictionary))
             {
                 addValidationError(context, new ValidationError(ERROR_PDF_PROCESSING_MISSING, 
@@ -52,7 +52,7 @@ public class PageTreeValidationProcess extends AbstractProcess
                 return;
             }
             int p = 0;
-            for (PDPage page : context.getDocument().getPages())
+            for (final PDPage page : context.getDocument().getPages())
             {
                 context.setCurrentPageNumber(p);
                 validatePage(context, page);
@@ -75,7 +75,7 @@ public class PageTreeValidationProcess extends AbstractProcess
         }
     }
 
-    private void validatePage(PreflightContext context, PDPage page) throws ValidationException
+    private void validatePage(final PreflightContext context, final PDPage page) throws ValidationException
     {
         ContextHelper.validateElement(context, page, PAGE_PROCESS);
     }

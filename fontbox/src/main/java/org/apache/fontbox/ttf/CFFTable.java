@@ -33,7 +33,7 @@ public class CFFTable extends TTFTable
 
     private CFFFont cffFont;
 
-    CFFTable(TrueTypeFont font)
+    CFFTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -46,11 +46,11 @@ public class CFFTable extends TTFTable
      * @throws java.io.IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
-        byte[] bytes = data.read((int)getLength());
+        final byte[] bytes = data.read((int)getLength());
 
-        CFFParser parser = new CFFParser();
+        final CFFParser parser = new CFFParser();
         cffFont = parser.parse(bytes, new CFFBytesource(font)).get(0);
 
         initialized = true;
@@ -71,7 +71,7 @@ public class CFFTable extends TTFTable
     {
         private final TrueTypeFont ttf;
         
-        CFFBytesource(TrueTypeFont ttf)
+        CFFBytesource(final TrueTypeFont ttf)
         {
            this.ttf = ttf; 
         }

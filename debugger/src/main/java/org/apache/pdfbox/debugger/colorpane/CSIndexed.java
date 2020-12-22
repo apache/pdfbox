@@ -49,7 +49,7 @@ public class CSIndexed
      * @param array COSArray instance for Indexed color space.
      * @throws java.io.IOException
      */
-    public CSIndexed(COSArray array) throws IOException
+    public CSIndexed(final COSArray array) throws IOException
     {
         indexed = new PDIndexed(array);
         colorCount = getHival(array) + 1;
@@ -63,38 +63,38 @@ public class CSIndexed
      */
     private IndexedColorant[] getColorantData()
     {
-        IndexedColorant[] colorants = new IndexedColorant[colorCount];
+        final IndexedColorant[] colorants = new IndexedColorant[colorCount];
         for (int i = 0; i < colorCount; i++)
         {
-            IndexedColorant colorant = new IndexedColorant();
+            final IndexedColorant colorant = new IndexedColorant();
             colorant.setIndex(i);
 
-            float[] rgbValues = indexed.toRGB(new float[]{i});
+            final float[] rgbValues = indexed.toRGB(new float[]{i});
             colorant.setRgbValues(rgbValues);
             colorants[i] = colorant;
         }
         return colorants;
     }
 
-    private void initUI(IndexedColorant[] colorants)
+    private void initUI(final IndexedColorant[] colorants)
     {
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         panel.setPreferredSize(new Dimension(300, 500));
 
-        JLabel colorSpaceLabel = new JLabel("Indexed colorspace");
+        final JLabel colorSpaceLabel = new JLabel("Indexed colorspace");
         colorSpaceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         colorSpaceLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
-        JPanel colorspaceLabelPanel = new JPanel();
+        final JPanel colorspaceLabelPanel = new JPanel();
         colorspaceLabelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         colorspaceLabelPanel.add(colorSpaceLabel);
 
-        JLabel colorCountLabel = new JLabel(" Total Color Count: " + colorCount);
+        final JLabel colorCountLabel = new JLabel(" Total Color Count: " + colorCount);
         colorCountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         colorCountLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
 
-        IndexedTableModel tableModel = new IndexedTableModel(colorants);
-        JTable table = new JTable(tableModel);
+        final IndexedTableModel tableModel = new IndexedTableModel(colorants);
+        final JTable table = new JTable(tableModel);
         table.setDefaultRenderer(Color.class, new ColorBarCellRenderer());
         table.setRowHeight(40);
         table.getColumnModel().getColumn(0).setMinWidth(30);
@@ -102,16 +102,16 @@ public class CSIndexed
         table.getColumnModel().getColumn(1).setMinWidth(100);
         table.getColumnModel().getColumn(1).setMaxWidth(100);
 
-        JScrollPane scrollPane = new JScrollPane();
+        final JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(table);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        Box box = Box.createVerticalBox();
+        final Box box = Box.createVerticalBox();
         box.add(colorCountLabel);
         box.add(scrollPane);
         box.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        final GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weighty = 0.05;
@@ -139,9 +139,9 @@ public class CSIndexed
         return panel;
     }
 
-    private int getHival(COSArray array)
+    private int getHival(final COSArray array)
     {
-        int hival = ((COSNumber) array.getObject(2).getCOSObject()).intValue();
+        final int hival = ((COSNumber) array.getObject(2).getCOSObject()).intValue();
         return Math.min(hival, 255);
     }
 }

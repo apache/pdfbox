@@ -45,9 +45,9 @@ public final class GlyphList
     /**
      * Loads a glyph list from disk.
      */
-    private static GlyphList load(String filename, int numberOfEntries)
+    private static GlyphList load(final String filename, final int numberOfEntries)
     {
-        String path = "/org/apache/pdfbox/resources/glyphlist/" + filename;
+        final String path = "/org/apache/pdfbox/resources/glyphlist/" + filename;
         //no need to use a BufferedInputSteam here, as GlyphList uses a BufferedReader
         try (InputStream resourceAsStream = GlyphList.class.getResourceAsStream(path))
         {
@@ -68,7 +68,7 @@ public final class GlyphList
         // not supported in PDFBox 2.0, but we issue a warning, see PDFBOX-2379
         try
         {
-            String location = System.getProperty("glyphlist_ext");
+            final String location = System.getProperty("glyphlist_ext");
             if (location != null)
             {
                 throw new UnsupportedOperationException("glyphlist_ext is no longer supported, "
@@ -112,7 +112,7 @@ public final class GlyphList
      * @param input glyph list in Adobe format
      * @throws IOException if the glyph list could not be read
      */
-    public GlyphList(InputStream input, int numberOfEntries) throws IOException
+    public GlyphList(final InputStream input, final int numberOfEntries) throws IOException
     {
         nameToUnicode = new HashMap<>(numberOfEntries);
         unicodeToName = new HashMap<>(numberOfEntries);
@@ -126,30 +126,30 @@ public final class GlyphList
      * @param input glyph list in Adobe format
      * @throws IOException if the glyph list could not be read
      */
-    public GlyphList(GlyphList glyphList, InputStream input) throws IOException
+    public GlyphList(final GlyphList glyphList, final InputStream input) throws IOException
     {
         nameToUnicode = new HashMap<>(glyphList.nameToUnicode);
         unicodeToName = new HashMap<>(glyphList.unicodeToName);
         loadList(input);
     }
 
-    private void loadList(InputStream input) throws IOException
+    private void loadList(final InputStream input) throws IOException
     {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(input, StandardCharsets.ISO_8859_1)))
         {
             while (in.ready())
             {
-                String line = in.readLine();
+                final String line = in.readLine();
                 if (line != null && !line.startsWith("#"))
                 {
-                    String[] parts = line.split(";");
+                    final String[] parts = line.split(";");
                     if (parts.length < 2)
                     {
                         throw new IOException("Invalid glyph list entry: " + line);
                     }
 
-                    String name = parts[0];
-                    String[] unicodeList = parts[1].split(" ");
+                    final String name = parts[0];
+                    final String[] unicodeList = parts[1].split(" ");
 
                     if (nameToUnicode.containsKey(name))
                     {
@@ -157,13 +157,13 @@ public final class GlyphList
                                  nameToUnicode.get(name));
                     }
 
-                    int[] codePoints = new int[unicodeList.length];
+                    final int[] codePoints = new int[unicodeList.length];
                     int index = 0;
-                    for (String hex : unicodeList)
+                    for (final String hex : unicodeList)
                     {
                         codePoints[index++] = Integer.parseInt(hex, 16);
                     }
-                    String string = new String(codePoints, 0 , codePoints.length);
+                    final String string = new String(codePoints, 0 , codePoints.length);
 
                     // forward mapping
                     nameToUnicode.put(name, string);
@@ -192,9 +192,9 @@ public final class GlyphList
      * @param codePoint Unicode code point
      * @return PostScript glyph name, or ".notdef"
      */
-    public String codePointToName(int codePoint)
+    public String codePointToName(final int codePoint)
     {
-        String name = unicodeToName.get(new String(new int[] { codePoint }, 0 , 1));
+        final String name = unicodeToName.get(new String(new int[] { codePoint }, 0 , 1));
         if (name == null)
         {
             return ".notdef";
@@ -208,9 +208,9 @@ public final class GlyphList
      * @param unicodeSequence sequence of Unicode characters
      * @return PostScript glyph name, or ".notdef"
      */
-    public String sequenceToName(String unicodeSequence)
+    public String sequenceToName(final String unicodeSequence)
     {
-        String name = unicodeToName.get(unicodeSequence);
+        final String name = unicodeToName.get(unicodeSequence);
         if (name == null)
         {
             return ".notdef";
@@ -224,7 +224,7 @@ public final class GlyphList
      * @param name PostScript glyph name
      * @return Unicode character(s), or null.
      */
-    public String toUnicode(String name)
+    public String toUnicode(final String name)
     {
         if (name == null)
         {
@@ -249,13 +249,13 @@ public final class GlyphList
             else if (name.startsWith("uni") && name.length() == 7)
             {
                 // test for Unicode name in the format uniXXXX where X is hex
-                int nameLength = name.length();
-                StringBuilder uniStr = new StringBuilder();
+                final int nameLength = name.length();
+                final StringBuilder uniStr = new StringBuilder();
                 try
                 {
                     for (int chPos = 3; chPos + 4 <= nameLength; chPos += 4)
                     {
-                        int codePoint = Integer.parseInt(name.substring(chPos, chPos + 4), 16);
+                        final int codePoint = Integer.parseInt(name.substring(chPos, chPos + 4), 16);
                         if (codePoint > 0xD7FF && codePoint < 0xE000)
                         {
                             LOG.warn("Unicode character name with disallowed code area: " + name);
@@ -277,7 +277,7 @@ public final class GlyphList
                 // test for an alternate Unicode name representation uXXXX
                 try
                 {
-                    int codePoint = Integer.parseInt(name.substring(1), 16);
+                    final int codePoint = Integer.parseInt(name.substring(1), 16);
                     if (codePoint > 0xD7FF && codePoint < 0xE000)
                     {
                         LOG.warn("Unicode character name with disallowed code area: " + name);

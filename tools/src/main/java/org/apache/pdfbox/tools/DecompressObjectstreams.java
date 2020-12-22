@@ -66,12 +66,12 @@ public final class DecompressObjectstreams implements Callable<Integer>
      *
      * @param args The command-line arguments.
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new DecompressObjectstreams()).execute(args);
+        final int exitCode = new CommandLine(new DecompressObjectstreams()).execute(args);
         System.exit(exitCode);
     }
 

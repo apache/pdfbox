@@ -100,7 +100,7 @@ public class PDDocument implements Closeable
     {
     	try
         {
-            WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, 1, 1, 3, new Point(0, 0));
+            final WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, 1, 1, 3, new Point(0, 0));
             PDDeviceRGB.INSTANCE.toRGBImage(raster);
         }
         catch (IOException ex)
@@ -165,26 +165,26 @@ public class PDDocument implements Closeable
      *
      * @param memUsageSetting defines how memory is used for buffering PDF streams 
      */
-    public PDDocument(MemoryUsageSetting memUsageSetting)
+    public PDDocument(final MemoryUsageSetting memUsageSetting)
     {
         document = new COSDocument(memUsageSetting);
         pdfSource = null;
 
         // First we need a trailer
-        COSDictionary trailer = new COSDictionary();
+        final COSDictionary trailer = new COSDictionary();
         document.setTrailer(trailer);
 
         // Next we need the root dictionary.
-        COSDictionary rootDictionary = new COSDictionary();
+        final COSDictionary rootDictionary = new COSDictionary();
         trailer.setItem(COSName.ROOT, rootDictionary);
         rootDictionary.setItem(COSName.TYPE, COSName.CATALOG);
         rootDictionary.setItem(COSName.VERSION, COSName.getPDFName("1.4"));
 
         // next we need the pages tree structure
-        COSDictionary pages = new COSDictionary();
+        final COSDictionary pages = new COSDictionary();
         rootDictionary.setItem(COSName.PAGES, pages);
         pages.setItem(COSName.TYPE, COSName.PAGES);
-        COSArray kidsArray = new COSArray();
+        final COSArray kidsArray = new COSArray();
         pages.setItem(COSName.KIDS, kidsArray);
         pages.setItem(COSName.COUNT, COSInteger.ZERO);
     }
@@ -194,7 +194,7 @@ public class PDDocument implements Closeable
      * 
      * @param doc The COSDocument that this document wraps.
      */
-    public PDDocument(COSDocument doc)
+    public PDDocument(final COSDocument doc)
     {
         this(doc, null);
     }
@@ -205,7 +205,7 @@ public class PDDocument implements Closeable
      * @param doc The COSDocument that this document wraps.
      * @param source input representing the pdf
      */
-    public PDDocument(COSDocument doc, RandomAccessRead source)
+    public PDDocument(final COSDocument doc, final RandomAccessRead source)
     {
         this(doc, source, null);
     }
@@ -218,7 +218,7 @@ public class PDDocument implements Closeable
      * @param permission he access permissions of the pdf
      * 
      */
-    public PDDocument(COSDocument doc, RandomAccessRead source, AccessPermission permission)
+    public PDDocument(final COSDocument doc, final RandomAccessRead source, final AccessPermission permission)
     {
         document = doc;
         pdfSource = source;
@@ -231,7 +231,7 @@ public class PDDocument implements Closeable
      * 
      * @param page The page to add to the document.
      */
-    public void addPage(PDPage page)
+    public void addPage(final PDPage page)
     {
         getPages().add(page);
     }
@@ -249,7 +249,7 @@ public class PDDocument implements Closeable
      * @throws IllegalStateException if one attempts to add several signature
      * fields.
      */
-    public void addSignature(PDSignature sigObject) throws IOException
+    public void addSignature(final PDSignature sigObject) throws IOException
     {
         addSignature(sigObject, new SignatureOptions());
     }
@@ -268,7 +268,7 @@ public class PDDocument implements Closeable
      * @throws IllegalStateException if one attempts to add several signature
      * fields.
      */
-    public void addSignature(PDSignature sigObject, SignatureOptions options) throws IOException
+    public void addSignature(final PDSignature sigObject, final SignatureOptions options) throws IOException
     {
         addSignature(sigObject, null, options);
     }
@@ -286,7 +286,7 @@ public class PDDocument implements Closeable
      * @throws IllegalStateException if one attempts to add several signature
      * fields.
      */
-    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) throws IOException
+    public void addSignature(final PDSignature sigObject, final SignatureInterface signatureInterface) throws IOException
     {
         addSignature(sigObject, signatureInterface, new SignatureOptions());
     }
@@ -307,8 +307,8 @@ public class PDDocument implements Closeable
      * @throws IllegalStateException if one attempts to add several signature
      * fields.
      */
-    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface,
-                             SignatureOptions options) throws IOException
+    public void addSignature(final PDSignature sigObject, final SignatureInterface signatureInterface,
+                             final SignatureOptions options) throws IOException
     {
         if (signatureAdded)
         {
@@ -319,7 +319,7 @@ public class PDDocument implements Closeable
         // Reserve content
         // We need to reserve some space for the signature. Some signatures including
         // big certificate chain and we need enough space to store it.
-        int preferredSignatureSize = options.getPreferredSignatureSize();
+        final int preferredSignatureSize = options.getPreferredSignatureSize();
         if (preferredSignatureSize > 0)
         {
             sigObject.setContents(new byte[preferredSignatureSize]);
@@ -337,17 +337,17 @@ public class PDDocument implements Closeable
         // Create SignatureForm for signature and append it to the document
 
         // Get the first valid page
-        int pageCount = getNumberOfPages();
+        final int pageCount = getNumberOfPages();
         if (pageCount == 0)
         {
             throw new IllegalStateException("Cannot sign an empty document");
         }
 
-        int startIndex = Math.min(Math.max(options.getPage(), 0), pageCount - 1);
-        PDPage page = getPage(startIndex);
+        final int startIndex = Math.min(Math.max(options.getPage(), 0), pageCount - 1);
+        final PDPage page = getPage(startIndex);
 
         // Get the AcroForm from the Root-Dictionary and append the annotation
-        PDDocumentCatalog catalog = getDocumentCatalog();
+        final PDDocumentCatalog catalog = getDocumentCatalog();
         PDAcroForm acroForm = catalog.getAcroForm();
         catalog.getCOSObject().setNeedToBeUpdated(true);
 
@@ -368,7 +368,7 @@ public class PDDocument implements Closeable
         }
         else
         {
-            COSArray fieldArray = (COSArray) acroForm.getCOSObject().getDictionaryObject(COSName.FIELDS);
+            final COSArray fieldArray = (COSArray) acroForm.getCOSObject().getDictionaryObject(COSName.FIELDS);
             fieldArray.setNeedToBeUpdated(true);
             signatureField = findSignatureField(acroForm.getFieldIterator(), sigObject);
         }
@@ -394,12 +394,12 @@ public class PDDocument implements Closeable
         signatureField.getWidgets().get(0).setPrinted(true);
 
         // Set the AcroForm Fields
-        List<PDField> acroFormFields = acroForm.getFields();
+        final List<PDField> acroFormFields = acroForm.getFields();
         acroForm.getCOSObject().setDirect(true);
         acroForm.setSignaturesExist(true);
         acroForm.setAppendOnly(true);
 
-        boolean checkFields = checkSignatureField(acroForm.getFieldIterator(), signatureField);
+        final boolean checkFields = checkSignatureField(acroForm.getFieldIterator(), signatureField);
         if (checkFields)
         {
             signatureField.getCOSObject().setNeedToBeUpdated(true);
@@ -410,7 +410,7 @@ public class PDDocument implements Closeable
         }
 
         // Get the object from the visual signature
-        COSDocument visualSignature = options.getVisualSignature();
+        final COSDocument visualSignature = options.getVisualSignature();
 
         // Distinction of case for visual and non-visual signature
         if (visualSignature == null)
@@ -422,7 +422,7 @@ public class PDDocument implements Closeable
         prepareVisibleSignature(signatureField, acroForm, visualSignature);
 
         // Create Annotation / Field for signature
-        List<PDAnnotation> annotations = page.getAnnotations();
+        final List<PDAnnotation> annotations = page.getAnnotations();
 
         // Make /Annots a direct object to avoid problem if it is an existing indirect object: 
         // it would not be updated in incremental save, and if we'd set the /Annots array "to be updated" 
@@ -436,7 +436,7 @@ public class PDDocument implements Closeable
               ((COSArrayList<?>) annotations).toList().equals(((COSArrayList<?>) acroFormFields).toList()) &&
               checkFields))
         {
-            PDAnnotationWidget widget = signatureField.getWidgets().get(0);
+            final PDAnnotationWidget widget = signatureField.getWidgets().get(0);
             // use check to prevent the annotation widget from appearing twice
             if (checkSignatureAnnotation(annotations, widget))
             {
@@ -457,15 +457,15 @@ public class PDDocument implements Closeable
      * @param sigObject signature object (the /V part).
      * @return a signature field if found, or null if none was found.
      */
-    private PDSignatureField findSignatureField(Iterator<PDField> fieldIterator, PDSignature sigObject)
+    private PDSignatureField findSignatureField(final Iterator<PDField> fieldIterator, final PDSignature sigObject)
     {
         PDSignatureField signatureField = null;
         while (fieldIterator.hasNext())
         {
-            PDField pdField = fieldIterator.next();
+            final PDField pdField = fieldIterator.next();
             if (pdField instanceof PDSignatureField)
             {
-                PDSignature signature = ((PDSignatureField) pdField).getSignature();
+                final PDSignature signature = ((PDSignatureField) pdField).getSignature();
                 if (signature != null && signature.getCOSObject().equals(sigObject.getCOSObject()))
                 {
                     signatureField = (PDSignatureField) pdField;
@@ -482,11 +482,11 @@ public class PDDocument implements Closeable
      * @param signatureField the signature field.
      * @return true if the field already existed in the field list, false if not.
      */
-    private boolean checkSignatureField(Iterator<PDField> fieldIterator, PDSignatureField signatureField)
+    private boolean checkSignatureField(final Iterator<PDField> fieldIterator, final PDSignatureField signatureField)
     {
         while (fieldIterator.hasNext())
         {
-            PDField field = fieldIterator.next();
+            final PDField field = fieldIterator.next();
             if (field instanceof PDSignatureField
                     && field.getCOSObject().equals(signatureField.getCOSObject()))
             {
@@ -503,9 +503,9 @@ public class PDDocument implements Closeable
      * @param signatureField the signature field.
      * @return true if the widget already existed in the annotation list, false if not.
      */
-    private boolean checkSignatureAnnotation(List<PDAnnotation> annotations, PDAnnotationWidget widget)
+    private boolean checkSignatureAnnotation(final List<PDAnnotation> annotations, final PDAnnotationWidget widget)
     {
-        for (PDAnnotation annotation : annotations)
+        for (final PDAnnotation annotation : annotations)
         {
             if (annotation.getCOSObject().equals(widget.getCOSObject()))
             {
@@ -515,22 +515,22 @@ public class PDDocument implements Closeable
         return false;
     }
 
-    private void prepareVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm, 
-            COSDocument visualSignature)
+    private void prepareVisibleSignature(final PDSignatureField signatureField, final PDAcroForm acroForm,
+                                         final COSDocument visualSignature)
     {
         // Obtain visual signature object
         boolean annotFound = false;
         boolean sigFieldFound = false;
         // get all objects
-        List<COSObject> cosObjects = visualSignature.getXrefTable().keySet().stream() //
+        final List<COSObject> cosObjects = visualSignature.getXrefTable().keySet().stream() //
                 .map(visualSignature::getObjectFromPool) //
                 .collect(Collectors.toList());
-        for (COSObject cosObject : cosObjects)
+        for (final COSObject cosObject : cosObjects)
         {
-            COSBase base = cosObject.getObject();
+            final COSBase base = cosObject.getObject();
             if (base instanceof COSDictionary)
             {
-                COSDictionary cosBaseDict = (COSDictionary) base;
+                final COSDictionary cosBaseDict = (COSDictionary) base;
                 // Search for signature annotation
                 if (!annotFound && COSName.ANNOT.equals(cosBaseDict.getCOSName(COSName.TYPE)))
                 {
@@ -538,7 +538,7 @@ public class PDDocument implements Closeable
                     annotFound = true;
                 }
                 // Search for signature field
-                COSDictionary apDict = cosBaseDict.getCOSDictionary(COSName.AP);
+                final COSDictionary apDict = cosBaseDict.getCOSDictionary(COSName.AP);
                 if (apDict != null && !sigFieldFound
                         && COSName.SIG.equals(cosBaseDict.getCOSName(COSName.FT)))
                 {
@@ -558,12 +558,12 @@ public class PDDocument implements Closeable
         }
     }
 
-    private void assignSignatureRectangle(PDSignatureField signatureField, COSDictionary annotDict)
+    private void assignSignatureRectangle(final PDSignatureField signatureField, final COSDictionary annotDict)
     {
         // Read and set the rectangle for visual signature
-        COSArray rectArray = (COSArray) annotDict.getDictionaryObject(COSName.RECT);
-        PDRectangle rect = new PDRectangle(rectArray);
-        PDRectangle existingRectangle = signatureField.getWidgets().get(0).getRectangle();
+        final COSArray rectArray = (COSArray) annotDict.getDictionaryObject(COSName.RECT);
+        final PDRectangle rect = new PDRectangle(rectArray);
+        final PDRectangle existingRectangle = signatureField.getWidgets().get(0).getRectangle();
 
         //in case of an existing field keep the original rect
         if (existingRectangle == null || existingRectangle.getCOSArray().size() != 4)
@@ -572,22 +572,22 @@ public class PDDocument implements Closeable
         }
     }
 
-    private void assignAppearanceDictionary(PDSignatureField signatureField, COSDictionary apDict)
+    private void assignAppearanceDictionary(final PDSignatureField signatureField, final COSDictionary apDict)
     {
         // read and set Appearance Dictionary
-        PDAppearanceDictionary ap = new PDAppearanceDictionary(apDict);
+        final PDAppearanceDictionary ap = new PDAppearanceDictionary(apDict);
         apDict.setDirect(true);
         signatureField.getWidgets().get(0).setAppearance(ap);
     }
 
-    private void assignAcroFormDefaultResource(PDAcroForm acroForm, COSDictionary newDict)
+    private void assignAcroFormDefaultResource(final PDAcroForm acroForm, final COSDictionary newDict)
     {
         // read and set/update AcroForm default resource dictionary /DR if available
-        COSBase newBase = newDict.getDictionaryObject(COSName.DR);
+        final COSBase newBase = newDict.getDictionaryObject(COSName.DR);
         if (newBase instanceof COSDictionary)
         {
-            COSDictionary newDR = (COSDictionary) newBase;
-            PDResources defaultResources = acroForm.getDefaultResources();
+            final COSDictionary newDR = (COSDictionary) newBase;
+            final PDResources defaultResources = acroForm.getDefaultResources();
             if (defaultResources == null)
             {
                 acroForm.getCOSObject().setItem(COSName.DR, newDR);
@@ -596,9 +596,9 @@ public class PDDocument implements Closeable
             }
             else
             {
-                COSDictionary oldDR = defaultResources.getCOSObject();
-                COSBase newXObjectBase = newDR.getItem(COSName.XOBJECT);
-                COSBase oldXObjectBase = oldDR.getItem(COSName.XOBJECT);
+                final COSDictionary oldDR = defaultResources.getCOSObject();
+                final COSBase newXObjectBase = newDR.getItem(COSName.XOBJECT);
+                final COSBase oldXObjectBase = oldDR.getItem(COSName.XOBJECT);
                 if (newXObjectBase instanceof COSDictionary &&
                     oldXObjectBase instanceof COSDictionary)
                 {
@@ -609,7 +609,7 @@ public class PDDocument implements Closeable
         }
     }
 
-    private void prepareNonVisibleSignature(PDSignatureField signatureField)
+    private void prepareNonVisibleSignature(final PDSignatureField signatureField)
     {
         // "Signature fields that are not intended to be visible shall
         // have an annotation rectangle that has zero height and width."
@@ -617,8 +617,8 @@ public class PDDocument implements Closeable
         signatureField.getWidgets().get(0).setRectangle(new PDRectangle());
         
         // The visual appearance must also exist for an invisible signature but may be empty.
-        PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
-        PDAppearanceStream appearanceStream = new PDAppearanceStream(this);
+        final PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
+        final PDAppearanceStream appearanceStream = new PDAppearanceStream(this);
         appearanceStream.setBBox(new PDRectangle());
         appearanceDictionary.setNormalAppearance(appearanceStream);
         signatureField.getWidgets().get(0).setAppearance(appearanceDictionary);
@@ -629,7 +629,7 @@ public class PDDocument implements Closeable
      * 
      * @param page The page to remove from the document.
      */
-    public void removePage(PDPage page)
+    public void removePage(final PDPage page)
     {
         getPages().remove(page);
     }
@@ -639,7 +639,7 @@ public class PDDocument implements Closeable
      * 
      * @param pageNumber 0 based index to page number.
      */
-    public void removePage(int pageNumber)
+    public void removePage(final int pageNumber)
     {
         getPages().remove(pageNumber);
     }
@@ -669,10 +669,10 @@ public class PDDocument implements Closeable
      *
      * @throws IOException If there is an error copying the page.
      */
-    public PDPage importPage(PDPage page) throws IOException
+    public PDPage importPage(final PDPage page) throws IOException
     {
-        PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()), resourceCache);
-        PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
+        final PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()), resourceCache);
+        final PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
         importedPage.setContents(dest);
         addPage(importedPage);
         importedPage.setCropBox(page.getCropBox());
@@ -710,7 +710,7 @@ public class PDDocument implements Closeable
     {
         if (documentInformation == null)
         {
-            COSDictionary trailer = document.getTrailer();
+            final COSDictionary trailer = document.getTrailer();
             COSDictionary infoDic = trailer.getCOSDictionary(COSName.INFO);
             if (infoDic == null)
             {
@@ -731,7 +731,7 @@ public class PDDocument implements Closeable
      *
      * @param info The updated document information.
      */
-    public void setDocumentInformation(PDDocumentInformation info)
+    public void setDocumentInformation(final PDDocumentInformation info)
     {
         documentInformation = info;
         document.getTrailer().setItem(COSName.INFO, info.getCOSObject());
@@ -746,8 +746,8 @@ public class PDDocument implements Closeable
     {
         if (documentCatalog == null)
         {
-            COSDictionary trailer = document.getTrailer();
-            COSBase dictionary = trailer.getDictionaryObject(COSName.ROOT);
+            final COSDictionary trailer = document.getTrailer();
+            final COSBase dictionary = trailer.getDictionaryObject(COSName.ROOT);
             if (dictionary instanceof COSDictionary)
             {
                 documentCatalog = new PDDocumentCatalog(this, (COSDictionary) dictionary);
@@ -792,7 +792,7 @@ public class PDDocument implements Closeable
      * 
      * @param encryption The encryption dictionary(most likely a PDStandardEncryption object)
      */
-    public void setEncryptionDictionary(PDEncryption encryption)
+    public void setEncryptionDictionary(final PDEncryption encryption)
     {
         this.encryption = encryption;
     }
@@ -805,8 +805,8 @@ public class PDDocument implements Closeable
      */
     public PDSignature getLastSignatureDictionary()
     {
-        List<PDSignature> signatureDictionaries = getSignatureDictionaries();
-        int size = signatureDictionaries.size();
+        final List<PDSignature> signatureDictionaries = getSignatureDictionaries();
+        final int size = signatureDictionaries.size();
         if (size > 0)
         {
             return signatureDictionaries.get(size - 1);
@@ -821,11 +821,11 @@ public class PDDocument implements Closeable
      */
     public List<PDSignatureField> getSignatureFields()
     {
-        List<PDSignatureField> fields = new ArrayList<>();
-        PDAcroForm acroForm = getDocumentCatalog().getAcroForm();
+        final List<PDSignatureField> fields = new ArrayList<>();
+        final PDAcroForm acroForm = getDocumentCatalog().getAcroForm();
         if (acroForm != null)
         {
-            for (PDField field : acroForm.getFieldTree())
+            for (final PDField field : acroForm.getFieldTree())
             {
                 if (field instanceof PDSignatureField)
                 {
@@ -843,10 +843,10 @@ public class PDDocument implements Closeable
      */
     public List<PDSignature> getSignatureDictionaries()
     {
-        List<PDSignature> signatures = new ArrayList<>();
-        for (PDSignatureField field : getSignatureFields())
+        final List<PDSignature> signatures = new ArrayList<>();
+        for (final PDSignatureField field : getSignatureFields())
         {
-            COSBase value = field.getCOSObject().getDictionaryObject(COSName.V);
+            final COSBase value = field.getCOSObject().getDictionaryObject(COSName.V);
             if (value instanceof COSDictionary)
             {
                 signatures.add(new PDSignature((COSDictionary)value));
@@ -862,7 +862,7 @@ public class PDDocument implements Closeable
      *
      * @param ttf
      */
-    public void registerTrueTypeFontForClosing(TrueTypeFont ttf)
+    public void registerTrueTypeFontForClosing(final TrueTypeFont ttf)
     {
         fontsToClose.add(ttf);
     }
@@ -882,7 +882,7 @@ public class PDDocument implements Closeable
      *
      * @throws IOException if the output could not be written
      */
-    public void save(String fileName) throws IOException
+    public void save(final String fileName) throws IOException
     {
         save(new File(fileName));
     }
@@ -894,7 +894,7 @@ public class PDDocument implements Closeable
      *
      * @throws IOException if the output could not be written
      */
-    public void save(File file) throws IOException
+    public void save(final File file) throws IOException
     {
         save(file, CompressParameters.DEFAULT_COMPRESSION);
     }
@@ -907,7 +907,7 @@ public class PDDocument implements Closeable
      *
      * @throws IOException if the output could not be written
      */
-    public void save(OutputStream output) throws IOException
+    public void save(final OutputStream output) throws IOException
     {
         save(output, CompressParameters.DEFAULT_COMPRESSION);
     }
@@ -919,7 +919,7 @@ public class PDDocument implements Closeable
      * @param compressParameters The parameters for the document's compression.
      * @throws IOException if the output could not be written
      */
-    public void save(File file, CompressParameters compressParameters) throws IOException
+    public void save(final File file, final CompressParameters compressParameters) throws IOException
     {
         save(new BufferedOutputStream(new FileOutputStream(file)), compressParameters);
     }
@@ -932,7 +932,7 @@ public class PDDocument implements Closeable
      *
      * @throws IOException if the output could not be written
      */
-    public void save(String fileName, CompressParameters compressParameters) throws IOException
+    public void save(final String fileName, final CompressParameters compressParameters) throws IOException
     {
         save(new File(fileName), compressParameters);
     }
@@ -945,7 +945,7 @@ public class PDDocument implements Closeable
      * @param compressParameters The parameters for the document's compression.
      * @throws IOException if the output could not be written
      */
-    public void save(OutputStream output, CompressParameters compressParameters)
+    public void save(final OutputStream output, final CompressParameters compressParameters)
             throws IOException
     {
         if (document.isClosed())
@@ -957,7 +957,7 @@ public class PDDocument implements Closeable
         document.setIsXRefStream(compressParameters != null //
                 && CompressParameters.NO_COMPRESSION != compressParameters);
         // subset designated fonts
-        for (PDFont font : fontsToSubset)
+        for (final PDFont font : fontsToSubset)
         {
             font.subset();
         }
@@ -985,7 +985,7 @@ public class PDDocument implements Closeable
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream.
      */
-    public void saveIncremental(OutputStream output) throws IOException
+    public void saveIncremental(final OutputStream output) throws IOException
     {
         if (pdfSource == null)
         {
@@ -1018,7 +1018,7 @@ public class PDDocument implements Closeable
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream.
      */
-    public void saveIncremental(OutputStream output, Set<COSDictionary> objectsToWrite) throws IOException
+    public void saveIncremental(final OutputStream output, final Set<COSDictionary> objectsToWrite) throws IOException
     {
         if (pdfSource == null)
         {
@@ -1067,7 +1067,7 @@ public class PDDocument implements Closeable
      * @throws IllegalStateException if the document was not loaded from a file or a stream or
      * signature options were not set.
      */
-    public ExternalSigningSupport saveIncrementalForExternalSigning(OutputStream output) throws IOException
+    public ExternalSigningSupport saveIncrementalForExternalSigning(final OutputStream output) throws IOException
     {
         if (pdfSource == null)
         {
@@ -1076,7 +1076,7 @@ public class PDDocument implements Closeable
         // PDFBOX-3978: getLastSignatureDictionary() not helpful if signing into a template
         // that is not the last signature. So give higher priority to signature with update flag.
         PDSignature foundSignature = null;
-        for (PDSignature sig : getSignatureDictionaries())
+        for (final PDSignature sig : getSignatureDictionaries())
         {
             foundSignature = sig;
             if (sig.getCOSObject().isNeedToBeUpdated())
@@ -1090,13 +1090,13 @@ public class PDDocument implements Closeable
             throw new IllegalStateException("document does not contain signature fields");
         }
 
-        int[] byteRange = foundSignature.getByteRange();
+        final int[] byteRange = foundSignature.getByteRange();
         if (!Arrays.equals(byteRange, RESERVE_BYTE_RANGE))
         {
             throw new IllegalStateException("signature reserve byte range has been changed "
                     + "after addSignature(), please set the byte range that existed after addSignature()");
         }
-        COSWriter writer = new COSWriter(output, pdfSource);
+        final COSWriter writer = new COSWriter(output, pdfSource);
         writer.write(this);
         signingSupport = new SigningSupport(writer);
         return signingSupport;
@@ -1112,7 +1112,7 @@ public class PDDocument implements Closeable
      * @param pageIndex the 0-based page index
      * @return the page at the given index.
      */
-    public PDPage getPage(int pageIndex) // todo: REPLACE most calls to this method with BELOW method
+    public PDPage getPage(final int pageIndex) // todo: REPLACE most calls to this method with BELOW method
     {
         return getDocumentCatalog().getPages().get(pageIndex);
     }
@@ -1170,7 +1170,7 @@ public class PDDocument implements Closeable
             }
 
             // close fonts
-            for (TrueTypeFont ttf : fontsToClose)
+            for (final TrueTypeFont ttf : fontsToClose)
             {
                 firstException = IOUtils.closeAndLogException(ttf, LOG, "TrueTypeFont", firstException);
             }
@@ -1195,7 +1195,7 @@ public class PDDocument implements Closeable
      * @param policy The protection policy.
      * @throws IOException if there isn't any suitable security handler.
      */
-    public void protect(ProtectionPolicy policy) throws IOException
+    public void protect(final ProtectionPolicy policy) throws IOException
     {
         if (isAllSecurityToBeRemoved())
         {
@@ -1209,7 +1209,7 @@ public class PDDocument implements Closeable
             encryption = new PDEncryption();
         }
 
-        SecurityHandler<ProtectionPolicy> securityHandler =
+        final SecurityHandler<ProtectionPolicy> securityHandler =
                 SecurityHandlerFactory.INSTANCE.newSecurityHandlerForPolicy(policy);
         if (securityHandler == null)
         {
@@ -1251,7 +1251,7 @@ public class PDDocument implements Closeable
      * 
      * @param removeAllSecurity remove all security if set to true
      */
-    public void setAllSecurityToBeRemoved(boolean removeAllSecurity)
+    public void setAllSecurityToBeRemoved(final boolean removeAllSecurity)
     {
         allSecurityToBeRemoved = removeAllSecurity;
     }
@@ -1271,7 +1271,7 @@ public class PDDocument implements Closeable
      * 
      * @param docId the new document ID
      */
-    public void setDocumentId(Long docId)
+    public void setDocumentId(final Long docId)
     {
         documentId = docId;
     }
@@ -1283,11 +1283,11 @@ public class PDDocument implements Closeable
      */
     public float getVersion()
     {
-        float headerVersionFloat = getDocument().getVersion();
+        final float headerVersionFloat = getDocument().getVersion();
         // there may be a second version information in the document catalog starting with 1.4
         if (headerVersionFloat >= 1.4f)
         {
-            String catalogVersion = getDocumentCatalog().getVersion();
+            final String catalogVersion = getDocumentCatalog().getVersion();
             float catalogVersionFloat = -1;
             if (catalogVersion != null)
             {
@@ -1295,7 +1295,7 @@ public class PDDocument implements Closeable
                 {
                     catalogVersionFloat = Float.parseFloat(catalogVersion);
                 }
-                catch(NumberFormatException exception)
+                catch(final NumberFormatException exception)
                 {
                     LOG.error("Can't extract the version number of the document catalog.", exception);
                 }
@@ -1315,9 +1315,9 @@ public class PDDocument implements Closeable
      * @param newVersion the new PDF version (e.g. 1.4f)
      * 
      */
-    public void setVersion(float newVersion)
+    public void setVersion(final float newVersion)
     {
-        float currentVersion = getVersion();
+        final float currentVersion = getVersion();
         // nothing to do?
         if (Float.compare(newVersion,currentVersion) == 0)
         {
@@ -1354,7 +1354,7 @@ public class PDDocument implements Closeable
      * 
      * @param resourceCache A resource cache, or null.
      */
-    public void setResourceCache(ResourceCache resourceCache)
+    public void setResourceCache(final ResourceCache resourceCache)
     {
         this.resourceCache = resourceCache;
     }

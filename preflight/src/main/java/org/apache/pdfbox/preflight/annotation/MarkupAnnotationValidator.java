@@ -36,7 +36,7 @@ abstract class MarkupAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationTextMarkup pdMarkup = null;
 
-    protected MarkupAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    protected MarkupAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
     }

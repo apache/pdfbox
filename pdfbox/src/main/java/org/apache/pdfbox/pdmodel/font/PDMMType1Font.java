@@ -32,7 +32,7 @@ public class PDMMType1Font extends PDType1Font
      *
      * @param fontDictionary font dictionary
      */
-    public PDMMType1Font(COSDictionary fontDictionary) throws IOException
+    public PDMMType1Font(final COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
     }

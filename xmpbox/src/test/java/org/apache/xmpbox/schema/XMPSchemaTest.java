@@ -57,18 +57,18 @@ class XMPSchemaTest
     @Test
     void testBagManagement() throws Exception
     {
-        String bagName = "BAGTEST";
-        String value1 = "valueOne";
-        String value2 = "valueTwo";
+        final String bagName = "BAGTEST";
+        final String value1 = "valueOne";
+        final String value2 = "valueTwo";
         schem.addBagValue(bagName, schem.getMetadata().getTypeMapping().createText(null, "rdf", "li", value1));
         schem.addQualifiedBagValue(bagName, value2);
 
-        List<String> values = schem.getUnqualifiedBagValueList(bagName);
+        final List<String> values = schem.getUnqualifiedBagValueList(bagName);
         assertEquals(value1, values.get(0));
         assertEquals(value2, values.get(1));
 
         schem.removeUnqualifiedBagValue(bagName, value1);
-        List<String> values2 = schem.getUnqualifiedBagValueList(bagName);
+        final List<String> values2 = schem.getUnqualifiedBagValueList(bagName);
         assertEquals(1, values2.size());
         assertEquals(value2, values2.get(0));
 
@@ -77,15 +77,15 @@ class XMPSchemaTest
     @Test
     void testArrayList() throws Exception
     {
-        XMPMetadata meta = XMPMetadata.createXMPMetadata();
-        ArrayProperty newSeq = meta.getTypeMapping().createArrayProperty(null, "nsSchem", "seqType", Cardinality.Seq);
-        TypeMapping tm = meta.getTypeMapping();
-        TextType li1 = tm.createText(null, "rdf", "li", "valeur1");
-        TextType li2 = tm.createText(null, "rdf", "li", "valeur2");
+        final XMPMetadata meta = XMPMetadata.createXMPMetadata();
+        final ArrayProperty newSeq = meta.getTypeMapping().createArrayProperty(null, "nsSchem", "seqType", Cardinality.Seq);
+        final TypeMapping tm = meta.getTypeMapping();
+        final TextType li1 = tm.createText(null, "rdf", "li", "valeur1");
+        final TextType li2 = tm.createText(null, "rdf", "li", "valeur2");
         newSeq.getContainer().addProperty(li1);
         newSeq.getContainer().addProperty(li2);
         schem.addProperty(newSeq);
-        List<AbstractField> list = schem.getUnqualifiedArrayList("seqType");
+        final List<AbstractField> list = schem.getUnqualifiedArrayList("seqType");
         assertTrue(list.contains(li1));
         assertTrue(list.contains(li2));
     }
@@ -99,20 +99,20 @@ class XMPSchemaTest
     @Test
     void testSeqManagement() throws Exception
     {
-        Calendar date = Calendar.getInstance();
-        BooleanType bool = parent.getTypeMapping().createBoolean(null, "rdf", "li", true);
-        String textVal = "seqValue";
-        String seqName = "SEQNAME";
+        final Calendar date = Calendar.getInstance();
+        final BooleanType bool = parent.getTypeMapping().createBoolean(null, "rdf", "li", true);
+        final String textVal = "seqValue";
+        final String seqName = "SEQNAME";
 
         schem.addUnqualifiedSequenceDateValue(seqName, date);
         schem.addUnqualifiedSequenceValue(seqName, bool);
         schem.addUnqualifiedSequenceValue(seqName, textVal);
 
-        List<Calendar> dates = schem.getUnqualifiedSequenceDateValueList(seqName);
+        final List<Calendar> dates = schem.getUnqualifiedSequenceDateValueList(seqName);
         assertEquals(1, dates.size());
         assertEquals(date, dates.get(0));
 
-        List<String> values = schem.getUnqualifiedSequenceValueList(seqName);
+        final List<String> values = schem.getUnqualifiedSequenceValueList(seqName);
         assertEquals(3, values.size());
         assertEquals(DateConverter.toISO8601(date), values.get(0));
         assertEquals(bool.getStringValue(), values.get(1));
@@ -131,7 +131,7 @@ class XMPSchemaTest
     void rdfAboutTest()
     {
         assertEquals("",schem.getAboutValue());
-        String about = "about";
+        final String about = "about";
         schem.setAboutAsSimple(about);
         assertEquals(about, schem.getAboutValue());
         schem.setAboutAsSimple("");
@@ -151,9 +151,9 @@ class XMPSchemaTest
     @Test
     void testSetSpecifiedSimpleTypeProperty() throws Exception
     {
-        String prop = "testprop";
-        String val = "value";
-        String val2 = "value2";
+        final String prop = "testprop";
+        final String val = "value";
+        final String val2 = "value2";
         schem.setTextPropertyValueAsSimple(prop, val);
         assertEquals(val, schem.getUnqualifiedTextPropertyValue(prop));
         schem.setTextPropertyValueAsSimple(prop, val2);
@@ -165,11 +165,11 @@ class XMPSchemaTest
     @Test
     void testSpecifiedSimplePropertyFormer() throws Exception
     {
-        String prop = "testprop";
-        String val = "value";
-        String val2 = "value2";
+        final String prop = "testprop";
+        final String val = "value";
+        final String val2 = "value2";
         schem.setTextPropertyValueAsSimple(prop, val);
-        TextType text = schem.getMetadata().getTypeMapping().createText(null, schem.getPrefix(), prop, "value2");
+        final TextType text = schem.getMetadata().getTypeMapping().createText(null, schem.getPrefix(), prop, "value2");
         schem.setTextProperty(text);
         assertEquals(val2, schem.getUnqualifiedTextPropertyValue(prop));
         assertEquals(text, schem.getUnqualifiedTextProperty(prop));
@@ -178,28 +178,28 @@ class XMPSchemaTest
     @Test
     void testAsSimpleMethods() throws Exception
     {
-        String bool = "bool";
-        boolean boolVal = true;
+        final String bool = "bool";
+        final boolean boolVal = true;
 
-        String date = "date";
-        Calendar dateVal = Calendar.getInstance();
+        final String date = "date";
+        final Calendar dateVal = Calendar.getInstance();
 
-        String integ = "integer";
-        Integer i = 1;
+        final String integ = "integer";
+        final Integer i = 1;
 
-        String langprop = "langprop";
-        String lang = "x-default";
-        String langVal = "langVal";
+        final String langprop = "langprop";
+        final String lang = "x-default";
+        final String langVal = "langVal";
 
-        String bagprop = "bagProp";
-        String bagVal = "bagVal";
+        final String bagprop = "bagProp";
+        final String bagVal = "bagVal";
 
-        String seqprop = "SeqProp";
-        String seqPropVal = "seqval";
+        final String seqprop = "SeqProp";
+        final String seqPropVal = "seqval";
 
-        String seqdate = "SeqDate";
+        final String seqdate = "SeqDate";
 
-        String prefSchem = "";
+        final String prefSchem = "";
 
         schem.setBooleanPropertyValueAsSimple(bool, boolVal);
         schem.setDatePropertyValueAsSimple(date, dateVal);
@@ -243,47 +243,47 @@ class XMPSchemaTest
         // In real cases, rdf ns will be declared before !
         schem.addNamespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf");
 
-        String aboutVal = "aboutTest";
+        final String aboutVal = "aboutTest";
         schem.setAboutAsSimple(aboutVal);
         assertEquals(aboutVal, schem.getAboutValue());
 
-        Attribute about = new Attribute(XmpConstants.RDF_NAMESPACE, "about", "YEP");
+        final Attribute about = new Attribute(XmpConstants.RDF_NAMESPACE, "about", "YEP");
         schem.setAbout(about);
         assertEquals(about, schem.getAboutAttribute());
 
-        String textProp = "textProp";
-        String textPropVal = "TextPropTest";
+        final String textProp = "textProp";
+        final String textPropVal = "TextPropTest";
         schem.setTextPropertyValue(textProp, textPropVal);
         assertEquals(textPropVal, schem.getUnqualifiedTextPropertyValue(textProp));
 
-        TextType text = parent.getTypeMapping().createText(null, "nsSchem", "textType", "GRINGO");
+        final TextType text = parent.getTypeMapping().createText(null, "nsSchem", "textType", "GRINGO");
         schem.setTextProperty(text);
         assertEquals(text, schem.getUnqualifiedTextProperty("textType"));
 
-        Calendar dateVal = Calendar.getInstance();
-        String date = "nsSchem:dateProp";
+        final Calendar dateVal = Calendar.getInstance();
+        final String date = "nsSchem:dateProp";
         schem.setDatePropertyValue(date, dateVal);
         assertEquals(dateVal, schem.getDatePropertyValue(date));
 
-        DateType dateType = parent.getTypeMapping().createDate(null, "nsSchem", "dateType", Calendar.getInstance());
+        final DateType dateType = parent.getTypeMapping().createDate(null, "nsSchem", "dateType", Calendar.getInstance());
         schem.setDateProperty(dateType);
         assertEquals(dateType, schem.getDateProperty("dateType"));
 
-        String bool = "nsSchem:booleanTestProp";
-        Boolean boolVal = false;
+        final String bool = "nsSchem:booleanTestProp";
+        final Boolean boolVal = false;
         schem.setBooleanPropertyValue(bool, boolVal);
         assertEquals(boolVal, schem.getBooleanPropertyValue(bool));
 
-        BooleanType boolType = parent.getTypeMapping().createBoolean(null, "nsSchem", "boolType", false);
+        final BooleanType boolType = parent.getTypeMapping().createBoolean(null, "nsSchem", "boolType", false);
         schem.setBooleanProperty(boolType);
         assertEquals(boolType, schem.getBooleanProperty("boolType"));
 
-        String intProp = "nsSchem:IntegerTestProp";
-        Integer intPropVal = 5;
+        final String intProp = "nsSchem:IntegerTestProp";
+        final Integer intPropVal = 5;
         schem.setIntegerPropertyValue(intProp, intPropVal);
         assertEquals(intPropVal, schem.getIntegerPropertyValue(intProp));
 
-        IntegerType intType = parent.getTypeMapping().createInteger(null, "nsSchem", "intType", 5);
+        final IntegerType intType = parent.getTypeMapping().createInteger(null, "nsSchem", "intType", 5);
         schem.setIntegerProperty(intType);
         assertEquals(intType, schem.getIntegerProperty("intType"));
 
@@ -333,15 +333,15 @@ class XMPSchemaTest
     @Test
     void testAltProperties() throws Exception
     {
-        String altProp = "AltProp";
+        final String altProp = "AltProp";
 
-        String defaultLang = "x-default";
-        String defaultVal = "Default Language";
+        final String defaultLang = "x-default";
+        final String defaultVal = "Default Language";
 
-        String usLang = "en-us";
-        String usVal = "American Language";
+        final String usLang = "en-us";
+        final String usVal = "American Language";
 
-        String frLang = "fr-fr";
+        final String frLang = "fr-fr";
         String frVal = "Lang française";
 
         schem.setUnqualifiedLanguagePropertyValue(altProp, usLang, usVal);
@@ -382,28 +382,28 @@ class XMPSchemaTest
     @Test
     void testMergeSchema() throws Exception
     {
-        String bagName = "bagName";
-        String seqName = "seqName";
-        String altName = "AltProp";
+        final String bagName = "bagName";
+        final String seqName = "seqName";
+        final String altName = "AltProp";
 
-        String valBagSchem1 = "BagvalSchem1";
-        String valBagSchem2 = "BagvalSchem2";
+        final String valBagSchem1 = "BagvalSchem1";
+        final String valBagSchem2 = "BagvalSchem2";
 
-        String valSeqSchem1 = "seqvalSchem1";
-        String valSeqSchem2 = "seqvalSchem2";
+        final String valSeqSchem1 = "seqvalSchem1";
+        final String valSeqSchem2 = "seqvalSchem2";
 
-        String valAltSchem1 = "altvalSchem1";
-        String langAltSchem1 = "x-default";
+        final String valAltSchem1 = "altvalSchem1";
+        final String langAltSchem1 = "x-default";
 
-        String valAltSchem2 = "altvalSchem2";
-        String langAltSchem2 = "fr-fr";
+        final String valAltSchem2 = "altvalSchem2";
+        final String langAltSchem2 = "fr-fr";
 
-        XMPSchema schem1 = new XMPSchema(parent, "http://www.test.org/schem/", "test");
+        final XMPSchema schem1 = new XMPSchema(parent, "http://www.test.org/schem/", "test");
         schem1.addQualifiedBagValue(bagName, valBagSchem1);
         schem1.addUnqualifiedSequenceValue(seqName, valSeqSchem1);
         schem1.setUnqualifiedLanguagePropertyValue(altName, langAltSchem1, valAltSchem1);
 
-        XMPSchema schem2 = new XMPSchema(parent, "http://www.test.org/schem/", "test");
+        final XMPSchema schem2 = new XMPSchema(parent, "http://www.test.org/schem/", "test");
         schem2.addQualifiedBagValue(bagName, valBagSchem2);
         schem2.addUnqualifiedSequenceValue(seqName, valSeqSchem2);
         schem2.setUnqualifiedLanguagePropertyValue(altName, langAltSchem2, valAltSchem2);
@@ -414,12 +414,12 @@ class XMPSchemaTest
         assertEquals(valAltSchem2, schem1.getUnqualifiedLanguagePropertyValue(altName, langAltSchem2));
         assertEquals(valAltSchem1, schem1.getUnqualifiedLanguagePropertyValue(altName, langAltSchem1));
 
-        List<String> bag = schem1.getUnqualifiedBagValueList(bagName);
+        final List<String> bag = schem1.getUnqualifiedBagValueList(bagName);
 
         assertTrue(bag.contains(valBagSchem1));
         assertTrue(bag.contains(valBagSchem2));
 
-        List<String> seq = schem1.getUnqualifiedSequenceValueList(seqName);
+        final List<String> seq = schem1.getUnqualifiedSequenceValueList(seqName);
         assertTrue(seq.contains(valSeqSchem1));
         assertTrue(seq.contains(valSeqSchem1));
 
@@ -428,10 +428,10 @@ class XMPSchemaTest
     @Test
     void testListAndContainerAccessor() throws Exception
     {
-        String boolname = "bool";
-        boolean boolVal = true;
-        BooleanType bool = parent.getTypeMapping().createBoolean(null, schem.getPrefix(), boolname, boolVal);
-        Attribute att = new Attribute(XmpConstants.RDF_NAMESPACE, "test", "vgh");
+        final String boolname = "bool";
+        final boolean boolVal = true;
+        final BooleanType bool = parent.getTypeMapping().createBoolean(null, schem.getPrefix(), boolname, boolVal);
+        final Attribute att = new Attribute(XmpConstants.RDF_NAMESPACE, "test", "vgh");
         schem.setAttribute(att);
         schem.setBooleanProperty(bool);
 

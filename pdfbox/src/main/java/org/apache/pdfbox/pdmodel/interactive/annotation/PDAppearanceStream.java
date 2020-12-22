@@ -35,7 +35,7 @@ public class PDAppearanceStream extends PDFormXObject
      * 
      * @param stream The XObject stream
      */
-    public PDAppearanceStream(COSStream stream)
+    public PDAppearanceStream(final COSStream stream)
     {
         super(stream);
     }
@@ -45,7 +45,7 @@ public class PDAppearanceStream extends PDFormXObject
      * 
      * @param document The current document
      */
-    public PDAppearanceStream(PDDocument document)
+    public PDAppearanceStream(final PDDocument document)
     {
         super(document);
     }

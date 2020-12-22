@@ -85,7 +85,7 @@ public class PDFTemplateStructure
      * Sets document page
      * @param page
      */
-    public void setPage(PDPage page)
+    public void setPage(final PDPage page)
     {
         this.page = page;
     }
@@ -107,7 +107,7 @@ public class PDFTemplateStructure
      * that can be attached to a document
      * @param template
      */
-    public void setTemplate(PDDocument template)
+    public void setTemplate(final PDDocument template)
     {
         this.template = template;
     }
@@ -125,7 +125,7 @@ public class PDFTemplateStructure
      * Sets AcroForm
      * @param acroForm
      */
-    public void setAcroForm(PDAcroForm acroForm)
+    public void setAcroForm(final PDAcroForm acroForm)
     {
         this.acroForm = acroForm;
     }
@@ -143,7 +143,7 @@ public class PDFTemplateStructure
      * Sets signature field
      * @param signatureField
      */
-    public void setSignatureField(PDSignatureField signatureField)
+    public void setSignatureField(final PDSignatureField signatureField)
     {
         this.signatureField = signatureField;
     }
@@ -161,7 +161,7 @@ public class PDFTemplateStructure
      * Sets PDSignatureField
      * @param pdSignature
      */
-    public void setPdSignature(PDSignature pdSignature)
+    public void setPdSignature(final PDSignature pdSignature)
     {
         this.pdSignature = pdSignature;
     }
@@ -182,7 +182,7 @@ public class PDFTemplateStructure
      * <b> AcroForm/DR </b>
      * @param acroFormDictionary
      */
-    public void setAcroFormDictionary(COSDictionary acroFormDictionary)
+    public void setAcroFormDictionary(final COSDictionary acroFormDictionary)
     {
         this.acroFormDictionary = acroFormDictionary;
     }
@@ -200,7 +200,7 @@ public class PDFTemplateStructure
      * Sets SignatureRectangle
      * @param signatureRectangle
      */
-    public void setSignatureRectangle(PDRectangle signatureRectangle)
+    public void setSignatureRectangle(final PDRectangle signatureRectangle)
     {
         this.signatureRectangle = signatureRectangle;
     }
@@ -218,7 +218,7 @@ public class PDFTemplateStructure
      * Sets AffineTransform
      * @param affineTransform
      */
-    public void setAffineTransform(AffineTransform affineTransform)
+    public void setAffineTransform(final AffineTransform affineTransform)
     {
         this.affineTransform = affineTransform;
     }
@@ -236,7 +236,7 @@ public class PDFTemplateStructure
      * Sets ProcSet Array
      * @param procSet
      */
-    public void setProcSet(COSArray procSet)
+    public void setProcSet(final COSArray procSet)
     {
         this.procSet = procSet;
     }
@@ -254,7 +254,7 @@ public class PDFTemplateStructure
      * Sets the image of visible signature
      * @param image Image XObject
      */
-    public void setImage(PDImageXObject image)
+    public void setImage(final PDImageXObject image)
     {
         this.image = image;
     }
@@ -272,7 +272,7 @@ public class PDFTemplateStructure
      * Sets formatter rectangle
      * @param formatterRectangle
      */
-    public void setFormatterRectangle(PDRectangle formatterRectangle)
+    public void setFormatterRectangle(final PDRectangle formatterRectangle)
     {
         this.formatterRectangle = formatterRectangle;
     }
@@ -290,7 +290,7 @@ public class PDFTemplateStructure
      * Sets stream of holder form Stream 
      * @param holderFormStream
      */
-    public void setHolderFormStream(PDStream holderFormStream)
+    public void setHolderFormStream(final PDStream holderFormStream)
     {
         this.holderFormStream = holderFormStream;
     }
@@ -311,7 +311,7 @@ public class PDFTemplateStructure
      * In the structure, form will be contained by XObject in the <b>AcroForm/DR/ </b>
      * @param holderForm
      */
-    public void setHolderForm(PDFormXObject holderForm)
+    public void setHolderForm(final PDFormXObject holderForm)
     {
         this.holderForm = holderForm;
     }
@@ -329,7 +329,7 @@ public class PDFTemplateStructure
      * Sets holder form resources
      * @param holderFormResources
      */
-    public void setHolderFormResources(PDResources holderFormResources)
+    public void setHolderFormResources(final PDResources holderFormResources)
     {
         this.holderFormResources = holderFormResources;
     }
@@ -349,7 +349,7 @@ public class PDFTemplateStructure
      * That is <b>/AP</b> entry the appearance dictionary.
      * @param appearanceDictionary
      */
-    public void setAppearanceDictionary(PDAppearanceDictionary appearanceDictionary)
+    public void setAppearanceDictionary(final PDAppearanceDictionary appearanceDictionary)
     {
         this.appearanceDictionary = appearanceDictionary;
     }
@@ -367,7 +367,7 @@ public class PDFTemplateStructure
      * Sets inner form stream
      * @param innerFormStream
      */
-    public void setInnterFormStream(PDStream innerFormStream)
+    public void setInnterFormStream(final PDStream innerFormStream)
     {
         this.innerFormStream = innerFormStream;
     }
@@ -385,7 +385,7 @@ public class PDFTemplateStructure
      * Sets inner form resource
      * @param innerFormResources
      */
-    public void setInnerFormResources(PDResources innerFormResources)
+    public void setInnerFormResources(final PDResources innerFormResources)
     {
         this.innerFormResources = innerFormResources;
     }
@@ -407,7 +407,7 @@ public class PDFTemplateStructure
      * <b> AcroForm/DR/XObject/{holder form name}/Resources/XObject/{destination} </b>
      * @param innerForm
      */
-    public void setInnerForm(PDFormXObject innerForm)
+    public void setInnerForm(final PDFormXObject innerForm)
     {
         this.innerForm = innerForm;
     }
@@ -425,7 +425,7 @@ public class PDFTemplateStructure
      * Sets inner form name
      * @param innerFormName
      */
-    public void setInnerFormName(COSName innerFormName)
+    public void setInnerFormName(final COSName innerFormName)
     {
         this.innerFormName = innerFormName;
     }
@@ -443,7 +443,7 @@ public class PDFTemplateStructure
      * Sets image form stream
      * @param imageFormStream
      */
-    public void setImageFormStream(PDStream imageFormStream)
+    public void setImageFormStream(final PDStream imageFormStream)
     {
         this.imageFormStream = imageFormStream;
     }
@@ -461,7 +461,7 @@ public class PDFTemplateStructure
      * Sets image form resource
      * @param imageFormResources
      */
-    public void setImageFormResources(PDResources imageFormResources)
+    public void setImageFormResources(final PDResources imageFormResources)
     {
         this.imageFormResources = imageFormResources;
     }
@@ -486,7 +486,7 @@ public class PDFTemplateStructure
      * Sets image form
      * @param imageForm
      */
-    public void setImageForm(PDFormXObject imageForm)
+    public void setImageForm(final PDFormXObject imageForm)
     {
         this.imageForm = imageForm;
     }
@@ -504,7 +504,7 @@ public class PDFTemplateStructure
      * Sets image form name
      * @param imageFormName
      */
-    public void setImageFormName(COSName imageFormName)
+    public void setImageFormName(final COSName imageFormName)
     {
         this.imageFormName = imageFormName;
     }
@@ -522,7 +522,7 @@ public class PDFTemplateStructure
      * Sets visible signature image name
      * @param imageName
      */
-    public void setImageName(COSName imageName)
+    public void setImageName(final COSName imageName)
     {
         this.imageName = imageName;
     }
@@ -543,7 +543,7 @@ public class PDFTemplateStructure
      * @see org.apache.pdfbox.cos.COSDocument
      * @param visualSignature
      */
-    public void setVisualSignature(COSDocument visualSignature)
+    public void setVisualSignature(final COSDocument visualSignature)
     {
         this.visualSignature = visualSignature;
     }
@@ -561,7 +561,7 @@ public class PDFTemplateStructure
      * Sets acroFormFields
      * @param acroFormFields
      */
-    public void setAcroFormFields(List<PDField> acroFormFields)
+    public void setAcroFormFields(final List<PDField> acroFormFields)
     {
         this.acroFormFields = acroFormFields;
     }
@@ -581,7 +581,7 @@ public class PDFTemplateStructure
      * 
      * @param widgetDictionary
      */
-    public void setWidgetDictionary(COSDictionary widgetDictionary)
+    public void setWidgetDictionary(final COSDictionary widgetDictionary)
     {
         this.widgetDictionary = widgetDictionary;
     }

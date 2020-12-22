@@ -293,7 +293,7 @@ public class AFMParser
      *
      * @param in The input stream to read the AFM document from.
      */
-    public AFMParser( InputStream in )
+    public AFMParser(final InputStream in )
     {
         input = in;
     }
@@ -320,7 +320,7 @@ public class AFMParser
      * 
      * @throws IOException If there is an IO error reading the document.
      */
-    public FontMetrics parse(boolean reducedDataset) throws IOException
+    public FontMetrics parse(final boolean reducedDataset) throws IOException
     {
         return parseFontMetric(reducedDataset);
     }
@@ -331,10 +331,10 @@ public class AFMParser
      *
      * @throws IOException If there is an error reading the AFM file.
      */
-    private FontMetrics parseFontMetric(boolean reducedDataset) throws IOException
+    private FontMetrics parseFontMetric(final boolean reducedDataset) throws IOException
     {
         readCommand(START_FONT_METRICS);
-        FontMetrics fontMetrics = new FontMetrics();
+        final FontMetrics fontMetrics = new FontMetrics();
         fontMetrics.setAFMVersion( readFloat() );
         String nextCommand;
         boolean charMetricsRead = false;
@@ -355,7 +355,7 @@ public class AFMParser
                 fontMetrics.setWeight( readLine() );
                 break;
             case FONT_BBOX:
-                BoundingBox bBox = new BoundingBox();
+                final BoundingBox bBox = new BoundingBox();
                 bBox.setLowerLeftX( readFloat() );
                 bBox.setLowerLeftY( readFloat() );
                 bBox.setUpperRightX( readFloat() );
@@ -387,7 +387,7 @@ public class AFMParser
                 fontMetrics.setIsBaseFont( readBoolean() );
                 break;
             case V_VECTOR:
-                float[] vector = new float[2];
+                final float[] vector = new float[2];
                 vector[0] = readFloat();
                 vector[1] = readFloat();
                 fontMetrics.setVVector( vector );
@@ -426,7 +426,7 @@ public class AFMParser
                 fontMetrics.setItalicAngle( readFloat() );
                 break;
             case CHAR_WIDTH:
-                float[] widths = new float[2];
+                final float[] widths = new float[2];
                 widths[0] = readFloat();
                 widths[1] = readFloat();
                 fontMetrics.setCharWidth( widths );
@@ -466,7 +466,7 @@ public class AFMParser
      *
      * @throws IOException If there is an error parsing the data.
      */
-    private void parseKernData( FontMetrics fontMetrics ) throws IOException
+    private void parseKernData(final FontMetrics fontMetrics ) throws IOException
     {
         String nextCommand;
         while( !(nextCommand = readString()).equals( END_KERN_DATA ) )
@@ -474,7 +474,7 @@ public class AFMParser
             switch(nextCommand)
             {
             case START_TRACK_KERN:
-                int countTrackKern = readInt();
+                final int countTrackKern = readInt();
                 for (int i = 0; i < countTrackKern; i++)
                 {
                     fontMetrics.addTrackKern(new TrackKern(readInt(), readFloat(), readFloat(),
@@ -497,9 +497,9 @@ public class AFMParser
         }
     }
 
-    private void parseKernPairs(FontMetrics fontMetrics) throws IOException
+    private void parseKernPairs(final FontMetrics fontMetrics) throws IOException
     {
-        int countKernPairs = readInt();
+        final int countKernPairs = readInt();
         for (int i = 0; i < countKernPairs; i++)
         {
             fontMetrics.addKernPair(parseKernPair());
@@ -507,9 +507,9 @@ public class AFMParser
         readCommand(END_KERN_PAIRS);
     }
 
-    private void parseKernPairs0(FontMetrics fontMetrics) throws IOException
+    private void parseKernPairs0(final FontMetrics fontMetrics) throws IOException
     {
-        int countKernPairs = readInt();
+        final int countKernPairs = readInt();
         for (int i = 0; i < countKernPairs; i++)
         {
             fontMetrics.addKernPair0(parseKernPair());
@@ -517,9 +517,9 @@ public class AFMParser
         readCommand(END_KERN_PAIRS);
     }
 
-    private void parseKernPairs1(FontMetrics fontMetrics) throws IOException
+    private void parseKernPairs1(final FontMetrics fontMetrics) throws IOException
     {
-        int countKernPairs = readInt();
+        final int countKernPairs = readInt();
         for (int i = 0; i < countKernPairs; i++)
         {
             fontMetrics.addKernPair1(parseKernPair());
@@ -536,7 +536,7 @@ public class AFMParser
      */
     private KernPair parseKernPair() throws IOException
     {
-        String cmd = readString();
+        final String cmd = readString();
         switch (cmd)
         {
         case KERN_PAIR_KP:
@@ -565,7 +565,7 @@ public class AFMParser
      *
      * @throws IOException If the string is in an invalid format.
      */
-    private String hexToString(String hexToString) throws IOException
+    private String hexToString(final String hexToString) throws IOException
     {
         if (hexToString.length() < 2)
         {
@@ -576,19 +576,19 @@ public class AFMParser
             throw new IOException(
                     "String should be enclosed by angle brackets '" + hexToString + "'");
         }
-        String hexString = hexToString.substring(1, hexToString.length() - 1);
-        byte[] data = new byte[hexString.length() / 2];
+        final String hexString = hexToString.substring(1, hexToString.length() - 1);
+        final byte[] data = new byte[hexString.length() / 2];
         for( int i=0; i<hexString.length(); i+=2 )
         {
-            String hex = Character.toString(hexString.charAt(i)) + hexString.charAt(i + 1);
+            final String hex = Character.toString(hexString.charAt(i)) + hexString.charAt(i + 1);
             data[i / 2] = (byte) parseInt(hex, BITS_IN_HEX);
         }
         return new String( data, StandardCharsets.ISO_8859_1 );
     }
 
-    private void parseComposites(FontMetrics fontMetrics) throws IOException
+    private void parseComposites(final FontMetrics fontMetrics) throws IOException
     {
-        int countComposites = readInt();
+        final int countComposites = readInt();
         for (int i = 0; i < countComposites; i++)
         {
             fontMetrics.addComposite(parseComposite());
@@ -605,37 +605,37 @@ public class AFMParser
      */
     private Composite parseComposite() throws IOException
     {
-        String partData = readLine();
-        StringTokenizer tokenizer = new StringTokenizer( partData, " ;" );
+        final String partData = readLine();
+        final StringTokenizer tokenizer = new StringTokenizer( partData, " ;" );
 
 
-        String cc = tokenizer.nextToken();
+        final String cc = tokenizer.nextToken();
         if( !cc.equals( CC ) )
         {
             throw new IOException( "Expected '" + CC + "' actual='" + cc + "'" );
         }
-        String name = tokenizer.nextToken();
-        Composite composite = new Composite(name);
+        final String name = tokenizer.nextToken();
+        final Composite composite = new Composite(name);
 
-        int partCount = parseInt(tokenizer.nextToken());
+        final int partCount = parseInt(tokenizer.nextToken());
         for( int i=0; i<partCount; i++ )
         {
-            String pcc = tokenizer.nextToken();
+            final String pcc = tokenizer.nextToken();
             if( !pcc.equals( PCC ) )
             {
                 throw new IOException( "Expected '" + PCC + "' actual='" + pcc + "'" );
             }
-            String partName = tokenizer.nextToken();
-            int x = parseInt(tokenizer.nextToken());
-            int y = parseInt(tokenizer.nextToken());
+            final String partName = tokenizer.nextToken();
+            final int x = parseInt(tokenizer.nextToken());
+            final int y = parseInt(tokenizer.nextToken());
             composite.addPart(new CompositePart(partName, x, y));
         }
         return composite;
     }
 
-    private boolean parseCharMetrics(FontMetrics fontMetrics) throws IOException
+    private boolean parseCharMetrics(final FontMetrics fontMetrics) throws IOException
     {
-        int countMetrics = readInt();
+        final int countMetrics = readInt();
         for (int i = 0; i < countMetrics; i++)
         {
             fontMetrics.addCharMetric(parseCharMetric());
@@ -653,23 +653,23 @@ public class AFMParser
      */
     private CharMetric parseCharMetric() throws IOException
     {
-        CharMetric charMetric = new CharMetric();
-        String metrics = readLine();
-        StringTokenizer metricsTokenizer = new StringTokenizer( metrics );
+        final CharMetric charMetric = new CharMetric();
+        final String metrics = readLine();
+        final StringTokenizer metricsTokenizer = new StringTokenizer( metrics );
         while (metricsTokenizer.hasMoreTokens())
         {
-            String nextCommand = metricsTokenizer.nextToken();
+            final String nextCommand = metricsTokenizer.nextToken();
             switch (nextCommand)
             {
             case CHARMETRICS_C:
-                String charCodeC = metricsTokenizer.nextToken();
+                final String charCodeC = metricsTokenizer.nextToken();
                 charMetric.setCharacterCode(parseInt(charCodeC));
                 verifySemicolon(metricsTokenizer);
                 break;
             case CHARMETRICS_CH:
                 // Is the hex string <FF> or FF, the spec is a little
                 // unclear, wait and see if it breaks anything.
-                String charCodeCH = metricsTokenizer.nextToken();
+                final String charCodeCH = metricsTokenizer.nextToken();
                 charMetric.setCharacterCode(parseInt(charCodeCH, BITS_IN_HEX));
                 verifySemicolon(metricsTokenizer);
                 break;
@@ -698,28 +698,28 @@ public class AFMParser
                 verifySemicolon(metricsTokenizer);
                 break;
             case CHARMETRICS_W:
-                float[] w = new float[2];
+                final float[] w = new float[2];
                 w[0] = parseFloat(metricsTokenizer.nextToken());
                 w[1] = parseFloat(metricsTokenizer.nextToken());
                 charMetric.setW(w);
                 verifySemicolon(metricsTokenizer);
                 break;
             case CHARMETRICS_W0:
-                float[] w0 = new float[2];
+                final float[] w0 = new float[2];
                 w0[0] = parseFloat(metricsTokenizer.nextToken());
                 w0[1] = parseFloat(metricsTokenizer.nextToken());
                 charMetric.setW0(w0);
                 verifySemicolon(metricsTokenizer);
                 break;
             case CHARMETRICS_W1:
-                float[] w1 = new float[2];
+                final float[] w1 = new float[2];
                 w1[0] = parseFloat(metricsTokenizer.nextToken());
                 w1[1] = parseFloat(metricsTokenizer.nextToken());
                 charMetric.setW1(w1);
                 verifySemicolon(metricsTokenizer);
                 break;
             case CHARMETRICS_VV:
-                float[] vv = new float[2];
+                final float[] vv = new float[2];
                 vv[0] = parseFloat(metricsTokenizer.nextToken());
                 vv[1] = parseFloat(metricsTokenizer.nextToken());
                 charMetric.setVv(vv);
@@ -730,7 +730,7 @@ public class AFMParser
                 verifySemicolon(metricsTokenizer);
                 break;
             case CHARMETRICS_B:
-                BoundingBox box = new BoundingBox();
+                final BoundingBox box = new BoundingBox();
                 box.setLowerLeftX(parseFloat(metricsTokenizer.nextToken()));
                 box.setLowerLeftY(parseFloat(metricsTokenizer.nextToken()));
                 box.setUpperRightX(parseFloat(metricsTokenizer.nextToken()));
@@ -739,7 +739,7 @@ public class AFMParser
                 verifySemicolon(metricsTokenizer);
                 break;
             case CHARMETRICS_L:
-                Ligature lig = new Ligature(metricsTokenizer.nextToken(),
+                final Ligature lig = new Ligature(metricsTokenizer.nextToken(),
                         metricsTokenizer.nextToken());
                 charMetric.addLigature(lig);
                 verifySemicolon(metricsTokenizer);
@@ -758,11 +758,11 @@ public class AFMParser
      *
      * @throws IOException If the semicolon is missing.
      */
-    private void verifySemicolon( StringTokenizer tokenizer ) throws IOException
+    private void verifySemicolon(final StringTokenizer tokenizer ) throws IOException
     {
         if( tokenizer.hasMoreTokens() )
         {
-            String semicolon = tokenizer.nextToken();
+            final String semicolon = tokenizer.nextToken();
             if (!";".equals(semicolon))
             {
                 throw new IOException( "Error: Expected semicolon in stream actual='" +
@@ -795,12 +795,12 @@ public class AFMParser
         return parseInt(readString(), 10);
     }
 
-    private int parseInt(String intValue) throws IOException
+    private int parseInt(final String intValue) throws IOException
     {
         return parseInt(intValue, 10);
     }
 
-    private int parseInt(String intValue, int radix) throws IOException
+    private int parseInt(final String intValue, final int radix) throws IOException
     {
         try
         {
@@ -822,7 +822,7 @@ public class AFMParser
         return parseFloat(readString());
     }
 
-    private float parseFloat(String floatValue) throws IOException
+    private float parseFloat(final String floatValue) throws IOException
     {
         try
         {
@@ -842,7 +842,7 @@ public class AFMParser
     private String readLine() throws IOException
     {
         //First skip the whitespace
-        StringBuilder buf = new StringBuilder(60);
+        final StringBuilder buf = new StringBuilder(60);
         int nextByte = input.read();
         while( isWhitespace( nextByte ) )
         {
@@ -871,7 +871,7 @@ public class AFMParser
     private String readString() throws IOException
     {
         //First skip the whitespace
-        StringBuilder buf = new StringBuilder(24);
+        final StringBuilder buf = new StringBuilder(24);
         int nextByte = input.read();
         while( isWhitespace( nextByte ) )
         {
@@ -896,9 +896,9 @@ public class AFMParser
      * @param expectedCommand the expected command
      * @throws IOException IF the read stgring differs from the expected command
      */
-    private void readCommand(String expectedCommand) throws IOException
+    private void readCommand(final String expectedCommand) throws IOException
     {
-        String command = readString();
+        final String command = readString();
         if (!expectedCommand.equals(command))
         {
             throw new IOException(
@@ -913,7 +913,7 @@ public class AFMParser
      *
      * @return true If the character is whitespace as defined by the AFM spec.
      */
-    private boolean isEOL( int character )
+    private boolean isEOL(final int character )
     {
         return character == 0x0D ||
                character == 0x0A;
@@ -926,7 +926,7 @@ public class AFMParser
      *
      * @return true If the character is whitespace as defined by the AFM spec.
      */
-    private boolean isWhitespace( int character )
+    private boolean isWhitespace(final int character )
     {
         return character == ' ' ||
                character == '\t' ||

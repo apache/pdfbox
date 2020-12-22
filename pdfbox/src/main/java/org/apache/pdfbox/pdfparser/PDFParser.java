@@ -43,7 +43,7 @@ public class PDFParser extends COSParser
      * @param source source representing the pdf.
      * @throws IOException If something went wrong.
      */
-    public PDFParser(RandomAccessRead source) throws IOException
+    public PDFParser(final RandomAccessRead source) throws IOException
     {
         this(source, "");
     }
@@ -56,7 +56,7 @@ public class PDFParser extends COSParser
      * @param decryptionPassword password to be used for decryption.
      * @throws IOException If something went wrong.
      */
-    public PDFParser(RandomAccessRead source, String decryptionPassword) throws IOException
+    public PDFParser(final RandomAccessRead source, final String decryptionPassword) throws IOException
     {
         this(source, decryptionPassword, null, null);
     }
@@ -72,8 +72,8 @@ public class PDFParser extends COSParser
      *
      * @throws IOException If something went wrong.
      */
-    public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
-            String alias) throws IOException
+    public PDFParser(final RandomAccessRead source, final String decryptionPassword, final InputStream keyStore,
+                     final String alias) throws IOException
     {
         this(source, decryptionPassword, keyStore, alias, null);
     }
@@ -89,16 +89,16 @@ public class PDFParser extends COSParser
      *
      * @throws IOException If something went wrong.
      */
-    public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
-            String alias, MemoryUsageSetting memUsageSetting) throws IOException
+    public PDFParser(final RandomAccessRead source, final String decryptionPassword, final InputStream keyStore,
+                     final String alias, final MemoryUsageSetting memUsageSetting) throws IOException
     {
         super(source, decryptionPassword, keyStore, alias);
         init(memUsageSetting);
     }
 
-    private void init(MemoryUsageSetting memUsageSetting)
+    private void init(final MemoryUsageSetting memUsageSetting)
     {
-        String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
+        final String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
         if (eofLookupRangeStr != null)
         {
             try
@@ -124,9 +124,9 @@ public class PDFParser extends COSParser
      */
     protected void initialParse() throws IOException
     {
-        COSDictionary trailer = retrieveTrailer();
+        final COSDictionary trailer = retrieveTrailer();
     
-        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
+        final COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
         if (root == null)
         {
             throw new IOException("Missing root object specification in trailer.");
@@ -162,7 +162,7 @@ public class PDFParser extends COSParser
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException If there is an error reading from the stream or corrupt data is found.
      */
-    public PDDocument parse(boolean lenient) throws IOException
+    public PDDocument parse(final boolean lenient) throws IOException
     {
         setLenient(lenient);
         // set to false if all is processed
@@ -180,7 +180,7 @@ public class PDFParser extends COSParser
                 initialParse();
             }
             exceptionOccurred = false;
-            PDDocument pdDocument = createDocument();
+            final PDDocument pdDocument = createDocument();
             pdDocument.setEncryptionDictionary(getEncryption());
             return pdDocument;
         }
@@ -218,7 +218,7 @@ public class PDFParser extends COSParser
      * @deprecated use {@link Loader#loadPDF(File)} instead
      */
     @Deprecated
-    public static PDDocument load(File file) throws IOException
+    public static PDDocument load(final File file) throws IOException
     {
         return Loader.loadPDF(file);
     }
@@ -237,7 +237,7 @@ public class PDFParser extends COSParser
      * @deprecated use {@link Loader#loadPDF(File, String)} instead
      */
     @Deprecated
-    public static PDDocument load(File file, String password) throws IOException
+    public static PDDocument load(final File file, final String password) throws IOException
     {
         return Loader.loadPDF(file, password);
     }

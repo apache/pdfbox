@@ -65,12 +65,12 @@ public final class ImageToPDF implements Callable<Integer>
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new ImageToPDF()).execute(args);
+        final int exitCode = new CommandLine(new ImageToPDF()).execute(args);
         System.exit(exitCode);
     }
 
@@ -80,16 +80,16 @@ public final class ImageToPDF implements Callable<Integer>
 
         try (PDDocument doc = new PDDocument())
         {
-            for (File imageFile : infiles)
+            for (final File imageFile : infiles)
             {
-                PDImageXObject pdImage = PDImageXObject.createFromFile(imageFile.getAbsolutePath(), doc);
+                final PDImageXObject pdImage = PDImageXObject.createFromFile(imageFile.getAbsolutePath(), doc);
 
                 PDRectangle actualMediaBox = mediaBox;
                 if ((autoOrientation && pdImage.getWidth() > pdImage.getHeight()) || landscape)
                 {
                     actualMediaBox = new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth());
                 }
-                PDPage page = new PDPage(actualMediaBox);
+                final PDPage page = new PDPage(actualMediaBox);
                 doc.addPage(page);
 
                 try (PDPageContentStream contents = new PDPageContentStream(doc, page))
@@ -114,7 +114,7 @@ public final class ImageToPDF implements Callable<Integer>
         return 0;
     }
 
-    private static PDRectangle createRectangle(String paperSize)
+    private static PDRectangle createRectangle(final String paperSize)
     {
         if ("letter".equalsIgnoreCase(paperSize))
         {
@@ -174,7 +174,7 @@ public final class ImageToPDF implements Callable<Integer>
      *
      * @param mediaBox the media box of the PDF document.
      */
-    public void setMediaBox(PDRectangle mediaBox)
+    public void setMediaBox(final PDRectangle mediaBox)
     {
         this.mediaBox = mediaBox;
     }
@@ -194,7 +194,7 @@ public final class ImageToPDF implements Callable<Integer>
      *
      * @param landscape use landscape orientation.
      */
-    public void setLandscape(boolean landscape)
+    public void setLandscape(final boolean landscape)
     {
         this.landscape = landscape;
     }
@@ -216,7 +216,7 @@ public final class ImageToPDF implements Callable<Integer>
      *
      * @param autoOrientation true if auto, false if not.
      */
-    public void setAutoOrientation(boolean autoOrientation)
+    public void setAutoOrientation(final boolean autoOrientation)
     {
         this.autoOrientation = autoOrientation;
     }

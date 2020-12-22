@@ -42,12 +42,12 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDSquareAppearanceHandler.class);
         
-    public PDSquareAppearanceHandler(PDAnnotation annotation)
+    public PDSquareAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDSquareAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDSquareAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -63,33 +63,33 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        float lineWidth = getLineWidth();
-        PDAnnotationSquare annotation = (PDAnnotationSquare) getAnnotation();
+        final float lineWidth = getLineWidth();
+        final PDAnnotationSquare annotation = (PDAnnotationSquare) getAnnotation();
         try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
-            boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
-            boolean hasBackground = contentStream
+            final boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
+            final boolean hasBackground = contentStream
                     .setNonStrokingColorOnDemand(annotation.getInteriorColor());
 
             setOpacity(contentStream, annotation.getConstantOpacity());
 
             contentStream.setBorderLine(lineWidth, annotation.getBorderStyle(), annotation.getBorder());                
-            PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
+            final PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
 
             if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
             {
-                CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
+                final CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
                     borderEffect.getIntensity(), lineWidth, getRectangle());
                 cloudyBorder.createCloudyRectangle(annotation.getRectDifference());
                 annotation.setRectangle(cloudyBorder.getRectangle());
                 annotation.setRectDifference(cloudyBorder.getRectDifference());
-                PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+                final PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
                 appearanceStream.setBBox(cloudyBorder.getBBox());
                 appearanceStream.setMatrix(cloudyBorder.getMatrix());
             }
             else
             {
-                PDRectangle borderBox = handleBorderBox(annotation, lineWidth);
+                final PDRectangle borderBox = handleBorderBox(annotation, lineWidth);
 
                 contentStream.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
                         borderBox.getWidth(), borderBox.getHeight());
@@ -132,19 +132,19 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
     // here and removed from the individual handlers.
     float getLineWidth()
     {
-        PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
+        final PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
 
-        PDBorderStyleDictionary bs = annotation.getBorderStyle();
+        final PDBorderStyleDictionary bs = annotation.getBorderStyle();
 
         if (bs != null)
         {
             return bs.getWidth();
         }
 
-        COSArray borderCharacteristics = annotation.getBorder();
+        final COSArray borderCharacteristics = annotation.getBorder();
         if (borderCharacteristics.size() >= 3)
         {
-            COSBase base = borderCharacteristics.getObject(2);
+            final COSBase base = borderCharacteristics.getObject(2);
             if (base instanceof COSNumber)
             {
                 return ((COSNumber) base).floatValue();

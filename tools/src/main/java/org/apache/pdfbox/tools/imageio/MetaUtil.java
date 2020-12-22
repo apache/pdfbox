@@ -46,7 +46,7 @@ public final class MetaUtil
     }    
 
     // logs metadata as an XML tree if debug is enabled
-    static void debugLogMetadata(IIOMetadata metadata, String format)
+    static void debugLogMetadata(final IIOMetadata metadata, final String format)
     {
         if (!LOG.isDebugEnabled())
         {
@@ -55,20 +55,20 @@ public final class MetaUtil
 
         // see http://docs.oracle.com/javase/7/docs/api/javax/imageio/
         //     metadata/doc-files/standard_metadata.html
-        IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(format);
+        final IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(format);
         try
         {
-            StringWriter xmlStringWriter = new StringWriter();
-            StreamResult streamResult = new StreamResult(xmlStringWriter);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            final StringWriter xmlStringWriter = new StringWriter();
+            final StreamResult streamResult = new StreamResult(xmlStringWriter);
+            final TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            Transformer transformer = transformerFactory.newTransformer();
+            final Transformer transformer = transformerFactory.newTransformer();
             // see http://stackoverflow.com/a/1264872/535646
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            DOMSource domSource = new DOMSource(root);
+            final DOMSource domSource = new DOMSource(root);
             transformer.transform(domSource, streamResult);
             LOG.debug("\n" + xmlStringWriter);
         }

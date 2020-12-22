@@ -68,7 +68,7 @@ class PDSquareAnnotationTest
     @Test
     void createDefaultSquareAnnotation()
     {
-        PDAnnotation annotation = new PDAnnotationSquare();
+        final PDAnnotation annotation = new PDAnnotationSquare();
         assertEquals(COSName.ANNOT, annotation.getCOSObject().getItem(COSName.TYPE));
         assertEquals(PDAnnotationSquare.SUB_TYPE,
                 annotation.getCOSObject().getNameAsString(COSName.SUBTYPE));
@@ -82,16 +82,16 @@ class PDSquareAnnotationTest
 
         try (PDDocument document = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             document.addPage(page);
-            List<PDAnnotation> annotations = page.getAnnotations();
+            final List<PDAnnotation> annotations = page.getAnnotations();
             
-            PDAnnotationSquareCircle annotation = new PDAnnotationSquare();
+            final PDAnnotationSquareCircle annotation = new PDAnnotationSquare();
             
-            PDBorderStyleDictionary borderThin = new PDBorderStyleDictionary();
+            final PDBorderStyleDictionary borderThin = new PDBorderStyleDictionary();
             borderThin.setWidth(borderWidth);
             
-            PDColor red = new PDColor(new float[] { 1, 0, 0 }, PDDeviceRGB.INSTANCE);
+            final PDColor red = new PDColor(new float[] { 1, 0, 0 }, PDDeviceRGB.INSTANCE);
             annotation.setContents("Square Annotation");
             annotation.setColor(red);
             annotation.setBorderStyle(borderThin);
@@ -110,26 +110,26 @@ class PDSquareAnnotationTest
         // the width of the <nnotations border
         final int borderWidth = 1;
 
-        File file = new File(IN_DIR, NAME_OF_PDF);
+        final File file = new File(IN_DIR, NAME_OF_PDF);
         try (PDDocument document = Loader.loadPDF(file))
         {
-            PDPage page = document.getPage(0);
-            List<PDAnnotation> annotations = page.getAnnotations();
+            final PDPage page = document.getPage(0);
+            final List<PDAnnotation> annotations = page.getAnnotations();
             
-            PDAnnotationSquareCircle annotation = (PDAnnotationSquareCircle) annotations.get(0);
+            final PDAnnotationSquareCircle annotation = (PDAnnotationSquareCircle) annotations.get(0);
             
             // test the correct setting of the appearance stream
             assertNotNull(annotation.getAppearance(), "Appearance dictionary shall not be null");
             assertNotNull(annotation.getAppearance().getNormalAppearance(),
                     "Normal appearance shall not be null");
-            PDAppearanceStream appearanceStream = annotation.getAppearance().getNormalAppearance().getAppearanceStream();
+            final PDAppearanceStream appearanceStream = annotation.getAppearance().getNormalAppearance().getAppearanceStream();
             assertNotNull(appearanceStream, "Appearance stream shall not be null");
             assertEquals(rectangle.getLowerLeftX(), appearanceStream.getBBox().getLowerLeftX(), DELTA);
             assertEquals(rectangle.getLowerLeftY(), appearanceStream.getBBox().getLowerLeftY(), DELTA);
             assertEquals(rectangle.getWidth(), appearanceStream.getBBox().getWidth(), DELTA);
             assertEquals(rectangle.getHeight(), appearanceStream.getBBox().getHeight(), DELTA);
             
-            Matrix matrix = appearanceStream.getMatrix();
+            final Matrix matrix = appearanceStream.getMatrix();
             assertNotNull(matrix, "Matrix shall not be null");
             
             // should have been translated to a 0 origin
@@ -137,10 +137,10 @@ class PDSquareAnnotationTest
             assertEquals(-rectangle.getLowerLeftY(), matrix.getTranslateY(), DELTA);
             
             // test the content of the appearance stream
-            PDStream contentStream = appearanceStream.getContentStream();
+            final PDStream contentStream = appearanceStream.getContentStream();
             assertNotNull(contentStream, "Content stream shall not be null");
-            PDFStreamParser parser = new PDFStreamParser(appearanceStream);
-            List<Object> tokens = parser.parse();
+            final PDFStreamParser parser = new PDFStreamParser(appearanceStream);
+            final List<Object> tokens = parser.parse();
             
             // the samples content stream should contain 10 tokens
             assertEquals(10, tokens.size());

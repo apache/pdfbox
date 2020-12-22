@@ -47,7 +47,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
      * Creates a new Lab color space from a PDF array.
      * @param lab the color space array
      */
-    public PDLab(COSArray lab)
+    public PDLab(final COSArray lab)
     {
         super(lab);
     }
@@ -62,21 +62,21 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     // WARNING: this method is performance sensitive, modify with care!
     //
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(final WritableRaster raster) throws IOException
     {
-        int width = raster.getWidth();
-        int height = raster.getHeight();
+        final int width = raster.getWidth();
+        final int height = raster.getHeight();
 
-        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        WritableRaster rgbRaster = rgbImage.getRaster();
+        final BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        final WritableRaster rgbRaster = rgbImage.getRaster();
 
-        float minA = getARange().getMin();
-        float maxA = getARange().getMax();
-        float minB = getBRange().getMin();
-        float maxB = getBRange().getMax();
+        final float minA = getARange().getMin();
+        final float maxA = getARange().getMax();
+        final float minB = getBRange().getMin();
+        final float maxB = getBRange().getMax();
 
         // always three components: ABC
-        float[] abc = new float[3];
+        final float[] abc = new float[3];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -93,7 +93,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
                 abc[1] = minA + (abc[1] * (maxA - minA));
                 abc[2] = minB + (abc[2] * (maxB - minB));
 
-                float[] rgb = toRGB(abc);
+                final float[] rgb = toRGB(abc);
 
                 // 0..1 -> 0..255
                 rgb[0] *= 255;
@@ -108,32 +108,32 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     }
 
     @Override
-    public BufferedImage toRawImage(WritableRaster raster)
+    public BufferedImage toRawImage(final WritableRaster raster)
     {
         // Not handled at the moment.
        return null;
     }
 
     @Override
-    public float[] toRGB(float[] value)
+    public float[] toRGB(final float[] value)
     {
         // CIE LAB to RGB, see http://en.wikipedia.org/wiki/Lab_color_space
 
         // L*
-        float lstar = (value[0] + 16f) * (1f / 116f);
+        final float lstar = (value[0] + 16f) * (1f / 116f);
 
         // TODO: how to use the blackpoint? scale linearly between black & white?
 
         // XYZ
-        float x = wpX * inverse(lstar + value[1] * (1f / 500f));
-        float y = wpY * inverse(lstar);
-        float z = wpZ * inverse(lstar - value[2] * (1f / 200f));
+        final float x = wpX * inverse(lstar + value[1] * (1f / 500f));
+        final float y = wpY * inverse(lstar);
+        final float z = wpZ * inverse(lstar - value[2] * (1f / 200f));
         
         return convXYZtoRGB(x, y, z);
     }
 
     // reverse transformation (f^-1)
-    private float inverse(float x)
+    private float inverse(final float x)
     {
         if (x > 6.0 / 29.0)
         {
@@ -152,10 +152,10 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
-        PDRange a = getARange();
-        PDRange b = getARange();
+        final PDRange a = getARange();
+        final PDRange b = getARange();
         return new float[] { 0, 100, a.getMin(), a.getMax(), b.getMin(), b.getMax() };
     }
 
@@ -179,7 +179,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
      */
     private COSArray getDefaultRangeArray()
     {
-        COSArray range = new COSArray();
+        final COSArray range = new COSArray();
         range.add(new COSFloat(-100));
         range.add(new COSFloat(100));
         range.add(new COSFloat(-100));
@@ -222,7 +222,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
      * @param range the new range for the "a" component, 
      * or null if defaults (-100..100) are to be set.
      */
-    public void setARange(PDRange range)
+    public void setARange(final PDRange range)
     {
         setComponentRangeArray(range, 0);
     }
@@ -232,12 +232,12 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
      * @param range the new range for the "b" component,
      * or null if defaults (-100..100) are to be set.
      */
-    public void setBRange(PDRange range)
+    public void setBRange(final PDRange range)
     {
         setComponentRangeArray(range, 2);
     }
 
-    private void setComponentRangeArray(PDRange range, int index)
+    private void setComponentRangeArray(final PDRange range, final int index)
     {
         COSArray rangeArray = (COSArray) dictionary.getDictionaryObject(COSName.RANGE);
         if (rangeArray == null)

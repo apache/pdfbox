@@ -35,12 +35,12 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDCaretAppearanceHandler.class);
 
-    public PDCaretAppearanceHandler(PDAnnotation annotation)
+    public PDCaretAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDCaretAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDCaretAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -56,7 +56,7 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        PDAnnotationCaret annotation = (PDAnnotationCaret) getAnnotation();
+        final PDAnnotationCaret annotation = (PDAnnotationCaret) getAnnotation();
         try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
             contentStream.setStrokingColor(getColor());
@@ -64,7 +64,7 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
 
             setOpacity(contentStream, annotation.getConstantOpacity());
 
-            PDRectangle rect = getRectangle();
+            final PDRectangle rect = getRectangle();
             PDRectangle bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
             if (!annotation.getCOSObject().containsKey(COSName.RD))
             {
@@ -74,20 +74,20 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
                 // translation values in the matrix and also used for the line width
                 // (not here because it has no effect, see comment near fill() ).
                 // The curves are based on the original rectangle.
-                float rd = Math.min(rect.getHeight() / 10, 5);
+                final float rd = Math.min(rect.getHeight() / 10, 5);
                 annotation.setRectDifferences(rd);
                 bbox = new PDRectangle(-rd, -rd, rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
-                Matrix matrix = annotation.getNormalAppearanceStream().getMatrix();
+                final Matrix matrix = annotation.getNormalAppearanceStream().getMatrix();
                 matrix.transformPoint(rd, rd);
                 annotation.getNormalAppearanceStream().setMatrix(matrix.createAffineTransform());
-                PDRectangle rect2 = new PDRectangle(rect.getLowerLeftX() - rd, rect.getLowerLeftY() - rd,
+                final PDRectangle rect2 = new PDRectangle(rect.getLowerLeftX() - rd, rect.getLowerLeftY() - rd,
                                                     rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
                 annotation.setRectangle(rect2);
             }
             annotation.getNormalAppearanceStream().setBBox(bbox);
 
-            float halfX = rect.getWidth() / 2;
-            float halfY = rect.getHeight() / 2;
+            final float halfX = rect.getWidth() / 2;
+            final float halfY = rect.getHeight() / 2;
             contentStream.moveTo(0, 0);
             contentStream.curveTo(halfX, 0,
                                   halfX, halfY, 

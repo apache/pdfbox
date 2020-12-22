@@ -50,7 +50,7 @@ public class FDFAnnotationText extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationText(COSDictionary a)
+    public FDFAnnotationText(final COSDictionary a)
     {
         super(a);
     }
@@ -62,19 +62,19 @@ public class FDFAnnotationText extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationText(Element element) throws IOException
+    public FDFAnnotationText(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
-        String icon = element.getAttribute("icon");
+        final String icon = element.getAttribute("icon");
         if (icon != null && !icon.isEmpty())
         {
             setIcon(element.getAttribute("icon"));
         }
-        String state = element.getAttribute("state");
+        final String state = element.getAttribute("state");
         if (state != null && !state.isEmpty())
         {
-            String statemodel = element.getAttribute("statemodel");
+            final String statemodel = element.getAttribute("statemodel");
             if (statemodel != null && !statemodel.isEmpty())
             {
                 setState(element.getAttribute("state"));
@@ -89,7 +89,7 @@ public class FDFAnnotationText extends FDFAnnotation
      *
      * @param icon The name of the annotation
      */
-    public final void setIcon(String icon)
+    public final void setIcon(final String icon)
     {
         annot.setName(COSName.NAME, icon);
     }
@@ -120,7 +120,7 @@ public class FDFAnnotationText extends FDFAnnotation
      * 
      * @param state the annotation state
      */
-    public final void setState(String state)
+    public final void setState(final String state)
     {
         annot.setString(COSName.STATE, state);
     }
@@ -140,7 +140,7 @@ public class FDFAnnotationText extends FDFAnnotation
      * 
      * @param stateModel the annotation state model
      */
-    public final void setStateModel(String stateModel)
+    public final void setStateModel(final String stateModel)
     {
         annot.setString(COSName.STATE_MODEL, stateModel);
     }

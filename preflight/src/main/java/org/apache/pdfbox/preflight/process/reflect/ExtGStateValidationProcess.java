@@ -65,9 +65,9 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @throws ValidationException thrown if an Extended Graphic State isn't valid.
      */
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
-        PreflightPath vPath = context.getValidationPath();
+        final PreflightPath vPath = context.getValidationPath();
         if (vPath.isEmpty())
         {
             return;
@@ -79,8 +79,8 @@ public class ExtGStateValidationProcess extends AbstractProcess
         }
         else
         {
-            COSDictionary extGStatesDict = (COSDictionary) vPath.peek();
-            List<COSDictionary> listOfExtGState = extractExtGStateDictionaries(extGStatesDict);
+            final COSDictionary extGStatesDict = (COSDictionary) vPath.peek();
+            final List<COSDictionary> listOfExtGState = extractExtGStateDictionaries(extGStatesDict);
             validateTransparencyRules(context, listOfExtGState);
             validateFonts(context, listOfExtGState);
         }
@@ -94,15 +94,15 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @throws ValidationException thrown if an Extended Graphic State isn't valid.
      */
     public List<COSDictionary> extractExtGStateDictionaries(
-            COSDictionary extGStates)
+            final COSDictionary extGStates)
             throws ValidationException
     {
-        List<COSDictionary> listOfExtGState = new ArrayList<>(0);
+        final List<COSDictionary> listOfExtGState = new ArrayList<>(0);
         if (extGStates != null)
         {
-            for (COSName key : extGStates.keySet())
+            for (final COSName key : extGStates.keySet())
             {
-                COSDictionary gsDict = extGStates.getCOSDictionary(key);
+                final COSDictionary gsDict = extGStates.getCOSDictionary(key);
                 if (gsDict == null)
                 {
                     throw new ValidationException("The Extended Graphics State dictionary is invalid");
@@ -120,9 +120,9 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @param listOfExtGState a list of ExtGState COSDictionaries.
      * 
      */
-    protected void validateTransparencyRules(PreflightContext context, List<COSDictionary> listOfExtGState)
+    protected void validateTransparencyRules(final PreflightContext context, final List<COSDictionary> listOfExtGState)
     {
-        for (COSDictionary egs : listOfExtGState)
+        for (final COSDictionary egs : listOfExtGState)
         {
             checkSoftMask(context, egs);
             checkUpperCA(context, egs);
@@ -141,10 +141,10 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @throws ValidationException
      * 
      */
-    protected void validateFonts(PreflightContext context, List<COSDictionary> listOfExtGState)
+    protected void validateFonts(final PreflightContext context, final List<COSDictionary> listOfExtGState)
             throws ValidationException
     {
-        for (COSDictionary egs : listOfExtGState)
+        for (final COSDictionary egs : listOfExtGState)
         {
             checkFont(context, egs);
         }
@@ -157,9 +157,9 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @param egs the Graphic state to check
      * @throws ValidationException
      */
-    private void checkFont(PreflightContext context, COSDictionary egs) throws ValidationException
+    private void checkFont(final PreflightContext context, final COSDictionary egs) throws ValidationException
     {
-        COSBase base = egs.getItem(COSName.FONT);
+        final COSBase base = egs.getItem(COSName.FONT);
         if (base == null)
         {
             return;
@@ -170,22 +170,22 @@ public class ExtGStateValidationProcess extends AbstractProcess
                     "/Font entry in /ExtGState must be an array with 2 elements"));
             return;
         }
-        COSArray ar = (COSArray) base;
-        COSBase base0 = ar.get(0);
+        final COSArray ar = (COSArray) base;
+        final COSBase base0 = ar.get(0);
         if (!(base0 instanceof COSObject))
         {
             context.addValidationError(new ValidationError(ERROR_SYNTAX_COMMON,
                     "1st element in /Font entry in /ExtGState must be an indirect object"));
             return;
         }
-        COSBase base1 = ar.getObject(1);
+        final COSBase base1 = ar.getObject(1);
         if (!(base1 instanceof COSNumber))
         {
             context.addValidationError(new ValidationError(ERROR_SYNTAX_COMMON,
                     "2nd element in /Font entry in /ExtGState must be a number"));
             return;
         }
-        COSNumber fontSize = (COSNumber) ar.getObject(1);
+        final COSNumber fontSize = (COSNumber) ar.getObject(1);
         if (fontSize.floatValue() > MAX_POSITIVE_FLOAT || fontSize.floatValue() < MAX_NEGATIVE_FLOAT)
         {
             context.addValidationError(new ValidationError(ERROR_SYNTAX_NUMERIC_RANGE,
@@ -193,10 +193,10 @@ public class ExtGStateValidationProcess extends AbstractProcess
         }
         if (ar.getObject(0) instanceof COSDictionary)
         {
-            COSDictionary fontDict = (COSDictionary) ar.getObject(0);
+            final COSDictionary fontDict = (COSDictionary) ar.getObject(0);
             try
             {
-                PDFont newFont = PDFontFactory.createFont(fontDict);
+                final PDFont newFont = PDFontFactory.createFont(fontDict);
                 ContextHelper.validateElement(context, newFont, FONT_PROCESS);
             }
             catch (IOException e)
@@ -214,7 +214,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @param context the preflight context.
      * @param egs the Graphic state to check
      */
-    private void checkSoftMask(PreflightContext context, COSDictionary egs)
+    private void checkSoftMask(final PreflightContext context, final COSDictionary egs)
     {
         if (egs.containsKey(COSName.SMASK) && !COSName.NONE.equals(egs.getCOSName(COSName.SMASK)))
         {
@@ -230,9 +230,9 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * 
      * @param context the preflight context     * @param egs the graphic state to check
      */
-    private void checkBlendMode(PreflightContext context, COSDictionary egs)
+    private void checkBlendMode(final PreflightContext context, final COSDictionary egs)
     {
-        COSName bmVal = egs.getCOSName(COSName.BM);
+        final COSName bmVal = egs.getCOSName(COSName.BM);
         // ---- Blend Mode is valid only if it is equals to Normal or Compatible
         if (bmVal != null && !(COSName.NORMAL.equals(bmVal) || COSName.COMPATIBLE.equals(bmVal)))
         {
@@ -248,14 +248,14 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @param context the preflight context.
      * @param egs the graphic state to check
      */
-    private void checkUpperCA(PreflightContext context, COSDictionary egs)
+    private void checkUpperCA(final PreflightContext context, final COSDictionary egs)
     {
-        COSBase uCA = egs.getDictionaryObject(COSName.CA);
+        final COSBase uCA = egs.getDictionaryObject(COSName.CA);
         if (uCA != null)
         {
             // ---- If CA is present only the value 1.0 is authorized
-            Float fca = uCA instanceof COSFloat ? ((COSFloat) uCA).floatValue() : null;
-            Integer ica = uCA instanceof COSInteger ? ((COSInteger) uCA).intValue() : null;
+            final Float fca = uCA instanceof COSFloat ? ((COSFloat) uCA).floatValue() : null;
+            final Integer ica = uCA instanceof COSInteger ? ((COSInteger) uCA).intValue() : null;
             if (!(fca != null && Float.compare(fca, 1.0f) == 0) && !(ica != null && ica == 1))
             {
                 context.addValidationError(new ValidationError(ERROR_TRANSPARENCY_EXT_GS_CA,
@@ -271,14 +271,14 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @param context the preflight context.
      * @param egs the graphic state to check
      */
-    private void checkLowerCA(PreflightContext context, COSDictionary egs)
+    private void checkLowerCA(final PreflightContext context, final COSDictionary egs)
     {
-        COSBase lCA = egs.getDictionaryObject(COSName.CA_NS);
+        final COSBase lCA = egs.getDictionaryObject(COSName.CA_NS);
         if (lCA != null)
         {
             // ---- If ca is present only the value 1.0 is authorized
-            Float fca = lCA instanceof COSFloat ? ((COSFloat) lCA).floatValue() : null;
-            Integer ica = lCA instanceof COSInteger ? ((COSInteger) lCA).intValue() : null;
+            final Float fca = lCA instanceof COSFloat ? ((COSFloat) lCA).floatValue() : null;
+            final Integer ica = lCA instanceof COSInteger ? ((COSInteger) lCA).intValue() : null;
             if (!(fca != null && Float.compare(fca, 1.0f) == 0) && !(ica != null && ica == 1))
             {
                 context.addValidationError(new ValidationError(ERROR_TRANSPARENCY_EXT_GS_CA,
@@ -293,7 +293,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @param context the preflight context
      * @param egs the graphic state to check
      */
-    protected void checkTRKey(PreflightContext context, COSDictionary egs)
+    protected void checkTRKey(final PreflightContext context, final COSDictionary egs)
     {
         if (egs.containsKey(COSName.TR))
         {
@@ -308,11 +308,11 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @param context the preflight context
      * @param egs the graphic state to check
      */
-    protected void checkTR2Key(PreflightContext context, COSDictionary egs)
+    protected void checkTR2Key(final PreflightContext context, final COSDictionary egs)
     {
         if (egs.containsKey(COSName.TR2))
         {
-            String s = egs.getNameAsString(COSName.TR2);
+            final String s = egs.getNameAsString(COSName.TR2);
             if (!"Default".equals(s))
             {
                 context.addValidationError(

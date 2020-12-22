@@ -29,17 +29,17 @@ final class GToolTip extends ColorToolTip
      * Constructor.
      * @param rowText String instance.
      */
-    GToolTip(String rowText)
+    GToolTip(final String rowText)
     {
         createMarkUp(rowText);
     }
 
-    private void createMarkUp(String rowText)
+    private void createMarkUp(final String rowText)
     {
-        float[] colorValues = extractColorValues(rowText);
+        final float[] colorValues = extractColorValues(rowText);
         if (colorValues != null)
         {
-            Color color = new Color(colorValues[0], colorValues[0], colorValues[0]);
+            final Color color = new Color(colorValues[0], colorValues[0], colorValues[0]);
             setToolTipText(getMarkUp(colorHexValue(color)));
         }
     }

@@ -110,18 +110,18 @@ public final class Encrypt implements Callable<Integer>
      * @throws IOException If there is an error decrypting the document.
      * @throws CertificateException If there is an error with a certificate.
      */
-    public static void main( String[] args )
+    public static void main(final String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new Encrypt()).execute(args);
+        final int exitCode = new CommandLine(new Encrypt()).execute(args);
         System.exit(exitCode);
     }
 
     public Integer call()
     {
-        AccessPermission ap = new AccessPermission();
+        final AccessPermission ap = new AccessPermission();
         ap.setCanAssembleDocument(canAssembleDocument);
         ap.setCanExtractContent(canExtractContent);
         ap.setCanExtractForAccessibility(canExtractForAccessibility);
@@ -142,17 +142,17 @@ public final class Encrypt implements Callable<Integer>
             {
                 if (!certFileList.isEmpty())
                 {
-                    PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
-                    PublicKeyRecipient recip = new PublicKeyRecipient();
+                    final PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
+                    final PublicKeyRecipient recip = new PublicKeyRecipient();
                     recip.setPermission(ap);
 
-                    CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                    final CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-                    for (File certFile : certFileList)
+                    for (final File certFile : certFileList)
                     {
                         try (InputStream inStream = new FileInputStream(certFile))
                         {
-                            X509Certificate certificate = (X509Certificate) cf.generateCertificate(inStream);
+                            final X509Certificate certificate = (X509Certificate) cf.generateCertificate(inStream);
                             recip.setX509(certificate);
                         }
                         ppp.addRecipient(recip);
@@ -164,7 +164,7 @@ public final class Encrypt implements Callable<Integer>
                 }
                 else
                 {
-                    StandardProtectionPolicy spp =
+                    final StandardProtectionPolicy spp =
                         new StandardProtectionPolicy(ownerPassword, userPassword, ap);
                     spp.setEncryptionKeyLength(keyLength);
                     document.protect(spp);

@@ -45,7 +45,7 @@ public class PDShadingPattern extends PDAbstractPattern
      * Creates a new shading pattern from the given COS dictionary.
      * @param resourceDictionary The COSDictionary for this pattern resource.
      */
-    public PDShadingPattern(COSDictionary resourceDictionary)
+    public PDShadingPattern(final COSDictionary resourceDictionary)
     {
         super(resourceDictionary);
     }
@@ -64,7 +64,7 @@ public class PDShadingPattern extends PDAbstractPattern
     {
         if (extendedGraphicsState == null)
         {
-            COSBase base = getCOSObject().getDictionaryObject(COSName.EXT_G_STATE);
+            final COSBase base = getCOSObject().getDictionaryObject(COSName.EXT_G_STATE);
             if (base instanceof COSDictionary)
             {
                 extendedGraphicsState = new PDExtendedGraphicsState((COSDictionary) base);
@@ -77,7 +77,7 @@ public class PDShadingPattern extends PDAbstractPattern
      * This will set the external graphics state for this pattern.
      * @param extendedGraphicsState The new extended graphics state for this pattern.
      */
-    public void setExtendedGraphicsState(PDExtendedGraphicsState extendedGraphicsState)
+    public void setExtendedGraphicsState(final PDExtendedGraphicsState extendedGraphicsState)
     {
         this.extendedGraphicsState = extendedGraphicsState;
         getCOSObject().setItem(COSName.EXT_G_STATE, extendedGraphicsState);
@@ -92,7 +92,7 @@ public class PDShadingPattern extends PDAbstractPattern
     {
         if (shading == null)
         {
-            COSBase base = getCOSObject().getDictionaryObject(COSName.SHADING);
+            final COSBase base = getCOSObject().getDictionaryObject(COSName.SHADING);
             if (base instanceof COSDictionary)
             {
                 shading = PDShading.create((COSDictionary) base);
@@ -105,7 +105,7 @@ public class PDShadingPattern extends PDAbstractPattern
      * This will set the shading resources for this pattern.
      * @param shadingResources The new shading resources for this pattern.
      */
-    public void setShading( PDShading shadingResources )
+    public void setShading(final PDShading shadingResources )
     {
         shading = shadingResources;
         getCOSObject().setItem(COSName.SHADING, shadingResources);

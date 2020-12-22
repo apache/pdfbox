@@ -41,10 +41,10 @@ public class WindowsFontDirFinder implements FontDirFinder
      * Attempts to read windir environment variable on windows (disclaimer: This is a bit dirty but seems to work
      * nicely).
      */
-    private String getWinDir(String osName) throws IOException
+    private String getWinDir(final String osName) throws IOException
     {
-        Process process;
-        Runtime runtime = Runtime.getRuntime();
+        final Process process;
+        final Runtime runtime = Runtime.getRuntime();
         if (osName.startsWith("Windows 9"))
         {
             process = runtime.exec("command.com /c echo %windir%");
@@ -68,7 +68,7 @@ public class WindowsFontDirFinder implements FontDirFinder
     @Override
     public List<File> find()
     {
-        List<File> fontDirList = new java.util.ArrayList<>();
+        final List<File> fontDirList = new java.util.ArrayList<>();
         String windir = null;
         try
         {
@@ -79,7 +79,7 @@ public class WindowsFontDirFinder implements FontDirFinder
             LOG.debug("Couldn't get Windows font directories - ignoring", e);
             // should continue if this fails
         }
-        String osName = System.getProperty("os.name");
+        final String osName = System.getProperty("os.name");
         if (windir == null)
         {
             try
@@ -114,7 +114,7 @@ public class WindowsFontDirFinder implements FontDirFinder
         }
         else
         {
-            String windowsDirName = osName.endsWith("NT") ? "WINNT" : "WINDOWS";
+            final String windowsDirName = osName.endsWith("NT") ? "WINNT" : "WINDOWS";
             // look for true type font folder
             for (char driveLetter = 'C'; driveLetter <= 'E'; driveLetter++)
             {

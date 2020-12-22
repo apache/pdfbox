@@ -47,10 +47,10 @@ public class CSDeviceN
      *
      * @param array COSArray instance that holds the DeviceN color space
      */
-    public CSDeviceN(COSArray array) throws IOException
+    public CSDeviceN(final COSArray array) throws IOException
     {
         deviceN = new PDDeviceN(array);
-        DeviceNColorant[] colorants = getColorantData();
+        final DeviceNColorant[] colorants = getColorantData();
         initUI(colorants);
     }
 
@@ -62,16 +62,16 @@ public class CSDeviceN
      */
     private DeviceNColorant[] getColorantData() throws IOException
     {
-        int componentCount = deviceN.getNumberOfComponents();
-        DeviceNColorant[] colorants = new DeviceNColorant[componentCount];
+        final int componentCount = deviceN.getNumberOfComponents();
+        final DeviceNColorant[] colorants = new DeviceNColorant[componentCount];
         for (int i = 0; i < componentCount; i++)
         {
-            DeviceNColorant colorant = new DeviceNColorant();
+            final DeviceNColorant colorant = new DeviceNColorant();
 
             colorant.setName(deviceN.getColorantNames().get(i));
-            float[] maximum = new float[componentCount];
+            final float[] maximum = new float[componentCount];
             Arrays.fill(maximum, 0);
-            float[] minimum = new float[componentCount];
+            final float[] minimum = new float[componentCount];
             Arrays.fill(minimum, 0);
             maximum[i] = 1;
             colorant.setMaximum(getColorObj(deviceN.toRGB(maximum)));
@@ -81,21 +81,21 @@ public class CSDeviceN
         return colorants;
     }
 
-    private void initUI(DeviceNColorant[] colorants)
+    private void initUI(final DeviceNColorant[] colorants)
     {
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setPreferredSize(new Dimension(300, 500));
 
-        JLabel colorSpaceLabel = new JLabel("DeviceN colorspace");
+        final JLabel colorSpaceLabel = new JLabel("DeviceN colorspace");
         colorSpaceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         colorSpaceLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
 
-        DeviceNTableModel tableModel = new DeviceNTableModel(colorants);
-        JTable table = new JTable(tableModel);
+        final DeviceNTableModel tableModel = new DeviceNTableModel(colorants);
+        final JTable table = new JTable(tableModel);
         table.setDefaultRenderer(Color.class, new ColorBarCellRenderer());
         table.setRowHeight(60);
-        JScrollPane scrollPane = new JScrollPane();
+        final JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(table);
 
         panel.add(colorSpaceLabel);
@@ -112,7 +112,7 @@ public class CSDeviceN
         return panel;
     }
 
-    private Color getColorObj(float[] rgbValues)
+    private Color getColorObj(final float[] rgbValues)
     {
         return new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
     }

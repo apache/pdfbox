@@ -69,7 +69,7 @@ public class PrintImageLocations extends PDFStreamEngine
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
         if( args.length != 1 )
         {
@@ -79,9 +79,9 @@ public class PrintImageLocations extends PDFStreamEngine
         {
             try (PDDocument document = Loader.loadPDF(new File(args[0])))
             {
-                PrintImageLocations printer = new PrintImageLocations();
+                final PrintImageLocations printer = new PrintImageLocations();
                 int pageNum = 0;
-                for( PDPage page : document.getPages() )
+                for( final PDPage page : document.getPages() )
                 {
                     pageNum++;
                     System.out.println( "Processing page: " + pageNum );
@@ -100,22 +100,22 @@ public class PrintImageLocations extends PDFStreamEngine
      * @throws IOException If there is an error processing the operation.
      */
     @Override
-    protected void processOperator( Operator operator, List<COSBase> operands) throws IOException
+    protected void processOperator(final Operator operator, final List<COSBase> operands) throws IOException
     {
-        String operation = operator.getName();
+        final String operation = operator.getName();
         if (OperatorName.DRAW_OBJECT.equals(operation))
         {
-            COSName objectName = (COSName) operands.get( 0 );
-            PDXObject xobject = getResources().getXObject( objectName );
+            final COSName objectName = (COSName) operands.get( 0 );
+            final PDXObject xobject = getResources().getXObject( objectName );
             if( xobject instanceof PDImageXObject)
             {
-                PDImageXObject image = (PDImageXObject)xobject;
-                int imageWidth = image.getWidth();
-                int imageHeight = image.getHeight();
+                final PDImageXObject image = (PDImageXObject)xobject;
+                final int imageWidth = image.getWidth();
+                final int imageHeight = image.getHeight();
                 System.out.println("*******************************************************************");
                 System.out.println("Found image [" + objectName.getName() + "]");
         
-                Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
+                final Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
                 float imageXScale = ctmNew.getScalingFactorX();
                 float imageYScale = ctmNew.getScalingFactorY();
 
@@ -137,7 +137,7 @@ public class PrintImageLocations extends PDFStreamEngine
             }
             else if(xobject instanceof PDFormXObject)
             {
-                PDFormXObject form = (PDFormXObject)xobject;
+                final PDFormXObject form = (PDFormXObject)xobject;
                 showForm(form);
             }
         }

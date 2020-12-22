@@ -43,7 +43,7 @@ public class PDExternalDataDictionary implements COSObjectable
      * 
      * @param dictionary Dictionary
      */
-    public PDExternalDataDictionary(COSDictionary dictionary)
+    public PDExternalDataDictionary(final COSDictionary dictionary)
     {
         this.dataDictionary = dictionary;
     }
@@ -84,7 +84,7 @@ public class PDExternalDataDictionary implements COSObjectable
      * 
      * @param subtype the subtype of the external data dictionary
      */
-    public void setSubtype(String subtype)
+    public void setSubtype(final String subtype)
     {
         this.getCOSObject().setName(COSName.SUBTYPE, subtype);
     }

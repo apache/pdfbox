@@ -43,7 +43,7 @@ public final class RenderingIntents
 
     static
     {
-        List<COSName> al = new ArrayList<>(4);
+        final List<COSName> al = new ArrayList<>(4);
         al.add(COSName.RELATIVE_COLORIMETRIC);
         al.add(COSName.ABSOLUTE_COLORIMETRIC);
         al.add(COSName.PERCEPTUAL);
@@ -55,7 +55,7 @@ public final class RenderingIntents
     {
     }
 
-    public static boolean contains(COSName renderingIntent)
+    public static boolean contains(final COSName renderingIntent)
     {
         return RENDERING_INTENTS.contains(renderingIntent);
     }

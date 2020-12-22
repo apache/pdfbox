@@ -36,15 +36,15 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
 
     private String prefix;
 
-    public AbstractStructuredType(XMPMetadata metadata)
+    public AbstractStructuredType(final XMPMetadata metadata)
     {
         this(metadata, null, null, null);
     }
 
-    public AbstractStructuredType(XMPMetadata metadata, String namespaceURI)
+    public AbstractStructuredType(final XMPMetadata metadata, final String namespaceURI)
     {
         this(metadata, namespaceURI, null, null);
-        StructuredType st = this.getClass().getAnnotation(StructuredType.class);
+        final StructuredType st = this.getClass().getAnnotation(StructuredType.class);
         if (st != null)
         {
             // init with annotation
@@ -58,10 +58,10 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
         this.prefix = this.preferedPrefix;
     }
 
-    public AbstractStructuredType(XMPMetadata metadata, String namespaceURI, String fieldPrefix, String propertyName)
+    public AbstractStructuredType(final XMPMetadata metadata, final String namespaceURI, final String fieldPrefix, final String propertyName)
     {
         super(metadata, propertyName);
-        StructuredType st = this.getClass().getAnnotation(StructuredType.class);
+        final StructuredType st = this.getClass().getAnnotation(StructuredType.class);
         if (st != null)
         {
             // init with annotation
@@ -92,7 +92,7 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
         return namespace;
     }
 
-    public final void setNamespace(String ns)
+    public final void setNamespace(final String ns)
     {
         this.namespace = ns;
     }
@@ -107,7 +107,7 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
         return prefix;
     }
 
-    public final void setPrefix(String pf)
+    public final void setPrefix(final String pf)
     {
         this.prefix = pf;
     }
@@ -117,16 +117,16 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
         return preferedPrefix;
     }
 
-    protected void addSimpleProperty(String propertyName, Object value)
+    protected void addSimpleProperty(final String propertyName, final Object value)
     {
-        TypeMapping tm = getMetadata().getTypeMapping();
-        AbstractSimpleProperty asp = tm.instanciateSimpleField(getClass(), null, getPrefix(), propertyName, value);
+        final TypeMapping tm = getMetadata().getTypeMapping();
+        final AbstractSimpleProperty asp = tm.instanciateSimpleField(getClass(), null, getPrefix(), propertyName, value);
         addProperty(asp);
     }
 
-    protected String getPropertyValueAsString(String fieldName)
+    protected String getPropertyValueAsString(final String fieldName)
     {
-        AbstractSimpleProperty absProp = (AbstractSimpleProperty) getProperty(fieldName);
+        final AbstractSimpleProperty absProp = (AbstractSimpleProperty) getProperty(fieldName);
         if (absProp == null)
         {
             return null;
@@ -137,9 +137,9 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
         }
     }
 
-    protected Calendar getDatePropertyAsCalendar(String fieldName)
+    protected Calendar getDatePropertyAsCalendar(final String fieldName)
     {
-        DateType absProp = (DateType) getFirstEquivalentProperty(fieldName, DateType.class);
+        final DateType absProp = (DateType) getFirstEquivalentProperty(fieldName, DateType.class);
         if (absProp != null)
         {
             return absProp.getValue();
@@ -150,12 +150,12 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
         }
     }
 
-    public TextType createTextType(String propertyName, String value)
+    public TextType createTextType(final String propertyName, final String value)
     {
         return getMetadata().getTypeMapping().createText(getNamespace(), getPrefix(), propertyName, value);
     }
 
-    public ArrayProperty createArrayProperty(String propertyName, Cardinality type)
+    public ArrayProperty createArrayProperty(final String propertyName, final Cardinality type)
     {
         return getMetadata().getTypeMapping().createArrayProperty(getNamespace(), getPrefix(), propertyName, type);
     }

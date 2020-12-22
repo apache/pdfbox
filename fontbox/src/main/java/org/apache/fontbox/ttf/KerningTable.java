@@ -38,7 +38,7 @@ public class KerningTable extends TTFTable
 
     private KerningSubtable[] subtables;
 
-    KerningTable(TrueTypeFont font)
+    KerningTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -51,7 +51,7 @@ public class KerningTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
         int version = data.readUnsignedShort();
         if (version != 0)
@@ -76,7 +76,7 @@ public class KerningTable extends TTFTable
             subtables = new KerningSubtable[numSubtables];
             for (int i = 0; i < numSubtables; ++i)
             {
-                KerningSubtable subtable = new KerningSubtable();
+                final KerningSubtable subtable = new KerningSubtable();
                 subtable.read(data, version);
                 subtables[i] = subtable;
             }
@@ -100,11 +100,11 @@ public class KerningTable extends TTFTable
      * @param cross true if requesting cross stream horizontal kerning
      * @return first matching subtable or null if none found
      */
-    public KerningSubtable getHorizontalKerningSubtable(boolean cross)
+    public KerningSubtable getHorizontalKerningSubtable(final boolean cross)
     {
         if (subtables != null)
         {
-            for (KerningSubtable s : subtables)
+            for (final KerningSubtable s : subtables)
             {
                 if (s.isHorizontalKerning(cross))
                 {

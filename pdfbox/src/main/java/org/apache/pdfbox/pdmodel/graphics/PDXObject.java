@@ -49,7 +49,7 @@ public class PDXObject implements COSObjectable
      * @return A new XObject instance.
      * @throws java.io.IOException if there is an error creating the XObject.
      */
-    public static PDXObject createXObject(COSBase base, PDResources resources) throws IOException
+    public static PDXObject createXObject(final COSBase base, final PDResources resources) throws IOException
     {
         if (base == null)
         {
@@ -62,8 +62,8 @@ public class PDXObject implements COSObjectable
             throw new IOException("Unexpected object type: " + base.getClass().getName());
         }
 
-        COSStream stream = (COSStream)base;
-        String subtype = stream.getNameAsString(COSName.SUBTYPE);
+        final COSStream stream = (COSStream)base;
+        final String subtype = stream.getNameAsString(COSName.SUBTYPE);
 
         if (COSName.IMAGE.getName().equals(subtype))
         {
@@ -71,8 +71,8 @@ public class PDXObject implements COSObjectable
         }
         else if (COSName.FORM.getName().equals(subtype))
         {
-            ResourceCache cache = resources != null ? resources.getResourceCache() : null;
-            COSDictionary group = (COSDictionary)stream.getDictionaryObject(COSName.GROUP);
+            final ResourceCache cache = resources != null ? resources.getResourceCache() : null;
+            final COSDictionary group = (COSDictionary)stream.getDictionaryObject(COSName.GROUP);
             if (group != null && COSName.TRANSPARENCY.equals(group.getCOSName(COSName.S)))
             {
                 return new PDTransparencyGroup(stream, cache);
@@ -94,7 +94,7 @@ public class PDXObject implements COSObjectable
      * @param stream The stream to read.
      * @param subtype
      */
-    protected PDXObject(COSStream stream, COSName subtype)
+    protected PDXObject(final COSStream stream, final COSName subtype)
     {
         this.stream = new PDStream(stream);
         // could be used for writing:
@@ -107,7 +107,7 @@ public class PDXObject implements COSObjectable
      * @param stream The stream to read.
      * @param subtype
      */
-    protected PDXObject(PDStream stream, COSName subtype)
+    protected PDXObject(final PDStream stream, final COSName subtype)
     {
         this.stream = stream;
         // could be used for writing:
@@ -120,7 +120,7 @@ public class PDXObject implements COSObjectable
      * @param document The document in which to create the XObject.
      * @param subtype The subtype of the new XObject.
      */
-    protected PDXObject(PDDocument document, COSName subtype)
+    protected PDXObject(final PDDocument document, final COSName subtype)
     {
         stream = new PDStream(document);
         stream.getCOSObject().setName(COSName.TYPE, COSName.XOBJECT.getName());

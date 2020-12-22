@@ -36,28 +36,28 @@ public class JobType extends AbstractStructuredType
     @PropertyType(type = Types.URL, card = Cardinality.Simple)
     public static final String URL = "url";
 
-    public JobType(XMPMetadata metadata)
+    public JobType(final XMPMetadata metadata)
     {
         this(metadata, null);
     }
 
-    public JobType(XMPMetadata metadata, String fieldPrefix)
+    public JobType(final XMPMetadata metadata, final String fieldPrefix)
     {
         super(metadata, fieldPrefix);
         addNamespace(getNamespace(), getPrefix());
     }
 
-    public void setId(String id)
+    public void setId(final String id)
     {
         addSimpleProperty(ID, id);
     }
 
-    public void setName(String name)
+    public void setName(final String name)
     {
         addSimpleProperty(NAME, name);
     }
 
-    public void setUrl(String name)
+    public void setUrl(final String name)
     {
         addSimpleProperty(URL, name);
     }

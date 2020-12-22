@@ -51,7 +51,7 @@ public final class FontMappers
     /**
      * Sets the singleton FontMapper instance.
      */
-    public static synchronized void set(FontMapper fontMapper)
+    public static synchronized void set(final FontMapper fontMapper)
     {
         instance = fontMapper;
     }

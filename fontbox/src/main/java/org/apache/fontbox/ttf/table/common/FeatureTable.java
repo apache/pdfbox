@@ -31,7 +31,7 @@ public class FeatureTable
     private final int lookupIndexCount;
     private final int[] lookupListIndices;
 
-    public FeatureTable(int featureParams, int lookupIndexCount, int[] lookupListIndices)
+    public FeatureTable(final int featureParams, final int lookupIndexCount, final int[] lookupListIndices)
     {
         this.featureParams = featureParams;
         this.lookupIndexCount = lookupIndexCount;

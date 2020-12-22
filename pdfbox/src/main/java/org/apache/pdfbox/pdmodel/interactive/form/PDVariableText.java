@@ -43,7 +43,7 @@ public abstract class PDVariableText extends PDTerminalField
      *
      * @param acroForm The acroform.
      */
-    PDVariableText(PDAcroForm acroForm)
+    PDVariableText(final PDAcroForm acroForm)
     {
         super(acroForm);
     }
@@ -55,7 +55,7 @@ public abstract class PDVariableText extends PDTerminalField
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDVariableText(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDVariableText(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -72,7 +72,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public String getDefaultAppearance()
     {
-        COSString defaultAppearance = (COSString) getInheritableAttribute(COSName.DA);
+        final COSString defaultAppearance = (COSString) getInheritableAttribute(COSName.DA);
         return defaultAppearance.getString();
     }
 
@@ -88,8 +88,8 @@ public abstract class PDVariableText extends PDTerminalField
      */
     PDDefaultAppearanceString getDefaultAppearanceString() throws IOException
     {
-        COSString da = (COSString) getInheritableAttribute(COSName.DA);
-        PDResources dr = getAcroForm().getDefaultResources();
+        final COSString da = (COSString) getInheritableAttribute(COSName.DA);
+        final PDResources dr = getAcroForm().getDefaultResources();
         return new PDDefaultAppearanceString(da, dr);
     }
 
@@ -113,7 +113,7 @@ public abstract class PDVariableText extends PDTerminalField
      *
      * @param daValue a string describing the default appearance
      */
-    public void setDefaultAppearance(String daValue)
+    public void setDefaultAppearance(final String daValue)
     {
         getCOSObject().setString(COSName.DA, daValue);
     }
@@ -128,7 +128,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public String getDefaultStyleString()
     {
-        COSString defaultStyleString = (COSString) getCOSObject().getDictionaryObject(COSName.DS);
+        final COSString defaultStyleString = (COSString) getCOSObject().getDictionaryObject(COSName.DS);
         return defaultStyleString.getString();
     }
 
@@ -139,7 +139,7 @@ public abstract class PDVariableText extends PDTerminalField
      * 
      * @param defaultStyleString a string describing the default style.
      */
-    public void setDefaultStyleString(String defaultStyleString)
+    public void setDefaultStyleString(final String defaultStyleString)
     {
         if (defaultStyleString != null)
         {
@@ -167,7 +167,7 @@ public abstract class PDVariableText extends PDTerminalField
     {
         int retval = 0;
 
-        COSNumber number = (COSNumber)getInheritableAttribute(COSName.Q);
+        final COSNumber number = (COSNumber)getInheritableAttribute(COSName.Q);
         
         if (number != null)
         {
@@ -181,7 +181,7 @@ public abstract class PDVariableText extends PDTerminalField
      *
      * @param q The new text justification.
      */
-    public void setQ(int q)
+    public void setQ(final int q)
     {
         getCOSObject().setInt(COSName.Q, q);
     }
@@ -211,7 +211,7 @@ public abstract class PDVariableText extends PDTerminalField
      * 
      * @param richTextValue a rich text string
      */
-    public void setRichTextValue(String richTextValue)
+    public void setRichTextValue(final String richTextValue)
     {
         if (richTextValue != null)
         {
@@ -231,7 +231,7 @@ public abstract class PDVariableText extends PDTerminalField
      * @param base the potential text or text stream
      * @return the text stream
      */
-    protected final String getStringOrStream(COSBase base)
+    protected final String getStringOrStream(final COSBase base)
     {
         if (base instanceof COSString)
         {

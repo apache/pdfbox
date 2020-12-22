@@ -52,7 +52,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param dictionary The existing graphics state.
      */
-    public PDExtendedGraphicsState(COSDictionary dictionary)
+    public PDExtendedGraphicsState(final COSDictionary dictionary)
     {
         dict = dictionary;
     }
@@ -64,9 +64,9 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @throws IOException If there is an error copying font information.
      */
-    public void copyIntoGraphicsState( PDGraphicsState gs ) throws IOException
+    public void copyIntoGraphicsState(final PDGraphicsState gs ) throws IOException
     {
-        for( COSName key : dict.keySet() )
+        for( final COSName key : dict.keySet() )
         {
             if( key.equals( COSName.LW ) )
             {
@@ -106,7 +106,7 @@ public class PDExtendedGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.FONT ) )
             {
-                PDFontSetting setting = getFontSetting();
+                final PDFontSetting setting = getFontSetting();
                 if (setting != null)
                 {
                     gs.getTextState().setFont( setting.getFont() );
@@ -143,7 +143,7 @@ public class PDExtendedGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.SMASK ) ) 
             {
-                PDSoftMask softmask = getSoftMask();
+                final PDSoftMask softmask = getSoftMask();
                 if (softmask != null)
                 {
                     // Softmask must know the CTM at the time the ExtGState is activated. Read
@@ -182,7 +182,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @return 'standard' value if not <code>null</code> otherwise default value
      */
-    private float defaultIfNull(Float standardValue, float defaultValue)
+    private float defaultIfNull(final Float standardValue, final float defaultValue)
     {
         return standardValue != null ? standardValue : defaultValue;
     }
@@ -213,7 +213,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param width The line width for the object.
      */
-    public void setLineWidth( Float width )
+    public void setLineWidth(final Float width )
     {
         setFloatItem( COSName.LW, width );
     }
@@ -233,7 +233,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param style The new line cap style to set.
      */
-    public void setLineCapStyle( int style )
+    public void setLineCapStyle(final int style )
     {
         dict.setInt(COSName.LC, style);
     }
@@ -253,7 +253,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param style The new line join style.
      */
-    public void setLineJoinStyle( int style )
+    public void setLineJoinStyle(final int style )
     {
         dict.setInt(COSName.LJ, style);
     }
@@ -274,7 +274,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param miterLimit The new miter limit value
      */
-    public void setMiterLimit( Float miterLimit )
+    public void setMiterLimit(final Float miterLimit )
     {
         setFloatItem( COSName.ML, miterLimit );
     }
@@ -287,11 +287,11 @@ public class PDExtendedGraphicsState implements COSObjectable
     public PDLineDashPattern getLineDashPattern()
     {
         PDLineDashPattern retval = null;
-        COSBase dp = dict.getDictionaryObject( COSName.D );
+        final COSBase dp = dict.getDictionaryObject( COSName.D );
         if( dp instanceof COSArray  && ((COSArray)dp).size() == 2)
         {
-            COSBase dashArray = ((COSArray)dp).getObject(0);
-            COSBase phase = ((COSArray)dp).getObject(1);
+            final COSBase dashArray = ((COSArray)dp).getObject(0);
+            final COSBase phase = ((COSArray)dp).getObject(1);
             if (dashArray instanceof COSArray && phase instanceof COSNumber)
             {
                 retval = new PDLineDashPattern((COSArray) dashArray, ((COSNumber) phase).intValue());
@@ -305,7 +305,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param dashPattern The dash pattern
      */
-    public void setLineDashPattern( PDLineDashPattern dashPattern )
+    public void setLineDashPattern(final PDLineDashPattern dashPattern )
     {
         dict.setItem(COSName.D, dashPattern.getCOSObject());
     }
@@ -317,7 +317,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public RenderingIntent getRenderingIntent()
     {
-        String ri = dict.getNameAsString( "RI" );
+        final String ri = dict.getNameAsString( "RI" );
         if (ri != null)
         {
             return RenderingIntent.fromString(ri);
@@ -333,7 +333,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param ri The new rendering intent
      */
-    public void setRenderingIntent( String ri )
+    public void setRenderingIntent(final String ri )
     {
         dict.setName("RI", ri);
     }
@@ -353,7 +353,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param op The overprint control.
      */
-    public void setStrokingOverprintControl( boolean op )
+    public void setStrokingOverprintControl(final boolean op )
     {
         dict.setBoolean(COSName.OP, op);
     }
@@ -374,7 +374,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param op The overprint control.
      */
-    public void setNonStrokingOverprintControl( boolean op )
+    public void setNonStrokingOverprintControl(final boolean op )
     {
         dict.setBoolean(COSName.OP_NS, op);
     }
@@ -394,7 +394,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param overprintMode The overprint mode
      */
-    public void setOverprintMode( Float overprintMode )
+    public void setOverprintMode(final Float overprintMode )
     {
         setFloatItem(COSName.OPM, overprintMode);
     }
@@ -407,10 +407,10 @@ public class PDExtendedGraphicsState implements COSObjectable
     public PDFontSetting getFontSetting()
     {
         PDFontSetting setting = null;
-        COSBase base = dict.getDictionaryObject(COSName.FONT);
+        final COSBase base = dict.getDictionaryObject(COSName.FONT);
         if (base instanceof COSArray)
         {
-            COSArray font = (COSArray) base;
+            final COSArray font = (COSArray) base;
             setting = new PDFontSetting(font);
         }
         return setting;
@@ -421,7 +421,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param fs The new font setting.
      */
-    public void setFontSetting( PDFontSetting fs )
+    public void setFontSetting(final PDFontSetting fs )
     {
         dict.setItem(COSName.FONT, fs);
     }
@@ -441,7 +441,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param flatness The new flatness tolerance
      */
-    public void setFlatnessTolerance( Float flatness )
+    public void setFlatnessTolerance(final Float flatness )
     {
         setFloatItem(COSName.FL, flatness);
     }
@@ -461,7 +461,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param smoothness The new smoothness tolerance
      */
-    public void setSmoothnessTolerance( Float smoothness )
+    public void setSmoothnessTolerance(final Float smoothness )
     {
         setFloatItem( COSName.SM, smoothness );
     }
@@ -481,7 +481,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param sa The new automatic stroke adjustment flag.
      */
-    public void setAutomaticStrokeAdjustment( boolean sa )
+    public void setAutomaticStrokeAdjustment(final boolean sa )
     {
         dict.setBoolean(COSName.SA, sa);
     }
@@ -501,7 +501,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param alpha The new stroking alpha constant.
      */
-    public void setStrokingAlphaConstant( Float alpha )
+    public void setStrokingAlphaConstant(final Float alpha )
     {
         setFloatItem(COSName.CA, alpha);
     }
@@ -521,7 +521,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param alpha The new non stroking alpha constant.
      */
-    public void setNonStrokingAlphaConstant( Float alpha )
+    public void setNonStrokingAlphaConstant(final Float alpha )
     {
         setFloatItem( COSName.CA_NS, alpha );
     }
@@ -545,7 +545,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param alpha The alpha source flag.
      */
-    public void setAlphaSourceFlag( boolean alpha )
+    public void setAlphaSourceFlag(final boolean alpha )
     {
         dict.setBoolean(COSName.AIS, alpha);
     }
@@ -565,7 +565,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      * 
      * @param bm 
      */
-    public void setBlendMode(BlendMode bm)
+    public void setBlendMode(final BlendMode bm)
     {
         dict.setItem(COSName.BM, BlendMode.getCOSName(bm));
     }
@@ -601,7 +601,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param tk The text knockout flag.
      */
-    public void setTextKnockoutFlag( boolean tk )
+    public void setTextKnockoutFlag(final boolean tk )
     {
         dict.setBoolean(COSName.TK, tk);
     }
@@ -613,14 +613,14 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @return The value for that item.
      */
-    private Float getFloatItem( COSName key )
+    private Float getFloatItem(final COSName key )
     {
         Float retval = null;
         
-        COSBase base = dict.getDictionaryObject(key);
+        final COSBase base = dict.getDictionaryObject(key);
         if (base instanceof COSNumber)
         {
-            COSNumber value = (COSNumber) base;
+            final COSNumber value = (COSNumber) base;
             retval = value.floatValue();
         }
         return retval;
@@ -632,7 +632,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      * @param key The key to the data that we are setting.
      * @param value The value that we are setting.
      */
-    private void setFloatItem( COSName key, Float value )
+    private void setFloatItem(final COSName key, final Float value )
     {
         if( value == null )
         {
@@ -654,7 +654,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public COSBase getTransfer()
     {
-        COSBase base = dict.getDictionaryObject(COSName.TR);
+        final COSBase base = dict.getDictionaryObject(COSName.TR);
         if (base instanceof COSArray && ((COSArray) base).size() != 4)
         {
             return null;
@@ -670,7 +670,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      * apply to the process colorants individually). The name Identity may be used to represent the
      * identity function.
      */
-    public void setTransfer(COSBase transfer)
+    public void setTransfer(final COSBase transfer)
     {
         dict.setItem(COSName.TR, transfer);
     }
@@ -686,7 +686,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public COSBase getTransfer2()
     {
-        COSBase base = dict.getDictionaryObject(COSName.TR2);
+        final COSBase base = dict.getDictionaryObject(COSName.TR2);
         if (base instanceof COSArray && ((COSArray) base).size() != 4)
         {
             return null;
@@ -703,7 +703,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      * identity function, and the name Default denotes the transfer function that was in effect at
      * the start of the page.
      */
-    public void setTransfer2(COSBase transfer2)
+    public void setTransfer2(final COSBase transfer2)
     {
         dict.setItem(COSName.TR2, transfer2);
     }

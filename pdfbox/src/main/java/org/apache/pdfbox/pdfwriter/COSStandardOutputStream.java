@@ -53,7 +53,7 @@ public class COSStandardOutputStream extends FilterOutputStream
      *
      * @param out The underlying stream to write to.
      */
-    public COSStandardOutputStream(OutputStream out)
+    public COSStandardOutputStream(final OutputStream out)
     {
         super(out);
     }
@@ -64,7 +64,7 @@ public class COSStandardOutputStream extends FilterOutputStream
      * @param out The underlying stream to write to.
      * @param position The current position of output stream.
      */
-    public COSStandardOutputStream(OutputStream out, long position)
+    public COSStandardOutputStream(final OutputStream out, final long position)
     {
         super(out);
         this.position = position;
@@ -94,7 +94,7 @@ public class COSStandardOutputStream extends FilterOutputStream
      *
      * @param newOnNewLine The new value for the onNewLine attribute.
      */
-    public void setOnNewLine(boolean newOnNewLine)
+    public void setOnNewLine(final boolean newOnNewLine)
     {
         onNewLine = newOnNewLine;
     }
@@ -109,7 +109,7 @@ public class COSStandardOutputStream extends FilterOutputStream
      * @throws IOException If the underlying stream throws an exception.
      */
     @Override
-    public void write(byte[] b, int off, int len) throws IOException
+    public void write(final byte[] b, final int off, final int len) throws IOException
     {
         setOnNewLine(false);
         out.write(b, off, len);
@@ -124,7 +124,7 @@ public class COSStandardOutputStream extends FilterOutputStream
      * @throws IOException If there is an error writing to the underlying stream.
      */
     @Override
-    public void write(int b) throws IOException
+    public void write(final int b) throws IOException
     {
         setOnNewLine(false);
         out.write(b);

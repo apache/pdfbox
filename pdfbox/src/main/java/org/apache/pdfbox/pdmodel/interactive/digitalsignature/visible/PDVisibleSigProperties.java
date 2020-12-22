@@ -43,8 +43,8 @@ public class PDVisibleSigProperties
      */
     public void buildSignature() throws IOException
     {
-        PDFTemplateBuilder builder = new PDVisibleSigBuilder();
-        PDFTemplateCreator creator = new PDFTemplateCreator(builder);
+        final PDFTemplateBuilder builder = new PDVisibleSigBuilder();
+        final PDFTemplateCreator creator = new PDFTemplateCreator(builder);
         setVisibleSignature(creator.buildPDF(getPdVisibleSignature()));
     }
 
@@ -62,7 +62,7 @@ public class PDVisibleSigProperties
      * @param signerName
      * @return the visible signature properties.
      */
-    public PDVisibleSigProperties signerName(String signerName)
+    public PDVisibleSigProperties signerName(final String signerName)
     {
         this.signerName = signerName;
         return this;
@@ -82,7 +82,7 @@ public class PDVisibleSigProperties
      * @param signerLocation
      * @return the visible signature properties.
      */
-    public PDVisibleSigProperties signerLocation(String signerLocation)
+    public PDVisibleSigProperties signerLocation(final String signerLocation)
     {
         this.signerLocation = signerLocation;
         return this;
@@ -102,7 +102,7 @@ public class PDVisibleSigProperties
      * @param signatureReason
      * @return the visible signature properties.
      */
-    public PDVisibleSigProperties signatureReason(String signatureReason)
+    public PDVisibleSigProperties signatureReason(final String signatureReason)
     {
         this.signatureReason = signatureReason;
         return this;
@@ -122,7 +122,7 @@ public class PDVisibleSigProperties
      * @param page
      * @return the visible signature properties.
      */
-    public PDVisibleSigProperties page(int page)
+    public PDVisibleSigProperties page(final int page)
     {
         this.page = page;
         return this;
@@ -144,7 +144,7 @@ public class PDVisibleSigProperties
      * @param preferredSize The preferred signature size in bytes, or 0 to use default.
      * @return the visible signature properties.
      */
-    public PDVisibleSigProperties preferredSize(int preferredSize)
+    public PDVisibleSigProperties preferredSize(final int preferredSize)
     {
         this.preferredSize = preferredSize;
         return this;
@@ -164,7 +164,7 @@ public class PDVisibleSigProperties
      * @param visualSignEnabled
      * @return the visible signature properties.
      */
-    public PDVisibleSigProperties visualSignEnabled(boolean visualSignEnabled)
+    public PDVisibleSigProperties visualSignEnabled(final boolean visualSignEnabled)
     {
         this.visualSignEnabled = visualSignEnabled;
         return this;
@@ -184,7 +184,7 @@ public class PDVisibleSigProperties
      * @param pdVisibleSignature
      * @return the visible signature properties.
      */
-    public PDVisibleSigProperties setPdVisibleSignature(PDVisibleSignDesigner pdVisibleSignature)
+    public PDVisibleSigProperties setPdVisibleSignature(final PDVisibleSignDesigner pdVisibleSignature)
     {
         this.pdVisibleSignature = pdVisibleSignature;
         return this;
@@ -203,7 +203,7 @@ public class PDVisibleSigProperties
      * sets configuration object of visible signature
      * @param visibleSignature
      */
-    public void setVisibleSignature(InputStream visibleSignature)
+    public void setVisibleSignature(final InputStream visibleSignature)
     {
         this.visibleSignature = visibleSignature;
     }

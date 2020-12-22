@@ -49,7 +49,7 @@ public class PDUserAttributeObject extends PDAttributeObject
      * 
      * @param dictionary the dictionary
      */
-    public PDUserAttributeObject(COSDictionary dictionary)
+    public PDUserAttributeObject(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -62,9 +62,9 @@ public class PDUserAttributeObject extends PDAttributeObject
      */
     public List<PDUserProperty> getOwnerUserProperties()
     {
-        COSArray p = (COSArray) this.getCOSObject()
+        final COSArray p = (COSArray) this.getCOSObject()
             .getDictionaryObject(COSName.P);
-        List<PDUserProperty> properties = new ArrayList<>(p.size());
+        final List<PDUserProperty> properties = new ArrayList<>(p.size());
         for (int i = 0; i < p.size(); i++)
         {
             properties.add(
@@ -78,10 +78,10 @@ public class PDUserAttributeObject extends PDAttributeObject
      * 
      * @param userProperties the user properties
      */
-    public void setUserProperties(List<PDUserProperty> userProperties)
+    public void setUserProperties(final List<PDUserProperty> userProperties)
     {
-        COSArray p = new COSArray();
-        for (PDUserProperty userProperty : userProperties)
+        final COSArray p = new COSArray();
+        for (final PDUserProperty userProperty : userProperties)
         {
             p.add(userProperty);
         }
@@ -93,9 +93,9 @@ public class PDUserAttributeObject extends PDAttributeObject
      * 
      * @param userProperty the user property
      */
-    public void addUserProperty(PDUserProperty userProperty)
+    public void addUserProperty(final PDUserProperty userProperty)
     {
-        COSArray p = (COSArray) this.getCOSObject().getDictionaryObject(COSName.P);
+        final COSArray p = (COSArray) this.getCOSObject().getDictionaryObject(COSName.P);
         p.add(userProperty);
         this.notifyChanged();
     }
@@ -105,13 +105,13 @@ public class PDUserAttributeObject extends PDAttributeObject
      * 
      * @param userProperty the user property
      */
-    public void removeUserProperty(PDUserProperty userProperty)
+    public void removeUserProperty(final PDUserProperty userProperty)
     {
         if (userProperty == null)
         {
             return;
         }
-        COSArray p = (COSArray) this.getCOSObject().getDictionaryObject(COSName.P);
+        final COSArray p = (COSArray) this.getCOSObject().getDictionaryObject(COSName.P);
         p.remove(userProperty.getCOSObject());
         this.notifyChanged();
     }
@@ -119,7 +119,7 @@ public class PDUserAttributeObject extends PDAttributeObject
     /**
      * @param userProperty  
      */
-    public void userPropertyChanged(PDUserProperty userProperty)
+    public void userPropertyChanged(final PDUserProperty userProperty)
     {
         
     }

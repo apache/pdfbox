@@ -121,7 +121,7 @@ public class PreflightConfiguration
 
     public static PreflightConfiguration createPdfA1BConfiguration()
     {
-        PreflightConfiguration configuration = new PreflightConfiguration();
+        final PreflightConfiguration configuration = new PreflightConfiguration();
 
         configuration.replaceProcess(CATALOG_PROCESS, CatalogValidationProcess.class);
         configuration.replaceProcess(FILE_SPECIF_PROCESS, FileSpecificationValidationProcess.class);
@@ -166,7 +166,7 @@ public class PreflightConfiguration
      * (errorOnMissingProcess is true).
      * @throws ValidationException if the process instance can't be created.
      */
-    public ValidationProcess getInstanceOfProcess(String processName) throws ValidationException
+    public ValidationProcess getInstanceOfProcess(final String processName) throws ValidationException
     {
         Class<? extends ValidationProcess> clazz = null;
         if (processes.containsKey(processName))
@@ -198,7 +198,7 @@ public class PreflightConfiguration
         }
     }
 
-    public void replaceProcess(String processName, Class<? extends ValidationProcess> process)
+    public void replaceProcess(final String processName, final Class<? extends ValidationProcess> process)
     {
         if (process == null) 
         {
@@ -210,7 +210,7 @@ public class PreflightConfiguration
         }
     }
 
-    public void removeProcess(String processName)
+    public void removeProcess(final String processName)
     {
         this.processes.remove(processName);
     }
@@ -220,7 +220,7 @@ public class PreflightConfiguration
         return this.innerProcesses.keySet();
     }
 
-    public void replacePageProcess(String processName, Class<? extends ValidationProcess> process)
+    public void replacePageProcess(final String processName, final Class<? extends ValidationProcess> process)
     {
         if (process == null)
         {
@@ -232,7 +232,7 @@ public class PreflightConfiguration
         }
     }
 
-    public void removePageProcess(String processName)
+    public void removePageProcess(final String processName)
     {
         this.innerProcesses.remove(processName);
     }
@@ -242,7 +242,7 @@ public class PreflightConfiguration
         return errorOnMissingProcess;
     }
 
-    public void setErrorOnMissingProcess(boolean errorOnMissingProcess)
+    public void setErrorOnMissingProcess(final boolean errorOnMissingProcess)
     {
         this.errorOnMissingProcess = errorOnMissingProcess;
     }
@@ -252,7 +252,7 @@ public class PreflightConfiguration
         return lazyValidation;
     }
 
-    public void setLazyValidation(boolean lazyValidation)
+    public void setLazyValidation(final boolean lazyValidation)
     {
         this.lazyValidation = lazyValidation;
     }
@@ -262,7 +262,7 @@ public class PreflightConfiguration
         return annotFact;
     }
 
-    public void setAnnotFact(AnnotationValidatorFactory annotFact)
+    public void setAnnotFact(final AnnotationValidatorFactory annotFact)
     {
         this.annotFact = annotFact;
     }
@@ -272,7 +272,7 @@ public class PreflightConfiguration
         return actionFact;
     }
 
-    public void setActionFact(ActionManagerFactory actionFact)
+    public void setActionFact(final ActionManagerFactory actionFact)
     {
         this.actionFact = actionFact;
     }
@@ -282,7 +282,7 @@ public class PreflightConfiguration
         return colorSpaceHelperFact;
     }
 
-    public void setColorSpaceHelperFact(ColorSpaceHelperFactory colorSpaceHelperFact)
+    public void setColorSpaceHelperFact(final ColorSpaceHelperFactory colorSpaceHelperFact)
     {
         this.colorSpaceHelperFact = colorSpaceHelperFact;
     }
@@ -302,7 +302,7 @@ public class PreflightConfiguration
      *
      * @param maxErrors 
      */
-    public void setMaxErrors(int maxErrors)
+    public void setMaxErrors(final int maxErrors)
     {
         this.maxErrors = maxErrors;
     }

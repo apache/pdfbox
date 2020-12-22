@@ -110,9 +110,9 @@ final class PNGConverter
      * @param imageData the byte data of the PNG
      * @return null or the PDImageXObject built from the png
      */
-    static PDImageXObject convertPNGImage(PDDocument doc, byte[] imageData) throws IOException
+    static PDImageXObject convertPNGImage(final PDDocument doc, final byte[] imageData) throws IOException
     {
-        PNGConverterState state = parsePNGChunks(imageData);
+        final PNGConverterState state = parsePNGChunks(imageData);
         if (!checkConverterState(state))
         {
             // There is something wrong, we can't convert this PNG
@@ -129,18 +129,18 @@ final class PNGConverter
      * @param state the parser state containing the PNG chunks.
      * @return null or the converted image
      */
-    private static PDImageXObject convertPng(PDDocument doc, PNGConverterState state)
+    private static PDImageXObject convertPng(final PDDocument doc, final PNGConverterState state)
             throws IOException
     {
-        Chunk ihdr = state.IHDR;
-        int ihdrStart = ihdr.start;
-        int width = readInt(ihdr.bytes, ihdrStart);
-        int height = readInt(ihdr.bytes, ihdrStart + 4);
-        int bitDepth = ihdr.bytes[ihdrStart + 8] & 0xFF;
-        int colorType = ihdr.bytes[ihdrStart + 9] & 0xFF;
-        int compressionMethod = ihdr.bytes[ihdrStart + 10] & 0xFF;
-        int filterMethod = ihdr.bytes[ihdrStart + 11] & 0xFF;
-        int interlaceMethod = ihdr.bytes[ihdrStart + 12] & 0xFF;
+        final Chunk ihdr = state.IHDR;
+        final int ihdrStart = ihdr.start;
+        final int width = readInt(ihdr.bytes, ihdrStart);
+        final int height = readInt(ihdr.bytes, ihdrStart + 4);
+        final int bitDepth = ihdr.bytes[ihdrStart + 8] & 0xFF;
+        final int colorType = ihdr.bytes[ihdrStart + 9] & 0xFF;
+        final int compressionMethod = ihdr.bytes[ihdrStart + 10] & 0xFF;
+        final int filterMethod = ihdr.bytes[ihdrStart + 11] & 0xFF;
+        final int interlaceMethod = ihdr.bytes[ihdrStart + 12] & 0xFF;
 
         if (bitDepth != 1 && bitDepth != 2 && bitDepth != 4 && bitDepth != 8 && bitDepth != 16)
         {
@@ -208,10 +208,10 @@ final class PNGConverter
     /**
      * Build a indexed image
      */
-    private static PDImageXObject buildIndexImage(PDDocument doc, PNGConverterState state)
+    private static PDImageXObject buildIndexImage(final PDDocument doc, final PNGConverterState state)
             throws IOException
     {
-        Chunk plte = state.PLTE;
+        final Chunk plte = state.PLTE;
         if (plte == null)
         {
             LOG.error("Indexed image without PLTE chunk.");
@@ -229,13 +229,13 @@ final class PNGConverter
             return null;
         }
 
-        PDImageXObject image = buildImageObject(doc, state);
+        final PDImageXObject image = buildImageObject(doc, state);
         if (image == null)
         {
             return null;
         }
 
-        int highVal = (plte.length / 3) - 1;
+        final int highVal = (plte.length / 3) - 1;
         if (highVal > 255)
         {
             LOG.error(String.format("To much colors in PLTE, only 256 allowed, found %d colors.",
@@ -254,31 +254,31 @@ final class PNGConverter
         return image;
     }
 
-    private static PDImageXObject buildTransparencyMaskFromIndexedData(PDDocument doc,
-            PDImageXObject image, PNGConverterState state) throws IOException
+    private static PDImageXObject buildTransparencyMaskFromIndexedData(final PDDocument doc,
+                                                                       final PDImageXObject image, final PNGConverterState state) throws IOException
     {
-        Filter flateDecode = FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        COSDictionary decodeParams = buildDecodeParams(state, PDDeviceGray.INSTANCE);
-        COSDictionary imageDict = new COSDictionary();
+        final Filter flateDecode = FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final COSDictionary decodeParams = buildDecodeParams(state, PDDeviceGray.INSTANCE);
+        final COSDictionary imageDict = new COSDictionary();
         imageDict.setItem(COSName.FILTER, COSName.FLATE_DECODE);
         imageDict.setItem(COSName.DECODE_PARMS, decodeParams);
         flateDecode.decode(getIDATInputStream(state), outputStream, imageDict, 0);
-        int length = image.getWidth() * image.getHeight();
-        byte[] bytes = new byte[length];
-        byte[] transparencyTable = state.tRNS.getData();
-        byte[] decodedIDAT = outputStream.toByteArray();
+        final int length = image.getWidth() * image.getHeight();
+        final byte[] bytes = new byte[length];
+        final byte[] transparencyTable = state.tRNS.getData();
+        final byte[] decodedIDAT = outputStream.toByteArray();
         try (ImageInputStream iis = new MemoryCacheImageInputStream(
                 new ByteArrayInputStream(decodedIDAT)))
         {
-            int bitsPerComponent = state.bitsPerComponent;
+            final int bitsPerComponent = state.bitsPerComponent;
             int w = 0;
-            int neededBits = bitsPerComponent * state.width;
-            int bitPadding = neededBits % 8;
+            final int neededBits = bitsPerComponent * state.width;
+            final int bitPadding = neededBits % 8;
             for (int i = 0; i < bytes.length; i++)
             {
-                int idx = (int) iis.readBits(bitsPerComponent);
-                byte v;
+                final int idx = (int) iis.readBits(bitsPerComponent);
+                final byte v;
                 if (idx < transparencyTable.length)
                 {
                     // Inside the table, use the transparency value
@@ -303,10 +303,10 @@ final class PNGConverter
                         PDDeviceGray.INSTANCE);
     }
 
-    private static void setupIndexedColorSpace(PDDocument doc, Chunk lookupTable,
-            PDImageXObject image, int highVal) throws IOException
+    private static void setupIndexedColorSpace(final PDDocument doc, final Chunk lookupTable,
+                                               final PDImageXObject image, final int highVal) throws IOException
     {
-        COSArray indexedArray = new COSArray();
+        final COSArray indexedArray = new COSArray();
         indexedArray.add(COSName.INDEXED);
         indexedArray.add(image.getColorSpace());
         ((COSDictionary) image.getCOSObject().getItem(COSName.DECODE_PARMS))
@@ -314,37 +314,37 @@ final class PNGConverter
 
         indexedArray.add(COSInteger.get(highVal));
 
-        PDStream colorTable = new PDStream(doc);
+        final PDStream colorTable = new PDStream(doc);
         try (OutputStream colorTableStream = colorTable.createOutputStream(COSName.FLATE_DECODE))
         {
             colorTableStream.write(lookupTable.bytes, lookupTable.start, lookupTable.length);
         }
         indexedArray.add(colorTable);
 
-        PDIndexed indexed = new PDIndexed(indexedArray);
+        final PDIndexed indexed = new PDIndexed(indexedArray);
         image.setColorSpace(indexed);
     }
 
     /**
      * Build the base image object from the IDATs and profile information
      */
-    private static PDImageXObject buildImageObject(PDDocument document, PNGConverterState state)
+    private static PDImageXObject buildImageObject(final PDDocument document, final PNGConverterState state)
             throws IOException
     {
-        InputStream encodedByteStream = getIDATInputStream(state);
+        final InputStream encodedByteStream = getIDATInputStream(state);
 
-        PDColorSpace colorSpace = PDDeviceRGB.INSTANCE;
+        final PDColorSpace colorSpace = PDDeviceRGB.INSTANCE;
 
-        PDImageXObject imageXObject = new PDImageXObject(document, encodedByteStream,
+        final PDImageXObject imageXObject = new PDImageXObject(document, encodedByteStream,
                 COSName.FLATE_DECODE, state.width, state.height, state.bitsPerComponent,
                 colorSpace);
 
-        COSDictionary decodeParams = buildDecodeParams(state, colorSpace);
+        final COSDictionary decodeParams = buildDecodeParams(state, colorSpace);
         imageXObject.getCOSObject().setItem(COSName.DECODE_PARMS, decodeParams);
 
         // We ignore gAMA and cHRM chunks if we have a ICC profile, as the ICC profile
         // takes preference
-        boolean hasICCColorProfile = state.sRGB != null || state.iCCP != null;
+        final boolean hasICCColorProfile = state.sRGB != null || state.iCCP != null;
 
         if (state.gAMA != null && !hasICCColorProfile)
         {
@@ -353,7 +353,7 @@ final class PNGConverter
                 LOG.error("Invalid gAMA chunk length " + state.gAMA.length);
                 return null;
             }
-            float gamma = readPNGFloat(state.gAMA.bytes, state.gAMA.start);
+            final float gamma = readPNGFloat(state.gAMA.bytes, state.gAMA.start);
             // If the gamma is 2.2 for sRGB everything is fine. Otherwise bail out.
             // The gamma is stored as 1 / gamma.
             if (Math.abs(gamma - (1 / 2.2f)) > 0.00001)
@@ -373,8 +373,8 @@ final class PNGConverter
             }
 
             // Store the specified rendering intent
-            int renderIntent = state.sRGB.bytes[state.sRGB.start];
-            COSName value = mapPNGRenderIntent(renderIntent);
+            final int renderIntent = state.sRGB.bytes[state.sRGB.start];
+            final COSName value = mapPNGRenderIntent(renderIntent);
             imageXObject.getCOSObject().setItem(COSName.INTENT, value);
         }
 
@@ -394,24 +394,24 @@ final class PNGConverter
         if (state.iCCP != null || state.sRGB != null)
         {
             // We have got a color profile, which we must attach
-            COSStream cosStream = createCOSStreamwithIccProfile(document, colorSpace, state);
+            final COSStream cosStream = createCOSStreamwithIccProfile(document, colorSpace, state);
             if (cosStream == null)
             {
                 return null;
             }
-            COSArray array = new COSArray();
+            final COSArray array = new COSArray();
             array.add(COSName.ICCBASED);
             array.add(cosStream);
-            PDICCBased profile = PDICCBased.create(array, null);
+            final PDICCBased profile = PDICCBased.create(array, null);
             imageXObject.setColorSpace(profile);
         }
         return imageXObject;
     }
 
     private static COSStream createCOSStreamwithIccProfile
-        (PDDocument document, PDColorSpace colorSpace, PNGConverterState state) throws IOException
+        (final PDDocument document, final PDColorSpace colorSpace, final PNGConverterState state) throws IOException
     {
-        COSStream cosStream = document.getDocument().createCOSStream();
+        final COSStream cosStream = document.getDocument().createCOSStream();
         cosStream.setInt(COSName.N, colorSpace.getNumberOfComponents());
         cosStream.setItem(COSName.ALTERNATE, colorSpace.getNumberOfComponents()
                 == 1 ? COSName.DEVICEGRAY : COSName.DEVICERGB);
@@ -434,7 +434,7 @@ final class PNGConverter
                 LOG.error("Invalid iCCP chunk, to few bytes");
                 return null;
             }
-            byte compressionMethod = state.iCCP.bytes[state.iCCP.start + iccProfileDataStart];
+            final byte compressionMethod = state.iCCP.bytes[state.iCCP.start + iccProfileDataStart];
             if (compressionMethod != 0)
             {
                 LOG.error(String.format("iCCP chunk: invalid compression method %d",
@@ -452,7 +452,7 @@ final class PNGConverter
         else
         {
             // We tag the image with the sRGB profile
-            ICC_Profile rgbProfile = ICC_Profile.getInstance(ColorSpace.CS_sRGB);
+            final ICC_Profile rgbProfile = ICC_Profile.getInstance(ColorSpace.CS_sRGB);
             try (OutputStream outputStream = cosStream.createOutputStream())
             {
                 outputStream.write(rgbProfile.getData());
@@ -461,9 +461,9 @@ final class PNGConverter
         return cosStream;
     }
 
-    private static COSDictionary buildDecodeParams(PNGConverterState state, PDColorSpace colorSpace)
+    private static COSDictionary buildDecodeParams(final PNGConverterState state, final PDColorSpace colorSpace)
     {
-        COSDictionary decodeParms = new COSDictionary();
+        final COSDictionary decodeParms = new COSDictionary();
         decodeParms.setItem(COSName.BITS_PER_COMPONENT, COSInteger.get(state.bitsPerComponent));
         decodeParms.setItem(COSName.PREDICTOR, COSInteger.get(15));
         decodeParms.setItem(COSName.COLUMNS, COSInteger.get(state.width));
@@ -478,10 +478,10 @@ final class PNGConverter
      * @param state the converter state.
      * @return a input stream with the IDAT data.
      */
-    private static InputStream getIDATInputStream(PNGConverterState state)
+    private static InputStream getIDATInputStream(final PNGConverterState state)
     {
-        MultipleInputStream inputStream = new MultipleInputStream();
-        for (Chunk idat : state.IDATs)
+        final MultipleInputStream inputStream = new MultipleInputStream();
+        for (final Chunk idat : state.IDATs)
         {
             inputStream.inputStreams
                     .add(new ByteArrayInputStream(idat.bytes, idat.start, idat.length));
@@ -516,7 +516,7 @@ final class PNGConverter
             {
                 return -1;
             }
-            int ret = currentStream.read();
+            final int ret = currentStream.read();
             if (ret == -1)
             {
                 currentStream = null;
@@ -536,13 +536,13 @@ final class PNGConverter
         }
 
         @Override
-        public int read(byte[] b, int off, int len) throws IOException
+        public int read(final byte[] b, final int off, final int len) throws IOException
         {
             if (!ensureStream())
             {
                 return -1;
             }
-            int ret = currentStream.read(b, off, len);
+            final int ret = currentStream.read(b, off, len);
             if (ret == -1)
             {
                 currentStream = null;
@@ -559,9 +559,9 @@ final class PNGConverter
      * @param renderIntent the PNG render intent
      * @return the matching PDF Render Intent or null
      */
-    static COSName mapPNGRenderIntent(int renderIntent)
+    static COSName mapPNGRenderIntent(final int renderIntent)
     {
-        COSName value;
+        final COSName value;
         switch (renderIntent)
         {
         case 0:
@@ -589,7 +589,7 @@ final class PNGConverter
      * @param state the parsed converter state
      * @return true if the state seems plausible
      */
-    static boolean checkConverterState(PNGConverterState state)
+    static boolean checkConverterState(final PNGConverterState state)
     {
         if (state == null)
         {
@@ -637,7 +637,7 @@ final class PNGConverter
             LOG.error("No IDAT chunks.");
             return false;
         }
-        for (Chunk idat : state.IDATs)
+        for (final Chunk idat : state.IDATs)
         {
             if (!checkChunkSane(idat))
             {
@@ -652,7 +652,7 @@ final class PNGConverter
      * Check if the chunk is sane, i.e. CRC matches and offsets and lengths in the
      * byte array
      */
-    static boolean checkChunkSane(Chunk chunk)
+    static boolean checkChunkSane(final Chunk chunk)
     {
         if (chunk == null)
         {
@@ -671,7 +671,7 @@ final class PNGConverter
         }
 
         // We must include the chunk type in the CRC calculation
-        int ourCRC = crc(chunk.bytes, chunk.start - 4, chunk.length + 4);
+        final int ourCRC = crc(chunk.bytes, chunk.start - 4, chunk.length + 4);
         if (ourCRC != chunk.crc)
         {
             LOG.error(String.format("Invalid CRC %08X on chunk %08X, expected %08X.", ourCRC,
@@ -741,18 +741,18 @@ final class PNGConverter
         int bitsPerComponent;
     }
 
-    private static int readInt(byte[] data, int offset)
+    private static int readInt(final byte[] data, final int offset)
     {
-        int b1 = (data[offset] & 0xFF) << 24;
-        int b2 = (data[offset + 1] & 0xFF) << 16;
-        int b3 = (data[offset + 2] & 0xFF) << 8;
-        int b4 = (data[offset + 3] & 0xFF);
+        final int b1 = (data[offset] & 0xFF) << 24;
+        final int b2 = (data[offset + 1] & 0xFF) << 16;
+        final int b3 = (data[offset + 2] & 0xFF) << 8;
+        final int b4 = (data[offset + 3] & 0xFF);
         return b1 | b2 | b3 | b4;
     }
 
-    private static float readPNGFloat(byte[] bytes, int offset)
+    private static float readPNGFloat(final byte[] bytes, final int offset)
     {
-        int v = readInt(bytes, offset);
+        final int v = readInt(bytes, offset);
         return v / 100000f;
     }
 
@@ -763,7 +763,7 @@ final class PNGConverter
      * @param imageData the byte array with the PNG data
      * @return null or the converter state with all relevant chunks
      */
-    private static PNGConverterState parsePNGChunks(byte[] imageData)
+    private static PNGConverterState parsePNGChunks(final byte[] imageData)
     {
         if (imageData.length < 20)
         {
@@ -771,9 +771,9 @@ final class PNGConverter
             return null;
         }
 
-        PNGConverterState state = new PNGConverterState();
+        final PNGConverterState state = new PNGConverterState();
         int ptr = 8;
-        int firstChunkType = readInt(imageData, ptr + 4);
+        final int firstChunkType = readInt(imageData, ptr + 4);
 
         if (firstChunkType != CHUNK_IHDR)
         {
@@ -783,8 +783,8 @@ final class PNGConverter
 
         while (ptr + 12 <= imageData.length)
         {
-            int chunkLength = readInt(imageData, ptr);
-            int chunkType = readInt(imageData, ptr + 4);
+            final int chunkLength = readInt(imageData, ptr);
+            final int chunkType = readInt(imageData, ptr + 4);
             ptr += 8;
 
             if (ptr + chunkLength + 4 > imageData.length)
@@ -794,7 +794,7 @@ final class PNGConverter
                 return null;
             }
 
-            Chunk chunk = new Chunk();
+            final Chunk chunk = new Chunk();
             chunk.chunkType = chunkType;
             chunk.bytes = imageData;
             chunk.start = ptr;
@@ -918,10 +918,10 @@ final class PNGConverter
      * initialized to all 1's, and the transmitted value is the 1's complement of
      * the final running CRC (see the crc() routine below).
      */
-    private static int updateCrc(byte[] buf, int offset, int len)
+    private static int updateCrc(final byte[] buf, final int offset, final int len)
     {
         int c = -1;
-        int end = offset + len;
+        final int end = offset + len;
         for (int n = offset; n < end; n++)
         {
             c = CRC_TABLE[(c ^ buf[n]) & 0xff] ^ (c >>> 8);
@@ -930,7 +930,7 @@ final class PNGConverter
     }
 
     /* Return the CRC of the bytes buf[offset..(offset+len-1)]. */
-    static int crc(byte[] buf, int offset, int len)
+    static int crc(final byte[] buf, final int offset, final int len)
     {
         return ~updateCrc(buf, offset, len);
     }

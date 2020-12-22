@@ -62,13 +62,13 @@ public final class ExtractTTFFonts
      * 
      * @throws IOException If there is an error decrypting the document.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        ExtractTTFFonts extractor = new ExtractTTFFonts();
+        final ExtractTTFFonts extractor = new ExtractTTFFonts();
         extractor.extractFonts(args);
     }
 
-    private void extractFonts(String[] args) throws IOException
+    private void extractFonts(final String[] args) throws IOException
     {
         if (args.length < 1 || args.length > 4)
         {
@@ -124,9 +124,9 @@ public final class ExtractTTFFonts
                 }
                 try (PDDocument document = Loader.loadPDF(new File(pdfFile), password))
                 {
-                    for (PDPage page : document.getPages())
+                    for (final PDPage page : document.getPages())
                     {
-                        PDResources resources = page.getResources();
+                        final PDResources resources = page.getResources();
                         // extract all fonts which are part of the page resources
                         processResources(resources, prefix, addKey);
                     }
@@ -135,20 +135,20 @@ public final class ExtractTTFFonts
         }
     }
 
-    private void processResources(PDResources resources, String prefix, boolean addKey) throws IOException
+    private void processResources(final PDResources resources, final String prefix, final boolean addKey) throws IOException
     {
         if (resources == null)
         {
             return;
         }
 
-        for (COSName key : resources.getFontNames())
+        for (final COSName key : resources.getFontNames())
         {
-            PDFont font = resources.getFont(key);
+            final PDFont font = resources.getFont(key);
             // write the font
             if (font instanceof PDTrueTypeFont)
             {
-                String name;
+                final String name;
                 if (addKey)
                 {
                     name = getUniqueFileName(prefix + "_" + key, "ttf");
@@ -161,10 +161,10 @@ public final class ExtractTTFFonts
             }
             else if (font instanceof PDType0Font)
             {
-                PDCIDFont descendantFont = ((PDType0Font) font).getDescendantFont();
+                final PDCIDFont descendantFont = ((PDType0Font) font).getDescendantFont();
                 if (descendantFont instanceof PDCIDFontType2)
                 {
-                    String name;
+                    final String name;
                     if (addKey)
                     {
                         name = getUniqueFileName(prefix + "_" + key, "ttf");
@@ -178,29 +178,29 @@ public final class ExtractTTFFonts
             }
         }
 
-        for (COSName name : resources.getXObjectNames())
+        for (final COSName name : resources.getXObjectNames())
         {
-            PDXObject xobject = resources.getXObject(name);
+            final PDXObject xobject = resources.getXObject(name);
             if (xobject instanceof PDFormXObject)
             {
-                PDFormXObject xObjectForm = (PDFormXObject) xobject;
-                PDResources formResources = xObjectForm.getResources();
+                final PDFormXObject xObjectForm = (PDFormXObject) xobject;
+                final PDResources formResources = xObjectForm.getResources();
                 processResources(formResources, prefix, addKey);
             }
         }
 
     }
 
-    private void writeFont(PDFontDescriptor fd, String name) throws IOException
+    private void writeFont(final PDFontDescriptor fd, final String name) throws IOException
     {
         if (fd != null)
         {
-            PDStream ff2Stream = fd.getFontFile2();
+            final PDStream ff2Stream = fd.getFontFile2();
             if (ff2Stream != null)
             {
                 System.out.println("Writing font: " + name);
                 try (OutputStream os = new FileOutputStream(new File(name + ".ttf"));
-                     InputStream is = ff2Stream.createInputStream())
+                     final InputStream is = ff2Stream.createInputStream())
                 {
                     IOUtils.copy(is, os);
                 }
@@ -208,7 +208,7 @@ public final class ExtractTTFFonts
         }
     }
 
-    private String getUniqueFileName(String prefix, String suffix)
+    private String getUniqueFileName(final String prefix, final String suffix)
     {
         String uniqueName = null;
         File f = null;

@@ -33,13 +33,13 @@ import org.apache.pdfbox.cos.COSNumber;
 public class SetLineCapStyle extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.isEmpty())
         {
             throw new MissingOperandException(operator, arguments);
         }
-        int lineCapStyle = ((COSNumber)arguments.get( 0 )).intValue();
+        final int lineCapStyle = ((COSNumber)arguments.get( 0 )).intValue();
         context.getGraphicsState().setLineCap( lineCapStyle );
     }
 

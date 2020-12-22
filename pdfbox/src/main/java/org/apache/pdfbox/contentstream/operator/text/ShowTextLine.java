@@ -33,7 +33,7 @@ import java.io.IOException;
 public class ShowTextLine extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         context.processOperator(OperatorName.NEXT_LINE, null);
         context.processOperator(OperatorName.SHOW_TEXT, arguments);

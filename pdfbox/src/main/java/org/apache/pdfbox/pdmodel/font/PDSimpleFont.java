@@ -59,7 +59,7 @@ public abstract class PDSimpleFont extends PDFont
     /**
      * Constructor for Standard 14.
      */
-    PDSimpleFont(String baseFont)
+    PDSimpleFont(final String baseFont)
     {
         super(baseFont);
         assignGlyphList(baseFont);
@@ -70,7 +70,7 @@ public abstract class PDSimpleFont extends PDFont
      *
      * @param fontDictionary Font dictionary.
      */
-    PDSimpleFont(COSDictionary fontDictionary)
+    PDSimpleFont(final COSDictionary fontDictionary)
     {
         super(fontDictionary);
     }
@@ -83,10 +83,10 @@ public abstract class PDSimpleFont extends PDFont
      */
     protected void readEncoding() throws IOException
     {
-        COSBase encodingBase = dict.getDictionaryObject(COSName.ENCODING);
+        final COSBase encodingBase = dict.getDictionaryObject(COSName.ENCODING);
         if (encodingBase instanceof COSName)
         {
-            COSName encodingName = (COSName) encodingBase;
+            final COSName encodingName = (COSName) encodingBase;
             this.encoding = Encoding.getInstance(encodingName);
             if (this.encoding == null)
             {
@@ -96,13 +96,13 @@ public abstract class PDSimpleFont extends PDFont
         }
         else if (encodingBase instanceof COSDictionary)
         {
-            COSDictionary encodingDict = (COSDictionary) encodingBase;
+            final COSDictionary encodingDict = (COSDictionary) encodingBase;
             Encoding builtIn = null;
             Boolean symbolic = getSymbolicFlag();
 
-            COSName baseEncoding = encodingDict.getCOSName(COSName.BASE_ENCODING);
+            final COSName baseEncoding = encodingDict.getCOSName(COSName.BASE_ENCODING);
 
-            boolean hasValidBaseEncoding = baseEncoding != null &&
+            final boolean hasValidBaseEncoding = baseEncoding != null &&
                                              Encoding.getInstance(baseEncoding) != null;
 
             if (!hasValidBaseEncoding && Boolean.TRUE.equals(symbolic))
@@ -122,7 +122,7 @@ public abstract class PDSimpleFont extends PDFont
         }
 
         // normalise the standard 14 name, e.g "Symbol,Italic" -> "Symbol"
-        String standard14Name = Standard14Fonts.getMappedFontName(getName());
+        final String standard14Name = Standard14Fonts.getMappedFontName(getName());
         assignGlyphList(standard14Name);
     }
     
@@ -157,7 +157,7 @@ public abstract class PDSimpleFont extends PDFont
     {
         if (isSymbolic == null)
         {
-            Boolean result = isFontSymbolic();
+            final Boolean result = isFontSymbolic();
             if (result != null)
             {
                 isSymbolic = result;
@@ -177,14 +177,14 @@ public abstract class PDSimpleFont extends PDFont
      */
     protected Boolean isFontSymbolic()
     {
-        Boolean result = getSymbolicFlag();
+        final Boolean result = getSymbolicFlag();
         if (result != null)
         {
             return result;
         }
         else if (isStandard14())
         {
-            String mappedName = Standard14Fonts.getMappedFontName(getName());
+            final String mappedName = Standard14Fonts.getMappedFontName(getName());
             return mappedName.equals("Symbol") || mappedName.equals("ZapfDingbats");
         }
         else
@@ -209,7 +209,7 @@ public abstract class PDSimpleFont extends PDFont
             else if (encoding instanceof DictionaryEncoding)
             {
                 // each name in Differences array must also be in the latin character set
-                for (String name : ((DictionaryEncoding)encoding).getDifferences().values())
+                for (final String name : ((DictionaryEncoding)encoding).getDifferences().values())
                 {
                     if (".notdef".equals(name))
                     {
@@ -248,17 +248,17 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     @Override
-    public String toUnicode(int code)
+    public String toUnicode(final int code)
     {
         return toUnicode(code, GlyphList.getAdobeGlyphList());
     }
 
     @Override
-    public String toUnicode(int code, GlyphList customGlyphList)
+    public String toUnicode(final int code, final GlyphList customGlyphList)
     {
         // allow the glyph list to be overridden for the purpose of extracting Unicode
         // we only do this when the font's glyph list is the AGL, to avoid breaking Zapf Dingbats
-        GlyphList unicodeGlyphList;
+        final GlyphList unicodeGlyphList;
         if (this.glyphList == GlyphList.getAdobeGlyphList())
         {
             unicodeGlyphList = customGlyphList;
@@ -319,7 +319,7 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     @Override
-    protected final float getStandard14Width(int code)
+    protected final float getStandard14Width(final int code)
     {
         if (getStandard14AFM() != null)
         {
@@ -349,13 +349,13 @@ public abstract class PDSimpleFont extends PDFont
         // the Encoding entry cannot have Differences if we want "standard 14" font handling
         if (getEncoding() instanceof DictionaryEncoding)
         {
-            DictionaryEncoding dictionary = (DictionaryEncoding)getEncoding();
+            final DictionaryEncoding dictionary = (DictionaryEncoding)getEncoding();
             if (dictionary.getDifferences().size() > 0)
             {
                 // we also require that the differences are actually different, see PDFBOX-1900 with
                 // the file from PDFBOX-2192 on Windows
-                Encoding baseEncoding = dictionary.getBaseEncoding();
-                for (Map.Entry<Integer, String> entry : dictionary.getDifferences().entrySet())
+                final Encoding baseEncoding = dictionary.getBaseEncoding();
+                for (final Map.Entry<Integer, String> entry : dictionary.getDifferences().entrySet())
                 {
                     if (!entry.getValue().equals(baseEncoding.getName(entry.getKey())))
                     {
@@ -367,7 +367,7 @@ public abstract class PDSimpleFont extends PDFont
         return super.isStandard14();
     }
 
-    protected boolean isNonZeroBoundingBox (PDRectangle bbox)
+    protected boolean isNonZeroBoundingBox (final PDRectangle bbox)
     {
         return bbox != null && (
             Float.compare(bbox.getLowerLeftX(), 0) != 0 ||
@@ -399,7 +399,7 @@ public abstract class PDSimpleFont extends PDFont
     public abstract FontBoxFont getFontBoxFont();
 
     @Override
-    public void addToSubset(int codePoint)
+    public void addToSubset(final int codePoint)
     {
         throw new UnsupportedOperationException();
     }
@@ -418,11 +418,11 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     @Override
-    public boolean hasExplicitWidth(int code) throws IOException
+    public boolean hasExplicitWidth(final int code) throws IOException
     {
         if (dict.containsKey(COSName.WIDTHS))
         {
-            int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
+            final int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
             if (code >= firstChar && code - firstChar < getWidths().size())
             {
                 return true;
@@ -431,7 +431,7 @@ public abstract class PDSimpleFont extends PDFont
         return false;
     }
 
-    private void assignGlyphList(String baseFont)
+    private void assignGlyphList(final String baseFont)
     {
         // assign the glyph list based on the font
         if ("ZapfDingbats".equals(baseFont))

@@ -52,7 +52,7 @@ public final class ExtractEmbeddedFiles
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
         if( args.length != 1 )
         {
@@ -60,38 +60,38 @@ public final class ExtractEmbeddedFiles
             System.exit(1);
         }
 
-        File pdfFile = new File(args[0]);
-        String filePath = pdfFile.getParent() + System.getProperty("file.separator");
+        final File pdfFile = new File(args[0]);
+        final String filePath = pdfFile.getParent() + System.getProperty("file.separator");
         try (PDDocument document = Loader.loadPDF(pdfFile))
         {
-            PDDocumentNameDictionary namesDictionary =
+            final PDDocumentNameDictionary namesDictionary =
                     new PDDocumentNameDictionary(document.getDocumentCatalog());
-            PDEmbeddedFilesNameTreeNode efTree = namesDictionary.getEmbeddedFiles();
+            final PDEmbeddedFilesNameTreeNode efTree = namesDictionary.getEmbeddedFiles();
             if (efTree != null)
             {
                 extractFilesFromEFTree(efTree, filePath);
             }
 
             // extract files from page annotations
-            for (PDPage page : document.getPages())
+            for (final PDPage page : document.getPages())
             {
                 extractFilesFromPage(page, filePath);
             }
         }
     }
 
-    private static void extractFilesFromPage(PDPage page, String filePath) throws IOException
+    private static void extractFilesFromPage(final PDPage page, final String filePath) throws IOException
     {
-        for (PDAnnotation annotation : page.getAnnotations())
+        for (final PDAnnotation annotation : page.getAnnotations())
         {
             if (annotation instanceof PDAnnotationFileAttachment)
             {
-                PDAnnotationFileAttachment annotationFileAttachment = (PDAnnotationFileAttachment) annotation;
-                PDFileSpecification fileSpec = annotationFileAttachment.getFile();
+                final PDAnnotationFileAttachment annotationFileAttachment = (PDAnnotationFileAttachment) annotation;
+                final PDFileSpecification fileSpec = annotationFileAttachment.getFile();
                 if (fileSpec instanceof PDComplexFileSpecification)
                 {
-                    PDComplexFileSpecification complexFileSpec = (PDComplexFileSpecification) fileSpec;
-                    PDEmbeddedFile embeddedFile = getEmbeddedFile(complexFileSpec);
+                    final PDComplexFileSpecification complexFileSpec = (PDComplexFileSpecification) fileSpec;
+                    final PDEmbeddedFile embeddedFile = getEmbeddedFile(complexFileSpec);
                     if (embeddedFile != null)
                     {
                         extractFile(filePath, complexFileSpec.getFilename(), embeddedFile);
@@ -101,7 +101,7 @@ public final class ExtractEmbeddedFiles
         }
     }
 
-    private static void extractFilesFromEFTree(PDEmbeddedFilesNameTreeNode efTree, String filePath) throws IOException
+    private static void extractFilesFromEFTree(final PDEmbeddedFilesNameTreeNode efTree, final String filePath) throws IOException
     {
         Map<String, PDComplexFileSpecification> names = efTree.getNames();
         if (names != null)
@@ -110,8 +110,8 @@ public final class ExtractEmbeddedFiles
         }
         else
         {
-            List<PDNameTreeNode<PDComplexFileSpecification>> kids = efTree.getKids();
-            for (PDNameTreeNode<PDComplexFileSpecification> node : kids)
+            final List<PDNameTreeNode<PDComplexFileSpecification>> kids = efTree.getKids();
+            for (final PDNameTreeNode<PDComplexFileSpecification> node : kids)
             {
                 names = node.getNames();
                 extractFiles(names, filePath);
@@ -119,13 +119,13 @@ public final class ExtractEmbeddedFiles
         }
     }
 
-    private static void extractFiles(Map<String, PDComplexFileSpecification> names, String filePath) 
+    private static void extractFiles(final Map<String, PDComplexFileSpecification> names, final String filePath)
             throws IOException
     {
-        for (Entry<String, PDComplexFileSpecification> entry : names.entrySet())
+        for (final Entry<String, PDComplexFileSpecification> entry : names.entrySet())
         {
-            PDComplexFileSpecification fileSpec = entry.getValue();
-            PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
+            final PDComplexFileSpecification fileSpec = entry.getValue();
+            final PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
             if (embeddedFile != null)
             {
                 extractFile(filePath, fileSpec.getFilename(), embeddedFile);
@@ -133,11 +133,11 @@ public final class ExtractEmbeddedFiles
         }
     }
 
-    private static void extractFile(String filePath, String filename, PDEmbeddedFile embeddedFile)
+    private static void extractFile(final String filePath, final String filename, final PDEmbeddedFile embeddedFile)
             throws IOException
     {
-        String embeddedFilename = filePath + filename;
-        File file = new File(filePath + filename);
+        final String embeddedFilename = filePath + filename;
+        final File file = new File(filePath + filename);
         System.out.println("Writing " + embeddedFilename);
         try (FileOutputStream fos = new FileOutputStream(file))
         {
@@ -145,7 +145,7 @@ public final class ExtractEmbeddedFiles
         }
     }
     
-    private static PDEmbeddedFile getEmbeddedFile(PDComplexFileSpecification fileSpec )
+    private static PDEmbeddedFile getEmbeddedFile(final PDComplexFileSpecification fileSpec )
     {
         // search for the first available alternative of the embedded file
         PDEmbeddedFile embeddedFile = null;

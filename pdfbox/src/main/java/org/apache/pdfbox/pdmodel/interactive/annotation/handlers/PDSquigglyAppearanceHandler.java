@@ -44,12 +44,12 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDSquigglyAppearanceHandler.class);
 
-    public PDSquigglyAppearanceHandler(PDAnnotation annotation)
+    public PDSquigglyAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDSquigglyAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDSquigglyAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -65,15 +65,15 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        PDAnnotationSquiggly annotation = (PDAnnotationSquiggly) getAnnotation();
-        PDRectangle rect = annotation.getRectangle();
-        float[] pathsArray = annotation.getQuadPoints();
+        final PDAnnotationSquiggly annotation = (PDAnnotationSquiggly) getAnnotation();
+        final PDRectangle rect = annotation.getRectangle();
+        final float[] pathsArray = annotation.getQuadPoints();
         if (pathsArray == null)
         {
             return;
         }
-        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
-        PDColor color = annotation.getColor();
+        final AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
+        final PDColor color = annotation.getColor();
         if (color == null || color.getComponents().length == 0)
         {
             return;
@@ -94,8 +94,8 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
         float maxY = Float.MIN_VALUE;
         for (int i = 0; i < pathsArray.length / 2; ++i)
         {
-            float x = pathsArray[i * 2];
-            float y = pathsArray[i * 2 + 1];
+            final float x = pathsArray[i * 2];
+            final float y = pathsArray[i * 2 + 1];
             minX = Math.min(minX, x);
             minY = Math.min(minY, y);
             maxX = Math.max(maxX, x);
@@ -124,20 +124,20 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
                 // horizontally and the same / 1.8 vertically.
                 // translation apparently based on bottom left, but slightly different in Adobe
                 //TODO what if the annotation is not horizontal?
-                float height = pathsArray[i * 8 + 1] - pathsArray[i * 8 + 5];
+                final float height = pathsArray[i * 8 + 1] - pathsArray[i * 8 + 5];
                 cs.transform(new Matrix(height / 40f, 0, 0, height / 40f / 1.8f, pathsArray[i * 8 + 4], pathsArray[i * 8 + 5]));
 
                 // Create form, BBox is mostly fixed, except for the horizontal size which is
                 // horizontal size divided by the horizontal transform factor from above
                 // (almost)
-                PDFormXObject form = new PDFormXObject(createCOSStream());
+                final PDFormXObject form = new PDFormXObject(createCOSStream());
                 form.setBBox(new PDRectangle(-0.5f, -0.5f, (pathsArray[i * 8 + 2] - pathsArray[i * 8]) / height * 40f + 0.5f, 13));
                 form.setResources(new PDResources());
                 form.setMatrix(AffineTransform.getTranslateInstance(0.5f, 0.5f));
                 cs.drawForm(form);
                 try (PDFormContentStream formCS = new PDFormContentStream(form))
                 {
-                    PDTilingPattern pattern = new PDTilingPattern();
+                    final PDTilingPattern pattern = new PDTilingPattern();
                     pattern.setBBox(new PDRectangle(0, 0, 10, 12));
                     pattern.setXStep(10);
                     pattern.setYStep(13);
@@ -155,9 +155,9 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
                         patternCS.lineTo(10, 1);
                         patternCS.stroke();
                     }
-                    COSName patternName = form.getResources().add(pattern);
-                    PDColorSpace patternColorSpace = new PDPattern(null, PDDeviceRGB.INSTANCE);
-                    PDColor patternColor = new PDColor(color.getComponents(), patternName, patternColorSpace);
+                    final COSName patternName = form.getResources().add(pattern);
+                    final PDColorSpace patternColorSpace = new PDPattern(null, PDDeviceRGB.INSTANCE);
+                    final PDColor patternColor = new PDColor(color.getComponents(), patternName, patternColorSpace);
                     formCS.setNonStrokingColor(patternColor);
 
                     // With Adobe, the horizontal size is slightly different, don't know why

@@ -31,19 +31,19 @@ class AttributeTest
     @Test
     void testAtt()
     {
-        String nsUri = "nsUri";
-        String localName = "localName";
-        String value = "value";
+        final String nsUri = "nsUri";
+        final String localName = "localName";
+        final String value = "value";
 
-        Attribute att = new Attribute(nsUri, localName, value);
+        final Attribute att = new Attribute(nsUri, localName, value);
 
         assertEquals(nsUri, att.getNamespace());
         assertEquals(localName, att.getName());
         assertEquals(value, att.getValue());
 
-        String nsUri2 = "nsUri2";
-        String localName2 = "localName2";
-        String value2 = "value2";
+        final String nsUri2 = "nsUri2";
+        final String localName2 = "localName2";
+        final String value2 = "value2";
 
         att.setNsURI(nsUri2);
         att.setName(localName2);
@@ -58,9 +58,9 @@ class AttributeTest
     @Test
     void testAttWithoutPrefix()
     {
-        String nsUri = "nsUri";
-        String localName = "localName";
-        String value = "value";
+        final String nsUri = "nsUri";
+        final String localName = "localName";
+        final String value = "value";
 
         Attribute att = new Attribute(nsUri, localName, value);
 

@@ -47,7 +47,7 @@ public class PDPropBuildDataDict implements COSObjectable
      *
      * @param dict The signature dictionary.
      */
-    public PDPropBuildDataDict(COSDictionary dict)
+    public PDPropBuildDataDict(final COSDictionary dict)
     {
         dictionary = dict;
         // the specification claim to use direct objects
@@ -79,7 +79,7 @@ public class PDPropBuildDataDict implements COSObjectable
      *
      * @param name is the name of the software module
      */
-    public void setName(String name)
+    public void setName(final String name)
     {
         dictionary.setName(COSName.NAME, name);
     }
@@ -101,7 +101,7 @@ public class PDPropBuildDataDict implements COSObjectable
      *
      * @param date is the build date of the software module
      */
-    public void setDate(String date)
+    public void setDate(final String date)
     {
         dictionary.setString(COSName.DATE, date);
     }
@@ -117,7 +117,7 @@ public class PDPropBuildDataDict implements COSObjectable
      *
      * @param applicationVersion the application implementation version
      */
-    public void setVersion(String applicationVersion)
+    public void setVersion(final String applicationVersion)
     {
         dictionary.setString("REx", applicationVersion);
     }
@@ -149,7 +149,7 @@ public class PDPropBuildDataDict implements COSObjectable
      *
      * @param revision is the software module revision number
      */
-    public void setRevision(long revision)
+    public void setRevision(final long revision)
     {
         dictionary.setLong(COSName.R, revision);
     }
@@ -177,7 +177,7 @@ public class PDPropBuildDataDict implements COSObjectable
      *
      * @param revision is the software module revision number
      */
-    public void setMinimumRevision(long revision)
+    public void setMinimumRevision(final long revision)
     {
         dictionary.setLong(COSName.V, revision);
     }
@@ -200,7 +200,7 @@ public class PDPropBuildDataDict implements COSObjectable
      * @param preRelease is true if the signature was created with a unrelease
      *                   software, otherwise false.
      */
-    public void setPreRelease(boolean preRelease)
+    public void setPreRelease(final boolean preRelease)
     {
         dictionary.setBoolean(COSName.PRE_RELEASE, preRelease);
     }
@@ -235,7 +235,7 @@ public class PDPropBuildDataDict implements COSObjectable
      *
      * @param os is a string with the system id or name.
      */
-    public void setOS(String os)
+    public void setOS(final String os)
     {
         if (os == null)
         {
@@ -286,7 +286,7 @@ public class PDPropBuildDataDict implements COSObjectable
      * @see #getNonEFontNoWarn()
      * @see COSName#NON_EFONT_NO_WARN
      */
-    public void setNonEFontNoWarn(boolean noEmbedFontWarning)
+    public void setNonEFontNoWarn(final boolean noEmbedFontWarning)
     {
         dictionary.setBoolean(COSName.NON_EFONT_NO_WARN, noEmbedFontWarning);
     }
@@ -307,7 +307,7 @@ public class PDPropBuildDataDict implements COSObjectable
      *
      * @param trustedMode true if the application is in trusted mode.
      */
-    public void setTrustedMode(boolean trustedMode)
+    public void setTrustedMode(final boolean trustedMode)
     {
         dictionary.setBoolean(COSName.TRUSTED_MODE, trustedMode);
     }

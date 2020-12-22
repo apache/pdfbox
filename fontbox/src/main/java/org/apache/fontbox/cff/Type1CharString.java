@@ -41,7 +41,7 @@ public class Type1CharString
 {
     private static final Log LOG = LogFactory.getLog(Type1CharString.class);
 
-    private Type1CharStringReader font;
+    private final Type1CharStringReader font;
     private final String fontName;
     private final String glyphName;
     private GeneralPath path = null;
@@ -61,8 +61,8 @@ public class Type1CharString
      * @param glyphName Name of the glyph.
      * @param sequence Type 1 char string sequence
      */
-    public Type1CharString(Type1CharStringReader font, String fontName, String glyphName,
-                           List<Object> sequence)
+    public Type1CharString(final Type1CharStringReader font, final String fontName, final String glyphName,
+                           final List<Object> sequence)
     {
         this(font, fontName, glyphName);
         type1Sequence = sequence;
@@ -75,7 +75,7 @@ public class Type1CharString
      * @param fontName Name of the font.
      * @param glyphName Name of the glyph.
      */
-    protected Type1CharString(Type1CharStringReader font, String fontName, String glyphName)
+    protected Type1CharString(final Type1CharStringReader font, final String fontName, final String glyphName)
     {
         this.font = font;
         this.fontName = fontName;
@@ -154,14 +154,14 @@ public class Type1CharString
         path = new GeneralPath();
         leftSideBearing = new Point2D.Float(0, 0);
         width = 0;
-        CharStringHandler handler = Type1CharString.this::handleCommand;
+        final CharStringHandler handler = Type1CharString.this::handleCommand;
         handler.handleSequence(type1Sequence);
     }
 
-    private List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
+    private List<Number> handleCommand(final List<Number> numbers, final CharStringCommand command)
     {
         commandCount++;
-        Type1KeyWord type1KeyWord = command.getType1KeyWord();
+        final Type1KeyWord type1KeyWord = command.getType1KeyWord();
         if (type1KeyWord == null)
         {
             // indicates an invalid charstring
@@ -289,12 +289,12 @@ public class Type1CharString
             }
             break;
         case DIV:
-            float b = numbers.get(numbers.size() -1).floatValue();
-            float a = numbers.get(numbers.size() -2).floatValue();
+            final float b = numbers.get(numbers.size() -1).floatValue();
+            final float a = numbers.get(numbers.size() -2).floatValue();
 
-            float result = a / b;
+            final float result = a / b;
 
-            List<Number> list = new ArrayList<>(numbers);
+            final List<Number> list = new ArrayList<>(numbers);
             list.remove(list.size() - 1);
             list.remove(list.size() - 1);
             list.add(result);
@@ -325,7 +325,7 @@ public class Type1CharString
      * Sets the current absolute point without performing a moveto.
      * Used only with results from callothersubr
      */
-    private void setcurrentpoint(Number x, Number y)
+    private void setcurrentpoint(final Number x, final Number y)
     {
         current.setLocation(x.floatValue(), y.floatValue());
     }
@@ -334,7 +334,7 @@ public class Type1CharString
      * Flex (via OtherSubrs)
      * @param num OtherSubrs entry number
      */
-    private void callothersubr(int num)
+    private void callothersubr(final int num)
     {
         if (num == 0)
         {
@@ -349,12 +349,12 @@ public class Type1CharString
             }
 
             // reference point is relative to start point
-            Point2D.Float reference = flexPoints.get(0);
+            final Point2D.Float reference = flexPoints.get(0);
             reference.setLocation(current.getX() + reference.getX(),
                                   current.getY() + reference.getY());
 
             // first point is relative to reference point
-            Point2D.Float first = flexPoints.get(1);
+            final Point2D.Float first = flexPoints.get(1);
             first.setLocation(reference.getX() + first.getX(), reference.getY() + first.getY());
 
             // make the first point relative to the start point
@@ -385,10 +385,10 @@ public class Type1CharString
     /**
      * Relative moveto.
      */
-    private void rmoveTo(Number dx, Number dy)
+    private void rmoveTo(final Number dx, final Number dy)
     {
-        float x = (float)current.getX() + dx.floatValue();
-        float y = (float)current.getY() + dy.floatValue();
+        final float x = (float)current.getX() + dx.floatValue();
+        final float y = (float)current.getY() + dy.floatValue();
         path.moveTo(x, y);
         current.setLocation(x, y);
     }
@@ -396,10 +396,10 @@ public class Type1CharString
     /**
      * Relative lineto.
      */
-    private void rlineTo(Number dx, Number dy)
+    private void rlineTo(final Number dx, final Number dy)
     {
-        float x = (float)current.getX() + dx.floatValue();
-        float y = (float)current.getY() + dy.floatValue();
+        final float x = (float)current.getX() + dx.floatValue();
+        final float y = (float)current.getY() + dy.floatValue();
         if (path.getCurrentPoint() == null)
         {
             LOG.warn("rlineTo without initial moveTo in font " + fontName + ", glyph " + glyphName);
@@ -415,15 +415,15 @@ public class Type1CharString
     /**
      * Relative curveto.
      */
-    private void rrcurveTo(Number dx1, Number dy1, Number dx2, Number dy2,
-            Number dx3, Number dy3)
+    private void rrcurveTo(final Number dx1, final Number dy1, final Number dx2, final Number dy2,
+                           final Number dx3, final Number dy3)
     {
-        float x1 = (float) current.getX() + dx1.floatValue();
-        float y1 = (float) current.getY() + dy1.floatValue();
-        float x2 = x1 + dx2.floatValue();
-        float y2 = y1 + dy2.floatValue();
-        float x3 = x2 + dx3.floatValue();
-        float y3 = y2 + dy3.floatValue();
+        final float x1 = (float) current.getX() + dx1.floatValue();
+        final float y1 = (float) current.getY() + dy1.floatValue();
+        final float x2 = x1 + dx2.floatValue();
+        final float y2 = y1 + dy2.floatValue();
+        final float x3 = x2 + dx3.floatValue();
+        final float y3 = y2 + dy3.floatValue();
         if (path.getCurrentPoint() == null)
         {
             LOG.warn("rrcurveTo without initial moveTo in font " + fontName + ", glyph " + glyphName);
@@ -458,13 +458,13 @@ public class Type1CharString
      * Makes an accented character from two other characters.
      * @param asb
      */
-    private void seac(Number asb, Number adx, Number ady, Number bchar, Number achar)
+    private void seac(final Number asb, final Number adx, final Number ady, final Number bchar, final Number achar)
     {
         // base character
-        String baseName = StandardEncoding.INSTANCE.getName(bchar.intValue());
+        final String baseName = StandardEncoding.INSTANCE.getName(bchar.intValue());
         try
         {
-            Type1CharString base = font.getType1CharString(baseName);
+            final Type1CharString base = font.getType1CharString(baseName);
             path.append(base.getPath().getPathIterator(null), false);
         }
         catch (IOException e)
@@ -472,11 +472,11 @@ public class Type1CharString
             LOG.warn("invalid seac character in glyph " + glyphName + " of font " + fontName, e);
         }
         // accent character
-        String accentName = StandardEncoding.INSTANCE.getName(achar.intValue());
+        final String accentName = StandardEncoding.INSTANCE.getName(achar.intValue());
         try
         {
-            Type1CharString accent = font.getType1CharString(accentName);
-            AffineTransform at = AffineTransform.getTranslateInstance(
+            final Type1CharString accent = font.getType1CharString(accentName);
+            final AffineTransform at = AffineTransform.getTranslateInstance(
                     leftSideBearing.getX() + adx.floatValue() - asb.floatValue(),
                     leftSideBearing.getY() + ady.floatValue());
             path.append(accent.getPath().getPathIterator(at), false);

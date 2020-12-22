@@ -43,7 +43,7 @@ public final class PDXFAResource implements COSObjectable
      *
      * @param xfaBase The xfa resource.
      */
-    public PDXFAResource(COSBase xfaBase)
+    public PDXFAResource(final COSBase xfaBase)
     {
         xfa = xfaBase;
     }
@@ -94,11 +94,11 @@ public final class PDXFAResource implements COSObjectable
      */
     private static byte[] getBytesFromPacket(final COSArray cosArray) throws IOException
     {
-        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream())
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
             for (int i = 1; i < cosArray.size(); i += 2) 
             {
-                COSBase cosObj = cosArray.getObject(i);
+                final COSBase cosObj = cosArray.getObject(i);
                 if (cosObj instanceof COSStream) 
                 {
                     baos.write(getBytesFromStream((COSStream) cosObj.getCOSObject()));
@@ -113,7 +113,7 @@ public final class PDXFAResource implements COSObjectable
      */
     private static byte[] getBytesFromStream(final COSStream stream) throws IOException
     {
-        try (final InputStream is = stream.createInputStream())
+        try (InputStream is = stream.createInputStream())
         {
             return IOUtils.toByteArray(is);
         }

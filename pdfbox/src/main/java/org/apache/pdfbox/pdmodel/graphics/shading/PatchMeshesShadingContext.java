@@ -62,9 +62,9 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
      * @param controlPoints number of control points, 12 for type 6 shading and 16 for type 7 shading
      * @throws IOException if something went wrong
      */
-    protected PatchMeshesShadingContext(PDShadingType6 shading, ColorModel colorModel,
-            AffineTransform xform, Matrix matrix, Rectangle deviceBounds,
-            int controlPoints) throws IOException
+    protected PatchMeshesShadingContext(final PDShadingType6 shading, final ColorModel colorModel,
+                                        final AffineTransform xform, final Matrix matrix, final Rectangle deviceBounds,
+                                        final int controlPoints) throws IOException
     {
         super(shading, colorModel, xform, matrix);
         patchList = collectPatches(shading, xform, matrix, controlPoints);
@@ -83,23 +83,23 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
      * @throws IOException when something went wrong
      */
     @SuppressWarnings({"squid:S2583","squid:S1166"})
-    final List<Patch> collectPatches(PDShadingType6 shadingType, AffineTransform xform,
-            Matrix matrix, int controlPoints) throws IOException
+    final List<Patch> collectPatches(final PDShadingType6 shadingType, final AffineTransform xform,
+                                     final Matrix matrix, final int controlPoints) throws IOException
     {
-        COSDictionary dict = shadingType.getCOSObject();
+        final COSDictionary dict = shadingType.getCOSObject();
         if (!(dict instanceof COSStream))
         {
             return Collections.emptyList();
         }
-        PDRange rangeX = shadingType.getDecodeForParameter(0);
-        PDRange rangeY = shadingType.getDecodeForParameter(1);
+        final PDRange rangeX = shadingType.getDecodeForParameter(0);
+        final PDRange rangeY = shadingType.getDecodeForParameter(1);
         if (Float.compare(rangeX.getMin(), rangeX.getMax()) == 0 ||
             Float.compare(rangeY.getMin(), rangeY.getMax()) == 0)
         {
             return Collections.emptyList();
         }
-        int bitsPerFlag = shadingType.getBitsPerFlag();
-        PDRange[] colRange = new PDRange[numberOfColorComponents];
+        final int bitsPerFlag = shadingType.getBitsPerFlag();
+        final PDRange[] colRange = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
             colRange[i] = shadingType.getDecodeForParameter(2 + i);
@@ -108,10 +108,10 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
                 throw new IOException("Range missing in shading /Decode entry");
             }
         }
-        List<Patch> list = new ArrayList<>();
-        long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
-        long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
-        COSStream cosStream = (COSStream) dict;
+        final List<Patch> list = new ArrayList<>();
+        final long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
+        final long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
+        final COSStream cosStream = (COSStream) dict;
 
         try (ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream()))
         {
@@ -133,8 +133,8 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
             {
                 try
                 {
-                    boolean isFree = (flag == 0);
-                    Patch current = readPatch(mciis, isFree, implicitEdge, implicitCornerColor,
+                    final boolean isFree = (flag == 0);
+                    final Patch current = readPatch(mciis, isFree, implicitEdge, implicitCornerColor,
                             maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform, controlPoints);
                     if (current == null)
                     {
@@ -191,13 +191,13 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
      * @return a single patch
      * @throws IOException when something went wrong
      */
-    protected Patch readPatch(ImageInputStream input, boolean isFree, Point2D[] implicitEdge,
-                              float[][] implicitCornerColor, long maxSrcCoord, long maxSrcColor,
-                              PDRange rangeX, PDRange rangeY, PDRange[] colRange, Matrix matrix,
-                              AffineTransform xform, int controlPoints) throws IOException
+    protected Patch readPatch(final ImageInputStream input, final boolean isFree, final Point2D[] implicitEdge,
+                              final float[][] implicitCornerColor, final long maxSrcCoord, final long maxSrcColor,
+                              final PDRange rangeX, final PDRange rangeY, final PDRange[] colRange, final Matrix matrix,
+                              final AffineTransform xform, final int controlPoints) throws IOException
     {
-        float[][] color = new float[4][numberOfColorComponents];
-        Point2D[] points = new Point2D[controlPoints];
+        final float[][] color = new float[4][numberOfColorComponents];
+        final Point2D[] points = new Point2D[controlPoints];
         int pStart = 4, cStart = 2;
         if (isFree)
         {
@@ -222,11 +222,11 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         {
             for (int i = pStart; i < controlPoints; i++)
             {
-                long x = input.readBits(bitsPerCoordinate);
-                long y = input.readBits(bitsPerCoordinate);
-                float px = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
-                float py = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
-                Point2D p = matrix.transformPoint(px, py);
+                final long x = input.readBits(bitsPerCoordinate);
+                final long y = input.readBits(bitsPerCoordinate);
+                final float px = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
+                final float py = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
+                final Point2D p = matrix.transformPoint(px, py);
                 xform.transform(p, p);
                 points[i] = p;
             }
@@ -234,7 +234,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
             {
                 for (int j = 0; j < numberOfColorComponents; j++)
                 {
-                    long c = input.readBits(bitsPerColorComponent);
+                    final long c = input.readBits(bitsPerColorComponent);
                     color[i][j] = interpolate(c, maxSrcColor, colRange[j].getMin(),
                             colRange[j].getMax());
                 }
@@ -262,16 +262,16 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     /**
      * Get a point coordinate on a line by linear interpolation.
      */
-    private float interpolate(float x, long maxValue, float rangeMin, float rangeMax)
+    private float interpolate(final float x, final long maxValue, final float rangeMin, final float rangeMax)
     {
         return rangeMin + (x / maxValue) * (rangeMax - rangeMin);
     }
 
     @Override
-    protected Map<Point, Integer> calcPixelTable(Rectangle deviceBounds)  throws IOException
+    protected Map<Point, Integer> calcPixelTable(final Rectangle deviceBounds)  throws IOException
     {
-        Map<Point, Integer> map = new HashMap<>();
-        for (Patch it : patchList)
+        final Map<Point, Integer> map = new HashMap<>();
+        for (final Patch it : patchList)
         {
             super.calcPixelTable(it.listOfTriangles, map, deviceBounds);
         }

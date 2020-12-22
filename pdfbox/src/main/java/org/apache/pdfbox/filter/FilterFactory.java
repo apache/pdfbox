@@ -38,16 +38,16 @@ public final class FilterFactory
 
     private FilterFactory()
     {
-        Filter flate = new FlateFilter();
-        Filter dct = new DCTFilter();
-        Filter ccittFax = new CCITTFaxFilter();
-        Filter lzw = new LZWFilter();
-        Filter asciiHex = new ASCIIHexFilter();
-        Filter ascii85 = new ASCII85Filter();
-        Filter runLength = new RunLengthDecodeFilter();
-        Filter crypt = new CryptFilter();
-        Filter jpx = new JPXFilter();
-        Filter jbig2 = new JBIG2Filter();
+        final Filter flate = new FlateFilter();
+        final Filter dct = new DCTFilter();
+        final Filter ccittFax = new CCITTFaxFilter();
+        final Filter lzw = new LZWFilter();
+        final Filter asciiHex = new ASCIIHexFilter();
+        final Filter ascii85 = new ASCII85Filter();
+        final Filter runLength = new RunLengthDecodeFilter();
+        final Filter crypt = new CryptFilter();
+        final Filter jpx = new JPXFilter();
+        final Filter jbig2 = new JBIG2Filter();
 
         filters.put(COSName.FLATE_DECODE, flate);
         filters.put(COSName.FLATE_DECODE_ABBREVIATION, flate);
@@ -74,7 +74,7 @@ public final class FilterFactory
      * @return the filter that matches the name
      * @throws IOException if the filter name was invalid
      */
-    public Filter getFilter(String filterName) throws IOException
+    public Filter getFilter(final String filterName) throws IOException
     {
         return getFilter(COSName.getPDFName(filterName));
     }
@@ -85,9 +85,9 @@ public final class FilterFactory
      * @return the filter that matches the name
      * @throws IOException if the filter name was invalid
      */
-    public Filter getFilter(COSName filterName) throws IOException
+    public Filter getFilter(final COSName filterName) throws IOException
     {
-        Filter filter = filters.get(filterName);
+        final Filter filter = filters.get(filterName);
         if (filter == null)
         {
             throw new IOException("Invalid filter: " + filterName);

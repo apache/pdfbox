@@ -44,7 +44,7 @@ public class PDPageAdditionalActions implements COSObjectable
      *
      * @param a The action dictionary.
      */
-    public PDPageAdditionalActions( COSDictionary a )
+    public PDPageAdditionalActions(final COSDictionary a )
     {
         actions = a;
     }
@@ -70,7 +70,7 @@ public class PDPageAdditionalActions implements COSObjectable
      */
     public PDAction getO()
     {
-        COSDictionary o = (COSDictionary) actions.getDictionaryObject(COSName.O);
+        final COSDictionary o = (COSDictionary) actions.getDictionaryObject(COSName.O);
         PDAction retval = null;
         if( o != null )
         {
@@ -87,7 +87,7 @@ public class PDPageAdditionalActions implements COSObjectable
      *
      * @param o The action to be performed.
      */
-    public void setO( PDAction o )
+    public void setO(final PDAction o )
     {
         actions.setItem(COSName.O, o);
     }
@@ -101,7 +101,7 @@ public class PDPageAdditionalActions implements COSObjectable
      */
     public PDAction getC()
     {
-        COSDictionary c = (COSDictionary)actions.getDictionaryObject( "C" );
+        final COSDictionary c = (COSDictionary)actions.getDictionaryObject( "C" );
         PDAction retval = null;
         if( c != null )
         {
@@ -117,7 +117,7 @@ public class PDPageAdditionalActions implements COSObjectable
      *
      * @param c The action to be performed.
      */
-    public void setC( PDAction c )
+    public void setC(final PDAction c )
     {
         actions.setItem( "C", c );
     }

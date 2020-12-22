@@ -28,7 +28,7 @@ import org.apache.pdfbox.cos.COSNumber;
  */
 public class PDRange implements COSObjectable
 {
-    private COSArray rangeArray;
+    private final COSArray rangeArray;
     private int startingIndex;
 
     /**
@@ -47,7 +47,7 @@ public class PDRange implements COSObjectable
      *
      * @param range The array that describes the range.
      */
-    public PDRange( COSArray range )
+    public PDRange(final COSArray range )
     {
         rangeArray = range;
     }
@@ -61,7 +61,7 @@ public class PDRange implements COSObjectable
      * @param range The array that describes the index
      * @param index The range index into the array for the start of the range.
      */
-    public PDRange( COSArray range, int index )
+    public PDRange(final COSArray range, final int index )
     {
         rangeArray = range;
         startingIndex = index;
@@ -95,7 +95,7 @@ public class PDRange implements COSObjectable
      */
     public float getMin()
     {
-        COSNumber min = (COSNumber)rangeArray.getObject( startingIndex*2 );
+        final COSNumber min = (COSNumber)rangeArray.getObject( startingIndex*2 );
         return min.floatValue();
     }
 
@@ -104,7 +104,7 @@ public class PDRange implements COSObjectable
      *
      * @param min The new minimum for the range.
      */
-    public void setMin( float min )
+    public void setMin(final float min )
     {
         rangeArray.set( startingIndex*2, new COSFloat( min ) );
     }
@@ -116,7 +116,7 @@ public class PDRange implements COSObjectable
      */
     public float getMax()
     {
-        COSNumber max = (COSNumber)rangeArray.getObject( startingIndex*2+1 );
+        final COSNumber max = (COSNumber)rangeArray.getObject( startingIndex*2+1 );
         return max.floatValue();
     }
 
@@ -125,7 +125,7 @@ public class PDRange implements COSObjectable
      *
      * @param max The new maximum for the range.
      */
-    public void setMax( float max )
+    public void setMax(final float max )
     {
         rangeArray.set( startingIndex*2+1, new COSFloat( max ) );
     }

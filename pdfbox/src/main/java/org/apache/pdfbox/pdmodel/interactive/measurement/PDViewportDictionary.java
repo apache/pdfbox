@@ -50,7 +50,7 @@ public class PDViewportDictionary implements COSObjectable
      * 
      * @param dictionary the dictionary
      */
-    public PDViewportDictionary(COSDictionary dictionary)
+    public PDViewportDictionary(final COSDictionary dictionary)
     {
         this.viewportDictionary = dictionary;
     }
@@ -84,7 +84,7 @@ public class PDViewportDictionary implements COSObjectable
      */
     public PDRectangle getBBox()
     {
-        COSBase bbox = this.getCOSObject().getDictionaryObject(COSName.BBOX);
+        final COSBase bbox = this.getCOSObject().getDictionaryObject(COSName.BBOX);
         if (bbox instanceof COSArray)
         {
             return new PDRectangle((COSArray) bbox);
@@ -97,7 +97,7 @@ public class PDViewportDictionary implements COSObjectable
      * 
      * @param rectangle the rectangle specifying the location.
      */
-    public void setBBox(PDRectangle rectangle)
+    public void setBBox(final PDRectangle rectangle)
     {
         this.getCOSObject().setItem(COSName.BBOX, rectangle);
     }
@@ -117,7 +117,7 @@ public class PDViewportDictionary implements COSObjectable
     *  
     * @param name the name of the viewport
     */
-    public void setName(String name)
+    public void setName(final String name)
     {
         this.getCOSObject().setName(COSName.NAME, name);
     }
@@ -129,7 +129,7 @@ public class PDViewportDictionary implements COSObjectable
      */
     public PDMeasureDictionary getMeasure()
     {
-        COSBase base = this.getCOSObject().getDictionaryObject(COSName.MEASURE);
+        final COSBase base = this.getCOSObject().getDictionaryObject(COSName.MEASURE);
         if (base instanceof COSDictionary)
         {
             return new PDMeasureDictionary((COSDictionary) base);
@@ -142,7 +142,7 @@ public class PDViewportDictionary implements COSObjectable
      * 
      * @param measure the measure dictionary
      */
-    public void setMeasure(PDMeasureDictionary measure)
+    public void setMeasure(final PDMeasureDictionary measure)
     {
         this.getCOSObject().setItem(COSName.MEASURE, measure);
     }

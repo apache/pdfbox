@@ -94,7 +94,7 @@ public class XMPBasicSchema extends XMPSchema
      * @param metadata
      *            The metadata to attach this schema
      */
-    public XMPBasicSchema(XMPMetadata metadata)
+    public XMPBasicSchema(final XMPMetadata metadata)
     {
         super(metadata);
 
@@ -108,7 +108,7 @@ public class XMPBasicSchema extends XMPSchema
      * @param ownPrefix
      *            The prefix to assign
      */
-    public XMPBasicSchema(XMPMetadata metadata, String ownPrefix)
+    public XMPBasicSchema(final XMPMetadata metadata, final String ownPrefix)
     {
         super(metadata, ownPrefix);
 
@@ -126,14 +126,14 @@ public class XMPBasicSchema extends XMPSchema
      * @param img
      *            Image data
      */
-    public void addThumbnails(Integer height, Integer width, String format, String img)
+    public void addThumbnails(final Integer height, final Integer width, final String format, final String img)
     {
         if (altThumbs == null)
         {
             altThumbs = createArrayProperty(THUMBNAILS, Cardinality.Alt);
             addProperty(altThumbs);
         }
-        ThumbnailType thumb = new ThumbnailType(getMetadata());
+        final ThumbnailType thumb = new ThumbnailType(getMetadata());
         thumb.setHeight(height);
         thumb.setWidth(width);
         thumb.setFormat(format);
@@ -147,12 +147,12 @@ public class XMPBasicSchema extends XMPSchema
      * @param xpath
      *            the value to add
      */
-    public void addAdvisory(String xpath)
+    public void addAdvisory(final String xpath)
     {
         addQualifiedBagValue(ADVISORY, xpath);
     }
 
-    public void removeAdvisory(String xpath)
+    public void removeAdvisory(final String xpath)
     {
         removeUnqualifiedBagValue(ADVISORY, xpath);
     }
@@ -163,9 +163,9 @@ public class XMPBasicSchema extends XMPSchema
      * @param url
      *            the Base url value to set
      */
-    public void setBaseURL(String url)
+    public void setBaseURL(final String url)
     {
-        URLType tt = (URLType) instanciateSimple(BASEURL, url);
+        final URLType tt = (URLType) instanciateSimple(BASEURL, url);
         setBaseURLProperty(tt);
     }
 
@@ -175,7 +175,7 @@ public class XMPBasicSchema extends XMPSchema
      * @param url
      *            the Base url property to set
      */
-    public void setBaseURLProperty(URLType url)
+    public void setBaseURLProperty(final URLType url)
     {
         addProperty(url);
     }
@@ -186,9 +186,9 @@ public class XMPBasicSchema extends XMPSchema
      * @param date
      *            the value to set
      */
-    public void setCreateDate(Calendar date)
+    public void setCreateDate(final Calendar date)
     {
-        DateType tt = (DateType) instanciateSimple(CREATEDATE, date);
+        final DateType tt = (DateType) instanciateSimple(CREATEDATE, date);
         setCreateDateProperty(tt);
     }
 
@@ -198,7 +198,7 @@ public class XMPBasicSchema extends XMPSchema
      * @param date
      *            the create date property to set
      */
-    public void setCreateDateProperty(DateType date)
+    public void setCreateDateProperty(final DateType date)
     {
         addProperty(date);
     }
@@ -209,9 +209,9 @@ public class XMPBasicSchema extends XMPSchema
      * @param creatorTool
      *            the creator tool value to set
      */
-    public void setCreatorTool(String creatorTool)
+    public void setCreatorTool(final String creatorTool)
     {
-        AgentNameType tt = (AgentNameType) instanciateSimple(CREATORTOOL, creatorTool);
+        final AgentNameType tt = (AgentNameType) instanciateSimple(CREATORTOOL, creatorTool);
         setCreatorToolProperty(tt);
     }
 
@@ -221,7 +221,7 @@ public class XMPBasicSchema extends XMPSchema
      * @param creatorTool
      *            the creator tool property to set
      */
-    public void setCreatorToolProperty(AgentNameType creatorTool)
+    public void setCreatorToolProperty(final AgentNameType creatorTool)
     {
         addProperty(creatorTool);
     }
@@ -232,12 +232,12 @@ public class XMPBasicSchema extends XMPSchema
      * @param text
      *            the identifier value to add
      */
-    public void addIdentifier(String text)
+    public void addIdentifier(final String text)
     {
         addQualifiedBagValue(IDENTIFIER, text);
     }
 
-    public void removeIdentifier(String text)
+    public void removeIdentifier(final String text)
     {
         removeUnqualifiedBagValue(IDENTIFIER, text);
     }
@@ -248,9 +248,9 @@ public class XMPBasicSchema extends XMPSchema
      * @param text
      *            the label value to set
      */
-    public void setLabel(String text)
+    public void setLabel(final String text)
     {
-        TextType tt = (TextType) instanciateSimple(LABEL, text);
+        final TextType tt = (TextType) instanciateSimple(LABEL, text);
         setLabelProperty(tt);
     }
 
@@ -260,7 +260,7 @@ public class XMPBasicSchema extends XMPSchema
      * @param text
      *            the label property to set
      */
-    public void setLabelProperty(TextType text)
+    public void setLabelProperty(final TextType text)
     {
         addProperty(text);
     }
@@ -272,9 +272,9 @@ public class XMPBasicSchema extends XMPSchema
      * @param date
      *            the Metadata Date value to set
      */
-    public void setMetadataDate(Calendar date)
+    public void setMetadataDate(final Calendar date)
     {
-        DateType tt = (DateType) instanciateSimple(METADATADATE, date);
+        final DateType tt = (DateType) instanciateSimple(METADATADATE, date);
         setMetadataDateProperty(tt);
     }
 
@@ -284,7 +284,7 @@ public class XMPBasicSchema extends XMPSchema
      * @param date
      *            the Metadata Date property to set
      */
-    public void setMetadataDateProperty(DateType date)
+    public void setMetadataDateProperty(final DateType date)
     {
         addProperty(date);
     }
@@ -295,15 +295,15 @@ public class XMPBasicSchema extends XMPSchema
      * @param date
      *            the Modify Date value to set
      */
-    public void setModifyDate(Calendar date)
+    public void setModifyDate(final Calendar date)
     {
-        DateType tt = (DateType) instanciateSimple(MODIFYDATE, date);
+        final DateType tt = (DateType) instanciateSimple(MODIFYDATE, date);
         setModifyDateProperty(tt);
     }
 
-    public void setModifierDate(Calendar date)
+    public void setModifierDate(final Calendar date)
     {
-        DateType tt = (DateType) instanciateSimple(MODIFIER_DATE, date);
+        final DateType tt = (DateType) instanciateSimple(MODIFIER_DATE, date);
         setModifierDateProperty(tt);
     }
 
@@ -313,12 +313,12 @@ public class XMPBasicSchema extends XMPSchema
      * @param date
      *            the Modify Date property to set
      */
-    public void setModifyDateProperty(DateType date)
+    public void setModifyDateProperty(final DateType date)
     {
         addProperty(date);
     }
 
-    public void setModifierDateProperty(DateType date)
+    public void setModifierDateProperty(final DateType date)
     {
         addProperty(date);
     }
@@ -329,9 +329,9 @@ public class XMPBasicSchema extends XMPSchema
      * @param text
      *            the Nickname value to set
      */
-    public void setNickname(String text)
+    public void setNickname(final String text)
     {
-        TextType tt = (TextType) instanciateSimple(NICKNAME, text);
+        final TextType tt = (TextType) instanciateSimple(NICKNAME, text);
         setNicknameProperty(tt);
     }
 
@@ -341,7 +341,7 @@ public class XMPBasicSchema extends XMPSchema
      * @param text
      *            the Nickname property to set
      */
-    public void setNicknameProperty(TextType text)
+    public void setNicknameProperty(final TextType text)
     {
         addProperty(text);
     }
@@ -353,9 +353,9 @@ public class XMPBasicSchema extends XMPSchema
      * @param rate
      *            the rate value to set
      */
-    public void setRating(Integer rate)
+    public void setRating(final Integer rate)
     {
-        IntegerType tt = (IntegerType) instanciateSimple(RATING, rate);
+        final IntegerType tt = (IntegerType) instanciateSimple(RATING, rate);
         setRatingProperty(tt);
 
     }
@@ -366,7 +366,7 @@ public class XMPBasicSchema extends XMPSchema
      * @param rate
      *            the rate property to set
      */
-    public void setRatingProperty(IntegerType rate)
+    public void setRatingProperty(final IntegerType rate)
     {
         addProperty(rate);
     }
@@ -408,7 +408,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public String getBaseURL()
     {
-        TextType tt = ((TextType) getProperty(BASEURL));
+        final TextType tt = ((TextType) getProperty(BASEURL));
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -429,7 +429,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public Calendar getCreateDate()
     {
-        DateType createDate = (DateType) getProperty(CREATEDATE);
+        final DateType createDate = (DateType) getProperty(CREATEDATE);
         if (createDate != null)
         {
             return createDate.getValue();
@@ -454,7 +454,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public String getCreatorTool()
     {
-        TextType tt = ((TextType) getProperty(CREATORTOOL));
+        final TextType tt = ((TextType) getProperty(CREATORTOOL));
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -495,7 +495,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public String getLabel()
     {
-        TextType tt = ((TextType) getProperty(LABEL));
+        final TextType tt = ((TextType) getProperty(LABEL));
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -516,7 +516,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public Calendar getMetadataDate()
     {
-        DateType dt = ((DateType) getProperty(METADATADATE));
+        final DateType dt = ((DateType) getProperty(METADATADATE));
         return dt == null ? null : dt.getValue();
     }
 
@@ -542,7 +542,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public Calendar getModifyDate()
     {
-        DateType modifyDate = (DateType) getProperty(MODIFYDATE);
+        final DateType modifyDate = (DateType) getProperty(MODIFYDATE);
         if (modifyDate != null)
         {
             return modifyDate.getValue();
@@ -553,7 +553,7 @@ public class XMPBasicSchema extends XMPSchema
 
     public Calendar getModifierDate()
     {
-        DateType modifierDate = (DateType) getProperty(MODIFIER_DATE);
+        final DateType modifierDate = (DateType) getProperty(MODIFIER_DATE);
         if (modifierDate != null)
         {
             return modifierDate.getValue();
@@ -579,7 +579,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public String getNickname()
     {
-        TextType tt = ((TextType) getProperty(NICKNAME));
+        final TextType tt = ((TextType) getProperty(NICKNAME));
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -600,7 +600,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public Integer getRating()
     {
-        IntegerType it = ((IntegerType) getProperty(RATING));
+        final IntegerType it = ((IntegerType) getProperty(RATING));
         return it == null ? null : it.getValue();
     }
 
@@ -613,11 +613,11 @@ public class XMPBasicSchema extends XMPSchema
      */
     public List<ThumbnailType> getThumbnailsProperty() throws BadFieldValueException
     {
-        List<AbstractField> tmp = getUnqualifiedArrayList(THUMBNAILS);
+        final List<AbstractField> tmp = getUnqualifiedArrayList(THUMBNAILS);
         if (tmp != null)
         {
-            List<ThumbnailType> thumbs = new ArrayList<>();
-            for (AbstractField abstractField : tmp)
+            final List<ThumbnailType> thumbs = new ArrayList<>();
+            for (final AbstractField abstractField : tmp)
             {
                 if (abstractField instanceof ThumbnailType)
                 {

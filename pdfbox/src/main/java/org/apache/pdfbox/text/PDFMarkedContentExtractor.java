@@ -58,7 +58,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
      *
      * @param encoding The encoding that the output will be written in.
      */
-    public PDFMarkedContentExtractor(String encoding) throws IOException
+    public PDFMarkedContentExtractor(final String encoding) throws IOException
     {
         addOperator(new BeginMarkedContentSequenceWithProperties());
         addOperator(new BeginMarkedContentSequence());
@@ -75,22 +75,22 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
      * @param second The second number to compare to.
      * @param variance The allowed variance.
      */
-    private boolean within( float first, float second, float variance )
+    private boolean within(final float first, final float second, final float variance )
     {
         return second > first - variance && second < first + variance;
     }
 
     @Override
-    public void beginMarkedContentSequence(COSName tag, COSDictionary properties)
+    public void beginMarkedContentSequence(final COSName tag, final COSDictionary properties)
     {
-        PDMarkedContent markedContent = PDMarkedContent.create(tag, properties);
+        final PDMarkedContent markedContent = PDMarkedContent.create(tag, properties);
         if (this.currentMarkedContents.isEmpty())
         {
             this.markedContents.add(markedContent);
         }
         else
         {
-            PDMarkedContent currentMarkedContent =
+            final PDMarkedContent currentMarkedContent =
                 this.currentMarkedContents.peek();
             if (currentMarkedContent != null)
             {
@@ -109,7 +109,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
         }
     }
 
-    public void xobject(PDXObject xobject)
+    public void xobject(final PDXObject xobject)
     {
         if (!this.currentMarkedContents.isEmpty())
         {
@@ -125,16 +125,16 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
      * @param text The text to process.
      */
     @Override
-    protected void processTextPosition( TextPosition text )
+    protected void processTextPosition(final TextPosition text )
     {
         boolean showCharacter = true;
         if( this.suppressDuplicateOverlappingText )
         {
             showCharacter = false;
-            String textCharacter = text.getUnicode();
-            float textX = text.getX();
-            float textY = text.getY();
-            List<TextPosition> sameTextCharacters =
+            final String textCharacter = text.getUnicode();
+            final float textX = text.getX();
+            final float textY = text.getY();
+            final List<TextPosition> sameTextCharacters =
                     this.characterListMapping.computeIfAbsent(textCharacter, k -> new ArrayList<>());
 
             // RDD - Here we compute the value that represents the end of the rendered
@@ -149,13 +149,13 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
             // character).
             //
             boolean suppressCharacter = false;
-            float tolerance = (text.getWidth()/textCharacter.length())/3.0f;
-            for (TextPosition sameTextCharacter : sameTextCharacters)
+            final float tolerance = (text.getWidth()/textCharacter.length())/3.0f;
+            for (final TextPosition sameTextCharacter : sameTextCharacters)
             {
-                TextPosition character = sameTextCharacter;
-                String charCharacter = character.getUnicode();
-                float charX = character.getX();
-                float charY = character.getY();
+                final TextPosition character = sameTextCharacter;
+                final String charCharacter = character.getUnicode();
+                final float charX = character.getX();
+                final float charY = character.getY();
                 //only want to suppress
                 if( charCharacter != null &&
                         //charCharacter.equals( textCharacter ) &&
@@ -177,7 +177,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
 
         if( showCharacter )
         {
-            List<TextPosition> textList = new ArrayList<>();
+            final List<TextPosition> textList = new ArrayList<>();
 
             /* In the wild, some PDF encoded documents put diacritics (accents on
              * top of characters) into a separate Tj element.  When displaying them
@@ -195,7 +195,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
                  * Note that we are making an assumption that we need to only look back
                  * one TextPosition to find what we are overlapping.  
                  * This may not always be true. */
-                TextPosition previousTextPosition = textList.get(textList.size()-1);
+                final TextPosition previousTextPosition = textList.get(textList.size()-1);
                 if(text.isDiacritic() && previousTextPosition.contains(text))
                 {
                     previousTextPosition.mergeDiacritic(text);

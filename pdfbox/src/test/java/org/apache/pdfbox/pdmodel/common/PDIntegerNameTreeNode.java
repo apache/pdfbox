@@ -42,19 +42,19 @@ public class PDIntegerNameTreeNode extends PDNameTreeNode<COSInteger>
      *
      * @param dic The COS dictionary.
      */
-    public PDIntegerNameTreeNode(COSDictionary dic)
+    public PDIntegerNameTreeNode(final COSDictionary dic)
     {
         super(dic);
     }
 
     @Override
-    protected COSInteger convertCOSToPD(COSBase base) throws IOException
+    protected COSInteger convertCOSToPD(final COSBase base) throws IOException
     {
         return (COSInteger)base;
     }
 
     @Override
-    protected PDIntegerNameTreeNode createChildNode( COSDictionary dic )
+    protected PDIntegerNameTreeNode createChildNode(final COSDictionary dic )
     {
         return new PDIntegerNameTreeNode(dic);
     }

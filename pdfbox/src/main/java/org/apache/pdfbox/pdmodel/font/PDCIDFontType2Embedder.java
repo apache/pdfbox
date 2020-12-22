@@ -70,8 +70,8 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      * @param parent parent Type 0 font
      * @throws IOException if the TTF could not be read
      */
-    PDCIDFontType2Embedder(PDDocument document, COSDictionary dict, TrueTypeFont ttf,
-            boolean embedSubset, PDType0Font parent, boolean vertical) throws IOException
+    PDCIDFontType2Embedder(final PDDocument document, final COSDictionary dict, final TrueTypeFont ttf,
+                           final boolean embedSubset, final PDType0Font parent, final boolean vertical) throws IOException
     {
         super(document, dict, ttf, embedSubset);
         this.document = document;
@@ -86,7 +86,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
         // descendant CIDFont
         cidFont = createCIDFont();
-        COSArray descendantFonts = new COSArray();
+        final COSArray descendantFonts = new COSArray();
         descendantFonts.add(cidFont);
         dict.setItem(COSName.DESCENDANT_FONTS, descendantFonts);
 
@@ -101,11 +101,11 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      * Rebuild a font subset.
      */
     @Override
-    protected void buildSubset(InputStream ttfSubset, String tag, Map<Integer, Integer> gidToCid)
+    protected void buildSubset(final InputStream ttfSubset, final String tag, final Map<Integer, Integer> gidToCid)
             throws IOException
     {
         // build CID2GIDMap, because the content stream has been written with the old GIDs
-        Map<Integer, Integer> cidToGid = new HashMap<>(gidToCid.size());
+        final Map<Integer, Integer> cidToGid = new HashMap<>(gidToCid.size());
         gidToCid.forEach((newGID, oldGID) -> cidToGid.put(oldGID, newGID));
         
         // build unicode mapping before subsetting as the subsetted font won't have a cmap
@@ -123,14 +123,14 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         buildCIDSet(cidToGid);
     }
 
-    private void buildToUnicodeCMap(Map<Integer, Integer> newGIDToOldCID) throws IOException
+    private void buildToUnicodeCMap(final Map<Integer, Integer> newGIDToOldCID) throws IOException
     {
-        ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
+        final ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
         boolean hasSurrogates = false;
         for (int gid = 1, max = ttf.getMaximumProfile().getNumGlyphs(); gid <= max; gid++)
         {
             // optional CID2GIDMap for subsetting
-            int cid;
+            final int cid;
             if (newGIDToOldCID != null)
             {
                 if (!newGIDToOldCID.containsKey(gid))
@@ -148,11 +148,11 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             }
 
             // skip composite glyph components that have no code point
-            List<Integer> codes = cmapLookup.getCharCodes(cid); // old GID -> Unicode
+            final List<Integer> codes = cmapLookup.getCharCodes(cid); // old GID -> Unicode
             if (codes != null)
             {
                 // use the first entry even for ambiguous mappings
-                int codePoint = codes.get(0);
+                final int codePoint = codes.get(0);
                 if (codePoint > 0xFFFF)
                 {
                     hasSurrogates = true;
@@ -161,16 +161,16 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             }
         }
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         toUniWriter.writeTo(out);
-        InputStream cMapStream = new ByteArrayInputStream(out.toByteArray());
+        final InputStream cMapStream = new ByteArrayInputStream(out.toByteArray());
 
-        PDStream stream = new PDStream(document, cMapStream, COSName.FLATE_DECODE);
+        final PDStream stream = new PDStream(document, cMapStream, COSName.FLATE_DECODE);
 
         // surrogate code points, requires PDF 1.5
         if (hasSurrogates)
         {
-            float version = document.getVersion();
+            final float version = document.getVersion();
             if (version < 1.5)
             {
                 document.setVersion(1.5f);
@@ -180,9 +180,9 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         dict.setItem(COSName.TO_UNICODE, stream);
     }
 
-    private COSDictionary toCIDSystemInfo(String registry, String ordering, int supplement)
+    private COSDictionary toCIDSystemInfo(final String registry, final String ordering, final int supplement)
     {
-        COSDictionary info = new COSDictionary();
+        final COSDictionary info = new COSDictionary();
         info.setString(COSName.REGISTRY, registry);
         info.setString(COSName.ORDERING, ordering);
         info.setInt(COSName.SUPPLEMENT, supplement);
@@ -191,7 +191,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
     private COSDictionary createCIDFont() throws IOException
     {
-        COSDictionary cidFont = new COSDictionary();
+        final COSDictionary cidFont = new COSDictionary();
 
         // Type, Subtype
         cidFont.setItem(COSName.TYPE, COSName.FONT);
@@ -201,7 +201,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         cidFont.setName(COSName.BASE_FONT, fontDescriptor.getFontName());
 
         // CIDSystemInfo
-        COSDictionary info = toCIDSystemInfo("Adobe", "Identity", 0);
+        final COSDictionary info = toCIDSystemInfo("Adobe", "Identity", 0);
         cidFont.setItem(COSName.CIDSYSTEMINFO, info);
 
         // FontDescriptor
@@ -222,23 +222,23 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         return cidFont;
     }
 
-    private void addNameTag(String tag)
+    private void addNameTag(final String tag)
     {
-        String name = fontDescriptor.getFontName();
-        String newName = tag + name;
+        final String name = fontDescriptor.getFontName();
+        final String newName = tag + name;
 
         dict.setName(COSName.BASE_FONT, newName);
         fontDescriptor.setFontName(newName);
         cidFont.setName(COSName.BASE_FONT, newName);
     }
 
-    private void buildCIDToGIDMap(Map<Integer, Integer> cidToGid) throws IOException
+    private void buildCIDToGIDMap(final Map<Integer, Integer> cidToGid) throws IOException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int cidMax = Collections.max(cidToGid.keySet());
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final int cidMax = Collections.max(cidToGid.keySet());
         for (int i = 0; i <= cidMax; i++)
         {
-            int gid;
+            final int gid;
             if (cidToGid.containsKey(i))
             {
                 gid = cidToGid.get(i);
@@ -250,8 +250,8 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             out.write(new byte[] { (byte)(gid >> 8 & 0xff), (byte)(gid & 0xff) });
         }
 
-        InputStream input = new ByteArrayInputStream(out.toByteArray());
-        PDStream stream = new PDStream(document, input, COSName.FLATE_DECODE);
+        final InputStream input = new ByteArrayInputStream(out.toByteArray());
+        final PDStream stream = new PDStream(document, input, COSName.FLATE_DECODE);
 
         cidFont.setItem(COSName.CID_TO_GID_MAP, stream);
     }
@@ -260,18 +260,18 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      * Builds the CIDSet entry, required by PDF/A. This lists all CIDs in the font, including those
      * that don't have a GID.
      */
-    private void buildCIDSet(Map<Integer, Integer> cidToGid) throws IOException
+    private void buildCIDSet(final Map<Integer, Integer> cidToGid) throws IOException
     {
-        int cidMax = Collections.max(cidToGid.keySet());
-        byte[] bytes = new byte[cidMax / 8 + 1];
+        final int cidMax = Collections.max(cidToGid.keySet());
+        final byte[] bytes = new byte[cidMax / 8 + 1];
         for (int cid = 0; cid <= cidMax; cid++)
         {
-            int mask = 1 << 7 - cid % 8;
+            final int mask = 1 << 7 - cid % 8;
             bytes[cid / 8] |= mask;
         }
 
-        InputStream input = new ByteArrayInputStream(bytes);
-        PDStream stream = new PDStream(document, input, COSName.FLATE_DECODE);
+        final InputStream input = new ByteArrayInputStream(bytes);
+        final PDStream stream = new PDStream(document, input, COSName.FLATE_DECODE);
 
         fontDescriptor.setCIDSet(stream);
     }
@@ -279,19 +279,19 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     /**
      * Builds widths with a custom CIDToGIDMap (for embedding font subset).
      */
-    private void buildWidths(Map<Integer, Integer> cidToGid) throws IOException
+    private void buildWidths(final Map<Integer, Integer> cidToGid) throws IOException
     {
-        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+        final float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
 
-        COSArray widths = new COSArray();
+        final COSArray widths = new COSArray();
         COSArray ws = new COSArray();
         int prev = Integer.MIN_VALUE;
         // Use a sorted list to get an optimal width array  
-        Set<Integer> keys = new TreeSet<>(cidToGid.keySet());
-        for (int cid : keys)
+        final Set<Integer> keys = new TreeSet<>(cidToGid.keySet());
+        for (final int cid : keys)
         {
-            int gid = cidToGid.get(cid);
-            long width = Math.round(ttf.getHorizontalMetrics().getAdvanceWidth(gid) * scaling);
+            final int gid = cidToGid.get(cid);
+            final long width = Math.round(ttf.getHorizontalMetrics().getAdvanceWidth(gid) * scaling);
             if (width == 1000)
             {
                 // skip default width
@@ -310,22 +310,22 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         cidFont.setItem(COSName.W, widths);
     }
 
-    private boolean buildVerticalHeader(COSDictionary cidFont) throws IOException
+    private boolean buildVerticalHeader(final COSDictionary cidFont) throws IOException
     {
-        VerticalHeaderTable vhea = ttf.getVerticalHeader();
+        final VerticalHeaderTable vhea = ttf.getVerticalHeader();
         if (vhea == null)
         {
             LOG.warn("Font to be subset is set to vertical, but has no 'vhea' table");
             return false;
         }
 
-        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+        final float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
 
-        long v = Math.round(vhea.getAscender() * scaling);
-        long w1 = Math.round(-vhea.getAdvanceHeightMax() * scaling);
+        final long v = Math.round(vhea.getAscender() * scaling);
+        final long w1 = Math.round(-vhea.getAdvanceHeightMax() * scaling);
         if (v != 880 || w1 != -1000)
         {
-            COSArray cosDw2 = new COSArray();
+            final COSArray cosDw2 = new COSArray();
             cosDw2.add(COSInteger.get(v));
             cosDw2.add(COSInteger.get(w1));
             cidFont.setItem(COSName.DW2, cosDw2);
@@ -336,7 +336,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     /**
      * Builds vertical metrics with a custom CIDToGIDMap (for embedding font subset).
      */
-    private void buildVerticalMetrics(Map<Integer, Integer> cidToGid) throws IOException
+    private void buildVerticalMetrics(final Map<Integer, Integer> cidToGid) throws IOException
     {
         // The "vhea" and "vmtx" tables that specify vertical metrics shall never be used by a conforming
         // reader. The only way to specify vertical metrics in PDF shall be by means of the DW2 and W2
@@ -347,32 +347,32 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             return;
         }
 
-        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+        final float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
 
-        VerticalHeaderTable vhea = ttf.getVerticalHeader();
-        VerticalMetricsTable vmtx = ttf.getVerticalMetrics();
-        GlyphTable glyf = ttf.getGlyph();
-        HorizontalMetricsTable hmtx = ttf.getHorizontalMetrics();
+        final VerticalHeaderTable vhea = ttf.getVerticalHeader();
+        final VerticalMetricsTable vmtx = ttf.getVerticalMetrics();
+        final GlyphTable glyf = ttf.getGlyph();
+        final HorizontalMetricsTable hmtx = ttf.getHorizontalMetrics();
 
-        long v_y = Math.round(vhea.getAscender() * scaling);
-        long w1 = Math.round(-vhea.getAdvanceHeightMax() * scaling);
+        final long v_y = Math.round(vhea.getAscender() * scaling);
+        final long w1 = Math.round(-vhea.getAdvanceHeightMax() * scaling);
 
-        COSArray heights = new COSArray();
+        final COSArray heights = new COSArray();
         COSArray w2 = new COSArray();
         int prev = Integer.MIN_VALUE;
         // Use a sorted list to get an optimal width array
-        Set<Integer> keys = new TreeSet<>(cidToGid.keySet());
-        for (int cid : keys)
+        final Set<Integer> keys = new TreeSet<>(cidToGid.keySet());
+        for (final int cid : keys)
         {
             // Unlike buildWidths, we look up with cid (not gid) here because this is
             // the original TTF, not the rebuilt one.
-            GlyphData glyph = glyf.getGlyph(cid);
+            final GlyphData glyph = glyf.getGlyph(cid);
             if (glyph == null)
             {
                 continue;
             }
-            long height = Math.round((glyph.getYMaximum() + vmtx.getTopSideBearing(cid)) * scaling);
-            long advance = Math.round(-vmtx.getAdvanceHeight(cid) * scaling);
+            final long height = Math.round((glyph.getYMaximum() + vmtx.getTopSideBearing(cid)) * scaling);
+            final long advance = Math.round(-vmtx.getAdvanceHeight(cid) * scaling);
             if (height == v_y && advance == w1)
             {
                 // skip default metrics
@@ -386,7 +386,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
                 heights.add(w2);
             }
             w2.add(COSInteger.get(advance)); // w1_iy
-            long width = Math.round(hmtx.getAdvanceWidth(cid) * scaling);
+            final long width = Math.round(hmtx.getAdvanceWidth(cid) * scaling);
             w2.add(COSInteger.get(width / 2)); // v_ix
             w2.add(COSInteger.get(height)); // v_iy
             prev = cid;
@@ -397,10 +397,10 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     /**
      * Build widths with Identity CIDToGIDMap (for embedding full font).
      */
-    private void buildWidths(COSDictionary cidFont) throws IOException
+    private void buildWidths(final COSDictionary cidFont) throws IOException
     {
-        int cidMax = ttf.getNumberOfGlyphs();
-        int[] gidwidths = new int[cidMax * 2];
+        final int cidMax = ttf.getNumberOfGlyphs();
+        final int[] gidwidths = new int[cidMax * 2];
         for (int cid = 0; cid < cidMax; cid++)
         {
             gidwidths[cid * 2] = cid;
@@ -415,28 +415,28 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         FIRST, BRACKET, SERIAL
     }
 
-    private COSArray getWidths(int[] widths) throws IOException
+    private COSArray getWidths(final int[] widths) throws IOException
     {
         if (widths.length == 0)
         {
             throw new IllegalArgumentException("length of widths must be > 0");
         }
 
-        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+        final float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
 
         long lastCid = widths[0];
         long lastValue = Math.round(widths[1] * scaling);
 
         COSArray inner = new COSArray();
-        COSArray outer = new COSArray();
+        final COSArray outer = new COSArray();
         outer.add(COSInteger.get(lastCid));
 
         State state = State.FIRST;
 
         for (int i = 2; i < widths.length; i += 2)
         {
-            long cid   = widths[i];
-            long value = Math.round(widths[i + 1] * scaling);
+            final long cid   = widths[i];
+            final long value = Math.round(widths[i + 1] * scaling);
 
             switch (state)
             {
@@ -514,18 +514,18 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     /**
      * Build vertical metrics with Identity CIDToGIDMap (for embedding full font).
      */
-    private void buildVerticalMetrics(COSDictionary cidFont) throws IOException
+    private void buildVerticalMetrics(final COSDictionary cidFont) throws IOException
     {
         if (!buildVerticalHeader(cidFont))
         {
             return;
         }
 
-        int cidMax = ttf.getNumberOfGlyphs();
-        int[] gidMetrics = new int[cidMax * 4];
+        final int cidMax = ttf.getNumberOfGlyphs();
+        final int[] gidMetrics = new int[cidMax * 4];
         for (int cid = 0; cid < cidMax; cid++)
         {
-            GlyphData glyph = ttf.getGlyph().getGlyph(cid);
+            final GlyphData glyph = ttf.getGlyph().getGlyph(cid);
             if (glyph == null)
             {
                 gidMetrics[cid * 4] = Integer.MIN_VALUE;
@@ -542,14 +542,14 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         cidFont.setItem(COSName.W2, getVerticalMetrics(gidMetrics));
     }
 
-    private COSArray getVerticalMetrics(int[] values) throws IOException
+    private COSArray getVerticalMetrics(final int[] values) throws IOException
     {
         if (values.length == 0)
         {
             throw new IllegalArgumentException("length of values must be > 0");
         }
 
-        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+        final float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
 
         long lastCid = values[0];
         long lastW1Value = Math.round(-values[1] * scaling);
@@ -557,22 +557,22 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         long lastVyValue = Math.round(values[3] * scaling);
 
         COSArray inner = new COSArray();
-        COSArray outer = new COSArray();
+        final COSArray outer = new COSArray();
         outer.add(COSInteger.get(lastCid));
 
         State state = State.FIRST;
 
         for (int i = 4; i < values.length; i += 4)
         {
-            long cid = values[i];
+            final long cid = values[i];
             if (cid == Integer.MIN_VALUE)
             {
                 // no glyph for this cid
                 continue;
             }
-            long w1Value = Math.round(-values[i + 1] * scaling);
-            long vxValue = Math.round(values[i + 2] * scaling / 2);
-            long vyValue = Math.round(values[i + 3] * scaling);
+            final long w1Value = Math.round(-values[i + 1] * scaling);
+            final long vxValue = Math.round(values[i + 2] * scaling / 2);
+            final long vyValue = Math.round(values[i + 3] * scaling);
 
             switch (state)
             {

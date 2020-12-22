@@ -29,7 +29,7 @@ public class GlyphDetail
     /**
      * @param code character code
      */
-    public GlyphDetail(int code)
+    public GlyphDetail(final int code)
     {
         this.code = code;
         this.exception = null;
@@ -39,7 +39,7 @@ public class GlyphDetail
      * @param code character code
      * @param error glyph exception
      */
-    public GlyphDetail(int code, GlyphException error)
+    public GlyphDetail(final int code, final GlyphException error)
     {
         this.code = code;
         this.exception = error;

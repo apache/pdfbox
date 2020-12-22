@@ -40,7 +40,7 @@ public final class PDDocumentOutline extends PDOutlineNode
      *
      * @param dic The storage dictionary.
      */
-    public PDDocumentOutline( COSDictionary dic )
+    public PDDocumentOutline(final COSDictionary dic )
     {
         super( dic );
         getCOSObject().setName(COSName.TYPE, COSName.OUTLINES.getName());

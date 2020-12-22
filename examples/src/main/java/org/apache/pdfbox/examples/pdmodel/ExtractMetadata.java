@@ -56,7 +56,7 @@ public final class ExtractMetadata
      * @throws XmpParsingException
      * @throws BadFieldValueException
      */
-    public static void main(String[] args) throws IOException, XmpParsingException, BadFieldValueException
+    public static void main(final String[] args) throws IOException, XmpParsingException, BadFieldValueException
     {
         if (args.length != 1)
         {
@@ -67,14 +67,14 @@ public final class ExtractMetadata
         {
             try (PDDocument document = Loader.loadPDF(new File(args[0])))
             {
-                PDDocumentCatalog catalog = document.getDocumentCatalog();
-                PDMetadata meta = catalog.getMetadata();
+                final PDDocumentCatalog catalog = document.getDocumentCatalog();
+                final PDMetadata meta = catalog.getMetadata();
                 if (meta != null)
                 {
-                    DomXmpParser xmpParser = new DomXmpParser();
+                    final DomXmpParser xmpParser = new DomXmpParser();
                     try
                     {
-                        XMPMetadata metadata = xmpParser.parse(meta.toByteArray());
+                        final XMPMetadata metadata = xmpParser.parse(meta.toByteArray());
 
                         showDublinCoreSchema(metadata);
                         showAdobePDFSchema(metadata);
@@ -90,7 +90,7 @@ public final class ExtractMetadata
                 {
                     // The pdf doesn't contain any metadata, try to use the
                     // document information instead
-                    PDDocumentInformation information = document.getDocumentInformation();
+                    final PDDocumentInformation information = document.getDocumentInformation();
                     if (information != null)
                     {
                         showDocumentInformation(information);
@@ -100,9 +100,9 @@ public final class ExtractMetadata
         }
     }
 
-    private static void showXMPBasicSchema(XMPMetadata metadata)
+    private static void showXMPBasicSchema(final XMPMetadata metadata)
     {
-        XMPBasicSchema basic = metadata.getXMPBasicSchema();
+        final XMPBasicSchema basic = metadata.getXMPBasicSchema();
         if (basic != null)
         {
             display("Create Date:", basic.getCreateDate());
@@ -111,9 +111,9 @@ public final class ExtractMetadata
         }
     }
 
-    private static void showAdobePDFSchema(XMPMetadata metadata)
+    private static void showAdobePDFSchema(final XMPMetadata metadata)
     {
-        AdobePDFSchema pdf = metadata.getAdobePDFSchema();
+        final AdobePDFSchema pdf = metadata.getAdobePDFSchema();
         if (pdf != null)
         {
             display("Keywords:", pdf.getKeywords());
@@ -122,9 +122,9 @@ public final class ExtractMetadata
         }
     }
 
-    private static void showDublinCoreSchema(XMPMetadata metadata) throws BadFieldValueException
+    private static void showDublinCoreSchema(final XMPMetadata metadata) throws BadFieldValueException
     {
-        DublinCoreSchema dc = metadata.getDublinCoreSchema();
+        final DublinCoreSchema dc = metadata.getDublinCoreSchema();
         if (dc != null)
         {
             display("Title:", dc.getTitle());
@@ -135,7 +135,7 @@ public final class ExtractMetadata
         }
     }
 
-    private static void showDocumentInformation(PDDocumentInformation information)
+    private static void showDocumentInformation(final PDDocumentInformation information)
     {
         display("Title:", information.getTitle());
         display("Subject:", information.getSubject());
@@ -144,37 +144,37 @@ public final class ExtractMetadata
         display("Producer:", information.getProducer());
     }
 
-    private static void listString(String title, List<String> list)
+    private static void listString(final String title, final List<String> list)
     {
         if (list == null)
         {
             return;
         }
         System.out.println(title);
-        for (String string : list)
+        for (final String string : list)
         {
             System.out.println("  " + string);
         }
     }
 
-    private static void listCalendar(String title, List<Calendar> list)
+    private static void listCalendar(final String title, final List<Calendar> list)
     {
         if (list == null)
         {
             return;
         }
         System.out.println(title);
-        for (Calendar calendar : list)
+        for (final Calendar calendar : list)
         {
             System.out.println("  " + format(calendar));
         }
     }
 
-    private static String format(Object o)
+    private static String format(final Object o)
     {
         if (o instanceof Calendar)
         {
-            Calendar cal = (Calendar) o;
+            final Calendar cal = (Calendar) o;
             return DateFormat.getDateInstance().format(cal.getTime());
         }
         else
@@ -183,7 +183,7 @@ public final class ExtractMetadata
         }
     }
 
-    private static void display(String title, Object value)
+    private static void display(final String title, final Object value)
     {
         if (value != null)
         {

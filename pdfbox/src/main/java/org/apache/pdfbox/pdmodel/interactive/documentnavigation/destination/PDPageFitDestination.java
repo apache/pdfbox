@@ -52,7 +52,7 @@ public class PDPageFitDestination extends PDPageDestination
      *
      * @param arr The destination array.
      */
-    public PDPageFitDestination( COSArray arr )
+    public PDPageFitDestination(final COSArray arr )
     {
         super( arr );
     }
@@ -72,7 +72,7 @@ public class PDPageFitDestination extends PDPageDestination
      *
      * @param fitBoundingBox A flag indicating if this should fit the bounding box.
      */
-    public void setFitBoundingBox( boolean fitBoundingBox )
+    public void setFitBoundingBox(final boolean fitBoundingBox )
     {
         array.growToSize( 2 );
         if( fitBoundingBox )

@@ -92,7 +92,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     private long highestXRefObjectNumber;
 
-    private ICOSParser parser;
+    private final ICOSParser parser;
 
     /**
      * Constructor. Uses main memory to buffer PDF streams.
@@ -107,7 +107,7 @@ public class COSDocument extends COSBase implements Closeable
      * 
      * @param parser Parser to be used to parse the document on demand
      */
-    public COSDocument(ICOSParser parser)
+    public COSDocument(final ICOSParser parser)
     {
         this(MemoryUsageSetting.setupMainMemoryOnly(), parser);
     }
@@ -118,7 +118,7 @@ public class COSDocument extends COSBase implements Closeable
      * @param memUsageSetting defines how memory is used for buffering PDF streams
      * 
      */
-    public COSDocument(MemoryUsageSetting memUsageSetting)
+    public COSDocument(final MemoryUsageSetting memUsageSetting)
     {
         this(memUsageSetting, null);
     }
@@ -130,7 +130,7 @@ public class COSDocument extends COSBase implements Closeable
      * @param parser Parser to be used to parse the document on demand
      * 
      */
-    public COSDocument(MemoryUsageSetting memUsageSetting, ICOSParser parser)
+    public COSDocument(final MemoryUsageSetting memUsageSetting, final ICOSParser parser)
     {
         try
         {
@@ -160,7 +160,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSStream createCOSStream()
     {
-        COSStream stream = new COSStream(scratchFile);
+        final COSStream stream = new COSStream(scratchFile);
         // collect all COSStreams so that they can be closed when closing the COSDocument.
         // This is limited to newly created pdfs as all COSStreams of an existing pdf are
         // collected within the map objectPool
@@ -178,10 +178,10 @@ public class COSDocument extends COSBase implements Closeable
      * @return the new COSStream
      * @throws IOException if the random access view can't be read
      */
-    public COSStream createCOSStream(COSDictionary dictionary, long startPosition,
-            long streamLength) throws IOException
+    public COSStream createCOSStream(final COSDictionary dictionary, final long startPosition,
+                                     final long streamLength) throws IOException
     {
-        COSStream stream = new COSStream(scratchFile,
+        final COSStream stream = new COSStream(scratchFile,
                 parser.createRandomAccessReadView(startPosition, streamLength));
         dictionary.forEach(stream::setItem);
         return stream;
@@ -196,18 +196,18 @@ public class COSDocument extends COSBase implements Closeable
     {
         // get all keys with a positive offset in ascending order, as the linearization dictionary shall be the first
         // within the pdf
-        List<COSObjectKey> objectKeys = xrefTable.entrySet().stream() //
+        final List<COSObjectKey> objectKeys = xrefTable.entrySet().stream() //
                 .filter(e -> e.getValue() > 0L) //
                 .sorted(Comparator.comparing(Entry::getValue)) //
                 .map(Entry::getKey) //
                 .collect(Collectors.toList());
-        for (COSObjectKey objectKey : objectKeys)
+        for (final COSObjectKey objectKey : objectKeys)
         {
-            COSObject objectFromPool = getObjectFromPool(objectKey);
-            COSBase realObject = objectFromPool.getObject();
+            final COSObject objectFromPool = getObjectFromPool(objectKey);
+            final COSBase realObject = objectFromPool.getObject();
             if (realObject instanceof COSDictionary)
             {
-                COSDictionary dic = (COSDictionary) realObject;
+                final COSDictionary dic = (COSDictionary) realObject;
                 if (dic.getItem(COSName.LINEARIZED) != null)
                 {
                     return dic;
@@ -224,7 +224,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @return This will return all objects with the specified type.
      */
-    public List<COSObject> getObjectsByType(COSName type)
+    public List<COSObject> getObjectsByType(final COSName type)
     {
         return getObjectsByType(type, null);
     }
@@ -237,16 +237,16 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @return This will return all objects with the specified type(s).
      */
-    public List<COSObject> getObjectsByType(COSName type1, COSName type2)
+    public List<COSObject> getObjectsByType(final COSName type1, final COSName type2)
     {
-        List<COSObject> retval = new ArrayList<>();
-        for (COSObjectKey objectKey : xrefTable.keySet())
+        final List<COSObject> retval = new ArrayList<>();
+        for (final COSObjectKey objectKey : xrefTable.keySet())
         {
-            COSObject objectFromPool = getObjectFromPool(objectKey);
-            COSBase realObject = objectFromPool.getObject();
+            final COSObject objectFromPool = getObjectFromPool(objectKey);
+            final COSBase realObject = objectFromPool.getObject();
             if( realObject instanceof COSDictionary )
             {
-                COSName dictType = ((COSDictionary) realObject).getCOSName(COSName.TYPE);
+                final COSName dictType = ((COSDictionary) realObject).getCOSName(COSName.TYPE);
                 if (type1.equals(dictType) || (type2 != null && type2.equals(dictType)))
                 {
                     retval.add(objectFromPool);
@@ -261,7 +261,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @param versionValue The version of the PDF document.
      */
-    public void setVersion( float versionValue )
+    public void setVersion(final float versionValue )
     {
         version = versionValue;
     }
@@ -326,7 +326,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @param encDictionary The encryption dictionary.
      */
-    public void setEncryptionDictionary( COSDictionary encDictionary )
+    public void setEncryptionDictionary(final COSDictionary encDictionary )
     {
         trailer.setItem( COSName.ENCRYPT, encDictionary );
     }
@@ -346,7 +346,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @param id The document id.
      */
-    public void setDocumentID( COSArray id )
+    public void setDocumentID(final COSArray id )
     {
         getTrailer().setItem(COSName.ID, id);
     }
@@ -367,7 +367,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @param newTrailer the document trailer dictionary
      */
-    public void setTrailer(COSDictionary newTrailer)
+    public void setTrailer(final COSDictionary newTrailer)
     {
         trailer = newTrailer;
     }
@@ -389,7 +389,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @param highestXRefObjectNumber The object number of the highest XRef stream.
      */
-    public void setHighestXRefObjectNumber(long highestXRefObjectNumber)
+    public void setHighestXRefObjectNumber(final long highestXRefObjectNumber)
     {
         this.highestXRefObjectNumber = highestXRefObjectNumber;
     }
@@ -402,7 +402,7 @@ public class COSDocument extends COSBase implements Closeable
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public Object accept(final ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromDocument( this );
     }
@@ -428,11 +428,11 @@ public class COSDocument extends COSBase implements Closeable
         IOException firstException = null;
 
         // close all open I/O streams
-        for (COSObject object : objectPool.values())
+        for (final COSObject object : objectPool.values())
         {
             if (!object.isObjectNull())
             {
-                COSBase cosObject = object.getObject();
+                final COSBase cosObject = object.getObject();
                 if (cosObject instanceof COSStream)
                 {
                     firstException = IOUtils.closeAndLogException((COSStream) cosObject, LOG,
@@ -441,7 +441,7 @@ public class COSDocument extends COSBase implements Closeable
             }
         }
 
-        for (COSStream stream : streams)
+        for (final COSStream stream : streams)
         {
             firstException = IOUtils.closeAndLogException(stream, LOG, "COSStream", firstException);
         }
@@ -493,7 +493,7 @@ public class COSDocument extends COSBase implements Closeable
      * before the warning is raised. By default, the warning is enabled.
      * @param warn true enables the warning, false disables it.
      */
-    public void setWarnMissingClose(boolean warn)
+    public void setWarnMissingClose(final boolean warn)
     {
         this.warnMissingClose = warn;
     }
@@ -505,7 +505,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @return The object in the pool or a new one if it has not been parsed yet.
      */
-    public COSObject getObjectFromPool(COSObjectKey key)
+    public COSObject getObjectFromPool(final COSObjectKey key)
     {
         COSObject obj = null;
         if( key != null )
@@ -521,7 +521,7 @@ public class COSDocument extends COSBase implements Closeable
      * Each entry maps ObjectKeys to byte offsets in the file.
      * @param xrefTableValues  xref table entries to be added
      */
-    public void addXRefTable( Map<COSObjectKey, Long> xrefTableValues )
+    public void addXRefTable(final Map<COSObjectKey, Long> xrefTableValues )
     {
         xrefTable.putAll( xrefTableValues );
     }
@@ -542,7 +542,7 @@ public class COSDocument extends COSBase implements Closeable
      * 
      * @param startXrefValue the value for startXref
      */
-    public void setStartXref(long startXrefValue)
+    public void setStartXref(final long startXrefValue)
     {
         startXref = startXrefValue;
     }
@@ -573,7 +573,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @param isXRefStreamValue the new value for isXRefStream
      */
-    public void setIsXRefStream(boolean isXRefStreamValue)
+    public void setIsXRefStream(final boolean isXRefStreamValue)
     {
         isXRefStream = isXRefStreamValue;
     }

@@ -43,13 +43,13 @@ public class PDJavascriptNameTreeNode extends PDNameTreeNode<PDActionJavaScript>
      *
      * @param dic The COS dictionary.
      */
-    public PDJavascriptNameTreeNode( COSDictionary dic )
+    public PDJavascriptNameTreeNode(final COSDictionary dic )
     {
         super(dic);
     }
 
     @Override
-    protected PDActionJavaScript convertCOSToPD( COSBase base ) throws IOException
+    protected PDActionJavaScript convertCOSToPD(final COSBase base ) throws IOException
     {
         if (!(base instanceof COSDictionary))
         {
@@ -59,7 +59,7 @@ public class PDJavascriptNameTreeNode extends PDNameTreeNode<PDActionJavaScript>
     }
 
     @Override
-    protected PDNameTreeNode<PDActionJavaScript> createChildNode( COSDictionary dic )
+    protected PDNameTreeNode<PDActionJavaScript> createChildNode(final COSDictionary dic )
     {
         return new PDJavascriptNameTreeNode(dic);
     }

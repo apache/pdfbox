@@ -63,13 +63,13 @@ class CCITTFactoryTest
     @Test
     void testCreateFromRandomAccessSingle() throws IOException
     {
-        String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
-        String tiffG4Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif";
+        final String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
+        final String tiffG4Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif";
         
         PDDocument document = new PDDocument();
-        PDImageXObject ximage3 = CCITTFactory.createFromFile(document, new File(tiffG3Path));
+        final PDImageXObject ximage3 = CCITTFactory.createFromFile(document, new File(tiffG3Path));
         validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
-        BufferedImage bim3 = ImageIO.read(new File(tiffG3Path));
+        final BufferedImage bim3 = ImageIO.read(new File(tiffG3Path));
         checkIdent(bim3, ximage3.getOpaqueImage());
         PDPage page = new PDPage(PDRectangle.A4);
         document.addPage(page);
@@ -77,9 +77,9 @@ class CCITTFactoryTest
         contentStream.drawImage(ximage3, 0, 0, ximage3.getWidth(), ximage3.getHeight());
         contentStream.close();
         
-        PDImageXObject ximage4 = CCITTFactory.createFromFile(document, new File(tiffG4Path));
+        final PDImageXObject ximage4 = CCITTFactory.createFromFile(document, new File(tiffG4Path));
         validate(ximage4, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
-        BufferedImage bim4 = ImageIO.read(new File(tiffG3Path));
+        final BufferedImage bim4 = ImageIO.read(new File(tiffG3Path));
         checkIdent(bim4, ximage4.getOpaqueImage());
         page = new PDPage(PDRectangle.A4);
         document.addPage(page);
@@ -103,12 +103,12 @@ class CCITTFactoryTest
     @Test
     void testCreateFromRandomAccessMulti() throws IOException
     {
-        String tiffPath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4multi.tif";
+        final String tiffPath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4multi.tif";
         
-        ImageInputStream is = ImageIO.createImageInputStream(new File(tiffPath));
-        ImageReader imageReader = ImageIO.getImageReaders(is).next();
+        final ImageInputStream is = ImageIO.createImageInputStream(new File(tiffPath));
+        final ImageReader imageReader = ImageIO.getImageReaders(is).next();
         imageReader.setInput(is);
-        int countTiffImages = imageReader.getNumImages(true);
+        final int countTiffImages = imageReader.getNumImages(true);
         assertTrue(countTiffImages > 1);
         
         PDDocument document = new PDDocument();
@@ -116,20 +116,20 @@ class CCITTFactoryTest
         int pdfPageNum = 0;
         while (true)
         {
-            PDImageXObject ximage = CCITTFactory.createFromFile(document, new File(tiffPath), pdfPageNum);
+            final PDImageXObject ximage = CCITTFactory.createFromFile(document, new File(tiffPath), pdfPageNum);
             if (ximage == null)
             {
                 break;
             }
-            BufferedImage bim = imageReader.read(pdfPageNum);
+            final BufferedImage bim = imageReader.read(pdfPageNum);
             validate(ximage, 1, bim.getWidth(), bim.getHeight(), "tiff", PDDeviceGray.INSTANCE.getName());
             checkIdent(bim, ximage.getOpaqueImage());
-            PDPage page = new PDPage(PDRectangle.A4);
-            float fX = ximage.getWidth() / page.getMediaBox().getWidth();
-            float fY = ximage.getHeight() / page.getMediaBox().getHeight();
-            float factor = Math.max(fX, fY);
+            final PDPage page = new PDPage(PDRectangle.A4);
+            final float fX = ximage.getWidth() / page.getMediaBox().getWidth();
+            final float fY = ximage.getHeight() / page.getMediaBox().getHeight();
+            final float factor = Math.max(fX, fY);
             document.addPage(page);
-            PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
+            final PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
             contentStream.drawImage(ximage, 0, 0, ximage.getWidth() / factor, ximage.getHeight() / factor);
             contentStream.close();
             ++pdfPageNum;
@@ -150,17 +150,17 @@ class CCITTFactoryTest
     @Test
     void testCreateFromBufferedImage() throws IOException
     {
-        String tiffG4Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif";
+        final String tiffG4Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif";
 
         PDDocument document = new PDDocument();
-        BufferedImage bim = ImageIO.read(new File(tiffG4Path));
-        PDImageXObject ximage3 = CCITTFactory.createFromImage(document, bim);
+        final BufferedImage bim = ImageIO.read(new File(tiffG4Path));
+        final PDImageXObject ximage3 = CCITTFactory.createFromImage(document, bim);
         validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
         checkIdent(bim, ximage3.getOpaqueImage());
         
-        PDPage page = new PDPage(PDRectangle.A4);
+        final PDPage page = new PDPage(PDRectangle.A4);
         document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
+        final PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
         contentStream.drawImage(ximage3, 0, 0, ximage3.getWidth(), ximage3.getHeight());
         contentStream.close();
         
@@ -177,7 +177,7 @@ class CCITTFactoryTest
     void testCreateFromBufferedChessImage() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage bim = new BufferedImage(343, 287, BufferedImage.TYPE_BYTE_BINARY);
+        final BufferedImage bim = new BufferedImage(343, 287, BufferedImage.TYPE_BYTE_BINARY);
         assertNotEquals((bim.getWidth() / 8) * 8, bim.getWidth()); // not mult of 8
         int col = 0;
         for (int x = 0; x < bim.getWidth(); ++x)
@@ -189,13 +189,13 @@ class CCITTFactoryTest
             }
         }
 
-        PDImageXObject ximage3 = CCITTFactory.createFromImage(document, bim);
+        final PDImageXObject ximage3 = CCITTFactory.createFromImage(document, bim);
         validate(ximage3, 1, 343, 287, "tiff", PDDeviceGray.INSTANCE.getName());
         checkIdent(bim, ximage3.getOpaqueImage());
 
-        PDPage page = new PDPage(PDRectangle.A4);
+        final PDPage page = new PDPage(PDRectangle.A4);
         document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
+        final PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
         contentStream.drawImage(ximage3, 0, 0, ximage3.getWidth(), ximage3.getHeight());
         contentStream.close();
 
@@ -216,10 +216,10 @@ class CCITTFactoryTest
     void testCreateFromFileLock() throws IOException
     {
         // copy the source file to a temp directory, as we will be deleting it
-        String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
-        File copiedTiffFile = new File(testResultsDir, "ccittg3.tif");
+        final String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
+        final File copiedTiffFile = new File(testResultsDir, "ccittg3.tif");
         Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        PDDocument document = new PDDocument();
+        final PDDocument document = new PDDocument();
         CCITTFactory.createFromFile(document, copiedTiffFile);
         assertTrue(copiedTiffFile.delete());
     }
@@ -232,10 +232,10 @@ class CCITTFactoryTest
     void testCreateFromFileNumberLock() throws IOException
     {
         // copy the source file to a temp directory, as we will be deleting it
-        String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
-        File copiedTiffFile = new File(testResultsDir, "ccittg3n.tif");
+        final String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
+        final File copiedTiffFile = new File(testResultsDir, "ccittg3n.tif");
         Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        PDDocument document = new PDDocument();
+        final PDDocument document = new PDDocument();
         CCITTFactory.createFromFile(document, copiedTiffFile, 0);
         assertTrue(copiedTiffFile.delete());
     }
@@ -249,11 +249,11 @@ class CCITTFactoryTest
     {
         try (PDDocument document = new PDDocument())
         {
-            String basePath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3-garbage-padded-fields";
-            for (String ext : Arrays.asList(".tif", "-bigendian.tif"))
+            final String basePath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3-garbage-padded-fields";
+            for (final String ext : Arrays.asList(".tif", "-bigendian.tif"))
             {
-                String tiffPath = basePath + ext;
-                PDImageXObject ximage3 = CCITTFactory.createFromFile(document, new File(tiffPath));
+                final String tiffPath = basePath + ext;
+                final PDImageXObject ximage3 = CCITTFactory.createFromFile(document, new File(tiffPath));
                 validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
             }
         }

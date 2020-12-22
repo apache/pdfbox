@@ -50,7 +50,7 @@ public class PDFunctionType2 extends PDFunction
      *
      * @param function The function.
      */
-    public PDFunctionType2(COSBase function)
+    public PDFunctionType2(final COSBase function)
     {
         super(function);
 
@@ -98,16 +98,16 @@ public class PDFunctionType2 extends PDFunction
      * {@inheritDoc}
      */
     @Override
-    public float[] eval(float[] input) throws IOException
+    public float[] eval(final float[] input) throws IOException
     {
         // exponential interpolation
-        float xToN = (float) Math.pow(input[0], exponent); // x^exponent
+        final float xToN = (float) Math.pow(input[0], exponent); // x^exponent
 
-        float[] result = new float[Math.min(c0.size(),c1.size())];
+        final float[] result = new float[Math.min(c0.size(),c1.size())];
         for (int j = 0; j < result.length; j++)
         {
-            float c0j = ((COSNumber) c0.get(j)).floatValue();
-            float c1j = ((COSNumber) c1.get(j)).floatValue();
+            final float c0j = ((COSNumber) c0.get(j)).floatValue();
+            final float c1j = ((COSNumber) c1.get(j)).floatValue();
             result[j] = c0j + xToN * (c1j - c0j);
         }
 

@@ -32,7 +32,7 @@ abstract class ColorToolTip implements ToolTip
      * @param color
      * @return
      */
-    static String colorHexValue(Color color)
+    static String colorHexValue(final Color color)
     {
         return String.format("%02x", color.getRed()) + String.format("%02x", color.getGreen()) +
                 String.format("%02x", color.getBlue());
@@ -43,15 +43,15 @@ abstract class ColorToolTip implements ToolTip
      * @param rowtext String instance,
      * @return float array containing color values.
      */
-    float[] extractColorValues(String rowtext)
+    float[] extractColorValues(final String rowtext)
     {
-        List<String> words = ToolTipController.getWords(rowtext);
+        final List<String> words = ToolTipController.getWords(rowtext);
         words.remove(words.size()-1);
-        float[] values = new float[words.size()];
+        final float[] values = new float[words.size()];
         int index = 0;
         try
         {
-            for (String word : words)
+            for (final String word : words)
             {
                 values[index++] = Float.parseFloat(word);
             }
@@ -68,7 +68,7 @@ abstract class ColorToolTip implements ToolTip
      * @param hexValue
      * @return String instance, In html format.
      */
-    String getMarkUp(String hexValue)
+    String getMarkUp(final String hexValue)
     {
          return  "<html>\n" +
                 "<body bgcolor=#ffffff>\n" +
@@ -76,7 +76,7 @@ abstract class ColorToolTip implements ToolTip
                 "</html>";
     }
 
-    public void setToolTipText(String toolTip)
+    public void setToolTipText(final String toolTip)
     {
         this.toolTipText = toolTip;
     }

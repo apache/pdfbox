@@ -46,7 +46,7 @@ public final class RubberStamp
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
         if( args.length != 2 )
         {
@@ -60,11 +60,11 @@ public final class RubberStamp
                 {
                     throw new IOException( "Encrypted documents are not supported for this example" );
                 }
-                for (PDPage page : document.getPages())
+                for (final PDPage page : document.getPages())
                 {
-                    List<PDAnnotation> annotations = page.getAnnotations();
+                    final List<PDAnnotation> annotations = page.getAnnotations();
 
-                    PDAnnotationRubberStamp rs = new PDAnnotationRubberStamp();
+                    final PDAnnotationRubberStamp rs = new PDAnnotationRubberStamp();
                     rs.setName(PDAnnotationRubberStamp.NAME_TOP_SECRET);
                     rs.setRectangle(new PDRectangle(100, 100));
                     rs.setContents("A top secret note");

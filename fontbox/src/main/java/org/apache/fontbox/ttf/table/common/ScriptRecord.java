@@ -29,7 +29,7 @@ public class ScriptRecord
     private final String scriptTag;
     private final ScriptTable scriptTable;
 
-    public ScriptRecord(String scriptTag, ScriptTable scriptTable)
+    public ScriptRecord(final String scriptTag, final ScriptTable scriptTable)
     {
         this.scriptTag = scriptTag;
         this.scriptTable = scriptTable;

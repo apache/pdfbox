@@ -44,13 +44,13 @@ public class PDDestinationNameTreeNode extends PDNameTreeNode<PDPageDestination>
      *
      * @param dic The COS dictionary.
      */
-    public PDDestinationNameTreeNode( COSDictionary dic )
+    public PDDestinationNameTreeNode(final COSDictionary dic )
     {
         super(dic);
     }
 
     @Override
-    protected PDPageDestination convertCOSToPD( COSBase base ) throws IOException
+    protected PDPageDestination convertCOSToPD(final COSBase base ) throws IOException
     {
         COSBase destination = base;
         if( base instanceof COSDictionary )
@@ -64,7 +64,7 @@ public class PDDestinationNameTreeNode extends PDNameTreeNode<PDPageDestination>
     }
 
     @Override
-    protected PDNameTreeNode<PDPageDestination> createChildNode( COSDictionary dic )
+    protected PDNameTreeNode<PDPageDestination> createChildNode(final COSDictionary dic )
     {
         return new PDDestinationNameTreeNode(dic);
     }

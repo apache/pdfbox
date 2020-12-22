@@ -28,19 +28,19 @@ public class SyntaxValidationException extends ValidationException
 
     private final ValidationResult result;
 
-    public SyntaxValidationException(String message, Throwable cause, ValidationResult result)
+    public SyntaxValidationException(final String message, final Throwable cause, final ValidationResult result)
     {
         super(message, cause);
         this.result = result;
     }
 
-    public SyntaxValidationException(String message, ValidationResult result)
+    public SyntaxValidationException(final String message, final ValidationResult result)
     {
         super(message);
         this.result = result;
     }
 
-    public SyntaxValidationException(Throwable cause, ValidationResult result)
+    public SyntaxValidationException(final Throwable cause, final ValidationResult result)
     {
         super(cause);
         this.result = result;

@@ -26,13 +26,13 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 
 public class CIDType2Container extends FontContainer<PDCIDFontType2>
 {
-    public CIDType2Container(PDCIDFontType2 font)
+    public CIDType2Container(final PDCIDFontType2 font)
     {
         super(font);
     }
 
     @Override
-    public boolean hasGlyph(int code) throws IOException
+    public boolean hasGlyph(final int code) throws IOException
     {
         return font.codeToGID(code) != 0;
     }

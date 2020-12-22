@@ -26,8 +26,8 @@ import org.apache.xmpbox.XMPMetadata;
 public class RenditionClassType extends TextType
 {
 
-    public RenditionClassType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
-            Object value)
+    public RenditionClassType(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String propertyName,
+                              final Object value)
     {
         super(metadata, namespaceURI, prefix, propertyName, value);
     }

@@ -45,9 +45,9 @@ public abstract class CFFEncoding extends Encoding
      * @return PostScript glyph name
      */
     @Override
-    public String getName(int code)
+    public String getName(final int code)
     {
-        String name = codeToName.get(code);
+        final String name = codeToName.get(code);
         if (name == null)
         {
             return ".notdef";
@@ -60,7 +60,7 @@ public abstract class CFFEncoding extends Encoding
      * @param code the given code
      * @param sid the given SID
      */
-    public void add(int code, int sid, String name)
+    public void add(final int code, final int sid, final String name)
     {
         codeToName.put(code, name);
         addCharacterEncoding(code, name);
@@ -69,9 +69,9 @@ public abstract class CFFEncoding extends Encoding
     /**
      * For use by subclasses only.
      */
-    protected void add(int code, int sid)
+    protected void add(final int code, final int sid)
     {
-        String name = CFFStandardString.getName(sid);
+        final String name = CFFStandardString.getName(sid);
         codeToName.put(code, name);
         addCharacterEncoding(code, name);
     }

@@ -52,9 +52,9 @@ public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandl
      * @param text the Type 4 function text
      * @return the instruction sequence
      */
-    public static InstructionSequence parse(CharSequence text)
+    public static InstructionSequence parse(final CharSequence text)
     {
-        InstructionSequenceBuilder builder = new InstructionSequenceBuilder();
+        final InstructionSequenceBuilder builder = new InstructionSequenceBuilder();
         Parser.parse(text, builder);
         return builder.getInstructionSequence();
     }
@@ -66,17 +66,17 @@ public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandl
 
     /** {@inheritDoc} */
     @Override
-    public void token(CharSequence text)
+    public void token(final CharSequence text)
     {
-        String token = text.toString();
+        final String token = text.toString();
         token(token);
     }
 
-    private void token(String token)
+    private void token(final String token)
     {
         if ("{".equals(token))
         {
-            InstructionSequence child = new InstructionSequence();
+            final InstructionSequence child = new InstructionSequence();
             getCurrentSequence().addProc(child);
             this.seqStack.push(child);
         }
@@ -111,7 +111,7 @@ public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandl
      * @param token the token to be parsed
      * @return the parsed value
      */
-    public static int parseInt(String token)
+    public static int parseInt(final String token)
     {
         return Integer.parseInt(token);
     }
@@ -121,7 +121,7 @@ public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandl
      * @param token the token to be parsed
      * @return the parsed value
      */
-    public static float parseReal(String token)
+    public static float parseReal(final String token)
     {
         return Float.parseFloat(token);
     }

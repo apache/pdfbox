@@ -37,7 +37,7 @@ public class PDObjectStream extends PDStream
      *
      * @param str The stream parameter.
      */
-    public PDObjectStream( COSStream str )
+    public PDObjectStream(final COSStream str )
     {
         super( str );
     }
@@ -48,10 +48,10 @@ public class PDObjectStream extends PDStream
      * @param document The document that the stream will be part of.
      * @return A new stream object.
      */
-    public static PDObjectStream createStream( PDDocument document )
+    public static PDObjectStream createStream(final PDDocument document )
     {
-        COSStream cosStream = document.getDocument().createCOSStream();
-        PDObjectStream strm = new PDObjectStream( cosStream );
+        final COSStream cosStream = document.getDocument().createCOSStream();
+        final PDObjectStream strm = new PDObjectStream( cosStream );
         strm.getCOSObject().setItem( COSName.TYPE, COSName.OBJ_STM );
         return strm;
     }
@@ -81,7 +81,7 @@ public class PDObjectStream extends PDStream
      *
      * @param n The new number of objects.
      */
-    public void setNumberOfObjects( int n )
+    public void setNumberOfObjects(final int n )
     {
         getCOSObject().setInt( COSName.N, n );
     }
@@ -101,7 +101,7 @@ public class PDObjectStream extends PDStream
      *
      * @param n The byte offset to the first object.
      */
-    public void setFirstByteOffset( int n )
+    public void setFirstByteOffset(final int n )
     {
         getCOSObject().setInt( COSName.FIRST, n );
     }
@@ -115,7 +115,7 @@ public class PDObjectStream extends PDStream
     public PDObjectStream getExtends()
     {
         PDObjectStream retval = null;
-        COSStream stream = (COSStream)getCOSObject().getDictionaryObject( COSName.EXTENDS );
+        final COSStream stream = (COSStream)getCOSObject().getDictionaryObject( COSName.EXTENDS );
         if( stream != null )
         {
             retval = new PDObjectStream( stream );
@@ -130,7 +130,7 @@ public class PDObjectStream extends PDStream
      *
      * @param stream The object stream extension.
      */
-    public void setExtends( PDObjectStream stream )
+    public void setExtends(final PDObjectStream stream )
     {
         getCOSObject().setItem( COSName.EXTENDS, stream );
     }

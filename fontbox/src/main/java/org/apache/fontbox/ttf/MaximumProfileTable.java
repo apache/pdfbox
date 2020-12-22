@@ -46,7 +46,7 @@ public class MaximumProfileTable extends TTFTable
     private int maxComponentElements;
     private int maxComponentDepth;
 
-    MaximumProfileTable(TrueTypeFont font)
+    MaximumProfileTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -61,7 +61,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxComponentDepthValue The maxComponentDepth to set.
      */
-    public void setMaxComponentDepth(int maxComponentDepthValue)
+    public void setMaxComponentDepth(final int maxComponentDepthValue)
     {
         this.maxComponentDepth = maxComponentDepthValue;
     }
@@ -75,7 +75,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxComponentElementsValue The maxComponentElements to set.
      */
-    public void setMaxComponentElements(int maxComponentElementsValue)
+    public void setMaxComponentElements(final int maxComponentElementsValue)
     {
         this.maxComponentElements = maxComponentElementsValue;
     }
@@ -89,7 +89,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxCompositeContoursValue The maxCompositeContours to set.
      */
-    public void setMaxCompositeContours(int maxCompositeContoursValue)
+    public void setMaxCompositeContours(final int maxCompositeContoursValue)
     {
         this.maxCompositeContours = maxCompositeContoursValue;
     }
@@ -103,7 +103,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxCompositePointsValue The maxCompositePoints to set.
      */
-    public void setMaxCompositePoints(int maxCompositePointsValue)
+    public void setMaxCompositePoints(final int maxCompositePointsValue)
     {
         this.maxCompositePoints = maxCompositePointsValue;
     }
@@ -117,7 +117,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxContoursValue The maxContours to set.
      */
-    public void setMaxContours(int maxContoursValue)
+    public void setMaxContours(final int maxContoursValue)
     {
         this.maxContours = maxContoursValue;
     }
@@ -131,7 +131,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxFunctionDefsValue The maxFunctionDefs to set.
      */
-    public void setMaxFunctionDefs(int maxFunctionDefsValue)
+    public void setMaxFunctionDefs(final int maxFunctionDefsValue)
     {
         this.maxFunctionDefs = maxFunctionDefsValue;
     }
@@ -145,7 +145,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxInstructionDefsValue The maxInstructionDefs to set.
      */
-    public void setMaxInstructionDefs(int maxInstructionDefsValue)
+    public void setMaxInstructionDefs(final int maxInstructionDefsValue)
     {
         this.maxInstructionDefs = maxInstructionDefsValue;
     }
@@ -159,7 +159,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxPointsValue The maxPoints to set.
      */
-    public void setMaxPoints(int maxPointsValue)
+    public void setMaxPoints(final int maxPointsValue)
     {
         this.maxPoints = maxPointsValue;
     }
@@ -173,7 +173,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxSizeOfInstructionsValue The maxSizeOfInstructions to set.
      */
-    public void setMaxSizeOfInstructions(int maxSizeOfInstructionsValue)
+    public void setMaxSizeOfInstructions(final int maxSizeOfInstructionsValue)
     {
         this.maxSizeOfInstructions = maxSizeOfInstructionsValue;
     }
@@ -187,7 +187,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxStackElementsValue The maxStackElements to set.
      */
-    public void setMaxStackElements(int maxStackElementsValue)
+    public void setMaxStackElements(final int maxStackElementsValue)
     {
         this.maxStackElements = maxStackElementsValue;
     }
@@ -201,7 +201,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxStorageValue The maxStorage to set.
      */
-    public void setMaxStorage(int maxStorageValue)
+    public void setMaxStorage(final int maxStorageValue)
     {
         this.maxStorage = maxStorageValue;
     }
@@ -215,7 +215,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxTwilightPointsValue The maxTwilightPoints to set.
      */
-    public void setMaxTwilightPoints(int maxTwilightPointsValue)
+    public void setMaxTwilightPoints(final int maxTwilightPointsValue)
     {
         this.maxTwilightPoints = maxTwilightPointsValue;
     }
@@ -229,7 +229,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param maxZonesValue The maxZones to set.
      */
-    public void setMaxZones(int maxZonesValue)
+    public void setMaxZones(final int maxZonesValue)
     {
         this.maxZones = maxZonesValue;
     }
@@ -243,7 +243,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param numGlyphsValue The numGlyphs to set.
      */
-    public void setNumGlyphs(int numGlyphsValue)
+    public void setNumGlyphs(final int numGlyphsValue)
     {
         this.numGlyphs = numGlyphsValue;
     }
@@ -257,7 +257,7 @@ public class MaximumProfileTable extends TTFTable
     /**
      * @param versionValue The version to set.
      */
-    public void setVersion(float versionValue)
+    public void setVersion(final float versionValue)
     {
         this.version = versionValue;
     }
@@ -270,7 +270,7 @@ public class MaximumProfileTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
         version = data.read32Fixed();
         numGlyphs = data.readUnsignedShort();

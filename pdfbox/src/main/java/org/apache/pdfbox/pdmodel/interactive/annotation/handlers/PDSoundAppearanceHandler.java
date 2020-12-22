@@ -20,12 +20,12 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 
 public class PDSoundAppearanceHandler extends PDAbstractAppearanceHandler
 {
-    public PDSoundAppearanceHandler(PDAnnotation annotation)
+    public PDSoundAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDSoundAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDSoundAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }

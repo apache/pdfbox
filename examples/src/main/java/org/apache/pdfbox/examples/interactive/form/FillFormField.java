@@ -34,14 +34,14 @@ public final class FillFormField
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        String formTemplate = "src/main/resources/org/apache/pdfbox/examples/interactive/form/FillFormField.pdf";
+        final String formTemplate = "src/main/resources/org/apache/pdfbox/examples/interactive/form/FillFormField.pdf";
         
         try (PDDocument pdfDocument = Loader.loadPDF(new File(formTemplate)))
         {
             // get the document catalog
-            PDAcroForm acroForm = pdfDocument.getDocumentCatalog().getAcroForm();
+            final PDAcroForm acroForm = pdfDocument.getDocumentCatalog().getAcroForm();
             
             // as there might not be an AcroForm entry a null check is necessary
             if (acroForm != null)

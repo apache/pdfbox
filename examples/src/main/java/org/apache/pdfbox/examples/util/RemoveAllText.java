@@ -60,7 +60,7 @@ public final class RemoveAllText
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 2)
         {
@@ -76,10 +76,10 @@ public final class RemoveAllText
                             "Error: Encrypted documents are not supported for this example.");
                     System.exit(1);
                 }
-                for (PDPage page : document.getPages())
+                for (final PDPage page : document.getPages())
                 {
-                    List<Object> newTokens = createTokensWithoutText(page);
-                    PDStream newContents = new PDStream(document);
+                    final List<Object> newTokens = createTokensWithoutText(page);
+                    final PDStream newContents = new PDStream(document);
                     writeTokensToStream(newContents, newTokens);
                     page.setContents(newContents);
                     processResources(page.getResources());
@@ -89,25 +89,25 @@ public final class RemoveAllText
         }
     }
 
-    private static void processResources(PDResources resources) throws IOException
+    private static void processResources(final PDResources resources) throws IOException
     {
-        for (COSName name : resources.getXObjectNames())
+        for (final COSName name : resources.getXObjectNames())
         {
-            PDXObject xobject = resources.getXObject(name);
+            final PDXObject xobject = resources.getXObject(name);
             if (xobject instanceof PDFormXObject)
             {
-                PDFormXObject formXObject = (PDFormXObject) xobject;
+                final PDFormXObject formXObject = (PDFormXObject) xobject;
                 writeTokensToStream(formXObject.getContentStream(),
                         createTokensWithoutText(formXObject));
                 processResources(formXObject.getResources());
             }
         }
-        for (COSName name : resources.getPatternNames())
+        for (final COSName name : resources.getPatternNames())
         {
-            PDAbstractPattern pattern = resources.getPattern(name);
+            final PDAbstractPattern pattern = resources.getPattern(name);
             if (pattern instanceof PDTilingPattern)
             {
-                PDTilingPattern tilingPattern = (PDTilingPattern) pattern;
+                final PDTilingPattern tilingPattern = (PDTilingPattern) pattern;
                 writeTokensToStream(tilingPattern.getContentStream(),
                         createTokensWithoutText(tilingPattern));
                 processResources(tilingPattern.getResources());
@@ -115,26 +115,26 @@ public final class RemoveAllText
         }
     }
 
-    private static void writeTokensToStream(PDStream newContents, List<Object> newTokens) throws IOException
+    private static void writeTokensToStream(final PDStream newContents, final List<Object> newTokens) throws IOException
     {
         try (OutputStream out = newContents.createOutputStream(COSName.FLATE_DECODE))
         {
-            ContentStreamWriter writer = new ContentStreamWriter(out);
+            final ContentStreamWriter writer = new ContentStreamWriter(out);
             writer.writeTokens(newTokens);
         }
     }
 
-    private static List<Object> createTokensWithoutText(PDContentStream contentStream) throws IOException
+    private static List<Object> createTokensWithoutText(final PDContentStream contentStream) throws IOException
     {
-        PDFStreamParser parser = new PDFStreamParser(contentStream);
+        final PDFStreamParser parser = new PDFStreamParser(contentStream);
         Object token = parser.parseNextToken();
-        List<Object> newTokens = new ArrayList<>();
+        final List<Object> newTokens = new ArrayList<>();
         while (token != null)
         {
             if (token instanceof Operator)
             {
-                Operator op = (Operator) token;
-                String opName = op.getName();
+                final Operator op = (Operator) token;
+                final String opName = op.getName();
                 if (OperatorName.SHOW_TEXT_ADJUSTED.equals(opName)
                         || OperatorName.SHOW_TEXT.equals(opName)
                         || OperatorName.SHOW_TEXT_LINE.equals(opName))

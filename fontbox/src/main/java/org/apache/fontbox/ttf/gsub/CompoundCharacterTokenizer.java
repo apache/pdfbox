@@ -36,37 +36,37 @@ public class CompoundCharacterTokenizer
 
     private final Pattern regexExpression;
 
-    public CompoundCharacterTokenizer(Set<String> compoundWords)
+    public CompoundCharacterTokenizer(final Set<String> compoundWords)
     {
         regexExpression = Pattern.compile(getRegexFromTokens(compoundWords));
     }
 
-    public CompoundCharacterTokenizer(String singleRegex)
+    public CompoundCharacterTokenizer(final String singleRegex)
     {
         regexExpression = Pattern.compile(singleRegex);
     }
 
-    public List<String> tokenize(String text)
+    public List<String> tokenize(final String text)
     {
-        List<String> tokens = new ArrayList<>();
+        final List<String> tokens = new ArrayList<>();
 
-        Matcher regexMatcher = regexExpression.matcher(text);
+        final Matcher regexMatcher = regexExpression.matcher(text);
 
         int lastIndexOfPrevMatch = 0;
 
         while (regexMatcher.find())
         {
 
-            int beginIndexOfNextMatch = regexMatcher.start();
+            final int beginIndexOfNextMatch = regexMatcher.start();
 
-            String prevToken = text.substring(lastIndexOfPrevMatch, beginIndexOfNextMatch);
+            final String prevToken = text.substring(lastIndexOfPrevMatch, beginIndexOfNextMatch);
 
             if (prevToken.length() > 0)
             {
                 tokens.add(prevToken);
             }
 
-            String currentMatch = regexMatcher.group();
+            final String currentMatch = regexMatcher.group();
 
             tokens.add(currentMatch);
 
@@ -74,7 +74,7 @@ public class CompoundCharacterTokenizer
 
         }
 
-        String tail = text.substring(lastIndexOfPrevMatch, text.length());
+        final String tail = text.substring(lastIndexOfPrevMatch, text.length());
 
         if (tail.length() > 0)
         {
@@ -84,9 +84,9 @@ public class CompoundCharacterTokenizer
         return tokens;
     }
 
-    private String getRegexFromTokens(Set<String> compoundWords)
+    private String getRegexFromTokens(final Set<String> compoundWords)
     {
-        StringJoiner sj = new StringJoiner(")|(", "(", ")");
+        final StringJoiner sj = new StringJoiner(")|(", "(", ")");
         compoundWords.stream().forEach(sj::add);
         return sj.toString();
     }

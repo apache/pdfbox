@@ -44,7 +44,7 @@ public class NamingTable extends TTFTable
     private String fontSubFamily = null;
     private String psName = null;
 
-    NamingTable(TrueTypeFont font)
+    NamingTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -57,20 +57,20 @@ public class NamingTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
-        int formatSelector = data.readUnsignedShort();
-        int numberOfNameRecords = data.readUnsignedShort();
-        int offsetToStartOfStringStorage = data.readUnsignedShort();
+        final int formatSelector = data.readUnsignedShort();
+        final int numberOfNameRecords = data.readUnsignedShort();
+        final int offsetToStartOfStringStorage = data.readUnsignedShort();
         nameRecords = new ArrayList<>(numberOfNameRecords);
         for (int i=0; i< numberOfNameRecords; i++)
         {
-            NameRecord nr = new NameRecord();
+            final NameRecord nr = new NameRecord();
             nr.initData(ttf, data);
             nameRecords.add(nr);
         }
 
-        for (NameRecord nr : nameRecords)
+        for (final NameRecord nr : nameRecords)
         {
             // don't try to read invalid offsets, see PDFBOX-2608
             if (nr.getStringOffset() > getLength())
@@ -80,8 +80,8 @@ public class NamingTable extends TTFTable
             }
             
             data.seek(getOffset() + (2*3)+numberOfNameRecords*2*6+nr.getStringOffset());
-            int platform = nr.getPlatformId();
-            int encoding = nr.getPlatformEncodingId();
+            final int platform = nr.getPlatformId();
+            final int encoding = nr.getPlatformEncodingId();
             Charset charset = StandardCharsets.ISO_8859_1;
             if (platform == NameRecord.PLATFORM_WINDOWS && (encoding == NameRecord.ENCODING_WINDOWS_SYMBOL || encoding == NameRecord.ENCODING_WINDOWS_UNICODE_BMP))
             {
@@ -109,13 +109,13 @@ public class NamingTable extends TTFTable
                         break;
                 }
             }
-            String string = data.readString(nr.getStringLength(), charset);
+            final String string = data.readString(nr.getStringLength(), charset);
             nr.setString(string);
         }
 
         // build multi-dimensional lookup table
         lookupTable = new HashMap<>(nameRecords.size());
-        for (NameRecord nr : nameRecords)
+        for (final NameRecord nr : nameRecords)
         {
             // name id
             Map<Integer, Map<Integer, Map<Integer, String>>> platformLookup = lookupTable.get(nr.getNameId());
@@ -169,12 +169,12 @@ public class NamingTable extends TTFTable
     /**
      * Helper to get English names by best effort.
      */
-    private String getEnglishName(int nameId)
+    private String getEnglishName(final int nameId)
     {
         // Unicode, Full, BMP, 1.1, 1.0
         for (int i = 4; i >= 0; i--)
         {
-            String nameUni =
+            final String nameUni =
                     getName(nameId,
                             NameRecord.PLATFORM_UNICODE,
                             i,
@@ -186,7 +186,7 @@ public class NamingTable extends TTFTable
         }
 
         // Windows, Unicode BMP, EN-US
-        String nameWin =
+        final String nameWin =
                 getName(nameId,
                         NameRecord.PLATFORM_WINDOWS,
                         NameRecord.ENCODING_WINDOWS_UNICODE_BMP,
@@ -197,7 +197,7 @@ public class NamingTable extends TTFTable
         }
 
         // Macintosh, Roman, English
-        String nameMac =
+        final String nameMac =
                 getName(nameId,
                         NameRecord.PLATFORM_MACINTOSH,
                         NameRecord.ENCODING_MACINTOSH_ROMAN,
@@ -219,19 +219,19 @@ public class NamingTable extends TTFTable
      * @param languageId Language ID from NameRecord constants.
      * @return name, or null
      */
-    public String getName(int nameId, int platformId, int encodingId, int languageId)
+    public String getName(final int nameId, final int platformId, final int encodingId, final int languageId)
     {
-        Map<Integer, Map<Integer, Map<Integer, String>>> platforms = lookupTable.get(nameId);
+        final Map<Integer, Map<Integer, Map<Integer, String>>> platforms = lookupTable.get(nameId);
         if (platforms == null)
         {
             return null;
         }
-        Map<Integer, Map<Integer, String>> encodings = platforms.get(platformId);
+        final Map<Integer, Map<Integer, String>> encodings = platforms.get(platformId);
         if (encodings == null)
         {
             return null;
         }
-        Map<Integer, String> languages = encodings.get(encodingId);
+        final Map<Integer, String> languages = encodings.get(encodingId);
         if (languages == null)
         {
             return null;

@@ -32,10 +32,10 @@ class MatrixTest
     @Test
     void testConstructionAndCopy() throws Exception
     {
-        Matrix m1 = new Matrix();
+        final Matrix m1 = new Matrix();
         assertMatrixIsPristine(m1);
 
-        Matrix m2 = m1.clone();
+        final Matrix m2 = m1.clone();
         assertNotSame(m1, m2);
         assertMatrixIsPristine(m2);
     }
@@ -44,12 +44,12 @@ class MatrixTest
     void testGetScalingFactor()
     {
         // check scaling factor of an initial matrix
-        Matrix m1 = new Matrix();
+        final Matrix m1 = new Matrix();
         assertEquals(1, m1.getScalingFactorX(), 0);
         assertEquals(1, m1.getScalingFactorY(), 0);
 
         // check scaling factor of an initial matrix
-        Matrix m2 = new Matrix(2, 4, 4, 2, 0, 0);
+        final Matrix m2 = new Matrix(2, 4, 4, 2, 0, 0);
         assertEquals((float) Math.sqrt(20), m2.getScalingFactorX(), 0);
         assertEquals((float) Math.sqrt(20), m2.getScalingFactorY(), 0);
     }
@@ -97,9 +97,9 @@ class MatrixTest
             }
         }
 
-        float[] m1MultipliedByM1 = new float[] { 5,  8,  11,  8, 14, 20, 11, 20,  29 };
-        float[] m1MultipliedByM2 = new float[] { 29, 32, 35, 56, 62, 68, 83, 92, 101 };
-        float[] m2MultipliedByM1 = new float[] { 29, 56, 83, 32, 62, 92, 35, 68, 101 };
+        final float[] m1MultipliedByM1 = new float[] { 5,  8,  11,  8, 14, 20, 11, 20,  29 };
+        final float[] m1MultipliedByM2 = new float[] { 29, 32, 35, 56, 62, 68, 83, 92, 101 };
+        final float[] m2MultipliedByM1 = new float[] { 29, 56, 83, 32, 62, 92, 35, 68, 101 };
 
         Matrix var1 = const1.clone();
         Matrix var2 = const2.clone();
@@ -157,10 +157,10 @@ class MatrixTest
         }
 
         Matrix m1 = testMatrix.clone();
-        Matrix m2 = testMatrix.clone();
+        final Matrix m2 = testMatrix.clone();
 
         // Multiply two matrices together producing a new result matrix.
-        Matrix product = m1.multiply(m2);
+        final Matrix product = m1.multiply(m2);
 
         assertNotSame(m1, product);
         assertNotSame(m2, product);
@@ -190,7 +190,7 @@ class MatrixTest
     @Test
     void testIllegalValueNaN1()
     {
-        Matrix m = new Matrix();
+        final Matrix m = new Matrix();
         m.setValue(0, 0, Float.MAX_VALUE);
         assertThrows(IllegalArgumentException.class, () -> m.multiply(m));
     }
@@ -198,7 +198,7 @@ class MatrixTest
     @Test
     void testIllegalValueNaN2()
     {
-        Matrix m = new Matrix();
+        final Matrix m = new Matrix();
         m.setValue(0, 0, Float.NaN);
         assertThrows(IllegalArgumentException.class, () -> m.multiply(m));
     }
@@ -206,7 +206,7 @@ class MatrixTest
     @Test
     void testIllegalValuePositiveInfinity()
     {
-        Matrix m = new Matrix();
+        final Matrix m = new Matrix();
         m.setValue(0, 0, Float.POSITIVE_INFINITY);
         assertThrows(IllegalArgumentException.class, () -> m.multiply(m));
     }
@@ -214,7 +214,7 @@ class MatrixTest
     @Test
     void testIllegalValueNegativeInfinity()
     {
-        Matrix m = new Matrix();
+        final Matrix m = new Matrix();
         m.setValue(0, 0, Float.NEGATIVE_INFINITY);
         assertThrows(IllegalArgumentException.class, () -> m.multiply(m));
     }
@@ -225,8 +225,8 @@ class MatrixTest
     @Test
     void testPdfbox2872()
     {
-        Matrix m = new Matrix(2, 4, 5, 8, 2, 0);
-        COSArray toCOSArray = m.toCOSArray();
+        final Matrix m = new Matrix(2, 4, 5, 8, 2, 0);
+        final COSArray toCOSArray = m.toCOSArray();
         assertEquals(new COSFloat(2), toCOSArray.get(0));
         assertEquals(new COSFloat(4), toCOSArray.get(1));
         assertEquals(new COSFloat(5), toCOSArray.get(2));
@@ -239,8 +239,8 @@ class MatrixTest
     @Test
     void testGetValues()
     {
-        Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
-        float[][] values = m.getValues();
+        final Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
+        final float[][] values = m.getValues();
         assertEquals(2, values[0][0], 0);
         assertEquals(4, values[0][1], 0);
         assertEquals(0, values[0][2], 0);
@@ -255,7 +255,7 @@ class MatrixTest
     @Test
     void testScaling()
     {
-        Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
+        final Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
         m.scale(2, 3);
         // first row, multiplication with 2
         assertEquals(4, m.getValue(0, 0), 0);
@@ -276,7 +276,7 @@ class MatrixTest
     @Test
     void testTranslation()
     {
-        Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
+        final Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
         m.translate(2, 3);
         // first row, no changes at all
         assertEquals(2, m.getValue(0, 0), 0);
@@ -300,7 +300,7 @@ class MatrixTest
      * 
      * @param m the Matrix to test.
      */
-    private void assertMatrixIsPristine(Matrix m)
+    private void assertMatrixIsPristine(final Matrix m)
     {
         assertMatrixValuesEqualTo(new float[] { 1, 0, 0, 0, 1, 0, 0, 0, 1 }, m);
     }
@@ -311,15 +311,15 @@ class MatrixTest
      * @param values the expected values
      * @param m the matrix to test
      */
-    private void assertMatrixValuesEqualTo(float[] values, Matrix m)
+    private void assertMatrixValuesEqualTo(final float[] values, final Matrix m)
     {
-        float delta = 0.00001f;
+        final float delta = 0.00001f;
         for (int i = 0; i < values.length; i++)
         {
             // Need to convert a (row, column) coordinate into a straight index.
-            int row = (int) Math.floor(i / 3);
-            int column = i % 3;
-            StringBuilder failureMsg = new StringBuilder();
+            final int row = (int) Math.floor(i / 3);
+            final int column = i % 3;
+            final StringBuilder failureMsg = new StringBuilder();
             failureMsg.append("Incorrect value for matrix[").append(row).append(",").append(column)
                     .append("]");
             assertEquals(values[i], m.getValue(row, column), delta, failureMsg.toString());
@@ -329,7 +329,7 @@ class MatrixTest
     //Uncomment annotation to run the test
     // @Test
     public void testMultiplicationPerformance() {
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
         Matrix c;
         Matrix d;
         for (int i=0; i<100000000; i++) {
@@ -338,7 +338,7 @@ class MatrixTest
             c.multiply(d);
             c.concatenate(d);
         }
-        long stop = System.currentTimeMillis();
+        final long stop = System.currentTimeMillis();
         System.out.println("Matrix multiplication took " + (stop - start) + "ms.");
     }
 }

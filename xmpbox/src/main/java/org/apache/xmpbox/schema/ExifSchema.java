@@ -277,12 +277,12 @@ public class ExifSchema extends XMPSchema
     @PropertyType(type = Types.DeviceSettings)
     public static final String DEVICE_SETTING_DESCRIPTION = "DeviceSettingDescription";
 
-    public ExifSchema(XMPMetadata metadata)
+    public ExifSchema(final XMPMetadata metadata)
     {
         super(metadata);
     }
 
-    public ExifSchema(XMPMetadata metadata, String ownPrefix)
+    public ExifSchema(final XMPMetadata metadata, final String ownPrefix)
     {
         super(metadata, ownPrefix);
     }
@@ -317,7 +317,7 @@ public class ExifSchema extends XMPSchema
      * @return the UserComment value for specified language or null if it doesn't exist.
      * @throws BadFieldValueException If the UserComment property is not a multi-lingual property.
      */
-    public String getUserComment(String lang) throws BadFieldValueException
+    public String getUserComment(final String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(USER_COMMENT, lang);
     }

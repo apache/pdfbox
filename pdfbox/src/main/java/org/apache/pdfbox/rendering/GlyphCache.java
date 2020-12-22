@@ -39,12 +39,12 @@ final class GlyphCache
     private final PDVectorFont font;
     private final Map<Integer, GeneralPath> cache = new HashMap<>();
 
-    GlyphCache(PDVectorFont font)
+    GlyphCache(final PDVectorFont font)
     {
         this.font = font;
     }
     
-    public GeneralPath getPathForCharacterCode(int code)
+    public GeneralPath getPathForCharacterCode(final int code)
     {
         GeneralPath path = cache.get(code);
         if (path != null)
@@ -56,11 +56,11 @@ final class GlyphCache
         {
             if (!font.hasGlyph(code))
             {
-                String fontName = ((PDFontLike) font).getName();
+                final String fontName = ((PDFontLike) font).getName();
                 if (font instanceof PDType0Font)
                 {
-                    int cid = ((PDType0Font) font).codeToCID(code);
-                    String cidHex = String.format("%04x", cid);
+                    final int cid = ((PDType0Font) font).codeToCID(code);
+                    final String cidHex = String.format("%04x", cid);
                     LOG.warn("No glyph for code " + code + " (CID " + cidHex + ") in font " + fontName);
                 }
                 else if (font instanceof PDSimpleFont)
@@ -68,7 +68,7 @@ final class GlyphCache
                     LOG.warn("No glyph for code " + code + " in " + font.getClass().getSimpleName()
                             + " " + fontName + " (embedded or system font used: "
                             + ((PDSimpleFont) font).getFontBoxFont().getName() + ")");
-                    PDSimpleFont simpleFont = (PDSimpleFont) font;
+                    final PDSimpleFont simpleFont = (PDSimpleFont) font;
                     if (code == 10 && simpleFont.isStandard14())
                     {
                         // PDFBOX-4001 return empty path for line feed on std14

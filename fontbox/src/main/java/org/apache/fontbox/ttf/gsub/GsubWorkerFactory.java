@@ -30,7 +30,7 @@ import org.apache.fontbox.ttf.model.Language;
 public class GsubWorkerFactory
 {
 
-    public GsubWorker getGsubWorker(CmapLookup cmapLookup, GsubData gsubData)
+    public GsubWorker getGsubWorker(final CmapLookup cmapLookup, final GsubData gsubData)
     {
         switch (gsubData.getLanguage())
         {

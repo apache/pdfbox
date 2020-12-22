@@ -61,7 +61,7 @@ public class CSSeparation implements ChangeListener, ActionListener
      * 
      * @throws java.io.IOException
      */
-    public CSSeparation(COSArray array) throws IOException
+    public CSSeparation(final COSArray array) throws IOException
     {
         separation = new PDSeparation(array);
         initUI();
@@ -73,24 +73,23 @@ public class CSSeparation implements ChangeListener, ActionListener
      */
     private void initUI() throws IOException
     {
-        Font boldFont = new Font(Font.MONOSPACED, Font.BOLD, 20);
+        final Font boldFont = new Font(Font.MONOSPACED, Font.BOLD, 20);
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        final GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(2, 2, 2, 2);
         
-        JPanel inputPanel = new JPanel(new GridBagLayout());
+        final JPanel inputPanel = new JPanel(new GridBagLayout());
 
         slider = new JSlider(0, 100, 50);
         slider.setMajorTickSpacing(50);
         slider.setPaintTicks(true);
 
-        @SuppressWarnings({"squid:S1149"})
-        Dictionary<Integer, JLabel> labelTable = new Hashtable<>();
-        JLabel lightest = new JLabel("lightest");
+        @SuppressWarnings({"squid:S1149"}) final Dictionary<Integer, JLabel> labelTable = new Hashtable<>();
+        final JLabel lightest = new JLabel("lightest");
         lightest.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
-        JLabel darkest = new JLabel("darkest");
+        final JLabel darkest = new JLabel("darkest");
         darkest.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
-        JLabel midPoint = new JLabel("0.5");
+        final JLabel midPoint = new JLabel("0.5");
         midPoint.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
         labelTable.put(0, lightest);
         labelTable.put(50, midPoint);
@@ -107,7 +106,7 @@ public class CSSeparation implements ChangeListener, ActionListener
         gbc.fill = GridBagConstraints.HORIZONTAL;
         inputPanel.add(slider, gbc);
 
-        JLabel tintLabel = new JLabel("Tint Value:");
+        final JLabel tintLabel = new JLabel("Tint Value:");
         tintLabel.setFont(boldFont);
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -125,8 +124,8 @@ public class CSSeparation implements ChangeListener, ActionListener
         gbc.fill = GridBagConstraints.HORIZONTAL;
         inputPanel.add(tintField, gbc);
 
-        JPanel contentPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc2 = new GridBagConstraints();
+        final JPanel contentPanel = new JPanel(new GridBagLayout());
+        final GridBagConstraints gbc2 = new GridBagConstraints();
         gbc2.gridx = 0;
         gbc2.gridy = 0;
         gbc2.gridwidth = 2;
@@ -145,12 +144,12 @@ public class CSSeparation implements ChangeListener, ActionListener
         contentPanel.add(colorBar, gbc2);
         setColorBarBorder();
 
-        JPanel mainpanel = new JPanel(new GridBagLayout());
+        final JPanel mainpanel = new JPanel(new GridBagLayout());
 
-        JLabel colorantNameLabel = new JLabel("Colorant: " + separation.getColorantName());
+        final JLabel colorantNameLabel = new JLabel("Colorant: " + separation.getColorantName());
         colorantNameLabel.setFont(boldFont);
 
-        GridBagConstraints maingbc = new GridBagConstraints();
+        final GridBagConstraints maingbc = new GridBagConstraints();
         maingbc.gridx = 0;
         maingbc.gridy = 0;
         maingbc.weightx = 1;
@@ -169,7 +168,7 @@ public class CSSeparation implements ChangeListener, ActionListener
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setPreferredSize(new Dimension(300, 500));
 
-        JLabel colorSpaceLabel = new JLabel("Separation colorspace");
+        final JLabel colorSpaceLabel = new JLabel("Separation colorspace");
         colorSpaceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         colorSpaceLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
 
@@ -197,9 +196,9 @@ public class CSSeparation implements ChangeListener, ActionListener
      * @param changeEvent
      */
     @Override
-    public void stateChanged(ChangeEvent changeEvent)
+    public void stateChanged(final ChangeEvent changeEvent)
     {
-        int value = slider.getValue();
+        final int value = slider.getValue();
         tintValue = getFloatRepresentation(value);
         tintField.setText(Float.toString(tintValue));
         try
@@ -217,9 +216,9 @@ public class CSSeparation implements ChangeListener, ActionListener
      * @param actionEvent
      */
     @Override
-    public void actionPerformed(ActionEvent actionEvent)
+    public void actionPerformed(final ActionEvent actionEvent)
     {
-        String input = tintField.getText();
+        final String input = tintField.getText();
         try
         {
             tintValue= Float.parseFloat(input);
@@ -238,7 +237,7 @@ public class CSSeparation implements ChangeListener, ActionListener
 
     private void updateColorBar() throws IOException
     {
-        float[] rgbValues = separation.toRGB(new float[] {tintValue});
+        final float[] rgbValues = separation.toRGB(new float[] {tintValue});
         colorBar.setBackground(new Color(rgbValues[0], rgbValues[1], rgbValues[2]));
     }
 
@@ -247,17 +246,17 @@ public class CSSeparation implements ChangeListener, ActionListener
      */
     private void setColorBarBorder() throws IOException
     {
-        float[] rgbValues = separation.toRGB(new float[] {1});
-        Color darkest= new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
+        final float[] rgbValues = separation.toRGB(new float[] {1});
+        final Color darkest= new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
         colorBar.setBorder(new BevelBorder(BevelBorder.LOWERED, darkest, darkest));
     }
 
-    private float getFloatRepresentation(int value)
+    private float getFloatRepresentation(final int value)
     {
         return (float) value/100;
     }
 
-    private int getIntRepresentation(float value)
+    private int getIntRepresentation(final float value)
     {
         return (int) (value*100);
     }

@@ -57,7 +57,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
 {
     protected PDFont font;
 
-    public Type0FontValidator(PreflightContext context, PDFont font)
+    public Type0FontValidator(final PreflightContext context, final PDFont font)
     {
         super(context, font.getCOSObject(), new Type0Container(font));
         this.font = font;
@@ -80,7 +80,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      */
     protected void checkMandatoryFields()
     {
-        COSDictionary fontDictionary = font.getCOSObject();
+        final COSDictionary fontDictionary = font.getCOSObject();
         boolean areFieldsPResent = fontDictionary.containsKey(COSName.TYPE);
         areFieldsPResent &= fontDictionary.containsKey(COSName.SUBTYPE);
         areFieldsPResent &= fontDictionary.containsKey(COSName.BASE_FONT);
@@ -103,9 +103,9 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      */
     protected void processDescendantFont() throws ValidationException
     {
-        COSDictionary fontDictionary = font.getCOSObject();
+        final COSDictionary fontDictionary = font.getCOSObject();
         // a CIDFont is contained in the DescendantFonts array
-        COSArray array = fontDictionary.getCOSArray(COSName.DESCENDANT_FONTS);
+        final COSArray array = fontDictionary.getCOSArray(COSName.DESCENDANT_FONTS);
         if (array == null || array.size() != 1)
         {
             /*
@@ -117,7 +117,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
             return;
         }
 
-        COSDictionary cidFont = (COSDictionary) array.getObject(0);
+        final COSDictionary cidFont = (COSDictionary) array.getObject(0);
         if (cidFont == null)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_INVALID,
@@ -125,7 +125,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
             return;
         }
 
-        FontValidator<? extends FontContainer<? extends PDCIDFont>> cidFontValidator = createDescendantValidator(cidFont);
+        final FontValidator<? extends FontContainer<? extends PDCIDFont>> cidFontValidator = createDescendantValidator(cidFont);
         if (cidFontValidator != null)
         {
             this.fontContainer.setDelegateFontContainer(cidFontValidator.getFontContainer());
@@ -133,9 +133,9 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         }
     }
 
-    protected FontValidator<? extends FontContainer<? extends PDCIDFont>> createDescendantValidator(COSDictionary cidFont)
+    protected FontValidator<? extends FontContainer<? extends PDCIDFont>> createDescendantValidator(final COSDictionary cidFont)
     {
-        COSName subtype = cidFont.getCOSName(COSName.SUBTYPE);
+        final COSName subtype = cidFont.getCOSName(COSName.SUBTYPE);
         FontValidator<? extends FontContainer<? extends PDCIDFont>> cidFontValidator = null;
         if (COSName.CID_FONT_TYPE0.equals(subtype))
         {
@@ -156,7 +156,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
     /**
      * Create the validation object for CIDType0 Font
      */
-    protected FontValidator<? extends FontContainer<PDCIDFontType0>> createCIDType0FontValidator(COSDictionary fDict)
+    protected FontValidator<? extends FontContainer<PDCIDFontType0>> createCIDType0FontValidator(final COSDictionary fDict)
     {
         try
         {
@@ -176,7 +176,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      * @param fDict a CIDType2 font dictionary.
      * @return a CIDType2 tont font validator.
      */
-    protected FontValidator<? extends FontContainer<PDCIDFontType2>> createCIDType2FontValidator(COSDictionary fDict)
+    protected FontValidator<? extends FontContainer<PDCIDFontType2>> createCIDType2FontValidator(final COSDictionary fDict)
     {
         try
         {
@@ -199,16 +199,16 @@ public class Type0FontValidator extends FontValidator<Type0Container>
     @Override
     protected void checkEncoding()
     {
-        COSBase encoding = (font.getCOSObject()).getDictionaryObject(COSName.ENCODING);
+        final COSBase encoding = (font.getCOSObject()).getDictionaryObject(COSName.ENCODING);
         checkCMapEncoding(encoding);
     }
 
-    protected void checkCMapEncoding(COSBase encoding)
+    protected void checkCMapEncoding(final COSBase encoding)
     {
         if (encoding instanceof COSName || encoding instanceof COSString)
         {
             // if encoding is a string, only 2 values are allowed
-            String str = encoding instanceof COSName ? ((COSName) encoding).getName()
+            final String str = encoding instanceof COSName ? ((COSName) encoding).getName()
                     : ((COSString) encoding).getString();
             if (!(FONT_DICTIONARY_VALUE_CMAP_IDENTITY_V.equals(str) || FONT_DICTIONARY_VALUE_CMAP_IDENTITY_H
                     .equals(str)))
@@ -242,24 +242,24 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      *
      * @param aCMap the cmap stream.
      */
-    private void processCMapAsStream(COSStream aCMap)
+    private void processCMapAsStream(final COSStream aCMap)
     {
         checkCIDSystemInfo(aCMap.getCOSDictionary(COSName.CIDSYSTEMINFO));
 
         try (InputStream cmapStream = aCMap.createInputStream())
         {
             // extract information from the CMap stream
-            CMap fontboxCMap = new CMapParser().parse(cmapStream);
-            int wmValue = fontboxCMap.getWMode();
-            String cmnValue = fontboxCMap.getName();
+            final CMap fontboxCMap = new CMapParser().parse(cmapStream);
+            final int wmValue = fontboxCMap.getWMode();
+            final String cmnValue = fontboxCMap.getName();
 
             /*
              * According to the getInt javadoc, -1 is returned if there is no result. In the PDF Reference v1.7 p449,
              * we can read that the default value is 0.
              */
-            int wmode = aCMap.getInt(COSName.WMODE, FONT_DICTIONARY_DEFAULT_CMAP_WMODE);
-            COSName type = aCMap.getCOSName(COSName.TYPE);
-            String cmapName = aCMap.getNameAsString(COSName.CMAPNAME);
+            final int wmode = aCMap.getInt(COSName.WMODE, FONT_DICTIONARY_DEFAULT_CMAP_WMODE);
+            final COSName type = aCMap.getCOSName(COSName.TYPE);
+            final String cmapName = aCMap.getNameAsString(COSName.CMAPNAME);
 
             if (cmapName == null || "".equals(cmapName) || wmode > 1)
             {
@@ -282,7 +282,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
             this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_CMAP_DAMAGED, font.getName() + ": The CMap type is damaged", e));
         }
 
-        COSDictionary cmapUsed = (COSDictionary) aCMap.getDictionaryObject(COSName.USE_CMAP);
+        final COSDictionary cmapUsed = (COSDictionary) aCMap.getDictionaryObject(COSName.USE_CMAP);
         if (cmapUsed != null)
         {
             checkCMapEncoding(cmapUsed);
@@ -301,14 +301,14 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      * @param cidSysInfo
      * @return the validation result.
      */
-    protected boolean checkCIDSystemInfo(COSDictionary cidSysInfo)
+    protected boolean checkCIDSystemInfo(final COSDictionary cidSysInfo)
     {
         boolean result = true;
         if (cidSysInfo != null)
         {
-            String reg = cidSysInfo.getString(COSName.REGISTRY);
-            String ord = cidSysInfo.getString(COSName.ORDERING);
-            COSBase sup = cidSysInfo.getDictionaryObject(COSName.SUPPLEMENT);
+            final String reg = cidSysInfo.getString(COSName.REGISTRY);
+            final String ord = cidSysInfo.getString(COSName.ORDERING);
+            final COSBase sup = cidSysInfo.getDictionaryObject(COSName.SUPPLEMENT);
 
             if (!(reg != null && ord != null && sup instanceof COSInteger))
             {
@@ -331,21 +331,21 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      * 
      * @param cmap
      */
-    private void compareCIDSystemInfo(COSDictionary cmap)
+    private void compareCIDSystemInfo(final COSDictionary cmap)
     {
-        COSDictionary fontDictionary = font.getCOSObject();
-        COSArray array = fontDictionary.getCOSArray(COSName.DESCENDANT_FONTS);
+        final COSDictionary fontDictionary = font.getCOSObject();
+        final COSArray array = fontDictionary.getCOSArray(COSName.DESCENDANT_FONTS);
 
         if (array != null && array.size() > 0)
         {
-            COSDictionary cidFont = (COSDictionary) array.getObject(0);
-            COSDictionary cmsi = cmap.getCOSDictionary(COSName.CIDSYSTEMINFO);
-            COSDictionary cfsi = cidFont.getCOSDictionary(COSName.CIDSYSTEMINFO);
+            final COSDictionary cidFont = (COSDictionary) array.getObject(0);
+            final COSDictionary cmsi = cmap.getCOSDictionary(COSName.CIDSYSTEMINFO);
+            final COSDictionary cfsi = cidFont.getCOSDictionary(COSName.CIDSYSTEMINFO);
 
-            String regCM = cmsi.getString(COSName.REGISTRY);
-            String ordCM = cmsi.getString(COSName.ORDERING);
-            String regCF = cfsi.getString(COSName.REGISTRY);
-            String ordCF = cfsi.getString(COSName.ORDERING);
+            final String regCM = cmsi.getString(COSName.REGISTRY);
+            final String ordCM = cmsi.getString(COSName.ORDERING);
+            final String regCF = cfsi.getString(COSName.REGISTRY);
+            final String ordCF = cfsi.getString(COSName.ORDERING);
 
             if (!regCF.equals(regCM) || !ordCF.equals(ordCM))
             {

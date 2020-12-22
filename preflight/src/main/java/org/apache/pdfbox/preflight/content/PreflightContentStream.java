@@ -52,7 +52,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_CONTEN
 
 public class PreflightContentStream extends PreflightStreamEngine
 {
-    public PreflightContentStream(PreflightContext _context, PDPage _page)
+    public PreflightContentStream(final PreflightContext _context, final PDPage _page)
     {
         super(_context, _page);
     }
@@ -87,7 +87,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @param form the PDFormXObject to be validated.
      * @throws ValidationException
      */
-    public void validateXObjContentStream(PDFormXObject form) throws ValidationException
+    public void validateXObjContentStream(final PDFormXObject form) throws ValidationException
     {
         try
         {
@@ -118,7 +118,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @param pattern the PDTilingPattern to be validated.
      * @throws ValidationException
      */
-    public void validatePatternContentStream(PDTilingPattern pattern) throws ValidationException
+    public void validatePatternContentStream(final PDTilingPattern pattern) throws ValidationException
     {
         try
         {
@@ -135,7 +135,7 @@ public class PreflightContentStream extends PreflightStreamEngine
     }
 
     @Override
-    protected void processOperator(Operator operator, List<COSBase> operands) throws IOException
+    protected void processOperator(final Operator operator, final List<COSBase> operands) throws IOException
     {
         super.processOperator(operator, operands);
 
@@ -159,7 +159,7 @@ public class PreflightContentStream extends PreflightStreamEngine
     }
 
     @Override
-    protected void unsupportedOperator(Operator operator, List<COSBase> arguments)
+    protected void unsupportedOperator(final Operator operator, final List<COSBase> arguments)
     {
         registerError("The operator \"" + operator.getName() + "\" isn't supported.",
                 ERROR_SYNTAX_CONTENT_STREAM_UNSUPPORTED_OP);
@@ -173,9 +173,9 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @param arguments
      * @throws IOException
      */
-    protected void checkShowTextOperators(Operator operator, List<?> arguments) throws IOException
+    protected void checkShowTextOperators(final Operator operator, final List<?> arguments) throws IOException
     {
-        String op = operator.getName();
+        final String op = operator.getName();
         if (OperatorName.SHOW_TEXT.equals(op) || OperatorName.SHOW_TEXT_LINE.equals(op)
                 || OperatorName.SHOW_TEXT_LINE_AND_SPACE.equals(op))
         {
@@ -198,7 +198,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @param arguments
      * @throws IOException
      */
-    private void validateStringDefinition(Operator operator, List<?> arguments) throws IOException
+    private void validateStringDefinition(final Operator operator, final List<?> arguments) throws IOException
     {
         /*
          * For a Text operator, the arguments list should contain only one COSString object
@@ -211,9 +211,9 @@ public class PreflightContentStream extends PreflightStreamEngine
                         ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
                 return;
             }
-            Object arg0 = arguments.get(0);
-            Object arg1 = arguments.get(1);
-            Object arg2 = arguments.get(2);
+            final Object arg0 = arguments.get(0);
+            final Object arg1 = arguments.get(1);
+            final Object arg2 = arguments.get(2);
             if (!(arg0 instanceof COSInteger || arg0 instanceof COSFloat)
                     || !(arg1 instanceof COSInteger || arg1 instanceof COSFloat))
             {
@@ -234,7 +234,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         }
         else
         {
-            Object objStr = arguments.get(0);
+            final Object objStr = arguments.get(0);
             if (objStr instanceof COSString)
             {
                 validateText(((COSString) objStr).getBytes());
@@ -257,9 +257,9 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @param arguments
      * @throws IOException
      */
-    private void validateStringArray(Operator operator, List<?> arguments) throws IOException
+    private void validateStringArray(final Operator operator, final List<?> arguments) throws IOException
     {
-        for (Object object : arguments)
+        for (final Object object : arguments)
         {
             if (object instanceof COSArray)
             {
@@ -289,10 +289,10 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @param string
      * @throws IOException
      */
-    public void validateText(byte[] string) throws IOException
+    public void validateText(final byte[] string) throws IOException
     {
         // TextSize accessible through the TextState
-        PDTextState textState = getGraphicsState().getTextState();
+        final PDTextState textState = getGraphicsState().getTextState();
         final RenderingMode renderingMode = textState.getRenderingMode();
         final PDFont font = textState.getFont();
         if (font == null)
@@ -302,7 +302,7 @@ public class PreflightContentStream extends PreflightStreamEngine
             return;
         }
 
-        FontContainer<?> fontContainer = context.getFontContainer(font.getCOSObject());
+        final FontContainer<?> fontContainer = context.getFontContainer(font.getCOSObject());
         if (renderingMode == RenderingMode.NEITHER && (fontContainer == null || !fontContainer.isEmbeddedFont()))
         {
             // font not embedded and rendering mode is 3. Valid case and nothing to check
@@ -333,12 +333,12 @@ public class PreflightContentStream extends PreflightStreamEngine
             return;
         }
 
-        InputStream in = new ByteArrayInputStream(string);
+        final InputStream in = new ByteArrayInputStream(string);
         while (in.available() > 0)
         {
             try
             {
-                int code = font.readCode(in);
+                final int code = font.readCode(in);
                 fontContainer.checkGlyphWidth(code);
             }
             catch (IOException e)

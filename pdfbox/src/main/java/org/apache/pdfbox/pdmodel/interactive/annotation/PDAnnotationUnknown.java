@@ -32,7 +32,7 @@ public class PDAnnotationUnknown extends PDAnnotation
      *
      * @param dic The dictionary which represents this Annotation.
      */
-    public PDAnnotationUnknown(COSDictionary dic)
+    public PDAnnotationUnknown(final COSDictionary dic)
     {
         super(dic);
     }

@@ -55,26 +55,26 @@ class PDAcroFormFromAnnotsTest
     void testFromAnnots4985DefaultMode() throws IOException
     {
 
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
-        String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13013384/POPPLER-806-acrobat.pdf";
+        final String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
+        final String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13013384/POPPLER-806-acrobat.pdf";
 
         int numFormFieldsByAcrobat = 0;
 
         try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
-            PDAcroForm acroForm = catalog.getAcroForm(null);
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDAcroForm acroForm = catalog.getAcroForm(null);
             numFormFieldsByAcrobat = acroForm.getFields().size();
         }
                 
         try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm 
-            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
-            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            final COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            final COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
             assertEquals(0, cosFields.size(), "Initially there shall be 0 fields");
-            PDAcroForm acroForm = catalog.getAcroForm();
+            final PDAcroForm acroForm = catalog.getAcroForm();
             assertEquals(numFormFieldsByAcrobat, acroForm.getFields().size(), "After rebuild there shall be " + numFormFieldsByAcrobat + " fields");
         }
     }
@@ -90,26 +90,26 @@ class PDAcroFormFromAnnotsTest
     void testFromAnnots4985CorrectionMode() throws IOException
     {
 
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
-        String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13013384/POPPLER-806-acrobat.pdf";
+        final String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
+        final String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13013384/POPPLER-806-acrobat.pdf";
 
         int numFormFieldsByAcrobat = 0;
 
         try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
-            PDAcroForm acroForm = catalog.getAcroForm(null);
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDAcroForm acroForm = catalog.getAcroForm(null);
             numFormFieldsByAcrobat = acroForm.getFields().size();
         }
                 
         try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm 
-            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
-            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            final COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            final COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
             assertEquals(0, cosFields.size(), "Initially there shall be 0 fields");
-            PDAcroForm acroForm = catalog.getAcroForm(new AcroFormDefaultFixup(testPdf));
+            final PDAcroForm acroForm = catalog.getAcroForm(new AcroFormDefaultFixup(testPdf));
             assertEquals(numFormFieldsByAcrobat, acroForm.getFields().size(), "After rebuild there shall be " + numFormFieldsByAcrobat + " fields");
         }
     } 
@@ -125,19 +125,19 @@ class PDAcroFormFromAnnotsTest
     void testFromAnnots4985WithoutCorrectionMode() throws IOException
     {
 
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
+        final String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
 
         int numCosFormFields = 0;
                 
         try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm 
-            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
-            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            final COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            final COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
             numCosFormFields = cosFields.size();
             assertEquals(0, cosFields.size(), "Initially there shall be 0 fields");
-            PDAcroForm acroForm = catalog.getAcroForm(null);
+            final PDAcroForm acroForm = catalog.getAcroForm(null);
             assertEquals(numCosFormFields, acroForm.getFields().size(), "After call without correction there shall be " + numCosFormFields + " fields");
         }
     }
@@ -153,16 +153,16 @@ class PDAcroFormFromAnnotsTest
     void testFromAnnots3891DontCreateFields() throws IOException
     {
 
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
+        final String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
 
         try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm
-            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
-            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            final COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            final COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
             assertEquals(0, cosFields.size(), "Initially there shall be 0 fields");
-            PDAcroForm acroForm = catalog.getAcroForm();
+            final PDAcroForm acroForm = catalog.getAcroForm();
             assertEquals(0, acroForm.getFields().size(), "After call with default correction there shall be 0 fields");
         }
     }
@@ -178,20 +178,20 @@ class PDAcroFormFromAnnotsTest
     void testFromAnnots3891CreateFields() throws IOException
     {
 
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
-        String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13014447/merge-test-na-acrobat.pdf";
+        final String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
+        final String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13014447/merge-test-na-acrobat.pdf";
 
         int numFormFieldsByAcrobat = 0;
 
         // will build the expected fields using the acrobat source document
-        Map<String, PDField> fieldsByName = new HashMap<>();
+        final Map<String, PDField> fieldsByName = new HashMap<>();
 
         try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
-            PDAcroForm acroForm = catalog.getAcroForm(null);
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDAcroForm acroForm = catalog.getAcroForm(null);
             numFormFieldsByAcrobat = acroForm.getFields().size();
-            for (PDField field : acroForm.getFieldTree())
+            for (final PDField field : acroForm.getFieldTree())
             {
                 fieldsByName.put(field.getFullyQualifiedName(), field);
             }
@@ -199,22 +199,22 @@ class PDAcroFormFromAnnotsTest
 
         try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm
-            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
-            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            final COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            final COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
             assertEquals(0, cosFields.size(), "Initially there shall be 0 fields");
-            PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
+            final PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
             assertEquals(numFormFieldsByAcrobat, acroForm.getFields().size(), "After rebuild there shall be " + numFormFieldsByAcrobat + " fields");
 
             // the the fields found are contained in the map
-            for (PDField field : acroForm.getFieldTree())
+            for (final PDField field : acroForm.getFieldTree())
             {
                 assertNotNull(fieldsByName.get(field.getFullyQualifiedName()));
             }
 
             // test all fields in the map are also found in the AcroForm
-            for (String fieldName : fieldsByName.keySet())
+            for (final String fieldName : fieldsByName.keySet())
             {
                 assertNotNull(acroForm.getField(fieldName));
             }
@@ -233,23 +233,23 @@ class PDAcroFormFromAnnotsTest
     void testFromAnnots3891ValidateFont() throws IOException
     {
 
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
-        String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13014447/merge-test-na-acrobat.pdf";
+        final String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
+        final String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13014447/merge-test-na-acrobat.pdf";
 
         // will build the expected font respurce names and font decriptor names using the acrobat source document
-        Map<String, String> fontNames = new HashMap<>();
+        final Map<String, String> fontNames = new HashMap<>();
 
         try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
-            PDAcroForm acroForm = catalog.getAcroForm(null);
-            PDResources acroFormResources = acroForm.getDefaultResources();
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDAcroForm acroForm = catalog.getAcroForm(null);
+            final PDResources acroFormResources = acroForm.getDefaultResources();
             if (acroFormResources != null)
             {
                 acroFormResources.getFontNames().forEach(fontName -> {
                     try
                     {
-                        PDFont font = acroFormResources.getFont(fontName);
+                        final PDFont font = acroFormResources.getFont(fontName);
                         font.getFontDescriptor().getFontName();
                         fontNames.put(fontName.getName(), font.getName());
                     }
@@ -263,16 +263,16 @@ class PDAcroFormFromAnnotsTest
 
         try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
-            PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
-            PDResources acroFormResources = acroForm.getDefaultResources();
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
+            final PDResources acroFormResources = acroForm.getDefaultResources();
             if (acroFormResources != null)
             {
                 acroFormResources.getFontNames().forEach(fontName -> {
                     try
                     {
-                        PDFont font = acroFormResources.getFont(fontName);
-                        String pdfBoxFontName = font.getFontDescriptor().getFontName();
+                        final PDFont font = acroFormResources.getFont(fontName);
+                        final String pdfBoxFontName = font.getFontDescriptor().getFontName();
                         assertEquals(fontNames.get(fontName.getName()), pdfBoxFontName, "font resource added by Acrobat shall match font resource added by PDFBox");
                     }
                     catch (IOException ioe)
@@ -292,11 +292,11 @@ class PDAcroFormFromAnnotsTest
     @Test
     void testFromAnnots3891NullField() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016993/poppler-14433-0.pdf";
+        final String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016993/poppler-14433-0.pdf";
 
         try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            final PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             assertDoesNotThrow(() -> catalog.getAcroForm(new CreateFieldsFixup(testPdf)), "Getting the AcroForm shall not throw an exception");
         }
     }
@@ -308,7 +308,7 @@ class PDAcroFormFromAnnotsTest
      */
     class CreateFieldsFixup extends AbstractFixup
     {
-        CreateFieldsFixup(PDDocument document)
+        CreateFieldsFixup(final PDDocument document)
         { 
             super(document); 
         }

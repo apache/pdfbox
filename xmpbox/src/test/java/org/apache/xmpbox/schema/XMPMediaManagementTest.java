@@ -48,17 +48,17 @@ class XMPMediaManagementTest
     
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementValue(String property, PropertyType type, Object value) throws Exception
+    void testElementValue(final String property, final PropertyType type, final Object value) throws Exception
     {
-        XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
+        final XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementProperty(String property, PropertyType type, Object value) throws Exception
+    void testElementProperty(final String property, final PropertyType type, final Object value) throws Exception
     {
-        XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
+        final XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();
     }
 

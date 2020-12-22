@@ -57,7 +57,7 @@ public final class CCITTFactory
      * @throws IOException if there is an error creating the image.
      * @throws IllegalArgumentException if the BufferedImage is not a b/w image.
      */
-    public static PDImageXObject createFromImage(PDDocument document, BufferedImage image)
+    public static PDImageXObject createFromImage(final PDDocument document, final BufferedImage image)
             throws IOException
     {
         if (image.getType() != BufferedImage.TYPE_BYTE_BINARY && image.getColorModel().getPixelSize() != 1)
@@ -65,10 +65,10 @@ public final class CCITTFactory
             throw new IllegalArgumentException("Only 1-bit b/w images supported");
         }
         
-        int height = image.getHeight();
-        int width = image.getWidth();
+        final int height = image.getHeight();
+        final int width = image.getWidth();
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos))
         {
             for (int y = 0; y < height; ++y)
@@ -103,7 +103,7 @@ public final class CCITTFactory
      * @return a new Image XObject
      * @throws IOException if there is an error reading the TIFF data.
      */
-    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray)
+    public static PDImageXObject createFromByteArray(final PDDocument document, final byte[] byteArray)
             throws IOException
     {
         return createFromByteArray(document, byteArray, 0);
@@ -124,7 +124,7 @@ public final class CCITTFactory
      * @return a new Image XObject
      * @throws IOException if there is an error reading the TIFF data.
      */
-    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray, int number)
+    public static PDImageXObject createFromByteArray(final PDDocument document, final byte[] byteArray, final int number)
             throws IOException
     {
         try (RandomAccessRead raf = new RandomAccessReadBuffer(byteArray))
@@ -133,20 +133,20 @@ public final class CCITTFactory
         }
     }
 
-    private static PDImageXObject prepareImageXObject(PDDocument document,
-            byte[] byteArray, int width, int height,
-            PDColorSpace initColorSpace) throws IOException
+    private static PDImageXObject prepareImageXObject(final PDDocument document,
+                                                      final byte[] byteArray, final int width, final int height,
+                                                      final PDColorSpace initColorSpace) throws IOException
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        Filter filter = FilterFactory.INSTANCE.getFilter(COSName.CCITTFAX_DECODE);
-        COSDictionary dict = new COSDictionary();
+        final Filter filter = FilterFactory.INSTANCE.getFilter(COSName.CCITTFAX_DECODE);
+        final COSDictionary dict = new COSDictionary();
         dict.setInt(COSName.COLUMNS, width);
         dict.setInt(COSName.ROWS, height);
         filter.encode(new ByteArrayInputStream(byteArray), baos, dict, 0);
 
-        ByteArrayInputStream encodedByteStream = new ByteArrayInputStream(baos.toByteArray());
-        PDImageXObject image = new PDImageXObject(document, encodedByteStream, COSName.CCITTFAX_DECODE,
+        final ByteArrayInputStream encodedByteStream = new ByteArrayInputStream(baos.toByteArray());
+        final PDImageXObject image = new PDImageXObject(document, encodedByteStream, COSName.CCITTFAX_DECODE,
                 width, height, 1, initColorSpace);
         dict.setInt(COSName.K, -1);
         image.getCOSObject().setItem(COSName.DECODE_PARMS, dict);
@@ -166,7 +166,7 @@ public final class CCITTFactory
      * @return a new Image XObject
      * @throws IOException if there is an error reading the TIFF data.
      */
-    public static PDImageXObject createFromFile(PDDocument document, File file)
+    public static PDImageXObject createFromFile(final PDDocument document, final File file)
             throws IOException
     {
         return createFromFile(document, file, 0);
@@ -186,7 +186,7 @@ public final class CCITTFactory
      * @return a new Image XObject
      * @throws IOException if there is an error reading the TIFF data.
      */
-    public static PDImageXObject createFromFile(PDDocument document, File file, int number)
+    public static PDImageXObject createFromFile(final PDDocument document, final File file, final int number)
             throws IOException
     {
         try (RandomAccessRead raf = new RandomAccessReadBufferedFile(file))
@@ -205,19 +205,19 @@ public final class CCITTFactory
      * @return a new Image XObject, or null if no such page
      * @throws IOException if there is an error reading the TIFF data.
      */
-    private static PDImageXObject createFromRandomAccessImpl(PDDocument document,
-            RandomAccessRead reader,
-                                                             int number) throws IOException
+    private static PDImageXObject createFromRandomAccessImpl(final PDDocument document,
+                                                             final RandomAccessRead reader,
+                                                             final int number) throws IOException
     {
-        COSDictionary decodeParms = new COSDictionary();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final COSDictionary decodeParms = new COSDictionary();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         extractFromTiff(reader, bos, decodeParms, number);
         if (bos.size() == 0)
         {
             return null;
         }
-        ByteArrayInputStream encodedByteStream = new ByteArrayInputStream(bos.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(document, 
+        final ByteArrayInputStream encodedByteStream = new ByteArrayInputStream(bos.toByteArray());
+        final PDImageXObject pdImage = new PDImageXObject(document,
                 encodedByteStream, 
                 COSName.CCITTFAX_DECODE, 
                 decodeParms.getInt(COSName.COLUMNS), 
@@ -225,21 +225,21 @@ public final class CCITTFactory
                 1,
                 PDDeviceGray.INSTANCE);
         
-        COSDictionary dict = pdImage.getCOSObject();
+        final COSDictionary dict = pdImage.getCOSObject();
         dict.setItem(COSName.DECODE_PARMS, decodeParms);
         return pdImage;
     }
 
     // extracts the CCITT stream from the TIFF file
-    private static void extractFromTiff(RandomAccessRead reader,
-            OutputStream os,
-            COSDictionary params, int number) throws IOException
+    private static void extractFromTiff(final RandomAccessRead reader,
+                                        final OutputStream os,
+                                        final COSDictionary params, final int number) throws IOException
     {
         try
         {
             // First check the basic tiff header
             reader.seek(0);
-            char endianess = (char) reader.read();
+            final char endianess = (char) reader.read();
             if ((char) reader.read() != endianess)
             {
                 throw new IOException("Not a valid tiff file");
@@ -249,7 +249,7 @@ public final class CCITTFactory
             {
                 throw new IOException("Not a valid tiff file");
             }
-            int magicNumber = readshort(endianess, reader);
+            final int magicNumber = readshort(endianess, reader);
             if (magicNumber != 42)
             {
                 throw new IOException("Not a valid tiff file");
@@ -263,7 +263,7 @@ public final class CCITTFactory
             // then read the next page's address
             for (int i = 0; i < number; i++)
             {
-                int numtags = readshort(endianess, reader);
+                final int numtags = readshort(endianess, reader);
                 if (numtags > 50)
                 {
                     throw new IOException("Not a valid tiff file");
@@ -277,7 +277,7 @@ public final class CCITTFactory
                 reader.seek(address);
             }
 
-            int numtags = readshort(endianess, reader);
+            final int numtags = readshort(endianess, reader);
 
             // The number 50 is somewhat arbitrary, it just stops us load up junk from somewhere
             // and tramping on
@@ -299,10 +299,10 @@ public final class CCITTFactory
 
             for (int i = 0; i < numtags; i++)
             {
-                int tag = readshort(endianess, reader);
-                int type = readshort(endianess, reader);
-                int count = readlong(endianess, reader);
-                int val;
+                final int tag = readshort(endianess, reader);
+                final int type = readshort(endianess, reader);
+                final int count = readlong(endianess, reader);
+                final int val;
                 // Note that when the type is shorter than 4 bytes, the rest can be garbage
                 // and must be ignored. E.g. short (2 bytes) from "01 00 38 32" (little endian)
                 // is 1, not 842530817 (seen in a real-life TIFF image).
@@ -442,7 +442,7 @@ public final class CCITTFactory
 
             reader.seek(dataoffset);
 
-            byte[] buf = new byte[8192];
+            final byte[] buf = new byte[8192];
             int amountRead;
             while ((amountRead = reader.read(buf, 0, Math.min(8192, datalength))) > 0)
             {
@@ -457,7 +457,7 @@ public final class CCITTFactory
         }
     }
 
-    private static int readshort(char endianess, RandomAccessRead raf) throws IOException
+    private static int readshort(final char endianess, final RandomAccessRead raf) throws IOException
     {
         if (endianess == 'I')
         {
@@ -466,7 +466,7 @@ public final class CCITTFactory
         return (raf.read() << 8) | raf.read();
     }
 
-    private static int readlong(char endianess, RandomAccessRead raf) throws IOException
+    private static int readlong(final char endianess, final RandomAccessRead raf) throws IOException
     {
         if (endianess == 'I')
         {

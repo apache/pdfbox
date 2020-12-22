@@ -42,7 +42,7 @@ public class PreflightPath
     private final Stack<Class> classObjPath = new Stack<>();
 
     @SuppressWarnings("unchecked")
-    public boolean pushObject(Object pathElement)
+    public boolean pushObject(final Object pathElement)
     {
         boolean pushed = false;
         if (pathElement != null)
@@ -62,7 +62,7 @@ public class PreflightPath
      * @return the object at the given position.
      */
     @SuppressWarnings("unchecked")
-    public <T> T getPathElement(int position, Class<T> expectedType)
+    public <T> T getPathElement(final int position, final Class<T> expectedType)
     {
         if (position < 0 || position >= this.objectPath.size())
         {
@@ -77,7 +77,7 @@ public class PreflightPath
      * @param type
      * @return the object position, -1 if the type doesn't exist in the stack.
      */
-    public <T> int getClosestTypePosition(Class<T> type)
+    public <T> int getClosestTypePosition(final Class<T> type)
     {
         for (int i = this.objectPath.size(); i-- > 0;)
         {
@@ -89,7 +89,7 @@ public class PreflightPath
         return -1;
     }
 
-    public <T> T getClosestPathElement(Class<T> type)
+    public <T> T getClosestPathElement(final Class<T> type)
     {
         return getPathElement(getClosestTypePosition(type), type);
     }
@@ -126,10 +126,9 @@ public class PreflightPath
         return this.objectPath.isEmpty();
     }
 
-    public boolean isExpectedType(Class<?> type)
+    public boolean isExpectedType(final Class<?> type)
     {
-        @SuppressWarnings("rawtypes")
-        Class knownType = this.classObjPath.peek();
+        @SuppressWarnings("rawtypes") final Class knownType = this.classObjPath.peek();
         return (knownType != null && (type.equals(knownType) || type.isAssignableFrom(knownType)));
     }
 }

@@ -36,7 +36,7 @@ public abstract class SimpleFontValidator<T extends FontContainer> extends FontV
     protected PDFontLike font;
     protected COSDictionary fontDictionary;
 
-    public SimpleFontValidator(PreflightContext context, PDFontLike font, COSDictionary fontDictionary, T fContainer)
+    public SimpleFontValidator(final PreflightContext context, final PDFontLike font, final COSDictionary fontDictionary, final T fContainer)
     {
         super(context, fontDictionary, fContainer);
         this.fontDictionary = fontDictionary;
@@ -71,31 +71,31 @@ public abstract class SimpleFontValidator<T extends FontContainer> extends FontV
         {
             missingFields = "type, ";
         }
-        boolean subType = fontDictionary.containsKey(COSName.SUBTYPE);
+        final boolean subType = fontDictionary.containsKey(COSName.SUBTYPE);
         areFieldsPresent &= subType;
         if (!subType)
         {
             missingFields += "subType, ";
         }
-        boolean baseFont = fontDictionary.containsKey(COSName.BASE_FONT);
+        final boolean baseFont = fontDictionary.containsKey(COSName.BASE_FONT);
         areFieldsPresent &= baseFont;
         if (!baseFont)
         {
             missingFields += "baseFont, ";
         }
-        boolean firstChar = fontDictionary.containsKey(COSName.FIRST_CHAR);
+        final boolean firstChar = fontDictionary.containsKey(COSName.FIRST_CHAR);
         areFieldsPresent &= firstChar;
         if (!firstChar)
         {
             missingFields += "firstChar, ";
         }
-        boolean lastChar = fontDictionary.containsKey(COSName.LAST_CHAR);
+        final boolean lastChar = fontDictionary.containsKey(COSName.LAST_CHAR);
         areFieldsPresent &= lastChar;
         if (!lastChar)
         {
             missingFields += "lastChar, ";
         }
-        boolean widths = fontDictionary.containsKey(COSName.WIDTHS);
+        final boolean widths = fontDictionary.containsKey(COSName.WIDTHS);
         areFieldsPresent &= widths;
         if (!widths)
         {

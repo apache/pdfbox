@@ -31,19 +31,19 @@ public class DefinedStructuredType extends AbstractStructuredType
 
     private Map<String, PropertyType> definedProperties = null;
 
-    public DefinedStructuredType(XMPMetadata metadata, String namespaceURI, String fieldPrefix, String propertyName)
+    public DefinedStructuredType(final XMPMetadata metadata, final String namespaceURI, final String fieldPrefix, final String propertyName)
     {
         super(metadata, namespaceURI, fieldPrefix, propertyName);
         this.definedProperties = new HashMap<>();
     }
 
-    public DefinedStructuredType(XMPMetadata metadata)
+    public DefinedStructuredType(final XMPMetadata metadata)
     {
         super(metadata);
         this.definedProperties = new HashMap<>();
     }
 
-    public void addProperty(String name, PropertyType type)
+    public void addProperty(final String name, final PropertyType type)
     {
         definedProperties.put(name, type);
     }

@@ -48,14 +48,14 @@ public class CreateCheckBox
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         try (PDDocument document = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             document.addPage(page);
             
-            PDAcroForm acroForm = new PDAcroForm(document);
+            final PDAcroForm acroForm = new PDAcroForm(document);
             document.getDocumentCatalog().setAcroForm(acroForm);
             
             // if you want to see what Adobe does, activate this, open with Adobe
@@ -64,35 +64,35 @@ public class CreateCheckBox
             //acroForm.setNeedAppearances(true)
             
             
-            float x = 50;
-            float y = page.getMediaBox().getHeight() - 50;
+            final float x = 50;
+            final float y = page.getMediaBox().getHeight() - 50;
             
-            PDRectangle rect = new PDRectangle(x, y, 20, 20);
+            final PDRectangle rect = new PDRectangle(x, y, 20, 20);
             
-            PDCheckBox checkbox = new PDCheckBox(acroForm);
+            final PDCheckBox checkbox = new PDCheckBox(acroForm);
             checkbox.setPartialName("MyCheckBox");
-            PDAnnotationWidget widget = checkbox.getWidgets().get(0);
+            final PDAnnotationWidget widget = checkbox.getWidgets().get(0);
             widget.setPage(page);
             widget.setRectangle(rect);
             widget.setPrinted(true);
             
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics = new PDAppearanceCharacteristicsDictionary(new COSDictionary());
+            final PDAppearanceCharacteristicsDictionary appearanceCharacteristics = new PDAppearanceCharacteristicsDictionary(new COSDictionary());
             appearanceCharacteristics.setBorderColour(new PDColor(new float[]{1, 0, 0}, PDDeviceRGB.INSTANCE));
             appearanceCharacteristics.setBackground(new PDColor(new float[]{1, 1, 0}, PDDeviceRGB.INSTANCE));
             // 8 = cross; 4 = checkmark; H = star; u = diamond; n = square, l = dot
             appearanceCharacteristics.setNormalCaption("4");
             widget.setAppearanceCharacteristics(appearanceCharacteristics);
             
-            PDBorderStyleDictionary borderStyleDictionary = new PDBorderStyleDictionary();
+            final PDBorderStyleDictionary borderStyleDictionary = new PDBorderStyleDictionary();
             borderStyleDictionary.setWidth(1);
             borderStyleDictionary.setStyle(PDBorderStyleDictionary.STYLE_SOLID);
             widget.setBorderStyle(borderStyleDictionary);
             
-            PDAppearanceDictionary ap = new PDAppearanceDictionary();
+            final PDAppearanceDictionary ap = new PDAppearanceDictionary();
             widget.setAppearance(ap);
-            PDAppearanceEntry normalAppearance = ap.getNormalAppearance();
+            final PDAppearanceEntry normalAppearance = ap.getNormalAppearance();
             
-            COSDictionary normalAppearanceDict = normalAppearance.getCOSObject();
+            final COSDictionary normalAppearanceDict = normalAppearance.getCOSObject();
             normalAppearanceDict.setItem(COSName.Off, createAppearanceStream(document, widget, false));
             normalAppearanceDict.setItem(COSName.YES, createAppearanceStream(document, widget, true));
             
@@ -110,19 +110,19 @@ public class CreateCheckBox
     }
 
     private static PDAppearanceStream createAppearanceStream(
-            final PDDocument document, PDAnnotationWidget widget, boolean on) throws IOException
+            final PDDocument document, final PDAnnotationWidget widget, final boolean on) throws IOException
     {
-        PDRectangle rect = widget.getRectangle();
-        PDAppearanceCharacteristicsDictionary appearanceCharacteristics;
-        PDAppearanceStream yesAP = new PDAppearanceStream(document);
+        final PDRectangle rect = widget.getRectangle();
+        final PDAppearanceCharacteristicsDictionary appearanceCharacteristics;
+        final PDAppearanceStream yesAP = new PDAppearanceStream(document);
         yesAP.setBBox(new PDRectangle(rect.getWidth(), rect.getHeight()));
         yesAP.setResources(new PDResources());
         try (PDAppearanceContentStream yesAPCS = new PDAppearanceContentStream(yesAP))
         {
             appearanceCharacteristics = widget.getAppearanceCharacteristics();
-            PDColor backgroundColor = appearanceCharacteristics.getBackground();
-            PDColor borderColor = appearanceCharacteristics.getBorderColour();
-            float lineWidth = getLineWidth(widget);
+            final PDColor backgroundColor = appearanceCharacteristics.getBackground();
+            final PDColor borderColor = appearanceCharacteristics.getBorderColour();
+            final float lineWidth = getLineWidth(widget);
             yesAPCS.setBorderLine(lineWidth, widget.getBorderStyle(), widget.getBorder());
             yesAPCS.setNonStrokingColor(backgroundColor);
             yesAPCS.addRect(0, 0, rect.getWidth(), rect.getHeight());
@@ -158,13 +158,13 @@ public class CreateCheckBox
                 // The caption is not unicode, but the Zapf Dingbats code in the PDF
                 // Thus convert it back to unicode
                 // Assume that only the first character is used.
-                String name = PDType1Font.ZAPF_DINGBATS.codeToName(normalCaption.codePointAt(0));
-                String unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(name);
-                Rectangle2D bounds = PDType1Font.ZAPF_DINGBATS.getPath(name).getBounds2D();
-                float size = (float) Math.min(bounds.getWidth(), bounds.getHeight()) / 1000;
+                final String name = PDType1Font.ZAPF_DINGBATS.codeToName(normalCaption.codePointAt(0));
+                final String unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(name);
+                final Rectangle2D bounds = PDType1Font.ZAPF_DINGBATS.getPath(name).getBounds2D();
+                final float size = (float) Math.min(bounds.getWidth(), bounds.getHeight()) / 1000;
                 // assume that checkmark has square size
                 // the calculations approximate what Adobe is doing, i.e. put the glyph in the middle
-                float fontSize = (rect.getWidth() - lineWidth * 2) / size * 0.6666f;
+                final float fontSize = (rect.getWidth() - lineWidth * 2) / size * 0.6666f;
                 float xOffset = (float) (rect.getWidth() - (bounds.getWidth()) / 1000 * fontSize) / 2;
                 xOffset -= bounds.getX() / 1000 * fontSize;
                 float yOffset = (float) (rect.getHeight() - (bounds.getHeight()) / 1000 * fontSize) / 2;
@@ -180,9 +180,9 @@ public class CreateCheckBox
         return yesAP;
     }
 
-    static float getLineWidth(PDAnnotationWidget widget)
+    static float getLineWidth(final PDAnnotationWidget widget)
     {
-        PDBorderStyleDictionary bs = widget.getBorderStyle();
+        final PDBorderStyleDictionary bs = widget.getBorderStyle();
         if (bs != null)
         {
             return bs.getWidth();

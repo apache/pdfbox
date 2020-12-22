@@ -80,7 +80,7 @@ public class COSStream extends COSDictionary implements Closeable
      *
      * @param scratchFile Scratch file for writing stream data.
      */
-    public COSStream(ScratchFile scratchFile)
+    public COSStream(final ScratchFile scratchFile)
     {
         setInt(COSName.LENGTH, 0);
         this.scratchFile = scratchFile;
@@ -93,7 +93,7 @@ public class COSStream extends COSDictionary implements Closeable
      * @param scratchFile Scratch file for writing stream data.
      * @throws IOException if the length of the random access view isn't available
      */
-    public COSStream(ScratchFile scratchFile, RandomAccessReadView randomAccessReadView)
+    public COSStream(final ScratchFile scratchFile, final RandomAccessReadView randomAccessReadView)
             throws IOException
     {
         this(scratchFile);
@@ -169,9 +169,9 @@ public class COSStream extends COSDictionary implements Closeable
         return createInputStream(DecodeOptions.DEFAULT);
     }
 
-    public COSInputStream createInputStream(DecodeOptions options) throws IOException
+    public COSInputStream createInputStream(final DecodeOptions options) throws IOException
     {
-        InputStream input = createRawInputStream();
+        final InputStream input = createRawInputStream();
         return COSInputStream.create(getFilterList(), this, input, options);
     }
 
@@ -183,7 +183,7 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public RandomAccessRead createView() throws IOException
     {
-        List<Filter> filterList = getFilterList();
+        final List<Filter> filterList = getFilterList();
         if (filterList.isEmpty())
         {
             if (randomAccess == null && randomAccessReadView != null)
@@ -198,13 +198,13 @@ public class COSStream extends COSDictionary implements Closeable
         }
         else
         {
-            Set<Filter> filterSet = new HashSet<>(filterList);
+            final Set<Filter> filterSet = new HashSet<>(filterList);
             if (filterSet.size() != filterList.size())
             {
                 throw new IOException("Duplicate");
             }
             InputStream input = createRawInputStream();
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            final ByteArrayOutputStream output = new ByteArrayOutputStream();
             // apply filters
             for (int i = 0; i < filterList.size(); i++)
             {
@@ -237,7 +237,7 @@ public class COSStream extends COSDictionary implements Closeable
      * @return OutputStream for un-encoded stream data.
      * @throws IOException If the output stream could not be created.
      */
-    public OutputStream createOutputStream(COSBase filters) throws IOException
+    public OutputStream createOutputStream(final COSBase filters) throws IOException
     {
         checkClosed();
         if (isWriting)
@@ -253,14 +253,14 @@ public class COSStream extends COSDictionary implements Closeable
             randomAccess.clear();
         else
             randomAccess = getScratchFile().createBuffer();
-        OutputStream randomOut = new RandomAccessOutputStream(randomAccess);
-        OutputStream cosOut = new COSOutputStream(getFilterList(), this, randomOut,
+        final OutputStream randomOut = new RandomAccessOutputStream(randomAccess);
+        final OutputStream cosOut = new COSOutputStream(getFilterList(), this, randomOut,
                 getScratchFile());
         isWriting = true;
         return new FilterOutputStream(cosOut)
         {
             @Override
-            public void write(byte[] b, int off, int len) throws IOException
+            public void write(final byte[] b, final int off, final int len) throws IOException
             {
                 this.out.write(b, off, len);
             }
@@ -292,12 +292,12 @@ public class COSStream extends COSDictionary implements Closeable
             randomAccess.clear();
         else
             randomAccess = getScratchFile().createBuffer();
-        OutputStream out = new RandomAccessOutputStream(randomAccess);
+        final OutputStream out = new RandomAccessOutputStream(randomAccess);
         isWriting = true;
         return new FilterOutputStream(out)
         {
             @Override
-            public void write(byte[] b, int off, int len) throws IOException
+            public void write(final byte[] b, final int off, final int len) throws IOException
             {
                 this.out.write(b, off, len);
             }
@@ -317,18 +317,18 @@ public class COSStream extends COSDictionary implements Closeable
      */
     private List<Filter> getFilterList() throws IOException
     {
-        List<Filter> filterList = new ArrayList<>();
-        COSBase filters = getFilters();
+        final List<Filter> filterList = new ArrayList<>();
+        final COSBase filters = getFilters();
         if (filters instanceof COSName)
         {
             filterList.add(FilterFactory.INSTANCE.getFilter((COSName)filters));
         }
         else if (filters instanceof COSArray)
         {
-            COSArray filterArray = (COSArray)filters;
+            final COSArray filterArray = (COSArray)filters;
             for (int i = 0; i < filterArray.size(); i++)
             {
-                COSName filterName = (COSName)filterArray.get(i);
+                final COSName filterName = (COSName)filterArray.get(i);
                 filterList.add(FilterFactory.INSTANCE.getFilter(filterName));
             }
         }
@@ -372,7 +372,7 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public String toTextString()
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         InputStream input = null;
         try
         {
@@ -388,12 +388,12 @@ public class COSStream extends COSDictionary implements Closeable
         {
             IOUtils.closeQuietly(input);
         }
-        COSString string = new COSString(out.toByteArray());
+        final COSString string = new COSString(out.toByteArray());
         return string.getString();
     }
     
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public Object accept(final ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromStream(this);
     }

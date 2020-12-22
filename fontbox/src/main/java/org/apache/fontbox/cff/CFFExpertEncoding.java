@@ -306,7 +306,7 @@ public final class CFFExpertEncoding extends CFFEncoding
 
     static
     {
-        for (int[] encodingEntry : CFF_EXPERT_ENCODING_TABLE)
+        for (final int[] encodingEntry : CFF_EXPERT_ENCODING_TABLE)
         {
             INSTANCE.add(encodingEntry[CHAR_CODE], encodingEntry[CHAR_SID]);
         }

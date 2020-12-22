@@ -36,7 +36,7 @@ class CIDRange
      * @param unicode        unicode start value
      * @param codeLength byte length of CID values
      */
-    CIDRange(int from, int to, int unicode, int codeLength)
+    CIDRange(final int from, final int to, final int unicode, final int codeLength)
     {
         this.from = from;
         this.to = to;
@@ -60,11 +60,11 @@ class CIDRange
      * @param bytes Unicode character
      * @return corresponding CID, or -1 if the character is out of range
      */
-    public int map(byte[] bytes)
+    public int map(final byte[] bytes)
     {
         if (bytes.length == codeLength)
         {
-            int ch = CMap.toInt(bytes);
+            final int ch = CMap.toInt(bytes);
             if (from <= ch && ch <= to)
             {
                 return unicode + (ch - from);
@@ -80,7 +80,7 @@ class CIDRange
      * @param length origin byte length of the code
      * @return corresponding CID, or -1 if the character is out of range
      */
-    public int map(int code, int length)
+    public int map(final int code, final int length)
     {
         if (length == codeLength && from <= code && code <= to)
         {
@@ -95,7 +95,7 @@ class CIDRange
      * @param code CID
      * @return corresponding Unicode character, or -1 if the CID is out of range
      */
-    public int unmap(int code)
+    public int unmap(final int code)
     {
         if (unicode <= code && code <= unicode + (to - from))
         {
@@ -114,7 +114,7 @@ class CIDRange
      * @param length  byte length of CIDs
      * @return true if the given range was extended
      */
-    public boolean extend(int newFrom, int newTo, int newCid, int length)
+    public boolean extend(final int newFrom, final int newTo, final int newCid, final int length)
     {
         if (codeLength == length && (newFrom == to + 1) && (newCid == unicode + to - from + 1))
         {

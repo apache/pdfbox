@@ -42,7 +42,7 @@ public class CSArrayBased
     private int numberOfComponents = 0;
     private String errmsg = "";
 
-    public CSArrayBased(COSArray array)
+    public CSArrayBased(final COSArray array)
     {
         try
         {
@@ -67,21 +67,21 @@ public class CSArrayBased
 
         if (colorSpace == null)
         {
-            JLabel error = new JLabel(errmsg);
+            final JLabel error = new JLabel(errmsg);
             error.setAlignmentX(Component.CENTER_ALIGNMENT);
             error.setFont(new Font(Font.MONOSPACED, Font.BOLD, 15));
             panel.add(error);
             return;
         }
         
-        JLabel colorSpaceLabel = new JLabel(colorSpace.getName() + " colorspace");
+        final JLabel colorSpaceLabel = new JLabel(colorSpace.getName() + " colorspace");
         colorSpaceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         colorSpaceLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
         panel.add(colorSpaceLabel);
 
         if (numberOfComponents > 0)
         {
-            JLabel colorCountLabel = new JLabel("Component Count: " + numberOfComponents);
+            final JLabel colorCountLabel = new JLabel("Component Count: " + numberOfComponents);
             colorCountLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             colorCountLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
             panel.add(colorCountLabel);
@@ -89,9 +89,9 @@ public class CSArrayBased
 
         if (colorSpace instanceof PDICCBased)
         {
-            PDICCBased icc = (PDICCBased) colorSpace;
-            int colorSpaceType = icc.getColorSpaceType();
-            String cs;
+            final PDICCBased icc = (PDICCBased) colorSpace;
+            final int colorSpaceType = icc.getColorSpaceType();
+            final String cs;
             switch (colorSpaceType)
             {
                 case ColorSpace.CS_LINEAR_RGB:
@@ -119,7 +119,7 @@ public class CSArrayBased
                     cs = "type " + colorSpaceType;
                     break;
             }
-            JLabel otherLabel = new JLabel("Colorspace type: " + cs);
+            final JLabel otherLabel = new JLabel("Colorspace type: " + cs);
             otherLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             otherLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
             panel.add(otherLabel);

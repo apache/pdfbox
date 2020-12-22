@@ -37,10 +37,10 @@ public class FileOpenSaveDialog
         @Override
         public void approveSelection()
         {
-            File selectedFile = getSelectedFile();
+            final File selectedFile = getSelectedFile();
             if (selectedFile.exists() && getDialogType() == JFileChooser.SAVE_DIALOG)
             {
-                int result = JOptionPane.showConfirmDialog(this,
+                final int result = JOptionPane.showConfirmDialog(this,
                     "Do you want to overwrite?",
                     "File already exists",
                     JOptionPane.YES_NO_OPTION);
@@ -60,7 +60,7 @@ public class FileOpenSaveDialog
      * @param parentUI the main UI (JFrame) on top of which File open/save dialog should open.
      * @param fileFilter file Filter, null is allowed when no filter is applicable.
      */
-    public FileOpenSaveDialog(Component parentUI, FileFilter fileFilter)
+    public FileOpenSaveDialog(final Component parentUI, final FileFilter fileFilter)
     {
         mainUI = parentUI;
         fileChooser.resetChoosableFileFilters();
@@ -75,9 +75,9 @@ public class FileOpenSaveDialog
      * @return true if the file is saved successfully or false if failed.
      * @throws IOException if there is an error in creation of the file.
      */
-    public boolean saveFile(byte[] bytes, String extension) throws IOException
+    public boolean saveFile(final byte[] bytes, final String extension) throws IOException
     {
-        int result = fileChooser.showSaveDialog(mainUI);
+        final int result = fileChooser.showSaveDialog(mainUI);
         if (result == JFileChooser.APPROVE_OPTION)
         {
             String filename = fileChooser.getSelectedFile().getAbsolutePath();
@@ -102,7 +102,7 @@ public class FileOpenSaveDialog
      */
     public File openFile() throws IOException
     {
-        int result = fileChooser.showOpenDialog(mainUI);
+        final int result = fileChooser.showOpenDialog(mainUI);
         if (result == JFileChooser.APPROVE_OPTION)
         {
             return fileChooser.getSelectedFile();

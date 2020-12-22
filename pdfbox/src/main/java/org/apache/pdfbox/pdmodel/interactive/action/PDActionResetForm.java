@@ -46,7 +46,7 @@ public class PDActionResetForm extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionResetForm(COSDictionary a)
+    public PDActionResetForm(final COSDictionary a)
     {
         super(a);
     }
@@ -59,14 +59,14 @@ public class PDActionResetForm extends PDAction
      */
     public COSArray getFields()
     {
-        COSBase retval = this.action.getDictionaryObject(COSName.FIELDS);
+        final COSBase retval = this.action.getDictionaryObject(COSName.FIELDS);
         return retval instanceof COSArray ? (COSArray) retval : null;
     }
 
     /**
      * @param array the array of fields
      */
-    public void setFields(COSArray array)
+    public void setFields(final COSArray array)
     {
         this.action.setItem(COSName.FIELDS, array);
     }
@@ -84,7 +84,7 @@ public class PDActionResetForm extends PDAction
     /**
      * @param flags the flags
      */
-    public void setFlags(int flags)
+    public void setFlags(final int flags)
     {
         this.action.setInt(COSName.FLAGS, flags);
     }

@@ -133,7 +133,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationText(COSDictionary field)
+    public PDAnnotationText(final COSDictionary field)
     {
         super(field);
     }
@@ -143,7 +143,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
      *
      * @param open Boolean value, true = open false = closed
      */
-    public void setOpen(boolean open)
+    public void setOpen(final boolean open)
     {
         getCOSObject().setBoolean(COSName.getPDFName("Open"), open);
     }
@@ -164,7 +164,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
      *
      * @param name The name of the annotation
      */
-    public void setName(String name)
+    public void setName(final String name)
     {
         getCOSObject().setName(COSName.NAME, name);
     }
@@ -195,7 +195,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
      * 
      * @param state the annotation state
      */
-    public void setState(String state)
+    public void setState(final String state)
     {
         this.getCOSObject().setString(COSName.STATE, state);
     }
@@ -215,7 +215,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
      * 
      * @param stateModel the annotation state model
      */
-    public void setStateModel(String stateModel)
+    public void setStateModel(final String stateModel)
     {
         this.getCOSObject().setString(COSName.STATE_MODEL, stateModel);
     }
@@ -225,7 +225,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -237,11 +237,11 @@ public class PDAnnotationText extends PDAnnotationMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDTextAppearanceHandler appearanceHandler = new PDTextAppearanceHandler(this, document);
+            final PDTextAppearanceHandler appearanceHandler = new PDTextAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

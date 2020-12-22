@@ -35,7 +35,7 @@ class IntPoint extends Point
 {
     private static final Log LOG = LogFactory.getLog(IntPoint.class);
 
-    IntPoint(int x, int y)
+    IntPoint(final int x, final int y)
     {
         super(x, y);
     }
@@ -47,7 +47,7 @@ class IntPoint extends Point
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(final Object obj)
     {
         if (this == obj)
         {

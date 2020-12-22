@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedConte
 public class PDArtifactMarkedContent extends PDMarkedContent
 {
 
-    public PDArtifactMarkedContent(COSDictionary properties)
+    public PDArtifactMarkedContent(final COSDictionary properties)
     {
         super(COSName.ARTIFACT, properties);
     }
@@ -55,7 +55,7 @@ public class PDArtifactMarkedContent extends PDMarkedContent
     public PDRectangle getBBox()
     {
         PDRectangle retval = null;
-        COSArray a = (COSArray) this.getProperties().getDictionaryObject(
+        final COSArray a = (COSArray) this.getProperties().getDictionaryObject(
             COSName.BBOX);
         if (a != null)
         {
@@ -126,9 +126,9 @@ public class PDArtifactMarkedContent extends PDMarkedContent
      * @return <code>true</code> if the artifact is attached to the given edge,
      * <code>false</code> otherwise
      */
-    private boolean isAttached(String edge)
+    private boolean isAttached(final String edge)
     {
-        COSArray a = (COSArray) this.getProperties().getDictionaryObject(
+        final COSArray a = (COSArray) this.getProperties().getDictionaryObject(
             COSName.ATTACHED);
         if (a != null)
         {

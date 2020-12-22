@@ -42,7 +42,7 @@ public class AxialShadingPaint extends ShadingPaint<PDShadingType2>
      * @param shadingType2 the shading resources
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    AxialShadingPaint(PDShadingType2 shadingType2, Matrix matrix)
+    AxialShadingPaint(final PDShadingType2 shadingType2, final Matrix matrix)
     {
         super(shadingType2, matrix);
     }
@@ -54,8 +54,8 @@ public class AxialShadingPaint extends ShadingPaint<PDShadingType2>
     }
 
     @Override
-    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
-                                      AffineTransform xform, RenderingHints hints)
+    public PaintContext createContext(final ColorModel cm, final Rectangle deviceBounds, final Rectangle2D userBounds,
+                                      final AffineTransform xform, final RenderingHints hints)
     {
         try
         {

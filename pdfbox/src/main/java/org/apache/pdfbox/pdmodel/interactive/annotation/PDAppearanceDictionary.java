@@ -46,7 +46,7 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param dictionary The annotations dictionary.
      */
-    public PDAppearanceDictionary(COSDictionary dictionary)
+    public PDAppearanceDictionary(final COSDictionary dictionary)
     {
         this.dictionary = dictionary;
     }
@@ -65,7 +65,7 @@ public class PDAppearanceDictionary implements COSObjectable
      */
     public PDAppearanceEntry getNormalAppearance()
     {
-        COSBase entry = dictionary.getDictionaryObject(COSName.N);
+        final COSBase entry = dictionary.getDictionaryObject(COSName.N);
         if (entry instanceof COSDictionary)
         {
             return new PDAppearanceEntry((COSDictionary) entry);
@@ -79,7 +79,7 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param entry appearance stream or subdictionary
      */
-    public void setNormalAppearance(PDAppearanceEntry entry)
+    public void setNormalAppearance(final PDAppearanceEntry entry)
     {
         dictionary.setItem(COSName.N, entry);
     }
@@ -89,7 +89,7 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param ap The appearance stream to show.
      */
-    public void setNormalAppearance(PDAppearanceStream ap)
+    public void setNormalAppearance(final PDAppearanceStream ap)
     {
         dictionary.setItem(COSName.N, ap);
     }
@@ -103,7 +103,7 @@ public class PDAppearanceDictionary implements COSObjectable
      */
     public PDAppearanceEntry getRolloverAppearance()
     {
-        COSBase entry = dictionary.getDictionaryObject(COSName.R);
+        final COSBase entry = dictionary.getDictionaryObject(COSName.R);
         if (entry instanceof COSDictionary)
         {
             return new PDAppearanceEntry((COSDictionary) entry);
@@ -120,7 +120,7 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param entry appearance stream or subdictionary
      */
-    public void setRolloverAppearance(PDAppearanceEntry entry)
+    public void setRolloverAppearance(final PDAppearanceEntry entry)
     {
         dictionary.setItem(COSName.R, entry);
     }
@@ -130,7 +130,7 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param ap The appearance stream to show.
      */
-    public void setRolloverAppearance(PDAppearanceStream ap)
+    public void setRolloverAppearance(final PDAppearanceStream ap)
     {
         dictionary.setItem(COSName.R, ap);
     }
@@ -144,7 +144,7 @@ public class PDAppearanceDictionary implements COSObjectable
      */
     public PDAppearanceEntry getDownAppearance()
     {
-        COSBase entry = dictionary.getDictionaryObject(COSName.D);
+        final COSBase entry = dictionary.getDictionaryObject(COSName.D);
         if (entry instanceof COSDictionary)
         {
             return new PDAppearanceEntry((COSDictionary) entry);
@@ -161,7 +161,7 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param entry appearance stream or subdictionary
      */
-    public void setDownAppearance(PDAppearanceEntry entry)
+    public void setDownAppearance(final PDAppearanceEntry entry)
     {
         dictionary.setItem(COSName.D, entry);
     }
@@ -171,7 +171,7 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param ap The appearance stream to show.
      */
-    public void setDownAppearance(PDAppearanceStream ap)
+    public void setDownAppearance(final PDAppearanceStream ap)
     {
         dictionary.setItem(COSName.D, ap);
     }

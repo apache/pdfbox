@@ -26,7 +26,7 @@ import org.apache.pdfbox.cos.COSBase;
  */
 public final class MissingOperandException extends IOException
 {
-    public MissingOperandException(Operator operator, List<COSBase> operands)
+    public MissingOperandException(final Operator operator, final List<COSBase> operands)
     {
         super("Operator " + operator.getName() + " has too few operands: " + operands);
     }

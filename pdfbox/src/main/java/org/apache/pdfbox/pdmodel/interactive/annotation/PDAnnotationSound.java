@@ -44,7 +44,7 @@ public class PDAnnotationSound extends PDAnnotationMarkup
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationSound(COSDictionary field)
+    public PDAnnotationSound(final COSDictionary field)
     {
         super(field);
     }
@@ -54,7 +54,7 @@ public class PDAnnotationSound extends PDAnnotationMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -66,11 +66,11 @@ public class PDAnnotationSound extends PDAnnotationMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDSoundAppearanceHandler appearanceHandler = new PDSoundAppearanceHandler(this, document);
+            final PDSoundAppearanceHandler appearanceHandler = new PDSoundAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

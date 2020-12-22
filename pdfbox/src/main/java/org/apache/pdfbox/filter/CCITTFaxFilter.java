@@ -34,16 +34,16 @@ import org.apache.pdfbox.io.IOUtils;
 final class CCITTFaxFilter extends Filter
 {
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded,
+                               final COSDictionary parameters, final int index) throws IOException
     {
         // get decode parameters
-        COSDictionary decodeParms = getDecodeParams(parameters, index);
+        final COSDictionary decodeParms = getDecodeParams(parameters, index);
 
         // parse dimensions
-        int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
+        final int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
-        int height = parameters.getInt(COSName.HEIGHT, COSName.H, 0);
+        final int height = parameters.getInt(COSName.HEIGHT, COSName.H, 0);
         if (rows > 0 && height > 0)
         {
             // PDFBOX-771, PDFBOX-3727: rows in DecodeParms sometimes contains an incorrect value
@@ -56,13 +56,13 @@ final class CCITTFaxFilter extends Filter
         }
 
         // decompress data
-        int k = decodeParms.getInt(COSName.K, 0);
-        boolean encodedByteAlign = decodeParms.getBoolean(COSName.ENCODED_BYTE_ALIGN, false);
-        int arraySize = (cols + 7) / 8 * rows;
+        final int k = decodeParms.getInt(COSName.K, 0);
+        final boolean encodedByteAlign = decodeParms.getBoolean(COSName.ENCODED_BYTE_ALIGN, false);
+        final int arraySize = (cols + 7) / 8 * rows;
         // TODO possible options??
-        byte[] decompressed = new byte[arraySize];
-        CCITTFaxDecoderStream s;
-        int type;
+        final byte[] decompressed = new byte[arraySize];
+        final CCITTFaxDecoderStream s;
+        final int type;
         long tiffOptions;
         if (k == 0)
         {
@@ -88,7 +88,7 @@ final class CCITTFaxFilter extends Filter
         readFromDecoderStream(s, decompressed);
 
         // invert bitmap
-        boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
+        final boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
         if (!blackIsOne)
         {
             // Inverting the bitmap
@@ -102,7 +102,7 @@ final class CCITTFaxFilter extends Filter
         return new DecodeResult(parameters);
     }
 
-    void readFromDecoderStream(CCITTFaxDecoderStream decoderStream, byte[] result)
+    void readFromDecoderStream(final CCITTFaxDecoderStream decoderStream, final byte[] result)
             throws IOException
     {
         int pos = 0;
@@ -118,7 +118,7 @@ final class CCITTFaxFilter extends Filter
         decoderStream.close();
     }
 
-    private void invertBitmap(byte[] bufferData)
+    private void invertBitmap(final byte[] bufferData)
     {
         for (int i = 0, c = bufferData.length; i < c; i++)
         {
@@ -127,12 +127,12 @@ final class CCITTFaxFilter extends Filter
     }
 
     @Override
-    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(final InputStream input, final OutputStream encoded, final COSDictionary parameters)
             throws IOException
     {
-        int cols = parameters.getInt(COSName.COLUMNS);
-        int rows = parameters.getInt(COSName.ROWS);
-        CCITTFaxEncoderStream ccittFaxEncoderStream = 
+        final int cols = parameters.getInt(COSName.COLUMNS);
+        final int rows = parameters.getInt(COSName.ROWS);
+        final CCITTFaxEncoderStream ccittFaxEncoderStream =
                 new CCITTFaxEncoderStream(encoded, cols, rows, TIFFExtension.FILL_LEFT_TO_RIGHT);
         IOUtils.copy(input, ccittFaxEncoderStream);
         input.close();

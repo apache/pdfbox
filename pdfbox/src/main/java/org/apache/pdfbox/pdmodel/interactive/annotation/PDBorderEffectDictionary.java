@@ -57,7 +57,7 @@ public class PDBorderEffectDictionary implements COSObjectable
      *
      * @param dict a border style dictionary.
      */
-    public PDBorderEffectDictionary(COSDictionary dict)
+    public PDBorderEffectDictionary(final COSDictionary dict)
     {
         dictionary = dict;
     }
@@ -78,7 +78,7 @@ public class PDBorderEffectDictionary implements COSObjectable
      *
      * @param i the intensity of the effect values 0 to 2
      */
-    public void setIntensity(float i)
+    public void setIntensity(final float i)
     {
         getCOSObject().setFloat("I", i);
     }
@@ -98,7 +98,7 @@ public class PDBorderEffectDictionary implements COSObjectable
      *
      * @param s the border effect to use
      */
-    public void setStyle(String s)
+    public void setStyle(final String s)
     {
         getCOSObject().setName("S", s);
     }

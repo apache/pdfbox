@@ -48,8 +48,8 @@ class TestPDPageTree
     void indexOfPageFromOutlineDestination() throws IOException
     {
         doc = Loader.loadPDF(TestPDPageTree.class.getResourceAsStream("with_outline.pdf"));
-        PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
-        for (PDOutlineItem current : outline.children())
+        final PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
+        for (final PDOutlineItem current : outline.children())
         {
             if (current.getTitle().contains("Second"))
             {
@@ -90,9 +90,9 @@ class TestPDPageTree
     void testInsertBeforeBlankPage() throws Exception
     {
         try (PDDocument document = new PDDocument()) {
-            PDPage pageOne = new PDPage();
-            PDPage pageTwo = new PDPage();
-            PDPage pageThree = new PDPage();
+            final PDPage pageOne = new PDPage();
+            final PDPage pageTwo = new PDPage();
+            final PDPage pageThree = new PDPage();
 
             document.addPage(pageOne);
             document.addPage(pageTwo);
@@ -109,9 +109,9 @@ class TestPDPageTree
     void testInsertAfterBlankPage() throws Exception
     {
         try (PDDocument document = new PDDocument()) {
-            PDPage pageOne = new PDPage();
-            PDPage pageTwo = new PDPage();
-            PDPage pageThree = new PDPage();
+            final PDPage pageOne = new PDPage();
+            final PDPage pageTwo = new PDPage();
+            final PDPage pageThree = new PDPage();
 
             document.addPage(pageOne);
             document.addPage(pageTwo);

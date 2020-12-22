@@ -45,10 +45,10 @@ import org.apache.xmpbox.type.TextType;
 public class FontMetaDataValidation
 {
 
-    public List<ValidationError> validatePDFAIdentifer(XMPMetadata metadata, PDFontDescriptor fontDesc)
+    public List<ValidationError> validatePDFAIdentifer(final XMPMetadata metadata, final PDFontDescriptor fontDesc)
             throws ValidationException
     {
-        List<ValidationError> ve = new ArrayList<>();
+        final List<ValidationError> ve = new ArrayList<>();
 
         analyseFontName(metadata, fontDesc, ve);
         analyseRights(metadata, fontDesc, ve);
@@ -66,26 +66,26 @@ public class FontMetaDataValidation
      * @param ve
      *            the list of validation error to update if the validation fails
      */
-    public boolean analyseFontName(XMPMetadata metadata, PDFontDescriptor fontDesc, List<ValidationError> ve)
+    public boolean analyseFontName(final XMPMetadata metadata, final PDFontDescriptor fontDesc, final List<ValidationError> ve)
     {
-        String fontName = fontDesc.getFontName();
+        final String fontName = fontDesc.getFontName();
         String noSubSetName = fontName;
         if (FontDescriptorHelper.isSubSet(fontName))
         {
             noSubSetName = fontName.split("\\+")[1];
         }
 
-        DublinCoreSchema dc = metadata.getDublinCoreSchema();
+        final DublinCoreSchema dc = metadata.getDublinCoreSchema();
         if (dc != null && dc.getTitleProperty() != null)
         {
-            String defaultTitle;
+            final String defaultTitle;
             try
             {
                 defaultTitle = dc.getTitle("x-default");
             }
             catch (BadFieldValueException badFieldValueException)
             {
-                StringBuilder sb = new StringBuilder(80);
+                final StringBuilder sb = new StringBuilder(80);
                 sb.append("Title property of XMP information is not a multi-lingual property");
                 ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_FORMAT, sb.toString()));
                 return false;
@@ -94,7 +94,7 @@ public class FontMetaDataValidation
             {
                 if (!defaultTitle.equals(fontName) && (noSubSetName != null && !defaultTitle.equals(noSubSetName)))
                 {
-                    StringBuilder sb = new StringBuilder(80);
+                    final StringBuilder sb = new StringBuilder(80);
                     sb.append("FontName")
                             .append(" present in the FontDescriptor dictionary doesn't match with XMP information dc:title of the Font File Stream.");
                     ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString()));
@@ -106,15 +106,15 @@ public class FontMetaDataValidation
             }
             else
             {
-                Iterator<AbstractField> it = dc.getTitleProperty().getContainer().getAllProperties().iterator();
+                final Iterator<AbstractField> it = dc.getTitleProperty().getContainer().getAllProperties().iterator();
                 boolean empty = true;
                 while (it.hasNext())
                 {
                     empty = false;
-                    AbstractField tmp = it.next();
+                    final AbstractField tmp = it.next();
                     if (tmp instanceof TextType)
                     {
-                        String val = ((TextType) tmp).getStringValue();
+                        final String val = ((TextType) tmp).getStringValue();
                         if (val.equals(fontName) || val.equals(noSubSetName))
                         {
                             // value found, return
@@ -124,7 +124,7 @@ public class FontMetaDataValidation
                 }
 
                 // title doesn't match, it is an error.
-                StringBuilder sb = new StringBuilder(80);
+                final StringBuilder sb = new StringBuilder(80);
                 sb.append("FontName");
                 if (empty)
                 {
@@ -159,13 +159,13 @@ public class FontMetaDataValidation
      *            the list of validation error to update if the validation fails
      * @return true if the analysis found no problems, false if it did.
      */
-    public boolean analyseRights(XMPMetadata metadata, PDFontDescriptor fontDesc, List<ValidationError> ve)
+    public boolean analyseRights(final XMPMetadata metadata, final PDFontDescriptor fontDesc, final List<ValidationError> ve)
     {
 
-        DublinCoreSchema dc = metadata.getDublinCoreSchema();
+        final DublinCoreSchema dc = metadata.getDublinCoreSchema();
         if (dc != null)
         {
-            ArrayProperty copyrights = dc.getRightsProperty();
+            final ArrayProperty copyrights = dc.getRightsProperty();
             if (copyrights == null || copyrights.getContainer() == null
                     || copyrights.getContainer().getAllProperties().isEmpty())
             {
@@ -175,10 +175,10 @@ public class FontMetaDataValidation
             }
         }
 
-        XMPRightsManagementSchema rights = metadata.getXMPRightsManagementSchema();
+        final XMPRightsManagementSchema rights = metadata.getXMPRightsManagementSchema();
         if (rights != null)
         {
-            BooleanType marked = rights.getMarkedProperty();
+            final BooleanType marked = rights.getMarkedProperty();
             if (marked != null && !marked.getValue())
             {
                 ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_MISSING,

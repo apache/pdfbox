@@ -62,19 +62,19 @@ final class JBIG2Filter extends Filter
     }
 
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary
-            parameters, int index, DecodeOptions options) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded, final COSDictionary
+            parameters, final int index, final DecodeOptions options) throws IOException
     {
-        ImageReader reader = findImageReader("JBIG2", "jbig2-imageio is not installed");
+        final ImageReader reader = findImageReader("JBIG2", "jbig2-imageio is not installed");
         if (reader.getClass().getName().contains("levigo"))
         {
             logLevigoDonated();
         }
 
-        int bits = parameters.getInt(COSName.BITS_PER_COMPONENT, 1);
-        COSDictionary params = getDecodeParams(parameters, index);
+        final int bits = parameters.getInt(COSName.BITS_PER_COMPONENT, 1);
+        final COSDictionary params = getDecodeParams(parameters, index);
 
-        ImageReadParam irp = reader.getDefaultReadParam();
+        final ImageReadParam irp = reader.getDefaultReadParam();
         irp.setSourceSubsampling(options.getSubsamplingX(), options.getSubsamplingY(),
                 options.getSubsamplingOffsetX(), options.getSubsamplingOffsetY());
         irp.setSourceRegion(options.getSourceRegion());
@@ -83,7 +83,7 @@ final class JBIG2Filter extends Filter
         InputStream source = encoded;
         if (params != null)
         {
-            COSBase globals = params.getDictionaryObject(COSName.JBIG2_GLOBALS);
+            final COSBase globals = params.getDictionaryObject(COSName.JBIG2_GLOBALS);
             if (globals instanceof COSStream)
             {
                 source = new SequenceInputStream(((COSStream) globals).createInputStream(), encoded);
@@ -113,15 +113,15 @@ final class JBIG2Filter extends Filter
                 {
                     LOG.warn("Attempting to handle a JBIG2 with more than 1-bit depth");
                 }
-                BufferedImage packedImage = new BufferedImage(image.getWidth(), image.getHeight(),
+                final BufferedImage packedImage = new BufferedImage(image.getWidth(), image.getHeight(),
                         BufferedImage.TYPE_BYTE_BINARY);
-                Graphics graphics = packedImage.getGraphics();
+                final Graphics graphics = packedImage.getGraphics();
                 graphics.drawImage(image, 0, 0, null);
                 graphics.dispose();
                 image = packedImage;
             }
 
-            DataBuffer dBuf = image.getData().getDataBuffer();
+            final DataBuffer dBuf = image.getData().getDataBuffer();
             if (dBuf.getDataType() == DataBuffer.TYPE_BYTE)
             {
                 decoded.write(((DataBufferByte) dBuf).getData());
@@ -140,14 +140,14 @@ final class JBIG2Filter extends Filter
     }
 
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                               COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded,
+                               final COSDictionary parameters, final int index) throws IOException
     {
         return decode(encoded, decoded, parameters, index, DecodeOptions.DEFAULT);
     }
 
     @Override
-    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(final InputStream input, final OutputStream encoded, final COSDictionary parameters)
             throws IOException
     {
         throw new UnsupportedOperationException("JBIG2 encoding not implemented");

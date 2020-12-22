@@ -43,10 +43,10 @@ class StreamPaneView
      * @param document StyledDocument instance that holds the text.
      * @param toolTipController ToolTipController instance.
      */
-    void showStreamText(StyledDocument document, ToolTipController toolTipController)
+    void showStreamText(final StyledDocument document, final ToolTipController toolTipController)
     {
         contentPanel.removeAll();
-        StreamTextView textView = new StreamTextView(document, toolTipController);
+        final StreamTextView textView = new StreamTextView(document, toolTipController);
         contentPanel.add(textView.getView(), BorderLayout.CENTER);
         contentPanel.validate();
     }
@@ -56,7 +56,7 @@ class StreamPaneView
      * This shows the stream as image.
      * @param image BufferedImage instance that holds the text.
      */
-    void showStreamImage(BufferedImage image)
+    void showStreamImage(final BufferedImage image)
     {
         contentPanel.removeAll();
         contentPanel.add(new StreamImageView(image).getView(), BorderLayout.CENTER);

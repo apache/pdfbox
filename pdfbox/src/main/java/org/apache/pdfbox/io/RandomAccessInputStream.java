@@ -41,7 +41,7 @@ public class RandomAccessInputStream extends InputStream
      *
      * @param randomAccessRead The RandomAccessRead to read from.
      */
-    public RandomAccessInputStream(RandomAccessRead randomAccessRead)
+    public RandomAccessInputStream(final RandomAccessRead randomAccessRead)
     {
         input = randomAccessRead;
         position = 0;
@@ -66,7 +66,7 @@ public class RandomAccessInputStream extends InputStream
         {
             return -1;
         }
-        int b = input.read();
+        final int b = input.read();
         if (b != -1)
         {
             position += 1;
@@ -82,14 +82,14 @@ public class RandomAccessInputStream extends InputStream
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException
+    public int read(final byte[] b, final int off, final int len) throws IOException
     {
         restorePosition();
         if (input.isEOF())
         {
             return -1;
         }
-        int n = input.read(b, off, len);
+        final int n = input.read(b, off, len);
         if (n != -1)
         {
             position += n;
@@ -105,7 +105,7 @@ public class RandomAccessInputStream extends InputStream
     }
 
     @Override
-    public long skip(long n) throws IOException
+    public long skip(final long n) throws IOException
     {
         if (n <= 0)
         {

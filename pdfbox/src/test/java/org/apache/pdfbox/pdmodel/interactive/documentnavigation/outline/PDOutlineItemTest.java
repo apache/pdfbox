@@ -138,7 +138,7 @@ class PDOutlineItemTest
     void insertSiblingTop()
     {
         assertEquals(root.getFirstChild(), first);
-        PDOutlineItem newSibling = new PDOutlineItem();
+        final PDOutlineItem newSibling = new PDOutlineItem();
         first.insertSiblingBefore(newSibling);
         assertEquals(first.getPreviousSibling(), newSibling);
         assertEquals(root.getFirstChild(), newSibling);
@@ -148,7 +148,7 @@ class PDOutlineItemTest
     void insertSiblingTopNoParent()
     {
         assertEquals(root.getFirstChild(), first);
-        PDOutlineItem newSibling = new PDOutlineItem();
+        final PDOutlineItem newSibling = new PDOutlineItem();
         root.insertSiblingBefore(newSibling);
         assertEquals(root.getPreviousSibling(), newSibling);
     }
@@ -157,7 +157,7 @@ class PDOutlineItemTest
     void insertSiblingBottom()
     {
         assertEquals(root.getLastChild(), second);
-        PDOutlineItem newSibling = new PDOutlineItem();
+        final PDOutlineItem newSibling = new PDOutlineItem();
         second.insertSiblingAfter(newSibling);
         assertEquals(second.getNextSibling(), newSibling);
         assertEquals(root.getLastChild(), newSibling);
@@ -167,7 +167,7 @@ class PDOutlineItemTest
     void insertSiblingBottomNoParent()
     {
         assertEquals(root.getLastChild(), second);
-        PDOutlineItem newSibling = new PDOutlineItem();
+        final PDOutlineItem newSibling = new PDOutlineItem();
         root.insertSiblingAfter(newSibling);
         assertEquals(root.getNextSibling(), newSibling);
     }
@@ -175,7 +175,7 @@ class PDOutlineItemTest
     @Test
     void cannotInsertSiblingBeforeAList()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.insertSiblingAfter(new PDOutlineItem());
         child.insertSiblingAfter(new PDOutlineItem());
         assertThrows(IllegalArgumentException.class, () -> root.insertSiblingBefore(child));
@@ -184,7 +184,7 @@ class PDOutlineItemTest
     @Test
     void cannotInsertSiblingAfterAList()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.insertSiblingAfter(new PDOutlineItem());
         child.insertSiblingAfter(new PDOutlineItem());
         assertThrows(IllegalArgumentException.class, () -> root.insertSiblingAfter(child));

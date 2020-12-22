@@ -51,7 +51,7 @@ public class PDAnnotationPopup extends PDAnnotation
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationPopup(COSDictionary field)
+    public PDAnnotationPopup(final COSDictionary field)
     {
         super(field);
     }
@@ -61,7 +61,7 @@ public class PDAnnotationPopup extends PDAnnotation
      *
      * @param open Boolean value, true = open false = closed.
      */
-    public void setOpen(boolean open)
+    public void setOpen(final boolean open)
     {
         getCOSObject().setBoolean("Open", open);
     }
@@ -81,7 +81,7 @@ public class PDAnnotationPopup extends PDAnnotation
      *
      * @param annot the markup annotation.
      */
-    public void setParent(PDAnnotationMarkup annot)
+    public void setParent(final PDAnnotationMarkup annot)
     {
         getCOSObject().setItem(COSName.PARENT, annot.getCOSObject());
     }

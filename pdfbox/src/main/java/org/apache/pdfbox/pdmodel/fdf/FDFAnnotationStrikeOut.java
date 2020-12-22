@@ -48,7 +48,7 @@ public class FDFAnnotationStrikeOut extends FDFAnnotationTextMarkup
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationStrikeOut(COSDictionary a)
+    public FDFAnnotationStrikeOut(final COSDictionary a)
     {
         super(a);
     }
@@ -60,7 +60,7 @@ public class FDFAnnotationStrikeOut extends FDFAnnotationTextMarkup
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationStrikeOut(Element element) throws IOException
+    public FDFAnnotationStrikeOut(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);

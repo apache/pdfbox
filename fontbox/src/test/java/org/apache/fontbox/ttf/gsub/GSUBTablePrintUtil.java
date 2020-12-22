@@ -40,16 +40,16 @@ import org.apache.fontbox.ttf.model.ScriptFeature;
 public class GSUBTablePrintUtil
 {
 
-    public void printCharacterToGlyph(GsubData gsubData, CmapLookup cmap)
+    public void printCharacterToGlyph(final GsubData gsubData, final CmapLookup cmap)
     {
         System.err.println(
                 "Format:\n<Serial no.>.) <Space separated characters to be replaced> : RawUnicode: [<Space separated unicode representation of each character to be replaced in hexadecimal>] : <The compound character> : <The GlyphId with which these characters are replaced>");
-        Map<Integer, List<Integer>> rawGSubTableData = new HashMap<>();
+        final Map<Integer, List<Integer>> rawGSubTableData = new HashMap<>();
 
-        for (String featureName : gsubData.getSupportedFeatures())
+        for (final String featureName : gsubData.getSupportedFeatures())
         {
-            ScriptFeature scriptFeature = gsubData.getFeature(featureName);
-            for (List<Integer> glyphsToBeReplaced : scriptFeature.getAllGlyphIdsForSubstitution())
+            final ScriptFeature scriptFeature = gsubData.getFeature(featureName);
+            for (final List<Integer> glyphsToBeReplaced : scriptFeature.getAllGlyphIdsForSubstitution())
             {
                 rawGSubTableData.put(scriptFeature.getReplacementForGlyphs(glyphsToBeReplaced),
                         glyphsToBeReplaced);
@@ -57,15 +57,15 @@ public class GSUBTablePrintUtil
 
         }
 
-        for (String featureName : gsubData.getSupportedFeatures())
+        for (final String featureName : gsubData.getSupportedFeatures())
         {
             System.out
                     .println("******************      " + featureName + "      ******************");
-            ScriptFeature scriptFeature = gsubData.getFeature(featureName);
+            final ScriptFeature scriptFeature = gsubData.getFeature(featureName);
             int index = 0;
-            for (List<Integer> glyphsToBeReplaced : scriptFeature.getAllGlyphIdsForSubstitution())
+            for (final List<Integer> glyphsToBeReplaced : scriptFeature.getAllGlyphIdsForSubstitution())
             {
-                String unicodeText = getUnicodeString(rawGSubTableData, cmap, glyphsToBeReplaced);
+                final String unicodeText = getUnicodeString(rawGSubTableData, cmap, glyphsToBeReplaced);
                 System.out.println(++index + ".) " + getExplainedUnicodeText(unicodeText) + " : "
                         + scriptFeature.getReplacementForGlyphs(glyphsToBeReplaced));
             }
@@ -74,19 +74,19 @@ public class GSUBTablePrintUtil
 
     }
 
-    private String getUnicodeChar(Map<Integer, List<Integer>> rawGSubTableData, CmapLookup cmap,
-            Integer glyphId)
+    private String getUnicodeChar(final Map<Integer, List<Integer>> rawGSubTableData, final CmapLookup cmap,
+                                  final Integer glyphId)
     {
-        List<Integer> keyChars = cmap.getCharCodes(glyphId);
+        final List<Integer> keyChars = cmap.getCharCodes(glyphId);
 
         // its a compound glyph
         if (keyChars == null)
         {
-            List<Integer> constituentGlyphs = rawGSubTableData.get(glyphId);
+            final List<Integer> constituentGlyphs = rawGSubTableData.get(glyphId);
 
             if (constituentGlyphs == null || constituentGlyphs.isEmpty())
             {
-                String message = "lookup for the glyphId: " + glyphId
+                final String message = "lookup for the glyphId: " + glyphId
                         + " failed, as no corresponding Unicode char found mapped to it";
                 throw new IllegalStateException(message);
             }
@@ -97,8 +97,8 @@ public class GSUBTablePrintUtil
         }
         else
         {
-            StringBuilder sb = new StringBuilder();
-            for (int unicodeChar : keyChars)
+            final StringBuilder sb = new StringBuilder();
+            for (final int unicodeChar : keyChars)
             {
                 sb.append((char) unicodeChar);
             }
@@ -107,29 +107,29 @@ public class GSUBTablePrintUtil
 
     }
 
-    private String getUnicodeString(Map<Integer, List<Integer>> rawGSubTableData, CmapLookup cmap,
-            List<Integer> glyphIDs)
+    private String getUnicodeString(final Map<Integer, List<Integer>> rawGSubTableData, final CmapLookup cmap,
+                                    final List<Integer> glyphIDs)
     {
-        StringBuilder sb = new StringBuilder();
-        for (Integer glyphId : glyphIDs)
+        final StringBuilder sb = new StringBuilder();
+        for (final Integer glyphId : glyphIDs)
         {
             sb.append(getUnicodeChar(rawGSubTableData, cmap, glyphId));
         }
         return sb.toString();
     }
 
-    private String getExplainedUnicodeText(String unicodeText)
+    private String getExplainedUnicodeText(final String unicodeText)
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
-        for (char unicode : unicodeText.toCharArray())
+        for (final char unicode : unicodeText.toCharArray())
         {
             sb.append(unicode).append(" ");
         }
         sb.append(":");
 
         sb.append(" RawUnicode: [");
-        for (char unicode : unicodeText.toCharArray())
+        for (final char unicode : unicodeText.toCharArray())
         {
             sb.append("\\u0").append(Integer.toHexString(unicode).toUpperCase()).append(" ");
         }

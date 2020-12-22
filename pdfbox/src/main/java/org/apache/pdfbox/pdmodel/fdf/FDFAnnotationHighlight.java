@@ -48,7 +48,7 @@ public class FDFAnnotationHighlight extends FDFAnnotationTextMarkup
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationHighlight(COSDictionary a)
+    public FDFAnnotationHighlight(final COSDictionary a)
     {
         super(a);
     }
@@ -60,7 +60,7 @@ public class FDFAnnotationHighlight extends FDFAnnotationTextMarkup
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationHighlight(Element element) throws IOException
+    public FDFAnnotationHighlight(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);

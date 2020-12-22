@@ -49,7 +49,7 @@ public final class ContextHelper
      * @param processName
      * @throws ValidationException
      */
-    public static void validateElement(PreflightContext context, Object element, String processName) throws ValidationException
+    public static void validateElement(final PreflightContext context, final Object element, final String processName) throws ValidationException
     {
         if (element == null)
         {
@@ -71,10 +71,10 @@ public final class ContextHelper
      *            the process to instantiate and to compute
      * @throws ValidationException
      */
-    private static void callValidation(PreflightContext context, Object element, String processName)
+    private static void callValidation(final PreflightContext context, final Object element, final String processName)
     throws ValidationException
     {
-        PreflightPath validationPath = context.getValidationPath();
+        final PreflightPath validationPath = context.getValidationPath();
         
         if (hasRecursion(context, element, validationPath))
         {
@@ -88,7 +88,7 @@ public final class ContextHelper
                  PreflightConfiguration.FONT_PROCESS.equals(processName))) // for speed
         {
             // don't check PDObjects, only their COSObject
-            COSBase cos = ((COSObjectable) element).getCOSObject();
+            final COSBase cos = ((COSObjectable) element).getCOSObject();
             if (context.isInProcessedSet(cos))
             {
                 return;
@@ -96,9 +96,9 @@ public final class ContextHelper
             context.addToProcessedSet(cos);
         }
 
-        boolean needPop = validationPath.pushObject(element);
-        PreflightConfiguration config = context.getConfig();
-        ValidationProcess process = config.getInstanceOfProcess(processName);
+        final boolean needPop = validationPath.pushObject(element);
+        final PreflightConfiguration config = context.getConfig();
+        final ValidationProcess process = config.getInstanceOfProcess(processName);
         process.validate(context);
         if (needPop)
         {
@@ -107,16 +107,16 @@ public final class ContextHelper
     }
 
     // detect recursion that would lead to stack overflow
-    private static boolean hasRecursion(PreflightContext context, Object element, PreflightPath validationPath)
+    private static boolean hasRecursion(final PreflightContext context, final Object element, final PreflightPath validationPath)
     {
         if (element instanceof PDResources || element instanceof PDFormXObject)
         {
             for (int i = 0; i < validationPath.size(); ++i)
             {
-                Object obj = validationPath.getPathElement(i, Object.class);
+                final Object obj = validationPath.getPathElement(i, Object.class);
                 if (obj instanceof COSObjectable)
                 {
-                    COSObjectable cos = (COSObjectable) obj;
+                    final COSObjectable cos = (COSObjectable) obj;
                     if (cos.getCOSObject() == ((COSObjectable) element).getCOSObject())
                     {
                         context.addValidationError(new ValidationError(ERROR_PDF_PROCESSING, 
@@ -136,7 +136,7 @@ public final class ContextHelper
      * @param processName
      * @throws ValidationException
      */
-    public static void validateElement(PreflightContext context, String processName) throws ValidationException
+    public static void validateElement(final PreflightContext context, final String processName) throws ValidationException
     {
         callValidation(context, null, processName);
     }

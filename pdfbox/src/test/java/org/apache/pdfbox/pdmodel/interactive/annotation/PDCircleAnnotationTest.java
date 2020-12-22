@@ -29,7 +29,7 @@ class PDCircleAnnotationTest
     @Test
     void createDefaultCircleAnnotation()
     {
-        PDAnnotation annotation = new PDAnnotationCircle();
+        final PDAnnotation annotation = new PDAnnotationCircle();
         assertEquals(COSName.ANNOT, annotation.getCOSObject().getItem(COSName.TYPE));
         assertEquals(PDAnnotationCircle.SUB_TYPE,
                 annotation.getCOSObject().getNameAsString(COSName.SUBTYPE));

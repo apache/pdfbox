@@ -62,21 +62,21 @@ class FontEncodingView
      * @param columnNames String array containing the columns name.
      * @param yBounds min low and max high bound of all glyphs.
      */
-    FontEncodingView(Object[][] tableData, Map<String, String> headerAttributes, String[] columnNames, double[] yBounds)
+    FontEncodingView(final Object[][] tableData, final Map<String, String> headerAttributes, final String[] columnNames, final double[] yBounds)
     {
         createView(getHeaderPanel(headerAttributes), getTable(tableData, columnNames, yBounds));
     }
 
-    private void createView(JPanel headerPanel, JTable table)
+    private void createView(final JPanel headerPanel, final JTable table)
     {
         panel = new JPanel(new GridBagLayout());
         panel.setPreferredSize(new Dimension(300, 500));
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        final JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        final GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weighty = 0.05;
@@ -94,33 +94,33 @@ class FontEncodingView
         panel.add(scrollPane, gbc);
     }
 
-    private JTable getTable(Object[][] tableData, String[] columnNames, double[] yBounds)
+    private JTable getTable(final Object[][] tableData, final String[] columnNames, final double[] yBounds)
     {
-        JTable table = new JTable(tableData, columnNames);
+        final JTable table = new JTable(tableData, columnNames);
         table.setRowHeight(40);
         table.setDefaultRenderer(Object.class, new GlyphCellRenderer(yBounds));
         return table;
     }
 
-    private JPanel getHeaderPanel(Map<String, String> attributes)
+    private JPanel getHeaderPanel(final Map<String, String> attributes)
     {
-        JPanel headerPanel = new JPanel(new GridBagLayout());
+        final JPanel headerPanel = new JPanel(new GridBagLayout());
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
 
         if (attributes != null)
         {
-            Iterator<String> keys = attributes.keySet().iterator();
+            final Iterator<String> keys = attributes.keySet().iterator();
             int row = 0;
             while (keys.hasNext())
             {
-                int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
+                final int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
                                     "headerFontSize", Integer.toString(headerPanel.getFont().getSize())));
-                String key = keys.next();
-                JLabel encodingNameLabel = new JLabel(key + ": " + attributes.get(key));
+                final String key = keys.next();
+                final JLabel encodingNameLabel = new JLabel(key + ": " + attributes.get(key));
                 encodingNameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
                 encodingNameLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 
-                GridBagConstraints gbc = new GridBagConstraints();
+                final GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = row++;
                 gbc.weighty = 0.1;
@@ -141,29 +141,29 @@ class FontEncodingView
     {
         private final double[] yBounds;
 
-        private GlyphCellRenderer(double[] yBounds)
+        private GlyphCellRenderer(final double[] yBounds)
         {
             this.yBounds = yBounds;
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable jTable, Object o, boolean b, boolean b1, int row, int col)
+        public Component getTableCellRendererComponent(final JTable jTable, final Object o, final boolean b, final boolean b1, final int row, final int col)
         {
             if (o instanceof GeneralPath)
             {
-                GeneralPath path = (GeneralPath) o;
-                Rectangle2D bounds2D = path.getBounds2D();
+                final GeneralPath path = (GeneralPath) o;
+                final Rectangle2D bounds2D = path.getBounds2D();
                 if (bounds2D.isEmpty())
                 {
-                    JLabel label = new JLabel(SimpleFont.NO_GLYPH, SwingConstants.CENTER);
-                    int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
+                    final JLabel label = new JLabel(SimpleFont.NO_GLYPH, SwingConstants.CENTER);
+                    final int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
                                         "encodingFontSize", Integer.toString(label.getFont().getSize())));
                     label.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
                     label.setForeground(Color.GRAY);
                     return label;
                 }
-                Rectangle cellRect = jTable.getCellRect(row, col, false);
-                BufferedImage bim = renderGlyph(path, bounds2D, cellRect);
+                final Rectangle cellRect = jTable.getCellRect(row, col, false);
+                final BufferedImage bim = renderGlyph(path, bounds2D, cellRect);
                 return new JLabel(new HighResolutionImageIcon(
                                    bim, 
                                    (int) Math.ceil(bim.getWidth() / DEFAULT_TRANSFORM.getScaleX()), 
@@ -172,17 +172,17 @@ class FontEncodingView
             }
             if (o instanceof BufferedImage)
             {
-                Rectangle cellRect = jTable.getCellRect(row, col, false);
-                BufferedImage glyphImage = (BufferedImage) o;
-                BufferedImage cellImage = new BufferedImage(
+                final Rectangle cellRect = jTable.getCellRect(row, col, false);
+                final BufferedImage glyphImage = (BufferedImage) o;
+                final BufferedImage cellImage = new BufferedImage(
                         (int) (cellRect.getWidth() * DEFAULT_TRANSFORM.getScaleX()),
                         (int) (cellRect.getHeight() * DEFAULT_TRANSFORM.getScaleY()),
                         BufferedImage.TYPE_INT_RGB);
-                Graphics2D g = (Graphics2D) cellImage.getGraphics();
+                final Graphics2D g = (Graphics2D) cellImage.getGraphics();
                 g.setBackground(Color.white);
                 g.clearRect(0, 0, cellImage.getWidth(), cellImage.getHeight());
 
-                double scale = 1 / (glyphImage.getHeight() / cellRect.getHeight());
+                final double scale = 1 / (glyphImage.getHeight() / cellRect.getHeight());
 
                 // horizontal center
                 g.translate((cellRect.getWidth() - glyphImage.getWidth() * scale) / 2 * DEFAULT_TRANSFORM.getScaleX(), 0);
@@ -202,8 +202,8 @@ class FontEncodingView
             }
             if (o != null)
             {
-                JLabel label = new JLabel(o.toString(), SwingConstants.CENTER);
-                int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
+                final JLabel label = new JLabel(o.toString(), SwingConstants.CENTER);
+                final int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
                         "encodingFontSize", Integer.toString(label.getFont().getSize())));
                 label.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
                 if (SimpleFont.NO_GLYPH.equals(o) || ".notdef".equals(o))
@@ -216,17 +216,17 @@ class FontEncodingView
             return new JLabel();
         }
 
-        private BufferedImage renderGlyph(GeneralPath path, Rectangle2D bounds2D, Rectangle cellRect)
+        private BufferedImage renderGlyph(final GeneralPath path, final Rectangle2D bounds2D, final Rectangle cellRect)
         {
-            BufferedImage bim = new BufferedImage(
+            final BufferedImage bim = new BufferedImage(
                     (int) (cellRect.getWidth() * DEFAULT_TRANSFORM.getScaleX()),
                     (int) (cellRect.getHeight() * DEFAULT_TRANSFORM.getScaleY()),
                     BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = (Graphics2D) bim.getGraphics();
+            final Graphics2D g = (Graphics2D) bim.getGraphics();
             g.setBackground(Color.white);
             g.clearRect(0, 0, bim.getWidth(), bim.getHeight());
 
-            double scale = 1 / ((yBounds[1] - yBounds[0]) / cellRect.getHeight());
+            final double scale = 1 / ((yBounds[1] - yBounds[0]) / cellRect.getHeight());
 
             // flip
             g.scale(1, -1);

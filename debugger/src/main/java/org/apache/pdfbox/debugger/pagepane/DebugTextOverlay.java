@@ -65,15 +65,15 @@ final class DebugTextOverlay
         private final Graphics2D graphics;
         private AffineTransform flip;
         
-        DebugTextStripper(Graphics2D graphics) throws IOException
+        DebugTextStripper(final Graphics2D graphics) throws IOException
         {
             this.graphics = graphics;
         }
 
-        public void stripPage(PDDocument document, PDPage page, int pageIndex, float scale) throws IOException
+        public void stripPage(final PDDocument document, final PDPage page, final int pageIndex, final float scale) throws IOException
         {
             // flip y-axis
-            PDRectangle cropBox = page.getCropBox();
+            final PDRectangle cropBox = page.getCropBox();
             this.flip = new AffineTransform();
             flip.translate(0, cropBox.getHeight());
             flip.scale(1, -1);
@@ -87,22 +87,22 @@ final class DebugTextOverlay
             setStartPage(pageIndex + 1);
             setEndPage(pageIndex + 1);
 
-            Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
+            final Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
             writeText(document, dummy);
 
             if (DebugTextOverlay.this.showTextStripperBeads)
             {
                 // beads in green
-                List<PDThreadBead> pageArticles = page.getThreadBeads();
-                for (PDThreadBead bead : pageArticles)
+                final List<PDThreadBead> pageArticles = page.getThreadBeads();
+                for (final PDThreadBead bead : pageArticles)
                 {
                     if (bead == null || bead.getRectangle() == null)
                     {
                         continue;
                     }
-                    PDRectangle r = bead.getRectangle();
-                    GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
-                    Shape s = flip.createTransformedShape(p);
+                    final PDRectangle r = bead.getRectangle();
+                    final GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
+                    final Shape s = flip.createTransformedShape(p);
                     graphics.setColor(Color.green);
                     graphics.draw(s);
                 }
@@ -110,12 +110,12 @@ final class DebugTextOverlay
         }
 
         // scale rotate translate
-        private void transform(Graphics2D graphics, PDPage page, float scale)
+        private void transform(final Graphics2D graphics, final PDPage page, final float scale)
         {
             graphics.scale(scale, scale);
             
-            int rotationAngle = page.getRotation();
-            PDRectangle cropBox = page.getCropBox();
+            final int rotationAngle = page.getRotation();
+            final PDRectangle cropBox = page.getCropBox();
 
             if (rotationAngle != 0)
             {
@@ -142,19 +142,19 @@ final class DebugTextOverlay
         }
         
         @Override
-        protected void writeString(String string, List<TextPosition> textPositions) throws IOException
+        protected void writeString(final String string, final List<TextPosition> textPositions) throws IOException
         {
-            for (TextPosition text : textPositions)
+            for (final TextPosition text : textPositions)
             {
                 if (DebugTextOverlay.this.showTextStripper)
                 {
-                    AffineTransform at = (AffineTransform) flip.clone();
+                    final AffineTransform at = (AffineTransform) flip.clone();
                     at.concatenate(text.getTextMatrix().createAffineTransform());
 
                     // in red:
                     // show rectangles with the "height" (not a real height, but used for text extraction 
                     // heuristics, it is 1/2 of the bounding box height and starts at y=0)
-                    Rectangle2D.Float rect = new Rectangle2D.Float(0, 0, 
+                    final Rectangle2D.Float rect = new Rectangle2D.Float(0, 0,
                             text.getWidthDirAdj() / text.getTextMatrix().getScalingFactorX(),
                             text.getHeightDir() / text.getTextMatrix().getScalingFactorY());
                     graphics.setColor(Color.red);
@@ -166,16 +166,16 @@ final class DebugTextOverlay
                     // in blue:
                     // show rectangle with the real vertical bounds, based on the font bounding box y values
                     // usually, the height is identical to what you see when marking text in Adobe Reader
-                    PDFont font = text.getFont();
-                    BoundingBox bbox = font.getBoundingBox();
+                    final PDFont font = text.getFont();
+                    final BoundingBox bbox = font.getBoundingBox();
 
                     // advance width, bbox height (glyph space)
-                    float xadvance = font.getWidth(text.getCharacterCodes()[0]); // todo: should iterate all chars
-                    Rectangle2D rect = new Rectangle2D.Float(0, bbox.getLowerLeftY(), xadvance, bbox.getHeight());
+                    final float xadvance = font.getWidth(text.getCharacterCodes()[0]); // todo: should iterate all chars
+                    final Rectangle2D rect = new Rectangle2D.Float(0, bbox.getLowerLeftY(), xadvance, bbox.getHeight());
 
                     // glyph space -> user space
                     // note: text.getTextMatrix() is *not* the Text Matrix, it's the Text Rendering Matrix
-                    AffineTransform at = (AffineTransform) flip.clone();
+                    final AffineTransform at = (AffineTransform) flip.clone();
                     at.concatenate(text.getTextMatrix().createAffineTransform());
 
                     if (font instanceof PDType3Font)
@@ -196,7 +196,7 @@ final class DebugTextOverlay
         }
 
         @Override
-        protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement) throws IOException
+        protected void showGlyph(final Matrix textRenderingMatrix, final PDFont font, final int code, final Vector displacement) throws IOException
         {
             super.showGlyph(textRenderingMatrix, font, code, displacement);
 
@@ -205,19 +205,19 @@ final class DebugTextOverlay
                 return;
             }
 
-            AffineTransform at = textRenderingMatrix.createAffineTransform();
-            Shape bbox = calculateGlyphBounds(at, font, code, displacement);
+            final AffineTransform at = textRenderingMatrix.createAffineTransform();
+            final Shape bbox = calculateGlyphBounds(at, font, code, displacement);
             if (bbox == null)
             {
                 return;
             }
 
-            Shape transformedBBox = flip.createTransformedShape(bbox);
+            final Shape transformedBBox = flip.createTransformedShape(bbox);
 
             // save
-            Color color = graphics.getColor();
-            Stroke stroke = graphics.getStroke();
-            Shape clip = graphics.getClip();
+            final Color color = graphics.getColor();
+            final Stroke stroke = graphics.getStroke();
+            final Shape clip = graphics.getClip();
 
             // draw
             graphics.setClip(graphics.getDeviceConfiguration().getBounds());
@@ -232,25 +232,25 @@ final class DebugTextOverlay
         }
 
         private Shape calculateGlyphBounds(
-                AffineTransform at, PDFont font, int code,Vector displacement) throws IOException
+                final AffineTransform at, final PDFont font, final int code, final Vector displacement) throws IOException
         {
             at.concatenate(font.getFontMatrix().createAffineTransform());
             // compute glyph path
-            GeneralPath path;
+            final GeneralPath path;
             if (font instanceof PDType3Font)
             {
                 // It is difficult to calculate the real individual glyph bounds for type 3 fonts
                 // because these are not vector fonts, the content stream could contain almost anything
                 // that is found in page content streams.
-                PDType3Font t3Font = (PDType3Font) font;
-                PDType3CharProc charProc = t3Font.getCharProc(code);
+                final PDType3Font t3Font = (PDType3Font) font;
+                final PDType3CharProc charProc = t3Font.getCharProc(code);
                 if (charProc == null)
                 {
                     return null;
                 }
 
-                BoundingBox fontBBox = t3Font.getBoundingBox();
-                PDRectangle glyphBBox = charProc.getGlyphBBox();
+                final BoundingBox fontBBox = t3Font.getBoundingBox();
+                final PDRectangle glyphBBox = charProc.getGlyphBBox();
                 if (glyphBBox == null)
                 {
                     return null;
@@ -265,7 +265,7 @@ final class DebugTextOverlay
             }
             else
             {
-                PDVectorFont vectorFont = (PDVectorFont) font;
+                final PDVectorFont vectorFont = (PDVectorFont) font;
                 path = vectorFont.getNormalizedPath(code);
 
                 if (path == null)
@@ -276,11 +276,11 @@ final class DebugTextOverlay
                 // stretch non-embedded glyph if it does not match the width contained in the PDF
                 if (!font.isEmbedded() && !font.isVertical() && !font.isStandard14() && font.hasExplicitWidth(code))
                 {
-                    float fontWidth = font.getWidthFromFont(code);
+                    final float fontWidth = font.getWidthFromFont(code);
                     if (fontWidth > 0 && // ignore spaces
                             Math.abs(fontWidth - displacement.getX() * 1000) > 0.0001)
                     {
-                        float pdfWidth = displacement.getX() * 1000;
+                        final float pdfWidth = displacement.getX() * 1000;
                         at.scale(pdfWidth / fontWidth, 1);
                     }
                 }
@@ -290,9 +290,9 @@ final class DebugTextOverlay
         }
     }
 
-    DebugTextOverlay(PDDocument document, int pageIndex, float scale,
-                      boolean showTextStripper, boolean showTextStripperBeads,
-                      boolean showFontBBox, boolean showGlyphBounds)
+    DebugTextOverlay(final PDDocument document, final int pageIndex, final float scale,
+                     final boolean showTextStripper, final boolean showTextStripperBeads,
+                     final boolean showFontBBox, final boolean showGlyphBounds)
     {
         this.document = document;
         this.pageIndex = pageIndex;
@@ -303,9 +303,9 @@ final class DebugTextOverlay
         this.showGlyphBounds = showGlyphBounds;
     }
     
-    public void renderTo(Graphics2D graphics) throws IOException
+    public void renderTo(final Graphics2D graphics) throws IOException
     {
-        DebugTextStripper stripper = new DebugTextStripper(graphics);
+        final DebugTextStripper stripper = new DebugTextStripper(graphics);
         stripper.stripPage(this.document, this.document.getPage(pageIndex), this.pageIndex, this.scale);
     }
 }

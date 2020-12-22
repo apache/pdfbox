@@ -33,7 +33,7 @@ class TestPreflightPath
     @Test
     void test()
     {
-        PreflightPath path = new PreflightPath();
+        final PreflightPath path = new PreflightPath();
 
         assertTrue(path.isEmpty());
         assertEquals(0, path.size());
@@ -62,7 +62,7 @@ class TestPreflightPath
         position = path.getClosestTypePosition(Integer.class);
         assertEquals(1, position);
 
-        Integer i = path.getPathElement(position, Integer.class);
+        final Integer i = path.getPathElement(position, Integer.class);
         assertEquals(Integer.valueOf(6), i);
 
         Object str = path.peek();
@@ -83,7 +83,7 @@ class TestPreflightPath
     @Test
     void testPush()
     {
-        PreflightPath path = new PreflightPath();
+        final PreflightPath path = new PreflightPath();
         assertTrue(path.pushObject("a"));
         assertFalse(path.pushObject(null));
     }

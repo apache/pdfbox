@@ -40,10 +40,10 @@ class TestOperators
 
         Type4Tester.create("5 0.23 add").pop(5.23f).isEmpty();
 
-        int bigValue = Integer.MAX_VALUE - 2;
-        ExecutionContext context = Type4Tester.create(
+        final int bigValue = Integer.MAX_VALUE - 2;
+        final ExecutionContext context = Type4Tester.create(
                 bigValue + " " + bigValue + " add").toExecutionContext();
-        float floatResult = (Float)context.getStack().pop();
+        final float floatResult = (Float)context.getStack().pop();
         assertEquals(2 * (long)Integer.MAX_VALUE - 4, floatResult, 1);
         assertTrue(context.getStack().isEmpty());
     }
@@ -130,7 +130,7 @@ class TestOperators
         Type4Tester.create("77 cvr").popReal(77f).isEmpty();
 
         //Check that the data types are really right
-        ExecutionContext context = Type4Tester.create("77 77 cvr").toExecutionContext();
+        final ExecutionContext context = Type4Tester.create("77 77 cvr").toExecutionContext();
         assertTrue(context.getStack().pop() instanceof Float,
                 "Expected a real as the result of 'cvr'");
         assertTrue(context.getStack().pop() instanceof Integer,

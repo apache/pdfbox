@@ -51,7 +51,7 @@ class TestDateUtil
     @Test
     void testExtract() throws Exception
     {
-        TimeZone timezone = TimeZone.getDefault();
+        final TimeZone timezone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         assertCalendarEquals( new GregorianCalendar( 2005, 4, 12 ),
@@ -70,7 +70,7 @@ class TestDateUtil
      * @param expect the expected calendar value
      * @param was the calendar value to be checked
      */
-    private void assertCalendarEquals(Calendar expect, Calendar was)
+    private void assertCalendarEquals(final Calendar expect, final Calendar was)
     {
         assertEquals( expect.getTimeInMillis(), was.getTimeInMillis() );
         assertEquals( expect.getTimeZone().getRawOffset(), 
@@ -86,7 +86,7 @@ class TestDateUtil
     @Test
     void testDateConversion() throws IOException
     { 
-        Calendar c = DateConverter.toCalendar("D:20050526205258+01'00'"); 
+        final Calendar c = DateConverter.toCalendar("D:20050526205258+01'00'");
         assertEquals(2005, c.get(Calendar.YEAR)); 
         assertEquals(05-1, c.get(Calendar.MONTH)); 
         assertEquals(26, c.get(Calendar.DAY_OF_MONTH)); 
@@ -110,13 +110,13 @@ class TestDateUtil
      * @param orig A date to be parsed.
      * @throws Exception If an unexpected error occurs.
      */
-    private static void checkParse(int yr, int mon, int day, 
-                int hr, int min, int sec, int offsetHours, int offsetMinutes,
-                String orig) throws Exception 
+    private static void checkParse(final int yr, final int mon, final int day,
+                                   final int hr, final int min, final int sec, final int offsetHours, final int offsetMinutes,
+                                   final String orig) throws Exception
     {
-        String pdfDate = String.format(Locale.US, "D:%04d%02d%02d%02d%02d%02d%+03d'%02d'", 
+        final String pdfDate = String.format(Locale.US, "D:%04d%02d%02d%02d%02d%02d%+03d'%02d'",
                 yr,mon,day,hr,min,sec,offsetHours,offsetMinutes);
-        String iso8601Date = String.format(Locale.US, "%04d-%02d-%02d"
+        final String iso8601Date = String.format(Locale.US, "%04d-%02d-%02d"
                 + "T%02d:%02d:%02d%+03d:%02d", 
                 yr,mon,day,hr,min,sec,offsetHours,offsetMinutes);
         Calendar cal = DateConverter.toCalendar(orig);
@@ -145,7 +145,7 @@ class TestDateUtil
     @Test
     void testDateConverter() throws Exception
     {
-            int year = Calendar.getInstance().get(Calendar.YEAR);
+            final int year = Calendar.getInstance().get(Calendar.YEAR);
             checkParse(2010, 4,23, 0, 0, 0, 0, 0, "D:20100423");
             checkParse(2011, 4,23, 0, 0, 0, 0, 0, "20110423");
             checkParse(2012, 1, 1, 0, 0, 0, 0, 0, "D:2012");
@@ -290,17 +290,17 @@ class TestDateUtil
             checkParse(2016, 4,11,16,01,15, 12, 0, "D:20160411160115+12'00'");   
     }
 
-    private static void checkToString(int yr, int mon, int day, 
-                int hr, int min, int sec, 
-                TimeZone tz, int offsetHours, int offsetMinutes) throws Exception 
+    private static void checkToString(final int yr, final int mon, final int day,
+                                      final int hr, final int min, final int sec,
+                                      final TimeZone tz, final int offsetHours, final int offsetMinutes) throws Exception
     {
         // construct a GregoreanCalendar from args
-        GregorianCalendar cal = new GregorianCalendar(tz, Locale.ENGLISH);
+        final GregorianCalendar cal = new GregorianCalendar(tz, Locale.ENGLISH);
         cal.set(yr, mon-1, day, hr, min, sec);
         // create expected strings
-        String pdfDate = String.format(Locale.US, "D:%04d%02d%02d%02d%02d%02d%+03d'%02d'", 
+        final String pdfDate = String.format(Locale.US, "D:%04d%02d%02d%02d%02d%02d%+03d'%02d'",
                 yr,mon,day,hr,min,sec,offsetHours, offsetMinutes);
-        String iso8601Date = String.format(Locale.US, "%04d-%02d-%02d"
+        final String iso8601Date = String.format(Locale.US, "%04d-%02d-%02d"
                 + "T%02d:%02d:%02d%+03d:%02d", 
                 yr,mon,day,hr,min,sec,offsetHours, offsetMinutes);
         // compare outputs from toString and toISO8601 with expected values
@@ -316,13 +316,13 @@ class TestDateUtil
     @Test
     void testToString() throws Exception
     {                                                              // std DST
-        TimeZone tzPgh = TimeZone.getTimeZone("America/New_York");   // -5 -4
-        TimeZone tzBerlin = TimeZone.getTimeZone("Europe/Berlin");   // +1 +2
-        TimeZone tzMaputo = TimeZone.getTimeZone("Africa/Maputo");   // +2 +2
-        TimeZone tzAruba = TimeZone.getTimeZone("America/Aruba");    // -4 -4
-        TimeZone tzJamaica = TimeZone.getTimeZone("America/Jamaica");// -5 -5
-        TimeZone tzMcMurdo = TimeZone.getTimeZone("Antartica/McMurdo");// +12 +13
-        TimeZone tzAdelaide = TimeZone.getTimeZone("Australia/Adelaide");// +9:30 +10:30
+        final TimeZone tzPgh = TimeZone.getTimeZone("America/New_York");   // -5 -4
+        final TimeZone tzBerlin = TimeZone.getTimeZone("Europe/Berlin");   // +1 +2
+        final TimeZone tzMaputo = TimeZone.getTimeZone("Africa/Maputo");   // +2 +2
+        final TimeZone tzAruba = TimeZone.getTimeZone("America/Aruba");    // -4 -4
+        final TimeZone tzJamaica = TimeZone.getTimeZone("America/Jamaica");// -5 -5
+        final TimeZone tzMcMurdo = TimeZone.getTimeZone("Antartica/McMurdo");// +12 +13
+        final TimeZone tzAdelaide = TimeZone.getTimeZone("Australia/Adelaide");// +9:30 +10:30
         
         assertNull(DateConverter.toCalendar((COSString) null));
         assertNull(DateConverter.toCalendar((String) null));
@@ -346,9 +346,9 @@ class TestDateUtil
         }
     }
 
-    private static void checkParseTZ(int expect, String src)
+    private static void checkParseTZ(final int expect, final String src)
     {
-        GregorianCalendar dest = DateConverter.newGreg();
+        final GregorianCalendar dest = DateConverter.newGreg();
         DateConverter.parseTZoffset(src, dest, new ParsePosition(0));
         assertEquals(expect, dest.get(Calendar.ZONE_OFFSET));
     }
@@ -387,10 +387,10 @@ class TestDateUtil
         checkParseTZ(-(14*HRS+0*MINS), "-1400");
     }
     
-    private static void checkFormatOffset(double off, String expect) 
+    private static void checkFormatOffset(final double off, final String expect)
     {
-        TimeZone tz = new SimpleTimeZone((int)(off*60*60*1000), "junkID");
-        String got = DateConverter.formatTZoffset(tz.getRawOffset(), ":");
+        final TimeZone tz = new SimpleTimeZone((int)(off*60*60*1000), "junkID");
+        final String got = DateConverter.formatTZoffset(tz.getRawOffset(), ":");
         assertEquals(expect, got);
     }
     

@@ -35,14 +35,14 @@ public interface CharStringHandler
      * @param sequence of CharStringCommands
      *
      */
-    default void handleSequence(List<Object> sequence)
+    default void handleSequence(final List<Object> sequence)
     {
-        List<Number> numbers = new ArrayList<>();
+        final List<Number> numbers = new ArrayList<>();
         sequence.forEach(obj ->
         {
             if (obj instanceof CharStringCommand)
             {
-                List<Number> results = handleCommand(numbers, (CharStringCommand) obj);
+                final List<Number> results = handleCommand(numbers, (CharStringCommand) obj);
                 numbers.clear();
                 numbers.addAll(results);
             }

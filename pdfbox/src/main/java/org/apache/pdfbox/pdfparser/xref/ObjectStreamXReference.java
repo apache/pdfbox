@@ -43,8 +43,8 @@ public class ObjectStreamXReference extends AbstractXReference
      * @param object The {@link COSObject}, that is represented by this entry.
      * @param parentKey The {@link COSObjectKey} of the object stream, that is containing the object.
      */
-    public ObjectStreamXReference(int objectStreamIndex, COSObjectKey key, COSBase object,
-            COSObjectKey parentKey)
+    public ObjectStreamXReference(final int objectStreamIndex, final COSObjectKey key, final COSBase object,
+                                  final COSObjectKey parentKey)
     {
         super(XReferenceType.OBJECT_STREAM_ENTRY);
         this.objectStreamIndex = objectStreamIndex;

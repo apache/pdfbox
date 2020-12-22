@@ -68,7 +68,7 @@ public final class ImageTypeMenu extends MenuBase
      * Set the image type selection.
      * @param selection String instance.
      */
-    public void setImageTypeSelection(String selection)
+    public void setImageTypeSelection(final String selection)
     {
         switch (selection)
         {
@@ -89,7 +89,7 @@ public final class ImageTypeMenu extends MenuBase
         }
     }
 
-    public static boolean isImageTypeMenu(String actionCommand)
+    public static boolean isImageTypeMenu(final String actionCommand)
     {
         return IMAGETYPE_RGB.equals(actionCommand) || IMAGETYPE_ARGB.equals(actionCommand) ||
                 IMAGETYPE_GRAY.equals(actionCommand) || IMAGETYPE_BITONAL.equals(actionCommand);
@@ -112,7 +112,7 @@ public final class ImageTypeMenu extends MenuBase
         return ImageType.RGB;
     }
 
-    public static ImageType getImageType(String actionCommand)
+    public static ImageType getImageType(final String actionCommand)
     {
         switch (actionCommand)
         {
@@ -131,7 +131,7 @@ public final class ImageTypeMenu extends MenuBase
 
     private JMenu createMenu()
     {
-        JMenu menu = new JMenu();
+        final JMenu menu = new JMenu();
         menu.setText("Image type");
 
         rgbItem = new JRadioButtonMenuItem();
@@ -140,7 +140,7 @@ public final class ImageTypeMenu extends MenuBase
         bitonalItem = new JRadioButtonMenuItem();
         rgbItem.setSelected(true);
 
-        ButtonGroup bg = new ButtonGroup();
+        final ButtonGroup bg = new ButtonGroup();
         bg.add(rgbItem);
         bg.add(argbItem);
         bg.add(grayItem);

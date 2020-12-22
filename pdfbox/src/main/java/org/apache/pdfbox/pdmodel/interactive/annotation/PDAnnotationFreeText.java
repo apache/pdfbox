@@ -64,7 +64,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationFreeText(COSDictionary field)
+    public PDAnnotationFreeText(final COSDictionary field)
     {
         super(field);
     }
@@ -84,7 +84,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      *
      * @param daValue a string describing the default appearance.
      */
-    public void setDefaultAppearance(String daValue)
+    public void setDefaultAppearance(final String daValue)
     {
         getCOSObject().setString(COSName.DA, daValue);
     }
@@ -108,7 +108,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      *
      * @param defaultStyleString a string describing the default style.
      */
-    public void setDefaultStyleString(String defaultStyleString)
+    public void setDefaultStyleString(final String defaultStyleString)
     {
         getCOSObject().setString(COSName.DS, defaultStyleString);
     }
@@ -134,7 +134,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      *
      * @param q The new text justification.
      */
-    public void setQ(int q)
+    public void setQ(final int q)
     {
         getCOSObject().setInt(COSName.Q, q);
     }
@@ -147,7 +147,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      * 
      * @param difference from the annotations /Rect entry
      */
-    public void setRectDifferences(float difference) {
+    public void setRectDifferences(final float difference) {
         setRectDifferences(difference, difference, difference, difference);
     }
     
@@ -161,9 +161,9 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      * @param differenceBottom bottom difference from the annotations /Rect entry
      * 
      */
-    public void setRectDifferences(float differenceLeft, float differenceTop, float differenceRight, float differenceBottom)
+    public void setRectDifferences(final float differenceLeft, final float differenceTop, final float differenceRight, final float differenceBottom)
     {
-        COSArray margins = new COSArray();
+        final COSArray margins = new COSArray();
         margins.add(new COSFloat(differenceLeft));
         margins.add(new COSFloat(differenceTop));
         margins.add(new COSFloat(differenceRight));
@@ -179,7 +179,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      */
     public float[] getRectDifferences()
     {
-        COSBase margin = getCOSObject().getItem(COSName.RD);
+        final COSBase margin = getCOSObject().getItem(COSName.RD);
         if (margin instanceof COSArray)
         {
             return ((COSArray) margin).toFloatArray();
@@ -196,9 +196,9 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      * ending coordinates of the line in default user space, four numbers [ x1 y1 x2 y2 ] represent
      * the starting and ending coordinates of the line.
      */
-    public final void setCallout(float[] callout)
+    public final void setCallout(final float[] callout)
     {
-        COSArray newCallout = new COSArray();
+        final COSArray newCallout = new COSArray();
         newCallout.setFloatArray(callout);
         getCOSObject().setItem(COSName.CL, newCallout);
     }
@@ -214,7 +214,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      */
     public float[] getCallout()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.CL);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.CL);
         if (base instanceof COSArray)
         {
             return ((COSArray) base).toFloatArray();
@@ -227,7 +227,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      *
      * @param style The new style.
      */
-    public final void setLineEndingStyle(String style)
+    public final void setLineEndingStyle(final String style)
     {
         getCOSObject().setName(COSName.LE, style);
     }
@@ -250,7 +250,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      * @param be The border effect dictionary to set.
      *
      */
-    public void setBorderEffect(PDBorderEffectDictionary be)
+    public void setBorderEffect(final PDBorderEffectDictionary be)
     {
         getCOSObject().setItem(COSName.BE, be);
     }
@@ -263,7 +263,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.BE);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.BE);
         if (base instanceof COSDictionary)
         {
             return new PDBorderEffectDictionary((COSDictionary) base);
@@ -279,7 +279,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      * @param rd the rectangle difference
      *
      */
-    public void setRectDifference(PDRectangle rd)
+    public void setRectDifference(final PDRectangle rd)
     {
         getCOSObject().setItem(COSName.RD, rd);
     }
@@ -293,7 +293,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      */
     public PDRectangle getRectDifference()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.RD);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.RD);
         if (base instanceof COSArray)
         {
             return new PDRectangle((COSArray) base);
@@ -306,7 +306,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -318,11 +318,11 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDFreeTextAppearanceHandler appearanceHandler = new PDFreeTextAppearanceHandler(this, document);
+            final PDFreeTextAppearanceHandler appearanceHandler = new PDFreeTextAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

@@ -117,16 +117,16 @@ public class ICCProfileWrapper
      * @param context
      * @return an instance of ICCProfileWrapper or null if there are no DestOutputProfile
      */
-    private static ICCProfileWrapper searchFirstICCProfile(PreflightContext context)
+    private static ICCProfileWrapper searchFirstICCProfile(final PreflightContext context)
     {
-        PreflightDocument document = context.getDocument();
-        PDDocumentCatalog catalog = document.getDocumentCatalog();
-        COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
+        final PreflightDocument document = context.getDocument();
+        final PDDocumentCatalog catalog = document.getDocumentCatalog();
+        final COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
 
         for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i)
         {
-            COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
-            COSBase destOutputProfile = outputIntentDict
+            final COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
+            final COSBase destOutputProfile = outputIntentDict
                     .getDictionaryObject(COSName.DEST_OUTPUT_PROFILE);
             if (destOutputProfile instanceof COSStream)
             {
@@ -149,7 +149,7 @@ public class ICCProfileWrapper
         return null;
     }
 
-    public static ICCProfileWrapper getOrSearchICCProfile(PreflightContext context) throws ValidationException
+    public static ICCProfileWrapper getOrSearchICCProfile(final PreflightContext context) throws ValidationException
     {
         ICCProfileWrapper profileWrapper = context.getIccProfileWrapper();
         if (profileWrapper == null && !context.isIccProfileAlreadySearched())

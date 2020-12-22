@@ -26,7 +26,7 @@ public class HighResolutionImageIcon implements Icon
     private final int baseWidth;
     private final int baseHeight;
 
-    public HighResolutionImageIcon(Image image, int baseWidth, int baseHeight)
+    public HighResolutionImageIcon(final Image image, final int baseWidth, final int baseHeight)
     {
         this.image = image;
         this.baseWidth = baseWidth;
@@ -34,7 +34,7 @@ public class HighResolutionImageIcon implements Icon
     }
 
     @Override
-    public void paintIcon(Component c, Graphics g, int x, int y)
+    public void paintIcon(final Component c, final Graphics g, final int x, final int y)
     {
         g.drawImage(image, x, y, getIconWidth(), getIconHeight(), null);
     }

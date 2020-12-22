@@ -34,7 +34,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class SetCharSpacing extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (arguments.isEmpty())
         {
@@ -44,10 +44,10 @@ public class SetCharSpacing extends OperatorProcessor
         // there are some documents which are incorrectly structured, and have
         // a wrong number of arguments to this, so we will assume the last argument
         // in the list
-        Object charSpacing = arguments.get(arguments.size()-1);
+        final Object charSpacing = arguments.get(arguments.size()-1);
         if (charSpacing instanceof COSNumber)
         {
-            COSNumber characterSpacing = (COSNumber)charSpacing;
+            final COSNumber characterSpacing = (COSNumber)charSpacing;
             context.getGraphicsState().getTextState().setCharacterSpacing(characterSpacing.floatValue());
         }
     }

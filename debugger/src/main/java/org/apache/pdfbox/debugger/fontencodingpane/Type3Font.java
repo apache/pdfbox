@@ -56,15 +56,15 @@ class Type3Font extends FontPane
      * @param font PDSimpleFont instance.
      * @throws IOException If fails to parse unicode characters.
      */
-    Type3Font(PDType3Font font, PDResources resources) throws IOException
+    Type3Font(final PDType3Font font, final PDResources resources) throws IOException
     {
         this.resources = resources;
 
         calcBBox(font);
         
-        Object[][] tableData = getGlyphs(font);
+        final Object[][] tableData = getGlyphs(font);
 
-        Map<String, String> attributes = new LinkedHashMap<>();
+        final Map<String, String> attributes = new LinkedHashMap<>();
         attributes.put("Font", font.getName());
         attributes.put("Encoding", getEncodingName(font));
         attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
@@ -73,7 +73,7 @@ class Type3Font extends FontPane
                 new String[] {"Code", "Glyph Name", "Unicode Character", "Glyph"}, null);
     }
     
-    private void calcBBox(PDType3Font font) throws IOException
+    private void calcBBox(final PDType3Font font) throws IOException
     {
         double minX = 0;
         double maxX = 0;
@@ -81,12 +81,12 @@ class Type3Font extends FontPane
         double maxY = 0;
         for (int index = 0; index <= 255; ++index)
         {
-            PDType3CharProc charProc = font.getCharProc(index);
+            final PDType3CharProc charProc = font.getCharProc(index);
             if (charProc == null)
             {
                 continue;
             }
-            PDRectangle glyphBBox = charProc.getGlyphBBox();
+            final PDRectangle glyphBBox = charProc.getGlyphBBox();
             if (glyphBBox == null)
             {
                 continue;
@@ -100,7 +100,7 @@ class Type3Font extends FontPane
         if (fontBBox.getWidth() <= 0 || fontBBox.getHeight() <= 0)
         {
             // less reliable, but good as a fallback solution for PDF.js issue 10717
-            BoundingBox boundingBox = font.getBoundingBox();
+            final BoundingBox boundingBox = font.getBoundingBox();
             fontBBox = new PDRectangle(boundingBox.getLowerLeftX(), 
                                        boundingBox.getLowerLeftY(),
                                        boundingBox.getWidth(),
@@ -108,21 +108,21 @@ class Type3Font extends FontPane
         }
     }
 
-    private Object[][] getGlyphs(PDType3Font font) throws IOException
+    private Object[][] getGlyphs(final PDType3Font font) throws IOException
     {
-        boolean isEmpty = fontBBox.toGeneralPath().getBounds2D().isEmpty();
-        Object[][] glyphs = new Object[256][4];
+        final boolean isEmpty = fontBBox.toGeneralPath().getBounds2D().isEmpty();
+        final Object[][] glyphs = new Object[256][4];
 
         // map needed to lessen memory footprint for files with duplicates
         // e.g. PDF.js issue 10717
-        Map<String, BufferedImage> map = new HashMap<>();
+        final Map<String, BufferedImage> map = new HashMap<>();
 
         for (int index = 0; index <= 255; index++)
         {
             glyphs[index][0] = index;
             if (font.getEncoding().contains(index) || font.toUnicode(index) != null)
             {
-                String name = font.getEncoding().getName(index);
+                final String name = font.getEncoding().getName(index);
                 glyphs[index][1] = name;
                 glyphs[index][2] = font.toUnicode(index);
                 if (isEmpty)
@@ -135,7 +135,7 @@ class Type3Font extends FontPane
                 }
                 else
                 {
-                    BufferedImage image = renderType3Glyph(font, index);
+                    final BufferedImage image = renderType3Glyph(font, index);
                     map.put(name, image);
                     glyphs[index][3] = image;
                 }
@@ -153,7 +153,7 @@ class Type3Font extends FontPane
 
     // Kindof an overkill to create a PDF for one glyph, but there is no better way at this time.
     // Isn't called if no bounds are available
-    private BufferedImage renderType3Glyph(PDType3Font font, int index) throws IOException
+    private BufferedImage renderType3Glyph(final PDType3Font font, final int index) throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -163,7 +163,7 @@ class Type3Font extends FontPane
                 // e.g. T4 font of PDFBOX-2959
                 scale = (int) (72 / Math.min(fontBBox.getWidth(), fontBBox.getHeight()));
             }
-            PDPage page = new PDPage(new PDRectangle(fontBBox.getWidth() * scale, fontBBox.getHeight() * scale));
+            final PDPage page = new PDPage(new PDRectangle(fontBBox.getWidth() * scale, fontBBox.getHeight() * scale));
             page.setResources(resources);
 
             try (PDPageContentStream cs = new PDPageContentStream(doc, page, AppendMode.APPEND, false))
@@ -174,10 +174,10 @@ class Type3Font extends FontPane
                 // also test PDFBOX-4228-type3.pdf (identity matrix)
                 // Root/Pages/Kids/[0]/Resources/XObject/X1/Resources/XObject/X3/Resources/Font/F10
                 // PDFBOX-1794-vattenfall.pdf (scale 0.001)
-                float scalingFactorX = font.getFontMatrix().getScalingFactorX();
-                float scalingFactorY = font.getFontMatrix().getScalingFactorY();
-                float translateX = scalingFactorX > 0 ? -fontBBox.getLowerLeftX() : fontBBox.getUpperRightX();
-                float translateY = scalingFactorY > 0 ? -fontBBox.getLowerLeftY() : fontBBox.getUpperRightY();
+                final float scalingFactorX = font.getFontMatrix().getScalingFactorX();
+                final float scalingFactorY = font.getFontMatrix().getScalingFactorY();
+                final float translateX = scalingFactorX > 0 ? -fontBBox.getLowerLeftX() : fontBBox.getUpperRightX();
+                final float translateY = scalingFactorY > 0 ? -fontBBox.getLowerLeftY() : fontBBox.getUpperRightY();
                 cs.transform(Matrix.getTranslateInstance(translateX * scale, translateY * scale));
                 cs.beginText();
                 cs.setFont(font, scale / Math.min(Math.abs(scalingFactorX), Math.abs(scalingFactorY)));
@@ -191,7 +191,7 @@ class Type3Font extends FontPane
         }
     }
 
-    private String getEncodingName(PDSimpleFont font)
+    private String getEncodingName(final PDSimpleFont font)
     {
         return font.getEncoding().getClass().getSimpleName();
     }

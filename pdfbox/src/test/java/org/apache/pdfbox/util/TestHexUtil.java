@@ -60,12 +60,12 @@ class TestHexUtil
     @Test
     void testMisc()
     {
-        byte[] byteSrcArray = new byte[256];
+        final byte[] byteSrcArray = new byte[256];
         for (int i = 0; i < 256; ++i)
         {
             byteSrcArray[i] = (byte) i;
 
-            byte[] bytes = Hex.getBytes((byte) i);
+            final byte[] bytes = Hex.getBytes((byte) i);
             assertEquals(2, bytes.length);
             String s2 = String.format(Locale.US, "%02X", i);
             assertArrayEquals(s2.getBytes(StandardCharsets.US_ASCII), bytes);
@@ -74,10 +74,10 @@ class TestHexUtil
             
             assertArrayEquals(new byte[]{(byte) i}, Hex.decodeHex(s2));
         }
-        byte[] byteDstArray = Hex.getBytes(byteSrcArray);
+        final byte[] byteDstArray = Hex.getBytes(byteSrcArray);
         assertEquals(byteDstArray.length, byteSrcArray.length * 2);
 
-        String dstString = Hex.getString(byteSrcArray);
+        final String dstString = Hex.getString(byteSrcArray);
         assertEquals(dstString.length(), byteSrcArray.length * 2);
 
         assertArrayEquals(dstString.getBytes(StandardCharsets.US_ASCII), byteDstArray);

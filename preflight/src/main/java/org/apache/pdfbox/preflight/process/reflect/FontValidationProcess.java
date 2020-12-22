@@ -53,9 +53,9 @@ public class FontValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
-        PreflightPath vPath = context.getValidationPath();
+        final PreflightPath vPath = context.getValidationPath();
         if (vPath.isEmpty()) 
         {
             return;
@@ -67,12 +67,12 @@ public class FontValidationProcess extends AbstractProcess
         } 
         else
         {
-            PDFont font = (PDFont) vPath.peek();
-            FontContainer<?> fontContainer = context.getFontContainer(font.getCOSObject());
+            final PDFont font = (PDFont) vPath.peek();
+            final FontContainer<?> fontContainer = context.getFontContainer(font.getCOSObject());
             if (fontContainer == null)
             {
                 // if fontContainer isn't null the font is already checked
-                FontValidator<? extends FontContainer<? extends PDFont>> validator = getFontValidator(context, font);
+                final FontValidator<? extends FontContainer<? extends PDFont>> validator = getFontValidator(context, font);
                 if (validator != null)
                 {
                     validator.validate();
@@ -88,9 +88,9 @@ public class FontValidationProcess extends AbstractProcess
      * @param font the font object.
      * @return the font validator instance for the font type.
      */
-    protected FontValidator<? extends FontContainer<? extends PDFont>> getFontValidator(PreflightContext context, PDFont font)
+    protected FontValidator<? extends FontContainer<? extends PDFont>> getFontValidator(final PreflightContext context, final PDFont font)
     {
-        String subtype = font.getSubType();
+        final String subtype = font.getSubType();
         if (FONT_DICTIONARY_VALUE_TRUETYPE.equals(subtype))
         {
             return new TrueTypeFontValidator(context, (PDTrueTypeFont) font);

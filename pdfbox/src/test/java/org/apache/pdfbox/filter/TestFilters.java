@@ -47,10 +47,10 @@ class TestFilters
     void testFilters() throws IOException
     {
         final int COUNT = 10;
-        Random rd = new Random(123456);
+        final Random rd = new Random(123456);
         for (int iter = 0; iter < COUNT * 2; iter++)
         {
-            long seed;
+            final long seed;
             if (iter < COUNT)
             {
                 // deterministic seed
@@ -66,7 +66,7 @@ class TestFilters
             {
                 final Random random = new Random(seed);
                 final int numBytes = 10000 + random.nextInt(20000);
-                byte[] original = new byte[numBytes];
+                final byte[] original = new byte[numBytes];
 
                 int upto = 0;
                 while(upto < numBytes) 
@@ -93,7 +93,7 @@ class TestFilters
                     }
                 }
 
-                for( Filter filter : FilterFactory.INSTANCE.getAllFilters() )
+                for( final Filter filter : FilterFactory.INSTANCE.getAllFilters() )
                 {
                     // Skip filters that don't currently support roundtripping
                     if( filter instanceof DCTFilter ||
@@ -141,8 +141,8 @@ class TestFilters
     @Test
     void testPDFBOX1977() throws IOException
     {
-        Filter lzwFilter = FilterFactory.INSTANCE.getFilter(COSName.LZW_DECODE);
-        byte[] byteArray = IOUtils.toByteArray(this.getClass().getResourceAsStream("PDFBOX-1977.bin"));
+        final Filter lzwFilter = FilterFactory.INSTANCE.getFilter(COSName.LZW_DECODE);
+        final byte[] byteArray = IOUtils.toByteArray(this.getClass().getResourceAsStream("PDFBOX-1977.bin"));
         checkEncodeDecode(lzwFilter, byteArray);
     }
 
@@ -155,32 +155,32 @@ class TestFilters
     @Test
     void testRLE() throws IOException
     {
-        Filter rleFilter = FilterFactory.INSTANCE.getFilter(COSName.RUN_LENGTH_DECODE);
-        byte[] input0 = new byte[0];
+        final Filter rleFilter = FilterFactory.INSTANCE.getFilter(COSName.RUN_LENGTH_DECODE);
+        final byte[] input0 = new byte[0];
         checkEncodeDecode(rleFilter, input0);
-        byte[] input1 = new byte[] { 1, 2, 3, 4, 5, (byte) 128, (byte) 140, (byte) 180, (byte) 0xFF};
+        final byte[] input1 = new byte[] { 1, 2, 3, 4, 5, (byte) 128, (byte) 140, (byte) 180, (byte) 0xFF};
         checkEncodeDecode(rleFilter, input1);
-        byte[] input2 = new byte[10];
+        final byte[] input2 = new byte[10];
         checkEncodeDecode(rleFilter, input2);
-        byte[] input3 = new byte[128];
+        final byte[] input3 = new byte[128];
         checkEncodeDecode(rleFilter, input3);
-        byte[] input4 = new byte[129];
+        final byte[] input4 = new byte[129];
         checkEncodeDecode(rleFilter, input4);
-        byte[] input5 = new byte[128 + 128];
+        final byte[] input5 = new byte[128 + 128];
         checkEncodeDecode(rleFilter, input5);
-        byte[] input6 = new byte[1];
+        final byte[] input6 = new byte[1];
         checkEncodeDecode(rleFilter, input6);
-        byte[] input7 = new byte[] {1, 2};
+        final byte[] input7 = new byte[] {1, 2};
         checkEncodeDecode(rleFilter, input7);
-        byte[] input8 = new byte[2];
+        final byte[] input8 = new byte[2];
         checkEncodeDecode(rleFilter, input8);
     }
 
-    private void checkEncodeDecode(Filter filter, byte[] original) throws IOException
+    private void checkEncodeDecode(final Filter filter, final byte[] original) throws IOException
     {
-        ByteArrayOutputStream encoded = new ByteArrayOutputStream();
+        final ByteArrayOutputStream encoded = new ByteArrayOutputStream();
         filter.encode(new ByteArrayInputStream(original), encoded, new COSDictionary());
-        ByteArrayOutputStream decoded = new ByteArrayOutputStream();
+        final ByteArrayOutputStream decoded = new ByteArrayOutputStream();
         filter.decode(new ByteArrayInputStream(encoded.toByteArray()),
                 decoded, new COSDictionary(), 0);
 

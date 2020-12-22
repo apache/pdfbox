@@ -102,11 +102,11 @@ public final class PDFToImage implements Callable<Integer>
      * @param args Command line arguments, should be one and a reference to a file.
      *
      */
-    public static void main( String[] args )
+    public static void main(final String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
-        int exitCode = new CommandLine(new PDFToImage()).execute(args);
+        final int exitCode = new CommandLine(new PDFToImage()).execute(args);
         System.exit(exitCode);
     }
 
@@ -132,14 +132,14 @@ public final class PDFToImage implements Callable<Integer>
         {
             dpi = Toolkit.getDefaultToolkit().getScreenResolution();
         }
-        catch( HeadlessException e )
+        catch( final HeadlessException e )
         {
             dpi = 96;
         }
 
         try (PDDocument document = Loader.loadPDF(infile, password))
         {
-            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            final PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             if (acroForm != null && acroForm.getNeedAppearances())
             {
                 acroForm.refreshAppearances();
@@ -150,24 +150,24 @@ public final class PDFToImage implements Callable<Integer>
                 changeCropBox(document, cropbox[0], cropbox[1], cropbox[2], cropbox[3]);
             }
 
-            long startTime = System.nanoTime();
+            final long startTime = System.nanoTime();
 
             // render the pages
             boolean success = true;
             endPage = Math.min(endPage, document.getNumberOfPages());
-            PDFRenderer renderer = new PDFRenderer(document);
+            final PDFRenderer renderer = new PDFRenderer(document);
             renderer.setSubsamplingAllowed(subsampling);
             for (int i = startPage - 1; i < endPage; i++)
             {
-                BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
-                String fileName = outputPrefix + "-" + (i + 1) + "." + imageFormat;
+                final BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
+                final String fileName = outputPrefix + "-" + (i + 1) + "." + imageFormat;
                 success &= ImageIOUtil.writeImage(image, fileName, dpi, quality);
             }
 
             // performance stats
-            long endTime = System.nanoTime();
-            long duration = endTime - startTime;
-            int count = 1 + endPage - startPage;
+            final long endTime = System.nanoTime();
+            final long duration = endTime - startTime;
+            final int count = 1 + endPage - startPage;
             if (showTime)
             {
                 SYSERR.printf("Rendered %d page%s in %dms%n", count, count == 1 ? "" : "s",
@@ -190,8 +190,8 @@ public final class PDFToImage implements Callable<Integer>
 
     private static String getImageFormats()
     {
-        StringBuilder retval = new StringBuilder();
-        String[] formats = ImageIO.getWriterFormatNames();
+        final StringBuilder retval = new StringBuilder();
+        final String[] formats = ImageIO.getWriterFormatNames();
         for( int i = 0; i < formats.length; i++ )
         {
            if (formats[i].equalsIgnoreCase(formats[i]))
@@ -206,11 +206,11 @@ public final class PDFToImage implements Callable<Integer>
         return retval.toString();
     }
 
-    private static void changeCropBox(PDDocument document, float a, float b, float c, float d)
+    private static void changeCropBox(final PDDocument document, final float a, final float b, final float c, final float d)
     {
-        for (PDPage page : document.getPages())
+        for (final PDPage page : document.getPages())
         {
-            PDRectangle rectangle = new PDRectangle();
+            final PDRectangle rectangle = new PDRectangle();
             rectangle.setLowerLeftX(a);
             rectangle.setLowerLeftY(b);
             rectangle.setUpperRightX(c);

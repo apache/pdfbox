@@ -61,7 +61,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
     protected PDType3Font font;
     protected COSDictionary fontDictionary;
 
-    public Type3FontValidator(PreflightContext context, PDType3Font font)
+    public Type3FontValidator(final PreflightContext context, final PDType3Font font)
     {
         super(context, font.getCOSObject(), new Type3Container(font));
         this.fontDictionary = font.getCOSObject();
@@ -103,7 +103,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      */
     private void checkFontBBox()
     {
-        COSBase fontBBox = fontDictionary.getDictionaryObject(COSName.FONT_BBOX);
+        final COSBase fontBBox = fontDictionary.getDictionaryObject(COSName.FONT_BBOX);
 
         if (!(fontBBox instanceof COSArray))
         {
@@ -115,7 +115,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         /*
          * check the content of the FontBBox. Should be an array with 4 numbers
          */
-        COSArray bbox = (COSArray) fontBBox;
+        final COSArray bbox = (COSArray) fontBBox;
         if (bbox.size() != 4)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
@@ -125,7 +125,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         
         for (int i = 0; i < 4; i++)
         {
-            COSBase elt = bbox.get(i);
+            final COSBase elt = bbox.get(i);
             if (!(elt instanceof COSFloat || elt instanceof COSInteger))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
@@ -140,7 +140,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      */
     private void checkFontMatrix()
     {
-        COSBase fontMatrix = fontDictionary.getDictionaryObject(COSName.FONT_MATRIX);
+        final COSBase fontMatrix = fontDictionary.getDictionaryObject(COSName.FONT_MATRIX);
 
         if (!(fontMatrix instanceof COSArray))
         {
@@ -152,7 +152,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         /*
          * Check the content of the FontMatrix. Should be an array with 6 numbers
          */
-        COSArray matrix = (COSArray) fontMatrix;
+        final COSArray matrix = (COSArray) fontMatrix;
         if (matrix.size() != 6)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
@@ -162,7 +162,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
 
         for (int i = 0; i < 6; i++)
         {
-            COSBase elt = matrix.get(i);
+            final COSBase elt = matrix.get(i);
             if (!(elt instanceof COSFloat || elt instanceof COSInteger))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
@@ -191,7 +191,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
     @Override
     protected void checkEncoding()
     {
-        COSBase fontEncoding = fontDictionary.getDictionaryObject(COSName.ENCODING);
+        final COSBase fontEncoding = fontDictionary.getDictionaryObject(COSName.ENCODING);
         if (fontEncoding instanceof COSName)
         {
             checkEncodingAsString(((COSName) fontEncoding).getName());
@@ -214,10 +214,10 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      * 
      * @param enc The name of the encoding.
      */
-    private void checkEncodingAsString(String enc)
+    private void checkEncodingAsString(final String enc)
     {
         // Encoding is a name, check if it is an existing encoding
-        Encoding encodingInstance = Encoding.getInstance(COSName.getPDFName(enc));
+        final Encoding encodingInstance = Encoding.getInstance(COSName.getPDFName(enc));
         if (encodingInstance == null)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_TYPE3_DAMAGED, 
@@ -233,14 +233,14 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      *
      * @param encodingDictionary the encoding dictionary.
      */
-    private void checkEncodingAsDictionary(COSDictionary encodingDictionary)
+    private void checkEncodingAsDictionary(final COSDictionary encodingDictionary)
     {
         if (encodingDictionary.containsKey(COSName.BASE_ENCODING))
         {
             checkEncodingAsString(encodingDictionary.getString(COSName.BASE_ENCODING));
         }
 
-        COSBase diff = encodingDictionary.getDictionaryObject(COSName.DIFFERENCES);
+        final COSBase diff = encodingDictionary.getDictionaryObject(COSName.DIFFERENCES);
         if (diff != null)
         {
             if (!(diff instanceof COSArray))
@@ -253,10 +253,10 @@ public class Type3FontValidator extends FontValidator<Type3Container>
             // ---- The DictionaryEncoding object doesn't throw exception if the
             // Differences isn't well formed.
             // So check if the array has the right format.
-            COSArray diffArray = (COSArray) diff;
+            final COSArray diffArray = (COSArray) diff;
             for (int i = 0; i < diffArray.size(); ++i)
             {
-                COSBase item = diffArray.get(i);
+                final COSBase item = diffArray.get(i);
                 if (!(item instanceof COSInteger || item instanceof COSName))
                 {
                     // ---- Error, the Differences array is invalid
@@ -279,7 +279,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      */
     private void checkCharProcsAndMetrics()
     {
-        List<Float> widths = getWidths(font);
+        final List<Float> widths = getWidths(font);
         if (widths == null || widths.isEmpty())
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
@@ -287,7 +287,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
             return;
         }
 
-        COSDictionary charProcs = fontDictionary.getCOSDictionary(COSName.CHAR_PROCS);
+        final COSDictionary charProcs = fontDictionary.getCOSDictionary(COSName.CHAR_PROCS);
         if (charProcs == null)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
@@ -295,15 +295,15 @@ public class Type3FontValidator extends FontValidator<Type3Container>
             return;
         }
 
-        int fc = font.getCOSObject().getInt(COSName.FIRST_CHAR, -1);
-        int lc = font.getCOSObject().getInt(COSName.LAST_CHAR, -1);
+        final int fc = font.getCOSObject().getInt(COSName.FIRST_CHAR, -1);
+        final int lc = font.getCOSObject().getInt(COSName.LAST_CHAR, -1);
 
         /*
          * wArr length = (lc - fc) + 1 and it is an array of int. 
          * If FirstChar is greater than LastChar, the validation
          * will fail because of the array will have an expected size &lt;= 0.
          */
-        int expectedLength = (lc - fc) + 1;
+        final int expectedLength = (lc - fc) + 1;
         if (widths.size() != expectedLength)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
@@ -315,15 +315,15 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         // Check width consistency
         for (int i = 0; i < expectedLength; i++)
         {
-            int code = fc + i;
-            float width = widths.get(i);
+            final int code = fc + i;
+            final float width = widths.get(i);
 
-            PDType3CharProc charProc = getCharProc(code);
+            final PDType3CharProc charProc = getCharProc(code);
             if (charProc != null)
             {
                 try
                 {
-                    float fontProgramWidth = getWidthFromCharProc(charProc);
+                    final float fontProgramWidth = getWidthFromCharProc(charProc);
                     if (Math.abs(width - fontProgramWidth) < 0.001f)
                     {
                         // Glyph is OK, we keep the CID.
@@ -335,7 +335,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                     }
                     else
                     {
-                        GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, code,
+                        final GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, code,
                                 font.getName() + ": The character with CID " + code
                                 + " should have a width equals to " + width + ", but has "
                                 + fontProgramWidth);
@@ -359,9 +359,9 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         }
     }
 
-    public List<Float> getWidths(PDFont font)
+    public List<Float> getWidths(final PDFont font)
     {
-        COSArray array = (COSArray) font.getCOSObject().getDictionaryObject(COSName.WIDTHS);
+        final COSArray array = (COSArray) font.getCOSObject().getDictionaryObject(COSName.WIDTHS);
         if (array != null)
         {
             return array.toCOSNumberFloatList();
@@ -369,14 +369,14 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         return Collections.emptyList();
     }
 
-    private PDType3CharProc getCharProc(int code)
+    private PDType3CharProc getCharProc(final int code)
     {
-        PDType3CharProc charProc = font.getCharProc(code);
+        final PDType3CharProc charProc = font.getCharProc(code);
         if (charProc == null)
         {
             // There are no character description, we declare the Glyph as Invalid. If the character
             // is used in a Stream, the GlyphDetail will throw an exception.
-            GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, code,
+            final GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, code,
                     font.getName() + ": The CharProcs \"" + font.getEncoding().getName(code)  + "\" doesn't exist");
             this.fontContainer.markAsInvalid(code, glyphEx);
         }
@@ -388,10 +388,10 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      * 
      * @return the width of the character
      */
-    private float getWidthFromCharProc(PDType3CharProc charProc) throws IOException
+    private float getWidthFromCharProc(final PDType3CharProc charProc) throws IOException
     {
-        PreflightPath vPath = context.getValidationPath();
-        PreflightType3Stream parser = new PreflightType3Stream(context, vPath.getClosestPathElement(PDPage.class), charProc);
+        final PreflightPath vPath = context.getValidationPath();
+        final PreflightType3Stream parser = new PreflightType3Stream(context, vPath.getClosestPathElement(PDPage.class), charProc);
         parser.showType3Character(charProc);
         return parser.getWidth();
     }
@@ -402,7 +402,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      */
     private void checkResources() throws ValidationException
     {
-        COSBase resources = this.fontDictionary.getDictionaryObject(COSName.RESOURCES);
+        final COSBase resources = this.fontDictionary.getDictionaryObject(COSName.RESOURCES);
         if (resources != null)
         {
             if (!(resources instanceof COSDictionary))
@@ -411,26 +411,26 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                         font.getName() + ": The Resources element isn't a dictionary"));
                 return;
             }
-            COSDictionary dictionary = (COSDictionary) resources;
+            final COSDictionary dictionary = (COSDictionary) resources;
             // process Fonts and XObjects
             ContextHelper.validateElement(context, new PDResources(dictionary),
                     RESOURCES_PROCESS);
-            COSDictionary dicFonts = dictionary.getCOSDictionary(COSName.FONT);
+            final COSDictionary dicFonts = dictionary.getCOSDictionary(COSName.FONT);
 
             if (dicFonts != null)
             {
                 /*
                  * Check that all referenced object are present in the PDF file
                  */
-                Set<COSName> keyList = dicFonts.keySet();
-                for (COSName key : keyList)
+                final Set<COSName> keyList = dicFonts.keySet();
+                for (final COSName key : keyList)
                 {
 
-                    COSDictionary xObjFont = dicFonts.getCOSDictionary(key);
+                    final COSDictionary xObjFont = dicFonts.getCOSDictionary(key);
                     try
                     {
-                        PDFont aFont = PDFontFactory.createFont(xObjFont);
-                        FontContainer<?> aContainer = this.context.getFontContainer(aFont.getCOSObject());
+                        final PDFont aFont = PDFontFactory.createFont(xObjFont);
+                        final FontContainer<?> aContainer = this.context.getFontContainer(aFont.getCOSObject());
                         // another font is used in the Type3, check if the font is valid.
                         if (!aContainer.isValid())
                         {

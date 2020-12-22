@@ -46,7 +46,7 @@ public final class PDTransition extends PDDictionaryWrapper
      * 
      * @param style
      */
-    public PDTransition(PDTransitionStyle style)
+    public PDTransition(final PDTransitionStyle style)
     {
         super();
         getCOSObject().setName(COSName.TYPE, COSName.TRANS.getName());
@@ -58,7 +58,7 @@ public final class PDTransition extends PDDictionaryWrapper
      * 
      * @param dictionary
      */
-    public PDTransition(COSDictionary dictionary)
+    public PDTransition(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -86,7 +86,7 @@ public final class PDTransition extends PDDictionaryWrapper
      * Sets the dimension in which the specified transition effect shall occur. Only for {@link PDTransitionStyle#Split}
      * and {@link PDTransitionStyle#Blinds}.
      */
-    public void setDimension(PDTransitionDimension dimension)
+    public void setDimension(final PDTransitionDimension dimension)
     {
         getCOSObject().setName(COSName.DM, dimension.name());
     }
@@ -105,7 +105,7 @@ public final class PDTransition extends PDDictionaryWrapper
      * Sets the direction of motion for the specified transition effect. Only for {@link PDTransitionStyle#Split},
      * {@link PDTransitionStyle#Blinds} and {@link PDTransitionStyle#Fly}.
      */
-    public void setMotion(PDTransitionMotion motion)
+    public void setMotion(final PDTransitionMotion motion)
     {
         getCOSObject().setName(COSName.M, motion.name());
     }
@@ -117,7 +117,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public COSBase getDirection()
     {
-        COSBase item = getCOSObject().getItem(COSName.DI);
+        final COSBase item = getCOSObject().getItem(COSName.DI);
         if (item == null)
         {
             return COSInteger.ZERO;
@@ -130,7 +130,7 @@ public final class PDTransition extends PDDictionaryWrapper
      * {@link PDTransitionStyle#Glitter}, {@link PDTransitionStyle#Fly}, {@link PDTransitionStyle#Cover},
      * {@link PDTransitionStyle#Uncover} and {@link PDTransitionStyle#Push}.
      */
-    public void setDirection(PDTransitionDirection direction)
+    public void setDirection(final PDTransitionDirection direction)
     {
         getCOSObject().setItem(COSName.DI, direction.getCOSBase());
     }
@@ -146,7 +146,7 @@ public final class PDTransition extends PDDictionaryWrapper
     /**
      * @param duration The duration of the transition effect, in seconds.
      */
-    public void setDuration(float duration)
+    public void setDuration(final float duration)
     {
         getCOSObject().setItem(COSName.D, new COSFloat(duration));
     }
@@ -164,7 +164,7 @@ public final class PDTransition extends PDDictionaryWrapper
      * @param scale The starting or ending scale at which the changes shall be drawn. Only for
      * {@link PDTransitionStyle#Fly}.
      */
-    public void setFlyScale(float scale)
+    public void setFlyScale(final float scale)
     {
         getCOSObject().setItem(COSName.SS, new COSFloat(scale));
     }
@@ -182,7 +182,7 @@ public final class PDTransition extends PDDictionaryWrapper
      * @param opaque If true, the area that shall be flown in is rectangular and opaque. Only for
      * {@link PDTransitionStyle#Fly}.
      */
-    public void setFlyAreaOpaque(boolean opaque)
+    public void setFlyAreaOpaque(final boolean opaque)
     {
         getCOSObject().setItem(COSName.B, COSBoolean.getBoolean(opaque));
     }

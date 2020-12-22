@@ -76,7 +76,7 @@ public class PDBorderStyleDictionary implements COSObjectable
      *
      * @param dict a border style dictionary.
      */
-    public PDBorderStyleDictionary(COSDictionary dict)
+    public PDBorderStyleDictionary(final COSDictionary dict)
     {
         dictionary = dict;
     }
@@ -103,7 +103,7 @@ public class PDBorderStyleDictionary implements COSObjectable
      *
      * @param w float the width in points
      */
-    public void setWidth(float w)
+    public void setWidth(final float w)
     {
         // PDFBOX-3929 workaround 
         if (Float.compare(w, (int) w) == 0)
@@ -137,7 +137,7 @@ public class PDBorderStyleDictionary implements COSObjectable
      *
      * @param s the border style to use
      */
-    public void setStyle(String s)
+    public void setStyle(final String s)
     {
         getCOSObject().setName(COSName.S, s);
     }
@@ -157,7 +157,7 @@ public class PDBorderStyleDictionary implements COSObjectable
      *
      * @param dashArray the dash style to use
      */
-    public void setDashStyle(COSArray dashArray)
+    public void setDashStyle(final COSArray dashArray)
     {
         COSArray array = null;
         if (dashArray != null)

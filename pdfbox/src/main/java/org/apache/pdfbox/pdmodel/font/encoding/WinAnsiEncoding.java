@@ -267,7 +267,7 @@ public class WinAnsiEncoding extends Encoding
      */
     public WinAnsiEncoding()
     {
-        for (Object[] encodingEntry : WIN_ANSI_ENCODING_TABLE)
+        for (final Object[] encodingEntry : WIN_ANSI_ENCODING_TABLE)
         {
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }

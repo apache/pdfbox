@@ -33,7 +33,7 @@ public abstract class FontValidator<T extends FontContainer>
     protected PreflightContext context;
     protected FontDescriptorHelper<T> descriptorHelper;
 
-    public FontValidator(PreflightContext context, COSDictionary dict, T fContainer)
+    public FontValidator(final PreflightContext context, final COSDictionary dict, final T fContainer)
     {
         super();
         this.context = context;

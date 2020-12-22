@@ -44,7 +44,7 @@ public class PostScriptTable extends TTFTable
      */
     public static final String TAG = "post";
 
-    PostScriptTable(TrueTypeFont font)
+    PostScriptTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -57,7 +57,7 @@ public class PostScriptTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
         formatType = data.read32Fixed();
         italicAngle = data.read32Fixed();
@@ -79,13 +79,13 @@ public class PostScriptTable extends TTFTable
         }
         else if (Float.compare(formatType, 2.0f) == 0)
         {
-            int numGlyphs = data.readUnsignedShort();
-            int[] glyphNameIndex = new int[numGlyphs];
+            final int numGlyphs = data.readUnsignedShort();
+            final int[] glyphNameIndex = new int[numGlyphs];
             glyphNames = new String[numGlyphs];
             int maxIndex = Integer.MIN_VALUE;
             for (int i = 0; i < numGlyphs; i++)
             {
-                int index = data.readUnsignedShort();
+                final int index = data.readUnsignedShort();
                 glyphNameIndex[i] = index;
                 // PDFBOX-808: Index numbers between 32768 and 65535 are
                 // reserved for future use, so we should just ignore them
@@ -100,7 +100,7 @@ public class PostScriptTable extends TTFTable
                 nameArray = new String[maxIndex - WGL4Names.NUMBER_OF_MAC_GLYPHS + 1];
                 for (int i = 0; i < maxIndex - WGL4Names.NUMBER_OF_MAC_GLYPHS + 1; i++)
                 {
-                    int numberOfChars = data.readUnsignedByte();
+                    final int numberOfChars = data.readUnsignedByte();
                     try
                     {
                         nameArray[i] = data.readString(numberOfChars);
@@ -120,7 +120,7 @@ public class PostScriptTable extends TTFTable
             }
             for (int i = 0; i < numGlyphs; i++)
             {
-                int index = glyphNameIndex[i];
+                final int index = glyphNameIndex[i];
                 if (index >= 0 && index < WGL4Names.NUMBER_OF_MAC_GLYPHS)
                 {
                     glyphNames[i] = WGL4Names.MAC_GLYPH_NAMES[index];
@@ -139,19 +139,19 @@ public class PostScriptTable extends TTFTable
         }
         else if (Float.compare(formatType, 2.5f) == 0)
         {
-            int[] glyphNameIndex = new int[ttf.getNumberOfGlyphs()];
+            final int[] glyphNameIndex = new int[ttf.getNumberOfGlyphs()];
             for (int i = 0; i < glyphNameIndex.length; i++)
             {
-                int offset = data.readSignedByte();
+                final int offset = data.readSignedByte();
                 glyphNameIndex[i] = i + 1 + offset;
             }
             glyphNames = new String[glyphNameIndex.length];
             for (int i = 0; i < glyphNames.length; i++)
             {
-                int index = glyphNameIndex[i];
+                final int index = glyphNameIndex[i];
                 if (index >= 0 && index < WGL4Names.NUMBER_OF_MAC_GLYPHS)
                 {
-                    String name = WGL4Names.MAC_GLYPH_NAMES[index];
+                    final String name = WGL4Names.MAC_GLYPH_NAMES[index];
                     if (name != null)
                     {
                         glyphNames[i] = name;
@@ -183,7 +183,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @param formatTypeValue The formatType to set.
      */
-    public void setFormatType(float formatTypeValue)
+    public void setFormatType(final float formatTypeValue)
     {
         this.formatType = formatTypeValue;
     }
@@ -199,7 +199,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @param isFixedPitchValue The isFixedPitch to set.
      */
-    public void setIsFixedPitch(long isFixedPitchValue)
+    public void setIsFixedPitch(final long isFixedPitchValue)
     {
         this.isFixedPitch = isFixedPitchValue;
     }
@@ -215,7 +215,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @param italicAngleValue The italicAngle to set.
      */
-    public void setItalicAngle(float italicAngleValue)
+    public void setItalicAngle(final float italicAngleValue)
     {
         this.italicAngle = italicAngleValue;
     }
@@ -231,7 +231,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @param maxMemType1Value The maxMemType1 to set.
      */
-    public void setMaxMemType1(long maxMemType1Value)
+    public void setMaxMemType1(final long maxMemType1Value)
     {
         this.maxMemType1 = maxMemType1Value;
     }
@@ -247,7 +247,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @param maxMemType42Value The maxMemType42 to set.
      */
-    public void setMaxMemType42(long maxMemType42Value)
+    public void setMaxMemType42(final long maxMemType42Value)
     {
         this.maxMemType42 = maxMemType42Value;
     }
@@ -263,7 +263,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @param mimMemType1Value The mimMemType1 to set.
      */
-    public void setMimMemType1(long mimMemType1Value)
+    public void setMimMemType1(final long mimMemType1Value)
     {
         this.mimMemType1 = mimMemType1Value;
     }
@@ -279,7 +279,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @param minMemType42Value The minMemType42 to set.
      */
-    public void setMinMemType42(long minMemType42Value)
+    public void setMinMemType42(final long minMemType42Value)
     {
         this.minMemType42 = minMemType42Value;
     }
@@ -295,7 +295,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @param underlinePositionValue The underlinePosition to set.
      */
-    public void setUnderlinePosition(short underlinePositionValue)
+    public void setUnderlinePosition(final short underlinePositionValue)
     {
         this.underlinePosition = underlinePositionValue;
     }
@@ -311,7 +311,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @param underlineThicknessValue The underlineThickness to set.
      */
-    public void setUnderlineThickness(short underlineThicknessValue)
+    public void setUnderlineThickness(final short underlineThicknessValue)
     {
         this.underlineThickness = underlineThicknessValue;
     }
@@ -327,7 +327,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @param glyphNamesValue The glyphNames to set.
      */
-    public void setGlyphNames(String[] glyphNamesValue)
+    public void setGlyphNames(final String[] glyphNamesValue)
     {
         this.glyphNames = glyphNamesValue;
     }
@@ -335,7 +335,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @return Returns the glyph name.
      */
-    public String getName(int gid)
+    public String getName(final int gid)
     {
         if (gid < 0 || glyphNames == null || gid >= glyphNames.length)
         {

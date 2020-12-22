@@ -29,7 +29,7 @@ public class MissingValidationProcessException extends ValidationException
      */
     private final String processName;
 
-    public MissingValidationProcessException(String process)
+    public MissingValidationProcessException(final String process)
     {
         super(process + " is missing, validation can't be done");
         this.processName = process;
