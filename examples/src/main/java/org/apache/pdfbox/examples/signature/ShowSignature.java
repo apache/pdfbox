@@ -348,6 +348,19 @@ public final class ShowSignature
         raf.close();
     }
 
+    /**
+     * Verify ETSI.RFC3161 TimeStampToken
+     *
+     * @param buf the byte sequence that has been signed
+     * @param contents the /Contents field as a COSString
+     * @throws CMSException
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     * @throws TSPException
+     * @throws OperatorCreationException
+     * @throws CertificateVerificationException
+     * @throws CertificateException 
+     */
     private void verifyETSIdotRFC3161(byte[] buf, byte[] contents)
             throws CertificateException, CMSException, IOException, OperatorCreationException,
             TSPException, NoSuchAlgorithmException, CertificateVerificationException
