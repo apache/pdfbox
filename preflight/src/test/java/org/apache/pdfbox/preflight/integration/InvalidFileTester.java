@@ -57,8 +57,7 @@ public class InvalidFileTester
     /**
      * Prepare the test for one file
      * 
-     * @param path  pdf/a file to test
-     * @param error expected error for this test
+     * @param resultKeyFile  The result key file
      * @throws Exception
      */
     public InvalidFileTester(String resultKeyFile) throws Exception

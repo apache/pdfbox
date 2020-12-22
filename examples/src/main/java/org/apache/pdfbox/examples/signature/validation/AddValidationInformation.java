@@ -129,7 +129,6 @@ public class AddValidationInformation
      * Fetches certificate information from the last signature of the document and appends a DSS
      * with the validation information to the document.
      *
-     * @param document containing the Signature
      * @param filename in file to extract signature
      * @param output where to write the changed document
      * @throws IOException
