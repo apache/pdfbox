@@ -1240,7 +1240,7 @@ public class CFFParser
          */
         private static class Entry
         {
-            private List<Number> operands = new ArrayList<>();
+            private final List<Number> operands = new ArrayList<>();
             private CFFOperator operator = null;
 
             public Number getNumber(int index)

@@ -56,7 +56,7 @@ public class XmpSerializer
     private final TransformerFactory transformerFactory;
     private final DocumentBuilder documentBuilder;
 
-    private boolean parseTypeResourceForLi = true;
+    private final boolean parseTypeResourceForLi = true;
 
     /**
      * Default constructor.

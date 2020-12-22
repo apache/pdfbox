@@ -64,7 +64,8 @@ public final class OverlayPDF implements Callable<Integer>
     @Option(names = "-useAllPages", description = "overlay file used for overlay, all pages are used by simply repeating them")
     private File useAllPages;
 
-    @Option(names = "-page", description = "overlay file used for the given page number, may occur more than once")    
+    @Option(names = "-page", description = "overlay file used for the given page number, may occur more than once")
+    final
     Map<Integer, String> specificPageOverlayFile = new HashMap<>();
 
     @Option(names = "-position", description = "where to put the overlay file: foreground or background (default: ${DEFAULT-VALUE})")    

@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
  */
 public class FDFDocument implements Closeable
 {
-    private COSDocument document;
+    private final COSDocument document;
 
     /**
      * Constructor, creates a new FDF document.

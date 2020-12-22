@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
  */
 public class FDFCatalog implements COSObjectable
 {
-    private COSDictionary catalog;
+    private final COSDictionary catalog;
 
     /**
      * Default constructor.

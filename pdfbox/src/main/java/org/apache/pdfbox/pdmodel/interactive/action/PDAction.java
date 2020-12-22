@@ -42,7 +42,7 @@ public abstract class PDAction implements PDDestinationOrAction
     /**
      * The action dictionary.
      */
-    protected COSDictionary action;
+    protected final COSDictionary action;
 
     /**
      * Default constructor.

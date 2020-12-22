@@ -35,7 +35,7 @@ import org.apache.pdfbox.io.IOUtils;
  */
 class CMSProcessableInputStream implements CMSTypedData
 {
-    private InputStream in;
+    private final InputStream in;
     private final ASN1ObjectIdentifier contentType;
 
     CMSProcessableInputStream(InputStream is)

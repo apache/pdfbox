@@ -33,8 +33,8 @@ import org.apache.pdfbox.preflight.font.container.FontContainer;
 
 public abstract class SimpleFontValidator<T extends FontContainer> extends FontValidator<T>
 {
-    protected PDFontLike font;
-    protected COSDictionary fontDictionary;
+    protected final PDFontLike font;
+    protected final COSDictionary fontDictionary;
 
     public SimpleFontValidator(PreflightContext context, PDFontLike font, COSDictionary fontDictionary, T fContainer)
     {

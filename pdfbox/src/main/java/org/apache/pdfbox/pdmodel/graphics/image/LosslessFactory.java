@@ -53,7 +53,7 @@ public final class LosslessFactory
     /** 
      * Internal, only for benchmark purpose
      */
-    static boolean usePredictorEncoder = true;
+    static final boolean usePredictorEncoder = true;
 
     private LosslessFactory()
     {

@@ -176,7 +176,7 @@ public class PDFDebugger extends JFrame
     private JMenuItem findPreviousMenuItem;
     
     // configuration
-    public static Properties configuration = new Properties();
+    public static final Properties configuration = new Properties();
     
     /**
      * Constructor.

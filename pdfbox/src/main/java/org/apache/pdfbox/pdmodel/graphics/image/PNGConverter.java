@@ -492,7 +492,7 @@ final class PNGConverter
     private static class MultipleInputStream extends InputStream
     {
 
-        List<InputStream> inputStreams = new ArrayList<>();
+        final List<InputStream> inputStreams = new ArrayList<>();
         int currentStreamIdx;
         InputStream currentStream;
 

@@ -34,10 +34,10 @@ import java.util.Map;
  */
 public class RandomAccessReadBufferedFile implements RandomAccessRead
 {
-    private int pageSizeShift = 12;
-    private int pageSize = 1 << pageSizeShift;
-    private long pageOffsetMask = -1L << pageSizeShift;
-    private int maxCachedPages = 1000;
+    private final int pageSizeShift = 12;
+    private final int pageSize = 1 << pageSizeShift;
+    private final long pageOffsetMask = -1L << pageSizeShift;
+    private final int maxCachedPages = 1000;
 
     private ByteBuffer lastRemovedCachePage = null;
 

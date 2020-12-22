@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 class PDFDocEncodingTest
 {
 
-    static List<String> deviations = new ArrayList<>();
+    static final List<String> deviations = new ArrayList<>();
     
     static
     {

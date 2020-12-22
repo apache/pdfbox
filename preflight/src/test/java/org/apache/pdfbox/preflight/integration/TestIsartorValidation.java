@@ -49,7 +49,7 @@ class TestIsartorValidation
 
     private static final String ISARTOR_FILES = "isartor.files";
 
-    protected static Log staticLogger = LogFactory.getLog("Test");
+    protected static final Log staticLogger = LogFactory.getLog("Test");
 
     private static InvalidFileTester tester;
 

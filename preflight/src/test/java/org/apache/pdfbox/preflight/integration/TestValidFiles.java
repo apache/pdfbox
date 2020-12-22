@@ -54,7 +54,7 @@ class TestValidFiles
 
     protected File path;
 
-    protected static Log staticLogger = LogFactory.getLog("Test");
+    protected static final Log staticLogger = LogFactory.getLog("Test");
 
     protected Log logger = null;
 

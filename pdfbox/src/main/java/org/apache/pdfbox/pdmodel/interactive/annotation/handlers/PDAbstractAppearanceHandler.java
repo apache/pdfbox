@@ -47,7 +47,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 {
     private final PDAnnotation annotation;
-    protected PDDocument document;
+    protected final PDDocument document;
 
     /**
      * Line ending styles where the line has to be drawn shorter (minus line width).

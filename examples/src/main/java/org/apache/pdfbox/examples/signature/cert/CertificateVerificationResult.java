@@ -28,7 +28,7 @@ import java.security.cert.PKIXCertPathBuilderResult;
  */
 public class CertificateVerificationResult
 {
-    private boolean valid;
+    private final boolean valid;
     private PKIXCertPathBuilderResult result;
     private Throwable exception;
 

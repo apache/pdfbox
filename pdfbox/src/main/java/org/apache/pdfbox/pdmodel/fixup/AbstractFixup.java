@@ -20,7 +20,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 public abstract class AbstractFixup implements PDDocumentFixup
 { 
-    protected PDDocument document; 
+    protected final PDDocument document;
 
     protected AbstractFixup(PDDocument document)
     { 

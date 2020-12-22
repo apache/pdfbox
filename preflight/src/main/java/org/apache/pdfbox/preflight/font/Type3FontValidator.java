@@ -58,8 +58,8 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 public class Type3FontValidator extends FontValidator<Type3Container>
 {
-    protected PDType3Font font;
-    protected COSDictionary fontDictionary;
+    protected final PDType3Font font;
+    protected final COSDictionary fontDictionary;
 
     public Type3FontValidator(PreflightContext context, PDType3Font font)
     {

@@ -34,7 +34,7 @@ public abstract class PDPageDestination extends PDDestination
     /**
      * Storage for the page destination.
      */
-    protected COSArray array;
+    protected final COSArray array;
 
     /**
      * Constructor to create empty page destination.

@@ -86,9 +86,9 @@ import java.util.List;
 public class OSXAdapter implements InvocationHandler
 {
 
-    protected Object targetObject;
-    protected Method targetMethod;
-    protected String proxySignature;
+    protected final Object targetObject;
+    protected final Method targetMethod;
+    protected final String proxySignature;
 
     static Object macOSXApplication;
     

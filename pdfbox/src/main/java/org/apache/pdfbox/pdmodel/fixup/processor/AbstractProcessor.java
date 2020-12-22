@@ -20,7 +20,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 public abstract class AbstractProcessor implements PDDocumentProcessor
 { 
-    protected PDDocument document; 
+    protected final PDDocument document;
 
     protected AbstractProcessor(PDDocument document)
     { 

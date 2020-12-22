@@ -75,11 +75,11 @@ public class TextToPDF implements Callable<Integer>
     private boolean landscape = false;
 
     @Option(names = "-pageSize", description = "the page size to use. \nCandidates: ${COMPLETION-CANDIDATES} (default: ${DEFAULT-VALUE})")
-    private PageSizes pageSize = PageSizes.LETTER;
+    private final PageSizes pageSize = PageSizes.LETTER;
 
     @Option(names = "-standardFont", 
         description = "the font to use for the text. Either this or -ttf should be specified but not both.\nCandidates: ${COMPLETION-CANDIDATES} (default: ${DEFAULT-VALUE})")
-    private Standard14Fonts standardFont = Standard14Fonts.HELVETICA;
+    private final Standard14Fonts standardFont = Standard14Fonts.HELVETICA;
 
     @Option(names = "-ttf", paramLabel="<ttf file>", description = "the TTF font to use for the text. Either this or -standardFont should be specified but not both.")
     private File ttf;

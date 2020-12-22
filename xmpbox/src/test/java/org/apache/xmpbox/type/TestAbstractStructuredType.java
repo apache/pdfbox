@@ -48,12 +48,12 @@ class TestAbstractStructuredType
 
     }
 
-    XMPMetadata xmp = XMPMetadata.createXMPMetadata();
+    final XMPMetadata xmp = XMPMetadata.createXMPMetadata();
 
     public static final String MY_NS = "http://www.apache.org/test#";
     public static final String MY_PREFIX = "test";
 
-    protected MyStructuredType st = new MyStructuredType(xmp, MY_NS, MY_PREFIX);
+    protected final MyStructuredType st = new MyStructuredType(xmp, MY_NS, MY_PREFIX);
 
     @Test
     void validate() throws Exception

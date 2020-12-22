@@ -65,7 +65,7 @@ public class TestPDFToImage
     static String inDir = "src/test/resources/input/rendering";
     static String outDir = "target/test-output/rendering/";
     
-    String filename;
+    final String filename;
 
     /**
      * Test class constructor.

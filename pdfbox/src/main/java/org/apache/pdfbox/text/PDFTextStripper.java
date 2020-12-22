@@ -164,7 +164,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     protected ArrayList<List<TextPosition>> charactersByArticle = new ArrayList<>();
 
-    private Map<String, TreeMap<Float, TreeSet<Float>>> characterListMapping = new HashMap<>();
+    private final Map<String, TreeMap<Float, TreeSet<Float>>> characterListMapping = new HashMap<>();
 
     protected PDDocument document;
     protected Writer output;
@@ -1971,7 +1971,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     private static final class LineItem
     {
-        public static LineItem WORD_SEPARATOR = new LineItem();
+        public static final LineItem WORD_SEPARATOR = new LineItem();
 
         public static LineItem getWordSeparator()
         {
@@ -2009,8 +2009,8 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     private static final class WordWithTextPositions
     {
-        String text;
-        List<TextPosition> textPositions;
+        final String text;
+        final List<TextPosition> textPositions;
 
         WordWithTextPositions(String word, List<TextPosition> positions)
         {

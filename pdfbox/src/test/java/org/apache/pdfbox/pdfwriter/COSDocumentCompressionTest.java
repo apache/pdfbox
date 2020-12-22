@@ -46,8 +46,8 @@ import java.util.Map;
 class COSDocumentCompressionTest
 {
 
-    static File inDir = new File("src/test/resources/input/compression/");
-    static File outDir = new File("target/test-output/compression/");
+    static final File inDir = new File("src/test/resources/input/compression/");
+    static final File outDir = new File("target/test-output/compression/");
 
     public COSDocumentCompressionTest()
     {
