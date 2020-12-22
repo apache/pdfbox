@@ -84,11 +84,11 @@ public class TextToPDF implements Callable<Integer>
     @Option(names = "-ttf", paramLabel="<ttf file>", description = "the TTF font to use for the text. Either this or -standardFont should be specified but not both.")
     private File ttf;
 
-    @Parameters(paramLabel = "outputfile", description = "the generated PDF file.")
-    private File outfile;
-
     @Parameters(paramLabel = "textfile", description = "the text file to convert.")
     private File infile;
+
+    @Parameters(paramLabel = "outputfile", index="1", description = "the generated PDF file.")
+    private File outfile;
 
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
