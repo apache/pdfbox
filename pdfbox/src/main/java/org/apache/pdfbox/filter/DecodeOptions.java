@@ -52,7 +52,7 @@ public class DecodeOptions
      *
      * @param sourceRegion Region of the source image that should be decoded
      */
-    public DecodeOptions(Rectangle sourceRegion)
+    public DecodeOptions(final Rectangle sourceRegion)
     {
         this.sourceRegion = sourceRegion;
     }
@@ -66,7 +66,7 @@ public class DecodeOptions
      * @param width Width of the region to be decoded
      * @param height Height of the region to be decoded
      */
-    public DecodeOptions(int x, int y, int width, int height)
+    public DecodeOptions(final int x, final int y, final int width, final int height)
     {
         this(new Rectangle(x, y, width, height));
     }
@@ -78,7 +78,7 @@ public class DecodeOptions
      * @param subsampling The number of rows and columns to advance in the source for each pixel in
      * the decoded image.
      */
-    public DecodeOptions(int subsampling)
+    public DecodeOptions(final int subsampling)
     {
         subsamplingX = subsampling;
         subsamplingY = subsampling;
@@ -103,7 +103,7 @@ public class DecodeOptions
      * @param sourceRegion The source region to decode, or null if the entire image should be
      * decoded.
      */
-    public void setSourceRegion(Rectangle sourceRegion)
+    public void setSourceRegion(final Rectangle sourceRegion)
     {
         this.sourceRegion = sourceRegion;
     }
@@ -124,7 +124,7 @@ public class DecodeOptions
      *
      * @param ssX The x-axis subsampling value
      */
-    public void setSubsamplingX(int ssX)
+    public void setSubsamplingX(final int ssX)
     {
         this.subsamplingX = ssX;
     }
@@ -144,7 +144,7 @@ public class DecodeOptions
      *
      * @param ssY The y-axis subsampling value
      */
-    public void setSubsamplingY(int ssY)
+    public void setSubsamplingY(final int ssY)
     {
         this.subsamplingY = ssY;
     }
@@ -164,7 +164,7 @@ public class DecodeOptions
      *
      * @param ssOffsetX The x-axis subsampling offset
      */
-    public void setSubsamplingOffsetX(int ssOffsetX)
+    public void setSubsamplingOffsetX(final int ssOffsetX)
     {
         this.subsamplingOffsetX = ssOffsetX;
     }
@@ -184,7 +184,7 @@ public class DecodeOptions
      *
      * @param ssOffsetY The y-axis subsampling offset
      */
-    public void setSubsamplingOffsetY(int ssOffsetY)
+    public void setSubsamplingOffsetY(final int ssOffsetY)
     {
         this.subsamplingOffsetY = ssOffsetY;
     }
@@ -210,7 +210,7 @@ public class DecodeOptions
      * Usually a filter will only call this with the value <code>true</code>, as the default value
      * for the flag is <code>false</code>.
      */
-    void setFilterSubsampled(boolean filterSubsampled)
+    void setFilterSubsampled(final boolean filterSubsampled)
     {
         this.filterSubsampled = filterSubsampled;
     }
@@ -220,43 +220,43 @@ public class DecodeOptions
      */
     private static class FinalDecodeOptions extends DecodeOptions
     {
-        FinalDecodeOptions(boolean filterSubsampled)
+        FinalDecodeOptions(final boolean filterSubsampled)
         {
             super.setFilterSubsampled(filterSubsampled);
         }
 
         @Override
-        public void setSourceRegion(Rectangle sourceRegion)
+        public void setSourceRegion(final Rectangle sourceRegion)
         {
             throw new UnsupportedOperationException("This instance may not be modified.");
         }
 
         @Override
-        public void setSubsamplingX(int ssX)
+        public void setSubsamplingX(final int ssX)
         {
             throw new UnsupportedOperationException("This instance may not be modified.");
         }
 
         @Override
-        public void setSubsamplingY(int ssY)
+        public void setSubsamplingY(final int ssY)
         {
             throw new UnsupportedOperationException("This instance may not be modified.");
         }
 
         @Override
-        public void setSubsamplingOffsetX(int ssOffsetX)
+        public void setSubsamplingOffsetX(final int ssOffsetX)
         {
             throw new UnsupportedOperationException("This instance may not be modified.");
         }
 
         @Override
-        public void setSubsamplingOffsetY(int ssOffsetY)
+        public void setSubsamplingOffsetY(final int ssOffsetY)
         {
             throw new UnsupportedOperationException("This instance may not be modified.");
         }
 
         @Override
-        void setFilterSubsampled(boolean filterSubsampled)
+        void setFilterSubsampled(final boolean filterSubsampled)
         {
             // Silently ignore the request.
         }

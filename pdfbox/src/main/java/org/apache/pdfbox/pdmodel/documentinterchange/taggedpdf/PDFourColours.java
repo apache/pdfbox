@@ -41,7 +41,7 @@ public class PDFourColours implements COSObjectable
         this.array.add(COSNull.NULL);
     }
 
-    public PDFourColours(COSArray array)
+    public PDFourColours(final COSArray array)
     {
         this.array = array;
         // ensure that array has 4 items
@@ -70,7 +70,7 @@ public class PDFourColours implements COSObjectable
      * 
      * @param colour the colour for the before edge
      */
-    public void setBeforeColour(PDGamma colour)
+    public void setBeforeColour(final PDGamma colour)
     {
         this.setColourByIndex(0, colour);
     }
@@ -90,7 +90,7 @@ public class PDFourColours implements COSObjectable
      * 
      * @param colour the colour for the after edge
      */
-    public void setAfterColour(PDGamma colour)
+    public void setAfterColour(final PDGamma colour)
     {
         this.setColourByIndex(1, colour);
     }
@@ -110,7 +110,7 @@ public class PDFourColours implements COSObjectable
      * 
      * @param colour the colour for the start edge
      */
-    public void setStartColour(PDGamma colour)
+    public void setStartColour(final PDGamma colour)
     {
         this.setColourByIndex(2, colour);
     }
@@ -130,7 +130,7 @@ public class PDFourColours implements COSObjectable
      * 
      * @param colour the colour for the end edge
      */
-    public void setEndColour(PDGamma colour)
+    public void setEndColour(final PDGamma colour)
     {
         this.setColourByIndex(3, colour);
     }
@@ -152,10 +152,10 @@ public class PDFourColours implements COSObjectable
      * @param index edge index
      * @return the colour
      */
-    private PDGamma getColourByIndex(int index)
+    private PDGamma getColourByIndex(final int index)
     {
         PDGamma retval = null;
-        COSBase item = this.array.getObject(index);
+        final COSBase item = this.array.getObject(index);
         if (item instanceof COSArray)
         {
             retval = new PDGamma((COSArray) item);
@@ -169,9 +169,9 @@ public class PDFourColours implements COSObjectable
      * @param index the edge index
      * @param colour the colour
      */
-    private void setColourByIndex(int index, PDGamma colour)
+    private void setColourByIndex(final int index, final PDGamma colour)
     {
-        COSBase base;
+        final COSBase base;
         if (colour == null)
         {
             base = COSNull.NULL;

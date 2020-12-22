@@ -34,7 +34,7 @@ public class PDPropertyList implements COSObjectable
      * Creates a property list from the given dictionary.
      * @param dict COS dictionary
      */
-    public static PDPropertyList create(COSDictionary dict)
+    public static PDPropertyList create(final COSDictionary dict)
     {
         if (COSName.OCG.equals(dict.getItem(COSName.TYPE)))
         {
@@ -62,7 +62,7 @@ public class PDPropertyList implements COSObjectable
     /**
      * Constructor for subclasses.
      */
-    protected PDPropertyList(COSDictionary dict)
+    protected PDPropertyList(final COSDictionary dict)
     {
         this.dict = dict;
     }

@@ -40,13 +40,13 @@ public class NormalXReference extends AbstractXReference
      * @param key The {@link COSObjectKey}, that is represented by this entry.
      * @param object The {@link COSObject}, that is represented by this entry.
      */
-    public NormalXReference(long byteOffset, COSObjectKey key, COSBase object)
+    public NormalXReference(final long byteOffset, final COSObjectKey key, final COSBase object)
     {
         super(XReferenceType.NORMAL);
         this.byteOffset = byteOffset;
         this.key = key;
         this.object = object;
-        COSBase base = object instanceof COSObject ? ((COSObject) object).getObject() : object;
+        final COSBase base = object instanceof COSObject ? ((COSObject) object).getObject() : object;
         if (base instanceof COSStream)
         {
             objectStream = COSName.OBJ_STM.equals(((COSStream) base).getCOSName(COSName.TYPE));

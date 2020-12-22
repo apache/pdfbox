@@ -33,8 +33,8 @@ class PDICCBasedTest
     @Test
     void testConstructor()
     {
-        PDDocument doc = new PDDocument();
-        PDICCBased iccBased = new PDICCBased(doc);
+        final PDDocument doc = new PDDocument();
+        final PDICCBased iccBased = new PDICCBased(doc);
         assertEquals("ICCBased", iccBased.getName());
         assertNotNull(iccBased.getPDStream());
     }

@@ -62,8 +62,8 @@ class COSDocumentCompressionTest
     @Test
     void testCompressAcroformDoc() throws Exception
     {
-        File source = new File(inDir, "acroform.pdf");
-        File target = new File(outDir, "acroform.pdf");
+        final File source = new File(inDir, "acroform.pdf");
+        final File target = new File(outDir, "acroform.pdf");
 
         PDDocument document = Loader.loadPDF(source);
         try
@@ -80,8 +80,8 @@ class COSDocumentCompressionTest
         {
             assertEquals(1, document.getNumberOfPages(),
                     "The number of pages should not have changed, during compression.");
-            PDPage page = document.getPage(0);
-            List<PDAnnotation> annotations = page.getAnnotations();
+            final PDPage page = document.getPage(0);
+            final List<PDAnnotation> annotations = page.getAnnotations();
             assertEquals(13, annotations.size(),
                     "The number of annotations should not have changed");
             assertEquals("TextField", annotations.get(0).getCOSObject().getNameAsString(COSName.T),
@@ -137,8 +137,8 @@ class COSDocumentCompressionTest
     @Test
     void testCompressAttachmentsDoc() throws Exception
     {
-        File source = new File(inDir, "attachment.pdf");
-        File target = new File(outDir, "attachment.pdf");
+        final File source = new File(inDir, "attachment.pdf");
+        final File target = new File(outDir, "attachment.pdf");
 
         PDDocument document = Loader.loadPDF(source);
         try
@@ -155,11 +155,11 @@ class COSDocumentCompressionTest
         {
             assertEquals(2, document.getNumberOfPages(),
                     "The number of pages should not have changed, during compression.");
-            Map<String, PDComplexFileSpecification> embeddedFiles = document.getDocumentCatalog()
+            final Map<String, PDComplexFileSpecification> embeddedFiles = document.getDocumentCatalog()
                     .getNames().getEmbeddedFiles().getNames();
             assertEquals(1, embeddedFiles.size(),
                     "The document should have contained an attachment");
-            PDComplexFileSpecification attachment;
+            final PDComplexFileSpecification attachment;
             assertNotNull((attachment = embeddedFiles.get("A4Unicode.pdf")),
                     "The document should have contained 'A4Unicode.pdf'.");
             assertEquals(14997, attachment.getEmbeddedFile().getLength(),
@@ -179,8 +179,8 @@ class COSDocumentCompressionTest
     @Test
     void testCompressEncryptedDoc() throws Exception
     {
-        File source = new File(inDir, "unencrypted.pdf");
-        File target = new File(outDir, "encrypted.pdf");
+        final File source = new File(inDir, "unencrypted.pdf");
+        final File target = new File(outDir, "encrypted.pdf");
 
         PDDocument document = Loader.loadPDF(source, "user");
         try
@@ -208,15 +208,15 @@ class COSDocumentCompressionTest
     @Test
     void testAlteredDoc() throws Exception
     {
-        File source = new File(inDir, "unencrypted.pdf");
-        File target = new File(outDir, "altered.pdf");
+        final File source = new File(inDir, "unencrypted.pdf");
+        final File target = new File(outDir, "altered.pdf");
 
         PDDocument document = Loader.loadPDF(source);
         try
         {
-            PDPage page = new PDPage(new PDRectangle(100, 100));
+            final PDPage page = new PDPage(new PDRectangle(100, 100));
             document.addPage(page);
-            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            final PDPageContentStream contentStream = new PDPageContentStream(document, page);
 
             try
             {
@@ -233,7 +233,7 @@ class COSDocumentCompressionTest
 
             document.save(target);
         }
-        catch (Throwable t)
+        catch (final Throwable t)
         {
             t.printStackTrace();
         }
@@ -247,7 +247,7 @@ class COSDocumentCompressionTest
         {
             assertEquals(3, document.getNumberOfPages(),
                     "The number of pages should not have changed, during compression.");
-            PDPage page = document.getPage(2);
+            final PDPage page = document.getPage(2);
             assertEquals(43, page.getContentStreams().next().getLength(),
                     "The stream length of the new page is not as expected.");
         }

@@ -26,7 +26,7 @@ import org.apache.xmpbox.XMPMetadata;
 public class AgentNameType extends TextType
 {
 
-    public AgentNameType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    public AgentNameType(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String propertyName, final Object value)
     {
         super(metadata, namespaceURI, prefix, propertyName, value);
     }

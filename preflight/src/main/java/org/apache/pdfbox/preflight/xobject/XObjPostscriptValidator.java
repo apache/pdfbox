@@ -27,7 +27,7 @@ import org.apache.pdfbox.preflight.PreflightContext;
 public class XObjPostscriptValidator extends AbstractXObjValidator
 {
 
-    public XObjPostscriptValidator(PreflightContext context, PDPostScriptXObject xobj)
+    public XObjPostscriptValidator(final PreflightContext context, final PDPostScriptXObject xobj)
     {
         super(context, xobj.getCOSObject());
     }

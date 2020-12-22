@@ -34,7 +34,7 @@ class TestGotoAction extends AbstractTestAction
     @Test
     void testGoto_OK() throws Exception
     {
-        PDActionGoTo gotoAction = new PDActionGoTo();
+        final PDActionGoTo gotoAction = new PDActionGoTo();
         gotoAction.setDestination(new PDDestination()
         {
             @Override
@@ -50,7 +50,7 @@ class TestGotoAction extends AbstractTestAction
     @Test
     void testGoto_KO_invalidContent() throws Exception
     {
-        PDActionGoTo gotoAction = new PDActionGoTo();
+        final PDActionGoTo gotoAction = new PDActionGoTo();
         gotoAction.setDestination(new PDDestination()
         {
             @Override
@@ -66,7 +66,7 @@ class TestGotoAction extends AbstractTestAction
     @Test
     void testGoto_KO_missingD() throws Exception
     {
-        PDActionGoTo gotoAction = new PDActionGoTo();
+        final PDActionGoTo gotoAction = new PDActionGoTo();
         valid(gotoAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
     }
 }

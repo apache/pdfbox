@@ -31,7 +31,7 @@ public class SigningSupport implements ExternalSigningSupport, Closeable
 {
     private COSWriter cosWriter;
 
-    public SigningSupport(COSWriter cosWriter)
+    public SigningSupport(final COSWriter cosWriter)
     {
         this.cosWriter = cosWriter;
     }
@@ -43,7 +43,7 @@ public class SigningSupport implements ExternalSigningSupport, Closeable
     }
 
     @Override
-    public void setSignature(byte[] signature) throws IOException
+    public void setSignature(final byte[] signature) throws IOException
     {
         cosWriter.writeExternalSignature(signature);
     }

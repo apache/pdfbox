@@ -49,7 +49,7 @@ public final class PDLineDashPattern implements COSObjectable
      * @param array the dash array
      * @param phase the phase
      */
-    public PDLineDashPattern(COSArray array, int phase)
+    public PDLineDashPattern(final COSArray array, final int phase)
     {
         this.array = array.toFloatArray();
         this.phase = phase;
@@ -58,8 +58,8 @@ public final class PDLineDashPattern implements COSObjectable
     @Override
     public COSBase getCOSObject()
     {
-        COSArray cos = new COSArray();
-        COSArray patternArray = new COSArray();
+        final COSArray cos = new COSArray();
+        final COSArray patternArray = new COSArray();
         patternArray.setFloatArray(array);
         cos.add(patternArray);
         cos.add(COSInteger.get(phase));

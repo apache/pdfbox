@@ -54,8 +54,8 @@ public final class MemoryUsageSetting
      *                        <code>0</code>  or less will be ignored; if it is less than
      *                        maxMainMemoryBytes we use maxMainMemoryBytes value instead 
      */
-    private MemoryUsageSetting(boolean useMainMemory, boolean useTempFile,
-                        long maxMainMemoryBytes, long maxStorageBytes)
+    private MemoryUsageSetting(final boolean useMainMemory, final boolean useTempFile,
+                               final long maxMainMemoryBytes, final long maxStorageBytes)
     {
         // do some checks; adjust values as needed to get consistent setting
         boolean locUseMainMemory = useTempFile ? useMainMemory : true;
@@ -107,7 +107,7 @@ public final class MemoryUsageSetting
      *                           <code>-1</code> for no restriction;
      *                           <code>0</code> will also be interpreted here as no restriction
      */
-    public static MemoryUsageSetting setupMainMemoryOnly(long maxMainMemoryBytes)
+    public static MemoryUsageSetting setupMainMemoryOnly(final long maxMainMemoryBytes)
     {
         return new MemoryUsageSetting(true, false, maxMainMemoryBytes, maxMainMemoryBytes);
     }
@@ -129,7 +129,7 @@ public final class MemoryUsageSetting
      *                        <code>-1</code> for no restriction;
      *                        <code>0</code> will also be interpreted here as no restriction
      */
-    public static MemoryUsageSetting setupTempFileOnly(long maxStorageBytes)
+    public static MemoryUsageSetting setupTempFileOnly(final long maxStorageBytes)
     {
         return new MemoryUsageSetting(false, true, 0, maxStorageBytes);
     }
@@ -142,7 +142,7 @@ public final class MemoryUsageSetting
      *                           if <code>-1</code> this is the same as {@link #setupMainMemoryOnly()};
      *                           if <code>0</code> this is the same as {@link #setupTempFileOnly()}
      */
-    public static MemoryUsageSetting setupMixed(long maxMainMemoryBytes)
+    public static MemoryUsageSetting setupMixed(final long maxMainMemoryBytes)
     {
         return setupMixed(maxMainMemoryBytes, -1);
     }
@@ -158,7 +158,7 @@ public final class MemoryUsageSetting
      *                        <code>0</code>  or less will be ignored; if it is less than
      *                        maxMainMemoryBytes we use maxMainMemoryBytes value instead 
      */
-    public static MemoryUsageSetting setupMixed(long maxMainMemoryBytes, long maxStorageBytes)
+    public static MemoryUsageSetting setupMixed(final long maxMainMemoryBytes, final long maxStorageBytes)
     {
         return new MemoryUsageSetting(true, true, maxMainMemoryBytes, maxStorageBytes);
     }
@@ -173,14 +173,14 @@ public final class MemoryUsageSetting
      * @return a copy from this instance with the maximum memory/storage restrictions
      *         adjusted to the multiple usage
      */
-    public MemoryUsageSetting getPartitionedCopy(int parallelUseCount)
+    public MemoryUsageSetting getPartitionedCopy(final int parallelUseCount)
     {
-        long newMaxMainMemoryBytes = maxMainMemoryBytes <= 0 ? maxMainMemoryBytes : 
+        final long newMaxMainMemoryBytes = maxMainMemoryBytes <= 0 ? maxMainMemoryBytes :
                                                                maxMainMemoryBytes / parallelUseCount;
-        long newMaxStorageBytes = maxStorageBytes <= 0 ? maxStorageBytes :
+        final long newMaxStorageBytes = maxStorageBytes <= 0 ? maxStorageBytes :
                                                          maxStorageBytes / parallelUseCount;
                 
-        MemoryUsageSetting copy = new MemoryUsageSetting( useMainMemory, useTempFile,
+        final MemoryUsageSetting copy = new MemoryUsageSetting( useMainMemory, useTempFile,
                                                           newMaxMainMemoryBytes, newMaxStorageBytes );
         copy.tempDir = tempDir;
         
@@ -194,7 +194,7 @@ public final class MemoryUsageSetting
      * 
      * @return this instance
      */
-    public MemoryUsageSetting setTempDir(File tempDir)
+    public MemoryUsageSetting setTempDir(final File tempDir)
     {
         this.tempDir = tempDir;
         return this;

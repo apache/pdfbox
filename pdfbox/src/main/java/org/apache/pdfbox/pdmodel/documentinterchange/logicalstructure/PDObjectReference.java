@@ -66,7 +66,7 @@ public class PDObjectReference implements COSObjectable
      *
      * @param theDictionary The existing dictionary.
      */
-    public PDObjectReference(COSDictionary theDictionary)
+    public PDObjectReference(final COSDictionary theDictionary)
     {
         dictionary = theDictionary;
     }
@@ -91,7 +91,7 @@ public class PDObjectReference implements COSObjectable
      */
     public COSObjectable getReferencedObject()
     {
-        COSBase obj = this.getCOSObject().getDictionaryObject(COSName.OBJ);
+        final COSBase obj = this.getCOSObject().getDictionaryObject(COSName.OBJ);
         if (!(obj instanceof COSDictionary))
         {
             return null;
@@ -100,14 +100,14 @@ public class PDObjectReference implements COSObjectable
         {
             if (obj instanceof COSStream)
             {
-                PDXObject xobject = PDXObject.createXObject(obj, null); // <-- TODO: valid?
+                final PDXObject xobject = PDXObject.createXObject(obj, null); // <-- TODO: valid?
                 if (xobject != null)
                 {
                     return xobject;
                 }
             }
-            COSDictionary objDictionary  = (COSDictionary)obj;
-            PDAnnotation annotation = PDAnnotation.createAnnotation(obj);
+            final COSDictionary objDictionary  = (COSDictionary)obj;
+            final PDAnnotation annotation = PDAnnotation.createAnnotation(obj);
             /*
              * COSName.TYPE is optional, so if annotation is of type unknown and
              * COSName.TYPE is not COSName.ANNOT it still may be an annotation.
@@ -120,7 +120,7 @@ public class PDObjectReference implements COSObjectable
                 return annotation;
             }
         }
-        catch (IOException exception)
+        catch (final IOException exception)
         {
             LOG.debug("Couldn't get the referenced object - returning null instead", exception);
             // this can only happen if the target is an XObject.
@@ -133,7 +133,7 @@ public class PDObjectReference implements COSObjectable
      * 
      * @param annotation the referenced annotation
      */
-    public void setReferencedObject(PDAnnotation annotation)
+    public void setReferencedObject(final PDAnnotation annotation)
     {
         this.getCOSObject().setItem(COSName.OBJ, annotation);
     }
@@ -143,7 +143,7 @@ public class PDObjectReference implements COSObjectable
      * 
      * @param xobject the referenced XObject
      */
-    public void setReferencedObject(PDXObject xobject)
+    public void setReferencedObject(final PDXObject xobject)
     {
         this.getCOSObject().setItem(COSName.OBJ, xobject);
     }

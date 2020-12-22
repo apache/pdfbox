@@ -48,7 +48,7 @@ public class PDPageFitRectangleDestination extends PDPageDestination
      *
      * @param arr The destination array.
      */
-    public PDPageFitRectangleDestination( COSArray arr )
+    public PDPageFitRectangleDestination(final COSArray arr )
     {
         super( arr );
     }
@@ -69,7 +69,7 @@ public class PDPageFitRectangleDestination extends PDPageDestination
      * will be used.
      * @param x The left x coordinate.
      */
-    public void setLeft( int x )
+    public void setLeft(final int x )
     {
         array.growToSize( 3 );
         if( x == -1 )
@@ -98,7 +98,7 @@ public class PDPageFitRectangleDestination extends PDPageDestination
      * will be used.
      * @param y The bottom y coordinate.
      */
-    public void setBottom( int y )
+    public void setBottom(final int y )
     {
         array.growToSize( 6 );
         if( y == -1 )
@@ -127,7 +127,7 @@ public class PDPageFitRectangleDestination extends PDPageDestination
      * will be used.
      * @param x The right x coordinate.
      */
-    public void setRight( int x )
+    public void setRight(final int x )
     {
         array.growToSize( 6 );
         if( x == -1 )
@@ -157,7 +157,7 @@ public class PDPageFitRectangleDestination extends PDPageDestination
      * will be used.
      * @param y The top ycoordinate.
      */
-    public void setTop( int y )
+    public void setTop(final int y )
     {
         array.growToSize( 6 );
         if( y == -1 )

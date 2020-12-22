@@ -55,7 +55,7 @@ class XMPSchemaTester
     private final PropertyType type;
     private final Object value;
 
-    public XMPSchemaTester(XMPMetadata metadata, XMPSchema schema, Class<?> schemaClass, String property, PropertyType type, Object value)
+    public XMPSchemaTester(final XMPMetadata metadata, final XMPSchema schema, final Class<?> schemaClass, final String property, final PropertyType type, final Object value)
     {
         this.metadata = metadata;
         this.schema = schema;
@@ -65,12 +65,12 @@ class XMPSchemaTester
         this.value = value;
     }
 
-    public static PropertyType createPropertyType(Types type)
+    public static PropertyType createPropertyType(final Types type)
     {
         return TypeMapping.createPropertyType(type, Cardinality.Simple);
     }
 
-    public static PropertyType createPropertyType(Types type, Cardinality card)
+    public static PropertyType createPropertyType(final Types type, final Cardinality card)
     {
         return TypeMapping.createPropertyType(type, card);
     }
@@ -189,14 +189,14 @@ class XMPSchemaTester
         {
             throw new Exception("Unknown type : " + type);
         }
-        Field[] fields = schemaClass.getFields();
-        for (Field field : fields)
+        final Field[] fields = schemaClass.getFields();
+        for (final Field field : fields)
         {
             if (field.isAnnotationPresent(PropertyType.class))
             {
                 if (!field.get(schema).equals(property))
                 {
-                    PropertyType pt = field.getAnnotation(PropertyType.class);
+                    final PropertyType pt = field.getAnnotation(PropertyType.class);
                     if (pt.type() == Types.LangAlt)
                     {
                         // do not check method existence
@@ -216,12 +216,12 @@ class XMPSchemaTester
                     else
                     {
                         // type test
-                        PropertyType spt = retrievePropertyType(field.get(schema).toString());
-                        String getNameProperty = "get" + prepareName(field.get(schema).toString(), spt) + "Property";
+                        final PropertyType spt = retrievePropertyType(field.get(schema).toString());
+                        final String getNameProperty = "get" + prepareName(field.get(schema).toString(), spt) + "Property";
                         Method getMethod = schemaClass.getMethod(getNameProperty);
                         assertNull(getMethod.invoke(schema), getNameProperty + " should return null when testing " + property);
                         // value test
-                        String getNameValue = "get" + prepareName(field.get(schema).toString(), spt);
+                        final String getNameValue = "get" + prepareName(field.get(schema).toString(), spt);
                         getMethod = schemaClass.getMethod(getNameValue);
                         assertNotNull(getMethod, getNameValue + " method should exist");
                         assertNull(getMethod.invoke(schema), getNameValue + " should return null when testing " + property);
@@ -231,14 +231,14 @@ class XMPSchemaTester
         }
     }
 
-    protected PropertyType retrievePropertyType(String prop) throws IllegalArgumentException, IllegalAccessException
+    protected PropertyType retrievePropertyType(final String prop) throws IllegalArgumentException, IllegalAccessException
     {
-        Field[] fields = schemaClass.getFields();
-        for (Field field : fields)
+        final Field[] fields = schemaClass.getFields();
+        for (final Field field : fields)
         {
             if (field.isAnnotationPresent(PropertyType.class))
             {
-                PropertyType pt = field.getAnnotation(PropertyType.class);
+                final PropertyType pt = field.getAnnotation(PropertyType.class);
                 if (field.get(schema).equals(prop))
                 {
                     return pt;
@@ -248,18 +248,18 @@ class XMPSchemaTester
         return type;
     }
 
-    protected String firstUpper(String name)
+    protected String firstUpper(final String name)
     {
-        StringBuilder sb = new StringBuilder(name.length());
+        final StringBuilder sb = new StringBuilder(name.length());
         sb.append(name.substring(0, 1).toUpperCase());
         sb.append(name.substring(1));
         return sb.toString();
     }
 
-    protected String prepareName(String prop, PropertyType type)
+    protected String prepareName(final String prop, final PropertyType type)
     {
-        String fu = firstUpper(prop);
-        StringBuilder sb = new StringBuilder(fu.length() + 1);
+        final String fu = firstUpper(prop);
+        final StringBuilder sb = new StringBuilder(fu.length() + 1);
         sb.append(fu);
         if (fu.endsWith("s"))
         {
@@ -276,48 +276,48 @@ class XMPSchemaTester
         return sb.toString();
     }
 
-    protected String setMethod(String prop)
+    protected String setMethod(final String prop)
     {
-        StringBuilder sb = new StringBuilder(3 + prop.length());
+        final StringBuilder sb = new StringBuilder(3 + prop.length());
         sb.append("set").append(prepareName(prop, type)).append("Property");
         return sb.toString();
     }
 
-    protected String addMethod(String prop)
+    protected String addMethod(final String prop)
     {
-        String fu = firstUpper(prop);
-        StringBuilder sb = new StringBuilder(3 + prop.length());
+        final String fu = firstUpper(prop);
+        final StringBuilder sb = new StringBuilder(3 + prop.length());
         sb.append("add").append(fu);
         return sb.toString();
     }
 
-    protected String getMethod(String prop)
+    protected String getMethod(final String prop)
     {
-        String fu = firstUpper(prop);
-        StringBuilder sb = new StringBuilder(3 + prop.length());
+        final String fu = firstUpper(prop);
+        final StringBuilder sb = new StringBuilder(3 + prop.length());
         sb.append("get").append(fu).append("Property");
         return sb.toString();
     }
 
-    protected String setValueMethod(String prop)
+    protected String setValueMethod(final String prop)
     {
-        String fu = firstUpper(prop);
-        StringBuilder sb = new StringBuilder(8 + prop.length());
+        final String fu = firstUpper(prop);
+        final StringBuilder sb = new StringBuilder(8 + prop.length());
         sb.append("set").append(fu);
         return sb.toString();
     }
 
-    protected String getValueMethod(String prop)
+    protected String getValueMethod(final String prop)
     {
-        StringBuilder sb = new StringBuilder(8 + prop.length());
+        final StringBuilder sb = new StringBuilder(8 + prop.length());
         sb.append("get").append(prepareName(prop, type));
         return sb.toString();
     }
 
-    protected String addToValueMethod(String prop)
+    protected String addToValueMethod(final String prop)
     {
-        String fu = firstUpper(prop);
-        StringBuilder sb = new StringBuilder(10 + prop.length());
+        final String fu = firstUpper(prop);
+        final StringBuilder sb = new StringBuilder(10 + prop.length());
         sb.append("add").append(fu);
         return sb.toString();
 
@@ -325,145 +325,145 @@ class XMPSchemaTester
 
     protected void testGetSetBooleanProperty() throws Exception
     {
-        String setName = setMethod(property);
-        String getName = getMethod(property);
+        final String setName = setMethod(property);
+        final String getName = getMethod(property);
 
-        BooleanType bt = new BooleanType(metadata, null, schema.getPrefix(), property, value);
-        Method setMethod = schemaClass.getMethod(setName, BooleanType.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final BooleanType bt = new BooleanType(metadata, null, schema.getPrefix(), property, value);
+        final Method setMethod = schemaClass.getMethod(setName, BooleanType.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, bt);
-        Boolean found = ((BooleanType) getMethod.invoke(schema)).getValue();
+        final Boolean found = ((BooleanType) getMethod.invoke(schema)).getValue();
         assertEquals(value, found);
 
     }
 
     protected void testGetSetDateProperty() throws Exception
     {
-        String setName = setMethod(property);
-        String getName = getMethod(property);
+        final String setName = setMethod(property);
+        final String getName = getMethod(property);
 
-        DateType dt = new DateType(metadata, null, schema.getPrefix(), property, value);
-        Method setMethod = schemaClass.getMethod(setName, DateType.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final DateType dt = new DateType(metadata, null, schema.getPrefix(), property, value);
+        final Method setMethod = schemaClass.getMethod(setName, DateType.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, dt);
-        Calendar found = ((DateType) getMethod.invoke(schema)).getValue();
+        final Calendar found = ((DateType) getMethod.invoke(schema)).getValue();
         assertEquals(value, found);
     }
 
     protected void testGetSetIntegerProperty() throws Exception
     {
-        String setName = setMethod(property);
-        String getName = getMethod(property);
+        final String setName = setMethod(property);
+        final String getName = getMethod(property);
 
-        IntegerType it = new IntegerType(metadata, null, schema.getPrefix(), property, value);
-        Method setMethod = schemaClass.getMethod(setName, IntegerType.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final IntegerType it = new IntegerType(metadata, null, schema.getPrefix(), property, value);
+        final Method setMethod = schemaClass.getMethod(setName, IntegerType.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, it);
-        Integer found = ((IntegerType) getMethod.invoke(schema)).getValue();
+        final Integer found = ((IntegerType) getMethod.invoke(schema)).getValue();
         assertEquals(value, found);
     }
 
     protected void testGetSetTextProperty() throws Exception
     {
-        String setName = setMethod(property);
-        String getName = getMethod(property);
+        final String setName = setMethod(property);
+        final String getName = getMethod(property);
 
-        TextType tt = metadata.getTypeMapping().createText(null, schema.getPrefix(), property, (String) value);
-        Method setMethod = schemaClass.getMethod(setName, TextType.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final TextType tt = metadata.getTypeMapping().createText(null, schema.getPrefix(), property, (String) value);
+        final Method setMethod = schemaClass.getMethod(setName, TextType.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, tt);
-        String found = ((TextType) getMethod.invoke(schema)).getStringValue();
+        final String found = ((TextType) getMethod.invoke(schema)).getStringValue();
         assertEquals(value, found);
 
     }
 
     protected void testGetSetURIProperty() throws Exception
     {
-        String setName = setMethod(property);
-        String getName = getMethod(property);
+        final String setName = setMethod(property);
+        final String getName = getMethod(property);
 
-        URIType tt = metadata.getTypeMapping().createURI(null, schema.getPrefix(), property, (String) value);
-        Method setMethod = schemaClass.getMethod(setName, URIType.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final URIType tt = metadata.getTypeMapping().createURI(null, schema.getPrefix(), property, (String) value);
+        final Method setMethod = schemaClass.getMethod(setName, URIType.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, tt);
-        String found = ((TextType) getMethod.invoke(schema)).getStringValue();
+        final String found = ((TextType) getMethod.invoke(schema)).getStringValue();
         assertEquals(value, found);
 
     }
 
     protected void testGetSetURLProperty() throws Exception
     {
-        String setName = setMethod(property);
-        String getName = getMethod(property);
+        final String setName = setMethod(property);
+        final String getName = getMethod(property);
 
-        URLType tt = metadata.getTypeMapping().createURL(null, schema.getPrefix(), property, (String) value);
-        Method setMethod = schemaClass.getMethod(setName, URLType.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final URLType tt = metadata.getTypeMapping().createURL(null, schema.getPrefix(), property, (String) value);
+        final Method setMethod = schemaClass.getMethod(setName, URLType.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, tt);
-        String found = ((TextType) getMethod.invoke(schema)).getStringValue();
+        final String found = ((TextType) getMethod.invoke(schema)).getStringValue();
         assertEquals(value, found);
 
     }
 
     protected void testGetSetAgentNameProperty() throws Exception
     {
-        String setName = setMethod(property);
-        String getName = getMethod(property);
+        final String setName = setMethod(property);
+        final String getName = getMethod(property);
 
-        AgentNameType tt = metadata.getTypeMapping()
+        final AgentNameType tt = metadata.getTypeMapping()
                 .createAgentName(null, schema.getPrefix(), property, (String) value);
-        Method setMethod = schemaClass.getMethod(setName, AgentNameType.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final Method setMethod = schemaClass.getMethod(setName, AgentNameType.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, tt);
-        String found = ((AgentNameType) getMethod.invoke(schema)).getStringValue();
+        final String found = ((AgentNameType) getMethod.invoke(schema)).getStringValue();
         assertEquals(value, found);
 
     }
 
-    protected void testGetSetTextListValue(String tp) throws Exception
+    protected void testGetSetTextListValue(final String tp) throws Exception
     {
-        String setName = addToValueMethod(property);
-        String getName = getValueMethod(property);
-        String[] svalue = (String[]) value;
+        final String setName = addToValueMethod(property);
+        final String getName = getValueMethod(property);
+        final String[] svalue = (String[]) value;
         Arrays.sort(svalue);
         // push all
-        Method setMethod = schemaClass.getMethod(setName, String.class);
-        for (String string : svalue)
+        final Method setMethod = schemaClass.getMethod(setName, String.class);
+        for (final String string : svalue)
         {
             setMethod.invoke(schema, string);
         }
         // retrieve
-        Method getMethod = schemaClass.getMethod(getName);
-        List<String> fields = (List<String>) getMethod.invoke(schema);
-        for (String field : fields)
+        final Method getMethod = schemaClass.getMethod(getName);
+        final List<String> fields = (List<String>) getMethod.invoke(schema);
+        for (final String field : fields)
         {
             assertTrue(Arrays.binarySearch(svalue, field) >= 0, field + " should be found in list");
         }
     }
 
-    protected void testGetSetDateListValue(String tp) throws Exception
+    protected void testGetSetDateListValue(final String tp) throws Exception
     {
-        String setName = addToValueMethod(property);
-        String getName = getValueMethod(property);
-        Calendar[] svalue = (Calendar[]) value;
+        final String setName = addToValueMethod(property);
+        final String getName = getValueMethod(property);
+        final Calendar[] svalue = (Calendar[]) value;
         Arrays.sort(svalue);
         // push all
-        Method setMethod = schemaClass.getMethod(setName, Calendar.class);
-        for (Calendar inst : svalue)
+        final Method setMethod = schemaClass.getMethod(setName, Calendar.class);
+        for (final Calendar inst : svalue)
         {
             setMethod.invoke(schema, inst);
         }
         // retrieve
-        Method getMethod = schemaClass.getMethod(getName);
-        List<Calendar> fields = (List<Calendar>) getMethod.invoke(schema);
-        for (Calendar field : fields)
+        final Method getMethod = schemaClass.getMethod(getName);
+        final List<Calendar> fields = (List<Calendar>) getMethod.invoke(schema);
+        for (final Calendar field : fields)
         {
             assertTrue(Arrays.binarySearch(svalue, field) >= 0, field + " should be found in list");
         }
@@ -471,18 +471,18 @@ class XMPSchemaTester
 
     protected void testGetSetThumbnail() throws Exception
     {
-        String addName = addMethod(property);
-        String getName = getMethod(property);
-        Method setMethod = schemaClass.getMethod(addName, Integer.class, Integer.class, String.class, String.class);
-        Method getMethod = schemaClass.getMethod(getName);
-        Integer height = 162;
-        Integer width = 400;
-        String format = "JPEG";
-        String img = "/9j/4AAQSkZJRgABAgEASABIAAD";
+        final String addName = addMethod(property);
+        final String getName = getMethod(property);
+        final Method setMethod = schemaClass.getMethod(addName, Integer.class, Integer.class, String.class, String.class);
+        final Method getMethod = schemaClass.getMethod(getName);
+        final Integer height = 162;
+        final Integer width = 400;
+        final String format = "JPEG";
+        final String img = "/9j/4AAQSkZJRgABAgEASABIAAD";
         setMethod.invoke(schema, height, width, format, img);
-        List<ThumbnailType> found = ((List<ThumbnailType>) getMethod.invoke(schema));
+        final List<ThumbnailType> found = ((List<ThumbnailType>) getMethod.invoke(schema));
         assertEquals(1, found.size());
-        ThumbnailType t1 = found.get(0);
+        final ThumbnailType t1 = found.get(0);
         assertEquals(height, t1.getHeight());
         assertEquals(width, t1.getWidth());
         assertEquals(format, t1.getFormat());
@@ -491,101 +491,101 @@ class XMPSchemaTester
 
     protected void testGetSetLangAltValue() throws Exception
     {
-        String setName = addToValueMethod(property);
-        String getName = getValueMethod(property);
-        Map<String, String> svalue = (Map<String, String>) value;
+        final String setName = addToValueMethod(property);
+        final String getName = getValueMethod(property);
+        final Map<String, String> svalue = (Map<String, String>) value;
         // push all
-        Method setMethod = schemaClass.getMethod(setName, String.class, String.class);
+        final Method setMethod = schemaClass.getMethod(setName, String.class, String.class);
 
-        for (Map.Entry<String, String> inst : svalue.entrySet())
+        for (final Map.Entry<String, String> inst : svalue.entrySet())
         {
             setMethod.invoke(schema, inst.getKey(), inst.getValue());
         }
         // retrieve
-        String getLanguagesName = "get" + firstUpper(property) + "Languages";
-        Method getLanguages = schemaClass.getMethod(getLanguagesName);
-        List<String> lgs = (List<String>) getLanguages.invoke(schema);
-        for (String string : lgs)
+        final String getLanguagesName = "get" + firstUpper(property) + "Languages";
+        final Method getLanguages = schemaClass.getMethod(getLanguagesName);
+        final List<String> lgs = (List<String>) getLanguages.invoke(schema);
+        for (final String string : lgs)
         {
-            Method getMethod = schemaClass.getMethod(getName, String.class);
-            String res = (String) getMethod.invoke(schema, string);
+            final Method getMethod = schemaClass.getMethod(getName, String.class);
+            final String res = (String) getMethod.invoke(schema, string);
             assertEquals(res, svalue.get(string));
         }
     }
 
     protected void testGetSetURLValue() throws Exception
     {
-        String setName = addToValueMethod(property);
-        String getName = getValueMethod(property);
-        String svalue = (String) value;
+        final String setName = addToValueMethod(property);
+        final String getName = getValueMethod(property);
+        final String svalue = (String) value;
         // push all
-        Method setMethod = schemaClass.getMethod(setName, String.class, String.class);
+        final Method setMethod = schemaClass.getMethod(setName, String.class, String.class);
         setMethod.invoke(schema, property, svalue);
 
         // retrieve
-        String getLanguagesName = "get" + firstUpper(property) + "Languages";
-        Method getLanguages = schemaClass.getMethod(getLanguagesName);
-        List<String> lgs = (List<String>) getLanguages.invoke(schema);
-        for (String string : lgs)
+        final String getLanguagesName = "get" + firstUpper(property) + "Languages";
+        final Method getLanguages = schemaClass.getMethod(getLanguagesName);
+        final List<String> lgs = (List<String>) getLanguages.invoke(schema);
+        for (final String string : lgs)
         {
-            Method getMethod = schemaClass.getMethod(getName, String.class);
-            String res = (String) getMethod.invoke(schema, string);
+            final Method getMethod = schemaClass.getMethod(getName, String.class);
+            final String res = (String) getMethod.invoke(schema, string);
             assertEquals(res, svalue);
         }
     }
 
     protected void testGetSetTextValue() throws Exception
     {
-        String setName = setValueMethod(property);
-        String getName = getValueMethod(property);
+        final String setName = setValueMethod(property);
+        final String getName = getValueMethod(property);
 
-        Method setMethod = schemaClass.getMethod(setName, String.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final Method setMethod = schemaClass.getMethod(setName, String.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, value);
-        String found = (String) getMethod.invoke(schema);
+        final String found = (String) getMethod.invoke(schema);
 
         assertEquals(value, found);
     }
 
     protected void testGetSetBooleanValue() throws Exception
     {
-        String setName = setValueMethod(property);
-        String getName = getValueMethod(property);
+        final String setName = setValueMethod(property);
+        final String getName = getValueMethod(property);
 
-        Method setMethod = schemaClass.getMethod(setName, Boolean.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final Method setMethod = schemaClass.getMethod(setName, Boolean.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, value);
-        Boolean found = (Boolean) getMethod.invoke(schema);
+        final Boolean found = (Boolean) getMethod.invoke(schema);
 
         assertEquals(value, found);
     }
 
     protected void testGetSetDateValue() throws Exception
     {
-        String setName = setValueMethod(property);
-        String getName = getValueMethod(property);
+        final String setName = setValueMethod(property);
+        final String getName = getValueMethod(property);
 
-        Method setMethod = schemaClass.getMethod(setName, Calendar.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final Method setMethod = schemaClass.getMethod(setName, Calendar.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, value);
-        Calendar found = (Calendar) getMethod.invoke(schema);
+        final Calendar found = (Calendar) getMethod.invoke(schema);
 
         assertEquals(value, found);
     }
 
     protected void testGetSetIntegerValue() throws Exception
     {
-        String setName = setValueMethod(property);
-        String getName = getValueMethod(property);
+        final String setName = setValueMethod(property);
+        final String getName = getValueMethod(property);
 
-        Method setMethod = schemaClass.getMethod(setName, Integer.class);
-        Method getMethod = schemaClass.getMethod(getName);
+        final Method setMethod = schemaClass.getMethod(setName, Integer.class);
+        final Method getMethod = schemaClass.getMethod(getName);
 
         setMethod.invoke(schema, value);
-        Integer found = (Integer) getMethod.invoke(schema);
+        final Integer found = (Integer) getMethod.invoke(schema);
 
         assertEquals(value, found);
     }

@@ -50,7 +50,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationCaret(COSDictionary a)
+    public FDFAnnotationCaret(final COSDictionary a)
     {
         super(a);
     }
@@ -62,31 +62,31 @@ public class FDFAnnotationCaret extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationCaret(Element element) throws IOException
+    public FDFAnnotationCaret(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
 
         initFringe(element);
 
-        String symbol = element.getAttribute("symbol");
+        final String symbol = element.getAttribute("symbol");
         if (symbol != null && !symbol.isEmpty())
         {
             setSymbol(element.getAttribute("symbol"));
         }
     }
 
-    private void initFringe(Element element) throws IOException
+    private void initFringe(final Element element) throws IOException
     {
-        String fringe = element.getAttribute("fringe");
+        final String fringe = element.getAttribute("fringe");
         if (fringe != null && !fringe.isEmpty())
         {
-            String[] fringeValues = fringe.split(",");
+            final String[] fringeValues = fringe.split(",");
             if (fringeValues.length != 4)
             {
                 throw new IOException("Error: wrong amount of numbers in attribute 'fringe'");
             }
-            PDRectangle rect = new PDRectangle();
+            final PDRectangle rect = new PDRectangle();
             rect.setLowerLeftX(Float.parseFloat(fringeValues[0]));
             rect.setLowerLeftY(Float.parseFloat(fringeValues[1]));
             rect.setUpperRightX(Float.parseFloat(fringeValues[2]));
@@ -101,7 +101,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
      *
      * @param fringe the fringe
      */
-    public final void setFringe(PDRectangle fringe)
+    public final void setFringe(final PDRectangle fringe)
     {
         annot.setItem(COSName.RD, fringe);
     }
@@ -114,7 +114,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
      */
     public PDRectangle getFringe()
     {
-        COSArray rd = (COSArray) annot.getDictionaryObject(COSName.RD);
+        final COSArray rd = (COSArray) annot.getDictionaryObject(COSName.RD);
         if (rd != null)
         {
             return new PDRectangle(rd);
@@ -130,7 +130,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
      * 
      * @param symbol the symbol
      */
-    public final void setSymbol(String symbol)
+    public final void setSymbol(final String symbol)
     {
         String newSymbol = "None";
         if ("paragraph".equals(symbol))

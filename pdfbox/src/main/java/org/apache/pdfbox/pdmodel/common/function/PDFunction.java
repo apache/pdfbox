@@ -50,7 +50,7 @@ public abstract class PDFunction implements COSObjectable
      * @param function The function stream.
      * 
      */
-    public PDFunction( COSBase function )
+    public PDFunction(final COSBase function )
     {
         if (function instanceof COSStream)
         {
@@ -111,7 +111,7 @@ public abstract class PDFunction implements COSObjectable
      *
      * @throws IOException If we are unable to create the PDFunction object.
      */
-    public static PDFunction create( COSBase function ) throws IOException
+    public static PDFunction create(final COSBase function ) throws IOException
     {
         if (function == COSName.IDENTITY)
         {
@@ -128,8 +128,8 @@ public abstract class PDFunction implements COSObjectable
             throw new IOException("Error: Function must be a Dictionary, but is " +
                     (base == null ? "(null)" : base.getClass().getSimpleName()));
         }
-        COSDictionary functionDictionary = (COSDictionary) base;
-        int functionType = functionDictionary.getInt(COSName.FUNCTION_TYPE);
+        final COSDictionary functionDictionary = (COSDictionary) base;
+        final int functionType = functionDictionary.getInt(COSName.FUNCTION_TYPE);
         switch (functionType)
         {
             case 0:
@@ -159,7 +159,7 @@ public abstract class PDFunction implements COSObjectable
     {
         if (numberOfOutputValues == -1)
         {
-            COSArray rangeValues = getRangeValues();
+            final COSArray rangeValues = getRangeValues();
             numberOfOutputValues = rangeValues.size() / 2;
         }
         return numberOfOutputValues;
@@ -174,9 +174,9 @@ public abstract class PDFunction implements COSObjectable
      *
      * @return The range for this component.
      */
-    public PDRange getRangeForOutput(int n)
+    public PDRange getRangeForOutput(final int n)
     {
-        COSArray rangeValues = getRangeValues();
+        final COSArray rangeValues = getRangeValues();
         return new PDRange( rangeValues, n );
     }
 
@@ -185,7 +185,7 @@ public abstract class PDFunction implements COSObjectable
      *
      * @param rangeValues The new range values.
      */
-    public void setRangeValues(COSArray rangeValues)
+    public void setRangeValues(final COSArray rangeValues)
     {
         range = rangeValues;
         getCOSObject().setItem(COSName.RANGE, rangeValues);
@@ -202,7 +202,7 @@ public abstract class PDFunction implements COSObjectable
     {
         if (numberOfInputValues == -1)
         {
-            COSArray array = getDomainValues();
+            final COSArray array = getDomainValues();
             numberOfInputValues = array.size() / 2;
         }
         return numberOfInputValues;
@@ -217,9 +217,9 @@ public abstract class PDFunction implements COSObjectable
      *
      * @return The domain range for this component.
      */
-    public PDRange getDomainForInput(int n) 
+    public PDRange getDomainForInput(final int n)
     {
-        COSArray domainValues = getDomainValues();
+        final COSArray domainValues = getDomainValues();
         return new PDRange( domainValues, n );
     }
 
@@ -228,7 +228,7 @@ public abstract class PDFunction implements COSObjectable
      *
      * @param domainValues The new domain values.
      */
-    public void setDomainValues(COSArray domainValues)
+    public void setDomainValues(final COSArray domainValues)
     {
         domain = domainValues;
         getCOSObject().setItem(COSName.DOMAIN, domainValues);
@@ -282,18 +282,18 @@ public abstract class PDFunction implements COSObjectable
      * @param inputValues the input values
      * @return the clipped values
      */
-    protected float[] clipToRange(float[] inputValues) 
+    protected float[] clipToRange(final float[] inputValues)
     {
-        COSArray rangesArray = getRangeValues();
-        float[] result;
+        final COSArray rangesArray = getRangeValues();
+        final float[] result;
         if (rangesArray != null && rangesArray.size() > 0)
         {
-            float[] rangeValues = rangesArray.toFloatArray();
-            int numberOfRanges = rangeValues.length/2;
+            final float[] rangeValues = rangesArray.toFloatArray();
+            final int numberOfRanges = rangeValues.length/2;
             result = new float[numberOfRanges];
             for (int i=0; i<numberOfRanges; i++)
             {
-                int index = i << 1;
+                final int index = i << 1;
                 result[i] = clipToRange(inputValues[i], rangeValues[index], rangeValues[index + 1]);
             }
         }
@@ -313,7 +313,7 @@ public abstract class PDFunction implements COSObjectable
 
      * @return the clipped value
      */
-    protected float clipToRange(float x, float rangeMin, float rangeMax) 
+    protected float clipToRange(final float x, final float rangeMin, final float rangeMax)
     {
         if (x < rangeMin)
         {
@@ -338,7 +338,7 @@ public abstract class PDFunction implements COSObjectable
      * @param yRangeMax the max value of the y range
      * @return the interpolated y value
      */
-    protected float interpolate(float x, float xRangeMin, float xRangeMax, float yRangeMin, float yRangeMax) 
+    protected float interpolate(final float x, final float xRangeMin, final float xRangeMax, final float yRangeMin, final float yRangeMax)
     {
         return yRangeMin + ((x - xRangeMin) * (yRangeMax - yRangeMin)/(xRangeMax - xRangeMin));
     }

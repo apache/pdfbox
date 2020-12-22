@@ -26,7 +26,7 @@ import java.io.IOException;
  */
 public class DamagedFontException extends IOException
 {
-    public DamagedFontException(String message)
+    public DamagedFontException(final String message)
     {
         super(message);
     }

@@ -26,7 +26,7 @@ import org.apache.xmpbox.XMPMetadata;
 public class XPathType extends TextType
 {
 
-    public XPathType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    public XPathType(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String propertyName, final Object value)
     {
         super(metadata, namespaceURI, prefix, propertyName, value);
     }

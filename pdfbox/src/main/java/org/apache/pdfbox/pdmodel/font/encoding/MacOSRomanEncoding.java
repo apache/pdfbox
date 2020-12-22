@@ -66,7 +66,7 @@ public class MacOSRomanEncoding extends MacRomanEncoding
         super();
 
         // differences and additions to MacRomanEncoding
-        for (Object[] encodingEntry : MAC_OS_ROMAN_ENCODING_TABLE)
+        for (final Object[] encodingEntry : MAC_OS_ROMAN_ENCODING_TABLE)
         {
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }

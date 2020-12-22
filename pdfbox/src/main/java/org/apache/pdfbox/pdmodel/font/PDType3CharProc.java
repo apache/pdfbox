@@ -45,7 +45,7 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
     private final PDType3Font font;
     private final COSStream charStream;
 
-    public PDType3CharProc(PDType3Font font, COSStream charStream)
+    public PDType3CharProc(final PDType3Font font, final COSStream charStream)
     {
         this.font = font;
         this.charStream = charStream;
@@ -100,8 +100,8 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
      */
     public PDRectangle getGlyphBBox() throws IOException
     {
-        List<COSBase> arguments = new ArrayList<>();
-        PDFStreamParser parser = new PDFStreamParser(this);
+        final List<COSBase> arguments = new ArrayList<>();
+        final PDFStreamParser parser = new PDFStreamParser(this);
         Object token = parser.parseNextToken();
         while (token != null)
         {
@@ -155,8 +155,8 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
      */
     public float getWidth() throws IOException
     {
-        List<COSBase> arguments = new ArrayList<>();
-        PDFStreamParser parser = new PDFStreamParser(this);
+        final List<COSBase> arguments = new ArrayList<>();
+        final PDFStreamParser parser = new PDFStreamParser(this);
         Object token = parser.parseNextToken();
         while (token != null)
         {
@@ -177,11 +177,11 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
         throw new IOException("Unexpected end of stream");
     }
 
-    private float parseWidth(Operator operator, List<COSBase> arguments) throws IOException
+    private float parseWidth(final Operator operator, final List<COSBase> arguments) throws IOException
     {
         if (operator.getName().equals("d0") || operator.getName().equals("d1"))
         {
-            COSBase obj = arguments.get(0);
+            final COSBase obj = arguments.get(0);
             if (obj instanceof COSNumber)
             {
                 return ((COSNumber) obj).floatValue();

@@ -70,7 +70,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @param dict The dictionary to copy.
      */
-    public COSDictionary(COSDictionary dict)
+    public COSDictionary(final COSDictionary dict)
     {
         items.putAll(dict.items);
     }
@@ -82,7 +82,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return true if the map contains this value.
      */
-    public boolean containsValue(Object value)
+    public boolean containsValue(final Object value)
     {
         boolean contains = items.containsValue(value);
         if (!contains && value instanceof COSObject)
@@ -98,11 +98,11 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param value The value to search for in the map.
      * @return The key for the value in the map or null if it does not exist.
      */
-    public COSName getKeyForValue(Object value)
+    public COSName getKeyForValue(final Object value)
     {
-        for (Map.Entry<COSName, COSBase> entry : items.entrySet())
+        for (final Map.Entry<COSName, COSBase> entry : items.entrySet())
         {
-            Object nextValue = entry.getValue();
+            final Object nextValue = entry.getValue();
             if (nextValue.equals(value)
                     || (nextValue instanceof COSObject && ((COSObject) nextValue).getObject()
                             .equals(value)))
@@ -139,7 +139,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The object that matches the key.
      */
-    public COSBase getDictionaryObject(String key)
+    public COSBase getDictionaryObject(final String key)
     {
         return getDictionaryObject(COSName.getPDFName(key));
     }
@@ -155,7 +155,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The object that matches the key.
      */
-    public COSBase getDictionaryObject(COSName firstKey, COSName secondKey)
+    public COSBase getDictionaryObject(final COSName firstKey, final COSName secondKey)
     {
         COSBase retval = getDictionaryObject(firstKey);
         if (retval == null && secondKey != null)
@@ -173,7 +173,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The object that matches the key.
      */
-    public COSBase getDictionaryObject(COSName key)
+    public COSBase getDictionaryObject(final COSName key)
     {
         COSBase retval = items.get(key);
         if (retval instanceof COSObject)
@@ -193,7 +193,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the dictionary object.
      * @param value The value to the dictionary object.
      */
-    public void setItem(COSName key, COSBase value)
+    public void setItem(final COSName key, final COSBase value)
     {
         if (value == null)
         {
@@ -211,7 +211,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the dictionary object.
      * @param value The value to the dictionary object.
      */
-    public void setItem(COSName key, COSObjectable value)
+    public void setItem(final COSName key, final COSObjectable value)
     {
         COSBase base = null;
         if (value != null)
@@ -227,7 +227,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the dictionary object.
      * @param value The value to the dictionary object.
      */
-    public void setItem(String key, COSObjectable value)
+    public void setItem(final String key, final COSObjectable value)
     {
         setItem(COSName.getPDFName(key), value);
     }
@@ -238,7 +238,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the dictionary object.
      * @param value The value to the dictionary object.
      */
-    public void setBoolean(String key, boolean value)
+    public void setBoolean(final String key, final boolean value)
     {
         setItem(COSName.getPDFName(key), COSBoolean.getBoolean(value));
     }
@@ -249,7 +249,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the dictionary object.
      * @param value The value to the dictionary object.
      */
-    public void setBoolean(COSName key, boolean value)
+    public void setBoolean(final COSName key, final boolean value)
     {
         setItem(key, COSBoolean.getBoolean(value));
     }
@@ -260,7 +260,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the dictionary object.
      * @param value The value to the dictionary object.
      */
-    public void setItem(String key, COSBase value)
+    public void setItem(final String key, final COSBase value)
     {
         setItem(COSName.getPDFName(key), value);
     }
@@ -272,7 +272,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The string value for the name.
      */
-    public void setName(String key, String value)
+    public void setName(final String key, final String value)
     {
         setName(COSName.getPDFName(key), value);
     }
@@ -284,7 +284,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The string value for the name.
      */
-    public void setName(COSName key, String value)
+    public void setName(final COSName key, final String value)
     {
         COSName name = null;
         if (value != null)
@@ -300,7 +300,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the date value.
      * @param date The date value.
      */
-    public void setDate(String key, Calendar date)
+    public void setDate(final String key, final Calendar date)
     {
         setDate(COSName.getPDFName(key), date);
     }
@@ -311,7 +311,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the date.
      * @param date The date to set.
      */
-    public void setDate(COSName key, Calendar date)
+    public void setDate(final COSName key, final Calendar date)
     {
         setString(key, DateConverter.toString(date));
     }
@@ -323,7 +323,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the date value.
      * @param date The date value.
      */
-    public void setEmbeddedDate(String embedded, String key, Calendar date)
+    public void setEmbeddedDate(final String embedded, final String key, final Calendar date)
     {
         setEmbeddedDate(embedded, COSName.getPDFName(key), date);
     }
@@ -335,7 +335,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the date.
      * @param date The date to set.
      */
-    public void setEmbeddedDate(String embedded, COSName key, Calendar date)
+    public void setEmbeddedDate(final String embedded, final COSName key, final Calendar date)
     {
         COSDictionary dic = (COSDictionary) getDictionaryObject(embedded);
         if (dic == null && date != null)
@@ -356,7 +356,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The string value for the name.
      */
-    public void setString(String key, String value)
+    public void setString(final String key, final String value)
     {
         setString(COSName.getPDFName(key), value);
     }
@@ -368,7 +368,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The string value for the name.
      */
-    public void setString(COSName key, String value)
+    public void setString(final COSName key, final String value)
     {
         COSString name = null;
         if (value != null)
@@ -386,7 +386,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The string value for the name.
      */
-    public void setEmbeddedString(String embedded, String key, String value)
+    public void setEmbeddedString(final String embedded, final String key, final String value)
     {
         setEmbeddedString(embedded, COSName.getPDFName(key), value);
     }
@@ -399,7 +399,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The string value for the name.
      */
-    public void setEmbeddedString(String embedded, COSName key, String value)
+    public void setEmbeddedString(final String embedded, final COSName key, final String value)
     {
         COSDictionary dic = (COSDictionary) getDictionaryObject(embedded);
         if (dic == null && value != null)
@@ -419,7 +419,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The int value for the name.
      */
-    public void setInt(String key, int value)
+    public void setInt(final String key, final int value)
     {
         setInt(COSName.getPDFName(key), value);
     }
@@ -430,7 +430,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The int value for the name.
      */
-    public void setInt(COSName key, int value)
+    public void setInt(final COSName key, final int value)
     {
         setItem(key, COSInteger.get(value));
     }
@@ -441,7 +441,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The int value for the name.
      */
-    public void setLong(String key, long value)
+    public void setLong(final String key, final long value)
     {
         setLong(COSName.getPDFName(key), value);
     }
@@ -452,9 +452,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The int value for the name.
      */
-    public void setLong(COSName key, long value)
+    public void setLong(final COSName key, final long value)
     {
-        COSInteger intVal = COSInteger.get(value);
+        final COSInteger intVal = COSInteger.get(value);
         setItem(key, intVal);
     }
 
@@ -465,7 +465,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The int value for the name.
      */
-    public void setEmbeddedInt(String embeddedDictionary, String key, int value)
+    public void setEmbeddedInt(final String embeddedDictionary, final String key, final int value)
     {
         setEmbeddedInt(embeddedDictionary, COSName.getPDFName(key), value);
     }
@@ -477,7 +477,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The int value for the name.
      */
-    public void setEmbeddedInt(String embeddedDictionary, COSName key, int value)
+    public void setEmbeddedInt(final String embeddedDictionary, final COSName key, final int value)
     {
         COSDictionary embedded = (COSDictionary) getDictionaryObject(embeddedDictionary);
         if (embedded == null)
@@ -494,7 +494,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The int value for the name.
      */
-    public void setFloat(String key, float value)
+    public void setFloat(final String key, final float value)
     {
         setFloat(COSName.getPDFName(key), value);
     }
@@ -505,9 +505,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the object,
      * @param value The int value for the name.
      */
-    public void setFloat(COSName key, float value)
+    public void setFloat(final COSName key, final float value)
     {
-        COSFloat fltVal = new COSFloat(value);
+        final COSFloat fltVal = new COSFloat(value);
         setItem(key, fltVal);
     }
 
@@ -518,7 +518,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param bitFlag the bit position to set the value in.
      * @param value the value the bit position should have.
      */
-    public void setFlag(COSName field, int bitFlag, boolean value)
+    public void setFlag(final COSName field, final int bitFlag, final boolean value)
     {
         int currentFlags = getInt(field, 0);
         if (value)
@@ -539,9 +539,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The COS name.
      */
-    public COSName getCOSName(COSName key)
+    public COSName getCOSName(final COSName key)
     {
-        COSBase name = getDictionaryObject(key);
+        final COSBase name = getDictionaryObject(key);
         if (name instanceof COSName)
         {
             return (COSName) name;
@@ -556,9 +556,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The COSObject.
      */
-    public COSObject getCOSObject(COSName key)
+    public COSObject getCOSObject(final COSName key)
     {
-        COSBase object = getItem(key);
+        final COSBase object = getItem(key);
         if (object instanceof COSObject)
         {
             return (COSObject) object;
@@ -573,9 +573,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The COSDictionary.
      */
-    public COSDictionary getCOSDictionary(COSName key)
+    public COSDictionary getCOSDictionary(final COSName key)
     {
-        COSBase dictionary = getDictionaryObject(key);
+        final COSBase dictionary = getDictionaryObject(key);
         if (dictionary instanceof COSDictionary)
         {
             return (COSDictionary) dictionary;
@@ -591,9 +591,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param secondKey The second key to the item in the dictionary.
      * @return The COSDictionary.
      */
-    public COSDictionary getCOSDictionary(COSName firstKey, COSName secondKey)
+    public COSDictionary getCOSDictionary(final COSName firstKey, final COSName secondKey)
     {
-        COSBase dictionary = getDictionaryObject(firstKey, secondKey);
+        final COSBase dictionary = getDictionaryObject(firstKey, secondKey);
         if (dictionary instanceof COSDictionary)
         {
             return (COSDictionary) dictionary;
@@ -608,9 +608,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The COSStream.
      */
-    public COSStream getCOSStream(COSName key)
+    public COSStream getCOSStream(final COSName key)
     {
-        COSBase base = getDictionaryObject(key);
+        final COSBase base = getDictionaryObject(key);
         if (base instanceof COSStream)
         {
             return (COSStream) base;
@@ -625,9 +625,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The COSArray.
      */
-    public COSArray getCOSArray(COSName key)
+    public COSArray getCOSArray(final COSName key)
     {
-        COSBase array = getDictionaryObject(key);
+        final COSBase array = getDictionaryObject(key);
         if (array instanceof COSArray)
         {
             return (COSArray) array;
@@ -643,9 +643,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The COS name.
      */
-    public COSName getCOSName(COSName key, COSName defaultValue)
+    public COSName getCOSName(final COSName key, final COSName defaultValue)
     {
-        COSBase name = getDictionaryObject(key);
+        final COSBase name = getDictionaryObject(key);
         if (name instanceof COSName)
         {
             return (COSName) name;
@@ -660,7 +660,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
      */
-    public String getNameAsString(String key)
+    public String getNameAsString(final String key)
     {
         return getNameAsString(COSName.getPDFName(key));
     }
@@ -672,10 +672,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
      */
-    public String getNameAsString(COSName key)
+    public String getNameAsString(final COSName key)
     {
         String retval = null;
-        COSBase name = getDictionaryObject(key);
+        final COSBase name = getDictionaryObject(key);
         if (name instanceof COSName)
         {
             retval = ((COSName) name).getName();
@@ -695,7 +695,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The name converted to a string.
      */
-    public String getNameAsString(String key, String defaultValue)
+    public String getNameAsString(final String key, final String defaultValue)
     {
         return getNameAsString(COSName.getPDFName(key), defaultValue);
     }
@@ -708,7 +708,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The name converted to a string.
      */
-    public String getNameAsString(COSName key, String defaultValue)
+    public String getNameAsString(final COSName key, final String defaultValue)
     {
         String retval = getNameAsString(key);
         if (retval == null)
@@ -725,7 +725,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
      */
-    public String getString(String key)
+    public String getString(final String key)
     {
         return getString(COSName.getPDFName(key));
     }
@@ -737,10 +737,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
      */
-    public String getString(COSName key)
+    public String getString(final COSName key)
     {
         String retval = null;
-        COSBase value = getDictionaryObject(key);
+        final COSBase value = getDictionaryObject(key);
         if (value instanceof COSString)
         {
             retval = ((COSString) value).getString();
@@ -756,7 +756,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The default value to return.
      * @return The name converted to a string.
      */
-    public String getString(String key, String defaultValue)
+    public String getString(final String key, final String defaultValue)
     {
         return getString(COSName.getPDFName(key), defaultValue);
     }
@@ -769,7 +769,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The default value to return.
      * @return The name converted to a string.
      */
-    public String getString(COSName key, String defaultValue)
+    public String getString(final COSName key, final String defaultValue)
     {
         String retval = getString(key);
         if (retval == null)
@@ -787,7 +787,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
      */
-    public String getEmbeddedString(String embedded, String key)
+    public String getEmbeddedString(final String embedded, final String key)
     {
         return getEmbeddedString(embedded, COSName.getPDFName(key), null);
     }
@@ -800,7 +800,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
      */
-    public String getEmbeddedString(String embedded, COSName key)
+    public String getEmbeddedString(final String embedded, final COSName key)
     {
         return getEmbeddedString(embedded, key, null);
     }
@@ -814,7 +814,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The default value to return.
      * @return The name converted to a string.
      */
-    public String getEmbeddedString(String embedded, String key, String defaultValue)
+    public String getEmbeddedString(final String embedded, final String key, final String defaultValue)
     {
         return getEmbeddedString(embedded, COSName.getPDFName(key), defaultValue);
     }
@@ -828,10 +828,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The default value to return.
      * @return The name converted to a string.
      */
-    public String getEmbeddedString(String embedded, COSName key, String defaultValue)
+    public String getEmbeddedString(final String embedded, final COSName key, final String defaultValue)
     {
         String retval = defaultValue;
-        COSBase base = getDictionaryObject(embedded);
+        final COSBase base = getDictionaryObject(embedded);
         if (base instanceof COSDictionary)
         {
             retval = ((COSDictionary) base).getString(key, defaultValue);
@@ -846,7 +846,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The name converted to a date.
      */
-    public Calendar getDate(String key)
+    public Calendar getDate(final String key)
     {
         return getDate(COSName.getPDFName(key));
     }
@@ -858,9 +858,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The name converted to a date.
      */
-    public Calendar getDate(COSName key)
+    public Calendar getDate(final COSName key)
     {
-        COSBase base = getDictionaryObject(key);
+        final COSBase base = getDictionaryObject(key);
         if (base instanceof COSString)
         {
             return DateConverter.toCalendar((COSString) base);
@@ -875,7 +875,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The default value to return if the entry does not exist in the dictionary or if the date was invalid.
      * @return The name converted to a date.
      */
-    public Calendar getDate(String key, Calendar defaultValue)
+    public Calendar getDate(final String key, final Calendar defaultValue)
     {
         return getDate(COSName.getPDFName(key), defaultValue);
     }
@@ -887,7 +887,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The default value to return if the entry does not exist in the dictionary or if the date was invalid.
      * @return The name converted to a date.
      */
-    public Calendar getDate(COSName key, Calendar defaultValue)
+    public Calendar getDate(final COSName key, final Calendar defaultValue)
     {
         Calendar retval = getDate(key);
         if (retval == null)
@@ -905,7 +905,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
      */
-    public Calendar getEmbeddedDate(String embedded, String key)
+    public Calendar getEmbeddedDate(final String embedded, final String key)
     {
         return getEmbeddedDate(embedded, COSName.getPDFName(key), null);
     }
@@ -918,7 +918,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
      */
-    public Calendar getEmbeddedDate(String embedded, COSName key)
+    public Calendar getEmbeddedDate(final String embedded, final COSName key)
     {
         return getEmbeddedDate(embedded, key, null);
     }
@@ -931,7 +931,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The default value to return if the entry does not exist in the dictionary or if the date was invalid.
      * @return The name converted to a string.
      */
-    public Calendar getEmbeddedDate(String embedded, String key, Calendar defaultValue)
+    public Calendar getEmbeddedDate(final String embedded, final String key, final Calendar defaultValue)
     {
         return getEmbeddedDate(embedded, COSName.getPDFName(key), defaultValue);
     }
@@ -944,10 +944,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The default value to return if the entry does not exist in the dictionary or if the date was invalid.
      * @return The name converted to a string.
      */
-    public Calendar getEmbeddedDate(String embedded, COSName key, Calendar defaultValue)
+    public Calendar getEmbeddedDate(final String embedded, final COSName key, final Calendar defaultValue)
     {
         Calendar retval = defaultValue;
-        COSDictionary eDic = (COSDictionary) getDictionaryObject(embedded);
+        final COSDictionary eDic = (COSDictionary) getDictionaryObject(embedded);
         if (eDic != null)
         {
             retval = eDic.getDate(key, defaultValue);
@@ -964,7 +964,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The value converted to a boolean.
      */
-    public boolean getBoolean(String key, boolean defaultValue)
+    public boolean getBoolean(final String key, final boolean defaultValue)
     {
         return getBoolean(COSName.getPDFName(key), defaultValue);
     }
@@ -978,7 +978,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The entry converted to a boolean.
      */
-    public boolean getBoolean(COSName key, boolean defaultValue)
+    public boolean getBoolean(final COSName key, final boolean defaultValue)
     {
         return getBoolean(key, null, defaultValue);
     }
@@ -993,10 +993,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The entry converted to a boolean.
      */
-    public boolean getBoolean(COSName firstKey, COSName secondKey, boolean defaultValue)
+    public boolean getBoolean(final COSName firstKey, final COSName secondKey, final boolean defaultValue)
     {
         boolean retval = defaultValue;
-        COSBase bool = getDictionaryObject(firstKey, secondKey);
+        final COSBase bool = getDictionaryObject(firstKey, secondKey);
         if (bool instanceof COSBoolean)
         {
             retval = ((COSBoolean) bool).getValue();
@@ -1012,7 +1012,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The value of the embedded integer.
      */
-    public int getEmbeddedInt(String embeddedDictionary, String key)
+    public int getEmbeddedInt(final String embeddedDictionary, final String key)
     {
         return getEmbeddedInt(embeddedDictionary, COSName.getPDFName(key));
     }
@@ -1025,7 +1025,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The value of the embedded integer.
      */
-    public int getEmbeddedInt(String embeddedDictionary, COSName key)
+    public int getEmbeddedInt(final String embeddedDictionary, final COSName key)
     {
         return getEmbeddedInt(embeddedDictionary, key, -1);
     }
@@ -1039,7 +1039,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The value of the embedded integer.
      */
-    public int getEmbeddedInt(String embeddedDictionary, String key, int defaultValue)
+    public int getEmbeddedInt(final String embeddedDictionary, final String key, final int defaultValue)
     {
         return getEmbeddedInt(embeddedDictionary, COSName.getPDFName(key), defaultValue);
     }
@@ -1053,10 +1053,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The value of the embedded integer.
      */
-    public int getEmbeddedInt(String embeddedDictionary, COSName key, int defaultValue)
+    public int getEmbeddedInt(final String embeddedDictionary, final COSName key, final int defaultValue)
     {
         int retval = defaultValue;
-        COSDictionary embedded = (COSDictionary) getDictionaryObject(embeddedDictionary);
+        final COSDictionary embedded = (COSDictionary) getDictionaryObject(embeddedDictionary);
         if (embedded != null)
         {
             retval = embedded.getInt(key, defaultValue);
@@ -1071,7 +1071,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The integer value.
      */
-    public int getInt(String key)
+    public int getInt(final String key)
     {
         return getInt(COSName.getPDFName(key), -1);
     }
@@ -1083,7 +1083,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The integer value..
      */
-    public int getInt(COSName key)
+    public int getInt(final COSName key)
     {
         return getInt(key, -1);
     }
@@ -1096,7 +1096,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The integer value.
      */
-    public int getInt(String key, int defaultValue)
+    public int getInt(final String key, final int defaultValue)
     {
         return getInt(COSName.getPDFName(key), defaultValue);
     }
@@ -1109,7 +1109,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The integer value.
      */
-    public int getInt(COSName key, int defaultValue)
+    public int getInt(final COSName key, final int defaultValue)
     {
         return getInt(key, null, defaultValue);
     }
@@ -1122,7 +1122,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param secondKey The second key to the item in the dictionary.
      * @return The integer value.
      */
-    public int getInt(COSName firstKey, COSName secondKey)
+    public int getInt(final COSName firstKey, final COSName secondKey)
     {
         return getInt(firstKey, secondKey, -1);
     }
@@ -1136,10 +1136,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The integer value.
      */
-    public int getInt(COSName firstKey, COSName secondKey, int defaultValue)
+    public int getInt(final COSName firstKey, final COSName secondKey, final int defaultValue)
     {
         int retval = defaultValue;
-        COSBase obj = getDictionaryObject(firstKey, secondKey);
+        final COSBase obj = getDictionaryObject(firstKey, secondKey);
         if (obj instanceof COSNumber)
         {
             retval = ((COSNumber) obj).intValue();
@@ -1155,7 +1155,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The long value.
      */
-    public long getLong(String key)
+    public long getLong(final String key)
     {
         return getLong(COSName.getPDFName(key), -1L);
     }
@@ -1167,7 +1167,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The long value.
      */
-    public long getLong(COSName key)
+    public long getLong(final COSName key)
     {
         return getLong(key, -1L);
     }
@@ -1180,7 +1180,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The integer value.
      */
-    public long getLong(String key, long defaultValue)
+    public long getLong(final String key, final long defaultValue)
     {
         return getLong(COSName.getPDFName(key), defaultValue);
     }
@@ -1193,10 +1193,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The integer value.
      */
-    public long getLong(COSName key, long defaultValue)
+    public long getLong(final COSName key, final long defaultValue)
     {
         long retval = defaultValue;
-        COSBase obj = getDictionaryObject(key);
+        final COSBase obj = getDictionaryObject(key);
         if (obj instanceof COSNumber)
         {
             retval = ((COSNumber) obj).longValue();
@@ -1211,7 +1211,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The float value.
      */
-    public float getFloat(String key)
+    public float getFloat(final String key)
     {
         return getFloat(COSName.getPDFName(key), -1);
     }
@@ -1223,7 +1223,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @return The float value.
      */
-    public float getFloat(COSName key)
+    public float getFloat(final COSName key)
     {
         return getFloat(key, -1);
     }
@@ -1236,7 +1236,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The float value.
      */
-    public float getFloat(String key, float defaultValue)
+    public float getFloat(final String key, final float defaultValue)
     {
         return getFloat(COSName.getPDFName(key), defaultValue);
     }
@@ -1249,10 +1249,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The float value.
      */
-    public float getFloat(COSName key, float defaultValue)
+    public float getFloat(final COSName key, final float defaultValue)
     {
         float retval = defaultValue;
-        COSBase obj = getDictionaryObject(key);
+        final COSBase obj = getDictionaryObject(key);
         if (obj instanceof COSNumber)
         {
             retval = ((COSNumber) obj).floatValue();
@@ -1268,9 +1268,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return true if the number at bitPos is '1'
      */
-    public boolean getFlag(COSName field, int bitFlag)
+    public boolean getFlag(final COSName field, final int bitFlag)
     {
-        int ff = getInt(field, 0);
+        final int ff = getInt(field, 0);
         return (ff & bitFlag) == bitFlag;
     }
 
@@ -1279,7 +1279,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @param key The key to the item to remove from the dictionary.
      */
-    public void removeItem(COSName key)
+    public void removeItem(final COSName key)
     {
         items.remove(key);
     }
@@ -1291,7 +1291,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The item that matches the key.
      */
-    public COSBase getItem(COSName key)
+    public COSBase getItem(final COSName key)
     {
         return items.get(key);
     }
@@ -1303,7 +1303,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The item that matches the key.
      */
-    public COSBase getItem(String key)
+    public COSBase getItem(final String key)
     {
         return getItem(COSName.getPDFName(key));
     }
@@ -1318,7 +1318,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @return The object that matches the key.
      */
-    public COSBase getItem(COSName firstKey, COSName secondKey)
+    public COSBase getItem(final COSName firstKey, final COSName secondKey)
     {
         COSBase retval = getItem(firstKey);
         if (retval == null && secondKey != null)
@@ -1358,7 +1358,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @param action
      */
-    public void forEach(BiConsumer<? super COSName, ? super COSBase> action)
+    public void forEach(final BiConsumer<? super COSName, ? super COSBase> action)
     {
         items.forEach(action);
     }
@@ -1382,7 +1382,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @throws IOException If there is an error visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public Object accept(final ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromDictionary(this);
     }
@@ -1394,7 +1394,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
     
     @Override
-    public void setNeedToBeUpdated(boolean flag) 
+    public void setNeedToBeUpdated(final boolean flag)
     {
       needToBeUpdated = flag;
     }
@@ -1405,7 +1405,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      *
      * @param dic The dictionaries to get the key/value pairs from.
      */
-    public void addAll(COSDictionary dic)
+    public void addAll(final COSDictionary dic)
     {
         dic.forEach(this::setItem);
     }
@@ -1416,7 +1416,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param name The key to find in the map.
      * @return true if the map contains this key.
      */
-    public boolean containsKey(COSName name)
+    public boolean containsKey(final COSName name)
     {
         return this.items.containsKey(name);
     }
@@ -1427,7 +1427,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param name The key to find in the map.
      * @return true if the map contains this key.
      */
-    public boolean containsKey(String name)
+    public boolean containsKey(final String name)
     {
         return containsKey(COSName.getPDFName(name));
     }
@@ -1439,15 +1439,15 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param objPath the relative path to the object.
      * @return the object
      */
-    public COSBase getObjectFromPath(String objPath)
+    public COSBase getObjectFromPath(final String objPath)
     {
-        String[] path = objPath.split(PATH_SEPARATOR);
+        final String[] path = objPath.split(PATH_SEPARATOR);
         COSBase retval = this;
-        for (String pathString : path)
+        for (final String pathString : path)
         {
             if (retval instanceof COSArray)
             {
-                int idx = Integer.parseInt(pathString.replaceAll("\\[", "").replaceAll("\\]", ""));
+                final int idx = Integer.parseInt(pathString.replaceAll("\\[", "").replaceAll("\\]", ""));
                 retval = ((COSArray) retval).getObject(idx);
             }
             else if (retval instanceof COSDictionary)
@@ -1478,14 +1478,14 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         {
             return getDictionaryString(this, new ArrayList<>());
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOG.debug("An exception occurred trying - returning error message instead", e);
             return "COSDictionary{" + e.getMessage() + "}";
         }
     }
 
-    private static String getDictionaryString(COSBase base, List<COSBase> objs) throws IOException
+    private static String getDictionaryString(final COSBase base, final List<COSBase> objs) throws IOException
     {
         if (base == null)
         {
@@ -1499,9 +1499,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         objs.add(base);
         if (base instanceof COSDictionary)
         {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             sb.append("COSDictionary{");
-            for (Map.Entry<COSName, COSBase> x : ((COSDictionary) base).entrySet())
+            for (final Map.Entry<COSName, COSBase> x : ((COSDictionary) base).entrySet())
             {
                 sb.append(x.getKey());
                 sb.append(":");
@@ -1513,7 +1513,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             {
                 try (InputStream stream = ((COSStream) base).createRawInputStream())
                 {
-                    byte[] b = IOUtils.toByteArray(stream);
+                    final byte[] b = IOUtils.toByteArray(stream);
                     sb.append("COSStream{").append(Arrays.hashCode(b)).append("}");
                 }
             }
@@ -1521,9 +1521,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         if (base instanceof COSArray)
         {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             sb.append("COSArray{");
-            for (COSBase x : ((COSArray) base).toList())
+            for (final COSBase x : ((COSArray) base).toList())
             {
                 sb.append(getDictionaryString(x, objs));
                 sb.append(";");
@@ -1533,7 +1533,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         if (base instanceof COSObject)
         {
-            COSObject obj = (COSObject) base;
+            final COSObject obj = (COSObject) base;
             return "COSObject{"
                     + getDictionaryString(
                             obj.isObjectNull() ? COSNull.NULL : obj.getObject(), objs)

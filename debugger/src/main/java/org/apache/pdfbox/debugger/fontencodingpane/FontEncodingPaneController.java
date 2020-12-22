@@ -42,14 +42,14 @@ abstract class FontPane
      * @return an array with two elements: min lower bound (but max 0), and max upper bound (but min
      * 0).
      */
-    double[] getYBounds(Object[][] tableData, int glyphIndex)
+    double[] getYBounds(final Object[][] tableData, final int glyphIndex)
     {
         double minY = 0;
         double maxY = 0;
-        for (Object[] aTableData : tableData)
+        for (final Object[] aTableData : tableData)
         {
-            GeneralPath path = (GeneralPath) aTableData[glyphIndex];
-            Rectangle2D bounds2D = path.getBounds2D();
+            final GeneralPath path = (GeneralPath) aTableData[glyphIndex];
+            final Rectangle2D bounds2D = path.getBounds2D();
             if (bounds2D.isEmpty())
             {
                 continue;
@@ -78,12 +78,12 @@ public class FontEncodingPaneController
      * @param fontName COSName instance, Font name in the fonts dictionary.
      * @param dictionary COSDictionary instance for resources which resides the font.
      */
-    public FontEncodingPaneController(COSName fontName, COSDictionary dictionary)
+    public FontEncodingPaneController(final COSName fontName, final COSDictionary dictionary)
     {
-        PDResources resources = new PDResources(dictionary);
+        final PDResources resources = new PDResources(dictionary);
         try
         {
-            PDFont font = resources.getFont(fontName);
+            final PDFont font = resources.getFont(fontName);
             if (font instanceof PDType3Font)
             {
                 fontPane = new Type3Font((PDType3Font) font, resources);
@@ -97,7 +97,7 @@ public class FontEncodingPaneController
                 fontPane = new Type0Font(((PDType0Font) font).getDescendantFont(), (PDType0Font) font);
             }
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOG.error(e.getMessage(), e);
         }

@@ -26,17 +26,17 @@ import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 
 public class Type1Container extends FontContainer<PDSimpleFont>
 {
-    public Type1Container(PDSimpleFont font)
+    public Type1Container(final PDSimpleFont font)
     {
         super(font);
     }
 
     @Override
-    public boolean hasGlyph(int code) throws IOException
+    public boolean hasGlyph(final int code) throws IOException
     {
         if (font.isEmbedded())
         {
-            String name = font.getEncoding().getName(code);
+            final String name = font.getEncoding().getName(code);
             return font.getFontBoxFont().hasGlyph(name);
         }
         return false;

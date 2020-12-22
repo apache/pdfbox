@@ -48,17 +48,17 @@ class PDStructureElementTest
     @Test
     void testPDFBox4197() throws IOException
     {
-        Set<Revisions<PDAttributeObject>> attributeSet = new HashSet<>();
+        final Set<Revisions<PDAttributeObject>> attributeSet = new HashSet<>();
         try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4197.pdf")))
         {
-            PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
+            final PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
             checkElement(structureTreeRoot.getK(), attributeSet);
         }
 
         // collect attributes and check their count.
         assertEquals(117, attributeSet.size());
         int cnt = 0;
-        for (Revisions<PDAttributeObject> attributes : attributeSet)
+        for (final Revisions<PDAttributeObject> attributes : attributeSet)
         {
             cnt += attributes.size();
         }
@@ -67,7 +67,7 @@ class PDStructureElementTest
 
     // Each element can be an array, a dictionary or a number.
     // See PDF specification Table 323 - Entries in a structure element dictionary
-    private void checkElement(COSBase base, Set<Revisions<PDAttributeObject>>attributeSet)
+    private void checkElement(final COSBase base, final Set<Revisions<PDAttributeObject>>attributeSet)
     {
         if (base instanceof COSArray)
         {
@@ -82,13 +82,13 @@ class PDStructureElementTest
         }
         else if (base instanceof COSDictionary)
         {
-            COSDictionary kdict = (COSDictionary) base;
+            final COSDictionary kdict = (COSDictionary) base;
             if (kdict.containsKey(COSName.PG))
             {
-                PDStructureElement structureElement = new PDStructureElement(kdict);
-                Revisions<PDAttributeObject> attributes = structureElement.getAttributes();
+                final PDStructureElement structureElement = new PDStructureElement(kdict);
+                final Revisions<PDAttributeObject> attributes = structureElement.getAttributes();
                 attributeSet.add(attributes);
-                Revisions<String> classNames = structureElement.getClassNames();
+                final Revisions<String> classNames = structureElement.getClassNames();
                 //TODO: modify the test to also check for class names, if we ever have a file.
             }
             if (kdict.containsKey(COSName.K))

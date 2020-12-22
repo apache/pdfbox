@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
  */
 public class PageExtractor
 {
-    private PDDocument sourceDocument;
+    private final PDDocument sourceDocument;
     
     // first page to extract is page 1 (by default)
     private int startPage = 1;
@@ -38,7 +38,7 @@ public class PageExtractor
      * Creates a new instance of PageExtractor
      * @param sourceDocument The document to split.
      */
-    public PageExtractor(PDDocument sourceDocument)
+    public PageExtractor(final PDDocument sourceDocument)
     {
         this.sourceDocument = sourceDocument;
         endPage = sourceDocument.getNumberOfPages();
@@ -50,7 +50,7 @@ public class PageExtractor
      * @param startPage The first page you want extracted (inclusive)
      * @param endPage The last page you want extracted (inclusive)
      */
-    public PageExtractor(PDDocument sourceDocument, int startPage, int endPage)
+    public PageExtractor(final PDDocument sourceDocument, final int startPage, final int endPage)
     {
         this(sourceDocument);
         this.startPage = startPage;
@@ -71,15 +71,15 @@ public class PageExtractor
      */
     public PDDocument extract() throws IOException
     {
-        PDDocument extractedDocument = new PDDocument();
+        final PDDocument extractedDocument = new PDDocument();
         extractedDocument.setDocumentInformation(sourceDocument.getDocumentInformation());
         extractedDocument.getDocumentCatalog().setViewerPreferences(
                 sourceDocument.getDocumentCatalog().getViewerPreferences());
         
         for (int i = startPage; i <= endPage; i++)
         {
-            PDPage page = sourceDocument.getPage(i - 1);
-            PDPage imported = extractedDocument.importPage(page);
+            final PDPage page = sourceDocument.getPage(i - 1);
+            final PDPage imported = extractedDocument.importPage(page);
             imported.setCropBox(page.getCropBox());
             imported.setMediaBox(page.getMediaBox());
             imported.setResources(page.getResources());
@@ -102,7 +102,7 @@ public class PageExtractor
      * Sets the first page number to be extracted.
      * @param startPage the first page number which should be extracted
      */
-    public void setStartPage(int startPage)
+    public void setStartPage(final int startPage)
     {
         this.startPage = startPage;
     }
@@ -120,7 +120,7 @@ public class PageExtractor
      * Sets the last page number to be extracted.
      * @param endPage the last page number which should be extracted
      */
-    public void setEndPage(int endPage)
+    public void setEndPage(final int endPage)
     {
         this.endPage = endPage;
     }

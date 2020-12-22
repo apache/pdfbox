@@ -41,9 +41,9 @@ public class GraphicObjectPageValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
-        PreflightPath vPath = context.getValidationPath();
+        final PreflightPath vPath = context.getValidationPath();
 
         XObjectValidator validator = null;
         if (!vPath.isEmpty() && vPath.isExpectedType(PDImageXObject.class))

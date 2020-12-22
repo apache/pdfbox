@@ -45,7 +45,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
      * Creates a new CalRGB color space using the given COS array.
      * @param rgb the cos array which represents this color space
      */
-    public PDCalRGB(COSArray rgb)
+    public PDCalRGB(final COSArray rgb)
     {
         super(rgb);
     }
@@ -63,7 +63,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
         return new float[] { 0, 1, 0, 1, 0, 1 };
     }
@@ -75,33 +75,33 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
     }
 
     @Override
-    public float[] toRGB(float[] value)
+    public float[] toRGB(final float[] value)
     {
         if (isWhitePoint())
         {
-            float a = value[0];
-            float b = value[1];
-            float c = value[2];
+            final float a = value[0];
+            final float b = value[1];
+            final float c = value[2];
 
-            PDGamma gamma = getGamma();
-            float powAR = (float)Math.pow(a, gamma.getR());
-            float powBG = (float)Math.pow(b, gamma.getG());
-            float powCB = (float)Math.pow(c, gamma.getB());
+            final PDGamma gamma = getGamma();
+            final float powAR = (float)Math.pow(a, gamma.getR());
+            final float powBG = (float)Math.pow(b, gamma.getG());
+            final float powCB = (float)Math.pow(c, gamma.getB());
 
-            float[] matrix = getMatrix();
-            float mXA = matrix[0];
-            float mYA = matrix[1];
-            float mZA = matrix[2];
-            float mXB = matrix[3];
-            float mYB = matrix[4];
-            float mZB = matrix[5];
-            float mXC = matrix[6];
-            float mYC = matrix[7];
-            float mZC = matrix[8];
+            final float[] matrix = getMatrix();
+            final float mXA = matrix[0];
+            final float mYA = matrix[1];
+            final float mZA = matrix[2];
+            final float mXB = matrix[3];
+            final float mYB = matrix[4];
+            final float mZB = matrix[5];
+            final float mXC = matrix[6];
+            final float mYC = matrix[7];
+            final float mZC = matrix[8];
 
-            float x = mXA * powAR + mXB * powBG + mXC * powCB;
-            float y = mYA * powAR + mYB * powBG + mYC * powCB;
-            float z = mZA * powAR + mZB * powBG + mZC * powCB;
+            final float x = mXA * powAR + mXB * powBG + mXC * powCB;
+            final float y = mYA * powAR + mYB * powBG + mYC * powCB;
+            final float z = mZA * powAR + mZB * powBG + mZC * powCB;
             return convXYZtoRGB(x, y, z);
         }
         else
@@ -139,7 +139,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
      */
     public final float[] getMatrix()
     {
-        COSArray matrix = (COSArray)dictionary.getDictionaryObject(COSName.MATRIX);
+        final COSArray matrix = (COSArray)dictionary.getDictionaryObject(COSName.MATRIX);
         if (matrix == null)
         {
             return new float[] {  1, 0, 0, 0, 1, 0, 0, 0, 1 };
@@ -154,7 +154,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
      * Sets the gamma value.
      * @param gamma the new gamma value
      */
-    public final void setGamma(PDGamma gamma)
+    public final void setGamma(final PDGamma gamma)
     {
         COSArray gammaArray = null;
         if(gamma != null)
@@ -169,13 +169,13 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
      * Passing in null will clear the matrix.
      * @param matrix the new linear interpretation matrix, or null
      */
-    public final void setMatrix(Matrix matrix)
+    public final void setMatrix(final Matrix matrix)
     {
         COSArray matrixArray = null;
         if(matrix != null)
         {
             // We can't use matrix.toCOSArray(), as it only returns a subset of the matrix
-            float[][] values = matrix.getValues();
+            final float[][] values = matrix.getValues();
             matrixArray = new COSArray();
             matrixArray.add(new COSFloat(values[0][0]));
             matrixArray.add(new COSFloat(values[0][1]));

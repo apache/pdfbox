@@ -74,11 +74,11 @@ public final class COSInteger extends COSNumber
      * @param val integer value
      * @return COSInteger instance
      */
-    public static COSInteger get(long val)
+    public static COSInteger get(final long val)
     {
         if (LOW <= val && val <= HIGH)
         {
-            int index = (int) val - LOW;
+            final int index = (int) val - LOW;
             // no synchronization needed
             if (STATIC[index] == null)
             {
@@ -96,7 +96,7 @@ public final class COSInteger extends COSNumber
      *
      * @param val The integer value of this object.
      */
-    private COSInteger( long val )
+    private COSInteger(final long val )
     {
         value = val;
     }
@@ -105,7 +105,7 @@ public final class COSInteger extends COSNumber
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object o)
+    public boolean equals(final Object o)
     {
         return o instanceof COSInteger && ((COSInteger)o).intValue() == intValue();
     }
@@ -172,7 +172,7 @@ public final class COSInteger extends COSNumber
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public Object accept(final ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromInt(this);
     }
@@ -183,7 +183,7 @@ public final class COSInteger extends COSNumber
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void writePDF( OutputStream output ) throws IOException
+    public void writePDF(final OutputStream output ) throws IOException
     {
         output.write(String.valueOf(value).getBytes(StandardCharsets.ISO_8859_1));
     }

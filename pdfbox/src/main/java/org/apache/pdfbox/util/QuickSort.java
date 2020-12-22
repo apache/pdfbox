@@ -43,9 +43,9 @@ public final class QuickSort
      * @param list list to be sorted
      * @param cmp comparator used to compare the objects within the list
      */
-    public static <T> void sort(List<T> list, Comparator<T> cmp)
+    public static <T> void sort(final List<T> list, final Comparator<T> cmp)
     {
-        int size = list.size();
+        final int size = list.size();
         if (size < 2)
         {
             return;
@@ -59,20 +59,20 @@ public final class QuickSort
      * @param <T> type of the objects to be sorted.
      * @param list list to be sorted
      */
-    public static <T extends Comparable> void sort(List<T> list)
+    public static <T extends Comparable> void sort(final List<T> list)
     {
         sort(list, (Comparator<T>) OBJCOMP);
     }
 
-    private static <T> void quicksort(List<T> list, Comparator<T> cmp)
+    private static <T> void quicksort(final List<T> list, final Comparator<T> cmp)
     {
-        Deque<Integer> stack = new ArrayDeque<>();
+        final Deque<Integer> stack = new ArrayDeque<>();
         stack.push(0);
         stack.push(list.size());
         while (!stack.isEmpty())
         {
-            int right = stack.pop();
-            int left = stack.pop();
+            final int right = stack.pop();
+            final int left = stack.pop();
             if (right - left < 2)
             {
                 continue;
@@ -88,11 +88,11 @@ public final class QuickSort
         }
     }
 
-    private static <T> int partition(List<T> list, Comparator<T> cmp, int p, int start, int end)
+    private static <T> int partition(final List<T> list, final Comparator<T> cmp, final int p, final int start, final int end)
     {
         int l = start;
         int h = end - 2;
-        T piv = list.get(p);
+        final T piv = list.get(p);
         swap(list, p, end - 1);
 
         while (l < h)
@@ -119,9 +119,9 @@ public final class QuickSort
         return idx;
     }
 
-    private static <T> void swap(List<T> list, int i, int j)
+    private static <T> void swap(final List<T> list, final int i, final int j)
     {
-        T tmp = list.get(i);
+        final T tmp = list.get(i);
         list.set(i, list.get(j));
         list.set(j, tmp);
     }

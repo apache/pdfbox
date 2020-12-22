@@ -41,7 +41,7 @@ class Type4ShadingPaint extends ShadingPaint<PDShadingType4>
      * @param shading the shading resources
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    Type4ShadingPaint(PDShadingType4 shading, Matrix matrix)
+    Type4ShadingPaint(final PDShadingType4 shading, final Matrix matrix)
     {
         super(shading, matrix);
     }
@@ -53,14 +53,14 @@ class Type4ShadingPaint extends ShadingPaint<PDShadingType4>
     }
 
     @Override
-    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
-                                      AffineTransform xform, RenderingHints hints)
+    public PaintContext createContext(final ColorModel cm, final Rectangle deviceBounds, final Rectangle2D userBounds,
+                                      final AffineTransform xform, final RenderingHints hints)
     {
         try
         {
             return new Type4ShadingContext(shading, cm, xform, matrix, deviceBounds);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOG.error("An error occurred while painting", e);
             return new Color(0, 0, 0, 0).createContext(cm, deviceBounds, userBounds, xform, hints);

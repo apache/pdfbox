@@ -29,12 +29,12 @@ class CompositeTest
     @Test
     void testComposite()
     {
-        Composite composite = new Composite("name");
+        final Composite composite = new Composite("name");
         assertEquals("name", composite.getName());
         assertEquals(0, composite.getParts().size());
-        CompositePart compositePart = new CompositePart("name", 10, 20);
+        final CompositePart compositePart = new CompositePart("name", 10, 20);
         composite.addPart(compositePart);
-        List<CompositePart> parts = composite.getParts();
+        final List<CompositePart> parts = composite.getParts();
         assertEquals(1, parts.size());
         assertEquals("name", parts.get(0).getName());
         try
@@ -42,7 +42,7 @@ class CompositeTest
             parts.add(compositePart);
             fail("An UnsupportedOperationException should have been thrown");
         }
-        catch (UnsupportedOperationException exception)
+        catch (final UnsupportedOperationException exception)
         {
             // do nothing
         }

@@ -29,7 +29,7 @@ import org.apache.pdfbox.preflight.PreflightContext;
  */
 public class UnderlineAnnotationValidator extends MarkupAnnotationValidator
 {
-    protected UnderlineAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    protected UnderlineAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdMarkup = new PDAnnotationUnderline(annotDictionary);

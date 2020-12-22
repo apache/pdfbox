@@ -42,7 +42,7 @@ public class PDAdditionalActions implements COSObjectable
      *
      * @param a The action dictionary.
      */
-    public PDAdditionalActions( COSDictionary a )
+    public PDAdditionalActions(final COSDictionary a )
     {
         actions = a;
     }
@@ -73,7 +73,7 @@ public class PDAdditionalActions implements COSObjectable
      *
      * @param action Get the F action.
      */
-    public void setF( PDAction action )
+    public void setF(final PDAction action )
     {
         actions.setItem( COSName.F, action );
     }

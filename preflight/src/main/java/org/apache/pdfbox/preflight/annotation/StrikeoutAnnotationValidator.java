@@ -29,7 +29,7 @@ import org.apache.pdfbox.preflight.PreflightContext;
  */
 public class StrikeoutAnnotationValidator extends MarkupAnnotationValidator
 {
-    protected StrikeoutAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    protected StrikeoutAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdMarkup = new PDAnnotationStrikeout(annotDictionary);

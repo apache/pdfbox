@@ -35,27 +35,27 @@ final class OperatorMarker
 
     static
     {
-        StyleContext styleContext = StyleContext.getDefaultStyleContext();
+        final StyleContext styleContext = StyleContext.getDefaultStyleContext();
 
-        Style common = styleContext.addStyle("common", null);
+        final Style common = styleContext.addStyle("common", null);
         StyleConstants.setBold(common, true);
 
-        Style textObjectStyle = styleContext.addStyle("text_object", common);
+        final Style textObjectStyle = styleContext.addStyle("text_object", common);
         StyleConstants.setForeground(textObjectStyle, new Color(0, 100, 0));
 
-        Style graphicsStyle = styleContext.addStyle("graphics", common);
+        final Style graphicsStyle = styleContext.addStyle("graphics", common);
         StyleConstants.setForeground(graphicsStyle, new Color(255, 68, 68));
 
-        Style concatStyle = styleContext.addStyle("cm", common);
+        final Style concatStyle = styleContext.addStyle("cm", common);
         StyleConstants.setForeground(concatStyle, new Color(1, 169, 219));
 
-        Style inlineImage = styleContext.addStyle("inline_image", common);
+        final Style inlineImage = styleContext.addStyle("inline_image", common);
         StyleConstants.setForeground(inlineImage, new Color(71, 117, 163));
 
-        Style imageData = styleContext.addStyle("ID", common);
+        final Style imageData = styleContext.addStyle("ID", common);
         StyleConstants.setForeground(imageData, new Color(255, 165, 0));
 
-        Map<String, Style> styleMap = new HashMap<>();
+        final Map<String, Style> styleMap = new HashMap<>();
 
         styleMap.put(OperatorName.BEGIN_TEXT, textObjectStyle);
         styleMap.put(OperatorName.END_TEXT, textObjectStyle);
@@ -73,7 +73,7 @@ final class OperatorMarker
     {
     }
 
-    public static Style getStyle(String operator)
+    public static Style getStyle(final String operator)
     {
         if (operatorStyleMap.containsKey(operator))
         {

@@ -46,7 +46,7 @@ public class PDMarkedContentReference implements COSObjectable
      * 
      * @param dictionary the page dictionary
      */
-    public PDMarkedContentReference(COSDictionary dictionary)
+    public PDMarkedContentReference(final COSDictionary dictionary)
     {
         this.dictionary = dictionary;
     }
@@ -67,7 +67,7 @@ public class PDMarkedContentReference implements COSObjectable
      */
     public PDPage getPage()
     {
-        COSDictionary pg = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.PG);
+        final COSDictionary pg = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.PG);
         if (pg != null)
         {
             return new PDPage(pg);
@@ -80,7 +80,7 @@ public class PDMarkedContentReference implements COSObjectable
      * 
      * @param page the page
      */
-    public void setPage(PDPage page)
+    public void setPage(final PDPage page)
     {
         this.getCOSObject().setItem(COSName.PG, page);
     }
@@ -100,7 +100,7 @@ public class PDMarkedContentReference implements COSObjectable
      * 
      * @param mcid the marked content identifier
      */
-    public void setMCID(int mcid)
+    public void setMCID(final int mcid)
     {
         this.getCOSObject().setInt(COSName.MCID, mcid);
     }

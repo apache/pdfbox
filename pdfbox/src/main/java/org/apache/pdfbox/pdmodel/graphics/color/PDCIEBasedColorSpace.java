@@ -33,20 +33,20 @@ public abstract class PDCIEBasedColorSpace extends PDColorSpace
     // WARNING: this method is performance sensitive, modify with care!
     //
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(final WritableRaster raster) throws IOException
     {
         // This method calls toRGB to convert images one pixel at a time. For matrix-based
         // CIE color spaces this is fast enough. However, it should not be used with any
         // color space which uses an ICC Profile as it will be far too slow.
 
-        int width = raster.getWidth();
-        int height = raster.getHeight();
+        final int width = raster.getWidth();
+        final int height = raster.getHeight();
 
-        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        WritableRaster rgbRaster = rgbImage.getRaster();
+        final BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        final WritableRaster rgbRaster = rgbImage.getRaster();
 
         // always three components: ABC
-        float[] abc = new float[3];
+        final float[] abc = new float[3];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -58,7 +58,7 @@ public abstract class PDCIEBasedColorSpace extends PDColorSpace
                 abc[1] /= 255;
                 abc[2] /= 255;
 
-                float[] rgb = toRGB(abc);
+                final float[] rgb = toRGB(abc);
 
                 // 0..1 -> 0..255
                 rgb[0] *= 255;
@@ -73,7 +73,7 @@ public abstract class PDCIEBasedColorSpace extends PDColorSpace
     }
 
     @Override
-    public BufferedImage toRawImage(WritableRaster raster) throws IOException
+    public BufferedImage toRawImage(final WritableRaster raster) throws IOException
     {
         // There is no direct equivalent of a CIE colorspace in Java. So we can
         // not do anything here.

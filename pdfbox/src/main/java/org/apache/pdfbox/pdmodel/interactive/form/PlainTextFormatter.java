@@ -41,7 +41,7 @@ class PlainTextFormatter
         
         private final int alignment;
         
-        private TextAlign(int alignment)
+        private TextAlign(final int alignment)
         {
             this.alignment = alignment;
         }
@@ -51,9 +51,9 @@ class PlainTextFormatter
             return alignment;
         }
         
-        public static TextAlign valueOf(int alignment)
+        public static TextAlign valueOf(final int alignment)
         {
-            for (TextAlign textAlignment : TextAlign.values())
+            for (final TextAlign textAlignment : TextAlign.values())
             {
                 if (textAlignment.getTextAlign() == alignment)
                 {
@@ -84,7 +84,7 @@ class PlainTextFormatter
     {
 
         // required parameters
-        private PDAppearanceContentStream contents;
+        private final PDAppearanceContentStream contents;
 
         // optional parameters
         private AppearanceStyle appearanceStyle;
@@ -98,49 +98,49 @@ class PlainTextFormatter
         private float horizontalOffset = 0f;
         private float verticalOffset = 0f;
         
-        Builder(PDAppearanceContentStream contents)
+        Builder(final PDAppearanceContentStream contents)
         {
             this.contents = contents;
         }
 
-        Builder style(AppearanceStyle appearanceStyle)
+        Builder style(final AppearanceStyle appearanceStyle)
         {
             this.appearanceStyle = appearanceStyle;
             return this;
         }
         
-        Builder wrapLines(boolean wrapLines)
+        Builder wrapLines(final boolean wrapLines)
         {
             this.wrapLines = wrapLines;
             return this;
         }
 
-        Builder width(float width)
+        Builder width(final float width)
         {
             this.width = width;
             return this;
         }
 
-        Builder textAlign(int alignment)
+        Builder textAlign(final int alignment)
         {
             this.textAlignment  = TextAlign.valueOf(alignment);
             return this;
         }
         
-        Builder textAlign(TextAlign alignment)
+        Builder textAlign(final TextAlign alignment)
         {
             this.textAlignment  = alignment;
             return this;
         }
         
         
-        Builder text(PlainText textContent)
+        Builder text(final PlainText textContent)
         {
             this.textContent  = textContent;
             return this;
         }
         
-        Builder initialOffset(float horizontalOffset, float verticalOffset)
+        Builder initialOffset(final float horizontalOffset, final float verticalOffset)
         {
             this.horizontalOffset = horizontalOffset;
             this.verticalOffset = verticalOffset;
@@ -153,7 +153,7 @@ class PlainTextFormatter
         }
     }
     
-    private PlainTextFormatter(Builder builder)
+    private PlainTextFormatter(final Builder builder)
     {
         appearanceStyle = builder.appearanceStyle;
         wrapLines = builder.wrapLines;
@@ -175,11 +175,11 @@ class PlainTextFormatter
         if (textContent != null && !textContent.getParagraphs().isEmpty())
         {
             boolean isFirstParagraph = true;
-        	for (Paragraph paragraph : textContent.getParagraphs())
+        	for (final Paragraph paragraph : textContent.getParagraphs())
             {
                 if (wrapLines)
                 {
-                    List<Line> lines = paragraph.getLines(
+                    final List<Line> lines = paragraph.getLines(
                                 appearanceStyle.getFont(), 
                                 appearanceStyle.getFontSize(), 
                                 width
@@ -192,7 +192,7 @@ class PlainTextFormatter
                     float startOffset = 0f;
                     
                     
-                    float lineWidth = appearanceStyle.getFont().getStringWidth(paragraph.getText()) *
+                    final float lineWidth = appearanceStyle.getFont().getStringWidth(paragraph.getText()) *
                             appearanceStyle.getFontSize() / FONTSCALE;
                     
                     if (lineWidth < width) 
@@ -227,7 +227,7 @@ class PlainTextFormatter
      * @param lines the lines to process.
      * @throws IOException if there is an error writing to the stream.
      */
-    private void processLines(List<Line> lines, boolean isFirstParagraph) throws IOException
+    private void processLines(final List<Line> lines, final boolean isFirstParagraph) throws IOException
     {
         float wordWidth;
 
@@ -235,7 +235,7 @@ class PlainTextFormatter
         float startOffset = 0f;
         float interWordSpacing = 0f;
         
-        for (Line line : lines)
+        for (final Line line : lines)
         {
             switch (textAlignment)
             {
@@ -255,7 +255,7 @@ class PlainTextFormatter
                 startOffset = 0f;
             }
             
-            float offset = -lastPos + startOffset + horizontalOffset;
+            final float offset = -lastPos + startOffset + horizontalOffset;
             
             if (lines.indexOf(line) == 0 && isFirstParagraph)
             {
@@ -270,8 +270,8 @@ class PlainTextFormatter
 
             lastPos += offset; 
 
-            List<Word> words = line.getWords();
-            for (Word word : words)
+            final List<Word> words = line.getWords();
+            for (final Word word : words)
             {
                 contents.showText(word.getText());
                 wordWidth = (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);

@@ -54,7 +54,7 @@ public class PDFXRefStream
      * 
      * @param cosDocument
      */
-    public PDFXRefStream(COSDocument cosDocument)
+    public PDFXRefStream(final COSDocument cosDocument)
     {
         stream = cosDocument.createCOSStream();
     }
@@ -73,17 +73,17 @@ public class PDFXRefStream
         }
         stream.setLong(COSName.SIZE, size);
     
-        List<Long> indexEntry = getIndexEntry();
-        COSArray indexAsArray = new COSArray();
-        for ( Long i : indexEntry )
+        final List<Long> indexEntry = getIndexEntry();
+        final COSArray indexAsArray = new COSArray();
+        for ( final Long i : indexEntry )
         {
             indexAsArray.add(COSInteger.get(i));
         }
         stream.setItem(COSName.INDEX, indexAsArray);
 
-        int[] wEntry = getWEntry();
-        COSArray wAsArray = new COSArray();
-        for (int j : wEntry)
+        final int[] wEntry = getWEntry();
+        final COSArray wAsArray = new COSArray();
+        for (final int j : wEntry)
         {
             wAsArray.add(COSInteger.get(j));
         }
@@ -95,8 +95,8 @@ public class PDFXRefStream
             outputStream.flush();
         }
     
-        Set<COSName> keySet = this.stream.keySet();
-        for ( COSName cosName : keySet )
+        final Set<COSName> keySet = this.stream.keySet();
+        for ( final COSName cosName : keySet )
         {
             // "Other cross-reference stream entries not listed in Table 17 may be indirect; in fact, 
             // some (such as Root in Table 15) shall be indirect."
@@ -109,7 +109,7 @@ public class PDFXRefStream
             {
                 continue;
             }
-            COSBase dictionaryObject = this.stream.getDictionaryObject(cosName);
+            final COSBase dictionaryObject = this.stream.getDictionaryObject(cosName);
             dictionaryObject.setDirect(true);
         }
         return this.stream;
@@ -120,7 +120,7 @@ public class PDFXRefStream
      * 
      * @param trailerDict dictionary to be added as trailer info
      */
-    public void addTrailerInfo(COSDictionary trailerDict)
+    public void addTrailerInfo(final COSDictionary trailerDict)
     {
         trailerDict.forEach((key, value) ->
         {
@@ -137,7 +137,7 @@ public class PDFXRefStream
      * 
      * @param entry new entry to be added
      */
-    public void addEntry(XReferenceEntry entry)
+    public void addEntry(final XReferenceEntry entry)
     {
         if (objectNumbers.contains(entry.getReferencedKey().getNumber()))
         {
@@ -154,15 +154,15 @@ public class PDFXRefStream
      */
     private int[] getWEntry()
     {
-        long[] wMax = new long[3];
-        for (XReferenceEntry entry : streamData)
+        final long[] wMax = new long[3];
+        for (final XReferenceEntry entry : streamData)
         {
             wMax[0] = Math.max(wMax[0], entry.getFirstColumnValue());
             wMax[1] = Math.max(wMax[1], entry.getSecondColumnValue());
             wMax[2] = Math.max(wMax[2], entry.getThirdColumnValue());
         }
         // find the max bytes needed to display that column
-        int[] w = new int[3];
+        final int[] w = new int[3];
         for ( int i = 0; i < w.length; i++ )
         {
             while (wMax[i] > 0)
@@ -179,21 +179,21 @@ public class PDFXRefStream
      * 
      * @param streamSize size to bet set as stream size
      */
-    public void setSize(long streamSize)
+    public void setSize(final long streamSize)
     {
         this.size = streamSize;
     }
 
     private List<Long> getIndexEntry()
     {
-        LinkedList<Long> linkedList = new LinkedList<>();
+        final LinkedList<Long> linkedList = new LinkedList<>();
         Long first = null;
         Long length = null;
-        Set<Long> objNumbers = new TreeSet<>();
+        final Set<Long> objNumbers = new TreeSet<>();
         // add object number 0 to the set
         objNumbers.add(0L);
         objNumbers.addAll(objectNumbers);
-        for ( Long objNumber : objNumbers )
+        for ( final Long objNumber : objNumbers )
         {
             if (first == null)
             {
@@ -218,9 +218,9 @@ public class PDFXRefStream
         return linkedList;
     }
 
-    private void writeNumber(OutputStream os, long number, int bytes) throws IOException
+    private void writeNumber(final OutputStream os, long number, final int bytes) throws IOException
     {
-        byte[] buffer = new byte[bytes];
+        final byte[] buffer = new byte[bytes];
         for ( int i = 0; i < bytes; i++ )
         {
             buffer[i] = (byte)(number & 0xff);
@@ -233,15 +233,15 @@ public class PDFXRefStream
         }
     }
 
-    private void writeStreamData(OutputStream os, int[] w) throws IOException
+    private void writeStreamData(final OutputStream os, final int[] w) throws IOException
     {
         Collections.sort(streamData);
-        FreeXReference nullEntry = FreeXReference.NULL_ENTRY;
+        final FreeXReference nullEntry = FreeXReference.NULL_ENTRY;
         writeNumber(os, nullEntry.getFirstColumnValue(), w[0]);
         writeNumber(os, nullEntry.getSecondColumnValue(), w[1]);
         writeNumber(os, nullEntry.getThirdColumnValue(), w[2]);
         // iterate over all streamData and write it in the required format
-        for (XReferenceEntry entry : streamData)
+        for (final XReferenceEntry entry : streamData)
         {
             writeNumber(os, entry.getFirstColumnValue(), w[0]);
             writeNumber(os, entry.getSecondColumnValue(), w[1]);

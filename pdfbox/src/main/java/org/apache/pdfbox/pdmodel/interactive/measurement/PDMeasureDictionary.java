@@ -47,7 +47,7 @@ public class PDMeasureDictionary implements COSObjectable
      * 
      * @param dictionary the corresponding dictionary
      */
-    public PDMeasureDictionary(COSDictionary dictionary)
+    public PDMeasureDictionary(final COSDictionary dictionary)
     {
         this.measureDictionary = dictionary;
     }
@@ -89,7 +89,7 @@ public class PDMeasureDictionary implements COSObjectable
      * This will set the subtype of the measure dictionary.
      * @param subtype the subtype of the measure dictionary
      */
-    protected void setSubtype(String subtype)
+    protected void setSubtype(final String subtype)
     {
         this.getCOSObject().setName(COSName.SUBTYPE, subtype);
     }

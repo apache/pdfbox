@@ -42,9 +42,9 @@ public class TilingPatternValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
-        PreflightPath vPath = context.getValidationPath();
+        final PreflightPath vPath = context.getValidationPath();
         if (vPath.isEmpty()) 
         {
             return;
@@ -55,8 +55,8 @@ public class TilingPatternValidationProcess extends AbstractProcess
         }
         else
         {
-            PDTilingPattern tilingPattern = (PDTilingPattern) vPath.peek();
-            PDPage page = vPath.getClosestPathElement(PDPage.class);
+            final PDTilingPattern tilingPattern = (PDTilingPattern) vPath.peek();
+            final PDPage page = vPath.getClosestPathElement(PDPage.class);
 
             checkMandatoryFields(context, page, tilingPattern);
             parseResources(context, page, tilingPattern);
@@ -64,10 +64,10 @@ public class TilingPatternValidationProcess extends AbstractProcess
         }
     }
 
-    protected void parseResources(PreflightContext context, PDPage page, PDTilingPattern pattern)
+    protected void parseResources(final PreflightContext context, final PDPage page, final PDTilingPattern pattern)
             throws ValidationException
     {
-        PDResources resources = pattern.getResources();
+        final PDResources resources = pattern.getResources();
         if (resources != null)
         {
             ContextHelper.validateElement(context, resources, RESOURCES_PROCESS);
@@ -77,19 +77,19 @@ public class TilingPatternValidationProcess extends AbstractProcess
     /**
      * Validate the Pattern content like Color and Show Text Operators using an instance of ContentStreamWrapper.
      */
-    protected void parsePatternContent(PreflightContext context, PDPage page, PDTilingPattern pattern)
+    protected void parsePatternContent(final PreflightContext context, final PDPage page, final PDTilingPattern pattern)
             throws ValidationException
     {
-        PreflightContentStream csWrapper = new PreflightContentStream(context, page);
+        final PreflightContentStream csWrapper = new PreflightContentStream(context, page);
         csWrapper.validatePatternContentStream(pattern);
     }
 
     /**
      * This method checks if required fields are present.
      */
-    protected void checkMandatoryFields(PreflightContext context, PDPage page, PDTilingPattern pattern)
+    protected void checkMandatoryFields(final PreflightContext context, final PDPage page, final PDTilingPattern pattern)
     {
-        COSDictionary dictionary = pattern.getCOSObject();
+        final COSDictionary dictionary = pattern.getCOSObject();
         boolean res = dictionary.getItem(COSName.RESOURCES) != null;
         res = res && dictionary.getItem(COSName.BBOX) != null;
         res = res && dictionary.getItem(COSName.PAINT_TYPE) != null;

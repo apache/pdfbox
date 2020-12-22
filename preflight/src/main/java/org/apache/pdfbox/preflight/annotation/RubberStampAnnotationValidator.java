@@ -35,7 +35,7 @@ public class RubberStampAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationRubberStamp pdRStamp = null;
 
-    public RubberStampAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public RubberStampAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdRStamp = new PDAnnotationRubberStamp(annotDictionary);

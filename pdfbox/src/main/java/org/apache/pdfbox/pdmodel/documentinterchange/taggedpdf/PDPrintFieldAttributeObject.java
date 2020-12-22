@@ -78,7 +78,7 @@ public class PDPrintFieldAttributeObject extends PDStandardAttributeObject
      * 
      * @param dictionary the dictionary
      */
-    public PDPrintFieldAttributeObject(COSDictionary dictionary)
+    public PDPrintFieldAttributeObject(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -105,7 +105,7 @@ public class PDPrintFieldAttributeObject extends PDStandardAttributeObject
      * 
      * @param role the role
      */
-    public void setRole(String role)
+    public void setRole(final String role)
     {
         this.setName(ROLE, role);
     }
@@ -130,7 +130,7 @@ public class PDPrintFieldAttributeObject extends PDStandardAttributeObject
      * 
      * @param checkedState the checked state
      */
-    public void setCheckedState(String checkedState)
+    public void setCheckedState(final String checkedState)
     {
         this.setName(CHECKED, checkedState);
     }
@@ -150,7 +150,7 @@ public class PDPrintFieldAttributeObject extends PDStandardAttributeObject
      * 
      * @param alternateName the alternate name of the field
      */
-    public void setAlternateName(String alternateName)
+    public void setAlternateName(final String alternateName)
     {
         this.setString(DESC, alternateName);
     }
@@ -158,7 +158,7 @@ public class PDPrintFieldAttributeObject extends PDStandardAttributeObject
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder().append(super.toString());
+        final StringBuilder sb = new StringBuilder().append(super.toString());
         if (this.isSpecified(ROLE))
         {
             sb.append(", Role=").append(this.getRole());

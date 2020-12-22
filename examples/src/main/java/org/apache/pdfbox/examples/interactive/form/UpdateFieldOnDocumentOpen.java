@@ -39,7 +39,7 @@ public final class UpdateFieldOnDocumentOpen
     {
     }
     
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         // Load the PDF document created by SimpleForm.java
         try (PDDocument document = Loader.loadPDF(new File("target/SimpleForm.pdf")))
@@ -47,12 +47,12 @@ public final class UpdateFieldOnDocumentOpen
             // Note that the JavaScript will depend on the reader application.
             // The classes and methods available to Adobe Reader and Adobe Acrobat
             // are documented in the Acrobat SDK.
-            String javaScript = "var now = util.printd('yyyy-mm-dd', new Date());"
+            final String javaScript = "var now = util.printd('yyyy-mm-dd', new Date());"
                     + "var oField = this.getField('SampleField');"
                     + "oField.value = now;";
             
             // Create an action as JavaScript action
-            PDActionJavaScript jsAction = new PDActionJavaScript();
+            final PDActionJavaScript jsAction = new PDActionJavaScript();
             jsAction.setAction(javaScript);
             
             // Set the action to be executed when the document is opened

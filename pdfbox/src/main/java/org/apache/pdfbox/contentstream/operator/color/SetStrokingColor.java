@@ -42,7 +42,7 @@ public class SetStrokingColor extends SetColor
      * @param color The new stroking color.
      */
     @Override
-    protected void setColor(PDColor color)
+    protected void setColor(final PDColor color)
     {
         context.getGraphicsState().setStrokingColor(color);
     }

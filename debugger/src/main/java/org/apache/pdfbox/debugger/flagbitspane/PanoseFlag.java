@@ -37,7 +37,7 @@ public class PanoseFlag extends Flag
      * Constructor.
      * @param dictionary COSDictionary instance. style dictionary that contains panose object.
      */
-    public PanoseFlag(COSDictionary dictionary)
+    public PanoseFlag(final COSDictionary dictionary)
     {
         byteValue = (COSString)dictionary.getDictionaryObject(COSName.PANOSE);
         bytes = getPanoseBytes(dictionary);
@@ -59,7 +59,7 @@ public class PanoseFlag extends Flag
     @Override
     Object[][] getFlagBits()
     {
-        PDPanoseClassification pc = new PDPanose(bytes).getPanose();
+        final PDPanoseClassification pc = new PDPanose(bytes).getPanose();
         return new Object[][]{
                 {2, "Family Kind", pc.getFamilyKind(), getFamilyKindValue(pc.getFamilyKind())},
                 {3, "Serif Style", pc.getSerifStyle(), getSerifStyleValue(pc.getSerifStyle())},
@@ -80,7 +80,7 @@ public class PanoseFlag extends Flag
         return new String[] {"Byte Position", "Name", "Byte Value", "Value"};
     }
 
-    private String getFamilyKindValue(int index)
+    private String getFamilyKindValue(final int index)
     {
         return new String[]{
                 "Any",
@@ -92,7 +92,7 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    private String getSerifStyleValue(int index)
+    private String getSerifStyleValue(final int index)
     {
         return new String[]{
                 "Any",
@@ -114,7 +114,7 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    private String getWeightValue(int index)
+    private String getWeightValue(final int index)
     {
         return new String[]{
                 "Any",
@@ -132,7 +132,7 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    private String getProportionValue(int index)
+    private String getProportionValue(final int index)
     {
         return new String[]{
                 "Any",
@@ -148,7 +148,7 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    private String getContrastValue(int index)
+    private String getContrastValue(final int index)
     {
         return new String[]{
                 "Any",
@@ -164,7 +164,7 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    private String getStrokeVariationValue(int index)
+    private String getStrokeVariationValue(final int index)
     {
         return new String[]{
                 "Any",
@@ -181,7 +181,7 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    private String getArmStyleValue(int index)
+    private String getArmStyleValue(final int index)
     {
         return new String[]{
                 "Any",
@@ -199,7 +199,7 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    private String getLetterformValue(int index)
+    private String getLetterformValue(final int index)
     {
         return new String[]{
                 "Any",
@@ -221,7 +221,7 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    private String getMidlineValue(int index)
+    private String getMidlineValue(final int index)
     {
         return new String[]{
                 "Any",
@@ -241,7 +241,7 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    private String getXHeightValue(int index)
+    private String getXHeightValue(final int index)
     {
         return new String[]{
                 "Any",
@@ -255,9 +255,9 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    public final byte[] getPanoseBytes(COSDictionary style)
+    public final byte[] getPanoseBytes(final COSDictionary style)
     {
-        COSString panose = (COSString)style.getDictionaryObject(COSName.PANOSE);
+        final COSString panose = (COSString)style.getDictionaryObject(COSName.PANOSE);
         return panose.getBytes();
     }
 }

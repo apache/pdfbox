@@ -63,9 +63,9 @@ public final class SecurityHandlerFactory
      * @param securityHandler security handler class to register
      * @param protectionPolicy protection policy class to register
      */
-    public void registerHandler(String name,
-                                Class<? extends SecurityHandler> securityHandler,
-                                Class<? extends ProtectionPolicy> protectionPolicy)
+    public void registerHandler(final String name,
+                                final Class<? extends SecurityHandler> securityHandler,
+                                final Class<? extends ProtectionPolicy> protectionPolicy)
     {
         if (nameToHandler.containsKey(name))
         {
@@ -81,16 +81,16 @@ public final class SecurityHandlerFactory
      * @param policy the protection policy for which to create a security handler
      * @return a new SecurityHandler instance, or null if none is available
      */
-    public SecurityHandler<ProtectionPolicy> newSecurityHandlerForPolicy(ProtectionPolicy policy)
+    public SecurityHandler<ProtectionPolicy> newSecurityHandlerForPolicy(final ProtectionPolicy policy)
     {
-        Class<? extends SecurityHandler> handlerClass = policyToHandler.get(policy.getClass());
+        final Class<? extends SecurityHandler> handlerClass = policyToHandler.get(policy.getClass());
         if (handlerClass == null)
         {
             return null;
         }
 
-        Class<?>[] argsClasses = { policy.getClass() };
-        Object[] args = { policy };
+        final Class<?>[] argsClasses = { policy.getClass() };
+        final Object[] args = { policy };
         return newSecurityHandler(handlerClass, argsClasses, args);
     }
 
@@ -99,16 +99,16 @@ public final class SecurityHandlerFactory
      * @param name the Filter name from the PDF encryption dictionary
      * @return a new SecurityHandler instance, or null if none is available
      */
-    public SecurityHandler<ProtectionPolicy> newSecurityHandlerForFilter(String name)
+    public SecurityHandler<ProtectionPolicy> newSecurityHandlerForFilter(final String name)
     {
-        Class<? extends SecurityHandler> handlerClass = nameToHandler.get(name);
+        final Class<? extends SecurityHandler> handlerClass = nameToHandler.get(name);
         if (handlerClass == null)
         {
             return null;
         }
 
-        Class<?>[] argsClasses = { };
-        Object[] args = { };
+        final Class<?>[] argsClasses = { };
+        final Object[] args = { };
         return newSecurityHandler(handlerClass, argsClasses, args);
     }
 
@@ -119,16 +119,16 @@ public final class SecurityHandlerFactory
      * @param args array of objects to be passed as arguments to the constructor call.
      * @return a new SecurityHandler instance, or null if none is available.
      */
-    private SecurityHandler<ProtectionPolicy> newSecurityHandler(Class<? extends SecurityHandler> handlerClass, 
-            Class<?>[] argsClasses, Object[] args)
+    private SecurityHandler<ProtectionPolicy> newSecurityHandler(final Class<? extends SecurityHandler> handlerClass,
+                                                                 final Class<?>[] argsClasses, final Object[] args)
     {
         try
         {
-            Constructor<? extends SecurityHandler> ctor =
+            final Constructor<? extends SecurityHandler> ctor =
                     handlerClass.getDeclaredConstructor(argsClasses);
             return ctor.newInstance(args);
         }
-        catch(NoSuchMethodException | IllegalAccessException | InstantiationException |
+        catch(final NoSuchMethodException | IllegalAccessException | InstantiationException |
                 InvocationTargetException e)
         {
             // should not happen in normal operation

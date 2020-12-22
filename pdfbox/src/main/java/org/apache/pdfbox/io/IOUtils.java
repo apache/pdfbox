@@ -78,9 +78,9 @@ public final class IOUtils
      * @return the byte array
      * @throws IOException if an I/O error occurs
      */
-    public static byte[] toByteArray(InputStream in) throws IOException
+    public static byte[] toByteArray(final InputStream in) throws IOException
     {
-        ByteArrayOutputStream baout = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baout = new ByteArrayOutputStream();
         copy(in, baout);
         return baout.toByteArray();
     }
@@ -92,9 +92,9 @@ public final class IOUtils
      * @return the number of bytes that have been copied
      * @throws IOException if an I/O error occurs
      */
-    public static long copy(InputStream input, OutputStream output) throws IOException
+    public static long copy(final InputStream input, final OutputStream output) throws IOException
     {
-        byte[] buffer = new byte[4096];
+        final byte[] buffer = new byte[4096];
         long count = 0;
         int n = 0;
         while (-1 != (n = input.read(buffer)))
@@ -114,13 +114,13 @@ public final class IOUtils
      * @return the number of bytes written to the buffer
      * @throws IOException if an I/O error occurs
      */
-    public static long populateBuffer(InputStream in, byte[] buffer) throws IOException
+    public static long populateBuffer(final InputStream in, final byte[] buffer) throws IOException
     {
         int remaining = buffer.length;
         while (remaining > 0)
         {
-            int bufferWritePos = buffer.length - remaining;
-            int bytesRead = in.read(buffer, bufferWritePos, remaining);
+            final int bufferWritePos = buffer.length - remaining;
+            final int bytesRead = in.read(buffer, bufferWritePos, remaining);
             if (bytesRead < 0)
             {
                 break; //EOD
@@ -135,7 +135,7 @@ public final class IOUtils
      *
      * @param closeable to be closed
      */
-    public static void closeQuietly(Closeable closeable)
+    public static void closeQuietly(final Closeable closeable)
     {
         try
         {
@@ -144,7 +144,7 @@ public final class IOUtils
                 closeable.close();
             }
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             LOG.debug("An exception occurred while trying to close - ignoring", ioe);
             // ignore
@@ -163,13 +163,13 @@ public final class IOUtils
      * exception while closing the IO resource
      * @return the IOException is there was any but only if initialException is null
      */
-    public static IOException closeAndLogException(Closeable closeable, Log logger, String resourceName, IOException initialException)
+    public static IOException closeAndLogException(final Closeable closeable, final Log logger, final String resourceName, final IOException initialException)
     {
         try
         {
             closeable.close();
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             logger.warn("Error closing " + resourceName, ioe);
             if (initialException == null)
@@ -188,13 +188,13 @@ public final class IOUtils
      * 
      * @param buf
      */
-    public static void unmap(ByteBuffer buf)
+    public static void unmap(final ByteBuffer buf)
     {
         try
         {
             UNMAPPER.ifPresent(u -> u.accept(buf));
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             LOG.error("Unable to unmap ByteBuffer.", e);
         }
@@ -224,13 +224,13 @@ public final class IOUtils
                 final Object theUnsafe = f.get(null);
                 return newBufferCleaner(ByteBuffer.class, unmapper.bindTo(theUnsafe));
             }
-            catch (SecurityException se)
+            catch (final SecurityException se)
             {
                 // rethrow to report errors correctly (we need to catch it here, as we also catch RuntimeException
                 // below!):
                 throw se;
             }
-            catch (ReflectiveOperationException | RuntimeException e)
+            catch (final ReflectiveOperationException | RuntimeException e)
             {
                 // *** sun.misc.Cleaner unmapping (Java 8) ***
                 final Class<?> directBufferClass = Class.forName("java.nio.DirectByteBuffer");
@@ -260,7 +260,7 @@ public final class IOUtils
                 return newBufferCleaner(directBufferClass, unmapper);
             }
         }
-        catch (SecurityException se)
+        catch (final SecurityException se)
         {
             LOG.error(
                     "Unmapping is not supported because of missing permissions. Please grant at least the following permissions: RuntimePermission(\"accessClassInPackage.sun.misc\") "
@@ -268,7 +268,7 @@ public final class IOUtils
                     se);
 
         }
-        catch (ReflectiveOperationException | RuntimeException e)
+        catch (final ReflectiveOperationException | RuntimeException e)
         {
             LOG.error("Unmapping is not supported.", e);
         }
@@ -295,7 +295,7 @@ public final class IOUtils
                     unmapper.invokeExact(buffer);
                     return null;
                 }
-                catch (Throwable t)
+                catch (final Throwable t)
                 {
                     return t;
                 }

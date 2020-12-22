@@ -46,7 +46,7 @@ public abstract class AbstractXObjValidator implements XObjectValidator
      */
     protected PreflightContext context = null;
 
-    public AbstractXObjValidator(PreflightContext context, COSStream xobj)
+    public AbstractXObjValidator(final PreflightContext context, final COSStream xobj)
     {
         this.xobject = xobj;
         this.context = context;
@@ -61,7 +61,7 @@ public abstract class AbstractXObjValidator implements XObjectValidator
      */
     protected void checkSMask()
     {
-        COSBase smask = xobject.getCOSDictionary(COSName.SMASK);
+        final COSBase smask = xobject.getCOSDictionary(COSName.SMASK);
         if (smask != null
                 && !(smask instanceof COSName && COSName.NONE.equals(smask)))
         {
@@ -108,7 +108,7 @@ public abstract class AbstractXObjValidator implements XObjectValidator
     protected void checkPostscriptXObject()
     {
         // 6.2.7 No PostScript XObjects
-        COSName subtype = this.xobject.getCOSName(COSName.SUBTYPE);
+        final COSName subtype = this.xobject.getCOSName(COSName.SUBTYPE);
         if (COSName.PS.equals(subtype))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,

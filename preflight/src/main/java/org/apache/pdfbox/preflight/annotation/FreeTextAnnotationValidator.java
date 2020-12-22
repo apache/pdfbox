@@ -36,7 +36,7 @@ public class FreeTextAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationMarkup pdFreeText = null;
 
-    public FreeTextAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public FreeTextAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdFreeText = new PDAnnotationMarkup(annotDictionary);

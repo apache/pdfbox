@@ -39,22 +39,22 @@ public abstract class AbstractTypeTester
 
     private Random counterRandom = new Random(COUNTER_SEED);
 
-    protected void initializeSeed(Random rand)
+    protected void initializeSeed(final Random rand)
     {
         this.counterRandom = rand;
     }
 
-    public String calculateSimpleGetter(String name)
+    public String calculateSimpleGetter(final String name)
     {
-        StringBuilder sb = new StringBuilder(3 + name.length());
+        final StringBuilder sb = new StringBuilder(3 + name.length());
         sb.append("get").append(calculateFieldNameForMethod(name));
         return sb.toString();
     }
 
-    public String calculateArrayGetter(String name)
+    public String calculateArrayGetter(final String name)
     {
-        StringBuilder sb = new StringBuilder(4 + name.length());
-        String fn = calculateFieldNameForMethod(name);
+        final StringBuilder sb = new StringBuilder(4 + name.length());
+        final String fn = calculateFieldNameForMethod(name);
         sb.append("get").append(fn);
         if (!fn.endsWith("s"))
         {
@@ -63,21 +63,21 @@ public abstract class AbstractTypeTester
         return sb.toString();
     }
 
-    public String calculateSimpleSetter(String name)
+    public String calculateSimpleSetter(final String name)
     {
-        StringBuilder sb = new StringBuilder(3 + name.length());
+        final StringBuilder sb = new StringBuilder(3 + name.length());
         sb.append("set").append(calculateFieldNameForMethod(name));
         return sb.toString();
     }
 
-    public String calculateFieldNameForMethod(String name)
+    public String calculateFieldNameForMethod(final String name)
     {
-        StringBuilder sb = new StringBuilder(name.length());
+        final StringBuilder sb = new StringBuilder(name.length());
         sb.append(name.substring(0, 1).toUpperCase()).append(name.substring(1));
         return sb.toString();
     }
 
-    public Class<?> getJavaType(Types type)
+    public Class<?> getJavaType(final Types type)
     {
         if (type.getImplementingClass() == TextType.class)
         {
@@ -101,7 +101,7 @@ public abstract class AbstractTypeTester
         }
     }
 
-    public Object getJavaValue(Types type)
+    public Object getJavaValue(final Types type)
     {
         if (TextType.class.isAssignableFrom(type.getImplementingClass()))
         {
@@ -109,7 +109,7 @@ public abstract class AbstractTypeTester
         }
         else if (type.getImplementingClass() == DateType.class)
         {
-            Calendar calendar = Calendar.getInstance();
+            final Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(counterRandom.nextLong()%MAX_COUNTER);
             return calendar;
         }
@@ -123,11 +123,11 @@ public abstract class AbstractTypeTester
         }
     }
 
-    public List<Field> getXmpFields(Class<?> clz)
+    public List<Field> getXmpFields(final Class<?> clz)
     {
-        Field[] fields = clz.getFields();
-        List<Field> result = new ArrayList<>(fields.length);
-        for (Field field : fields)
+        final Field[] fields = clz.getFields();
+        final List<Field> result = new ArrayList<>(fields.length);
+        for (final Field field : fields)
         {
             if (field.getAnnotation(PropertyType.class) != null)
             {

@@ -59,7 +59,7 @@ class TestPDDocument
     @Test
     void testSaveLoadStream() throws IOException
     {
-        ByteArrayOutputStream baos;
+        final ByteArrayOutputStream baos;
         // Create PDF with one blank page
         try (PDDocument document = new PDDocument())
         {
@@ -70,7 +70,7 @@ class TestPDDocument
         }
 
         // Verify content
-        byte[] pdf = baos.toByteArray();
+        final byte[] pdf = baos.toByteArray();
         assertTrue(pdf.length > 200);
         assertEquals("%PDF-1.4", new String(Arrays.copyOfRange(pdf, 0, 8), StandardCharsets.UTF_8));
         assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), StandardCharsets.UTF_8));
@@ -89,7 +89,7 @@ class TestPDDocument
     @Test
     void testSaveLoadFile() throws IOException
     {
-        File targetFile = new File(TESTRESULTSDIR, "pddocument-saveloadfile.pdf");
+        final File targetFile = new File(TESTRESULTSDIR, "pddocument-saveloadfile.pdf");
 
         // Create PDF with one blank page
         try (PDDocument document = new PDDocument())
@@ -101,7 +101,7 @@ class TestPDDocument
         // Verify content
         assertTrue(targetFile.length() > 200);
 
-        byte[] pdf = Files.readAllBytes(targetFile.toPath());
+        final byte[] pdf = Files.readAllBytes(targetFile.toPath());
 
         assertTrue(pdf.length > 200);
         assertEquals("%PDF-1.4", new String(Arrays.copyOfRange(pdf, 0, 8), StandardCharsets.UTF_8));
@@ -165,7 +165,7 @@ class TestPDDocument
     @Test
     void testDeleteBadFile() throws IOException
     {
-        File f = new File(TESTRESULTSDIR, "testDeleteBadFile.pdf");
+        final File f = new File(TESTRESULTSDIR, "testDeleteBadFile.pdf");
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(f)))
         {
             pw.write("<script language='JavaScript'>");
@@ -175,7 +175,7 @@ class TestPDDocument
         {
             Files.delete(f.toPath());
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             fail("delete bad file failed after failed load");
         }
@@ -189,7 +189,7 @@ class TestPDDocument
     @Test
     void testDeleteGoodFile() throws IOException
     {
-        File f = new File(TESTRESULTSDIR, "testDeleteGoodFile.pdf");
+        final File f = new File(TESTRESULTSDIR, "testDeleteGoodFile.pdf");
         try (PDDocument doc = new PDDocument())
         {
             doc.addPage(new PDPage());
@@ -202,7 +202,7 @@ class TestPDDocument
         {
             Files.delete(f.toPath());
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             fail("delete good file failed after successful load() and close()");
         }
@@ -217,11 +217,11 @@ class TestPDDocument
     @Test
     void testSaveArabicLocale() throws IOException
     {
-        Locale defaultLocale = Locale.getDefault();
-        Locale arabicLocale = new Locale.Builder().setLanguageTag("ar-EG-u-nu-arab").build();
+        final Locale defaultLocale = Locale.getDefault();
+        final Locale arabicLocale = new Locale.Builder().setLanguageTag("ar-EG-u-nu-arab").build();
         Locale.setDefault(arabicLocale);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try (PDDocument doc = new PDDocument())
         {

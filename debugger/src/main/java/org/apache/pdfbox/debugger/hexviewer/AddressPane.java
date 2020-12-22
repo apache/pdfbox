@@ -39,7 +39,7 @@ class AddressPane extends JComponent
      * Constructor.
      * @param total int. Total line number needed to show all the bytes.
      */
-    AddressPane(int total)
+    AddressPane(final int total)
     {
         totalLine = total;
         setPreferredSize(new Dimension(HexView.ADDRESS_PANE_WIDTH, HexView.CHAR_HEIGHT * (totalLine+1)));
@@ -47,14 +47,14 @@ class AddressPane extends JComponent
     }
 
     @Override
-    protected void paintComponent(Graphics g)
+    protected void paintComponent(final Graphics g)
     {
         super.paintComponent(g);
 
-        Graphics2D g2d = (Graphics2D)g;
+        final Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHints(HexView.RENDERING_HINTS);
         
-        Rectangle bound = getVisibleRect();
+        final Rectangle bound = getVisibleRect();
 
         int x = HexView.LINE_INSET;
         int y = bound.y;
@@ -63,7 +63,7 @@ class AddressPane extends JComponent
         {
             y += HexView.CHAR_HEIGHT - y%HexView.CHAR_HEIGHT;
         }
-        int firstLine = y/HexView.CHAR_HEIGHT;
+        final int firstLine = y/HexView.CHAR_HEIGHT;
 
         for (int line = firstLine; line < firstLine + bound.getHeight()/HexView.CHAR_HEIGHT; line++)
         {
@@ -90,7 +90,7 @@ class AddressPane extends JComponent
      * @param x int. x axis value.
      * @param y int. y axis value.
      */
-    private void paintSelected(Graphics g, int x, int y)
+    private void paintSelected(final Graphics g, final int x, final int y)
     {
         g.setColor(HexView.SELECTED_COLOR);
         g.setFont(HexView.BOLD_FONT);
@@ -106,7 +106,7 @@ class AddressPane extends JComponent
      * selected in hex pane.
      * @param index int.
      */
-    void setSelected(int index)
+    void setSelected(final int index)
     {
         if (index != selectedIndex)
         {

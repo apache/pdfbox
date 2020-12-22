@@ -32,7 +32,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 public class FillNonZeroRule extends GraphicsOperatorProcessor
 {
     @Override
-    public final void process(Operator operator, List<COSBase> operands) throws IOException
+    public final void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         context.fillPath(Path2D.WIND_NON_ZERO);
     }

@@ -50,7 +50,7 @@ public class ThumbnailType extends AbstractStructuredType
      * @param metadata
      *            The metadata to attach to this property
      */
-    public ThumbnailType(XMPMetadata metadata)
+    public ThumbnailType(final XMPMetadata metadata)
     {
         super(metadata);
         setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "parseType", "Resource"));
@@ -63,7 +63,7 @@ public class ThumbnailType extends AbstractStructuredType
      */
     public Integer getHeight()
     {
-        AbstractField absProp = getFirstEquivalentProperty(HEIGHT, IntegerType.class);
+        final AbstractField absProp = getFirstEquivalentProperty(HEIGHT, IntegerType.class);
         if (absProp != null)
         {
             return ((IntegerType) absProp).getValue();
@@ -77,7 +77,7 @@ public class ThumbnailType extends AbstractStructuredType
      * @param height
      *            the value of Height property to set
      */
-    public void setHeight(Integer height)
+    public void setHeight(final Integer height)
     {
         addSimpleProperty(HEIGHT, height);
     }
@@ -89,7 +89,7 @@ public class ThumbnailType extends AbstractStructuredType
      */
     public Integer getWidth()
     {
-        AbstractField absProp = getFirstEquivalentProperty(WIDTH, IntegerType.class);
+        final AbstractField absProp = getFirstEquivalentProperty(WIDTH, IntegerType.class);
         if (absProp != null)
         {
 
@@ -104,7 +104,7 @@ public class ThumbnailType extends AbstractStructuredType
      * @param width
      *            the value of width property to set
      */
-    public void setWidth(Integer width)
+    public void setWidth(final Integer width)
     {
         addSimpleProperty(WIDTH, width);
     }
@@ -116,7 +116,7 @@ public class ThumbnailType extends AbstractStructuredType
      */
     public String getImage()
     {
-        AbstractField absProp = getFirstEquivalentProperty(IMAGE, TextType.class);
+        final AbstractField absProp = getFirstEquivalentProperty(IMAGE, TextType.class);
         if (absProp != null)
         {
             return ((TextType) absProp).getStringValue();
@@ -130,7 +130,7 @@ public class ThumbnailType extends AbstractStructuredType
      * @param image
      *            the value of image property to set
      */
-    public void setImage(String image)
+    public void setImage(final String image)
     {
         addSimpleProperty(IMAGE, image);
     }
@@ -142,7 +142,7 @@ public class ThumbnailType extends AbstractStructuredType
      */
     public String getFormat()
     {
-        AbstractField absProp = getFirstEquivalentProperty(FORMAT, ChoiceType.class);
+        final AbstractField absProp = getFirstEquivalentProperty(FORMAT, ChoiceType.class);
         if (absProp != null)
         {
             return ((TextType) absProp).getStringValue();
@@ -156,7 +156,7 @@ public class ThumbnailType extends AbstractStructuredType
      * @param format
      *            the value of format property to set
      */
-    public void setFormat(String format)
+    public void setFormat(final String format)
     {
         addSimpleProperty(FORMAT, format);
     }

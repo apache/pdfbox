@@ -140,17 +140,17 @@ public class LucenePDFDocument
      * 
      * @param aStripper The new pdf text stripper.
      */
-    public void setTextStripper(PDFTextStripper aStripper)
+    public void setTextStripper(final PDFTextStripper aStripper)
     {
         stripper = aStripper;
     }
 
-    private static String timeToString(long time)
+    private static String timeToString(final long time)
     {
         return DateTools.timeToString(time, DATE_TIME_RES);
     }
 
-    private void addKeywordField(Document document, String name, String value)
+    private void addKeywordField(final Document document, final String name, final String value)
     {
         if (value != null)
         {
@@ -158,7 +158,7 @@ public class LucenePDFDocument
         }
     }
 
-    private void addTextField(Document document, String name, Reader value)
+    private void addTextField(final Document document, final String name, final Reader value)
     {
         if (value != null)
         {
@@ -166,7 +166,7 @@ public class LucenePDFDocument
         }
     }
 
-    private void addTextField(Document document, String name, String value)
+    private void addTextField(final Document document, final String name, final String value)
     {
         if (value != null)
         {
@@ -174,7 +174,7 @@ public class LucenePDFDocument
         }
     }
 
-    private void addTextField(Document document, String name, Date value)
+    private void addTextField(final Document document, final String name, final Date value)
     {
         if (value != null)
         {
@@ -182,7 +182,7 @@ public class LucenePDFDocument
         }
     }
 
-    private void addTextField(Document document, String name, Calendar value)
+    private void addTextField(final Document document, final String name, final Calendar value)
     {
         if (value != null)
         {
@@ -190,7 +190,7 @@ public class LucenePDFDocument
         }
     }
 
-    private static void addUnindexedField(Document document, String name, String value)
+    private static void addUnindexedField(final Document document, final String name, final String value)
     {
         if (value != null)
         {
@@ -198,7 +198,7 @@ public class LucenePDFDocument
         }
     }
 
-    private void addUnstoredKeywordField(Document document, String name, String value)
+    private void addUnstoredKeywordField(final Document document, final String name, final String value)
     {
         if (value != null)
         {
@@ -213,9 +213,9 @@ public class LucenePDFDocument
      * @return The input stream converted to a lucene document.
      * @throws IOException If there is an error converting the PDF.
      */
-    public Document convertDocument(InputStream is) throws IOException
+    public Document convertDocument(final InputStream is) throws IOException
     {
-        Document document = new Document();
+        final Document document = new Document();
         addContent(document, is, "<inputstream>");
         return document;
 
@@ -229,9 +229,9 @@ public class LucenePDFDocument
      * 
      * @throws IOException If there is an exception while converting the document.
      */
-    public Document convertDocument(File file) throws IOException
+    public Document convertDocument(final File file) throws IOException
     {
-        Document document = new Document();
+        final Document document = new Document();
 
         // Add the url as a field named "url". Use an UnIndexed field, so
         // that the url is just stored with the document, but is not searchable.
@@ -243,7 +243,7 @@ public class LucenePDFDocument
         // to tokenize the field into words.
         addKeywordField(document, "modified", timeToString(file.lastModified()));
 
-        String uid = createUID(file);
+        final String uid = createUID(file);
 
         // Add the uid as a field, so that index can be incrementally maintained.
         // This field is not stored with document, it is indexed, but it is not
@@ -267,10 +267,10 @@ public class LucenePDFDocument
      * @return The PDF converted to a lucene document.
      * @throws IOException If there is an error while converting the document.
      */
-    public Document convertDocument(URL url) throws IOException
+    public Document convertDocument(final URL url) throws IOException
     {
-        Document document = new Document();
-        URLConnection connection = url.openConnection();
+        final Document document = new Document();
+        final URLConnection connection = url.openConnection();
         connection.connect();
         // Add the url as a field named "url". Use an UnIndexed field, so
         // that the url is just stored with the document, but is not searchable.
@@ -281,7 +281,7 @@ public class LucenePDFDocument
         // to tokenize the field into words.
         addKeywordField(document, "modified", timeToString(connection.getLastModified()));
 
-        String uid = createUID(url, connection.getLastModified());
+        final String uid = createUID(url, connection.getLastModified());
 
         // Add the uid as a field, so that index can be incrementally maintained.
         // This field is not stored with document, it is indexed, but it is not
@@ -306,9 +306,9 @@ public class LucenePDFDocument
      * 
      * @throws IOException If there is an error parsing or indexing the document.
      */
-    public static Document getDocument(InputStream is) throws IOException
+    public static Document getDocument(final InputStream is) throws IOException
     {
-        LucenePDFDocument converter = new LucenePDFDocument();
+        final LucenePDFDocument converter = new LucenePDFDocument();
         return converter.convertDocument(is);
     }
 
@@ -321,9 +321,9 @@ public class LucenePDFDocument
      * 
      * @throws IOException If there is an error parsing or indexing the document.
      */
-    public static Document getDocument(File file) throws IOException
+    public static Document getDocument(final File file) throws IOException
     {
-        LucenePDFDocument converter = new LucenePDFDocument();
+        final LucenePDFDocument converter = new LucenePDFDocument();
         return converter.convertDocument(file);
     }
 
@@ -336,9 +336,9 @@ public class LucenePDFDocument
      * 
      * @throws IOException If there is an error parsing or indexing the document.
      */
-    public static Document getDocument(URL url) throws IOException
+    public static Document getDocument(final URL url) throws IOException
     {
-        LucenePDFDocument converter = new LucenePDFDocument();
+        final LucenePDFDocument converter = new LucenePDFDocument();
         return converter.convertDocument(url);
     }
 
@@ -351,12 +351,12 @@ public class LucenePDFDocument
      * 
      * @throws IOException If there is an error parsing the document.
      */
-    private void addContent(Document document, InputStream is, String documentLocation) throws IOException
+    private void addContent(final Document document, final InputStream is, final String documentLocation) throws IOException
     {
         try (PDDocument pdfDocument = Loader.loadPDF(is))
         {
             // create a writer where to append the text content.
-            StringWriter writer = new StringWriter();
+            final StringWriter writer = new StringWriter();
             if (stripper == null)
             {
                 stripper = new PDFTextStripper();
@@ -367,15 +367,15 @@ public class LucenePDFDocument
             // the char array value of the writer buffer and the content string
             // is shared as long as the buffer content is not modified, which will
             // not occur here.
-            String contents = writer.getBuffer().toString();
+            final String contents = writer.getBuffer().toString();
 
-            StringReader reader = new StringReader(contents);
+            final StringReader reader = new StringReader(contents);
 
             // Add the tag-stripped contents as a Reader-valued Text field so it will
             // get tokenized and indexed.
             addTextField(document, "contents", reader);
 
-            PDDocumentInformation info = pdfDocument.getDocumentInformation();
+            final PDDocumentInformation info = pdfDocument.getDocumentInformation();
             if (info != null)
             {
                 addTextField(document, "Author", info.getAuthor());
@@ -388,13 +388,13 @@ public class LucenePDFDocument
                 addTextField(document, "Title", info.getTitle());
                 addTextField(document, "Trapped", info.getTrapped());
             }
-            int summarySize = Math.min(contents.length(), 500);
-            String summary = contents.substring(0, summarySize);
+            final int summarySize = Math.min(contents.length(), 500);
+            final String summary = contents.substring(0, summarySize);
             // Add the summary as an UnIndexed field, so that it is stored and returned
             // with hit documents for display.
             addUnindexedField(document, "summary", summary);
         }
-        catch (InvalidPasswordException e)
+        catch (final InvalidPasswordException e)
         {
             // they didn't suppply a password and the default of "" was wrong.
             throw new IOException("Error: The document(" + documentLocation + ") is encrypted and will not be indexed.", e);
@@ -409,7 +409,7 @@ public class LucenePDFDocument
      * 
      * @return the created UID
      */
-    public static String createUID(URL url, long time)
+    public static String createUID(final URL url, final long time)
     {
         return url.toExternalForm().replace(FILE_SEPARATOR, '\u0000') + "\u0000" + timeToString(time);
     }
@@ -421,7 +421,7 @@ public class LucenePDFDocument
      * 
      * @return the created UID
      */
-    public static String createUID(File file)
+    public static String createUID(final File file)
     {
         return file.getPath().replace(FILE_SEPARATOR, '\u0000') + "\u0000" + timeToString(file.lastModified());
     }

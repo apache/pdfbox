@@ -44,7 +44,7 @@ public class PDSignatureField extends PDTerminalField
      *
      * @param acroForm The acroForm for this field.
      */
-    public PDSignatureField(PDAcroForm acroForm)
+    public PDSignatureField(final PDAcroForm acroForm)
     {
         super(acroForm);
         getCOSObject().setItem(COSName.FT, COSName.SIG);
@@ -60,7 +60,7 @@ public class PDSignatureField extends PDTerminalField
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node to be created
      */
-    PDSignatureField(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDSignatureField(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -72,8 +72,8 @@ public class PDSignatureField extends PDTerminalField
      */
     private String generatePartialName()
     {
-        String fieldName = "Signature";
-        Set<String> nameSet = new HashSet<>();
+        final String fieldName = "Signature";
+        final Set<String> nameSet = new HashSet<>();
         getAcroForm().getFieldTree().forEach(field -> nameSet.add(field.getPartialName()));
         int i = 1;
         while (nameSet.contains(fieldName + i))
@@ -99,7 +99,7 @@ public class PDSignatureField extends PDTerminalField
      * 
      * @param value is the PDSignatureField
      */
-    public void setValue(PDSignature value) throws IOException
+    public void setValue(final PDSignature value) throws IOException
     {
         getCOSObject().setItem(COSName.V, value);
         applyChange();
@@ -114,7 +114,7 @@ public class PDSignatureField extends PDTerminalField
      * @throws UnsupportedOperationException in all cases!
      */
     @Override
-    public void setValue(String value)
+    public void setValue(final String value)
     {
         throw new UnsupportedOperationException("Signature fields don't support setting the value as String "
                 + "- use setValue(PDSignature value) instead");
@@ -126,7 +126,7 @@ public class PDSignatureField extends PDTerminalField
      *
      * @param value is the PDSignatureField
      */
-    public void setDefaultValue(PDSignature value)
+    public void setDefaultValue(final PDSignature value)
     {
         getCOSObject().setItem(COSName.DV, value);
     }
@@ -138,7 +138,7 @@ public class PDSignatureField extends PDTerminalField
      */
     public PDSignature getValue()
     {
-        COSBase value = getCOSObject().getDictionaryObject(COSName.V);
+        final COSBase value = getCOSObject().getDictionaryObject(COSName.V);
         if (value instanceof COSDictionary)
         {
             return new PDSignature((COSDictionary)value);
@@ -153,7 +153,7 @@ public class PDSignatureField extends PDTerminalField
      */
     public PDSignature getDefaultValue()
     {
-        COSBase value = getCOSObject().getDictionaryObject(COSName.DV);
+        final COSBase value = getCOSObject().getDictionaryObject(COSName.DV);
         if (value == null)
         {
             return null;
@@ -164,7 +164,7 @@ public class PDSignatureField extends PDTerminalField
     @Override
     public String getValueAsString()
     {
-        PDSignature signature = getValue();
+        final PDSignature signature = getValue();
         return signature != null ? signature.toString() : "";
     }
 
@@ -177,7 +177,7 @@ public class PDSignatureField extends PDTerminalField
      */
     public PDSeedValue getSeedValue()
     {
-        COSDictionary dict = (COSDictionary) getCOSObject().getDictionaryObject(COSName.SV);
+        final COSDictionary dict = (COSDictionary) getCOSObject().getDictionaryObject(COSName.SV);
         PDSeedValue sv = null;
         if (dict != null)
         {
@@ -193,7 +193,7 @@ public class PDSignatureField extends PDTerminalField
      *
      * @param sv is the seed value dictionary as PDSeedValue
      */
-    public void setSeedValue(PDSeedValue sv)
+    public void setSeedValue(final PDSeedValue sv)
     {
         if (sv != null)
         {
@@ -204,7 +204,7 @@ public class PDSignatureField extends PDTerminalField
     @Override
     void constructAppearances() throws IOException
     {
-        PDAnnotationWidget widget = this.getWidgets().get(0);
+        final PDAnnotationWidget widget = this.getWidgets().get(0);
         if (widget != null)
         {
             // check if the signature is visible

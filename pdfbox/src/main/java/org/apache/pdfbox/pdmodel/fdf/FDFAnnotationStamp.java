@@ -68,7 +68,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationStamp(COSDictionary a)
+    public FDFAnnotationStamp(final COSDictionary a)
     {
         super(a);
     }
@@ -80,7 +80,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationStamp(Element element) throws IOException
+    public FDFAnnotationStamp(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
@@ -88,27 +88,27 @@ public class FDFAnnotationStamp extends FDFAnnotation
         // PDFBOX-4437: Initialize the Stamp appearance from the XFDF
         // https://www.immagic.com/eLibrary/ARCHIVES/TECH/ADOBE/A070914X.pdf
         // appearance is only defined for stamps
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
 
         // Set the Appearance to the annotation
         LOG.debug("Get the DOM Document for the stamp appearance");
-        String base64EncodedAppearance;
+        final String base64EncodedAppearance;
         try
         {
             base64EncodedAppearance = xpath.evaluate("appearance", element);
         }
-        catch (XPathExpressionException e)
+        catch (final XPathExpressionException e)
         {
             // should not happen
             LOG.error("Error while evaluating XPath expression for appearance: " + e);
             return;
         }
-        byte[] decodedAppearanceXML;
+        final byte[] decodedAppearanceXML;
         try
         {
             decodedAppearanceXML = Hex.decodeBase64(base64EncodedAppearance);
         }
-        catch (IllegalArgumentException ex)
+        catch (final IllegalArgumentException ex)
         {
             LOG.error("Bad base64 encoded appearance ignored", ex);
             return;
@@ -117,10 +117,10 @@ public class FDFAnnotationStamp extends FDFAnnotation
         {
             LOG.debug("Decoded XML: " + new String(decodedAppearanceXML));
 
-            Document stampAppearance = XMLUtil
+            final Document stampAppearance = XMLUtil
                     .parse(new ByteArrayInputStream(decodedAppearanceXML));
 
-            Element appearanceEl = stampAppearance.getDocumentElement();
+            final Element appearanceEl = stampAppearance.getDocumentElement();
 
             // Is the root node have tag as DICT, error otherwise
             if (!"dict".equalsIgnoreCase(appearanceEl.getNodeName()))
@@ -138,15 +138,15 @@ public class FDFAnnotationStamp extends FDFAnnotation
      *
      * @param fdfXML The XML document that contains the appearance data.
      */
-    private COSDictionary parseStampAnnotationAppearanceXML(Element appearanceXML) throws IOException
+    private COSDictionary parseStampAnnotationAppearanceXML(final Element appearanceXML) throws IOException
     {
-        COSDictionary dictionary = new COSDictionary();
+        final COSDictionary dictionary = new COSDictionary();
         // the N entry is required.
         dictionary.setItem(COSName.N, new COSStream());
         LOG.debug("Build dictionary for Appearance based on the appearanceXML");
 
-        NodeList nodeList = appearanceXML.getChildNodes();
-        String parentAttrKey = appearanceXML.getAttribute("KEY");
+        final NodeList nodeList = appearanceXML.getChildNodes();
+        final String parentAttrKey = appearanceXML.getAttribute("KEY");
         LOG.debug("Appearance Root - tag: " + appearanceXML.getTagName() + ", name: " + 
                 appearanceXML.getNodeName() + ", key: " + parentAttrKey + ", children: " + 
                 nodeList.getLength());
@@ -160,10 +160,10 @@ public class FDFAnnotationStamp extends FDFAnnotation
         }
         for (int i = 0; i < nodeList.getLength(); i++)
         {
-            Node node = nodeList.item(i);
+            final Node node = nodeList.item(i);
             if (node instanceof Element)
             {
-                Element child = (Element) node;
+                final Element child = (Element) node;
                 if ("STREAM".equalsIgnoreCase(child.getTagName()))
                 {
                     LOG.debug(parentAttrKey +
@@ -182,22 +182,22 @@ public class FDFAnnotationStamp extends FDFAnnotation
         return dictionary;
     }
 
-    private COSStream parseStreamElement(Element streamEl) throws IOException
+    private COSStream parseStreamElement(final Element streamEl) throws IOException
     {
         LOG.debug("Parse " + streamEl.getAttribute("KEY") + " Stream");
-        COSStream stream = new COSStream();
+        final COSStream stream = new COSStream();
 
-        NodeList nodeList = streamEl.getChildNodes();
-        String parentAttrKey = streamEl.getAttribute("KEY");
+        final NodeList nodeList = streamEl.getChildNodes();
+        final String parentAttrKey = streamEl.getAttribute("KEY");
 
         for (int i = 0; i < nodeList.getLength(); i++)
         {
-            Node node = nodeList.item(i);
+            final Node node = nodeList.item(i);
             if (node instanceof Element)
             {
-                Element child = (Element) node;
-                String childAttrKey = child.getAttribute("KEY");
-                String childAttrVal = child.getAttribute("VAL");
+                final Element child = (Element) node;
+                final String childAttrKey = child.getAttribute("KEY");
+                final String childAttrVal = child.getAttribute("VAL");
                 LOG.debug(parentAttrKey + " => reading child: " + child.getTagName() +
                            " with key: " + childAttrKey);
                 if ("INT".equalsIgnoreCase(child.getTagName()))
@@ -275,13 +275,13 @@ public class FDFAnnotationStamp extends FDFAnnotation
         return stream;
     }
 
-    private COSArray parseArrayElement(Element arrayEl) throws IOException
+    private COSArray parseArrayElement(final Element arrayEl) throws IOException
     {
         LOG.debug("Parse " + arrayEl.getAttribute("KEY") + " Array");
-        COSArray array = new COSArray();
+        final COSArray array = new COSArray();
 
-        NodeList nodeList = arrayEl.getChildNodes();
-        String parentAttrKey = arrayEl.getAttribute("KEY");
+        final NodeList nodeList = arrayEl.getChildNodes();
+        final String parentAttrKey = arrayEl.getAttribute("KEY");
 
         if ("BBox".equals(parentAttrKey) && nodeList.getLength() < 4)
         {
@@ -296,12 +296,12 @@ public class FDFAnnotationStamp extends FDFAnnotation
 
         for (int i = 0; i < nodeList.getLength(); i++)
         {
-            Node node = nodeList.item(i);
+            final Node node = nodeList.item(i);
             if (node instanceof Element)
             {
-                Element child = (Element) node;
-                String childAttrKey = child.getAttribute("KEY");
-                String childAttrVal = child.getAttribute("VAL");
+                final Element child = (Element) node;
+                final String childAttrKey = child.getAttribute("KEY");
+                final String childAttrVal = child.getAttribute("VAL");
                 LOG.debug(parentAttrKey + " => reading child: " + child.getTagName() +
                            " with key: " + childAttrKey);
                 if ("INT".equalsIgnoreCase(child.getTagName()) || "FIXED".equalsIgnoreCase(child.getTagName()))
@@ -344,22 +344,22 @@ public class FDFAnnotationStamp extends FDFAnnotation
         return array;
     }
 
-    private COSDictionary parseDictElement(Element dictEl) throws IOException
+    private COSDictionary parseDictElement(final Element dictEl) throws IOException
     {
         LOG.debug("Parse " + dictEl.getAttribute("KEY") + " Dictionary");
-        COSDictionary dict = new COSDictionary();
+        final COSDictionary dict = new COSDictionary();
 
-        NodeList nodeList = dictEl.getChildNodes();
-        String parentAttrKey = dictEl.getAttribute("KEY");
+        final NodeList nodeList = dictEl.getChildNodes();
+        final String parentAttrKey = dictEl.getAttribute("KEY");
 
         for (int i = 0; i < nodeList.getLength(); i++)
         {
-            Node node = nodeList.item(i);
+            final Node node = nodeList.item(i);
             if (node instanceof Element)
             {
-                Element child = (Element) node;
-                String childAttrKey = child.getAttribute("KEY");
-                String childAttrVal = child.getAttribute("VAL");
+                final Element child = (Element) node;
+                final String childAttrKey = child.getAttribute("KEY");
+                final String childAttrVal = child.getAttribute("VAL");
 
                 if ("DICT".equals(child.getTagName()))
                 {

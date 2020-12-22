@@ -59,36 +59,36 @@ class TestXmlResultParser
     @Test
     void testOneError() throws Exception
     {
-        ValidationResult result = new ValidationResult(false);
+        final ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError("7"));
         parser.createResponseWithError(document, "pdftype", result, preflight);
         assertNotNull(xpath.evaluate("errors[@count='1']", preflight, XPathConstants.NODE));
-        NodeList nl = (NodeList)xpath.evaluate("errors/error[@count='1']", preflight, XPathConstants.NODESET);
+        final NodeList nl = (NodeList)xpath.evaluate("errors/error[@count='1']", preflight, XPathConstants.NODESET);
         assertEquals(1,nl.getLength());
     }
 
     @Test
     void testTwoError() throws Exception
     {
-        ValidationResult result = new ValidationResult(false);
+        final ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError("7"));
         result.addError(new ValidationResult.ValidationError(ERROR_CODE));
         parser.createResponseWithError(document, "pdftype", result, preflight);
         assertNotNull(xpath.evaluate("errors[@count='2']", preflight, XPathConstants.NODE));
-        NodeList nl = (NodeList)xpath.evaluate("errors/error[@count='1']", preflight, XPathConstants.NODESET);
+        final NodeList nl = (NodeList)xpath.evaluate("errors/error[@count='1']", preflight, XPathConstants.NODESET);
         assertEquals(2,nl.getLength());
     }
 
     @Test
     void testSameErrorTwice() throws Exception
     {
-        ValidationResult result = new ValidationResult(false);
+        final ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError(ERROR_CODE));
         result.addError(new ValidationResult.ValidationError(ERROR_CODE));
         parser.createResponseWithError(document,"pdftype",result,preflight);
         assertNotNull(xpath.evaluate("errors[@count='2']", preflight, XPathConstants.NODE));
         assertNotNull(xpath.evaluate("errors/error[@count='2']", preflight, XPathConstants.NODE));
-        Element code = (Element)xpath.evaluate("errors/error[@count='2']/code", preflight, XPathConstants.NODE);
+        final Element code = (Element)xpath.evaluate("errors/error[@count='2']/code", preflight, XPathConstants.NODE);
         assertNotNull(code);
         assertEquals(ERROR_CODE,code.getTextContent());
     }
@@ -96,12 +96,12 @@ class TestXmlResultParser
     @Test
     void testSameCodeWithDifferentMessages() throws Exception
     {
-        ValidationResult result = new ValidationResult(false);
+        final ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError(ERROR_CODE,"message 1"));
         result.addError(new ValidationResult.ValidationError(ERROR_CODE,"message 2"));
         parser.createResponseWithError(document, "pdftype", result, preflight);
         assertNotNull(xpath.evaluate("errors[@count='2']", preflight, XPathConstants.NODE));
-        NodeList nl = (NodeList)xpath.evaluate("errors/error[@count='1']", preflight, XPathConstants.NODESET);
+        final NodeList nl = (NodeList)xpath.evaluate("errors/error[@count='1']", preflight, XPathConstants.NODESET);
         assertEquals(2,nl.getLength());
     }
 

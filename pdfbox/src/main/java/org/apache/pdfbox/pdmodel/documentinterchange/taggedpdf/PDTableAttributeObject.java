@@ -64,7 +64,7 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
      * 
      * @param dictionary the dictionary
      */
-    public PDTableAttributeObject(COSDictionary dictionary)
+    public PDTableAttributeObject(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -87,7 +87,7 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
      * 
      * @param rowSpan the row span
      */
-    public void setRowSpan(int rowSpan)
+    public void setRowSpan(final int rowSpan)
     {
         this.setInteger(ROW_SPAN, rowSpan);
     }
@@ -109,7 +109,7 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
      * 
      * @param colSpan the column span
      */
-    public void setColSpan(int colSpan)
+    public void setColSpan(final int colSpan)
     {
         this.setInteger(COL_SPAN, colSpan);
     }
@@ -135,7 +135,7 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
      * 
      * @param headers the headers
      */
-    public void setHeaders(String[] headers)
+    public void setHeaders(final String[] headers)
     {
         this.setArrayOfString(HEADERS, headers);
     }
@@ -165,7 +165,7 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
      * 
      * @param scope the scope
      */
-    public void setScope(String scope)
+    public void setScope(final String scope)
     {
         this.setName(SCOPE, scope);
     }
@@ -185,7 +185,7 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
      * 
      * @param summary the summary
      */
-    public void setSummary(String summary)
+    public void setSummary(final String summary)
     {
         this.setString(SUMMARY, summary);
     }
@@ -193,7 +193,7 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder().append(super.toString());
+        final StringBuilder sb = new StringBuilder().append(super.toString());
         if (this.isSpecified(ROW_SPAN))
         {
             sb.append(", RowSpan=").append(String.valueOf(this.getRowSpan()));

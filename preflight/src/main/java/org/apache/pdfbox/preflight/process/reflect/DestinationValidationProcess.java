@@ -38,9 +38,9 @@ public class DestinationValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext ctx) throws ValidationException
+    public void validate(final PreflightContext ctx) throws ValidationException
     {
-        PreflightPath vPath = ctx.getValidationPath();
+        final PreflightPath vPath = ctx.getValidationPath();
         if (vPath.isEmpty())
         {
             return;
@@ -51,7 +51,7 @@ public class DestinationValidationProcess extends AbstractProcess
                     "Destination validation process needs at least one COSBase object"));
             return;
         }
-        COSBase dest = (COSBase) vPath.peek();
+        final COSBase dest = (COSBase) vPath.peek();
         
         // "A destination may be specified either explicitly by 
         // an array of parameters defining its properties or indirectly by name."
@@ -65,7 +65,7 @@ public class DestinationValidationProcess extends AbstractProcess
 
         if (dest instanceof COSArray)
         {
-            COSArray ar = (COSArray) dest;
+            final COSArray ar = (COSArray) dest;
             if (ar.size() < 2)
             {
                 ctx.addValidationError(new ValidationResult.ValidationError(ERROR_SYNTAX_DICT_INVALID,
@@ -86,7 +86,7 @@ public class DestinationValidationProcess extends AbstractProcess
         {
             PDDestination.create(dest);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             ctx.addValidationError(new ValidationResult.ValidationError(PreflightConstants.ERROR_SYNTAX_DICT_INVALID,
                     e.getMessage(), e));
@@ -94,20 +94,20 @@ public class DestinationValidationProcess extends AbstractProcess
 
     }
 
-    void validateExplicitDestination(PreflightContext ctx, COSArray ar)
+    void validateExplicitDestination(final PreflightContext ctx, final COSArray ar)
     {
         // "In each case, page is an indirect reference to a page object."
-        COSBase cosObject = ar.getObject(0);
+        final COSBase cosObject = ar.getObject(0);
         if (cosObject instanceof COSDictionary)
         {
-            COSName type = ((COSDictionary) cosObject).getCOSName(COSName.TYPE);
+            final COSName type = ((COSDictionary) cosObject).getCOSName(COSName.TYPE);
             if (COSName.PAGE.equals(type))
             {
                 try
                 {
                     PDDestination.create(ar);
                 }
-                catch (IOException e)
+                catch (final IOException e)
                 {
                     ctx.addValidationError(new ValidationResult.ValidationError(ERROR_SYNTAX_DICT_INVALID,
                             e.getMessage(), e));

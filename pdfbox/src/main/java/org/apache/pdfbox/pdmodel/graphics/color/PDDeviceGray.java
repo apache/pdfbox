@@ -52,7 +52,7 @@ public final class PDDeviceGray extends PDDeviceColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode(int bitsPerComponent)
+    public float[] getDefaultDecode(final int bitsPerComponent)
     {
         return new float[] { 0, 1 };
     }
@@ -64,13 +64,13 @@ public final class PDDeviceGray extends PDDeviceColorSpace
     }
 
     @Override
-    public float[] toRGB(float[] value)
+    public float[] toRGB(final float[] value)
     {
         return new float[] { value[0], value[0], value[0] };
     }
 
     @Override
-    public BufferedImage toRawImage(WritableRaster raster) throws IOException
+    public BufferedImage toRawImage(final WritableRaster raster) throws IOException
     {
         // DeviceGray is whatever the output device chooses. We have no Java colorspace
         // for this.
@@ -78,15 +78,15 @@ public final class PDDeviceGray extends PDDeviceColorSpace
     }
 
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(final WritableRaster raster) throws IOException
     {
-        int width = raster.getWidth();
-        int height = raster.getHeight();
+        final int width = raster.getWidth();
+        final int height = raster.getHeight();
 
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        int[] gray = new int[1];
-        int[] rgb = new int[3];
+        final int[] gray = new int[1];
+        final int[] rgb = new int[3];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)

@@ -27,7 +27,7 @@ public enum Format
 
     private final String fname;
 
-    private Format(String name)
+    private Format(final String name)
     {
         this.fname = name;
     }

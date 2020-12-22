@@ -48,7 +48,7 @@ public class PDTargetDirectory implements COSObjectable
      *
      * @param dictionary The existing graphics state.
      */
-    public PDTargetDirectory(COSDictionary dictionary)
+    public PDTargetDirectory(final COSDictionary dictionary)
     {
         dict = dictionary;
     }
@@ -74,7 +74,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public COSName getRelationship()
     {
-        COSBase base = dict.getItem(COSName.R);
+        final COSBase base = dict.getItem(COSName.R);
         if (base instanceof COSName)
         {
             return (COSName) base;
@@ -91,7 +91,7 @@ public class PDTargetDirectory implements COSObjectable
      *
      * throws IllegalArgumentException if the parameter is not P or C.
      */
-    public void setRelationship(COSName relationship)
+    public void setRelationship(final COSName relationship)
     {
         if (!COSName.P.equals(relationship) && !COSName.C.equals(relationship))
         {
@@ -117,7 +117,7 @@ public class PDTargetDirectory implements COSObjectable
      *
      * @param filename a filename or null if the entry is to be deleted.
      */
-    public void setFilename(String filename)
+    public void setFilename(final String filename)
     {
         dict.setString(COSName.N, filename);
     }
@@ -131,7 +131,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public PDTargetDirectory getTargetDirectory()
     {
-        COSBase base = dict.getDictionaryObject(COSName.T);
+        final COSBase base = dict.getDictionaryObject(COSName.T);
         if (base instanceof COSDictionary)
         {
             return new PDTargetDirectory((COSDictionary) base);
@@ -145,7 +145,7 @@ public class PDTargetDirectory implements COSObjectable
      * @param targetDirectory the target directory or null if the current document is the target
      * file containing the destination.
      */
-    public void setTargetDirectory(PDTargetDirectory targetDirectory)
+    public void setTargetDirectory(final PDTargetDirectory targetDirectory)
     {
         dict.setItem(COSName.T, targetDirectory);
     }
@@ -158,7 +158,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public int getPageNumber()
     {
-        COSBase base = dict.getDictionaryObject(COSName.P);
+        final COSBase base = dict.getDictionaryObject(COSName.P);
         if (base instanceof COSInteger)
         {
             return ((COSInteger) base).intValue();
@@ -172,7 +172,7 @@ public class PDTargetDirectory implements COSObjectable
      *
      * @param pageNumber the zero based page number. If this is &lt; 0 then the entry is removed.
      */
-    public void setPageNumber(int pageNumber)
+    public void setPageNumber(final int pageNumber)
     {
         if (pageNumber < 0)
         {
@@ -192,7 +192,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public PDNamedDestination getNamedDestination()
     {
-        COSBase base = dict.getDictionaryObject(COSName.P);
+        final COSBase base = dict.getDictionaryObject(COSName.P);
         if (base instanceof COSString)
         {
             return new PDNamedDestination((COSString) base);
@@ -206,7 +206,7 @@ public class PDTargetDirectory implements COSObjectable
      *
      * @param dest a named destination or null if the entry is to be removed.
      */
-    public void setNamedDestination(PDNamedDestination dest)
+    public void setNamedDestination(final PDNamedDestination dest)
     {
         if (dest == null)
         {
@@ -226,7 +226,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public int getAnnotationIndex()
     {
-        COSBase base = dict.getDictionaryObject(COSName.A);
+        final COSBase base = dict.getDictionaryObject(COSName.A);
         if (base instanceof COSInteger)
         {
             return ((COSInteger) base).intValue();
@@ -240,7 +240,7 @@ public class PDTargetDirectory implements COSObjectable
      *
      * @param index the zero based index. If this is &lt; 0 then the entry is removed.
      */
-    public void setAnnotationIndex(int index)
+    public void setAnnotationIndex(final int index)
     {
         if (index < 0)
         {
@@ -261,7 +261,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public String getAnnotationName()
     {
-        COSBase base = dict.getDictionaryObject(COSName.A);
+        final COSBase base = dict.getDictionaryObject(COSName.A);
         if (base instanceof COSString)
         {
             return ((COSString) base).getString();
@@ -274,7 +274,7 @@ public class PDTargetDirectory implements COSObjectable
      *
      * @param name the /NM value of an annotation dictionary or null if the entry is to be removed.
      */
-    public void setAnnotationName(String name)
+    public void setAnnotationName(final String name)
     {
         dict.setString(COSName.A, name);
     }

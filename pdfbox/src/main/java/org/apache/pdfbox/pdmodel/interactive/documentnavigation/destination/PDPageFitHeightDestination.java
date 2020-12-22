@@ -52,7 +52,7 @@ public class PDPageFitHeightDestination extends PDPageDestination
      *
      * @param arr The destination array.
      */
-    public PDPageFitHeightDestination( COSArray arr )
+    public PDPageFitHeightDestination(final COSArray arr )
     {
         super( arr );
     }
@@ -73,7 +73,7 @@ public class PDPageFitHeightDestination extends PDPageDestination
      * will be used.
      * @param x The left x coordinate.
      */
-    public void setLeft( int x )
+    public void setLeft(final int x )
     {
         array.growToSize( 3 );
         if( x == -1 )
@@ -101,7 +101,7 @@ public class PDPageFitHeightDestination extends PDPageDestination
      *
      * @param fitBoundingBox A flag indicating if this should fit the bounding box.
      */
-    public void setFitBoundingBox( boolean fitBoundingBox )
+    public void setFitBoundingBox(final boolean fitBoundingBox )
     {
         array.growToSize( 2 );
         if( fitBoundingBox )

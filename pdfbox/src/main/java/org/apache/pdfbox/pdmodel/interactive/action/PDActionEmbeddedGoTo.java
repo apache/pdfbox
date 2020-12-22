@@ -54,7 +54,7 @@ public class PDActionEmbeddedGoTo extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionEmbeddedGoTo(COSDictionary a)
+    public PDActionEmbeddedGoTo(final COSDictionary a)
     {
         super(a);
     }
@@ -78,15 +78,15 @@ public class PDActionEmbeddedGoTo extends PDAction
      *
      * @throws IllegalArgumentException if the destination is not a page dictionary object.
      */
-    public void setDestination(PDDestination d)
+    public void setDestination(final PDDestination d)
     {
         if (d instanceof PDPageDestination)
         {
-            PDPageDestination pageDest = (PDPageDestination) d;
-            COSArray destArray = pageDest.getCOSObject();
+            final PDPageDestination pageDest = (PDPageDestination) d;
+            final COSArray destArray = pageDest.getCOSObject();
             if (destArray.size() >= 1)
             {
-                COSBase page = destArray.getObject(0);
+                final COSBase page = destArray.getObject(0);
                 if (!(page instanceof COSDictionary))
                 {
                     throw new IllegalArgumentException("Destination of a GoToE action must be "
@@ -114,7 +114,7 @@ public class PDActionEmbeddedGoTo extends PDAction
      *
      * @param fs The file specification.
      */
-    public void setFile(PDFileSpecification fs)
+    public void setFile(final PDFileSpecification fs)
     {
         getCOSObject().setItem(COSName.F, fs);
     }
@@ -129,7 +129,7 @@ public class PDActionEmbeddedGoTo extends PDAction
     {
         if (getCOSObject().getDictionaryObject(COSName.NEW_WINDOW) instanceof COSBoolean)
         {
-            COSBoolean b = (COSBoolean) getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
+            final COSBoolean b = (COSBoolean) getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
             return b.getValue() ? OpenMode.NEW_WINDOW : OpenMode.SAME_WINDOW;
         }
         return OpenMode.USER_PREFERENCE;
@@ -140,7 +140,7 @@ public class PDActionEmbeddedGoTo extends PDAction
      *
      * @param value The flag value.
      */
-    public void setOpenInNewWindow(OpenMode value)
+    public void setOpenInNewWindow(final OpenMode value)
     {
         if (null == value)
         {
@@ -171,7 +171,7 @@ public class PDActionEmbeddedGoTo extends PDAction
      */
     public PDTargetDirectory getTargetDirectory()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.T);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.T);
         if (base instanceof COSDictionary)
         {
             return new PDTargetDirectory((COSDictionary) base);
@@ -184,7 +184,7 @@ public class PDActionEmbeddedGoTo extends PDAction
      * 
      * @param targetDirectory
      */
-    public void setTargetDirectory(PDTargetDirectory targetDirectory)
+    public void setTargetDirectory(final PDTargetDirectory targetDirectory)
     {
         getCOSObject().setItem(COSName.T, targetDirectory);
     }

@@ -47,7 +47,7 @@ public class PDAnnotationSquiggly extends PDAnnotationTextMarkup
      *
      * @param dict The annotations dictionary.
      */
-    public PDAnnotationSquiggly(COSDictionary dict)
+    public PDAnnotationSquiggly(final COSDictionary dict)
     {
         super(dict);
     }
@@ -57,7 +57,7 @@ public class PDAnnotationSquiggly extends PDAnnotationTextMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -69,11 +69,11 @@ public class PDAnnotationSquiggly extends PDAnnotationTextMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDSquigglyAppearanceHandler appearanceHandler = new PDSquigglyAppearanceHandler(this, document);
+            final PDSquigglyAppearanceHandler appearanceHandler = new PDSquigglyAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

@@ -46,7 +46,7 @@ public final class Predictor
      *                 parameter should be an empty byte array of the same length as
      *                 <code>actline</code>.
      */
-    static void decodePredictorRow(int predictor, int colors, int bitsPerComponent, int columns, byte[] actline, byte[] lastline)
+    static void decodePredictorRow(final int predictor, final int colors, final int bitsPerComponent, final int columns, final byte[] actline, final byte[] lastline)
     {
         if (predictor == 1)
         {
@@ -65,8 +65,8 @@ public final class Predictor
                     // for 8 bits per component it is the same algorithm as PRED SUB of PNG format
                     for (int p = bytesPerPixel; p < rowlength; p++)
                     {
-                        int sub = actline[p] & 0xff;
-                        int left = actline[p - bytesPerPixel] & 0xff;
+                        final int sub = actline[p] & 0xff;
+                        final int left = actline[p - bytesPerPixel] & 0xff;
                         actline[p] = (byte) (sub + left);
                     }
                     break;
@@ -75,8 +75,8 @@ public final class Predictor
                 {
                     for (int p = bytesPerPixel; p < rowlength; p += 2)
                     {
-                        int sub = ((actline[p] & 0xff) << 8) + (actline[p + 1] & 0xff);
-                        int left = (((actline[p - bytesPerPixel] & 0xff) << 8)
+                        final int sub = ((actline[p] & 0xff) << 8) + (actline[p + 1] & 0xff);
+                        final int left = (((actline[p - bytesPerPixel] & 0xff) << 8)
                                 + (actline[p - bytesPerPixel + 1] & 0xff));
                         actline[p] = (byte) (((sub + left) >> 8) & 0xff);
                         actline[p + 1] = (byte) ((sub + left) & 0xff);
@@ -93,12 +93,12 @@ public final class Predictor
                     {
                         for (int bit = 7; bit >= 0; --bit)
                         {
-                            int sub = (actline[p] >> bit) & 1;
+                            final int sub = (actline[p] >> bit) & 1;
                             if (p == 0 && bit == 7)
                             {
                                 continue;
                             }
-                            int left;
+                            final int left;
                             if (bit == 7)
                             {
                                 // use bit #0 from previous byte
@@ -124,16 +124,16 @@ public final class Predictor
                     break;
                 }
                 // everything else, i.e. bpc 2 and 4, but has been tested for bpc 1 and 8 too
-                int elements = columns * colors;
+                final int elements = columns * colors;
                 for (int p = colors; p < elements; ++p)
                 {
-                    int bytePosSub = p * bitsPerComponent / 8;
-                    int bitPosSub = 8 - p * bitsPerComponent % 8 - bitsPerComponent;
-                    int bytePosLeft = (p - colors) * bitsPerComponent / 8;
-                    int bitPosLeft = 8 - (p - colors) * bitsPerComponent % 8 - bitsPerComponent;
+                    final int bytePosSub = p * bitsPerComponent / 8;
+                    final int bitPosSub = 8 - p * bitsPerComponent % 8 - bitsPerComponent;
+                    final int bytePosLeft = (p - colors) * bitsPerComponent / 8;
+                    final int bitPosLeft = 8 - (p - colors) * bitsPerComponent % 8 - bitsPerComponent;
 
-                    int sub = getBitSeq(actline[bytePosSub], bitPosSub, bitsPerComponent);
-                    int left = getBitSeq(actline[bytePosLeft], bitPosLeft, bitsPerComponent);
+                    final int sub = getBitSeq(actline[bytePosSub], bitPosSub, bitsPerComponent);
+                    final int left = getBitSeq(actline[bytePosLeft], bitPosLeft, bitsPerComponent);
                     actline[bytePosSub] = (byte) calcSetBitSeq(actline[bytePosSub], bitPosSub, bitsPerComponent, sub + left);
                 }
                 break;
@@ -145,8 +145,8 @@ public final class Predictor
                 // PRED SUB
                 for (int p = bytesPerPixel; p < rowlength; p++)
                 {
-                    int sub = actline[p];
-                    int left = actline[p - bytesPerPixel];
+                    final int sub = actline[p];
+                    final int left = actline[p - bytesPerPixel];
                     actline[p] = (byte) (sub + left);
                 }
                 break;
@@ -154,8 +154,8 @@ public final class Predictor
                 // PRED UP
                 for (int p = 0; p < rowlength; p++)
                 {
-                    int up = actline[p] & 0xff;
-                    int prior = lastline[p] & 0xff;
+                    final int up = actline[p] & 0xff;
+                    final int prior = lastline[p] & 0xff;
                     actline[p] = (byte) ((up + prior) & 0xff);
                 }
                 break;
@@ -163,9 +163,9 @@ public final class Predictor
                 // PRED AVG
                 for (int p = 0; p < rowlength; p++)
                 {
-                    int avg = actline[p] & 0xff;
-                    int left = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] & 0xff : 0;
-                    int up = lastline[p] & 0xff;
+                    final int avg = actline[p] & 0xff;
+                    final int left = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] & 0xff : 0;
+                    final int up = lastline[p] & 0xff;
                     actline[p] = (byte) ((avg + (left + up) / 2) & 0xff);
                 }
                 break;
@@ -173,14 +173,14 @@ public final class Predictor
                 // PRED PAETH
                 for (int p = 0; p < rowlength; p++)
                 {
-                    int paeth = actline[p] & 0xff;
-                    int a = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] & 0xff : 0;// left
-                    int b = lastline[p] & 0xff;// upper
-                    int c = p - bytesPerPixel >= 0 ? lastline[p - bytesPerPixel] & 0xff : 0;// upperleft
-                    int value = a + b - c;
-                    int absa = Math.abs(value - a);
-                    int absb = Math.abs(value - b);
-                    int absc = Math.abs(value - c);
+                    final int paeth = actline[p] & 0xff;
+                    final int a = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] & 0xff : 0;// left
+                    final int b = lastline[p] & 0xff;// upper
+                    final int c = p - bytesPerPixel >= 0 ? lastline[p - bytesPerPixel] & 0xff : 0;// upperleft
+                    final int value = a + b - c;
+                    final int absa = Math.abs(value - a);
+                    final int absb = Math.abs(value - b);
+                    final int absc = Math.abs(value - c);
 
                     if (absa <= absb && absa <= absc)
                     {
@@ -201,24 +201,24 @@ public final class Predictor
         }
     }
 
-    static int calculateRowLength(int colors, int bitsPerComponent, int columns)
+    static int calculateRowLength(final int colors, final int bitsPerComponent, final int columns)
     {
         final int bitsPerPixel = colors * bitsPerComponent;
         return  (columns * bitsPerPixel + 7) / 8;
     }
     
     // get value from bit interval from a byte
-    static int getBitSeq(int by, int startBit, int bitSize)
+    static int getBitSeq(final int by, final int startBit, final int bitSize)
     {
-        int mask = ((1 << bitSize) - 1);
+        final int mask = ((1 << bitSize) - 1);
         return (by >>> startBit) & mask;
     }
 
     // set value in a bit interval and return that value
-    static int calcSetBitSeq(int by, int startBit, int bitSize, int val)
+    static int calcSetBitSeq(final int by, final int startBit, final int bitSize, final int val)
     {
         int mask = ((1 << bitSize) - 1);
-        int truncatedVal = val & mask;
+        final int truncatedVal = val & mask;
         mask = ~(mask << startBit);
         return (by & mask) | (truncatedVal << startBit);
     }
@@ -232,14 +232,14 @@ public final class Predictor
      * @return An <code>OutputStream</code> is returned, which will write decoded data
      * into the given stream. If no predictor is specified, the original stream is returned.
      */
-    static OutputStream wrapPredictor(OutputStream out, COSDictionary decodeParams)
+    static OutputStream wrapPredictor(final OutputStream out, final COSDictionary decodeParams)
     {
-        int predictor = decodeParams.getInt(COSName.PREDICTOR);
+        final int predictor = decodeParams.getInt(COSName.PREDICTOR);
         if (predictor > 1)
         {
-            int colors = Math.min(decodeParams.getInt(COSName.COLORS, 1), 32);
-            int bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT, 8);
-            int columns = decodeParams.getInt(COSName.COLUMNS, 1);
+            final int colors = Math.min(decodeParams.getInt(COSName.COLORS, 1), 32);
+            final int bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT, 8);
+            final int columns = decodeParams.getInt(COSName.COLUMNS, 1);
 
             return new PredictorOutputStream(out, predictor, colors, bitsPerPixel, columns);
         }
@@ -274,7 +274,7 @@ public final class Predictor
         // was the per-row predictor value read for the current row being processed
         private boolean predictorRead = false;
 
-        PredictorOutputStream(OutputStream out, int predictor, int colors, int bitsPerComponent, int columns)
+        PredictorOutputStream(final OutputStream out, final int predictor, final int colors, final int bitsPerComponent, final int columns)
         {
             super(out);
             this.predictor = predictor;
@@ -288,16 +288,16 @@ public final class Predictor
         }
 
         @Override
-        public void write(byte[] bytes) throws IOException
+        public void write(final byte[] bytes) throws IOException
         {
             write(bytes, 0, bytes.length);
         }
 
         @Override
-        public void write(byte[] bytes, int off, int len) throws IOException
+        public void write(final byte[] bytes, final int off, final int len) throws IOException
         {
             int currentOffset = off;
-            int maxOffset = currentOffset + len;
+            final int maxOffset = currentOffset + len;
             while (currentOffset < maxOffset)
             {
                 if (predictorPerRow && currentRowData == 0 && !predictorRead)
@@ -310,7 +310,7 @@ public final class Predictor
                 }
                 else
                 {
-                    int toRead = Math.min(rowLength - currentRowData, maxOffset - currentOffset);
+                    final int toRead = Math.min(rowLength - currentRowData, maxOffset - currentOffset);
                     System.arraycopy(bytes, currentOffset, currentRow, currentRowData, toRead);
                     currentRowData += toRead;
                     currentOffset += toRead;
@@ -338,7 +338,7 @@ public final class Predictor
          */
         private void flipRows()
         {
-            byte[] temp = lastRow;
+            final byte[] temp = lastRow;
             lastRow = currentRow;
             currentRow = temp;
             currentRowData = 0;
@@ -358,7 +358,7 @@ public final class Predictor
         }
 
         @Override
-        public void write(int i) throws IOException
+        public void write(final int i) throws IOException
         {
             throw new UnsupportedOperationException("Not supported");
         }

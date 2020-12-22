@@ -46,7 +46,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      *
      * @param dict The dictionary that fulfils this file specification.
      */
-    public PDComplexFileSpecification( COSDictionary dict )
+    public PDComplexFileSpecification(final COSDictionary dict )
     {
         if (dict == null)
         {
@@ -79,9 +79,9 @@ public class PDComplexFileSpecification extends PDFileSpecification
         return efDictionary;
     }
 
-    private COSBase getObjectFromEFDictionary(COSName key)
+    private COSBase getObjectFromEFDictionary(final COSName key)
     {
-        COSDictionary ef = getEFDictionary();
+        final COSDictionary ef = getEFDictionary();
         if (ef != null)
         {
             return ef.getDictionaryObject(key);
@@ -137,7 +137,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      *
      * @param file The name of the file.
      */
-    public void setFileUnicode( String file )
+    public void setFileUnicode(final String file )
     {
         fs.setString( COSName.UF, file );
     }
@@ -161,7 +161,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      * @param file The name of the file.
      */
     @Override
-    public void setFile( String file )
+    public void setFile(final String file )
     {
         fs.setString( COSName.F, file );
     }
@@ -202,7 +202,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      *
      * @param fileIsVolatile The new value for the volatility of the file.
      */
-    public void setVolatile( boolean fileIsVolatile )
+    public void setVolatile(final boolean fileIsVolatile )
     {
         fs.setBoolean( COSName.V, fileIsVolatile );
     }
@@ -224,7 +224,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public PDEmbeddedFile getEmbeddedFile()
     {        
-        COSBase base = getObjectFromEFDictionary(COSName.F);
+        final COSBase base = getObjectFromEFDictionary(COSName.F);
         if (base instanceof COSStream)
         {
             return new PDEmbeddedFile((COSStream) base);
@@ -239,7 +239,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      *
      * @param file The file to be embedded.
      */
-    public void setEmbeddedFile( PDEmbeddedFile file )
+    public void setEmbeddedFile(final PDEmbeddedFile file )
     {
         COSDictionary ef = getEFDictionary();
         if( ef == null && file != null )
@@ -260,7 +260,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public PDEmbeddedFile getEmbeddedFileDos()
     {        
-        COSBase base = getObjectFromEFDictionary( COSName.DOS );
+        final COSBase base = getObjectFromEFDictionary( COSName.DOS );
         if (base instanceof COSStream)
         {
             return new PDEmbeddedFile((COSStream) base);
@@ -275,7 +275,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public PDEmbeddedFile getEmbeddedFileMac()
     {        
-        COSBase base = getObjectFromEFDictionary( COSName.MAC );
+        final COSBase base = getObjectFromEFDictionary( COSName.MAC );
         if (base instanceof COSStream)
         {
             return new PDEmbeddedFile((COSStream) base);
@@ -290,7 +290,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public PDEmbeddedFile getEmbeddedFileUnix()
     {        
-        COSBase base = getObjectFromEFDictionary( COSName.UNIX );
+        final COSBase base = getObjectFromEFDictionary( COSName.UNIX );
         if (base instanceof COSStream)
         {
             return new PDEmbeddedFile((COSStream) base);
@@ -305,7 +305,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public PDEmbeddedFile getEmbeddedFileUnicode()
     {        
-        COSBase base = getObjectFromEFDictionary( COSName.UF );
+        final COSBase base = getObjectFromEFDictionary( COSName.UF );
         if (base instanceof COSStream)
         {
             return new PDEmbeddedFile((COSStream) base);
@@ -321,7 +321,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      *
      * @param file The Unicode file to be embedded.
      */
-    public void setEmbeddedFileUnicode( PDEmbeddedFile file )
+    public void setEmbeddedFileUnicode(final PDEmbeddedFile file )
     {
         COSDictionary ef = getEFDictionary();
         if( ef == null && file != null )
@@ -340,7 +340,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      * 
      * @param description The file description
      */
-    public void setFileDescription( String description )
+    public void setFileDescription(final String description )
     {
         fs.setString( COSName.DESC, description );
     }

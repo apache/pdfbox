@@ -281,7 +281,7 @@ public final class CFFISOAdobeCharset extends CFFCharset
     static
     {
         int gid = 0;
-        for (Object[] charsetEntry : CFF_ISO_ADOBE_CHARSET_TABLE)
+        for (final Object[] charsetEntry : CFF_ISO_ADOBE_CHARSET_TABLE)
         {
             INSTANCE.addSID(gid++, (Integer) charsetEntry[CHAR_CODE], charsetEntry[CHAR_NAME].toString());
         }

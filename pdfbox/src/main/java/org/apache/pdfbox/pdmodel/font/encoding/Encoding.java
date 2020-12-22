@@ -37,7 +37,7 @@ public abstract class Encoding implements COSObjectable
      * @param name The name of the encoding to get.
      * @return The encoding that matches the name.
      */
-    public static Encoding getInstance(COSName name)
+    public static Encoding getInstance(final COSName name)
     {
         if (COSName.STANDARD_ENCODING.equals(name))
         {
@@ -94,7 +94,7 @@ public abstract class Encoding implements COSObjectable
      * @param code character code
      * @param name PostScript glyph name
      */
-    protected void add(int code, String name)
+    protected void add(final int code, final String name)
     {
         codeToName.put(code, name);
         inverted.putIfAbsent(name, code);
@@ -108,13 +108,13 @@ public abstract class Encoding implements COSObjectable
      * @param code character code
      * @param name PostScript glyph name
      */
-    protected void overwrite(int code, String name)
+    protected void overwrite(final int code, final String name)
     {
         // remove existing reverse mapping first
-        String oldName = codeToName.get(code);
+        final String oldName = codeToName.get(code);
         if (oldName != null)
         {
-            Integer oldCode = inverted.get(oldName);
+            final Integer oldCode = inverted.get(oldName);
             if (oldCode != null && oldCode == code)
             {
                 inverted.remove(oldName);
@@ -129,7 +129,7 @@ public abstract class Encoding implements COSObjectable
      * 
      * @param name PostScript glyph name
      */
-    public boolean contains(String name)
+    public boolean contains(final String name)
     {
         // we have to wait until all add() calls are done before building the name cache
         // otherwise /Differences won't be accounted for
@@ -138,7 +138,7 @@ public abstract class Encoding implements COSObjectable
             synchronized(this)
             {
                 // PDFBOX-3404: avoid possibility that one thread ends up with newly created empty map from other thread
-                Set<String> tmpSet = new HashSet<>(codeToName.values());
+                final Set<String> tmpSet = new HashSet<>(codeToName.values());
                 // make sure that assignment is done after initialisation is complete
                 names = tmpSet;
                 // note that it might still happen that 'names' is initialized twice, but this is harmless
@@ -153,7 +153,7 @@ public abstract class Encoding implements COSObjectable
      * 
      * @param code character code
      */
-    public boolean contains(int code)
+    public boolean contains(final int code)
     {
         return codeToName.containsKey(code);
     }
@@ -164,9 +164,9 @@ public abstract class Encoding implements COSObjectable
      * @param code character code
      * @return PostScript glyph name
      */
-    public String getName(int code)
+    public String getName(final int code)
     {
-       String name = codeToName.get(code);
+       final String name = codeToName.get(code);
        if (name != null)
        {
           return name;

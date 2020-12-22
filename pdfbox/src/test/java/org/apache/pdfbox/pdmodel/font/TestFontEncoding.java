@@ -61,14 +61,14 @@ class TestFontEncoding
     void testOverwrite() throws Exception
     {
         // see PDFDBOX-3332
-        COSDictionary dictEncodingDict = new COSDictionary();
+        final COSDictionary dictEncodingDict = new COSDictionary();
         dictEncodingDict.setItem(COSName.TYPE, COSName.ENCODING);
         dictEncodingDict.setItem(COSName.BASE_ENCODING, COSName.WIN_ANSI_ENCODING);
-        COSArray differences = new COSArray();
+        final COSArray differences = new COSArray();
         differences.add(COSInteger.get(32));
         differences.add(COSName.getPDFName("a"));
         dictEncodingDict.setItem(COSName.DIFFERENCES, differences);
-        DictionaryEncoding dictEncoding = new DictionaryEncoding(dictEncodingDict, false, null);
+        final DictionaryEncoding dictEncoding = new DictionaryEncoding(dictEncodingDict, false, null);
         assertNull(dictEncoding.getNameToCodeMap().get("space"));
         assertEquals(32, dictEncoding.getNameToCodeMap().get("a").intValue());
     }
@@ -83,9 +83,9 @@ class TestFontEncoding
     void testPDFBox3884() throws IOException
     {
         PDDocument doc = new PDDocument();
-        PDPage page = new PDPage();
+        final PDPage page = new PDPage();
         doc.addPage(page);
-        PDPageContentStream cs = new PDPageContentStream(doc, page);
+        final PDPageContentStream cs = new PDPageContentStream(doc, page);
         cs.setFont(PDType1Font.HELVETICA, 20);
         cs.beginText();
         cs.newLineAtOffset(100, 700);
@@ -94,14 +94,14 @@ class TestFontEncoding
         cs.showText("~˜");
         cs.endText();
         cs.close();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         doc.save(baos);
         doc.close();
 
         // verify
         doc = Loader.loadPDF(baos.toByteArray());
-        PDFTextStripper stripper = new PDFTextStripper();
-        String text = stripper.getText(doc);
+        final PDFTextStripper stripper = new PDFTextStripper();
+        final String text = stripper.getText(doc);
         assertEquals("~˜", text.trim());
         doc.close();
     }

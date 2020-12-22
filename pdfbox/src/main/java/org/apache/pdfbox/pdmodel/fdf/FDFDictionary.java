@@ -46,7 +46,7 @@ public class FDFDictionary implements COSObjectable
 
     private static final Log LOG = LogFactory.getLog(FDFDictionary.class);
 
-    private COSDictionary fdf;
+    private final COSDictionary fdf;
 
     /**
      * Default constructor.
@@ -61,7 +61,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param fdfDictionary The FDF documents catalog.
      */
-    public FDFDictionary(COSDictionary fdfDictionary)
+    public FDFDictionary(final COSDictionary fdfDictionary)
     {
         fdf = fdfDictionary;
     }
@@ -71,32 +71,32 @@ public class FDFDictionary implements COSObjectable
      *
      * @param fdfXML The XML document that contains the XFDF data.
      */
-    public FDFDictionary(Element fdfXML)
+    public FDFDictionary(final Element fdfXML)
     {
         this();
-        NodeList nodeList = fdfXML.getChildNodes();
+        final NodeList nodeList = fdfXML.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++)
         {
-            Node node = nodeList.item(i);
+            final Node node = nodeList.item(i);
             if (node instanceof Element)
             {
-                Element child = (Element) node;
+                final Element child = (Element) node;
                 switch (child.getTagName())
                 {
                     case "f":
-                        PDSimpleFileSpecification fs = new PDSimpleFileSpecification();
+                        final PDSimpleFileSpecification fs = new PDSimpleFileSpecification();
                         fs.setFile(child.getAttribute("href"));
                         setFile(fs);
                         break;
                     case "ids":
-                        COSArray ids = new COSArray();
-                        String original = child.getAttribute("original");
-                        String modified = child.getAttribute("modified");
+                        final COSArray ids = new COSArray();
+                        final String original = child.getAttribute("original");
+                        final String modified = child.getAttribute("modified");
                         try
                         {
                             ids.add(COSString.parseHex(original));
                         }
-                        catch (IOException e)
+                        catch (final IOException e)
                         {
                             LOG.warn("Error parsing ID entry for attribute 'original' [" + original +
                                     "]. ID entry ignored.", e);
@@ -105,7 +105,7 @@ public class FDFDictionary implements COSObjectable
                         {
                             ids.add(COSString.parseHex(modified));
                         }
-                        catch (IOException e)
+                        catch (final IOException e)
                         {
                             LOG.warn("Error parsing ID entry for attribute 'modified' [" + modified +
                                     "]. ID entry ignored.", e);
@@ -113,11 +113,11 @@ public class FDFDictionary implements COSObjectable
                         setID(ids);
                         break;
                     case "fields":
-                        NodeList fields = child.getChildNodes();
-                        List<FDFField> fieldList = new ArrayList<>();
+                        final NodeList fields = child.getChildNodes();
+                        final List<FDFField> fieldList = new ArrayList<>();
                         for (int f = 0; f < fields.getLength(); f++)
                         {
-                            Node currentNode = fields.item(f);
+                            final Node currentNode = fields.item(f);
                             if (currentNode instanceof Element
                                     && ((Element) currentNode).getTagName().equals("field"))
                             {
@@ -125,7 +125,7 @@ public class FDFDictionary implements COSObjectable
                                 {
                                     fieldList.add(new FDFField((Element) fields.item(f)));
                                 }
-                                catch (IOException e)
+                                catch (final IOException e)
                                 {
                                     LOG.warn("Error parsing field entry [" + currentNode.getNodeValue() +
                                             "]. Field ignored.", e);
@@ -135,16 +135,16 @@ public class FDFDictionary implements COSObjectable
                         setFields(fieldList);
                         break;
                     case "annots":
-                        NodeList annots = child.getChildNodes();
-                        List<FDFAnnotation> annotList = new ArrayList<>();
+                        final NodeList annots = child.getChildNodes();
+                        final List<FDFAnnotation> annotList = new ArrayList<>();
                         for (int j = 0; j < annots.getLength(); j++)
                         {
-                            Node annotNode = annots.item(j);
+                            final Node annotNode = annots.item(j);
                             if (annotNode instanceof Element)
                             {
                                 // the node name defines the annotation type
-                                Element annot = (Element) annotNode;
-                                String annotationName = annot.getNodeName();
+                                final Element annot = (Element) annotNode;
+                                final String annotationName = annot.getNodeName();
                                 try
                                 {
                                     switch (annotationName)
@@ -206,7 +206,7 @@ public class FDFDictionary implements COSObjectable
                                             break;
                                     }
                                 }
-                                catch (IOException e)
+                                catch (final IOException e)
                                 {
                                     LOG.warn("Error parsing annotation information [" +
                                             annot.getNodeValue() + "]. Annotation ignored", e);
@@ -229,26 +229,26 @@ public class FDFDictionary implements COSObjectable
      *
      * @throws IOException If there is an error writing the XML.
      */
-    public void writeXML(Writer output) throws IOException
+    public void writeXML(final Writer output) throws IOException
     {
-        PDFileSpecification fs = this.getFile();
+        final PDFileSpecification fs = this.getFile();
         if (fs != null)
         {
             output.write("<f href=\"" + fs.getFile() + "\" />\n");
         }
-        COSArray ids = this.getID();
+        final COSArray ids = this.getID();
         if (ids != null)
         {
-            COSString original = (COSString) ids.getObject(0);
-            COSString modified = (COSString) ids.getObject(1);
+            final COSString original = (COSString) ids.getObject(0);
+            final COSString modified = (COSString) ids.getObject(1);
             output.write("<ids original=\"" + original.toHexString() + "\" ");
             output.write("modified=\"" + modified.toHexString() + "\" />\n");
         }
-        List<FDFField> fields = getFields();
+        final List<FDFField> fields = getFields();
         if (fields != null && fields.size() > 0)
         {
             output.write("<fields>\n");
-            for (FDFField field : fields)
+            for (final FDFField field : fields)
             {
                 field.writeXML(output);
             }
@@ -285,7 +285,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param fs The file specification.
      */
-    public final void setFile(PDFileSpecification fs)
+    public final void setFile(final PDFileSpecification fs)
     {
         fdf.setItem(COSName.F, fs);
     }
@@ -305,7 +305,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param id The new id for the FDF.
      */
-    public final void setID(COSArray id)
+    public final void setID(final COSArray id)
     {
         fdf.setItem(COSName.ID, id);
     }
@@ -318,10 +318,10 @@ public class FDFDictionary implements COSObjectable
     public List<FDFField> getFields()
     {
         List<FDFField> retval = null;
-        COSArray fieldArray = (COSArray) fdf.getDictionaryObject(COSName.FIELDS);
+        final COSArray fieldArray = (COSArray) fdf.getDictionaryObject(COSName.FIELDS);
         if (fieldArray != null)
         {
-            List<FDFField> fields = new ArrayList<>();
+            final List<FDFField> fields = new ArrayList<>();
             for (int i = 0; i < fieldArray.size(); i++)
             {
                 fields.add(new FDFField((COSDictionary) fieldArray.getObject(i)));
@@ -336,7 +336,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param fields The list of fields.
      */
-    public final void setFields(List<FDFField> fields)
+    public final void setFields(final List<FDFField> fields)
     {
         fdf.setItem(COSName.FIELDS, new COSArray(fields));
     }
@@ -356,7 +356,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param status The new status string.
      */
-    public void setStatus(String status)
+    public void setStatus(final String status)
     {
         fdf.setString(COSName.STATUS, status);
     }
@@ -369,10 +369,10 @@ public class FDFDictionary implements COSObjectable
     public List<FDFPage> getPages()
     {
         List<FDFPage> retval = null;
-        COSArray pageArray = (COSArray) fdf.getDictionaryObject(COSName.PAGES);
+        final COSArray pageArray = (COSArray) fdf.getDictionaryObject(COSName.PAGES);
         if (pageArray != null)
         {
-            List<FDFPage> pages = new ArrayList<>();
+            final List<FDFPage> pages = new ArrayList<>();
             for (int i = 0; i < pageArray.size(); i++)
             {
                 pages.add(new FDFPage((COSDictionary) pageArray.get(i)));
@@ -388,7 +388,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param pages The list of pages.
      */
-    public void setPages(List<FDFPage> pages)
+    public void setPages(final List<FDFPage> pages)
     {
         fdf.setItem(COSName.PAGES, new COSArray(pages));
     }
@@ -414,7 +414,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param encoding The new encoding.
      */
-    public void setEncoding(String encoding)
+    public void setEncoding(final String encoding)
     {
         fdf.setName(COSName.ENCODING, encoding);
     }
@@ -430,10 +430,10 @@ public class FDFDictionary implements COSObjectable
     public List<FDFAnnotation> getAnnotations() throws IOException
     {
         List<FDFAnnotation> retval = null;
-        COSArray annotArray = (COSArray) fdf.getDictionaryObject(COSName.ANNOTS);
+        final COSArray annotArray = (COSArray) fdf.getDictionaryObject(COSName.ANNOTS);
         if (annotArray != null)
         {
-            List<FDFAnnotation> annots = new ArrayList<>();
+            final List<FDFAnnotation> annots = new ArrayList<>();
             for (int i = 0; i < annotArray.size(); i++)
             {
                 annots.add(FDFAnnotation.create((COSDictionary) annotArray.getObject(i)));
@@ -449,7 +449,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param annots The list of annotations.
      */
-    public final void setAnnotations(List<FDFAnnotation> annots)
+    public final void setAnnotations(final List<FDFAnnotation> annots)
     {
         fdf.setItem(COSName.ANNOTS, new COSArray(annots));
     }
@@ -469,7 +469,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param diff The new differences stream.
      */
-    public void setDifferences(COSStream diff)
+    public void setDifferences(final COSStream diff)
     {
         fdf.setItem(COSName.DIFFERENCES, diff);
     }
@@ -489,7 +489,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param target The new target frame.
      */
-    public void setTarget(String target)
+    public void setTarget(final String target)
     {
         fdf.setString(COSName.TARGET, target);
     }
@@ -505,10 +505,10 @@ public class FDFDictionary implements COSObjectable
     public List<PDFileSpecification> getEmbeddedFDFs() throws IOException
     {
         List<PDFileSpecification> retval = null;
-        COSArray embeddedArray = (COSArray) fdf.getDictionaryObject(COSName.EMBEDDED_FDFS);
+        final COSArray embeddedArray = (COSArray) fdf.getDictionaryObject(COSName.EMBEDDED_FDFS);
         if (embeddedArray != null)
         {
-            List<PDFileSpecification> embedded = new ArrayList<>();
+            final List<PDFileSpecification> embedded = new ArrayList<>();
             for (int i = 0; i < embeddedArray.size(); i++)
             {
                 embedded.add(PDFileSpecification.createFS(embeddedArray.get(i)));
@@ -524,7 +524,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param embedded The list of embedded FDFs.
      */
-    public void setEmbeddedFDFs(List<PDFileSpecification> embedded)
+    public void setEmbeddedFDFs(final List<PDFileSpecification> embedded)
     {
         fdf.setItem(COSName.EMBEDDED_FDFS, new COSArray(embedded));
     }
@@ -537,7 +537,7 @@ public class FDFDictionary implements COSObjectable
     public FDFJavaScript getJavaScript()
     {
         FDFJavaScript fs = null;
-        COSDictionary dic = (COSDictionary) fdf.getDictionaryObject(COSName.JAVA_SCRIPT);
+        final COSDictionary dic = (COSDictionary) fdf.getDictionaryObject(COSName.JAVA_SCRIPT);
         if (dic != null)
         {
             fs = new FDFJavaScript(dic);
@@ -550,7 +550,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param js The javascript entries.
      */
-    public void setJavaScript(FDFJavaScript js)
+    public void setJavaScript(final FDFJavaScript js)
     {
         fdf.setItem(COSName.JAVA_SCRIPT, js);
     }

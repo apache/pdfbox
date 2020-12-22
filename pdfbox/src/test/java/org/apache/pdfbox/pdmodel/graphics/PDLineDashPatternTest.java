@@ -40,12 +40,12 @@ class PDLineDashPatternTest
     @Test
     void testGetCOSObject()
     {
-        COSArray ar = new COSArray();
+        final COSArray ar = new COSArray();
         ar.add(COSInteger.ONE);
         ar.add(COSInteger.TWO);
-        PDLineDashPattern dash = new PDLineDashPattern(ar, 3);
-        COSArray dashBase = (COSArray) dash.getCOSObject();
-        COSArray dashArray = (COSArray) dashBase.getObject(0);
+        final PDLineDashPattern dash = new PDLineDashPattern(ar, 3);
+        final COSArray dashBase = (COSArray) dash.getCOSObject();
+        final COSArray dashArray = (COSArray) dashBase.getObject(0);
         assertEquals(2, dashBase.size());
         assertEquals(2, dashArray.size());
         assertEquals(new COSFloat(1), dashArray.get(0));

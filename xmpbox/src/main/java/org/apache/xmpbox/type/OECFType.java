@@ -41,7 +41,7 @@ public class OECFType extends AbstractStructuredType
     public static final String VALUES = "Values";
 
 
-    public OECFType(XMPMetadata metadata)
+    public OECFType(final XMPMetadata metadata)
     {
         super(metadata);
     }

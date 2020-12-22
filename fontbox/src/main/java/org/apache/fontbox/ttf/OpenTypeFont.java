@@ -32,13 +32,13 @@ public class OpenTypeFont extends TrueTypeFont
      *
      * @param fontData The font data.
      */
-    OpenTypeFont(TTFDataStream fontData)
+    OpenTypeFont(final TTFDataStream fontData)
     {
         super(fontData);
     }
 
     @Override
-    void setVersion(float versionValue)
+    void setVersion(final float versionValue)
     {
         isPostScript = Float.floatToIntBits(versionValue) == 0x469EA8A9; // OTTO
         super.setVersion(versionValue);
@@ -69,9 +69,9 @@ public class OpenTypeFont extends TrueTypeFont
     }
 
     @Override
-    public GeneralPath getPath(String name) throws IOException
+    public GeneralPath getPath(final String name) throws IOException
     {
-        int gid = nameToGID(name);
+        final int gid = nameToGID(name);
         return getCFF().getFont().getType2CharString(gid).getPath();
     }
 

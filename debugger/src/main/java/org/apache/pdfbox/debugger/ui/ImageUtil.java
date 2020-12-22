@@ -37,13 +37,13 @@ public final class ImageUtil
      * @param rotation The rotation in degrees.
      * @return The rotated image.
      */
-    public static BufferedImage getRotatedImage(BufferedImage image, int rotation)
+    public static BufferedImage getRotatedImage(final BufferedImage image, final int rotation)
     {
-        int width = image.getWidth();
-        int height = image.getHeight();
+        final int width = image.getWidth();
+        final int height = image.getHeight();
         double x = 0;
         double y = 0;
-        BufferedImage rotatedImage;
+        final BufferedImage rotatedImage;
         switch (rotation % 360)
         {
             case 90:
@@ -62,7 +62,7 @@ public final class ImageUtil
             default:
                 return image;
         }
-        Graphics2D g = (Graphics2D) rotatedImage.getGraphics();
+        final Graphics2D g = (Graphics2D) rotatedImage.getGraphics();
         g.translate(x, y);
         g.rotate(Math.toRadians(rotation));
         g.drawImage(image, 0, 0, null);

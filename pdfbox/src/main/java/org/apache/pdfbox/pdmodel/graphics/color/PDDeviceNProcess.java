@@ -54,7 +54,7 @@ public class PDDeviceNProcess
      * Creates a new  DeviceN Process Dictionary from the given attributes.
      * @param attributes a DeviceN attributes dictionary
      */
-    public PDDeviceNProcess(COSDictionary attributes)
+    public PDDeviceNProcess(final COSDictionary attributes)
     {
         dictionary = attributes;
     }
@@ -75,7 +75,7 @@ public class PDDeviceNProcess
      */
     public PDColorSpace getColorSpace() throws IOException
     {
-        COSBase cosColorSpace = dictionary.getDictionaryObject(COSName.COLORSPACE);
+        final COSBase cosColorSpace = dictionary.getDictionaryObject(COSName.COLORSPACE);
         if (cosColorSpace == null)
         {
             return null; // TODO: return a default?
@@ -89,13 +89,13 @@ public class PDDeviceNProcess
      */
     public List<String> getComponents()
     {
-        List<String> components = new ArrayList<>();
-        COSArray cosComponents = (COSArray)dictionary.getDictionaryObject(COSName.COMPONENTS);
+        final List<String> components = new ArrayList<>();
+        final COSArray cosComponents = (COSArray)dictionary.getDictionaryObject(COSName.COMPONENTS);
         if (cosComponents == null)
         {
             return components;
         }
-        for (COSBase name : cosComponents)
+        for (final COSBase name : cosComponents)
         {
             components.add(((COSName)name).getName());
         }
@@ -105,18 +105,18 @@ public class PDDeviceNProcess
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder("Process{");
+        final StringBuilder sb = new StringBuilder("Process{");
         try
         {
             sb.append(getColorSpace());
-            for (String component : getComponents())
+            for (final String component : getComponents())
             {
                 sb.append(" \"");
                 sb.append(component);
                 sb.append('\"');
             }
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOG.debug("Couldn't get the colorants information - returning 'ERROR' instead'", e);
             sb.append("ERROR");

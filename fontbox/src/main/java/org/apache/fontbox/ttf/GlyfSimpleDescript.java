@@ -48,7 +48,7 @@ public class GlyfSimpleDescript extends GlyfDescript
      * @param x0 the initial X-position
      * @throws IOException is thrown if something went wrong
      */
-    GlyfSimpleDescript(short numberOfContours, TTFDataStream bais, short x0) throws IOException
+    GlyfSimpleDescript(final short numberOfContours, final TTFDataStream bais, final short x0) throws IOException
     {
         super(numberOfContours, bais);
 
@@ -66,7 +66,7 @@ public class GlyfSimpleDescript extends GlyfDescript
         // Simple glyph description
         endPtsOfContours = bais.readUnsignedShortArray(numberOfContours);
 
-        int lastEndPt = endPtsOfContours[numberOfContours - 1];
+        final int lastEndPt = endPtsOfContours[numberOfContours - 1];
         if (numberOfContours == 1 && lastEndPt == 65535)
         {
             // PDFBOX-2939: assume an empty glyph
@@ -80,7 +80,7 @@ public class GlyfSimpleDescript extends GlyfDescript
         xCoordinates = new short[pointCount];
         yCoordinates = new short[pointCount];
 
-        int instructionCount = bais.readUnsignedShort();
+        final int instructionCount = bais.readUnsignedShort();
         readInstructions(bais, instructionCount);
         readFlags(pointCount, bais);
         readCoords(pointCount, bais, x0);
@@ -90,7 +90,7 @@ public class GlyfSimpleDescript extends GlyfDescript
      * {@inheritDoc}
      */
     @Override
-    public int getEndPtOfContours(int i)
+    public int getEndPtOfContours(final int i)
     {
         return endPtsOfContours[i];
     }
@@ -99,7 +99,7 @@ public class GlyfSimpleDescript extends GlyfDescript
      * {@inheritDoc}
      */
     @Override
-    public byte getFlags(int i)
+    public byte getFlags(final int i)
     {
         return flags[i];
     }
@@ -108,7 +108,7 @@ public class GlyfSimpleDescript extends GlyfDescript
      * {@inheritDoc}
      */
     @Override
-    public short getXCoordinate(int i)
+    public short getXCoordinate(final int i)
     {
         return xCoordinates[i];
     }
@@ -117,7 +117,7 @@ public class GlyfSimpleDescript extends GlyfDescript
      * {@inheritDoc}
      */
     @Override
-    public short getYCoordinate(int i)
+    public short getYCoordinate(final int i)
     {
         return yCoordinates[i];
     }
@@ -143,7 +143,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * The table is stored as relative values, but we'll store them as absolutes.
      */
-    private void readCoords(int count, TTFDataStream bais, short x0) throws IOException
+    private void readCoords(final int count, final TTFDataStream bais, final short x0) throws IOException
     {
         short x = x0;
         short y = 0;
@@ -197,14 +197,14 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * The flags are run-length encoded.
      */
-    private void readFlags(int flagCount, TTFDataStream bais) throws IOException
+    private void readFlags(final int flagCount, final TTFDataStream bais) throws IOException
     {
         for (int index = 0; index < flagCount; index++)
         {
             flags[index] = (byte) bais.readUnsignedByte();
             if ((flags[index] & REPEAT) != 0)
             {
-                int repeats = bais.readUnsignedByte();
+                final int repeats = bais.readUnsignedByte();
                 for (int i = 1; i <= repeats && index + i < flags.length; i++)
                 {
                     flags[index + i] = flags[index];

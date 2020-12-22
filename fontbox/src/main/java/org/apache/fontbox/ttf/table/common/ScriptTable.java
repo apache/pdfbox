@@ -31,7 +31,7 @@ public class ScriptTable
     private final LangSysTable defaultLangSysTable;
     private final Map<String, LangSysTable> langSysTables;
 
-    public ScriptTable(LangSysTable defaultLangSysTable, Map<String, LangSysTable> langSysTables)
+    public ScriptTable(final LangSysTable defaultLangSysTable, final Map<String, LangSysTable> langSysTables)
     {
         this.defaultLangSysTable = defaultLangSysTable;
         this.langSysTables = langSysTables;

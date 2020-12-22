@@ -29,7 +29,7 @@ public class LangSysRecord
     private final String langSysTag;
     private final LangSysTable langSysTable;
 
-    public LangSysRecord(String langSysTag, LangSysTable langSysTable)
+    public LangSysRecord(final String langSysTag, final LangSysTable langSysTable)
     {
         this.langSysTag = langSysTag;
         this.langSysTable = langSysTable;

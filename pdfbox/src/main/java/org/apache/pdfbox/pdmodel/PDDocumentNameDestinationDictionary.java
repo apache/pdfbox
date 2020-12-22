@@ -38,7 +38,7 @@ public class PDDocumentNameDestinationDictionary implements COSObjectable
      *
      * @param dict The dictionary of names and corresponding destinations.
      */
-    public PDDocumentNameDestinationDictionary(COSDictionary dict)
+    public PDDocumentNameDestinationDictionary(final COSDictionary dict)
     {
         this.nameDictionary = dict;
     }
@@ -62,9 +62,9 @@ public class PDDocumentNameDestinationDictionary implements COSObjectable
      * 
      * @throws IOException if something goes wrong when creating the destination object.
      */
-    public PDDestination getDestination(String name) throws IOException
+    public PDDestination getDestination(final String name) throws IOException
     {
-        COSBase item = nameDictionary.getDictionaryObject(name);
+        final COSBase item = nameDictionary.getDictionaryObject(name);
 
         // "The value of this entry shall be a dictionary in which each key is a destination name
         // and the corresponding value is either an array defining the destination (...) 
@@ -75,7 +75,7 @@ public class PDDocumentNameDestinationDictionary implements COSObjectable
         }
         else if (item instanceof COSDictionary)
         {
-            COSDictionary dict = (COSDictionary) item;
+            final COSDictionary dict = (COSDictionary) item;
             if (dict.containsKey(COSName.D))
             {
                 return PDDestination.create(dict.getDictionaryObject(COSName.D));

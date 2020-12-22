@@ -25,7 +25,7 @@ import java.io.IOException;
 public class DataOutput
 {
 
-    private ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
 
     private String outputEncoding = null;
 
@@ -41,7 +41,7 @@ public class DataOutput
      * Constructor with a given encoding.
      * @param encoding the encoding to be used for writing
      */
-    public DataOutput(String encoding)
+    public DataOutput(final String encoding)
     {
         this.outputEncoding = encoding;
     }
@@ -59,7 +59,7 @@ public class DataOutput
      * Write an int value to the buffer.
      * @param value the given value
      */
-    public void write(int value)
+    public void write(final int value)
     {
         outputBuffer.write(value);
     }
@@ -68,7 +68,7 @@ public class DataOutput
      * Write a byte array to the buffer.
      * @param buffer the given byte array
      */
-    public void write(byte[] buffer)
+    public void write(final byte[] buffer)
     {
         outputBuffer.write(buffer, 0, buffer.length);
     }
@@ -79,7 +79,7 @@ public class DataOutput
      * @param offset the offset where to start 
      * @param length the amount of bytes to be written from the array
      */
-    public void write(byte[] buffer, int offset, int length)
+    public void write(final byte[] buffer, final int offset, final int length)
     {
         outputBuffer.write(buffer, offset, length);
     }
@@ -89,7 +89,7 @@ public class DataOutput
      * @param string the given string
      * @throws IOException If an error occurs during writing the data to the buffer
      */
-    public void print(String string) throws IOException
+    public void print(final String string) throws IOException
     {
         write(string.getBytes(outputEncoding));
     }
@@ -100,7 +100,7 @@ public class DataOutput
      * @param string the given string
      * @throws IOException If an error occurs during writing the data to the buffer
      */
-    public void println(String string) throws IOException
+    public void println(final String string) throws IOException
     {
         write(string.getBytes(outputEncoding));
         write('\n');

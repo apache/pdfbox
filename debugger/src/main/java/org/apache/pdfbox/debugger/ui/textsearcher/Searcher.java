@@ -59,12 +59,12 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
     private final Action previousAction = new AbstractAction()
     {
         @Override
-        public void actionPerformed(ActionEvent actionEvent)
+        public void actionPerformed(final ActionEvent actionEvent)
         {
             if (totalMatch != 0 && currentMatch != 0)
             {
                 currentMatch = currentMatch - 1;
-                int offset = highlights.get(currentMatch).getStartOffset();
+                final int offset = highlights.get(currentMatch).getStartOffset();
                 scrollToWord(offset);
 
                 updateHighLighter(currentMatch, currentMatch + 1);
@@ -75,12 +75,12 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
     private final Action nextAction = new AbstractAction()
     {
         @Override
-        public void actionPerformed(ActionEvent actionEvent)
+        public void actionPerformed(final ActionEvent actionEvent)
         {
             if (totalMatch != 0 && currentMatch != totalMatch - 1)
             {
                 currentMatch = currentMatch + 1;
-                int offset = highlights.get(currentMatch).getStartOffset();
+                final int offset = highlights.get(currentMatch).getStartOffset();
                 scrollToWord(offset);
 
                 updateHighLighter(currentMatch, currentMatch - 1);
@@ -93,7 +93,7 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
      * Constructor.
      * @param textComponent JTextComponent instance.
      */
-    public Searcher(JTextComponent textComponent)
+    public Searcher(final JTextComponent textComponent)
     {
         this.textComponent = textComponent;
         searchPanel = new SearchPanel(this, this, this, nextAction, previousAction);
@@ -109,28 +109,28 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
     }
 
     @Override
-    public void insertUpdate(DocumentEvent documentEvent)
+    public void insertUpdate(final DocumentEvent documentEvent)
     {
         search(documentEvent);
     }
 
     @Override
-    public void removeUpdate(DocumentEvent documentEvent)
+    public void removeUpdate(final DocumentEvent documentEvent)
     {
         search(documentEvent);
     }
 
     @Override
-    public void changedUpdate(DocumentEvent documentEvent)
+    public void changedUpdate(final DocumentEvent documentEvent)
     {
         search(documentEvent);
     }
 
-    private void search(DocumentEvent documentEvent)
+    private void search(final DocumentEvent documentEvent)
     {
         try
         {
-            String word = documentEvent.getDocument().getText(0, documentEvent.getDocument().getLength());
+            final String word = documentEvent.getDocument().getText(0, documentEvent.getDocument().getLength());
             if (word.isEmpty())
             {
                 nextAction.setEnabled(false);
@@ -141,13 +141,13 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
             }
             search(word);
         }
-        catch (BadLocationException e)
+        catch (final BadLocationException e)
         {
             LOG.error(e.getMessage(), e);
         }
     }
 
-    private void search(String word)
+    private void search(final String word)
     {
         highlights = searchEngine.search(word, searchPanel.isCaseSensitive());
         if (!highlights.isEmpty())
@@ -188,13 +188,13 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
         searchPanel.updateCounterLabel(currentMatch + 1, totalMatch);
     }
 
-    private void scrollToWord(int offset)
+    private void scrollToWord(final int offset)
     {
         try
         {
             textComponent.scrollRectToVisible(textComponent.modelToView(offset));
         }
-        catch (BadLocationException e)
+        catch (final BadLocationException e)
         {
             LOG.error(e.getMessage(), e);
         }
@@ -209,25 +209,25 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
         changeHighlighter(presentIndex, SELECTION_PAINTER);
     }
 
-    private void changeHighlighter(int index, Highlighter.HighlightPainter newPainter)
+    private void changeHighlighter(final int index, final Highlighter.HighlightPainter newPainter)
     {
-        Highlighter highlighter = textComponent.getHighlighter();
+        final Highlighter highlighter = textComponent.getHighlighter();
 
-        Highlighter.Highlight highLight = highlights.get(index);
+        final Highlighter.Highlight highLight = highlights.get(index);
         highlighter.removeHighlight(highLight);
         try
         {
             highlighter.addHighlight(highLight.getStartOffset(), highLight.getEndOffset(), newPainter);
             highlights.set(index, highlighter.getHighlights()[highlighter.getHighlights().length - 1]);
         }
-        catch (BadLocationException e)
+        catch (final BadLocationException e)
         {
             LOG.error(e.getMessage(), e);
         }
     }
 
     @Override
-    public void stateChanged(ChangeEvent changeEvent)
+    public void stateChanged(final ChangeEvent changeEvent)
     {
         if (changeEvent.getSource() instanceof JCheckBox)
         {
@@ -236,35 +236,35 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
     }
 
     @Override
-    public void componentResized(ComponentEvent componentEvent)
+    public void componentResized(final ComponentEvent componentEvent)
     {
         // do nothing
     }
 
     @Override
-    public void componentMoved(ComponentEvent componentEvent)
+    public void componentMoved(final ComponentEvent componentEvent)
     {
         // do nothing
     }
 
     @Override
-    public void componentShown(ComponentEvent componentEvent)
+    public void componentShown(final ComponentEvent componentEvent)
     {
         searchPanel.reFocus();
     }
 
     @Override
-    public void componentHidden(ComponentEvent componentEvent)
+    public void componentHidden(final ComponentEvent componentEvent)
     {
         textComponent.getHighlighter().removeAllHighlights();
     }
 
-    public void addMenuListeners(PDFDebugger frame)
+    public void addMenuListeners(final PDFDebugger frame)
     {
         searchPanel.addMenuListeners(frame);
     }
 
-    public void removeMenuListeners(PDFDebugger frame)
+    public void removeMenuListeners(final PDFDebugger frame)
     {
         searchPanel.removeMenuListeners(frame);
     }

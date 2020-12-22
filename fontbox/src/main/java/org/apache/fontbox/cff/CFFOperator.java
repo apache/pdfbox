@@ -30,7 +30,7 @@ public final class CFFOperator
     private Key operatorKey = null;
     private String operatorName = null;
 
-    private CFFOperator(Key key, String name)
+    private CFFOperator(final Key key, final String name)
     {
         setKey(key);
         setName(name);
@@ -45,7 +45,7 @@ public final class CFFOperator
         return operatorKey;
     }
 
-    private void setKey(Key key)
+    private void setKey(final Key key)
     {
         operatorKey = key;
     }
@@ -59,7 +59,7 @@ public final class CFFOperator
         return operatorName;
     }
 
-    private void setName(String name)
+    private void setName(final String name)
     {
         operatorName = name;
     }
@@ -86,19 +86,19 @@ public final class CFFOperator
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object object)
+    public boolean equals(final Object object)
     {
         if (object instanceof CFFOperator)
         {
-            CFFOperator that = (CFFOperator) object;
+            final CFFOperator that = (CFFOperator) object;
             return getKey().equals(that.getKey());
         }
         return false;
     }
 
-    private static void register(Key key, String name)
+    private static void register(final Key key, final String name)
     {
-        CFFOperator operator = new CFFOperator(key, name);
+        final CFFOperator operator = new CFFOperator(key, name);
         keyMap.put(key, operator);
         nameMap.put(name, operator);
     }
@@ -108,7 +108,7 @@ public final class CFFOperator
      * @param key the given key
      * @return the corresponding operator
      */
-    public static CFFOperator getOperator(Key key)
+    public static CFFOperator getOperator(final Key key)
     {
         return keyMap.get(key);
     }
@@ -118,7 +118,7 @@ public final class CFFOperator
      * @param name the given name
      * @return the corresponding operator
      */
-    public static CFFOperator getOperator(String name)
+    public static CFFOperator getOperator(final String name)
     {
         return nameMap.get(name);
     }
@@ -135,7 +135,7 @@ public final class CFFOperator
          * Constructor.
          * @param b0 the one byte value
          */
-        public Key(int b0)
+        public Key(final int b0)
         {
             this(new int[] { b0 });
         }
@@ -145,12 +145,12 @@ public final class CFFOperator
          * @param b0 the first byte of a two byte value
          * @param b1 the second byte of a two byte value
          */
-        public Key(int b0, int b1)
+        public Key(final int b0, final int b1)
         {
             this(new int[] { b0, b1 });
         }
 
-        private Key(int[] value)
+        private Key(final int[] value)
         {
             setValue(value);
         }
@@ -164,7 +164,7 @@ public final class CFFOperator
             return value;
         }
 
-        private void setValue(int[] value)
+        private void setValue(final int[] value)
         {
             this.value = value;
         }
@@ -191,19 +191,19 @@ public final class CFFOperator
          * {@inheritDoc}
          */
         @Override
-        public boolean equals(Object object)
+        public boolean equals(final Object object)
         {
             if (object instanceof Key)
             {
-                Key that = (Key) object;
+                final Key that = (Key) object;
                 return Arrays.equals(getValue(), that.getValue());
             }
             return false;
         }
     }
 
-    private static Map<CFFOperator.Key, CFFOperator> keyMap = new LinkedHashMap<>(52);
-    private static Map<String, CFFOperator> nameMap = new LinkedHashMap<>(52);
+    private static final Map<CFFOperator.Key, CFFOperator> keyMap = new LinkedHashMap<>(52);
+    private static final Map<String, CFFOperator> nameMap = new LinkedHashMap<>(52);
 
     static
     {

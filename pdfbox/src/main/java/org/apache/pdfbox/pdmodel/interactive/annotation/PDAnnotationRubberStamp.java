@@ -106,7 +106,7 @@ public class PDAnnotationRubberStamp extends PDAnnotationMarkup
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationRubberStamp(COSDictionary field)
+    public PDAnnotationRubberStamp(final COSDictionary field)
     {
         super(field);
     }
@@ -117,7 +117,7 @@ public class PDAnnotationRubberStamp extends PDAnnotationMarkup
      *
      * @param name The name of the rubber stamp.
      */
-    public void setName(String name)
+    public void setName(final String name)
     {
         getCOSObject().setName(COSName.NAME, name);
     }

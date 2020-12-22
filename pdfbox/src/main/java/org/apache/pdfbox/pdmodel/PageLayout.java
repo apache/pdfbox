@@ -42,9 +42,9 @@ public enum PageLayout
     /** Display the pages two at a time), with odd-numbered pages on the right. */
     TWO_PAGE_RIGHT("TwoPageRight");
 
-    public static PageLayout fromString(String value)
+    public static PageLayout fromString(final String value)
     {
-        for (PageLayout instance : PageLayout.values())
+        for (final PageLayout instance : PageLayout.values())
         {
             if (instance.value.equals(value))
             {
@@ -56,7 +56,7 @@ public enum PageLayout
 
     private final String value;
 
-    PageLayout(String value)
+    PageLayout(final String value)
     {
         this.value = value;
     }

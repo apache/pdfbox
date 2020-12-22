@@ -45,30 +45,30 @@ public class ShowTextWithPositioning
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         doIt("Hello World, this is a test!", "justify-example.pdf");
     }
 
-    public static void doIt(String message, String outfile) throws IOException
+    public static void doIt(final String message, final String outfile) throws IOException
     {
         // the document
         try (PDDocument doc = new PDDocument();
-             InputStream is = PDDocument.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
+             final InputStream is = PDDocument.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
         {
             // Page 1
             PDFont font = PDType0Font.load(doc, is, true);
-            PDPage page = new PDPage(PDRectangle.A4);
+            final PDPage page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
 
             // Get the non-justified string width in text space units.
-            float stringWidth = font.getStringWidth(message) * FONT_SIZE;
+            final float stringWidth = font.getStringWidth(message) * FONT_SIZE;
 
             // Get the string height in text space units.
-            float stringHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() * FONT_SIZE;
+            final float stringHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() * FONT_SIZE;
 
             // Get the width we have to justify in.
-            PDRectangle pageSize = page.getMediaBox();
+            final PDRectangle pageSize = page.getMediaBox();
 
             try (PDPageContentStream contentStream = new PDPageContentStream(doc,
                     page, AppendMode.OVERWRITE, false))
@@ -92,9 +92,9 @@ public class ShowTextWithPositioning
                 float justifyWidth = pageSize.getWidth() * 1000f - stringWidth;
                 
                 List<Object> text = new ArrayList<>();
-                String[] parts = message.split("\\s");
+                final String[] parts = message.split("\\s");
                 
-                float spaceWidth = (justifyWidth / (parts.length - 1)) / FONT_SIZE;
+                final float spaceWidth = (justifyWidth / (parts.length - 1)) / FONT_SIZE;
                 
                 for (int i = 0; i < parts.length; i++)
                 {
@@ -112,7 +112,7 @@ public class ShowTextWithPositioning
                 // Now show letter justified.
                 text = new ArrayList<>();
                 justifyWidth = pageSize.getWidth() * 1000f - stringWidth;
-                float extraLetterWidth = (justifyWidth / (message.codePointCount(0, message.length()) - 1)) / FONT_SIZE;
+                final float extraLetterWidth = (justifyWidth / (message.codePointCount(0, message.length()) - 1)) / FONT_SIZE;
                 
                 for (int i = 0; i < message.length(); i += Character.charCount(message.codePointAt(i)))
                 {
@@ -138,7 +138,7 @@ public class ShowTextWithPositioning
                 contentStream.setFont(font, FONT_SIZE);
                 contentStream.showText(message);
 
-                float wordSpacing = (pageSize.getWidth() * 1000f - stringWidth) / (parts.length - 1) / 1000;
+                final float wordSpacing = (pageSize.getWidth() * 1000f - stringWidth) / (parts.length - 1) / 1000;
 
                 // TrueType font with word spacing
                 contentStream.setTextMatrix(

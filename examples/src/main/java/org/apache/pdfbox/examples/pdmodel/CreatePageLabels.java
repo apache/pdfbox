@@ -36,20 +36,20 @@ public class CreatePageLabels
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
             doc.addPage(new PDPage());
             doc.addPage(new PDPage());
             doc.addPage(new PDPage());
-            PDPageLabels pageLabels = new PDPageLabels(doc);
-            PDPageLabelRange pageLabelRange1 = new PDPageLabelRange();
+            final PDPageLabels pageLabels = new PDPageLabels(doc);
+            final PDPageLabelRange pageLabelRange1 = new PDPageLabelRange();
             pageLabelRange1.setPrefix("RO ");
             pageLabelRange1.setStart(3);
             pageLabelRange1.setStyle(PDPageLabelRange.STYLE_ROMAN_UPPER);
             pageLabels.setLabelItem(0, pageLabelRange1);
-            PDPageLabelRange pageLabelRange2 = new PDPageLabelRange();
+            final PDPageLabelRange pageLabelRange2 = new PDPageLabelRange();
             pageLabelRange2.setStart(1);
             pageLabelRange2.setStyle(PDPageLabelRange.STYLE_DECIMAL);
             pageLabels.setLabelItem(2, pageLabelRange2);

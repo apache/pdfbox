@@ -51,7 +51,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @param dic The underlying dictionary.
      */
-    public PDDocumentInformation( COSDictionary dic )
+    public PDDocumentInformation(final COSDictionary dic )
     {
         info = dic;
     }
@@ -77,7 +77,7 @@ public class PDDocumentInformation implements COSObjectable
      * @param propertyKey the dictionaries key
      * @return the properties value
      */
-     public Object getPropertyStringValue(String propertyKey)
+     public Object getPropertyStringValue(final String propertyKey)
      {
          return info.getString(propertyKey);
      }    
@@ -97,7 +97,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @param title The new title for the document.
      */
-    public void setTitle( String title )
+    public void setTitle(final String title )
     {
         info.setString( COSName.TITLE, title );
     }
@@ -117,7 +117,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @param author The new author for the document.
      */
-    public void setAuthor( String author )
+    public void setAuthor(final String author )
     {
         info.setString( COSName.AUTHOR, author );
     }
@@ -137,7 +137,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @param subject The new subject for the document.
      */
-    public void setSubject( String subject )
+    public void setSubject(final String subject )
     {
         info.setString( COSName.SUBJECT, subject );
     }
@@ -157,7 +157,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @param keywords The new keywords for the document.
      */
-    public void setKeywords( String keywords )
+    public void setKeywords(final String keywords )
     {
         info.setString( COSName.KEYWORDS, keywords );
     }
@@ -177,7 +177,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @param creator The new creator for the document.
      */
-    public void setCreator( String creator )
+    public void setCreator(final String creator )
     {
         info.setString( COSName.CREATOR, creator );
     }
@@ -197,7 +197,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @param producer The new producer for the document.
      */
-    public void setProducer( String producer )
+    public void setProducer(final String producer )
     {
         info.setString( COSName.PRODUCER, producer );
     }
@@ -217,7 +217,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @param date The new creation date for the document.
      */
-    public void setCreationDate( Calendar date )
+    public void setCreationDate(final Calendar date )
     {
         info.setDate( COSName.CREATION_DATE, date );
     }
@@ -237,7 +237,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @param date The new modification date for the document.
      */
-    public void setModificationDate( Calendar date )
+    public void setModificationDate(final Calendar date )
     {
         info.setDate( COSName.MOD_DATE, date );
     }
@@ -261,8 +261,8 @@ public class PDDocumentInformation implements COSObjectable
      */
     public Set<String> getMetadataKeys()
     {
-        Set<String> keys = new TreeSet<>();
-        for (COSName key : info.keySet())
+        final Set<String> keys = new TreeSet<>();
+        for (final COSName key : info.keySet())
         {
             keys.add(key.getName());
         }
@@ -277,7 +277,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @return String Value of metadata field
      */
-    public String getCustomMetadataValue(String fieldName)
+    public String getCustomMetadataValue(final String fieldName)
     {
         return info.getString( fieldName );
     }
@@ -288,7 +288,7 @@ public class PDDocumentInformation implements COSObjectable
      * @param fieldName The name of the custom metadata field.
      * @param fieldValue The value to the custom metadata field.
      */
-    public void setCustomMetadataValue( String fieldName, String fieldValue )
+    public void setCustomMetadataValue(final String fieldName, final String fieldValue )
     {
         info.setString( fieldName, fieldValue );
     }
@@ -301,7 +301,7 @@ public class PDDocumentInformation implements COSObjectable
      * 
      * @throws IllegalArgumentException if the parameter is invalid.
      */
-    public void setTrapped( String value )
+    public void setTrapped(final String value )
     {
         if( value != null &&
             !value.equals( "True" ) &&

@@ -25,7 +25,7 @@ class CIDRangeTest
     @Test
     void testCIDRangeOneByte()
     {
-        CIDRange cidRange = new CIDRange(0, 20, 65, 1);
+        final CIDRange cidRange = new CIDRange(0, 20, 65, 1);
         assertEquals(1, cidRange.getCodeLength());
 
         assertEquals(65, cidRange.map(new byte[] { 0 }));
@@ -51,7 +51,7 @@ class CIDRangeTest
     @Test
     void testCIDRangeTwoByte()
     {
-        CIDRange cidRange = new CIDRange(256, 280, 65, 2);
+        final CIDRange cidRange = new CIDRange(256, 280, 65, 2);
         assertEquals(2, cidRange.getCodeLength());
 
         assertEquals(65, cidRange.map(new byte[] { 1, 0 }));

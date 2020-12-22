@@ -29,8 +29,8 @@ public class TrackKern
     private final float maxPointSize;
     private final float maxKern;
 
-    public TrackKern(int degree, float minPointSize, float minKern, float maxPointSize,
-            float maxKern)
+    public TrackKern(final int degree, final float minPointSize, final float minKern, final float maxPointSize,
+                     final float maxKern)
     {
         this.degree = degree;
         this.minPointSize = minPointSize;

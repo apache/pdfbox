@@ -29,13 +29,13 @@ public class RevokedCertificateException extends Exception
     
     private final Date revocationTime;
 
-    public RevokedCertificateException(String message)
+    public RevokedCertificateException(final String message)
     {
         super(message);
         this.revocationTime = null;
     }
 
-    public RevokedCertificateException(String message, Date revocationTime)
+    public RevokedCertificateException(final String message, final Date revocationTime)
     {
         super(message);
         this.revocationTime = revocationTime;

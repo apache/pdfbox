@@ -31,7 +31,7 @@ class FontMetricsTest
     @Test
     void testFontMetricsNames()
     {
-        FontMetrics fontMetrics = new FontMetrics();
+        final FontMetrics fontMetrics = new FontMetrics();
         fontMetrics.setFontName("fontName");
         fontMetrics.setFamilyName("familyName");
         fontMetrics.setFullName("fullName");
@@ -45,14 +45,14 @@ class FontMetricsTest
 
         assertEquals(0, fontMetrics.getComments().size());
         fontMetrics.addComment("comment");
-        List<String> comments = fontMetrics.getComments();
+        final List<String> comments = fontMetrics.getComments();
         assertEquals(1, comments.size());
         try
         {
             comments.add("comment");
             fail("An UnsupportedOperationException should have been thrown");
         }
-        catch (UnsupportedOperationException exception)
+        catch (final UnsupportedOperationException exception)
         {
             // do nothing
         }
@@ -61,7 +61,7 @@ class FontMetricsTest
     @Test
     void testFontMetricsSimpleValues()
     {
-        FontMetrics fontMetrics = new FontMetrics();
+        final FontMetrics fontMetrics = new FontMetrics();
         fontMetrics.setAFMVersion(4.3f);
         fontMetrics.setWeight("weight");
         fontMetrics.setEncodingScheme("encodingScheme");
@@ -106,7 +106,7 @@ class FontMetricsTest
     @Test
     void testFontMetricsComplexValues()
     {
-        FontMetrics fontMetrics = new FontMetrics();
+        final FontMetrics fontMetrics = new FontMetrics();
         fontMetrics.setFontBBox(new BoundingBox(10, 20, 30, 40));
         fontMetrics.setVVector(new float[] { 10, 20 });
         fontMetrics.setCharWidth(new float[] { 30, 40 });
@@ -123,7 +123,7 @@ class FontMetricsTest
     @Test
     void testMetricSets()
     {
-        FontMetrics fontMetrics = new FontMetrics();
+        final FontMetrics fontMetrics = new FontMetrics();
         fontMetrics.setMetricSets(1);
         assertEquals(1, fontMetrics.getMetricSets());
         try
@@ -132,7 +132,7 @@ class FontMetricsTest
             fontMetrics.setMetricSets(-1);
             fail("An IllegalArgumentException should have been thrown");
         }
-        catch (IllegalArgumentException excpetion)
+        catch (final IllegalArgumentException excpetion)
         {
             // do nothing
         }
@@ -143,7 +143,7 @@ class FontMetricsTest
             fontMetrics.setMetricSets(3);
             fail("An IllegalArgumentException should have been thrown");
         }
-        catch (IllegalArgumentException excpetion)
+        catch (final IllegalArgumentException excpetion)
         {
             // do nothing
         }
@@ -152,18 +152,18 @@ class FontMetricsTest
     @Test
     void testCharMetrics()
     {
-        FontMetrics fontMetrics = new FontMetrics();
+        final FontMetrics fontMetrics = new FontMetrics();
         assertEquals(0, fontMetrics.getCharMetrics().size());
-        CharMetric charMetric = new CharMetric();
+        final CharMetric charMetric = new CharMetric();
         fontMetrics.addCharMetric(charMetric);
-        List<CharMetric> charMetrics = fontMetrics.getCharMetrics();
+        final List<CharMetric> charMetrics = fontMetrics.getCharMetrics();
         assertEquals(1, charMetrics.size());
         try
         {
             charMetrics.add(charMetric);
             fail("An UnsupportedOperationException should have been thrown");
         }
-        catch (UnsupportedOperationException exception)
+        catch (final UnsupportedOperationException exception)
         {
             // do nothing
         }
@@ -172,18 +172,18 @@ class FontMetricsTest
     @Test
     void testComposites()
     {
-        FontMetrics fontMetrics = new FontMetrics();
+        final FontMetrics fontMetrics = new FontMetrics();
         assertEquals(0, fontMetrics.getComposites().size());
-        Composite composite = new Composite("name");
+        final Composite composite = new Composite("name");
         fontMetrics.addComposite(composite);
-        List<Composite> composites = fontMetrics.getComposites();
+        final List<Composite> composites = fontMetrics.getComposites();
         assertEquals(1, composites.size());
         try
         {
             composites.add(composite);
             fail("An UnsupportedOperationException should have been thrown");
         }
-        catch (UnsupportedOperationException exception)
+        catch (final UnsupportedOperationException exception)
         {
             // do nothing
         }
@@ -192,62 +192,62 @@ class FontMetricsTest
     @Test
     void testKernData()
     {
-        FontMetrics fontMetrics = new FontMetrics();
+        final FontMetrics fontMetrics = new FontMetrics();
         // KernPairs
         assertEquals(0, fontMetrics.getKernPairs().size());
-        KernPair kernPair = new KernPair("first", "second", 10, 20);
+        final KernPair kernPair = new KernPair("first", "second", 10, 20);
         fontMetrics.addKernPair(kernPair);
-        List<KernPair> kernPairs = fontMetrics.getKernPairs();
+        final List<KernPair> kernPairs = fontMetrics.getKernPairs();
         assertEquals(1, kernPairs.size());
         try
         {
             kernPairs.add(kernPair);
             fail("An UnsupportedOperationException should have been thrown");
         }
-        catch (UnsupportedOperationException exception)
+        catch (final UnsupportedOperationException exception)
         {
             // do nothing
         }
         // KernPairs0
         assertEquals(0, fontMetrics.getKernPairs0().size());
         fontMetrics.addKernPair0(kernPair);
-        List<KernPair> kernPairs0 = fontMetrics.getKernPairs0();
+        final List<KernPair> kernPairs0 = fontMetrics.getKernPairs0();
         assertEquals(1, kernPairs0.size());
         try
         {
             kernPairs0.add(kernPair);
             fail("An UnsupportedOperationException should have been thrown");
         }
-        catch (UnsupportedOperationException exception)
+        catch (final UnsupportedOperationException exception)
         {
             // do nothing
         }
         // KernPairs1
         assertEquals(0, fontMetrics.getKernPairs1().size());
         fontMetrics.addKernPair1(kernPair);
-        List<KernPair> kernPairs1 = fontMetrics.getKernPairs1();
+        final List<KernPair> kernPairs1 = fontMetrics.getKernPairs1();
         assertEquals(1, kernPairs1.size());
         try
         {
             kernPairs1.add(kernPair);
             fail("An UnsupportedOperationException should have been thrown");
         }
-        catch (UnsupportedOperationException exception)
+        catch (final UnsupportedOperationException exception)
         {
             // do nothing
         }
         // TrackKern
         assertEquals(0, fontMetrics.getTrackKern().size());
-        TrackKern trackKern = new TrackKern(0, 1, 1, 10, 10);
+        final TrackKern trackKern = new TrackKern(0, 1, 1, 10, 10);
         fontMetrics.addTrackKern(trackKern);
-        List<TrackKern> trackKerns = fontMetrics.getTrackKern();
+        final List<TrackKern> trackKerns = fontMetrics.getTrackKern();
         assertEquals(1, trackKerns.size());
         try
         {
             trackKerns.add(trackKern);
             fail("An UnsupportedOperationException should have been thrown");
         }
-        catch (UnsupportedOperationException exception)
+        catch (final UnsupportedOperationException exception)
         {
             // do nothing
         }
@@ -256,25 +256,25 @@ class FontMetricsTest
     @Test
     void testCharMetricDimensions()
     {
-        FontMetrics fontMetrics = new FontMetrics();
+        final FontMetrics fontMetrics = new FontMetrics();
         assertEquals(0, fontMetrics.getAverageCharacterWidth(), 0f);
 
-        CharMetric charMetric10 = new CharMetric();
+        final CharMetric charMetric10 = new CharMetric();
         charMetric10.setName("ten");
         charMetric10.setWx(10f);
         charMetric10.setWy(20f);
         fontMetrics.addCharMetric(charMetric10);
-        CharMetric charMetric20 = new CharMetric();
+        final CharMetric charMetric20 = new CharMetric();
         charMetric20.setName("twenty");
         charMetric20.setWx(20f);
         charMetric20.setWy(40f);
         fontMetrics.addCharMetric(charMetric20);
-        CharMetric charMetric30 = new CharMetric();
+        final CharMetric charMetric30 = new CharMetric();
         charMetric30.setName("thirty");
         charMetric30.setWx(30f);
         charMetric30.setWy(60f);
         fontMetrics.addCharMetric(charMetric30);
-        CharMetric charMetric40 = new CharMetric();
+        final CharMetric charMetric40 = new CharMetric();
         charMetric40.setName("forty");
         charMetric40.setWx(40f);
         charMetric40.setWy(80f);

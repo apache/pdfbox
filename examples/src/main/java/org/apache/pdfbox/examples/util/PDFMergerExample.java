@@ -64,21 +64,21 @@ public class PDFMergerExample
      */
     public InputStream merge(final List<InputStream> sources) throws IOException
     {
-        String title = "My title";
-        String creator = "Alexander Kriegisch";
-        String subject = "Subject with umlauts ÄÖÜ";
+        final String title = "My title";
+        final String creator = "Alexander Kriegisch";
+        final String subject = "Subject with umlauts ÄÖÜ";
 
         try (COSStream cosStream = new COSStream();
-             ByteArrayOutputStream mergedPDFOutputStream = new ByteArrayOutputStream())
+             final ByteArrayOutputStream mergedPDFOutputStream = new ByteArrayOutputStream())
         {
             // If you're merging in a servlet, you can modify this example to use the outputStream only
             // as the response as shown here: http://stackoverflow.com/a/36894346/535646
 
-            PDFMergerUtility pdfMerger = createPDFMergerUtility(sources, mergedPDFOutputStream);
+            final PDFMergerUtility pdfMerger = createPDFMergerUtility(sources, mergedPDFOutputStream);
 
             // PDF and XMP properties must be identical, otherwise document is not PDF/A compliant
-            PDDocumentInformation pdfDocumentInfo = createPDFDocumentInfo(title, creator, subject);
-            PDMetadata xmpMetadata = createXMPMetadata(cosStream, title, creator, subject);
+            final PDDocumentInformation pdfDocumentInfo = createPDFDocumentInfo(title, creator, subject);
+            final PDMetadata xmpMetadata = createXMPMetadata(cosStream, title, creator, subject);
             pdfMerger.setDestinationDocumentInformation(pdfDocumentInfo);
             pdfMerger.setDestinationMetadata(xmpMetadata);
 
@@ -88,7 +88,7 @@ public class PDFMergerExample
 
             return new ByteArrayInputStream(mergedPDFOutputStream.toByteArray());
         }
-        catch (BadFieldValueException | TransformerException e)
+        catch (final BadFieldValueException | TransformerException e)
         {
             throw new IOException("PDF merge problem", e);
         }
@@ -98,45 +98,45 @@ public class PDFMergerExample
         }
     }
 
-    private PDFMergerUtility createPDFMergerUtility(List<InputStream> sources, ByteArrayOutputStream mergedPDFOutputStream)
+    private PDFMergerUtility createPDFMergerUtility(final List<InputStream> sources, final ByteArrayOutputStream mergedPDFOutputStream)
     {
         LOG.info("Initialising PDF merge utility");
-        PDFMergerUtility pdfMerger = new PDFMergerUtility();
+        final PDFMergerUtility pdfMerger = new PDFMergerUtility();
         pdfMerger.addSources(sources);
         pdfMerger.setDestinationStream(mergedPDFOutputStream);
         return pdfMerger;
     }
 
-    private PDDocumentInformation createPDFDocumentInfo(String title, String creator, String subject)
+    private PDDocumentInformation createPDFDocumentInfo(final String title, final String creator, final String subject)
     {
         LOG.info("Setting document info (title, author, subject) for merged PDF");
-        PDDocumentInformation documentInformation = new PDDocumentInformation();
+        final PDDocumentInformation documentInformation = new PDDocumentInformation();
         documentInformation.setTitle(title);
         documentInformation.setCreator(creator);
         documentInformation.setSubject(subject);
         return documentInformation;
     }
 
-    private PDMetadata createXMPMetadata(COSStream cosStream, String title, String creator, String subject)
+    private PDMetadata createXMPMetadata(final COSStream cosStream, final String title, final String creator, final String subject)
             throws BadFieldValueException, TransformerException, IOException
     {
         LOG.info("Setting XMP metadata (title, author, subject) for merged PDF");
-        XMPMetadata xmpMetadata = XMPMetadata.createXMPMetadata();
+        final XMPMetadata xmpMetadata = XMPMetadata.createXMPMetadata();
 
         // PDF/A-1b properties
-        PDFAIdentificationSchema pdfaSchema = xmpMetadata.createAndAddPFAIdentificationSchema();
+        final PDFAIdentificationSchema pdfaSchema = xmpMetadata.createAndAddPFAIdentificationSchema();
         pdfaSchema.setPart(1);
         pdfaSchema.setConformance("B");
 
         // Dublin Core properties
-        DublinCoreSchema dublinCoreSchema = xmpMetadata.createAndAddDublinCoreSchema();
+        final DublinCoreSchema dublinCoreSchema = xmpMetadata.createAndAddDublinCoreSchema();
         dublinCoreSchema.setTitle(title);
         dublinCoreSchema.addCreator(creator);
         dublinCoreSchema.setDescription(subject);
 
         // XMP Basic properties
-        XMPBasicSchema basicSchema = xmpMetadata.createAndAddXMPBasicSchema();
-        Calendar creationDate = Calendar.getInstance();
+        final XMPBasicSchema basicSchema = xmpMetadata.createAndAddXMPBasicSchema();
+        final Calendar creationDate = Calendar.getInstance();
         basicSchema.setCreateDate(creationDate);
         basicSchema.setModifyDate(creationDate);
         basicSchema.setMetadataDate(creationDate);
@@ -144,7 +144,7 @@ public class PDFMergerExample
 
         // Create and return XMP data structure in XML format
         try (ByteArrayOutputStream xmpOutputStream = new ByteArrayOutputStream();
-             OutputStream cosXMPStream = cosStream.createOutputStream())
+             final OutputStream cosXMPStream = cosStream.createOutputStream())
         {
             new XmpSerializer().serialize(xmpMetadata, xmpOutputStream, true);
             cosXMPStream.write(xmpOutputStream.toByteArray());

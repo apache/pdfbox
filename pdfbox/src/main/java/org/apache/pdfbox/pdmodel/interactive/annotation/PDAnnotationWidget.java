@@ -51,7 +51,7 @@ public class PDAnnotationWidget extends PDAnnotation
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationWidget(COSDictionary field)
+    public PDAnnotationWidget(final COSDictionary field)
     {
         super(field);
         getCOSObject().setName(COSName.SUBTYPE, SUB_TYPE);
@@ -98,7 +98,7 @@ public class PDAnnotationWidget extends PDAnnotation
      * 
      * @param highlightingMode the highlighting mode the defined values
      */
-    public void setHighlightingMode(String highlightingMode)
+    public void setHighlightingMode(final String highlightingMode)
     {
         if ((highlightingMode == null) || "N".equals(highlightingMode)
                 || "I".equals(highlightingMode) || "O".equals(highlightingMode)
@@ -120,7 +120,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAppearanceCharacteristicsDictionary getAppearanceCharacteristics()
     {
-        COSBase mk = this.getCOSObject().getDictionaryObject(COSName.MK);
+        final COSBase mk = this.getCOSObject().getDictionaryObject(COSName.MK);
         if (mk instanceof COSDictionary)
         {
             return new PDAppearanceCharacteristicsDictionary((COSDictionary) mk);
@@ -134,7 +134,7 @@ public class PDAnnotationWidget extends PDAnnotation
      * @param appearanceCharacteristics the appearance characteristics dictionary
      */
     public void setAppearanceCharacteristics(
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics)
+            final PDAppearanceCharacteristicsDictionary appearanceCharacteristics)
     {
         this.getCOSObject().setItem(COSName.MK, appearanceCharacteristics);
     }
@@ -146,7 +146,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAction getAction()
     {
-        COSBase base = this.getCOSObject().getDictionaryObject(COSName.A);
+        final COSBase base = this.getCOSObject().getDictionaryObject(COSName.A);
         if (base instanceof COSDictionary)
         {
             return PDActionFactory.createAction((COSDictionary) base);
@@ -159,7 +159,7 @@ public class PDAnnotationWidget extends PDAnnotation
      * 
      * @param action The annotation action.
      */
-    public void setAction(PDAction action)
+    public void setAction(final PDAction action)
     {
         this.getCOSObject().setItem(COSName.A, action);
     }
@@ -172,7 +172,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAnnotationAdditionalActions getActions()
     {
-        COSBase base = this.getCOSObject().getDictionaryObject(COSName.AA);
+        final COSBase base = this.getCOSObject().getDictionaryObject(COSName.AA);
         if (base instanceof COSDictionary)
         {
             return new PDAnnotationAdditionalActions((COSDictionary) base);
@@ -185,7 +185,7 @@ public class PDAnnotationWidget extends PDAnnotation
      *
      * @param actions The field actions.
      */
-    public void setActions(PDAnnotationAdditionalActions actions)
+    public void setActions(final PDAnnotationAdditionalActions actions)
     {
         this.getCOSObject().setItem(COSName.AA, actions);
     }
@@ -196,7 +196,7 @@ public class PDAnnotationWidget extends PDAnnotation
      * @param bs the border style dictionary to set.
      *
      */
-    public void setBorderStyle(PDBorderStyleDictionary bs)
+    public void setBorderStyle(final PDBorderStyleDictionary bs)
     {
         this.getCOSObject().setItem(COSName.BS, bs);
     }
@@ -208,7 +208,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
+        final COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
         if (bs instanceof COSDictionary)
         {
             return new PDBorderStyleDictionary((COSDictionary) bs);
@@ -238,7 +238,7 @@ public class PDAnnotationWidget extends PDAnnotation
      * @throws IllegalArgumentException if setParent() was called for a field that shares a
      * dictionary with its only widget.
      */
-    public void setParent(PDTerminalField field)
+    public void setParent(final PDTerminalField field)
     {
         if (this.getCOSObject().equals(field.getCOSObject()))
         {

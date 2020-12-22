@@ -41,9 +41,9 @@ public final class Parser
      * @param input the text source
      * @param handler the syntax handler
      */
-    public static void parse(CharSequence input, SyntaxHandler handler)
+    public static void parse(final CharSequence input, final SyntaxHandler handler)
     {
-        Tokenizer tokenizer = new Tokenizer(input, handler);
+        final Tokenizer tokenizer = new Tokenizer(input, handler);
         tokenizer.tokenize();
     }
 
@@ -88,21 +88,21 @@ public final class Parser
 
         /** {@inheritDoc} */
         @Override
-        public void comment(CharSequence text)
+        public void comment(final CharSequence text)
         {
             //nop
         }
 
         /** {@inheritDoc} */
         @Override
-        public void newLine(CharSequence text)
+        public void newLine(final CharSequence text)
         {
             //nop
         }
 
         /** {@inheritDoc} */
         @Override
-        public void whitespace(CharSequence text)
+        public void whitespace(final CharSequence text)
         {
             //nop
         }
@@ -129,7 +129,7 @@ public final class Parser
         private State state = State.WHITESPACE;
         private final StringBuilder buffer = new StringBuilder();
 
-        private Tokenizer(CharSequence text, SyntaxHandler syntaxHandler)
+        private Tokenizer(final CharSequence text, final SyntaxHandler syntaxHandler)
         {
             this.input = text;
             this.handler = syntaxHandler;
@@ -172,7 +172,7 @@ public final class Parser
 
         private State nextState()
         {
-            char ch = currentChar();
+            final char ch = currentChar();
             switch (ch)
             {
             case CR:
@@ -220,7 +220,7 @@ public final class Parser
         private void scanNewLine()
         {
             assert state == State.NEWLINE;
-            char ch = currentChar();
+            final char ch = currentChar();
             buffer.append(ch);
             if (ch == CR && peek() == LF)
             {
@@ -238,7 +238,7 @@ public final class Parser
             loop:
             while (hasMore())
             {
-                char ch = nextChar();
+                final char ch = nextChar();
                 switch (ch)
                 {
                 case NUL:
@@ -260,7 +260,7 @@ public final class Parser
             loop:
             while (hasMore())
             {
-                char ch = nextChar();
+                final char ch = nextChar();
                 switch (ch)
                 {
                 case CR:

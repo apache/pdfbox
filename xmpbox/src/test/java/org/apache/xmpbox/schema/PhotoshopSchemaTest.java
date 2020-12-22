@@ -44,73 +44,73 @@ class PhotoshopSchemaTest
     
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testInitializedToNull(String fieldName, Types type, Cardinality card) throws Exception
+    void testInitializedToNull(final String fieldName, final Types type, final Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
+        final SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testInitializedToNull();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testSettingValue(String fieldName, Types type, Cardinality card) throws Exception
+    void testSettingValue(final String fieldName, final Types type, final Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
+        final SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testSettingValue();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomSettingValue(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomSettingValue(final String fieldName, final Types type, final Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
+        final SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomSettingValue();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testSettingValueInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testSettingValueInArray(final String fieldName, final Types type, final Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
+        final SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testSettingValueInArray();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomSettingValueInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomSettingValueInArray(final String fieldName, final Types type, final Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
+        final SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomSettingValueInArray();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testPropertySetterSimple(String fieldName, Types type, Cardinality card) throws Exception
+    void testPropertySetterSimple(final String fieldName, final Types type, final Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
+        final SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testPropertySetterSimple();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomPropertySetterSimple(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomPropertySetterSimple(final String fieldName, final Types type, final Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
+        final SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomPropertySetterSimple();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testPropertySetterInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testPropertySetterInArray(final String fieldName, final Types type, final Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
+        final SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testPropertySetterInArray();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomPropertySetterInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomPropertySetterInArray(final String fieldName, final Types type, final Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
+        final SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomPropertySetterInArray();
     }
 

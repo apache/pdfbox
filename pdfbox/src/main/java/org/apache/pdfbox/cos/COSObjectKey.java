@@ -32,7 +32,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      *
      * @param object The object that this key will represent.
      */
-    public COSObjectKey(COSObject object)
+    public COSObjectKey(final COSObject object)
     {
         this(object.getObjectNumber(), object.getGenerationNumber());
     }
@@ -43,7 +43,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      * @param num The object number.
      * @param gen The object generation number.
      */
-    public COSObjectKey(long num, int gen)
+    public COSObjectKey(final long num, final int gen)
     {
         number = num;
         generation = gen;
@@ -53,9 +53,9 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(final Object obj)
     {
-        COSObjectKey objToBeCompared = obj instanceof COSObjectKey ? (COSObjectKey)obj : null;
+        final COSObjectKey objToBeCompared = obj instanceof COSObjectKey ? (COSObjectKey)obj : null;
         return objToBeCompared != null &&
                 objToBeCompared.getNumber() == getNumber() &&
                 objToBeCompared.getGeneration() == getGeneration();
@@ -76,7 +76,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      * 
      * @param genNumber the new generation number.
      */
-    public void fixGeneration(int genNumber)
+    public void fixGeneration(final int genNumber)
     {
         generation = genNumber;
     }
@@ -109,9 +109,9 @@ public class COSObjectKey implements Comparable<COSObjectKey>
     }
 
     @Override
-    public int compareTo(COSObjectKey other)
+    public int compareTo(final COSObjectKey other)
     {
-        int result = Long.compare(getNumber(), other.getNumber());
+        final int result = Long.compare(getNumber(), other.getNumber());
         if (result == 0)
         {
             return Integer.compare(getGeneration(), other.getGeneration());

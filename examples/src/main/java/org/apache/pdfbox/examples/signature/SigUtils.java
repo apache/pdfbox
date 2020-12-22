@@ -79,32 +79,32 @@ public class SigUtils
      * return values are 1, 2 or 3. 2 is also returned if the DocMDP transform parameters dictionary
      * is found but did not contain a /P entry, or if the value is outside the valid range.
      */
-    public static int getMDPPermission(PDDocument doc)
+    public static int getMDPPermission(final PDDocument doc)
     {
         COSBase base = doc.getDocumentCatalog().getCOSObject().getDictionaryObject(COSName.PERMS);
         if (base instanceof COSDictionary)
         {
-            COSDictionary permsDict = (COSDictionary) base;
+            final COSDictionary permsDict = (COSDictionary) base;
             base = permsDict.getDictionaryObject(COSName.DOCMDP);
             if (base instanceof COSDictionary)
             {
-                COSDictionary signatureDict = (COSDictionary) base;
+                final COSDictionary signatureDict = (COSDictionary) base;
                 base = signatureDict.getDictionaryObject("Reference");
                 if (base instanceof COSArray)
                 {
-                    COSArray refArray = (COSArray) base;
+                    final COSArray refArray = (COSArray) base;
                     for (int i = 0; i < refArray.size(); ++i)
                     {
                         base = refArray.getObject(i);
                         if (base instanceof COSDictionary)
                         {
-                            COSDictionary sigRefDict = (COSDictionary) base;
+                            final COSDictionary sigRefDict = (COSDictionary) base;
                             if (COSName.DOCMDP.equals(sigRefDict.getDictionaryObject("TransformMethod")))
                             {
                                 base = sigRefDict.getDictionaryObject("TransformParams");
                                 if (base instanceof COSDictionary)
                                 {
-                                    COSDictionary transformDict = (COSDictionary) base;
+                                    final COSDictionary transformDict = (COSDictionary) base;
                                     int accessPermissions = transformDict.getInt(COSName.P, 2);
                                     if (accessPermissions < 1 || accessPermissions > 3)
                                     {
@@ -132,10 +132,10 @@ public class SigUtils
      *
      * @throws IOException if a signature exists.
      */
-    public static void setMDPPermission(PDDocument doc, PDSignature signature, int accessPermissions)
+    public static void setMDPPermission(final PDDocument doc, final PDSignature signature, final int accessPermissions)
             throws IOException
     {
-        for (PDSignature sig : doc.getSignatureDictionaries())
+        for (final PDSignature sig : doc.getSignatureDictionaries())
         {
             // "Approval signatures shall follow the certification signature if one is present"
             // thus we don't care about timestamp signatures
@@ -149,30 +149,30 @@ public class SigUtils
             }
         }
 
-        COSDictionary sigDict = signature.getCOSObject();
+        final COSDictionary sigDict = signature.getCOSObject();
 
         // DocMDP specific stuff
-        COSDictionary transformParameters = new COSDictionary();
+        final COSDictionary transformParameters = new COSDictionary();
         transformParameters.setItem(COSName.TYPE, COSName.getPDFName("TransformParams"));
         transformParameters.setInt(COSName.P, accessPermissions);
         transformParameters.setName(COSName.V, "1.2");
         transformParameters.setNeedToBeUpdated(true);
 
-        COSDictionary referenceDict = new COSDictionary();
+        final COSDictionary referenceDict = new COSDictionary();
         referenceDict.setItem(COSName.TYPE, COSName.getPDFName("SigRef"));
         referenceDict.setItem("TransformMethod", COSName.DOCMDP);
         referenceDict.setItem("DigestMethod", COSName.getPDFName("SHA1"));
         referenceDict.setItem("TransformParams", transformParameters);
         referenceDict.setNeedToBeUpdated(true);
 
-        COSArray referenceArray = new COSArray();
+        final COSArray referenceArray = new COSArray();
         referenceArray.add(referenceDict);
         sigDict.setItem("Reference", referenceArray);
         referenceArray.setNeedToBeUpdated(true);
 
         // Catalog
-        COSDictionary catalogDict = doc.getDocumentCatalog().getCOSObject();
-        COSDictionary permsDict = new COSDictionary();
+        final COSDictionary catalogDict = doc.getDocumentCatalog().getCOSObject();
+        final COSDictionary permsDict = new COSDictionary();
         catalogDict.setItem(COSName.PERMS, permsDict);
         permsDict.setItem(COSName.DOCMDP, signature);
         catalogDict.setNeedToBeUpdated(true);
@@ -186,13 +186,13 @@ public class SigUtils
      * @param x509Certificate 
      * @throws java.security.cert.CertificateParsingException 
      */
-    public static void checkCertificateUsage(X509Certificate x509Certificate)
+    public static void checkCertificateUsage(final X509Certificate x509Certificate)
             throws CertificateParsingException
     {
         // Check whether signer certificate is "valid for usage"
         // https://stackoverflow.com/a/52765021/535646
         // https://www.adobe.com/devnet-docs/acrobatetk/tools/DigSig/changes.html#id1
-        boolean[] keyUsage = x509Certificate.getKeyUsage();
+        final boolean[] keyUsage = x509Certificate.getKeyUsage();
         if (keyUsage != null && !keyUsage[0] && !keyUsage[1])
         {
             // (unclear what "signTransaction" is)
@@ -200,7 +200,7 @@ public class SigUtils
             LOG.error("Certificate key usage does not include " +
                     "digitalSignature nor nonRepudiation");
         }
-        List<String> extendedKeyUsage = x509Certificate.getExtendedKeyUsage();
+        final List<String> extendedKeyUsage = x509Certificate.getExtendedKeyUsage();
         if (extendedKeyUsage != null &&
             !extendedKeyUsage.contains(KeyPurposeId.id_kp_emailProtection.toString()) &&
             !extendedKeyUsage.contains(KeyPurposeId.id_kp_codeSigning.toString()) &&
@@ -221,10 +221,10 @@ public class SigUtils
      * @param x509Certificate 
      * @throws java.security.cert.CertificateParsingException 
      */
-    public static void checkTimeStampCertificateUsage(X509Certificate x509Certificate)
+    public static void checkTimeStampCertificateUsage(final X509Certificate x509Certificate)
             throws CertificateParsingException
     {
-        List<String> extendedKeyUsage = x509Certificate.getExtendedKeyUsage();
+        final List<String> extendedKeyUsage = x509Certificate.getExtendedKeyUsage();
         // https://tools.ietf.org/html/rfc5280#section-4.2.1.12
         if (extendedKeyUsage != null &&
             !extendedKeyUsage.contains(KeyPurposeId.id_kp_timeStamping.toString()))
@@ -239,10 +239,10 @@ public class SigUtils
      * @param x509Certificate 
      * @throws java.security.cert.CertificateParsingException 
      */
-    public static void checkResponderCertificateUsage(X509Certificate x509Certificate)
+    public static void checkResponderCertificateUsage(final X509Certificate x509Certificate)
             throws CertificateParsingException
     {
-        List<String> extendedKeyUsage = x509Certificate.getExtendedKeyUsage();
+        final List<String> extendedKeyUsage = x509Certificate.getExtendedKeyUsage();
         // https://tools.ietf.org/html/rfc5280#section-4.2.1.12
         if (extendedKeyUsage != null &&
             !extendedKeyUsage.contains(KeyPurposeId.id_kp_OCSPSigning.toString()))
@@ -257,22 +257,22 @@ public class SigUtils
      * @param document to get its last signature
      * @return last signature or null when none found
      */
-    public static PDSignature getLastRelevantSignature(PDDocument document)
+    public static PDSignature getLastRelevantSignature(final PDDocument document)
     {
-        Comparator<PDSignature> comparatorByOffset =
+        final Comparator<PDSignature> comparatorByOffset =
                 Comparator.comparing(sig -> sig.getByteRange()[1]);
 
         // we can't use getLastSignatureDictionary() because this will fail (see PDFBOX-3978) 
         // if a signature is assigned to a pre-defined empty signature field that isn't the last.
         // we get the last in time by looking at the offset in the PDF file.
-        Optional<PDSignature> optLastSignature =
+        final Optional<PDSignature> optLastSignature =
                 document.getSignatureDictionaries().stream().
                 sorted(comparatorByOffset.reversed()).
                 findFirst();
         if (optLastSignature.isPresent())
         {
-            PDSignature lastSignature = optLastSignature.get();
-            COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
+            final PDSignature lastSignature = optLastSignature.get();
+            final COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
             if (type == null || COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type))
             {
                 return lastSignature;
@@ -281,35 +281,35 @@ public class SigUtils
         return null;
     }
 
-    public static TimeStampToken extractTimeStampTokenFromSignerInformation(SignerInformation signerInformation)
+    public static TimeStampToken extractTimeStampTokenFromSignerInformation(final SignerInformation signerInformation)
             throws CMSException, IOException, TSPException
     {
         if (signerInformation.getUnsignedAttributes() == null)
         {
             return null;
         }
-        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
+        final AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
         // https://stackoverflow.com/questions/1647759/how-to-validate-if-a-signed-jar-contains-a-timestamp
-        Attribute attribute = unsignedAttributes.get(
+        final Attribute attribute = unsignedAttributes.get(
                 PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
         if (attribute == null)
         {
             return null;
         }
-        ASN1Object obj = (ASN1Object) attribute.getAttrValues().getObjectAt(0);
-        CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
+        final ASN1Object obj = (ASN1Object) attribute.getAttrValues().getObjectAt(0);
+        final CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
         return new TimeStampToken(signedTSTData);
     }
 
-    public static void validateTimestampToken(TimeStampToken timeStampToken)
+    public static void validateTimestampToken(final TimeStampToken timeStampToken)
             throws TSPException, CertificateException, OperatorCreationException, IOException
     {
         // https://stackoverflow.com/questions/42114742/
-        @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
+        @SuppressWarnings("unchecked") final // TimeStampToken.getSID() is untyped
         Collection<X509CertificateHolder> tstMatches =
                 timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
-        X509CertificateHolder certificateHolder = tstMatches.iterator().next();
-        SignerInformationVerifier siv = 
+        final X509CertificateHolder certificateHolder = tstMatches.iterator().next();
+        final SignerInformationVerifier siv =
                 new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(certificateHolder);
         timeStampToken.validate(siv);
     }
@@ -326,16 +326,16 @@ public class SigUtils
      * @throws CertificateVerificationException
      * @throws CertificateException
      */
-    public static void verifyCertificateChain(Store<X509CertificateHolder> certificatesStore,
-            X509Certificate certFromSignedData, Date signDate)
+    public static void verifyCertificateChain(final Store<X509CertificateHolder> certificatesStore,
+                                              final X509Certificate certFromSignedData, final Date signDate)
             throws CertificateVerificationException, CertificateException
     {
-        Collection<X509CertificateHolder> certificateHolders = certificatesStore.getMatches(null);
-        Set<X509Certificate> additionalCerts = new HashSet<>();
-        JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
-        for (X509CertificateHolder certHolder : certificateHolders)
+        final Collection<X509CertificateHolder> certificateHolders = certificatesStore.getMatches(null);
+        final Set<X509Certificate> additionalCerts = new HashSet<>();
+        final JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
+        for (final X509CertificateHolder certHolder : certificateHolders)
         {
-            X509Certificate certificate = certificateConverter.getCertificate(certHolder);
+            final X509Certificate certificate = certificateConverter.getCertificate(certHolder);
             if (!certificate.equals(certFromSignedData))
             {
                 additionalCerts.add(certificate);

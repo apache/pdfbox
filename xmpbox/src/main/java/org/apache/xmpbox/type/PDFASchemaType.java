@@ -42,20 +42,20 @@ public class PDFASchemaType extends AbstractStructuredType
     @PropertyType(type = Types.PDFAType, card = Cardinality.Seq)
     public static final String VALUE_TYPE = "valueType";
 
-    public PDFASchemaType(XMPMetadata metadata)
+    public PDFASchemaType(final XMPMetadata metadata)
     {
         super(metadata);
     }
 
     public String getNamespaceURI()
     {
-        URIType tt = (URIType) getProperty(NAMESPACE_URI);
+        final URIType tt = (URIType) getProperty(NAMESPACE_URI);
         return tt == null ? null : tt.getStringValue();
     }
 
     public String getPrefixValue()
     {
-        TextType tt = (TextType) getProperty(PREFIX);
+        final TextType tt = (TextType) getProperty(PREFIX);
         return tt == null ? null : tt.getStringValue();
     }
 

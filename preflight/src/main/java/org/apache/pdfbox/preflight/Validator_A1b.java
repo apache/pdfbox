@@ -56,7 +56,7 @@ import org.w3c.dom.Element;
 public class Validator_A1b
 {
 
-    public static void main(String[] args) 
+    public static void main(final String[] args)
             throws IOException, TransformerException, ParserConfigurationException
     {
         if (args.length == 0)
@@ -67,24 +67,24 @@ public class Validator_A1b
 
         // is output xml ?
         int posFile = 0;
-        boolean outputXml = "xml".equals(args[posFile]);
+        final boolean outputXml = "xml".equals(args[posFile]);
         posFile += outputXml?1:0;
         // list
-        boolean isGroup = "group".equals(args[posFile]);
+        final boolean isGroup = "group".equals(args[posFile]);
         posFile += isGroup?1:0;
         // list
-        boolean isBatch = "batch".equals(args[posFile]);
+        final boolean isBatch = "batch".equals(args[posFile]);
         posFile += isBatch?1:0;
 
         if (isGroup||isBatch)
         {
             // prepare the list
-            List<File> ftp = listFiles(args[posFile]);
+            final List<File> ftp = listFiles(args[posFile]);
             int status = 0;
             if (!outputXml)
             {
                 // simple list of files
-                for (File file2 : ftp)
+                for (final File file2 : ftp)
                 {
                     status |= runSimple(file2);
                 }
@@ -92,21 +92,21 @@ public class Validator_A1b
             }
             else
             {
-                @SuppressWarnings({"squid:S2755"}) // self-created XML
+                @SuppressWarnings({"squid:S2755"}) final // self-created XML
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-                XmlResultParser xrp = new XmlResultParser();
+                final XmlResultParser xrp = new XmlResultParser();
                 if (isGroup)
                 {
-                    @SuppressWarnings({"squid:S2755"}) // self-created XML
+                    @SuppressWarnings({"squid:S2755"}) final // self-created XML
                     Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-                    Element root = document.createElement("preflights");
+                    final Element root = document.createElement("preflights");
                     document.appendChild(root);
                     root.setAttribute("count", String.format("%d", ftp.size()));
-                    for (File file : ftp)
+                    for (final File file : ftp)
                     {
-                        Element result = xrp.validate(document, file);
+                        final Element result = xrp.validate(document, file);
                         root.appendChild(result);
                     }
                     transformer.transform(new DOMSource(document), 
@@ -115,10 +115,10 @@ public class Validator_A1b
                 else
                 {
                     // isBatch
-                    for (File file : ftp)
+                    for (final File file : ftp)
                     {
-                        Element result = xrp.validate(file);
-                        Document document = result.getOwnerDocument();
+                        final Element result = xrp.validate(file);
+                        final Document document = result.getOwnerDocument();
                         document.appendChild(result);
                         transformer.transform(new DOMSource(document), 
                                 new StreamResult(new File(file.getAbsolutePath()+".preflight.xml")));
@@ -136,11 +136,11 @@ public class Validator_A1b
             else
             {
                 // generate xml output
-                XmlResultParser xrp = new XmlResultParser();
-                Element result = xrp.validate(new File(args[posFile]));
-                Document document = result.getOwnerDocument();
+                final XmlResultParser xrp = new XmlResultParser();
+                final Element result = xrp.validate(new File(args[posFile]));
+                final Document document = result.getOwnerDocument();
                 document.appendChild(result);
-                @SuppressWarnings({"squid:S2755"}) // self-created XML
+                @SuppressWarnings({"squid:S2755"}) final // self-created XML
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
@@ -152,7 +152,7 @@ public class Validator_A1b
 
     private static void usage()
     {
-        String version = Version.getVersion();
+        final String version = Version.getVersion();
 
         System.out.println("Usage : java org.apache.pdfbox.preflight.Validator_A1b [xml] [<mode>] <file path>");
         System.out.println();
@@ -163,9 +163,9 @@ public class Validator_A1b
         System.out.println("Version : " + version);
     }
 
-    private static int runSimple(File file) throws IOException
+    private static int runSimple(final File file) throws IOException
     {
-        ValidationResult result = PreflightParser.validate(file);
+        final ValidationResult result = PreflightParser.validate(file);
 
         if (result.isValid())
         {
@@ -176,7 +176,7 @@ public class Validator_A1b
         else
         {
             System.out.println("The file " + file.getName() + " is not a valid PDF/A-1b file, error(s) :");
-            for (ValidationError error : result.getErrorsList())
+            for (final ValidationError error : result.getErrorsList())
             {
                 System.out.print(error.getErrorCode() + " : " + error.getDetails());
                 if (error.getPageNumber() != null)
@@ -195,18 +195,18 @@ public class Validator_A1b
     }
 
 
-    private static List<File> listFiles(String path) throws IOException
+    private static List<File> listFiles(final String path) throws IOException
     {
-        List<File> files = new ArrayList<>();
-        File f = new File(path);
+        final List<File> files = new ArrayList<>();
+        final File f = new File(path);
         if (f.isFile())
         {
-            FileReader fr = new FileReader(f);
+            final FileReader fr = new FileReader(f);
             try (BufferedReader bufferedReader = new BufferedReader(fr))
             {
                 while (bufferedReader.ready())
                 {
-                    File fn = new File(bufferedReader.readLine());
+                    final File fn = new File(bufferedReader.readLine());
                     if (fn.exists())
                     {
                         files.add(fn);
@@ -216,7 +216,7 @@ public class Validator_A1b
         }
         else
         {
-            File[] fileList = f.listFiles();
+            final File[] fileList = f.listFiles();
             if (fileList != null)
             {
                 files.addAll(Arrays.asList(fileList));

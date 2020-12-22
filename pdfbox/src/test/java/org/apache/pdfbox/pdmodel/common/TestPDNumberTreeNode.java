@@ -47,12 +47,12 @@ class TestPDNumberTreeNode
     {
         private final int value;
 
-        public PDTest(int value)
+        public PDTest(final int value)
         {
             this.value = value;
         }
         
-        public PDTest(COSInteger cosInt)
+        public PDTest(final COSInteger cosInt)
         {
             this.value = cosInt.intValue();
         }
@@ -73,7 +73,7 @@ class TestPDNumberTreeNode
         }
 
         @Override
-        public boolean equals( Object obj )
+        public boolean equals(final Object obj )
         {
             if ( this == obj)
             {
@@ -87,7 +87,7 @@ class TestPDNumberTreeNode
             {
                 return false;
             }
-            PDTest other = (PDTest) obj;
+            final PDTest other = (PDTest) obj;
             return value == other.value;
         }
     }

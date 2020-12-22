@@ -66,12 +66,12 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      */
     protected static final Set<String> ANGLED_STYLES = createAngledStyles();
 
-    public PDAbstractAppearanceHandler(PDAnnotation annotation)
+    public PDAbstractAppearanceHandler(final PDAnnotation annotation)
     {
         this(annotation, null);
     }
 
-    public PDAbstractAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDAbstractAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         this.annotation = annotation;
         this.document = document;
@@ -143,9 +143,9 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * @return the appearance entry representing the normal appearance.
      * @throws IOException
      */
-    PDAppearanceContentStream getNormalAppearanceAsContentStream(boolean compress) throws IOException
+    PDAppearanceContentStream getNormalAppearanceAsContentStream(final boolean compress) throws IOException
     {
-        PDAppearanceEntry appearanceEntry = getNormalAppearance();
+        final PDAppearanceEntry appearanceEntry = getNormalAppearance();
         return getAppearanceEntryAsContentStream(appearanceEntry, compress);
     }
     
@@ -160,7 +160,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      */
     PDAppearanceEntry getDownAppearance()
     {
-        PDAppearanceDictionary appearanceDictionary = getAppearance();
+        final PDAppearanceDictionary appearanceDictionary = getAppearance();
         PDAppearanceEntry downAppearanceEntry = appearanceDictionary.getDownAppearance();
 
         if (downAppearanceEntry.isSubDictionary())
@@ -183,7 +183,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      */
     PDAppearanceEntry getRolloverAppearance()
     {
-        PDAppearanceDictionary appearanceDictionary = getAppearance();
+        final PDAppearanceDictionary appearanceDictionary = getAppearance();
         PDAppearanceEntry rolloverAppearanceEntry = appearanceDictionary.getRolloverAppearance();
 
         if (rolloverAppearanceEntry.isSubDictionary())
@@ -204,7 +204,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * @param padding the padding to apply.
      * @return the padded rectangle.
      */
-    PDRectangle getPaddedRectangle(PDRectangle rectangle, float padding)
+    PDRectangle getPaddedRectangle(final PDRectangle rectangle, final float padding)
     {
         return new PDRectangle(rectangle.getLowerLeftX() + padding, rectangle.getLowerLeftY() + padding,
                 rectangle.getWidth() - 2 * padding, rectangle.getHeight() - 2 * padding);
@@ -221,7 +221,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * @param differences the differences to apply.
      * @return the padded rectangle.
      */
-    PDRectangle addRectDifferences(PDRectangle rectangle, float[] differences)
+    PDRectangle addRectDifferences(final PDRectangle rectangle, final float[] differences)
     {
         if (differences == null || differences.length != 4)
         {
@@ -245,7 +245,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * @param differences the differences to apply.
      * @return the padded rectangle.
      */
-    PDRectangle applyRectDifferences(PDRectangle rectangle, float[] differences)
+    PDRectangle applyRectDifferences(final PDRectangle rectangle, final float[] differences)
     {
         if (differences == null || differences.length != 4)
         {
@@ -257,11 +257,11 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
                 rectangle.getHeight() - differences[1] - differences[3]);
     }
 
-    void setOpacity(PDAppearanceContentStream contentStream, float opacity) throws IOException
+    void setOpacity(final PDAppearanceContentStream contentStream, final float opacity) throws IOException
     {
         if (opacity < 1)
         {
-            PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+            final PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
             gs.setStrokingAlphaConstant(opacity);
             gs.setNonStrokingAlphaConstant(opacity);
 
@@ -284,10 +284,10 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      *
      * @throws IOException
      */
-    void drawStyle(String style, final PDAppearanceContentStream cs, float x, float y,
-                   float width, boolean hasStroke, boolean hasBackground, boolean ending) throws IOException
+    void drawStyle(final String style, final PDAppearanceContentStream cs, final float x, final float y,
+                   final float width, final boolean hasStroke, final boolean hasBackground, final boolean ending) throws IOException
     {
-        int sign = ending ? -1 : 1;
+        final int sign = ending ? -1 : 1;
         switch (style)
         {
             case PDAnnotationLine.LE_OPEN_ARROW:
@@ -342,7 +342,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * 
      * @throws IOException If the content stream could not be written
      */
-    void drawArrow(PDAppearanceContentStream cs, float x, float y, float len) throws IOException
+    void drawArrow(final PDAppearanceContentStream cs, final float x, final float y, final float len) throws IOException
     {
         // strategy for arrows: angle 30°, arrow arm length = 9 * line width
         // cos(angle) = x position
@@ -363,7 +363,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * 
      * @throws IOException If the content stream could not be written
      */
-    void drawDiamond(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
+    void drawDiamond(final PDAppearanceContentStream cs, final float x, final float y, final float r) throws IOException
     {
         cs.moveTo(x - r, y);
         cs.lineTo(x, y + r);
@@ -382,10 +382,10 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * 
      * @throws IOException If the content stream could not be written.
      */
-    void drawCircle(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
+    void drawCircle(final PDAppearanceContentStream cs, final float x, final float y, final float r) throws IOException
     {
         // http://stackoverflow.com/a/2007782/535646
-        float magic = r * 0.551784f;
+        final float magic = r * 0.551784f;
         cs.moveTo(x, y + r);
         cs.curveTo(x + magic, y + r, x + r, y + magic, x + r, y);
         cs.curveTo(x + r, y - magic, x + magic, y - r, x, y - r);
@@ -405,10 +405,10 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      *
      * @throws IOException If the content stream could not be written.
      */
-    void drawCircle2(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
+    void drawCircle2(final PDAppearanceContentStream cs, final float x, final float y, final float r) throws IOException
     {
         // http://stackoverflow.com/a/2007782/535646
-        float magic = r * 0.551784f;
+        final float magic = r * 0.551784f;
         cs.moveTo(x, y + r);
         cs.curveTo(x - magic, y + r, x - r, y + magic, x - r, y);
         cs.curveTo(x - r, y - magic, x - magic, y - r, x, y - r);
@@ -419,7 +419,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
     private static Set<String> createShortStyles()
     {
-        Set<String> shortStyles = new HashSet<>();
+        final Set<String> shortStyles = new HashSet<>();
         shortStyles.add(PDAnnotationLine.LE_OPEN_ARROW);
         shortStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
         shortStyles.add(PDAnnotationLine.LE_SQUARE);
@@ -430,7 +430,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
     private static Set<String> createInteriorColorStyles()
     {
-        Set<String> interiorColorStyles = new HashSet<>();
+        final Set<String> interiorColorStyles = new HashSet<>();
         interiorColorStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
         interiorColorStyles.add(PDAnnotationLine.LE_CIRCLE);
         interiorColorStyles.add(PDAnnotationLine.LE_DIAMOND);
@@ -441,7 +441,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
     private static Set<String> createAngledStyles()
     {
-        Set<String> angledStyles = new HashSet<>();
+        final Set<String> angledStyles = new HashSet<>();
         angledStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
         angledStyles.add(PDAnnotationLine.LE_OPEN_ARROW);
         angledStyles.add(PDAnnotationLine.LE_R_CLOSED_ARROW);
@@ -462,7 +462,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      */
     private PDAppearanceEntry getNormalAppearance()
     {
-        PDAppearanceDictionary appearanceDictionary = getAppearance();
+        final PDAppearanceDictionary appearanceDictionary = getAppearance();
         PDAppearanceEntry normalAppearanceEntry = appearanceDictionary.getNormalAppearance();
 
         if (normalAppearanceEntry == null || normalAppearanceEntry.isSubDictionary())
@@ -476,9 +476,9 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     
     
     private PDAppearanceContentStream getAppearanceEntryAsContentStream(
-              PDAppearanceEntry appearanceEntry, boolean compress) throws IOException
+            final PDAppearanceEntry appearanceEntry, final boolean compress) throws IOException
     {
-        PDAppearanceStream appearanceStream = appearanceEntry.getAppearanceStream();
+        final PDAppearanceStream appearanceStream = appearanceEntry.getAppearanceStream();
         setTransformationMatrix(appearanceStream);
 
         // ensure there are resources
@@ -492,16 +492,16 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         return new PDAppearanceContentStream(appearanceStream, compress);
     }
     
-    private void setTransformationMatrix(PDAppearanceStream appearanceStream)
+    private void setTransformationMatrix(final PDAppearanceStream appearanceStream)
     {
-        PDRectangle bbox = getRectangle();
+        final PDRectangle bbox = getRectangle();
         appearanceStream.setBBox(bbox);
-        AffineTransform transform = AffineTransform.getTranslateInstance(-bbox.getLowerLeftX(),
+        final AffineTransform transform = AffineTransform.getTranslateInstance(-bbox.getLowerLeftX(),
                 -bbox.getLowerLeftY());
         appearanceStream.setMatrix(transform);
     }
 
-    PDRectangle handleBorderBox(PDAnnotationSquareCircle annotation, float lineWidth)
+    PDRectangle handleBorderBox(final PDAnnotationSquareCircle annotation, final float lineWidth)
     {
         // There are two options. The handling is not part of the PDF specification but
         // implementation specific to Adobe Reader
@@ -510,7 +510,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
         //   be set to be the line width and the /Rect is enlarged by the /RD amount
         PDRectangle borderBox;
-        float[] rectDifferences = annotation.getRectDifferences();
+        final float[] rectDifferences = annotation.getRectDifferences();
         if (rectDifferences.length == 0)
         {
             borderBox = getPaddedRectangle(getRectangle(), lineWidth / 2);
@@ -520,7 +520,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
             // when the normal appearance stream was generated BBox and Matrix have been set to the
             // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
             annotation.getNormalAppearanceStream().setBBox(getRectangle());
-            AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(), -getRectangle().getLowerLeftY());
+            final AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(), -getRectangle().getLowerLeftY());
             annotation.getNormalAppearanceStream().setMatrix(transform);
         }
         else

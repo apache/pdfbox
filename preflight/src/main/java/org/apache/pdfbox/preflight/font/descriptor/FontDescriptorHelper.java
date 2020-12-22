@@ -81,7 +81,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         MANDATORYFIELDS.add(COSName.TYPE.getName());
     }
 
-    public FontDescriptorHelper(PreflightContext context, PDFontLike font, T fontContainer)
+    public FontDescriptorHelper(final PreflightContext context, final PDFontLike font, final T fontContainer)
     {
         super();
         this.fContainer = fontContainer;
@@ -91,7 +91,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
 
     public void validate()
     {
-        PDFontDescriptor fd = this.font.getFontDescriptor();
+        final PDFontDescriptor fd = this.font.getFontDescriptor();
         boolean isStandard14 = false;
         if (this.font instanceof PDFont)
         {
@@ -109,7 +109,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
             }
             if (hasOnlyOneFontFile(fontDescriptor))
             {
-                PDStream fontFile = extractFontFile(fontDescriptor);
+                final PDStream fontFile = extractFontFile(fontDescriptor);
                 if (fontFile != null)
                 {
                     processFontFile(fontDescriptor, fontFile);
@@ -139,11 +139,11 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         }
     }
 
-    protected boolean checkMandatoryFields(COSDictionary fDescriptor)
+    protected boolean checkMandatoryFields(final COSDictionary fDescriptor)
     {
         boolean result = true;
-        StringBuilder missingFields = new StringBuilder();
-        for (String field : MANDATORYFIELDS)
+        final StringBuilder missingFields = new StringBuilder();
+        for (final String field : MANDATORYFIELDS)
         {
             if (!fDescriptor.containsKey(field))
             {
@@ -156,7 +156,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         }        
         if (fDescriptor.containsKey(COSName.TYPE))
         {
-            COSBase type = fDescriptor.getItem(COSName.TYPE);
+            final COSBase type = fDescriptor.getItem(COSName.TYPE);
             if (!COSName.FONT_DESC.equals(type))
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_DESCRIPTOR_INVALID,
@@ -183,19 +183,19 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
      * @param fontDescriptor
      * @return true if the FontDescriptor has only one FontFile entry.
      */
-    protected boolean hasOnlyOneFontFile(PDFontDescriptor fontDescriptor)
+    protected boolean hasOnlyOneFontFile(final PDFontDescriptor fontDescriptor)
     {
-        PDStream ff1 = fontDescriptor.getFontFile();
-        PDStream ff2 = fontDescriptor.getFontFile2();
-        PDStream ff3 = fontDescriptor.getFontFile3();
+        final PDStream ff1 = fontDescriptor.getFontFile();
+        final PDStream ff2 = fontDescriptor.getFontFile2();
+        final PDStream ff3 = fontDescriptor.getFontFile3();
         return (ff1 != null ^ ff2 != null ^ ff3 != null);
     }
 
-    protected boolean fontFileNotEmbedded(PDFontDescriptor fontDescriptor)
+    protected boolean fontFileNotEmbedded(final PDFontDescriptor fontDescriptor)
     {
-        PDStream ff1 = fontDescriptor.getFontFile();
-        PDStream ff2 = fontDescriptor.getFontFile2();
-        PDStream ff3 = fontDescriptor.getFontFile3();
+        final PDStream ff1 = fontDescriptor.getFontFile();
+        final PDStream ff2 = fontDescriptor.getFontFile2();
+        final PDStream ff3 = fontDescriptor.getFontFile3();
         return (ff1 == null && ff2 == null && ff3 == null);
     }
 
@@ -209,11 +209,11 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
      * @param fontFile
      *            The font file stream to check
      */
-    protected void checkFontFileMetaData(PDFontDescriptor fontDescriptor, PDStream fontFile)
+    protected void checkFontFileMetaData(final PDFontDescriptor fontDescriptor, final PDStream fontFile)
     {
         try
         {
-            PDMetadata metadata = fontFile.getMetadata();
+            final PDMetadata metadata = fontFile.getMetadata();
 
             if (metadata != null)
             {
@@ -225,22 +225,22 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
                     return;
                 }
 
-                byte[] mdAsBytes = getMetaDataStreamAsBytes(metadata);
+                final byte[] mdAsBytes = getMetaDataStreamAsBytes(metadata);
 
                 try
                 {
 
-                    DomXmpParser xmpBuilder = new DomXmpParser();
-                    XMPMetadata xmpMeta = xmpBuilder.parse(mdAsBytes);
+                    final DomXmpParser xmpBuilder = new DomXmpParser();
+                    final XMPMetadata xmpMeta = xmpBuilder.parse(mdAsBytes);
 
-                    FontMetaDataValidation fontMDval = new FontMetaDataValidation();
-                    List<ValidationError> ve = new ArrayList<>();
+                    final FontMetaDataValidation fontMDval = new FontMetaDataValidation();
+                    final List<ValidationError> ve = new ArrayList<>();
                     fontMDval.analyseFontName(xmpMeta, fontDescriptor, ve);
                     fontMDval.analyseRights(xmpMeta, fontDescriptor, ve);
                     this.fContainer.push(ve);
 
                 }
-                catch (XmpParsingException e)
+                catch (final XmpParsingException e)
                 {
                     if (e.getErrorType() == ErrorType.NoValueType)
                     {
@@ -258,20 +258,20 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
                 }
             }
         }
-        catch (IllegalStateException e)
+        catch (final IllegalStateException e)
         {
             this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_UNKNOWN,
                     this.font.getName() + ": The Metadata entry doesn't reference a stream object", e));
         }
     }
 
-    protected final byte[] getMetaDataStreamAsBytes(PDMetadata metadata)
+    protected final byte[] getMetaDataStreamAsBytes(final PDMetadata metadata)
     {
         try (InputStream metaDataContent = metadata.createInputStream())
         {
             return IOUtils.toByteArray(metaDataContent);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_STREAM,
                     this.font.getName() + ": Unable to read font metadata due to : " + e.getMessage(), e));
@@ -279,7 +279,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         }
     }
 
-    public static boolean isSubSet(String fontName)
+    public static boolean isSubSet(final String fontName)
     {
         return fontName != null && fontName.matches("^[A-Z]{6}\\+.*");
     }

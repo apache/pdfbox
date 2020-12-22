@@ -49,20 +49,20 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
      *
      * @param page PDF Page
      */
-    protected CustomGraphicsStreamEngine(PDPage page)
+    protected CustomGraphicsStreamEngine(final PDPage page)
     {
         super(page);
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        File file = new File("src/main/resources/org/apache/pdfbox/examples/rendering/",
+        final File file = new File("src/main/resources/org/apache/pdfbox/examples/rendering/",
                              "custom-render-demo.pdf");
 
         try (PDDocument doc = Loader.loadPDF(file))
         {
-            PDPage page = doc.getPage(0);
-            CustomGraphicsStreamEngine engine = new CustomGraphicsStreamEngine(page);
+            final PDPage page = doc.getPage(0);
+            final CustomGraphicsStreamEngine engine = new CustomGraphicsStreamEngine(page);
             engine.run();
         }
     }
@@ -76,14 +76,14 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     {
         processPage(getPage());
 
-        for (PDAnnotation annotation : getPage().getAnnotations())
+        for (final PDAnnotation annotation : getPage().getAnnotations())
         {
             showAnnotation(annotation);
         }
     }
     
     @Override
-    public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
+    public void appendRectangle(final Point2D p0, final Point2D p1, final Point2D p2, final Point2D p3) throws IOException
     {
         System.out.printf("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f%n",
                 p0.getX(), p0.getY(), p1.getX(), p1.getY(),
@@ -91,31 +91,31 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     }
 
     @Override
-    public void drawImage(PDImage pdImage) throws IOException
+    public void drawImage(final PDImage pdImage) throws IOException
     {
         System.out.println("drawImage");
     }
 
     @Override
-    public void clip(int windingRule) throws IOException
+    public void clip(final int windingRule) throws IOException
     {
         System.out.println("clip");
     }
 
     @Override
-    public void moveTo(float x, float y) throws IOException
+    public void moveTo(final float x, final float y) throws IOException
     {
         System.out.printf("moveTo %.2f %.2f%n", x, y);
     }
 
     @Override
-    public void lineTo(float x, float y) throws IOException
+    public void lineTo(final float x, final float y) throws IOException
     {
         System.out.printf("lineTo %.2f %.2f%n", x, y);
     }
 
     @Override
-    public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
+    public void curveTo(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3) throws IOException
     {
         System.out.printf("curveTo %.2f %.2f, %.2f %.2f, %.2f %.2f%n", x1, y1, x2, y2, x3, y3);
     }
@@ -146,19 +146,19 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     }
 
     @Override
-    public void fillPath(int windingRule) throws IOException
+    public void fillPath(final int windingRule) throws IOException
     {
         System.out.println("fillPath");
     }
 
     @Override
-    public void fillAndStrokePath(int windingRule) throws IOException
+    public void fillAndStrokePath(final int windingRule) throws IOException
     {
         System.out.println("fillAndStrokePath");
     }
 
     @Override
-    public void shadingFill(COSName shadingName) throws IOException
+    public void shadingFill(final COSName shadingName) throws IOException
     {
         System.out.println("shadingFill " + shadingName.toString());
     }
@@ -167,7 +167,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
      * Overridden from PDFStreamEngine.
      */
     @Override
-    public void showTextString(byte[] string) throws IOException
+    public void showTextString(final byte[] string) throws IOException
     {
         System.out.print("showTextString \"");
         super.showTextString(string);
@@ -178,7 +178,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
      * Overridden from PDFStreamEngine.
      */
     @Override
-    public void showTextStrings(COSArray array) throws IOException
+    public void showTextStrings(final COSArray array) throws IOException
     {
         System.out.print("showTextStrings \"");
         super.showTextStrings(array);
@@ -189,7 +189,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
      * Overridden from PDFStreamEngine.
      */
     @Override
-    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
+    protected void showGlyph(final Matrix textRenderingMatrix, final PDFont font, final int code, final Vector displacement)
             throws IOException
     {
         System.out.print("showGlyph " + code);

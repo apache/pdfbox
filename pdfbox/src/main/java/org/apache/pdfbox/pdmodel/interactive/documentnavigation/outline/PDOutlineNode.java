@@ -40,7 +40,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
     /**
      * @param dict The dictionary storage.
      */
-    public PDOutlineNode(COSDictionary dict)
+    public PDOutlineNode(final COSDictionary dict)
     {
         super(dict);
     }
@@ -50,10 +50,10 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      */
     PDOutlineNode getParent()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.PARENT);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.PARENT);
         if (base instanceof COSDictionary)
         {
-            COSDictionary parent = (COSDictionary) base;
+            final COSDictionary parent = (COSDictionary) base;
             if (COSName.OUTLINES.equals(parent.getCOSName(COSName.TYPE)))
             {
                 return new PDDocumentOutline(parent);
@@ -63,7 +63,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
         return null;
     }
 
-    void setParent(PDOutlineNode parent)
+    void setParent(final PDOutlineNode parent)
     {
         getCOSObject().setItem(COSName.PARENT, parent);
     }
@@ -75,7 +75,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      * @throws IllegalArgumentException if the given node is part of a list (i.e. if it has a previous or a next
      * sibling)
      */
-    public void addLast(PDOutlineItem newChild)
+    public void addLast(final PDOutlineItem newChild)
     {
         requireSingleNode(newChild);
         append(newChild);
@@ -89,7 +89,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      * @throws IllegalArgumentException if the given node is part of a list (i.e. if it has a previous or a next
      * sibling)
      */
-    public void addFirst(PDOutlineItem newChild)
+    public void addFirst(final PDOutlineItem newChild)
     {
         requireSingleNode(newChild);
         prepend(newChild);
@@ -101,7 +101,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      * @throws IllegalArgumentException if the given node is part of a list (i.e. if it has a previous or a next
      * sibling)
      */
-    void requireSingleNode(PDOutlineItem node)
+    void requireSingleNode(final PDOutlineItem node)
     {
         if (node.getNextSibling() != null || node.getPreviousSibling() != null)
         {
@@ -115,7 +115,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      * 
      * @param newChild
      */
-    private void append(PDOutlineItem newChild)
+    private void append(final PDOutlineItem newChild)
     {
         newChild.setParent(this);
         if (!hasChildren())
@@ -124,7 +124,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
         }
         else
         {
-            PDOutlineItem previousLastChild = getLastChild();
+            final PDOutlineItem previousLastChild = getLastChild();
             previousLastChild.setNextSibling(newChild);
             newChild.setPreviousSibling(previousLastChild);
         }
@@ -137,7 +137,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      * 
      * @param newChild
      */
-    private void prepend(PDOutlineItem newChild)
+    private void prepend(final PDOutlineItem newChild)
     {
         newChild.setParent(this);
         if (!hasChildren())
@@ -146,14 +146,14 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
         }
         else
         {
-            PDOutlineItem previousFirstChild = getFirstChild();
+            final PDOutlineItem previousFirstChild = getFirstChild();
             newChild.setNextSibling(previousFirstChild);
             previousFirstChild.setPreviousSibling(newChild);
         }
         setFirstChild(newChild);
     }
 
-    void updateParentOpenCountForAddedChild(PDOutlineItem newChild)
+    void updateParentOpenCountForAddedChild(final PDOutlineItem newChild)
     {
         int delta = 1;
         if (newChild.isNodeOpen())
@@ -171,9 +171,9 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
         return getFirstChild() != null;
     }
 
-    PDOutlineItem getOutlineItem(COSName name)
+    PDOutlineItem getOutlineItem(final COSName name)
     {
-        COSBase base = getCOSObject().getDictionaryObject(name);
+        final COSBase base = getCOSObject().getDictionaryObject(name);
         if (base instanceof COSDictionary)
         {
             return new PDOutlineItem((COSDictionary) base);
@@ -194,7 +194,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      *
      * @param outlineNode The new first child.
      */
-    void setFirstChild(PDOutlineNode outlineNode)
+    void setFirstChild(final PDOutlineNode outlineNode)
     {
         getCOSObject().setItem(COSName.FIRST, outlineNode);
     }
@@ -212,7 +212,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      *
      * @param outlineNode The new last child.
      */
-    void setLastChild(PDOutlineNode outlineNode)
+    void setLastChild(final PDOutlineNode outlineNode)
     {
         getCOSObject().setItem(COSName.LAST, outlineNode);
     }
@@ -234,7 +234,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      *
      * @param openCount The new open count.
      */
-    void setOpenCount(int openCount)
+    void setOpenCount(final int openCount)
     {
         getCOSObject().setInt(COSName.COUNT, openCount);
     }
@@ -266,7 +266,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
 
     private void switchNodeCount()
     {
-        int openCount = getOpenCount();
+        final int openCount = getOpenCount();
         setOpenCount(-openCount);
         updateParentOpenCount(-openCount);
     }
@@ -284,9 +284,9 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      *
      * @param delta The amount to update by.
      */
-    void updateParentOpenCount(int delta)
+    void updateParentOpenCount(final int delta)
     {
-        PDOutlineNode parent = getParent();
+        final PDOutlineNode parent = getParent();
         if (parent != null)
         {
             if (parent.isNodeOpen())

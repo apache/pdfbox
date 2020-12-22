@@ -50,7 +50,7 @@ public class PDAnnotationInk extends PDAnnotationMarkup
      *
      * @param dict The annotations dictionary.
      */
-    public PDAnnotationInk(COSDictionary dict)
+    public PDAnnotationInk(final COSDictionary dict)
     {
         super(dict);
     }
@@ -62,17 +62,17 @@ public class PDAnnotationInk extends PDAnnotationMarkup
      * series of alternating horizontal and vertical coordinates. If the parameter is null the entry
      * will be removed.
      */
-    public void setInkList(float[][] inkList)
+    public void setInkList(final float[][] inkList)
     {
         if (inkList == null)
         {
             getCOSObject().removeItem(COSName.INKLIST);
             return;
         }
-        COSArray array = new COSArray();
-        for (float[] path : inkList)
+        final COSArray array = new COSArray();
+        for (final float[] path : inkList)
         {
-            COSArray innerArray = new COSArray();
+            final COSArray innerArray = new COSArray();
             innerArray.setFloatArray(path);
             array.add(innerArray);
         }
@@ -87,14 +87,14 @@ public class PDAnnotationInk extends PDAnnotationMarkup
      */
     public float[][] getInkList()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.INKLIST);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.INKLIST);
         if (base instanceof COSArray)
         {
-            COSArray array = (COSArray) base;
-            float[][] inkList = new float[array.size()][];
+            final COSArray array = (COSArray) base;
+            final float[][] inkList = new float[array.size()][];
             for (int i = 0; i < array.size(); ++i)
             {
-                COSBase base2 = array.getObject(i);
+                final COSBase base2 = array.getObject(i);
                 if (base2 instanceof COSArray)
                 {
                     inkList[i] = ((COSArray) array.getObject(i)).toFloatArray();
@@ -114,7 +114,7 @@ public class PDAnnotationInk extends PDAnnotationMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -126,11 +126,11 @@ public class PDAnnotationInk extends PDAnnotationMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDInkAppearanceHandler appearanceHandler = new PDInkAppearanceHandler(this, document);
+            final PDInkAppearanceHandler appearanceHandler = new PDInkAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

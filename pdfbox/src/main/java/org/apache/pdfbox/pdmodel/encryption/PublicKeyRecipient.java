@@ -47,7 +47,7 @@ public class PublicKeyRecipient
      *
      * @param aX509 The X509 certificate
      */
-    public void setX509(X509Certificate aX509)
+    public void setX509(final X509Certificate aX509)
     {
         this.x509 = aX509;
     }
@@ -67,7 +67,7 @@ public class PublicKeyRecipient
      *
      * @param permissions The permission to set.
      */
-    public void setPermission(AccessPermission permissions)
+    public void setPermission(final AccessPermission permissions)
     {
         this.permission = permissions;
     }

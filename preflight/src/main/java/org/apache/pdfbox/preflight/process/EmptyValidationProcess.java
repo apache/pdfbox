@@ -33,7 +33,7 @@ public class EmptyValidationProcess implements ValidationProcess
 {
 
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
         // this class does nothing
     }

@@ -53,7 +53,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationLine(COSDictionary a)
+    public FDFAnnotationLine(final COSDictionary a)
     {
         super(a);
     }
@@ -65,89 +65,89 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationLine(Element element) throws IOException
+    public FDFAnnotationLine(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
 
-        String startCoords = element.getAttribute("start");
+        final String startCoords = element.getAttribute("start");
         if (startCoords == null || startCoords.isEmpty())
         {
             throw new IOException("Error: missing attribute 'start'");
         }
-        String endCoords = element.getAttribute("end");
+        final String endCoords = element.getAttribute("end");
         if (endCoords == null || endCoords.isEmpty())
         {
             throw new IOException("Error: missing attribute 'end'");
         }
-        String line = startCoords + "," + endCoords;
-        String[] lineValues = line.split(",");
+        final String line = startCoords + "," + endCoords;
+        final String[] lineValues = line.split(",");
         if (lineValues.length != 4)
         {
             throw new IOException("Error: wrong amount of line coordinates");
         }
-        float[] values = new float[4];
+        final float[] values = new float[4];
         for (int i = 0; i < 4; i++)
         {
             values[i] = Float.parseFloat(lineValues[i]);
         }
         setLine(values);
 
-        String leaderLine = element.getAttribute("leaderLength");
+        final String leaderLine = element.getAttribute("leaderLength");
         if (leaderLine != null && !leaderLine.isEmpty())
         {
             setLeaderLength(Float.parseFloat(leaderLine));
         }
 
-        String leaderLineExtension = element.getAttribute("leaderExtend");
+        final String leaderLineExtension = element.getAttribute("leaderExtend");
         if (leaderLineExtension != null && !leaderLineExtension.isEmpty())
         {
             setLeaderExtend(Float.parseFloat(leaderLineExtension));
         }
 
-        String leaderLineOffset = element.getAttribute("leaderOffset");
+        final String leaderLineOffset = element.getAttribute("leaderOffset");
         if (leaderLineOffset != null && !leaderLineOffset.isEmpty())
         {
             setLeaderOffset(Float.parseFloat(leaderLineOffset));
         }
 
-        String startStyle = element.getAttribute("head");
+        final String startStyle = element.getAttribute("head");
         if (startStyle != null && !startStyle.isEmpty())
         {
             setStartPointEndingStyle(startStyle);
         }
-        String endStyle = element.getAttribute("tail");
+        final String endStyle = element.getAttribute("tail");
         if (endStyle != null && !endStyle.isEmpty())
         {
             setEndPointEndingStyle(endStyle);
         }
 
-        String color = element.getAttribute("interior-color");
+        final String color = element.getAttribute("interior-color");
         if (color != null && color.length() == 7 && color.charAt(0) == '#')
         {
-            int colorValue = Integer.parseInt(color.substring(1, 7), 16);
+            final int colorValue = Integer.parseInt(color.substring(1, 7), 16);
             setInteriorColor(new Color(colorValue));
         }
 
-        String caption = element.getAttribute("caption");
+        final String caption = element.getAttribute("caption");
         if (caption != null && !caption.isEmpty())
         {
             setCaption("yes".equals(caption));
         }
 
-        String captionH = element.getAttribute("caption-offset-h");
+        final String captionH = element.getAttribute("caption-offset-h");
         if (captionH != null && !captionH.isEmpty())
         {
             setCaptionHorizontalOffset(Float.parseFloat(captionH));
         }
 
-        String captionV = element.getAttribute("caption-offset-v");
+        final String captionV = element.getAttribute("caption-offset-v");
         if (captionV != null && !captionV.isEmpty())
         {
             setCaptionVerticalOffset(Float.parseFloat(captionV));
         }
 
-        String captionStyle = element.getAttribute("caption-style");
+        final String captionStyle = element.getAttribute("caption-style");
         if (captionStyle != null && !captionStyle.isEmpty())
         {
             setCaptionStyle(captionStyle);
@@ -159,9 +159,9 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param line array of 4 floats [x1, y1, x2, y2] line start and end points in default user space.
      */
-    public final void setLine(float[] line)
+    public final void setLine(final float[] line)
     {
-        COSArray newLine = new COSArray();
+        final COSArray newLine = new COSArray();
         newLine.setFloatArray(line);
         annot.setItem(COSName.L, newLine);
     }
@@ -173,7 +173,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      */
     public float[] getLine()
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.L);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.L);
         if (array != null)
         {
             return array.toFloatArray();
@@ -189,9 +189,9 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param style The new style.
      */
-    public final void setStartPointEndingStyle(String style)
+    public final void setStartPointEndingStyle(final String style)
     {
-        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
+        final String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
         if (array == null)
         {
@@ -214,7 +214,7 @@ public class FDFAnnotationLine extends FDFAnnotation
     public String getStartPointEndingStyle()
     {
         String retval = PDAnnotationLine.LE_NONE;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
         if (array != null)
         {
             retval = array.getName(0);
@@ -228,9 +228,9 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param style The new style.
      */
-    public final void setEndPointEndingStyle(String style)
+    public final void setEndPointEndingStyle(final String style)
     {
-        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
+        final String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
         if (array == null)
         {
@@ -253,7 +253,7 @@ public class FDFAnnotationLine extends FDFAnnotation
     public String getEndPointEndingStyle()
     {
         String retval = PDAnnotationLine.LE_NONE;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
         if (array != null)
         {
             retval = array.getName(1);
@@ -267,12 +267,12 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param color The interior color of the line endings.
      */
-    public final void setInteriorColor(Color color)
+    public final void setInteriorColor(final Color color)
     {
         COSArray array = null;
         if (color != null)
         {
-            float[] colors = color.getRGBColorComponents(null);
+            final float[] colors = color.getRGBColorComponents(null);
             array = new COSArray();
             array.setFloatArray(colors);
         }
@@ -287,10 +287,10 @@ public class FDFAnnotationLine extends FDFAnnotation
     public Color getInteriorColor()
     {
         Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
         if (array != null)
         {
-            float[] rgb = array.toFloatArray();
+            final float[] rgb = array.toFloatArray();
             if (rgb.length >= 3)
             {
                 retval = new Color(rgb[0], rgb[1], rgb[2]);
@@ -304,7 +304,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param cap Boolean value.
      */
-    public final void setCaption(boolean cap)
+    public final void setCaption(final boolean cap)
     {
         annot.setBoolean(COSName.CAP, cap);
     }
@@ -334,7 +334,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param leaderLength length of the leader line
      */
-    public final void setLeaderLength(float leaderLength)
+    public final void setLeaderLength(final float leaderLength)
     {
         annot.setFloat(COSName.LL, leaderLength);
     }
@@ -354,7 +354,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param leaderExtend length of the leader line extensions
      */
-    public final void setLeaderExtend(float leaderExtend)
+    public final void setLeaderExtend(final float leaderExtend)
     {
         annot.setFloat(COSName.LLE, leaderExtend);
     }
@@ -374,7 +374,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param leaderOffset length of the leader line offset
      */
-    public final void setLeaderOffset(float leaderOffset)
+    public final void setLeaderOffset(final float leaderOffset)
     {
         annot.setFloat(COSName.LLO, leaderOffset);
     }
@@ -394,7 +394,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param captionStyle caption positioning
      */
-    public final void setCaptionStyle(String captionStyle)
+    public final void setCaptionStyle(final String captionStyle)
     {
         annot.setString(COSName.CP, captionStyle);
     }
@@ -404,7 +404,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param offset the horizontal offset of the caption
      */
-    public final void setCaptionHorizontalOffset(float offset)
+    public final void setCaptionHorizontalOffset(final float offset)
     {
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
         if (array == null)
@@ -427,7 +427,7 @@ public class FDFAnnotationLine extends FDFAnnotation
     public float getCaptionHorizontalOffset()
     {
         float retval = 0.f;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
         if (array != null)
         {
             retval = array.toFloatArray()[0];
@@ -441,7 +441,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param offset vertical offset of the caption
      */
-    public final void setCaptionVerticalOffset(float offset)
+    public final void setCaptionVerticalOffset(final float offset)
     {
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
         if (array == null)
@@ -464,7 +464,7 @@ public class FDFAnnotationLine extends FDFAnnotation
     public float getCaptionVerticalOffset()
     {
         float retval = 0.f;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
         if (array != null)
         {
             retval = array.toFloatArray()[1];

@@ -30,7 +30,7 @@ import org.apache.pdfbox.cos.COSName;
 public class PDPageLabelRange implements COSObjectable
 {
 
-    private COSDictionary root;
+    private final COSDictionary root;
 
     // Page label dictionary (PDF32000-1:2008 Section 12.4.2, Table 159)
     private static final COSName KEY_START = COSName.ST;
@@ -80,7 +80,7 @@ public class PDPageLabelRange implements COSObjectable
      * @param dict
      *            the base dictionary for the new object.
      */
-    public PDPageLabelRange(COSDictionary dict)
+    public PDPageLabelRange(final COSDictionary dict)
     {
         root = dict;
     }
@@ -113,7 +113,7 @@ public class PDPageLabelRange implements COSObjectable
      *            one of the STYLE_* constants or {@code null} if no page
      *            numbering is desired.
      */
-    public void setStyle(String style)
+    public void setStyle(final String style)
     {
         if (style != null)
         {
@@ -143,7 +143,7 @@ public class PDPageLabelRange implements COSObjectable
      * @throws IllegalArgumentException
      *             if {@code start} is not a positive integer
      */
-    public void setStart(int start)
+    public void setStart(final int start)
     {
         if (start <= 0)
         {
@@ -171,7 +171,7 @@ public class PDPageLabelRange implements COSObjectable
      *            the page label prefix for this page range, or {@code null} to
      *            unset the prefix.
      */
-    public void setPrefix(String prefix)
+    public void setPrefix(final String prefix)
     {
         if (prefix != null)
         {

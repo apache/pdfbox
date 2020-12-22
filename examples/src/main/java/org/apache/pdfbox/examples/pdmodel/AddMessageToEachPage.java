@@ -55,24 +55,24 @@ public class AddMessageToEachPage
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void doIt( String file, String message, String  outfile ) throws IOException
+    public void doIt(final String file, final String message, final String  outfile ) throws IOException
     {
         try (PDDocument doc = Loader.loadPDF(new File(file)))
         {
-            PDFont font = PDType1Font.HELVETICA_BOLD;
-            float fontSize = 36.0f;
+            final PDFont font = PDType1Font.HELVETICA_BOLD;
+            final float fontSize = 36.0f;
 
-            for( PDPage page : doc.getPages() )
+            for( final PDPage page : doc.getPages() )
             {
-                PDRectangle pageSize = page.getMediaBox();
-                float stringWidth = font.getStringWidth( message )*fontSize/1000f;
+                final PDRectangle pageSize = page.getMediaBox();
+                final float stringWidth = font.getStringWidth( message )*fontSize/1000f;
                 // calculate to center of the page
-                int rotation = page.getRotation();
-                boolean rotate = rotation == 90 || rotation == 270;
-                float pageWidth = rotate ? pageSize.getHeight() : pageSize.getWidth();
-                float pageHeight = rotate ? pageSize.getWidth() : pageSize.getHeight();
-                float centerX = rotate ? pageHeight/2f : (pageWidth - stringWidth)/2f;
-                float centerY = rotate ? (pageWidth - stringWidth)/2f : pageHeight/2f;
+                final int rotation = page.getRotation();
+                final boolean rotate = rotation == 90 || rotation == 270;
+                final float pageWidth = rotate ? pageSize.getHeight() : pageSize.getWidth();
+                final float pageHeight = rotate ? pageSize.getWidth() : pageSize.getHeight();
+                final float centerX = rotate ? pageHeight/2f : (pageWidth - stringWidth)/2f;
+                final float centerY = rotate ? (pageWidth - stringWidth)/2f : pageHeight/2f;
 
                 // append the content to the existing stream
                 try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.APPEND, true, true))
@@ -107,9 +107,9 @@ public class AddMessageToEachPage
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        AddMessageToEachPage app = new AddMessageToEachPage();
+        final AddMessageToEachPage app = new AddMessageToEachPage();
         if( args.length != 3 )
         {
             app.usage();

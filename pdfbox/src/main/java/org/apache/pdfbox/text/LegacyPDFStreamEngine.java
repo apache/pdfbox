@@ -114,7 +114,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         addOperator(new ShowTextLineAndSpace());
 
         // load additional glyph list for Unicode mapping
-        String path = "/org/apache/pdfbox/resources/glyphlist/additional.txt";
+        final String path = "/org/apache/pdfbox/resources/glyphlist/additional.txt";
         //no need to use a BufferedInputSteam here, as GlyphList uses a BufferedReader
         try (InputStream input = GlyphList.class.getResourceAsStream(path))
         {
@@ -129,7 +129,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
      * @throws java.io.IOException if there is an error accessing the stream.
      */
     @Override
-    public void processPage(PDPage page) throws IOException
+    public void processPage(final PDPage page) throws IOException
     {
         this.pageRotation = page.getRotation();
         this.pageSize = page.getCropBox();
@@ -151,7 +151,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
      * written by Ben Litchfield for PDFStreamEngine.
      */
     @Override
-    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
+    protected void showGlyph(final Matrix textRenderingMatrix, final PDFont font, final int code, final Vector displacement)
             throws IOException
     {
         //
@@ -161,11 +161,11 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         //  THIS CODE IS DELIBERATELY INCORRECT
         //
 
-        PDGraphicsState state = getGraphicsState();
-        Matrix ctm = state.getCurrentTransformationMatrix();
-        float fontSize = state.getTextState().getFontSize();
-        float horizontalScaling = state.getTextState().getHorizontalScaling() / 100f;
-        Matrix textMatrix = getTextMatrix();
+        final PDGraphicsState state = getGraphicsState();
+        final Matrix ctm = state.getCurrentTransformationMatrix();
+        final float fontSize = state.getTextState().getFontSize();
+        final float horizontalScaling = state.getTextState().getHorizontalScaling() / 100f;
+        final Matrix textMatrix = getTextMatrix();
 
         float displacementX = displacement.getX();
         // the sorting algorithm is based on the width of the character. As the displacement
@@ -182,7 +182,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
             }
             else if (font instanceof PDType0Font)
             {
-                PDCIDFont cidFont = ((PDType0Font)font).getDescendantFont();
+                final PDCIDFont cidFont = ((PDType0Font)font).getDescendantFont();
                 if (cidFont instanceof PDCIDFontType2)
                 {
                     ttf = ((PDCIDFontType2)cidFont).getTrueTypeFont();
@@ -203,26 +203,26 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         
         // (modified) combined displacement, this is calculated *without* taking the character
         // spacing and word spacing into account, due to legacy code in TextStripper
-        float tx = displacementX * fontSize * horizontalScaling;
-        float ty = displacement.getY() * fontSize;
+        final float tx = displacementX * fontSize * horizontalScaling;
+        final float ty = displacement.getY() * fontSize;
 
         // (modified) combined displacement matrix
-        Matrix td = Matrix.getTranslateInstance(tx, ty);
+        final Matrix td = Matrix.getTranslateInstance(tx, ty);
 
         // (modified) text rendering matrix
-        Matrix nextTextRenderingMatrix = td.multiply(textMatrix).multiply(ctm); // text space -> device space
+        final Matrix nextTextRenderingMatrix = td.multiply(textMatrix).multiply(ctm); // text space -> device space
         float nextX = nextTextRenderingMatrix.getTranslateX();
         float nextY = nextTextRenderingMatrix.getTranslateY();
 
         // (modified) width and height calculations
-        float dxDisplay = nextX - textRenderingMatrix.getTranslateX();
+        final float dxDisplay = nextX - textRenderingMatrix.getTranslateX();
         Float fontHeight = fontHeightMap.get(font.getCOSObject());
         if (fontHeight == null)
         {
             fontHeight = computeFontHeight(font);
             fontHeightMap.put(font.getCOSObject(), fontHeight);
         }
-        float dyDisplay = fontHeight * textRenderingMatrix.getScalingFactorY();
+        final float dyDisplay = fontHeight * textRenderingMatrix.getScalingFactorY();
 
         //
         // start of the original method
@@ -246,7 +246,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
             // to avoid crash as described in PDFBOX-614, see what the space displacement should be
             spaceWidthText = font.getSpaceWidth() * glyphSpaceToTextSpaceFactor;
         }
-        catch (Exception exception)
+        catch (final Exception exception)
         {
             LOG.warn(exception, exception);
         }
@@ -263,7 +263,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         }
 
         // the space width has to be transformed into display units
-        float spaceWidthDisplay = spaceWidthText * textRenderingMatrix.getScalingFactorX();
+        final float spaceWidthDisplay = spaceWidthText * textRenderingMatrix.getScalingFactorX();
 
         // use our additional glyph list for Unicode mapping
         String unicode = font.toUnicode(code, glyphList);
@@ -275,7 +275,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         {
             if (font instanceof PDSimpleFont)
             {
-                char c = (char) code;
+                final char c = (char) code;
                 unicode = new String(new char[] { c });
             }
             else
@@ -287,7 +287,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         }
 
         // adjust for cropbox if needed
-        Matrix translatedTextRenderingMatrix;
+        final Matrix translatedTextRenderingMatrix;
         if (translateMatrix == null)
         {
             translatedTextRenderingMatrix = textRenderingMatrix;
@@ -314,9 +314,9 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
      * 
      * @throws IOException if there is an error while getting the font bounding box.
      */
-    protected float computeFontHeight(PDFont font) throws IOException
+    protected float computeFontHeight(final PDFont font) throws IOException
     {
-        BoundingBox bbox = font.getBoundingBox();
+        final BoundingBox bbox = font.getBoundingBox();
         if (bbox.getLowerLeftY() < Short.MIN_VALUE)
         {
             // PDFBOX-2158 and PDFBOX-3130
@@ -327,10 +327,10 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         float glyphHeight = bbox.getHeight() / 2;
 
         // sometimes the bbox has very high values, but CapHeight is OK
-        PDFontDescriptor fontDescriptor = font.getFontDescriptor();
+        final PDFontDescriptor fontDescriptor = font.getFontDescriptor();
         if (fontDescriptor != null)
         {
-            float capHeight = fontDescriptor.getCapHeight();
+            final float capHeight = fontDescriptor.getCapHeight();
             if (Float.compare(capHeight, 0) != 0 &&
                     (capHeight < glyphHeight || Float.compare(glyphHeight, 0) == 0))
             {
@@ -338,8 +338,8 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
             }
             // PDFBOX-3464, PDFBOX-4480, PDFBOX-4553:
             // sometimes even CapHeight has very high value, but Ascent and Descent are ok
-            float ascent = fontDescriptor.getAscent();
-            float descent = fontDescriptor.getDescent();
+            final float ascent = fontDescriptor.getAscent();
+            final float descent = fontDescriptor.getDescent();
             if (capHeight > ascent && ascent > 0 && descent < 0 &&
                     ((ascent - descent) / 2 < glyphHeight || Float.compare(glyphHeight, 0) == 0))
             {
@@ -348,7 +348,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         }
 
         // transformPoint from glyph space -> text space
-        float height;
+        final float height;
         if (font instanceof PDType3Font)
         {
             height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
@@ -367,7 +367,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
      *
      * @param text The text to be processed.
      */
-    protected void processTextPosition(TextPosition text)
+    protected void processTextPosition(final TextPosition text)
     {
         // subclasses can override to provide specific functionality
     }

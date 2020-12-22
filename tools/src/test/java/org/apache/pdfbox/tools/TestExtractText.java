@@ -38,8 +38,8 @@ class TestExtractText
     @Test
     void testEmbeddedPDFs() throws Exception 
     {
-        ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
-        PrintStream stdout = System.out;
+        final ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
+        final PrintStream stdout = System.out;
         System.setOut(new PrintStream(outBytes));
         try 
         {
@@ -52,7 +52,7 @@ class TestExtractText
             System.setOut(stdout);
         }
 
-        String result = outBytes.toString("UTF-8");
+        final String result = outBytes.toString("UTF-8");
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
     }

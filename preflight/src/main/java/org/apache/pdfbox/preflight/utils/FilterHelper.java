@@ -82,9 +82,9 @@ public final class FilterHelper
      * @param filter
      *            the filter to check
      */
-    public static void isAuthorizedFilter(PreflightContext context, String filter)
+    public static void isAuthorizedFilter(final PreflightContext context, final String filter)
     {
-        PreflightDocument preflightDocument = context.getDocument();
+        final PreflightDocument preflightDocument = context.getDocument();
         switch (preflightDocument.getSpecification())
         {
         case PDF_A1A:
@@ -106,7 +106,7 @@ public final class FilterHelper
      * @param context
      * @param filter
      */
-    public static void isAuthorizedFilterInPDFA(PreflightContext context, String filter)
+    public static void isAuthorizedFilterInPDFA(final PreflightContext context, final String filter)
     {
         if (filter != null)
         {

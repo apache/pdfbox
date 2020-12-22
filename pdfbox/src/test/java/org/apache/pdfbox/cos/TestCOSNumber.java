@@ -79,7 +79,7 @@ abstract class TestCOSNumber extends TestCOSBase
                     COSNumber.get(null);
             });
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             fail("Failed to convert a number " + e.getMessage());
         }
@@ -105,7 +105,7 @@ abstract class TestCOSNumber extends TestCOSBase
             COSNumber.get("18446744073307F448448");
             fail("Was expecting an IOException");
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
         }
     }

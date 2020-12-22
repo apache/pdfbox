@@ -28,7 +28,7 @@ class Vertex
     final Point2D point;
     final float[] color;
 
-    Vertex(Point2D p, float[] c)
+    Vertex(final Point2D p, final float[] c)
     {
         point = p;
         color = c.clone();
@@ -37,8 +37,8 @@ class Vertex
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
-        for (float f : color)
+        final StringBuilder sb = new StringBuilder();
+        for (final float f : color)
         {
             if (sb.length() > 0)
             {

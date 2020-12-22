@@ -50,10 +50,10 @@ public class UniquePropertiesValidation
      * @return List of validation errors
      * @throws ValidationException
      */
-    public List<ValidationResult.ValidationError> validatePropertiesUniqueness(PDDocument document, XMPMetadata metadata)
+    public List<ValidationResult.ValidationError> validatePropertiesUniqueness(final PDDocument document, final XMPMetadata metadata)
             throws ValidationException
     {
-        List<ValidationResult.ValidationError> ve = new ArrayList<>();
+        final List<ValidationResult.ValidationError> ve = new ArrayList<>();
 
         if (document == null)
         {
@@ -75,8 +75,8 @@ public class UniquePropertiesValidation
         return ve;
     }
 
-    private static void analyzePropertyUniqueness(XMPSchema schema, String propertyName,
-            List<ValidationResult.ValidationError> ve)
+    private static void analyzePropertyUniqueness(final XMPSchema schema, final String propertyName,
+                                                  final List<ValidationResult.ValidationError> ve)
     {
         if (schema == null)
         {

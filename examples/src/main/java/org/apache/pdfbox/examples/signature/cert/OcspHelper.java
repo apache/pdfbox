@@ -99,8 +99,8 @@ public class OcspHelper
      * the rest are considered to be intermediate CA certificates.
      * @param ocspUrl where to fetch for OCSP
      */
-    public OcspHelper(X509Certificate checkCertificate, Date signDate, X509Certificate issuerCertificate,
-            Set<X509Certificate> additionalCerts, String ocspUrl)
+    public OcspHelper(final X509Certificate checkCertificate, final Date signDate, final X509Certificate issuerCertificate,
+                      final Set<X509Certificate> additionalCerts, final String ocspUrl)
     {
         this.certificateToCheck = checkCertificate;
         this.signDate = signDate;
@@ -131,7 +131,7 @@ public class OcspHelper
      */
     public OCSPResp getResponseOcsp() throws IOException, OCSPException, RevokedCertificateException
     {
-        OCSPResp ocspResponse = performRequest();
+        final OCSPResp ocspResponse = performRequest();
         verifyOcspResponse(ocspResponse);
         return ocspResponse;
     }
@@ -155,15 +155,15 @@ public class OcspHelper
      * @throws RevokedCertificateException
      * @throws IOException if the default security provider can't be instantiated
      */
-    private void verifyOcspResponse(OCSPResp ocspResponse)
+    private void verifyOcspResponse(final OCSPResp ocspResponse)
             throws OCSPException, RevokedCertificateException, IOException
     {
         verifyRespStatus(ocspResponse);
 
-        BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
+        final BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
         if (basicResponse != null)
         {
-            ResponderID responderID = basicResponse.getResponderId().toASN1Primitive();
+            final ResponderID responderID = basicResponse.getResponderId().toASN1Primitive();
             // https://tools.ietf.org/html/rfc6960#section-4.2.2.3
             // The basic response type contains:
             // (...)
@@ -173,14 +173,14 @@ public class OcspHelper
             // The responder MAY include certificates in the certs field of
             // BasicOCSPResponse that help the OCSP client verify the responder's
             // signature.
-            X500Name name = responderID.getName();
+            final X500Name name = responderID.getName();
             if (name != null)
             {
                 findResponderCertificateByName(basicResponse, name);
             }
             else
             {
-                byte[] keyHash = responderID.getKeyHash();
+                final byte[] keyHash = responderID.getKeyHash();
                 if (keyHash != null)
                 {
                     findResponderCertificateByKeyHash(basicResponse, keyHash);
@@ -200,24 +200,24 @@ public class OcspHelper
             {
                 SigUtils.checkResponderCertificateUsage(ocspResponderCertificate);
             }
-            catch (CertificateParsingException ex)
+            catch (final CertificateParsingException ex)
             {
                 // unlikely to happen because the certificate existed as an object
                 LOG.error(ex, ex);
             }
             checkOcspSignature(ocspResponderCertificate, basicResponse);
 
-            boolean nonceChecked = checkNonce(basicResponse);
+            final boolean nonceChecked = checkNonce(basicResponse);
 
-            SingleResp[] responses = basicResponse.getResponses();
+            final SingleResp[] responses = basicResponse.getResponses();
             if (responses.length != 1)
             {
                 throw new OCSPException(
                         "OCSP: Received " + responses.length + " responses instead of 1!");
             }
 
-            SingleResp resp = responses[0];
-            Object status = resp.getCertStatus();
+            final SingleResp resp = responses[0];
+            final Object status = resp.getCertStatus();
 
             if (!nonceChecked)
             {
@@ -228,7 +228,7 @@ public class OcspHelper
 
             if (status instanceof RevokedStatus)
             {
-                RevokedStatus revokedStatus = (RevokedStatus) status;
+                final RevokedStatus revokedStatus = (RevokedStatus) status;
                 if (revokedStatus.getRevocationTime().compareTo(signDate) <= 0)
                 {
                     throw new RevokedCertificateException(
@@ -246,7 +246,7 @@ public class OcspHelper
         }
     }
 
-    private byte[] getKeyHashFromCertHolder(X509CertificateHolder certHolder)
+    private byte[] getKeyHashFromCertHolder(final X509CertificateHolder certHolder)
     {
         // https://tools.ietf.org/html/rfc2560#section-4.2.1
         // KeyHash ::= OCTET STRING -- SHA-1 hash of responder's public key
@@ -257,12 +257,12 @@ public class OcspHelper
 
         // code below inspired by org.bouncycastle.cert.ocsp.CertificateID.createCertID()
         // tested with SO52757037-Signed3-OCSP-with-KeyHash.pdf
-        SubjectPublicKeyInfo info = certHolder.getSubjectPublicKeyInfo();
+        final SubjectPublicKeyInfo info = certHolder.getSubjectPublicKeyInfo();
         try
         {
             return MessageDigest.getInstance("SHA-1").digest(info.getPublicKeyData().getBytes());
         }
-        catch (NoSuchAlgorithmException ex)
+        catch (final NoSuchAlgorithmException ex)
         {
             // should not happen
             LOG.error("SHA-1 Algorithm not found", ex);
@@ -270,13 +270,13 @@ public class OcspHelper
         }
     }
 
-    private void findResponderCertificateByKeyHash(BasicOCSPResp basicResponse, byte[] keyHash)
+    private void findResponderCertificateByKeyHash(final BasicOCSPResp basicResponse, final byte[] keyHash)
             throws IOException
     {
-        X509CertificateHolder[] certHolders = basicResponse.getCerts();
-        for (X509CertificateHolder certHolder : certHolders)
+        final X509CertificateHolder[] certHolders = basicResponse.getCerts();
+        for (final X509CertificateHolder certHolder : certHolders)
         {
-            byte[] digest = getKeyHashFromCertHolder(certHolder);
+            final byte[] digest = getKeyHashFromCertHolder(certHolder);
             if (Arrays.equals(keyHash, digest))
             {
                 try
@@ -284,7 +284,7 @@ public class OcspHelper
                     ocspResponderCertificate = certificateConverter.getCertificate(certHolder);
                     return;
                 }
-                catch (CertificateException ex)
+                catch (final CertificateException ex)
                 {
                     // unlikely to happen because the certificate existed as an object
                     LOG.error(ex, ex);
@@ -298,18 +298,18 @@ public class OcspHelper
         // the responder delivered a different (newer, more secure) certificate
         // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
         // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
-        for (X509Certificate cert : additionalCerts)
+        for (final X509Certificate cert : additionalCerts)
         {
             try
             {
-                byte[] digest = getKeyHashFromCertHolder(new X509CertificateHolder(cert.getEncoded()));
+                final byte[] digest = getKeyHashFromCertHolder(new X509CertificateHolder(cert.getEncoded()));
                 if (Arrays.equals(keyHash, digest))
                 {
                     ocspResponderCertificate = cert;
                     return;
                 }
             }
-            catch (CertificateEncodingException ex)
+            catch (final CertificateEncodingException ex)
             {
                 // unlikely to happen because the certificate existed as an object
                 LOG.error(ex, ex);
@@ -317,10 +317,10 @@ public class OcspHelper
         }
     }
 
-    private void findResponderCertificateByName(BasicOCSPResp basicResponse, X500Name name)
+    private void findResponderCertificateByName(final BasicOCSPResp basicResponse, final X500Name name)
     {
-        X509CertificateHolder[] certHolders = basicResponse.getCerts();
-        for (X509CertificateHolder certHolder : certHolders)
+        final X509CertificateHolder[] certHolders = basicResponse.getCerts();
+        for (final X509CertificateHolder certHolder : certHolders)
         {
             if (name.equals(certHolder.getSubject()))
             {
@@ -329,7 +329,7 @@ public class OcspHelper
                     ocspResponderCertificate = certificateConverter.getCertificate(certHolder);
                     return;
                 }
-                catch (CertificateException ex)
+                catch (final CertificateException ex)
                 {
                     // unlikely to happen because the certificate existed as an object
                     LOG.error(ex, ex);
@@ -342,9 +342,9 @@ public class OcspHelper
         // the responder delivered a different (newer, more secure) certificate
         // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
         // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
-        for (X509Certificate cert : additionalCerts)
+        for (final X509Certificate cert : additionalCerts)
         {
-            X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
+            final X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
             if (certSubjectName.equals(name))
             {
                 ocspResponderCertificate = cert;
@@ -353,7 +353,7 @@ public class OcspHelper
         }
     }
 
-    private void checkOcspResponseFresh(SingleResp resp) throws OCSPException
+    private void checkOcspResponseFresh(final SingleResp resp) throws OCSPException
     {
         // https://tools.ietf.org/html/rfc5019
         // Clients MUST check for the existence of the nextUpdate field and MUST
@@ -361,14 +361,14 @@ public class OcspHelper
         // Section 2.2.4, falls between the thisUpdate and nextUpdate times.  If
         // the nextUpdate field is absent, the client MUST reject the response.
 
-        Date curDate = Calendar.getInstance().getTime();
+        final Date curDate = Calendar.getInstance().getTime();
 
-        Date thisUpdate = resp.getThisUpdate();
+        final Date thisUpdate = resp.getThisUpdate();
         if (thisUpdate == null)
         {
             throw new OCSPException("OCSP: thisUpdate field is missing in response (RFC 5019 2.2.4.)");
         }
-        Date nextUpdate = resp.getNextUpdate();
+        final Date nextUpdate = resp.getNextUpdate();
         if (nextUpdate == null)
         {
             throw new OCSPException("OCSP: nextUpdate field is missing in response (RFC 5019 2.2.4.)");
@@ -394,12 +394,12 @@ public class OcspHelper
      * @throws OCSPException when the signature is invalid or could not be checked
      * @throws IOException if the default security provider can't be instantiated
      */
-    private void checkOcspSignature(X509Certificate certificate, BasicOCSPResp basicResponse)
+    private void checkOcspSignature(final X509Certificate certificate, final BasicOCSPResp basicResponse)
             throws OCSPException, IOException
     {
         try
         {
-            ContentVerifierProvider verifier = new JcaContentVerifierProviderBuilder()
+            final ContentVerifierProvider verifier = new JcaContentVerifierProviderBuilder()
                     .setProvider(SecurityProvider.getProvider()).build(certificate);
 
             if (!basicResponse.isSignatureValid(verifier))
@@ -407,7 +407,7 @@ public class OcspHelper
                 throw new OCSPException("OCSP-Signature is not valid!");
             }
         }
-        catch (OperatorCreationException e)
+        catch (final OperatorCreationException e)
         {
             throw new OCSPException("Error checking Ocsp-Signature", e);
         }
@@ -420,12 +420,12 @@ public class OcspHelper
      * @return true if the nonce is present and matches, false if nonce is missing.
      * @throws OCSPException if the nonce is different
      */
-    private boolean checkNonce(BasicOCSPResp basicResponse) throws OCSPException
+    private boolean checkNonce(final BasicOCSPResp basicResponse) throws OCSPException
     {
-        Extension nonceExt = basicResponse.getExtension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce);
+        final Extension nonceExt = basicResponse.getExtension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce);
         if (nonceExt != null)
         {
-            DEROctetString responseNonceString = (DEROctetString) nonceExt.getExtnValue();
+            final DEROctetString responseNonceString = (DEROctetString) nonceExt.getExtnValue();
             if (!responseNonceString.equals(encodedNonce))
             {
                 throw new OCSPException("Different nonce found in response!");
@@ -453,9 +453,9 @@ public class OcspHelper
      */
     private OCSPResp performRequest() throws IOException, OCSPException
     {
-        OCSPReq request = generateOCSPRequest();
-        URL url = new URL(ocspUrl);
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+        final OCSPReq request = generateOCSPRequest();
+        final URL url = new URL(ocspUrl);
+        final HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
         try
         {
             httpConnection.setRequestProperty("Content-Type", "application/ocsp-request");
@@ -489,12 +489,12 @@ public class OcspHelper
      * @param resp OCSP response
      * @throws OCSPException if the response status is not ok
      */
-    public void verifyRespStatus(OCSPResp resp) throws OCSPException
+    public void verifyRespStatus(final OCSPResp resp) throws OCSPException
     {
         String statusInfo = "";
         if (resp != null)
         {
-            int status = resp.getStatus();
+            final int status = resp.getStatus();
             switch (status)
             {
             case OCSPResponseStatus.INTERNAL_ERROR:
@@ -544,14 +544,14 @@ public class OcspHelper
         Security.addProvider(SecurityProvider.getProvider());
 
         // Generate the ID for the certificate we are looking for
-        CertificateID certId;
+        final CertificateID certId;
         try
         {
             certId = new CertificateID(new SHA1DigestCalculator(),
                     new JcaX509CertificateHolder(issuerCertificate),
                     certificateToCheck.getSerialNumber());
         }
-        catch (CertificateEncodingException e)
+        catch (final CertificateEncodingException e)
         {
             throw new IOException("Error creating CertificateID with the Certificate encoding", e);
         }
@@ -560,14 +560,14 @@ public class OcspHelper
         // Support for any specific extension is OPTIONAL. The critical flag
         // SHOULD NOT be set for any of them.
 
-        Extension responseExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_response,
+        final Extension responseExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_response,
                 false, new DLSequence(OCSPObjectIdentifiers.id_pkix_ocsp_basic).getEncoded());
 
         encodedNonce = new DEROctetString(new DEROctetString(create16BytesNonce()));
-        Extension nonceExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, false,
+        final Extension nonceExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, false,
                 encodedNonce);
 
-        OCSPReqBuilder builder = new OCSPReqBuilder();
+        final OCSPReqBuilder builder = new OCSPReqBuilder();
         builder.setRequestExtensions(
                 new Extensions(new Extension[] { responseExtension, nonceExtension }));
         builder.addRequest(certId);
@@ -576,7 +576,7 @@ public class OcspHelper
 
     private byte[] create16BytesNonce()
     {
-        byte[] nonce = new byte[16];
+        final byte[] nonce = new byte[16];
         RANDOM.nextBytes(nonce);
         return nonce;
     }
@@ -603,15 +603,15 @@ public class OcspHelper
         @Override
         public byte[] getDigest()
         {
-            byte[] bytes = bOut.toByteArray();
+            final byte[] bytes = bOut.toByteArray();
             bOut.reset();
 
             try
             {
-                MessageDigest md = MessageDigest.getInstance("SHA-1");
+                final MessageDigest md = MessageDigest.getInstance("SHA-1");
                 return md.digest(bytes);
             }
-            catch (NoSuchAlgorithmException ex)
+            catch (final NoSuchAlgorithmException ex)
             {
                 // should not happen
                 LOG.error("SHA-1 Algorithm not found", ex);

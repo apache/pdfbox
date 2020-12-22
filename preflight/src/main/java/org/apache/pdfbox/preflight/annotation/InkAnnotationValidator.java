@@ -36,7 +36,7 @@ public class InkAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationUnknown pdUnk = null;
 
-    public InkAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public InkAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdUnk = new PDAnnotationUnknown(annotDictionary);

@@ -31,12 +31,12 @@ public class Type0Container extends FontContainer<PDFont>
 {
     private FontContainer<?> delegateFontContainer;
 
-    public Type0Container(PDFont font)
+    public Type0Container(final PDFont font)
     {
         super(font);
     }
 
-    public void setDelegateFontContainer(FontContainer<?> delegateFontContainer)
+    public void setDelegateFontContainer(final FontContainer<?> delegateFontContainer)
     {
         this.delegateFontContainer = delegateFontContainer;
     }
@@ -74,7 +74,7 @@ public class Type0Container extends FontContainer<PDFont>
     }
 
     @Override
-    public boolean hasGlyph(int code) throws IOException
+    public boolean hasGlyph(final int code) throws IOException
     {
         return this.delegateFontContainer.hasGlyph(code);
     }

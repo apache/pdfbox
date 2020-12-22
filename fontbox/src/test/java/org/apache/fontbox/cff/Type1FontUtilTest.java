@@ -36,7 +36,7 @@ class Type1FontUtilTest
     @Test
     void testHexEncoding()
     {
-        long seed = DEFAULTSEED;
+        final long seed = DEFAULTSEED;
         tryHexEncoding(seed);
         for (int i = 0; i < LOOPS; ++i)
         {
@@ -44,12 +44,12 @@ class Type1FontUtilTest
         }
     }
 
-    private void tryHexEncoding(long seed)
+    private void tryHexEncoding(final long seed)
     {
-        byte[] bytes = createRandomByteArray(128, seed);
+        final byte[] bytes = createRandomByteArray(128, seed);
 
-        String encodedBytes = Type1FontUtil.hexEncode(bytes);
-        byte[] decodedBytes = Type1FontUtil.hexDecode(encodedBytes);
+        final String encodedBytes = Type1FontUtil.hexEncode(bytes);
+        final byte[] decodedBytes = Type1FontUtil.hexDecode(encodedBytes);
         
         assertArrayEquals(bytes, decodedBytes, "Seed: " + seed);
     }
@@ -60,7 +60,7 @@ class Type1FontUtilTest
     @Test
     void testEexecEncryption()
     {
-        long seed = DEFAULTSEED;
+        final long seed = DEFAULTSEED;
         tryEexecEncryption(seed);
         for (int i = 0; i < LOOPS; ++i)
         {
@@ -68,12 +68,12 @@ class Type1FontUtilTest
         }
     }
 
-    private void tryEexecEncryption(long seed)
+    private void tryEexecEncryption(final long seed)
     {
-        byte[] bytes = createRandomByteArray(128, seed);
+        final byte[] bytes = createRandomByteArray(128, seed);
 
-        byte[] encryptedBytes = Type1FontUtil.eexecEncrypt(bytes);
-        byte[] decryptedBytes = Type1FontUtil.eexecDecrypt(encryptedBytes);
+        final byte[] encryptedBytes = Type1FontUtil.eexecEncrypt(bytes);
+        final byte[] decryptedBytes = Type1FontUtil.eexecDecrypt(encryptedBytes);
 
         assertArrayEquals(bytes, decryptedBytes, "Seed: " + seed);
     }
@@ -84,7 +84,7 @@ class Type1FontUtilTest
     @Test
     void testCharstringEncryption()
     {
-        long seed = DEFAULTSEED;
+        final long seed = DEFAULTSEED;
         tryCharstringEncryption(seed);
         for (int i = 0; i < LOOPS; ++i)
         {
@@ -92,20 +92,20 @@ class Type1FontUtilTest
         }
     }
 
-    private void tryCharstringEncryption(long seed)
+    private void tryCharstringEncryption(final long seed)
     {
-        byte[] bytes = createRandomByteArray(128, seed);
+        final byte[] bytes = createRandomByteArray(128, seed);
 
-        byte[] encryptedBytes = Type1FontUtil.charstringEncrypt(bytes, 4);
-        byte[] decryptedBytes = Type1FontUtil.charstringDecrypt(encryptedBytes, 4);
+        final byte[] encryptedBytes = Type1FontUtil.charstringEncrypt(bytes, 4);
+        final byte[] decryptedBytes = Type1FontUtil.charstringDecrypt(encryptedBytes, 4);
 
         assertArrayEquals(bytes, decryptedBytes, "Seed: " + seed);
     }
 
-    private static byte[] createRandomByteArray(int arrayLength, long seed)
+    private static byte[] createRandomByteArray(final int arrayLength, final long seed)
     {
-        byte[] bytes = new byte[arrayLength];
-        Random ramdom = new Random(seed);
+        final byte[] bytes = new byte[arrayLength];
+        final Random ramdom = new Random(seed);
 
         for (int i = 0; i < arrayLength; i++)
         {

@@ -73,7 +73,7 @@ class ScratchFileBuffer implements RandomAccess
      * 
      * @throws IOException If getting first page failed.
      */
-    ScratchFileBuffer(ScratchFile pageHandler) throws IOException
+    ScratchFileBuffer(final ScratchFile pageHandler) throws IOException
     {
         pageHandler.checkClosed();
 
@@ -118,12 +118,12 @@ class ScratchFileBuffer implements RandomAccess
                 }
                 newSize = Integer.MAX_VALUE;
             }
-            int[] newPageIndexes = new int[newSize];
+            final int[] newPageIndexes = new int[newSize];
             System.arraycopy(pageIndexes, 0, newPageIndexes, 0, pageCount);
             pageIndexes = newPageIndexes;
         }
         
-        int newPageIdx = pageHandler.getNewPage();
+        final int newPageIdx = pageHandler.getNewPage();
         
         pageIndexes[pageCount] = newPageIdx;
         currentPagePositionInPageIndexes = pageCount;
@@ -159,7 +159,7 @@ class ScratchFileBuffer implements RandomAccess
      * 
      * @throws IOException
      */
-    private boolean ensureAvailableBytesInPage(boolean addNewPageIfNeeded) throws IOException
+    private boolean ensureAvailableBytesInPage(final boolean addNewPageIfNeeded) throws IOException
     {
         if (positionInPage >= pageSize)
         {
@@ -196,7 +196,7 @@ class ScratchFileBuffer implements RandomAccess
      * {@inheritDoc}
      */
     @Override
-    public void write(int b) throws IOException
+    public void write(final int b) throws IOException
     {
         checkClosed();
         
@@ -215,7 +215,7 @@ class ScratchFileBuffer implements RandomAccess
      * {@inheritDoc}
      */
     @Override
-    public void write(byte[] b) throws IOException
+    public void write(final byte[] b) throws IOException
     {
         write(b, 0, b.length);
     }
@@ -224,7 +224,7 @@ class ScratchFileBuffer implements RandomAccess
      * {@inheritDoc}
      */
     @Override
-    public void write(byte[] b, int off, int len) throws IOException
+    public void write(final byte[] b, final int off, final int len) throws IOException
     {
         checkClosed();
 
@@ -235,7 +235,7 @@ class ScratchFileBuffer implements RandomAccess
         {
             ensureAvailableBytesInPage(true);
 
-            int bytesToWrite = Math.min(remain, pageSize-positionInPage);
+            final int bytesToWrite = Math.min(remain, pageSize-positionInPage);
             
             System.arraycopy(b, bOff, currentPage, positionInPage, bytesToWrite);
             
@@ -290,7 +290,7 @@ class ScratchFileBuffer implements RandomAccess
      * {@inheritDoc}
      */
     @Override
-    public void seek(long seekToPosition) throws IOException
+    public void seek(final long seekToPosition) throws IOException
     {
         checkClosed();
 
@@ -381,7 +381,7 @@ class ScratchFileBuffer implements RandomAccess
      * {@inheritDoc}
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException
+    public int read(final byte[] b, final int off, final int len) throws IOException
     {
         checkClosed();
 
@@ -403,7 +403,7 @@ class ScratchFileBuffer implements RandomAccess
                 throw new IOException("Unexpectedly no bytes available for read in buffer.");
             }
             
-            int readBytes = Math.min(remain, pageSize - positionInPage);
+            final int readBytes = Math.min(remain, pageSize - positionInPage);
 
             System.arraycopy(currentPage, positionInPage, b, bOff, readBytes);
 
@@ -464,7 +464,7 @@ class ScratchFileBuffer implements RandomAccess
     }
 
     @Override
-    public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
+    public RandomAccessReadView createView(final long startPosition, final long streamLength) throws IOException
     {
         return new RandomAccessReadView(this, startPosition, streamLength);
     }

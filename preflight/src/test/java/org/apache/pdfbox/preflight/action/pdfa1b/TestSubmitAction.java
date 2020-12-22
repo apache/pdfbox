@@ -32,7 +32,7 @@ class TestSubmitAction extends AbstractTestAction
 
     protected COSDictionary createSubmitAction()
     {
-        COSDictionary action = new COSDictionary();
+        final COSDictionary action = new COSDictionary();
         action.setItem(COSName.TYPE, COSName.getPDFName("Action"));
         action.setItem(COSName.S, COSName.getPDFName("SubmitForm"));
         action.setItem(COSName.F, new PDFileSpecification()
@@ -44,7 +44,7 @@ class TestSubmitAction extends AbstractTestAction
             }
 
             @Override
-            public void setFile(String file)
+            public void setFile(final String file)
             {
             }
 
@@ -60,14 +60,14 @@ class TestSubmitAction extends AbstractTestAction
     @Test
     void test() throws Exception
     {
-        COSDictionary action = createSubmitAction();
+        final COSDictionary action = createSubmitAction();
         valid(action, true);
     }
 
     @Test
     void testMissngF() throws Exception
     {
-        COSDictionary action = createSubmitAction();
+        final COSDictionary action = createSubmitAction();
         action.removeItem(COSName.F);
         valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
     }

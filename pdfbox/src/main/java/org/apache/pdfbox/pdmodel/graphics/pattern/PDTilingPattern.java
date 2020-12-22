@@ -71,7 +71,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      * Creates a new tiling pattern from the given COS dictionary.
      * @param dictionary The COSDictionary for this pattern.
      */
-    public PDTilingPattern(COSDictionary dictionary)
+    public PDTilingPattern(final COSDictionary dictionary)
     {
         this(dictionary, null);
     }
@@ -81,7 +81,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      * @param dictionary The COSDictionary for this pattern.
      * @param resourceCache The resource cache, may be null
      */
-    public PDTilingPattern(COSDictionary dictionary, ResourceCache resourceCache)
+    public PDTilingPattern(final COSDictionary dictionary, final ResourceCache resourceCache)
     {
         super(dictionary);
         this.resourceCache = resourceCache;
@@ -98,7 +98,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      * @param paintType The new paint type.
      */
     @Override
-    public void setPaintType(int paintType)
+    public void setPaintType(final int paintType)
     {
         getCOSObject().setInt(COSName.PAINT_TYPE, paintType);
     }
@@ -116,7 +116,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      * This will set the tiling type.
      * @param tilingType The new tiling type.
      */
-    public void setTilingType(int tilingType)
+    public void setTilingType(final int tilingType)
     {
         getCOSObject().setInt(COSName.TILING_TYPE, tilingType);
     }
@@ -134,7 +134,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      * This will set the XStep value.
      * @param xStep The new XStep value.
      */
-    public void setXStep(float xStep)
+    public void setXStep(final float xStep)
     {
         getCOSObject().setFloat(COSName.X_STEP, xStep);
     }
@@ -152,7 +152,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      * This will set the YStep value.
      * @param yStep The new YStep value.
      */
-    public void setYStep(float yStep)
+    public void setYStep(final float yStep)
     {
         getCOSObject().setFloat(COSName.Y_STEP, yStep);
     }
@@ -174,7 +174,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     @Override
     public InputStream getContents() throws IOException
     {
-        COSDictionary dict = getCOSObject();
+        final COSDictionary dict = getCOSObject();
         if (dict instanceof COSStream)
         {
             return ((COSStream) getCOSObject()).createInputStream();
@@ -185,7 +185,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     @Override
     public RandomAccessRead getContentsForRandomAccess() throws IOException
     {
-        COSDictionary dict = getCOSObject();
+        final COSDictionary dict = getCOSObject();
         if (dict instanceof COSStream)
         {
             return ((COSStream) getCOSObject()).createView();
@@ -202,7 +202,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     public PDResources getResources()
     {
         PDResources retval = null;
-        COSBase base = getCOSObject().getDictionaryObject(COSName.RESOURCES);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.RESOURCES);
         if (base instanceof COSDictionary)
         {
             retval = new PDResources((COSDictionary) base, resourceCache);
@@ -214,7 +214,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      * This will set the resources for this pattern.
      * @param resources The new resources for this pattern.
      */
-    public final void setResources( PDResources resources )
+    public final void setResources(final PDResources resources )
     {
         getCOSObject().setItem(COSName.RESOURCES, resources);
     }
@@ -230,7 +230,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     public PDRectangle getBBox()
     {
         PDRectangle retval = null;
-        COSBase base = getCOSObject().getDictionaryObject(COSName.BBOX);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.BBOX);
         if (base instanceof COSArray)
         {
             retval = new PDRectangle((COSArray) base);
@@ -242,7 +242,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      * This will set the BBox (bounding box) for this Pattern.
      * @param bbox The new BBox for this Pattern.
      */
-    public void setBBox(PDRectangle bbox)
+    public void setBBox(final PDRectangle bbox)
     {
         if( bbox == null )
         {

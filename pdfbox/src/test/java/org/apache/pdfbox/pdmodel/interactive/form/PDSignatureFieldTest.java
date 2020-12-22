@@ -52,7 +52,7 @@ class PDSignatureFieldTest
     @Test
     void createDefaultSignatureField()
     {
-        PDSignatureField sigField = new PDSignatureField(acroForm);
+        final PDSignatureField sigField = new PDSignatureField(acroForm);
         sigField.setPartialName("SignatureField");
 
         assertEquals(sigField.getFieldType(), sigField.getCOSObject().getNameAsString(COSName.FT));
@@ -62,7 +62,7 @@ class PDSignatureFieldTest
         assertEquals(PDAnnotationWidget.SUB_TYPE, sigField.getCOSObject().getNameAsString(COSName.SUBTYPE));
 
         // Add the field to the acroform
-        List<PDField> fields = new ArrayList<>();
+        final List<PDField> fields = new ArrayList<>();
         fields.add(sigField);
         this.acroForm.setFields(fields);
 
@@ -72,7 +72,7 @@ class PDSignatureFieldTest
     @Test
     void setValueForAbstractedSignatureField()
     {
-        PDSignatureField sigField = new PDSignatureField(acroForm);
+        final PDSignatureField sigField = new PDSignatureField(acroForm);
         sigField.setPartialName("SignatureField");
         assertThrows(UnsupportedOperationException.class, () -> {
             sigField.setValue("Can't set value using String");
@@ -88,9 +88,9 @@ class PDSignatureFieldTest
     void testGetContents() throws IOException
     {
         // Normally, range0 + range1 = position of "<", and range2 = position after ">"
-        PDSignature signature = new PDSignature();
+        final PDSignature signature = new PDSignature();
         signature.setByteRange(new int[]{ 0, 10, 30, 10});
-        byte[] by = "AAAAAAAAAA<313233343536373839>BBBBBBBBBB".getBytes(StandardCharsets.ISO_8859_1);
+        final byte[] by = "AAAAAAAAAA<313233343536373839>BBBBBBBBBB".getBytes(StandardCharsets.ISO_8859_1);
         assertEquals("123456789", new String(signature.getContents(by)));
         assertEquals("123456789", new String(signature.getContents(new ByteArrayInputStream(by))));
     }

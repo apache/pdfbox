@@ -30,13 +30,13 @@ import org.apache.pdfbox.preflight.font.descriptor.CIDType0DescriptorHelper;
 public class CIDType0FontValidator extends DescendantFontValidator<CIDType0Container>
 {
 
-    public CIDType0FontValidator(PreflightContext context, PDCIDFontType0 font)
+    public CIDType0FontValidator(final PreflightContext context, final PDCIDFontType0 font)
     {
         super(context, font, new CIDType0Container(font));
     }
 
     @Override
-    protected void checkCIDToGIDMap(COSBase ctog)
+    protected void checkCIDToGIDMap(final COSBase ctog)
     {
         checkCIDToGIDMap(ctog, false);
     }

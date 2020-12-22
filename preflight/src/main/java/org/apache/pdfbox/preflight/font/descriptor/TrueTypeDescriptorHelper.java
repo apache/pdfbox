@@ -41,17 +41,17 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
 {
     private final PDTrueTypeFont pdTrueTypeFont;
 
-    public TrueTypeDescriptorHelper(PreflightContext context, PDTrueTypeFont font, TrueTypeContainer fontContainer)
+    public TrueTypeDescriptorHelper(final PreflightContext context, final PDTrueTypeFont font, final TrueTypeContainer fontContainer)
     {
         super(context, font, fontContainer);
         pdTrueTypeFont = font;
     }
 
     @Override
-    public PDStream extractFontFile(PDFontDescriptor fontDescriptor)
+    public PDStream extractFontFile(final PDFontDescriptor fontDescriptor)
     {
-        PDStream fontFile = fontDescriptor.getFontFile2();
-        COSStream stream = (fontFile == null ? null : fontFile.getCOSObject());
+        final PDStream fontFile = fontDescriptor.getFontFile2();
+        final COSStream stream = (fontFile == null ? null : fontFile.getCOSObject());
         if (stream == null)
         {
             this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
@@ -71,7 +71,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
     }
 
     @Override
-    protected void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile)
+    protected void processFontFile(final PDFontDescriptor fontDescriptor, final PDStream fontFile)
     {
         if (font.isDamaged())
         {
@@ -81,7 +81,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
         else
         {
             // there must be exactly one encoding in the "cmap" table if the font is symbolic
-            TrueTypeFont ttf = pdTrueTypeFont.getTrueTypeFont();
+            final TrueTypeFont ttf = pdTrueTypeFont.getTrueTypeFont();
             try
             {
                 if (pdTrueTypeFont.isSymbolic() && ttf.getCmap().getCmaps().length != 1)
@@ -90,7 +90,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
                             this.font.getName() + ": Symbolic TrueType font has more than one 'cmap' entry"));
                 }
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_TRUETYPE_DAMAGED,
                          this.font.getName() + ": The TTF 'cmap' could not be read"));

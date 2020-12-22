@@ -48,7 +48,7 @@ public class FDFAnnotationFileAttachment extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationFileAttachment(COSDictionary a)
+    public FDFAnnotationFileAttachment(final COSDictionary a)
     {
         super(a);
     }
@@ -60,7 +60,7 @@ public class FDFAnnotationFileAttachment extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationFileAttachment(Element element) throws IOException
+    public FDFAnnotationFileAttachment(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);

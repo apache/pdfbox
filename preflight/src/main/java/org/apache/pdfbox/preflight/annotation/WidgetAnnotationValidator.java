@@ -39,7 +39,7 @@ public class WidgetAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationWidget pdWidget = null;
 
-    public WidgetAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public WidgetAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdWidget = new PDAnnotationWidget(annotDictionary);
@@ -54,7 +54,7 @@ public class WidgetAnnotationValidator extends AnnotationValidator
     @Override
     public boolean validate() throws ValidationException
     {
-        boolean isValid = super.validate();
+        final boolean isValid = super.validate();
         return checkAAField() && isValid;
     }
 

@@ -81,8 +81,8 @@ public abstract class Filter
      * @return repaired parameters dictionary, or the original parameters dictionary
      * @throws IOException if the stream cannot be decoded
      */
-    public DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary parameters,
-                               int index, DecodeOptions options) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded, final COSDictionary parameters,
+                               final int index, final DecodeOptions options) throws IOException
     {
         return decode(encoded, decoded, parameters, index);
     }
@@ -95,8 +95,8 @@ public abstract class Filter
      * @param index the index to the filter being encoded
      * @throws IOException if the stream cannot be encoded
      */
-    public final void encode(InputStream input, OutputStream encoded, COSDictionary parameters,
-                            int index) throws IOException
+    public final void encode(final InputStream input, final OutputStream encoded, final COSDictionary parameters,
+                             final int index) throws IOException
     {
         encode(input, encoded, parameters.asUnmodifiableDictionary());
     }
@@ -107,10 +107,10 @@ public abstract class Filter
 
     // gets the decode params for a specific filter index, this is used to
     // normalise the DecodeParams entry so that it is always a dictionary
-    protected COSDictionary getDecodeParams(COSDictionary dictionary, int index)
+    protected COSDictionary getDecodeParams(final COSDictionary dictionary, final int index)
     {
-        COSBase filter = dictionary.getDictionaryObject(COSName.FILTER, COSName.F);
-        COSBase obj = dictionary.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
+        final COSBase filter = dictionary.getDictionaryObject(COSName.FILTER, COSName.F);
+        final COSBase obj = dictionary.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
         if (filter instanceof COSName && obj instanceof COSDictionary)
         {
             // PDFBOX-3932: The PDF specification requires "If there is only one filter and that 
@@ -120,10 +120,10 @@ public abstract class Filter
         }
         else if (filter instanceof COSArray && obj instanceof COSArray)
         {
-            COSArray array = (COSArray)obj;
+            final COSArray array = (COSArray)obj;
             if (index < array.size())
             {
-                COSBase objAtIndex = array.getObject(index);
+                final COSBase objAtIndex = array.getObject(index);
                 if (objAtIndex instanceof COSDictionary)
                 {
                     return (COSDictionary)array.getObject(index);
@@ -146,9 +146,9 @@ public abstract class Filter
      * @return The image reader for the format.
      * @throws MissingImageReaderException if no image reader is found.
      */
-    protected static ImageReader findImageReader(String formatName, String errorCause) throws MissingImageReaderException
+    protected static ImageReader findImageReader(final String formatName, final String errorCause) throws MissingImageReaderException
     {
-        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(formatName);
+        final Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(formatName);
         ImageReader reader = null;
         while (readers.hasNext())
         {
@@ -175,7 +175,7 @@ public abstract class Filter
         {
             compressionLevel = Integer.parseInt(System.getProperty(Filter.SYSPROP_DEFLATELEVEL, "-1"));
         }
-        catch (NumberFormatException ex)
+        catch (final NumberFormatException ex)
         {
             LOG.warn(ex.getMessage(), ex);
         }

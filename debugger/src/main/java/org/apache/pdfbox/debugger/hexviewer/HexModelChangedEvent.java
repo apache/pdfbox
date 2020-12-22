@@ -37,7 +37,7 @@ class HexModelChangedEvent
      * @param changeType int. Change type if it is only a single change or a bulk change by pasting
      * or deleting. Though later features are not yet implemented.
      */
-    HexModelChangedEvent(int startIndex, int changeType)
+    HexModelChangedEvent(final int startIndex, final int changeType)
     {
         this.startIndex = startIndex;
         this.changeType = changeType;

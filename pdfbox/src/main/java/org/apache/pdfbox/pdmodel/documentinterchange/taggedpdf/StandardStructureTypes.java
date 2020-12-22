@@ -296,8 +296,8 @@ public class StandardStructureTypes
 
     static
     {
-        Field[] fields = StandardStructureTypes.class.getFields();
-        for (Field field : fields)
+        final Field[] fields = StandardStructureTypes.class.getFields();
+        for (final Field field : fields)
         {
             if (Modifier.isFinal(field.getModifiers()))
             {
@@ -305,7 +305,7 @@ public class StandardStructureTypes
                 {
                     types.add(field.get(null).toString());
                 }
-                catch (IllegalArgumentException | IllegalAccessException e)
+                catch (final IllegalArgumentException | IllegalAccessException e)
                 {
                     LOG.error(e,e);
                 }

@@ -41,7 +41,7 @@ public final class Operator
      * @param aOperator The operator that this object will represent.
      * @throws IllegalArgumentException if the operator starts with "/".
      */
-    private Operator(String aOperator)
+    private Operator(final String aOperator)
     {
         theOperator = aOperator;
         if( aOperator.startsWith( "/" ) )
@@ -57,7 +57,7 @@ public final class Operator
      *
      * @return The operator that matches the operator keyword.
      */
-    public static Operator getOperator( String operator )
+    public static Operator getOperator(final String operator )
     {
         Operator operation;
         if (operator.equals(OperatorName.BEGIN_INLINE_IMAGE_DATA)
@@ -121,7 +121,7 @@ public final class Operator
      *
      * @param imageDataArray New value of property imageData.
      */
-    public void setImageData(byte[] imageDataArray)
+    public void setImageData(final byte[] imageDataArray)
     {
         imageData = imageDataArray;
     }
@@ -141,7 +141,7 @@ public final class Operator
      *
      * @param params The image parameters.
      */
-    public void setImageParameters( COSDictionary params)
+    public void setImageParameters(final COSDictionary params)
     {
         imageParameters = params;
     }

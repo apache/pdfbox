@@ -51,25 +51,25 @@ class TestRendering
 
     private static Collection<Arguments> data()
     {
-        File[] testFiles = new File(INPUT_DIR).listFiles(
+        final File[] testFiles = new File(INPUT_DIR).listFiles(
                 (dir, name) -> (name.endsWith(".pdf") || name.endsWith(".ai")));
         return Stream.of(testFiles).map(file -> Arguments.of(file.getName())).collect(Collectors.toList());
     }
 
     private static Collection<Arguments> dataSubset()
     {
-        File[] testFiles = new File(INPUT_DIR).listFiles(
+        final File[] testFiles = new File(INPUT_DIR).listFiles(
                 (dir, name) -> (name.endsWith(".pdf") || name.endsWith(".ai")));
         return Stream.of(testFiles).map(file -> Arguments.of(file.getName())).limit(MAX_NUM_FILES).collect(Collectors.toList());
     }
 
     @ParameterizedTest(name = "{index} render running for {0}")
 	@MethodSource("dataSubset")
-    void render(String fileName) throws IOException
+    void render(final String fileName) throws IOException
     {
-        File file = new File(INPUT_DIR, fileName);
-        PDDocument document = Loader.loadPDF(file);
-        PDFRenderer renderer = new PDFRenderer(document);
+        final File file = new File(INPUT_DIR, fileName);
+        final PDDocument document = Loader.loadPDF(file);
+        final PDFRenderer renderer = new PDFRenderer(document);
         
         // We don't actually do anything with the image for the same reason that
         // TestPDFToImage is disabled - different JVMs produce different results
@@ -86,12 +86,12 @@ class TestRendering
      */
     // @ParameterizedTest(name = "{index} render and compare running for {0}")
 	@MethodSource("data")
-    void renderAndCompare(String fileName) throws IOException
+    void renderAndCompare(final String fileName) throws IOException
     {
 
         new File(OUTPUT_DIR).mkdirs();
         // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        final TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
         if (!testPDFToImage.doTestFile(new File(INPUT_DIR, fileName), INPUT_DIR, OUTPUT_DIR))
         {
             fail("Rendering of " + fileName + " failed or is not identical to expected rendering in " + INPUT_DIR + " directory");

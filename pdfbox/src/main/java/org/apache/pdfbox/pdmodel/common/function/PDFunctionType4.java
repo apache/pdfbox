@@ -45,11 +45,11 @@ public class PDFunctionType4 extends PDFunction
      * @param functionStream The function stream.
      * @throws IOException if an I/O error occurs while reading the function
      */
-    public PDFunctionType4(COSBase functionStream) throws IOException
+    public PDFunctionType4(final COSBase functionStream) throws IOException
     {
         super( functionStream );
-        byte[] bytes = getPDStream().toByteArray();
-        String string = new String(bytes, StandardCharsets.ISO_8859_1);
+        final byte[] bytes = getPDStream().toByteArray();
+        final String string = new String(bytes, StandardCharsets.ISO_8859_1);
         this.instructions = InstructionSequenceBuilder.parse(string);
     }
     
@@ -66,14 +66,14 @@ public class PDFunctionType4 extends PDFunction
     * {@inheritDoc}
     */
     @Override
-    public float[] eval(float[] input) throws IOException
+    public float[] eval(final float[] input) throws IOException
     {
         //Setup the input values
-        ExecutionContext context = new ExecutionContext(OPERATORS);
+        final ExecutionContext context = new ExecutionContext(OPERATORS);
         for (int i = 0; i < input.length; i++)
         {
-            PDRange domain = getDomainForInput(i);
-            float value = clipToRange(input[i], domain.getMin(), domain.getMax());
+            final PDRange domain = getDomainForInput(i);
+            final float value = clipToRange(input[i], domain.getMin(), domain.getMax());
             context.getStack().push(value);
         }
 
@@ -81,8 +81,8 @@ public class PDFunctionType4 extends PDFunction
         instructions.execute(context);
 
         //Extract the output values
-        int numberOfOutputValues = getNumberOfOutputParameters();
-        int numberOfActualOutputValues = context.getStack().size();
+        final int numberOfOutputValues = getNumberOfOutputParameters();
+        final int numberOfActualOutputValues = context.getStack().size();
         if (numberOfActualOutputValues < numberOfOutputValues)
         {
             throw new IllegalStateException("The type 4 function returned "
@@ -90,10 +90,10 @@ public class PDFunctionType4 extends PDFunction
                     + " values but the Range entry indicates that "
                     + numberOfOutputValues + " values be returned.");
         }
-        float[] outputValues = new float[numberOfOutputValues];
+        final float[] outputValues = new float[numberOfOutputValues];
         for (int i = numberOfOutputValues - 1; i >= 0; i--)
         {
-            PDRange range = getRangeForOutput(i);
+            final PDRange range = getRangeForOutput(i);
             outputValues[i] = context.popReal();
             outputValues[i] = clipToRange(outputValues[i], range.getMin(), range.getMax());
         }

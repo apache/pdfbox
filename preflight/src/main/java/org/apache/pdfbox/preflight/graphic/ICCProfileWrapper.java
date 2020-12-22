@@ -117,16 +117,16 @@ public class ICCProfileWrapper
      * @param context
      * @return an instance of ICCProfileWrapper or null if there are no DestOutputProfile
      */
-    private static ICCProfileWrapper searchFirstICCProfile(PreflightContext context)
+    private static ICCProfileWrapper searchFirstICCProfile(final PreflightContext context)
     {
-        PreflightDocument document = context.getDocument();
-        PDDocumentCatalog catalog = document.getDocumentCatalog();
-        COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
+        final PreflightDocument document = context.getDocument();
+        final PDDocumentCatalog catalog = document.getDocumentCatalog();
+        final COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
 
         for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i)
         {
-            COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
-            COSBase destOutputProfile = outputIntentDict
+            final COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
+            final COSBase destOutputProfile = outputIntentDict
                     .getDictionaryObject(COSName.DEST_OUTPUT_PROFILE);
             if (destOutputProfile instanceof COSStream)
             {
@@ -134,12 +134,12 @@ public class ICCProfileWrapper
                 {
                     return new ICCProfileWrapper(ICC_Profile.getInstance(is));
                 }
-                catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e)
+                catch (final ArrayIndexOutOfBoundsException | IllegalArgumentException e)
                 {
                     context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
                             "DestOutputProfile isn't a valid ICCProfile. Caused by : " + e.getMessage(), e));
                 }
-                catch (IOException e)
+                catch (final IOException e)
                 {            
                     context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
                         "Unable to parse the ICCProfile. Caused by : " + e.getMessage(), e));
@@ -149,7 +149,7 @@ public class ICCProfileWrapper
         return null;
     }
 
-    public static ICCProfileWrapper getOrSearchICCProfile(PreflightContext context) throws ValidationException
+    public static ICCProfileWrapper getOrSearchICCProfile(final PreflightContext context) throws ValidationException
     {
         ICCProfileWrapper profileWrapper = context.getIccProfileWrapper();
         if (profileWrapper == null && !context.isIccProfileAlreadySearched())

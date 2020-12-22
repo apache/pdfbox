@@ -48,7 +48,7 @@ public final class CreateBookmarks
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
         if( args.length != 2 )
         {
@@ -63,21 +63,21 @@ public final class CreateBookmarks
                     System.err.println( "Error: Cannot add bookmarks to encrypted document." );
                     System.exit( 1 );
                 }
-                PDDocumentOutline outline =  new PDDocumentOutline();
+                final PDDocumentOutline outline =  new PDDocumentOutline();
                 document.getDocumentCatalog().setDocumentOutline( outline );
-                PDOutlineItem pagesOutline = new PDOutlineItem();
+                final PDOutlineItem pagesOutline = new PDOutlineItem();
                 pagesOutline.setTitle( "All Pages" );
                 outline.addLast( pagesOutline );
                 int pageNum = 0;
-                for( PDPage page : document.getPages() )
+                for( final PDPage page : document.getPages() )
                 {
                     pageNum++;
-                    PDPageDestination dest = new PDPageFitWidthDestination();
+                    final PDPageDestination dest = new PDPageFitWidthDestination();
                     // If you want to have several bookmarks pointing to different areas 
                     // on the same page, have a look at the other classes derived from PDPageDestination.
 
                     dest.setPage( page );
-                    PDOutlineItem bookmark = new PDOutlineItem();
+                    final PDOutlineItem bookmark = new PDOutlineItem();
                     bookmark.setDestination( dest );
                     bookmark.setTitle( "Page " + pageNum );
                     pagesOutline.addLast( bookmark );

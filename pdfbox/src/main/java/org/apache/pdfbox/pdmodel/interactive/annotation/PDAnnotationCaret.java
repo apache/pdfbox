@@ -47,7 +47,7 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationCaret(COSDictionary field)
+    public PDAnnotationCaret(final COSDictionary field)
     {
         super(field);
     }
@@ -60,7 +60,7 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
      * 
      * @param difference from the annotations /Rect entry
      */
-    public void setRectDifferences(float difference) {
+    public void setRectDifferences(final float difference) {
         setRectDifferences(difference, difference, difference, difference);
     }
     
@@ -74,9 +74,9 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
      * @param differenceBottom bottom difference from the annotations /Rect entry
      * 
      */
-    public void setRectDifferences(float differenceLeft, float differenceTop, float differenceRight, float differenceBottom)
+    public void setRectDifferences(final float differenceLeft, final float differenceTop, final float differenceRight, final float differenceBottom)
     {
-        COSArray margins = new COSArray();
+        final COSArray margins = new COSArray();
         margins.add(new COSFloat(differenceLeft));
         margins.add(new COSFloat(differenceTop));
         margins.add(new COSFloat(differenceRight));
@@ -92,7 +92,7 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
      */
     public float[] getRectDifferences()
     {
-        COSBase margin = getCOSObject().getItem(COSName.RD);
+        final COSBase margin = getCOSObject().getItem(COSName.RD);
         if (margin instanceof COSArray)
         {
             return ((COSArray) margin).toFloatArray();
@@ -105,7 +105,7 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -117,11 +117,11 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDCaretAppearanceHandler appearanceHandler = new PDCaretAppearanceHandler(this, document);
+            final PDCaretAppearanceHandler appearanceHandler = new PDCaretAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

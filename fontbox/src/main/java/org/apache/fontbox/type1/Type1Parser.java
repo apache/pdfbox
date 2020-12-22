@@ -55,7 +55,7 @@ final class Type1Parser
      * @param segment2 Segment 2: Binary
      * @throws IOException
      */
-    public Type1Font parse(byte[] segment1, byte[] segment2) throws IOException
+    public Type1Font parse(final byte[] segment1, final byte[] segment2) throws IOException
     {
         font = new Type1Font(segment1, segment2);
         parseASCII(segment1);
@@ -69,7 +69,7 @@ final class Type1Parser
     /**
      * Parses the ASCII portion of a Type 1 font.
      */
-    private void parseASCII(byte[] bytes) throws IOException
+    private void parseASCII(final byte[] bytes) throws IOException
     {
         if (bytes.length == 0)
         {
@@ -99,7 +99,7 @@ final class Type1Parser
         }
 
         // font dict
-        int length = read(Token.INTEGER).intValue();
+        final int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
         // found in some TeX fonts
         readMaybe(Token.NAME, "dup");
@@ -109,7 +109,7 @@ final class Type1Parser
         for (int i = 0; i < length; i++)
         {
             // premature end
-            Token token = lexer.peekToken();
+            final Token token = lexer.peekToken();
             if (token == null)
             {
                 break;
@@ -121,7 +121,7 @@ final class Type1Parser
             }
 
             // key/value
-            String key = read(Token.LITERAL).getText();
+            final String key = read(Token.LITERAL).getText();
             switch (key)
             {
                 case "FontInfo":
@@ -147,9 +147,9 @@ final class Type1Parser
         read(Token.NAME, "eexec");
     }
 
-    private void readSimpleValue(String key) throws IOException
+    private void readSimpleValue(final String key) throws IOException
     {
-        List<Token> value = readDictValue();
+        final List<Token> value = readDictValue();
         
         switch (key)
         {
@@ -186,7 +186,7 @@ final class Type1Parser
     {
         if (lexer.peekToken().getKind() == Token.NAME)
         {
-            String name = lexer.nextToken().getText();
+            final String name = lexer.nextToken().getText();
             
             if (name.equals("StandardEncoding"))
             {
@@ -215,13 +215,13 @@ final class Type1Parser
                 lexer.nextToken();
             }
             
-            Map<Integer, String> codeToName = new HashMap<>();
+            final Map<Integer, String> codeToName = new HashMap<>();
             while (lexer.peekToken().getKind() == Token.NAME &&
                     lexer.peekToken().getText().equals("dup"))
             {
                 read(Token.NAME, "dup");
-                int code = read(Token.INTEGER).intValue();
-                String name = read(Token.LITERAL).getText();
+                final int code = read(Token.INTEGER).intValue();
+                final String name = read(Token.LITERAL).getText();
                 read(Token.NAME, "put");
                 codeToName.put(code, name);
             }
@@ -234,12 +234,12 @@ final class Type1Parser
     /**
      * Extracts values from an array as numbers.
      */
-    private List<Number> arrayToNumbers(List<Token> value) throws IOException
+    private List<Number> arrayToNumbers(final List<Token> value) throws IOException
     {
-        List<Number> numbers = new ArrayList<>();
+        final List<Number> numbers = new ArrayList<>();
         for (int i = 1, size = value.size() - 1; i < size; i++)
         {
-            Token token = value.get(i);
+            final Token token = value.get(i);
             if (token.getKind() == Token.REAL)
             {
                 numbers.add(token.floatValue());
@@ -259,12 +259,12 @@ final class Type1Parser
     /**
      * Extracts values from the /FontInfo dictionary.
      */
-    private void readFontInfo(Map<String, List<Token>> fontInfo)
+    private void readFontInfo(final Map<String, List<Token>> fontInfo)
     {
-        for (Map.Entry<String, List<Token>> entry : fontInfo.entrySet())
+        for (final Map.Entry<String, List<Token>> entry : fontInfo.entrySet())
         {
-            String key = entry.getKey();
-            List<Token> value = entry.getValue();
+            final String key = entry.getKey();
+            final List<Token> value = entry.getValue();
 
             switch (key)
             {
@@ -307,9 +307,9 @@ final class Type1Parser
      */
     private Map<String, List<Token>> readSimpleDict() throws IOException
     {
-        Map<String, List<Token>> dict = new HashMap<>();
+        final Map<String, List<Token>> dict = new HashMap<>();
 
-        int length = read(Token.INTEGER).intValue();
+        final int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
         readMaybe(Token.NAME, "dup");
         read(Token.NAME, "begin");
@@ -337,8 +337,8 @@ final class Type1Parser
             }
 
             // simple value
-            String key = read(Token.LITERAL).getText();
-            List<Token> value = readDictValue();
+            final String key = read(Token.LITERAL).getText();
+            final List<Token> value = readDictValue();
             dict.put(key, value);
         }
 
@@ -354,7 +354,7 @@ final class Type1Parser
      */
     private List<Token> readDictValue() throws IOException
     {
-        List<Token> value = readValue();
+        final List<Token> value = readValue();
         readDef();
         return value;
     }
@@ -366,7 +366,7 @@ final class Type1Parser
      */
     private List<Token> readValue() throws IOException
     {
-        List<Token> value = new ArrayList<>();
+        final List<Token> value = new ArrayList<>();
         Token token = lexer.nextToken();
         if (lexer.peekToken() == null)
         {
@@ -416,7 +416,7 @@ final class Type1Parser
         return value;
     }
 
-    private void readPostScriptWrapper(List<Token> value) throws IOException
+    private void readPostScriptWrapper(final List<Token> value) throws IOException
     {
         // postscript wrapper (not in the Type 1 spec)
         if (lexer.peekToken().getText().equals("systemdict"))
@@ -449,7 +449,7 @@ final class Type1Parser
      */
     private List<Token> readProc() throws IOException
     {
-        List<Token> value = new ArrayList<>();
+        final List<Token> value = new ArrayList<>();
 
         int openProc = 1;
         while (true)
@@ -459,7 +459,7 @@ final class Type1Parser
                 openProc++;
             }
 
-            Token token = lexer.nextToken();
+            final Token token = lexer.nextToken();
             value.add(token);
 
             if (token.getKind() == Token.END_PROC)
@@ -471,7 +471,7 @@ final class Type1Parser
                 }
             }
         }
-        Token executeonly = readMaybe(Token.NAME, "executeonly");
+        final Token executeonly = readMaybe(Token.NAME, "executeonly");
         if (executeonly != null)
         {
             value.add(executeonly);
@@ -483,9 +483,9 @@ final class Type1Parser
     /**
      * Parses the binary portion of a Type 1 font.
      */
-    private void parseBinary(byte[] bytes) throws IOException
+    private void parseBinary(final byte[] bytes) throws IOException
     {
-        byte[] decrypted;
+        final byte[] decrypted;
         // Sometimes, fonts use the hex format, so this needs to be converted before decryption
         if (isBinary(bytes))
         {
@@ -514,7 +514,7 @@ final class Type1Parser
 
         // Private dict
         read(Token.LITERAL, "Private");
-        int length = read(Token.INTEGER).intValue();
+        final int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
         // actually could also be "/Private 10 dict def Private begin"
         // instead of the "dup"
@@ -532,7 +532,7 @@ final class Type1Parser
             }
 
             // key/value
-            String key = read(Token.LITERAL).getText();
+            final String key = read(Token.LITERAL).getText();
 
             switch (key)
             {
@@ -593,7 +593,7 @@ final class Type1Parser
     /**
      * Extracts values from the /Private dictionary.
      */
-    private void readPrivate(String key, List<Token> value) throws IOException
+    private void readPrivate(final String key, final List<Token> value) throws IOException
     {
         switch (key)
         {
@@ -645,10 +645,10 @@ final class Type1Parser
      * Reads the /Subrs array.
      * @param lenIV The number of random bytes used in charstring encryption.
      */
-    private void readSubrs(int lenIV) throws IOException
+    private void readSubrs(final int lenIV) throws IOException
     {
         // allocate size (array indexes may not be in-order)
-        int length = read(Token.INTEGER).intValue();
+        final int length = read(Token.INTEGER).intValue();
         for (int i = 0; i < length; i++)
         {
             font.subrs.add(null);
@@ -669,11 +669,11 @@ final class Type1Parser
             }
 
             read(Token.NAME, "dup");
-            Token index = read(Token.INTEGER);
+            final Token index = read(Token.INTEGER);
             read(Token.INTEGER);
 
             // RD
-            Token charstring = read(Token.CHARSTRING);
+            final Token charstring = read(Token.CHARSTRING);
             font.subrs.set(index.intValue(), decrypt(charstring.getData(), CHARSTRING_KEY, lenIV));
             readPut();
         }
@@ -690,7 +690,7 @@ final class Type1Parser
         }
         else
         {
-            int length = read(Token.INTEGER).intValue();
+            final int length = read(Token.INTEGER).intValue();
             read(Token.NAME, "array");
 
             for (int i = 0; i < length; i++)
@@ -708,9 +708,9 @@ final class Type1Parser
      * Reads the /CharStrings dictionary.
      * @param lenIV The number of random bytes used in charstring encryption.
      */
-    private void readCharStrings(int lenIV) throws IOException
+    private void readCharStrings(final int lenIV) throws IOException
     {
-        int length = read(Token.INTEGER).intValue();
+        final int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
         // could actually be a sequence ending in "CharStrings begin", too
         // instead of the "dup begin"
@@ -730,11 +730,11 @@ final class Type1Parser
                 break;
             }
             // key/value
-            String name = read(Token.LITERAL).getText();
+            final String name = read(Token.LITERAL).getText();
 
             // RD
             read(Token.INTEGER);
-            Token charstring = read(Token.CHARSTRING);
+            final Token charstring = read(Token.CHARSTRING);
             font.charstrings.put(name, decrypt(charstring.getData(), CHARSTRING_KEY, lenIV));
             readDef();
         }
@@ -804,9 +804,9 @@ final class Type1Parser
     /**
      * Reads the next token and throws an error if it is not of the given kind.
      */
-    private Token read(Token.Kind kind) throws IOException
+    private Token read(final Token.Kind kind) throws IOException
     {
-        Token token = lexer.nextToken();
+        final Token token = lexer.nextToken();
         if (token == null || token.getKind() != kind)
         {
             throw new IOException("Found " + token + " but expected " + kind);
@@ -818,9 +818,9 @@ final class Type1Parser
      * Reads the next token and throws an error if it is not of the given kind
      * and does not have the given value.
      */
-    private void read(Token.Kind kind, String name) throws IOException
+    private void read(final Token.Kind kind, final String name) throws IOException
     {
-        Token token = read(kind);
+        final Token token = read(kind);
         if (!token.getText().equals(name))
         {
             throw new IOException("Found " + token + " but expected " + name);
@@ -831,9 +831,9 @@ final class Type1Parser
      * Reads the next token if and only if it is of the given kind and
      * has the given value.
      */
-    private Token readMaybe(Token.Kind kind, String name) throws IOException
+    private Token readMaybe(final Token.Kind kind, final String name) throws IOException
     {
-        Token token = lexer.peekToken();
+        final Token token = lexer.peekToken();
         if (token != null && token.getKind() == kind && token.getText().equals(name))
         {
             return lexer.nextToken();
@@ -849,7 +849,7 @@ final class Type1Parser
      * @param n number of random bytes (lenIV)
      * @return plain text
      */
-    private byte[] decrypt(byte[] cipherBytes, int r, int n)
+    private byte[] decrypt(final byte[] cipherBytes, int r, final int n)
     {
         // lenIV of -1 means no encryption (not documented)
         if (n == -1)
@@ -862,13 +862,13 @@ final class Type1Parser
             return new byte[] {};
         }
         // decrypt
-        int c1 = 52845;
-        int c2 = 22719;
-        byte[] plainBytes = new byte[cipherBytes.length - n];
+        final int c1 = 52845;
+        final int c2 = 22719;
+        final byte[] plainBytes = new byte[cipherBytes.length - n];
         for (int i = 0; i < cipherBytes.length; i++)
         {
-            int cipher = cipherBytes[i] & 0xFF;
-            int plain = cipher ^ r >> 8;
+            final int cipher = cipherBytes[i] & 0xFF;
+            final int plain = cipher ^ r >> 8;
             if (i >= n)
             {
                 plainBytes[i - n] = (byte) plain;
@@ -880,7 +880,7 @@ final class Type1Parser
 
     // Check whether binary or hex encoded. See Adobe Type 1 Font Format specification
     // 7.2 eexec encryption
-    private boolean isBinary(byte[] bytes)
+    private boolean isBinary(final byte[] bytes)
     {
         if (bytes.length < 4)
         {
@@ -890,7 +890,7 @@ final class Type1Parser
         // the ASCII hexadecimal character codes (a code for 0-9, A-F, or a-f)."
         for (int i = 0; i < 4; ++i)
         {
-            byte by = bytes[i];
+            final byte by = bytes[i];
             if (by != 0x0a && by != 0x0d && by != 0x20 && by != '\t' && 
                     Character.digit((char) by, 16) == -1)
             {
@@ -900,23 +900,23 @@ final class Type1Parser
         return false;
     }
 
-    private byte[] hexToBinary(byte[] bytes)
+    private byte[] hexToBinary(final byte[] bytes)
     {
         // calculate needed length
         int len = 0;
-        for (byte by : bytes)
+        for (final byte by : bytes)
         {
             if (Character.digit((char) by, 16) != -1)
             {
                 ++len;
             }
         }
-        byte[] res = new byte[len / 2];
+        final byte[] res = new byte[len / 2];
         int r = 0;
         int prev = -1;
-        for (byte by : bytes)
+        for (final byte by : bytes)
         {
-            int digit = Character.digit((char) by, 16);
+            final int digit = Character.digit((char) by, 16);
             if (digit != -1)
             {
                 if (prev == -1)

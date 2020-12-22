@@ -32,7 +32,7 @@ class HexChangedEvent
      * @param newValue byte. The new byte value for the index.
      * @param byteIndex int. Index for the changed byte.
      */
-    HexChangedEvent(byte newValue, int byteIndex)
+    HexChangedEvent(final byte newValue, final int byteIndex)
     {
         this.newValue = newValue;
         this.byteIndex = byteIndex;

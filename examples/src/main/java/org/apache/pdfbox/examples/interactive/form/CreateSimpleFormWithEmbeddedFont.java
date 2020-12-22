@@ -49,19 +49,19 @@ public class CreateSimpleFormWithEmbeddedFont
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         // Create a new document with an empty page.
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage(PDRectangle.A4);
+            final PDPage page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
-            PDAcroForm acroForm = new PDAcroForm(doc);
+            final PDAcroForm acroForm = new PDAcroForm(doc);
             doc.getDocumentCatalog().setAcroForm(acroForm);
 
             // Note that the font is fully embedded. If you use a different font, make sure that 
             // its license allows full embedding.
-            PDFont formFont = PDType0Font.load(doc, CreateSimpleFormWithEmbeddedFont.class.getResourceAsStream(
+            final PDFont formFont = PDType0Font.load(doc, CreateSimpleFormWithEmbeddedFont.class.getResourceAsStream(
                     "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"), false);
 
             // Add and set the resources and default appearance at the form level
@@ -72,23 +72,23 @@ public class CreateSimpleFormWithEmbeddedFont
             // Acrobat sets the font size on the form level to be
             // auto sized as default. This is done by setting the font size to '0'
             acroForm.setDefaultResources(resources);
-            String defaultAppearanceString = "/" + fontName + " 0 Tf 0 g";
+            final String defaultAppearanceString = "/" + fontName + " 0 Tf 0 g";
 
-            PDTextField textBox = new PDTextField(acroForm);
+            final PDTextField textBox = new PDTextField(acroForm);
             textBox.setPartialName("SampleField");
             textBox.setDefaultAppearance(defaultAppearanceString);
             acroForm.getFields().add(textBox);
 
             // Specify the widget annotation associated with the field
-            PDAnnotationWidget widget = textBox.getWidgets().get(0);
-            PDRectangle rect = new PDRectangle(50, 700, 200, 50);
+            final PDAnnotationWidget widget = textBox.getWidgets().get(0);
+            final PDRectangle rect = new PDRectangle(50, 700, 200, 50);
             widget.setRectangle(rect);
             widget.setPage(page);
             page.getAnnotations().add(widget);
 
             // set green border and yellow background
             // if you prefer defaults, delete this code block
-            PDAppearanceCharacteristicsDictionary fieldAppearance
+            final PDAppearanceCharacteristicsDictionary fieldAppearance
                     = new PDAppearanceCharacteristicsDictionary(new COSDictionary());
             fieldAppearance.setBorderColour(new PDColor(new float[]{0,1,0}, PDDeviceRGB.INSTANCE));
             fieldAppearance.setBackground(new PDColor(new float[]{1,1,0}, PDDeviceRGB.INSTANCE));

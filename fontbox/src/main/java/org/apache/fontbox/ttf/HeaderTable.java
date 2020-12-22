@@ -59,7 +59,7 @@ public class HeaderTable extends TTFTable
     private short indexToLocFormat;
     private short glyphDataFormat;
 
-    HeaderTable(TrueTypeFont font)
+    HeaderTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -72,7 +72,7 @@ public class HeaderTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
         version = data.read32Fixed();
         fontRevision = data.read32Fixed();
@@ -103,7 +103,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param checkSumAdjustmentValue The checkSumAdjustment to set.
      */
-    public void setCheckSumAdjustment(long checkSumAdjustmentValue)
+    public void setCheckSumAdjustment(final long checkSumAdjustmentValue)
     {
         this.checkSumAdjustment = checkSumAdjustmentValue;
     }
@@ -117,7 +117,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param createdValue The created to set.
      */
-    public void setCreated(Calendar createdValue)
+    public void setCreated(final Calendar createdValue)
     {
         this.created = createdValue;
     }
@@ -131,7 +131,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param flagsValue The flags to set.
      */
-    public void setFlags(int flagsValue)
+    public void setFlags(final int flagsValue)
     {
         this.flags = flagsValue;
     }
@@ -145,7 +145,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param fontDirectionHintValue The fontDirectionHint to set.
      */
-    public void setFontDirectionHint(short fontDirectionHintValue)
+    public void setFontDirectionHint(final short fontDirectionHintValue)
     {
         this.fontDirectionHint = fontDirectionHintValue;
     }
@@ -159,7 +159,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param fontRevisionValue The fontRevision to set.
      */
-    public void setFontRevision(float fontRevisionValue)
+    public void setFontRevision(final float fontRevisionValue)
     {
         this.fontRevision = fontRevisionValue;
     }
@@ -173,7 +173,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param glyphDataFormatValue The glyphDataFormat to set.
      */
-    public void setGlyphDataFormat(short glyphDataFormatValue)
+    public void setGlyphDataFormat(final short glyphDataFormatValue)
     {
         this.glyphDataFormat = glyphDataFormatValue;
     }
@@ -187,7 +187,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param indexToLocFormatValue The indexToLocFormat to set.
      */
-    public void setIndexToLocFormat(short indexToLocFormatValue)
+    public void setIndexToLocFormat(final short indexToLocFormatValue)
     {
         this.indexToLocFormat = indexToLocFormatValue;
     }
@@ -201,7 +201,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param lowestRecPPEMValue The lowestRecPPEM to set.
      */
-    public void setLowestRecPPEM(int lowestRecPPEMValue)
+    public void setLowestRecPPEM(final int lowestRecPPEMValue)
     {
         this.lowestRecPPEM = lowestRecPPEMValue;
     }
@@ -215,7 +215,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param macStyleValue The macStyle to set.
      */
-    public void setMacStyle(int macStyleValue)
+    public void setMacStyle(final int macStyleValue)
     {
         this.macStyle = macStyleValue;
     }
@@ -229,7 +229,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param magicNumberValue The magicNumber to set.
      */
-    public void setMagicNumber(long magicNumberValue)
+    public void setMagicNumber(final long magicNumberValue)
     {
         this.magicNumber = magicNumberValue;
     }
@@ -243,7 +243,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param modifiedValue The modified to set.
      */
-    public void setModified(Calendar modifiedValue)
+    public void setModified(final Calendar modifiedValue)
     {
         this.modified = modifiedValue;
     }
@@ -257,7 +257,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param unitsPerEmValue The unitsPerEm to set.
      */
-    public void setUnitsPerEm(int unitsPerEmValue)
+    public void setUnitsPerEm(final int unitsPerEmValue)
     {
         this.unitsPerEm = unitsPerEmValue;
     }
@@ -271,7 +271,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param versionValue The version to set.
      */
-    public void setVersion(float versionValue)
+    public void setVersion(final float versionValue)
     {
         this.version = versionValue;
     }
@@ -285,7 +285,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param maxValue The xMax to set.
      */
-    public void setXMax(short maxValue)
+    public void setXMax(final short maxValue)
     {
         xMax = maxValue;
     }
@@ -299,7 +299,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param minValue The xMin to set.
      */
-    public void setXMin(short minValue)
+    public void setXMin(final short minValue)
     {
         xMin = minValue;
     }
@@ -313,7 +313,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param maxValue The yMax to set.
      */
-    public void setYMax(short maxValue)
+    public void setYMax(final short maxValue)
     {
         yMax = maxValue;
     }
@@ -327,7 +327,7 @@ public class HeaderTable extends TTFTable
     /**
      * @param minValue The yMin to set.
      */
-    public void setYMin(short minValue)
+    public void setYMin(final short minValue)
     {
         yMin = minValue;
     }

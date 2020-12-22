@@ -45,12 +45,12 @@ class TestXMPWithDefinedSchemas
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void main(String path) throws Exception
+    void main(final String path) throws Exception
     {
-        InputStream is = this.getClass().getResourceAsStream(path);
+        final InputStream is = this.getClass().getResourceAsStream(path);
 
-        DomXmpParser builder = new DomXmpParser();
-        XMPMetadata rxmp = builder.parse(is);
+        final DomXmpParser builder = new DomXmpParser();
+        final XMPMetadata rxmp = builder.parse(is);
         // ensure basic parsing was OK
         assertTrue(rxmp.getAllSchemas().size()>0);
     }

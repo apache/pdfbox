@@ -69,8 +69,8 @@ public class ErrorDialog extends JDialog
 
     private boolean showingDetails;
     private boolean isFiltering = true;
-    private JComponent message;
-    private JComponent main;
+    private final JComponent message;
+    private final JComponent main;
     private JScrollPane details;
     private JTextPane stacktrace;
     private final Throwable error;
@@ -80,7 +80,7 @@ public class ErrorDialog extends JDialog
      *
      * @param t the exception to display
      */
-    public ErrorDialog(Throwable t)
+    public ErrorDialog(final Throwable t)
     {
         this(null, null, t);
     }
@@ -91,7 +91,7 @@ public class ErrorDialog extends JDialog
      * @param owner if non-null, then the dialog is positioned (centered) w.r.t. this component
      * @param t the exception to display
      */
-    public ErrorDialog(JComponent owner, Throwable t)
+    public ErrorDialog(final JComponent owner, final Throwable t)
     {
         this(owner, null, t);
     }
@@ -103,7 +103,7 @@ public class ErrorDialog extends JDialog
      * @param icon the icon to display
      * @param t the exception to display
      */
-    public ErrorDialog(JComponent owner, Icon icon, Throwable t)
+    public ErrorDialog(final JComponent owner, final Icon icon, final Throwable t)
     {
         setTitle(t.getClass().getName());
         setModal(true);
@@ -129,19 +129,19 @@ public class ErrorDialog extends JDialog
      * null, the given component will match the screen center.
      *
      */
-    static void position(Component c, Component parent)
+    static void position(final Component c, final Component parent)
     {
-        Dimension d = c.getPreferredSize();
+        final Dimension d = c.getPreferredSize();
         if (parent == null)
         {
-            Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
+            final Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
             c.setLocation(s.width / 2 - d.width / 2, s.height / 2 - d.height / 2);
         }
         else
         {
-            Point p = parent.getLocationOnScreen();
-            int pw = parent.getWidth();
-            int ph = parent.getHeight();
+            final Point p = parent.getLocationOnScreen();
+            final int pw = parent.getWidth();
+            final int ph = parent.getHeight();
             c.setLocation(p.x + pw / 2 - d.width / 2, p.y + ph / 2 - d.height / 2);
         }
     }
@@ -166,7 +166,7 @@ public class ErrorDialog extends JDialog
                 if (details == null)
                 {
                     details = createDetailedMessage();
-                    StringBuilder buffer = new StringBuilder();
+                    final StringBuilder buffer = new StringBuilder();
                     stacktrace.setText(generateStackTrace(error, buffer).toString());
                     stacktrace.setCaretPosition(0);
                     stacktrace.setBackground(main.getBackground());
@@ -180,20 +180,20 @@ public class ErrorDialog extends JDialog
             showDetails.setText(showingDetails ? "<< Hide Details" : "Show Details >>");
             ErrorDialog.this.pack();
         });
-        JPanel messagePanel = new JPanel();
+        final JPanel messagePanel = new JPanel();
 
         final JCheckBox filter = new JCheckBox("Filter stack traces");
         filter.setSelected(isFiltering);
         filter.addActionListener(e ->
         {
             isFiltering = filter.isSelected();
-            StringBuilder buffer = new StringBuilder();
+            final StringBuilder buffer = new StringBuilder();
             stacktrace.setText(generateStackTrace(error, buffer).toString());
             stacktrace.setCaretPosition(0);
             stacktrace.repaint();
         });
         message.setBackground(messagePanel.getBackground());
-        JPanel buttonPanel = new JPanel();
+        final JPanel buttonPanel = new JPanel();
         buttonPanel.add(Box.createHorizontalStrut(BORDER_SIZE));
         buttonPanel.add(showDetails);
         buttonPanel.add(filter);
@@ -204,13 +204,13 @@ public class ErrorDialog extends JDialog
         messagePanel.add(buttonPanel, BorderLayout.SOUTH);
         messagePanel.setPreferredSize(MESSAGE_SIZE);
 
-        JPanel panel = new JPanel();
+        final JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(messagePanel, BorderLayout.NORTH);
         
         // allow closing with ESC
-        ActionListener actionListener = actionEvent -> dispose();
-        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        final ActionListener actionListener = actionEvent -> dispose();
+        final KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
         panel.registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);        
         
         return panel;
@@ -220,10 +220,10 @@ public class ErrorDialog extends JDialog
      * Creates a non-editable widget to display the error message.
      *
      */
-    final JComponent createErrorMessage(Throwable t)
+    final JComponent createErrorMessage(final Throwable t)
     {
-        String txt = t.getLocalizedMessage();
-        JEditorPane msg = new JEditorPane();
+        final String txt = t.getLocalizedMessage();
+        final JEditorPane msg = new JEditorPane();
         msg.setContentType("text/plain");
         msg.setEditable(false);
         msg.setText(txt);
@@ -245,11 +245,11 @@ public class ErrorDialog extends JDialog
     /**
      * Recursively print the stack trace on the given buffer.
      */
-    StringBuilder generateStackTrace(Throwable t, StringBuilder buffer)
+    StringBuilder generateStackTrace(final Throwable t, final StringBuilder buffer)
     {
         buffer.append(t.getClass().getName()).append(": ").append(t.getMessage()).append(NEWLINE);
         buffer.append(toString(t.getStackTrace()));
-        Throwable cause = t.getCause();
+        final Throwable cause = t.getCause();
         if (cause != null && !cause.equals(t))
         {
             buffer.append("Caused by: ");
@@ -258,14 +258,14 @@ public class ErrorDialog extends JDialog
         return buffer;
     }
 
-    StringBuilder toString(StackTraceElement[] traces)
+    StringBuilder toString(final StackTraceElement[] traces)
     {
-        StringBuilder err = new StringBuilder();
-        for (StackTraceElement e : traces)
+        final StringBuilder err = new StringBuilder();
+        for (final StackTraceElement e : traces)
         {
             if (!isFiltering || !isSuppressed(e.getClassName()))
             {
-                String str = e.toString();
+                final String str = e.toString();
                 err.append(INDENT).append(str).append(NEWLINE);
             }
         }
@@ -275,7 +275,7 @@ public class ErrorDialog extends JDialog
     /**
      * Affirms if the error messages from the given class name is to be suppressed.
      */
-    private boolean isSuppressed(String className)
+    private boolean isSuppressed(final String className)
     {
         return FILTERS.stream().anyMatch(className::startsWith);
     }

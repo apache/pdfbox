@@ -51,7 +51,7 @@ final class ASCII85OutputStream extends FilterOutputStream
      *
      * @param out The output stream to write to.
      */
-    ASCII85OutputStream(OutputStream out)
+    ASCII85OutputStream(final OutputStream out)
     {
         super(out);
         lineBreak = 36 * 2;
@@ -68,7 +68,7 @@ final class ASCII85OutputStream extends FilterOutputStream
      *
      * @param term The terminating character.
      */
-    public void setTerminator(char term)
+    public void setTerminator(final char term)
     {
         if (term < 118 || term > 126 || term == Z)
         {
@@ -92,7 +92,7 @@ final class ASCII85OutputStream extends FilterOutputStream
      *
      * @param l The length of the line to use.
      */
-    public void setLineLength(int l)
+    public void setLineLength(final int l)
     {
         if (lineBreak > l)
         {
@@ -151,7 +151,7 @@ final class ASCII85OutputStream extends FilterOutputStream
      * @throws IOException If there is an error writing to the stream.
      */
     @Override
-    public void write(int b) throws IOException
+    public void write(final int b) throws IOException
     {
         flushed = false;
         indata[count++] = (byte) b;

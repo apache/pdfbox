@@ -33,9 +33,9 @@ public class ColorBarCellRenderer implements TableCellRenderer
 {
     @Override
     public Component getTableCellRendererComponent(
-            JTable jTable, Object o, boolean b, boolean b2, int i, int i2)
+            final JTable jTable, final Object o, final boolean b, final boolean b2, final int i, final int i2)
     {
-        JLabel colorBar = new JLabel();
+        final JLabel colorBar = new JLabel();
         colorBar.setOpaque(true);
         colorBar.setBackground((Color) o);
         return colorBar;

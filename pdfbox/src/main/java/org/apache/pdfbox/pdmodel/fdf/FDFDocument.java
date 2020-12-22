@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
  */
 public class FDFDocument implements Closeable
 {
-    private COSDocument document;
+    private final COSDocument document;
 
     /**
      * Constructor, creates a new FDF document.
@@ -56,7 +56,7 @@ public class FDFDocument implements Closeable
         document.setTrailer(new COSDictionary());
 
         // Next we need the root dictionary.
-        FDFCatalog catalog = new FDFCatalog();
+        final FDFCatalog catalog = new FDFCatalog();
         setCatalog(catalog);
     }
 
@@ -65,7 +65,7 @@ public class FDFDocument implements Closeable
      *
      * @param doc The COSDocument that this document wraps.
      */
-    public FDFDocument(COSDocument doc)
+    public FDFDocument(final COSDocument doc)
     {
         document = doc;
     }
@@ -76,16 +76,16 @@ public class FDFDocument implements Closeable
      * @param doc The XML document that contains the XFDF data.
      * @throws IOException If there is an error reading from the dom.
      */
-    public FDFDocument(Document doc) throws IOException
+    public FDFDocument(final Document doc) throws IOException
     {
         this();
-        Element xfdf = doc.getDocumentElement();
+        final Element xfdf = doc.getDocumentElement();
         if (!xfdf.getNodeName().equals("xfdf"))
         {
             throw new IOException("Error while importing xfdf document, "
                     + "root should be 'xfdf' and not '" + xfdf.getNodeName() + "'");
         }
-        FDFCatalog cat = new FDFCatalog(xfdf);
+        final FDFCatalog cat = new FDFCatalog(xfdf);
         setCatalog(cat);
     }
 
@@ -96,7 +96,7 @@ public class FDFDocument implements Closeable
      *
      * @throws IOException If there is an error writing the XML.
      */
-    public void writeXML(Writer output) throws IOException
+    public void writeXML(final Writer output) throws IOException
     {
         output.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         output.write("<xfdf xmlns=\"http://ns.adobe.com/xfdf/\" xml:space=\"preserve\">\n");
@@ -124,8 +124,8 @@ public class FDFDocument implements Closeable
     public FDFCatalog getCatalog()
     {
         FDFCatalog retval = null;
-        COSDictionary trailer = document.getTrailer();
-        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
+        final COSDictionary trailer = document.getTrailer();
+        final COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
         if (root == null)
         {
             retval = new FDFCatalog();
@@ -143,9 +143,9 @@ public class FDFDocument implements Closeable
      *
      * @param cat The FDF catalog.
      */
-    public final void setCatalog(FDFCatalog cat)
+    public final void setCatalog(final FDFCatalog cat)
     {
-        COSDictionary trailer = document.getTrailer();
+        final COSDictionary trailer = document.getTrailer();
         trailer.setItem(COSName.ROOT, cat);
     }
 
@@ -156,7 +156,7 @@ public class FDFDocument implements Closeable
      *
      * @throws IOException If there is an error saving the document.
      */
-    public void save(File fileName) throws IOException
+    public void save(final File fileName) throws IOException
     {
         save(new FileOutputStream(fileName));
     }
@@ -168,7 +168,7 @@ public class FDFDocument implements Closeable
      *
      * @throws IOException If there is an error saving the document.
      */
-    public void save(String fileName) throws IOException
+    public void save(final String fileName) throws IOException
     {
         save(new FileOutputStream(fileName));
     }
@@ -180,7 +180,7 @@ public class FDFDocument implements Closeable
      *
      * @throws IOException If there is an error writing the document.
      */
-    public void save(OutputStream output) throws IOException
+    public void save(final OutputStream output) throws IOException
     {
         try (COSWriter writer = new COSWriter(output))
         {
@@ -195,7 +195,7 @@ public class FDFDocument implements Closeable
      *
      * @throws IOException If there is an error saving the document.
      */
-    public void saveXFDF(File fileName) throws IOException
+    public void saveXFDF(final File fileName) throws IOException
     {
         saveXFDF(new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8)));
@@ -208,7 +208,7 @@ public class FDFDocument implements Closeable
      *
      * @throws IOException If there is an error saving the document.
      */
-    public void saveXFDF(String fileName) throws IOException
+    public void saveXFDF(final String fileName) throws IOException
     {
         saveXFDF(new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8)));
@@ -221,7 +221,7 @@ public class FDFDocument implements Closeable
      *
      * @throws IOException If there is an error writing the document.
      */
-    public void saveXFDF(Writer output) throws IOException
+    public void saveXFDF(final Writer output) throws IOException
     {
         try
         {

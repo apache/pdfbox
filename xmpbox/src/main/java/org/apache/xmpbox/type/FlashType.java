@@ -43,7 +43,7 @@ public class FlashType extends AbstractStructuredType
     @PropertyType(type = Types.Integer)
     public static final String RETURN = "Return";
 
-    public FlashType(XMPMetadata metadata)
+    public FlashType(final XMPMetadata metadata)
     {
         super(metadata);
     }

@@ -26,7 +26,7 @@ class CompositePartTest
     @Test
     void testCompositePart()
     {
-        CompositePart compositePart = new CompositePart("name", 10, 20);
+        final CompositePart compositePart = new CompositePart("name", 10, 20);
         assertEquals("name", compositePart.getName());
         assertEquals(10, compositePart.getXDisplacement());
         assertEquals(20, compositePart.getYDisplacement());

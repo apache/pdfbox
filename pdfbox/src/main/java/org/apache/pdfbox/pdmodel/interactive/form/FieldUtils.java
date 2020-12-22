@@ -83,9 +83,9 @@ public final class FieldUtils
      * @param value the value elements
      * @return a sorted list of KeyValue elements.
      */
-    static List<KeyValue> toKeyValueList(List<String> key, List<String> value)
+    static List<KeyValue> toKeyValueList(final List<String> key, final List<String> value)
     {
-        List<KeyValue> list = new ArrayList<>();
+        final List<KeyValue> list = new ArrayList<>();
         for(int i =0; i<key.size(); i++)
         {
             list.add(new FieldUtils.KeyValue(key.get(i),value.get(i)));
@@ -98,7 +98,7 @@ public final class FieldUtils
      * 
      * @param pairs a list of KeyValue elements
      */
-    static void sortByValue(List<KeyValue> pairs)
+    static void sortByValue(final List<KeyValue> pairs)
     {
         pairs.sort(BY_VALUE_COMPARATOR);
     }
@@ -108,7 +108,7 @@ public final class FieldUtils
      * 
      * @param pairs a list of KeyValue elements
      */
-    static void sortByKey(List<KeyValue> pairs)
+    static void sortByKey(final List<KeyValue> pairs)
     {
         pairs.sort(BY_KEY_COMPARATOR);
     }
@@ -130,7 +130,7 @@ public final class FieldUtils
      * @param pairIdx the index into the two-element array
      * @return a List of single elements
      */
-    static List<String> getPairableItems(COSBase items, int pairIdx)
+    static List<String> getPairableItems(final COSBase items, final int pairIdx)
     {
         if (pairIdx < 0 || pairIdx > 1) 
         {
@@ -139,14 +139,14 @@ public final class FieldUtils
         
         if (items instanceof COSString)
         {
-            List<String> array = new ArrayList<>();
+            final List<String> array = new ArrayList<>();
             array.add(((COSString) items).getString());
             return array;
         }
         else if (items instanceof COSArray)
         {
-            List<String> entryList = new ArrayList<>(); 
-            for (COSBase entry : (COSArray) items)
+            final List<String> entryList = new ArrayList<>();
+            for (final COSBase entry : (COSArray) items)
             {
                 if (entry instanceof COSString)
                 {
@@ -154,7 +154,7 @@ public final class FieldUtils
                 }
                 else if (entry instanceof COSArray)
                 {
-                    COSArray cosArray = (COSArray) entry;
+                    final COSArray cosArray = (COSArray) entry;
                     if (cosArray.size() >= pairIdx +1 && cosArray.get(pairIdx) instanceof COSString)
                     {
                         entryList.add(((COSString) cosArray.get(pairIdx)).getString());

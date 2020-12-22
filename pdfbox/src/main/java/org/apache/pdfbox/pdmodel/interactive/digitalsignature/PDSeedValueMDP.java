@@ -43,7 +43,7 @@ public class PDSeedValueMDP
      *
      * @param dict The signature dictionary.
      */
-    public PDSeedValueMDP(COSDictionary dict)
+    public PDSeedValueMDP(final COSDictionary dict)
     {
         dictionary = dict;
         dictionary.setDirect(true);
@@ -74,7 +74,7 @@ public class PDSeedValueMDP
      * 
      * @param p the value to be set as P
      */
-    public void setP(int p)
+    public void setP(final int p)
     {
         if (p < 0 || p > 3)
         {

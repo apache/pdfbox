@@ -42,7 +42,7 @@ public class PDDictionaryWrapper implements COSObjectable
      * 
      * @param dictionary the dictionary
      */
-    public PDDictionaryWrapper(COSDictionary dictionary)
+    public PDDictionaryWrapper(final COSDictionary dictionary)
     {
         this.dictionary = dictionary;
     }
@@ -57,7 +57,7 @@ public class PDDictionaryWrapper implements COSObjectable
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(final Object obj)
     {
         if (this == obj)
         {

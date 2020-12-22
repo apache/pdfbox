@@ -39,7 +39,7 @@ public class PDMetadata extends PDStream
      *
      * @param document The document that the stream will be part of.
      */
-    public PDMetadata( PDDocument document )
+    public PDMetadata(final PDDocument document )
     {
         super( document );
         getCOSObject().setName( COSName.TYPE, "Metadata" );
@@ -54,7 +54,7 @@ public class PDMetadata extends PDStream
      * @param str The stream parameter.
      * @throws IOException If there is an error creating the stream in the document.
      */
-    public PDMetadata( PDDocument doc, InputStream str) throws IOException
+    public PDMetadata(final PDDocument doc, final InputStream str) throws IOException
     {
         super( doc, str );
         getCOSObject().setName( COSName.TYPE, "Metadata" );
@@ -66,7 +66,7 @@ public class PDMetadata extends PDStream
      *
      * @param str The stream parameter.
      */
-    public PDMetadata( COSStream str )
+    public PDMetadata(final COSStream str )
     {
         super( str );
     }
@@ -91,7 +91,7 @@ public class PDMetadata extends PDStream
      *
      * @throws IOException If there is an error generating the XML document.
      */
-    public void importXMPMetadata( byte[] xmp )
+    public void importXMPMetadata(final byte[] xmp )
         throws IOException
     {
         try (OutputStream os = createOutputStream())

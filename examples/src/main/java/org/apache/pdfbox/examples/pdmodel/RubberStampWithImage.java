@@ -58,7 +58,7 @@ public class RubberStampWithImage
      * @param args the command line arguments
      * @throws IOException an exception is thrown if something went wrong
      */
-    public void doIt( String[] args ) throws IOException
+    public void doIt(final String[] args ) throws IOException
     {
         if( args.length != 3 )
         {
@@ -75,9 +75,9 @@ public class RubberStampWithImage
     
                 for (int i = 0; i < document.getNumberOfPages(); i++)
                 {
-                    PDPage page = document.getPage(i);
-                    List<PDAnnotation> annotations = page.getAnnotations();
-                    PDAnnotationRubberStamp rubberStamp = new PDAnnotationRubberStamp();
+                    final PDPage page = document.getPage(i);
+                    final List<PDAnnotation> annotations = page.getAnnotations();
+                    final PDAnnotationRubberStamp rubberStamp = new PDAnnotationRubberStamp();
                     rubberStamp.setName(PDAnnotationRubberStamp.NAME_TOP_SECRET);
                     rubberStamp.setRectangle(new PDRectangle(200,100));
                     rubberStamp.setContents("A top secret note");
@@ -85,24 +85,24 @@ public class RubberStampWithImage
                     // create a PDXObjectImage with the given image file
                     // if you already have the image in a BufferedImage, 
                     // call LosslessFactory.createFromImage() instead
-                    PDImageXObject ximage = PDImageXObject.createFromFile(args[2], document);           
+                    final PDImageXObject ximage = PDImageXObject.createFromFile(args[2], document);
 
                     // define and set the target rectangle
-                    float lowerLeftX = 250;
-                    float lowerLeftY = 550;
-                    float formWidth = 150;
-                    float formHeight = 25;
-                    float imgWidth = 50;
-                    float imgHeight = 25;
+                    final float lowerLeftX = 250;
+                    final float lowerLeftY = 550;
+                    final float formWidth = 150;
+                    final float formHeight = 25;
+                    final float imgWidth = 50;
+                    final float imgHeight = 25;
                     
-                    PDRectangle rect = new PDRectangle();
+                    final PDRectangle rect = new PDRectangle();
                     rect.setLowerLeftX(lowerLeftX);
                     rect.setLowerLeftY(lowerLeftY);
                     rect.setUpperRightX(lowerLeftX + formWidth);
                     rect.setUpperRightY(lowerLeftY + formHeight);
 
                     // Create a PDFormXObject
-                    PDFormXObject form = new PDFormXObject(document);
+                    final PDFormXObject form = new PDFormXObject(document);
                     form.setResources(new PDResources());
                     form.setBBox(rect);
                     form.setFormType(1);
@@ -113,8 +113,8 @@ public class RubberStampWithImage
                         drawXObject(ximage, form.getResources(), os, lowerLeftX, lowerLeftY, imgWidth, imgHeight);
                     }
 
-                    PDAppearanceStream myDic = new PDAppearanceStream(form.getCOSObject());
-                    PDAppearanceDictionary appearance = new PDAppearanceDictionary(new COSDictionary());
+                    final PDAppearanceStream myDic = new PDAppearanceStream(form.getCOSObject());
+                    final PDAppearanceDictionary appearance = new PDAppearanceDictionary(new COSDictionary());
                     appearance.setNormalAppearance(myDic);
                     rubberStamp.setAppearance(appearance);
                     rubberStamp.setRectangle(rect);
@@ -128,11 +128,11 @@ public class RubberStampWithImage
         }
     }
     
-    private void drawXObject( PDImageXObject xobject, PDResources resources, OutputStream os,
-            float x, float y, float width, float height ) throws IOException
+    private void drawXObject(final PDImageXObject xobject, final PDResources resources, final OutputStream os,
+                             final float x, final float y, final float width, final float height ) throws IOException
     {
         // This is similar to PDPageContentStream.drawXObject()
-        COSName xObjectId = resources.add(xobject);
+        final COSName xObjectId = resources.add(xobject);
 
         appendRawCommands( os, SAVE_GRAPHICS_STATE );
         appendRawCommands( os, FORMATDECIMAL.format( width ) );
@@ -157,7 +157,7 @@ public class RubberStampWithImage
         appendRawCommands( os, RESTORE_GRAPHICS_STATE );
     }
 
-    private void appendRawCommands(OutputStream os, String commands) throws IOException
+    private void appendRawCommands(final OutputStream os, final String commands) throws IOException
     {
         os.write( commands.getBytes(StandardCharsets.ISO_8859_1));
     }
@@ -169,9 +169,9 @@ public class RubberStampWithImage
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
-        RubberStampWithImage rubberStamp = new RubberStampWithImage();
+        final RubberStampWithImage rubberStamp = new RubberStampWithImage();
         rubberStamp.doIt(args);
     }
 

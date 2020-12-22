@@ -54,8 +54,8 @@ class TestPDDocumentCatalog
         {
             doc = Loader
                     .loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf"));
-            PDDocumentCatalog cat = doc.getDocumentCatalog();
-            String[] labels = cat.getPageLabels().getLabelsByPageIndices();
+            final PDDocumentCatalog cat = doc.getDocumentCatalog();
+            final String[] labels = cat.getPageLabels().getLabelsByPageIndices();
             assertEquals(12, labels.length);
             assertEquals("A1", labels[0]);
             assertEquals("A2", labels[1]);
@@ -96,7 +96,7 @@ class TestPDDocumentCatalog
         {
             doc = Loader
                     .loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("badpagelabels.pdf"));
-            PDDocumentCatalog cat = doc.getDocumentCatalog();
+            final PDDocumentCatalog cat = doc.getDocumentCatalog();
             // getLabelsByPageIndices() should not throw an exception
             cat.getPageLabels().getLabelsByPageIndices();
         }
@@ -155,7 +155,7 @@ class TestPDDocumentCatalog
         {
             
             doc = Loader.loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"));
-            PDDocumentCatalog catalog = doc.getDocumentCatalog();
+            final PDDocumentCatalog catalog = doc.getDocumentCatalog();
 
             // retrieve OutputIntents
             List<PDOutputIntent> outputIntents = catalog.getOutputIntents();
@@ -164,7 +164,7 @@ class TestPDDocumentCatalog
             // add an OutputIntent
             colorProfile = TestPDDocumentCatalog.class.getResourceAsStream("sRGB.icc");
             // create output intent
-            PDOutputIntent oi = new PDOutputIntent(doc, colorProfile); 
+            final PDOutputIntent oi = new PDOutputIntent(doc, colorProfile);
             oi.setInfo("sRGB IEC61966-2.1"); 
             oi.setOutputCondition("sRGB IEC61966-2.1"); 
             oi.setOutputConditionIdentifier("sRGB IEC61966-2.1"); 
@@ -199,7 +199,7 @@ class TestPDDocumentCatalog
     void handleBooleanInOpenAction() throws IOException
     {
         //PDFBOX-3772 -- allow for COSBoolean
-        PDDocument doc = new PDDocument();
+        final PDDocument doc = new PDDocument();
         doc.getDocumentCatalog().getCOSObject().setBoolean(COSName.OPEN_ACTION, false);
         assertNull(doc.getDocumentCatalog().getOpenAction());
         doc.close();

@@ -257,7 +257,7 @@ public class MacRomanEncoding extends Encoding
      */
     public MacRomanEncoding()
     {
-        for (Object[] encodingEntry : MAC_ROMAN_ENCODING_TABLE)
+        for (final Object[] encodingEntry : MAC_ROMAN_ENCODING_TABLE)
         {
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }

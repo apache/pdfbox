@@ -32,16 +32,16 @@ import org.junit.jupiter.api.Test;
 class AdobePDFErrorsTest
 {
 
-    private XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+    private final XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
     @Test
     void testPDFAIdentification() throws Exception
     {
-        AdobePDFSchema schem = metadata.createAndAddAdobePDFSchema();
+        final AdobePDFSchema schem = metadata.createAndAddAdobePDFSchema();
 
-        String keywords = "keywords ihih";
-        String pdfVersion = "1.4";
-        String producer = "producer";
+        final String keywords = "keywords ihih";
+        final String pdfVersion = "1.4";
+        final String producer = "producer";
 
         schem.setKeywords(keywords);
         schem.setPDFVersion(pdfVersion);
@@ -69,8 +69,8 @@ class AdobePDFErrorsTest
     @Test
     void testBadPDFAConformanceId() throws Exception
     {
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
-        String conformance = "kiohiohiohiohio";
+        final PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        final String conformance = "kiohiohiohiohio";
         assertThrows(BadFieldValueException.class, () -> {
 	        pdfaid.setConformance(conformance);
 	    });
@@ -79,7 +79,7 @@ class AdobePDFErrorsTest
     @Test
     void testBadVersionIdValueType() throws Exception
     {
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        final PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
         pdfaid.setPartValueWithString("1");
         assertThrows(IllegalArgumentException.class, () -> {    
             pdfaid.setPartValueWithString("ojoj");

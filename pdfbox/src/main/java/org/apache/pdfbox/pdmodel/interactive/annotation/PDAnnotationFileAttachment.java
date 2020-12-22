@@ -64,7 +64,7 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationFileAttachment(COSDictionary field)
+    public PDAnnotationFileAttachment(final COSDictionary field)
     {
         super(field);
     }
@@ -86,7 +86,7 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      *
      * @param file The file that is attached.
      */
-    public void setFile(PDFileSpecification file)
+    public void setFile(final PDFileSpecification file)
     {
         getCOSObject().setItem("FS", file);
     }
@@ -106,7 +106,7 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      *
      * @param name The name of the visual icon to draw.
      */
-    public void setAttachmentName(String name)
+    public void setAttachmentName(final String name)
     {
         getCOSObject().setName(COSName.NAME, name);
     }

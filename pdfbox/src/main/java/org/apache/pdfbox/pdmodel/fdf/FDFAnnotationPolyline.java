@@ -59,7 +59,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationPolyline(COSDictionary a)
+    public FDFAnnotationPolyline(final COSDictionary a)
     {
         super(a);
     }
@@ -71,7 +71,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationPolyline(Element element) throws IOException
+    public FDFAnnotationPolyline(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
@@ -80,47 +80,47 @@ public class FDFAnnotationPolyline extends FDFAnnotation
         initStyles(element);
     }
 
-    private void initVertices(Element element) throws IOException
+    private void initVertices(final Element element) throws IOException
     {
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
         try
         {
-            String vertices = xpath.evaluate("vertices[1]", element);
+            final String vertices = xpath.evaluate("vertices[1]", element);
             if (vertices == null || vertices.isEmpty())
             {
                 throw new IOException("Error: missing element 'vertices'");
             }
-            String[] verticesValues = vertices.split(",|;");
-            float[] values = new float[verticesValues.length];
+            final String[] verticesValues = vertices.split(",|;");
+            final float[] values = new float[verticesValues.length];
             for (int i = 0; i < verticesValues.length; i++)
             {
                 values[i] = Float.parseFloat(verticesValues[i]);
             }
             setVertices(values);
         }
-        catch (XPathExpressionException e)
+        catch (final XPathExpressionException e)
         {
             LOG.debug("Error while evaluating XPath expression for polyline vertices", e);
         }
     }
 
-    private void initStyles(Element element)
+    private void initStyles(final Element element)
     {
-        String startStyle = element.getAttribute("head");
+        final String startStyle = element.getAttribute("head");
         if (startStyle != null && !startStyle.isEmpty())
         {
             setStartPointEndingStyle(startStyle);
         }
-        String endStyle = element.getAttribute("tail");
+        final String endStyle = element.getAttribute("tail");
         if (endStyle != null && !endStyle.isEmpty())
         {
             setEndPointEndingStyle(endStyle);
         }
 
-        String color = element.getAttribute("interior-color");
+        final String color = element.getAttribute("interior-color");
         if (color != null && color.length() == 7 && color.charAt(0) == '#')
         {
-            int colorValue = Integer.parseInt(color.substring(1, 7), 16);
+            final int colorValue = Integer.parseInt(color.substring(1, 7), 16);
             setInteriorColor(new Color(colorValue));
         }
     }
@@ -130,9 +130,9 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      *
      * @param vertices array of floats [x1, y1, x2, y2, ...] vertex coordinates in default user space.
      */
-    public void setVertices(float[] vertices)
+    public void setVertices(final float[] vertices)
     {
-        COSArray newVertices = new COSArray();
+        final COSArray newVertices = new COSArray();
         newVertices.setFloatArray(vertices);
         annot.setItem(COSName.VERTICES, newVertices);
     }
@@ -144,7 +144,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      */
     public float[] getVertices()
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.VERTICES);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.VERTICES);
         if (array != null)
         {
             return array.toFloatArray();
@@ -160,9 +160,9 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      *
      * @param style The new style.
      */
-    public void setStartPointEndingStyle(String style)
+    public void setStartPointEndingStyle(final String style)
     {
-        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
+        final String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
         if (array == null)
         {
@@ -185,7 +185,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
     public String getStartPointEndingStyle()
     {
         String retval = PDAnnotationLine.LE_NONE;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
         if (array != null)
         {
             retval = array.getName(0);
@@ -199,9 +199,9 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      *
      * @param style The new style.
      */
-    public void setEndPointEndingStyle(String style)
+    public void setEndPointEndingStyle(final String style)
     {
-        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
+        final String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
         if (array == null)
         {
@@ -224,7 +224,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
     public String getEndPointEndingStyle()
     {
         String retval = PDAnnotationLine.LE_NONE;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
         if (array != null)
         {
             retval = array.getName(1);
@@ -238,12 +238,12 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      *
      * @param color The interior color of the line endings.
      */
-    public void setInteriorColor(Color color)
+    public void setInteriorColor(final Color color)
     {
         COSArray array = null;
         if (color != null)
         {
-            float[] colors = color.getRGBColorComponents(null);
+            final float[] colors = color.getRGBColorComponents(null);
             array = new COSArray();
             array.setFloatArray(colors);
         }
@@ -258,10 +258,10 @@ public class FDFAnnotationPolyline extends FDFAnnotation
     public Color getInteriorColor()
     {
         Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
+        final COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
         if (array != null)
         {
-            float[] rgb = array.toFloatArray();
+            final float[] rgb = array.toFloatArray();
             if (rgb.length >= 3)
             {
                 retval = new Color(rgb[0], rgb[1], rgb[2]);

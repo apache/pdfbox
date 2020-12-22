@@ -34,7 +34,7 @@ class TestGotoRemoteAction extends AbstractTestAction
     @Test
     void testGoto_OK() throws Exception
     {
-        PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
+        final PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
         gotoAction.setD(COSName.getPDFName("ADest"));
         gotoAction.setFile(new PDFileSpecification()
         {
@@ -45,7 +45,7 @@ class TestGotoRemoteAction extends AbstractTestAction
             }
 
             @Override
-            public void setFile(String file)
+            public void setFile(final String file)
             {
             }
 
@@ -61,7 +61,7 @@ class TestGotoRemoteAction extends AbstractTestAction
     @Test
     void testGoto_KO_InvalidContent() throws Exception
     {
-        PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
+        final PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
         gotoAction.setD(new COSDictionary());
         gotoAction.setFile(new PDFileSpecification()
         {
@@ -72,7 +72,7 @@ class TestGotoRemoteAction extends AbstractTestAction
             }
 
             @Override
-            public void setFile(String file)
+            public void setFile(final String file)
             {
             }
 
@@ -88,7 +88,7 @@ class TestGotoRemoteAction extends AbstractTestAction
     @Test
     void testGoto_KO_MissingD() throws Exception
     {
-        PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
+        final PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
         gotoAction.setFile(new PDFileSpecification()
         {
             @Override
@@ -98,7 +98,7 @@ class TestGotoRemoteAction extends AbstractTestAction
             }
 
             @Override
-            public void setFile(String file)
+            public void setFile(final String file)
             {
             }
 
@@ -114,7 +114,7 @@ class TestGotoRemoteAction extends AbstractTestAction
     @Test
     void testGoto_KO_MissingF() throws Exception
     {
-        PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
+        final PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
         gotoAction.setD(COSName.getPDFName("ADest"));
         valid(gotoAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
     }

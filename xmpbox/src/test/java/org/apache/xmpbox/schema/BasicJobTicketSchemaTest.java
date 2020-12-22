@@ -36,22 +36,22 @@ class BasicJobTicketSchemaTest
     @Test
     void testAddTwoJobs() throws Exception
     {
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        XmpSerializer serializer = new XmpSerializer();
-        DomXmpParser builder = new DomXmpParser();
+        final XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        final XmpSerializer serializer = new XmpSerializer();
+        final DomXmpParser builder = new DomXmpParser();
 
-        XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
+        final XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
         basic.addJob("zeid1", "zename1", "zeurl1", "aaa");
         basic.addJob("zeid2", "zename2", "zeurl2");
 
         // serializer.serialize(metadata, System.out, true);
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serializer.serialize(metadata, bos, true);
 
-        XMPMetadata rxmp = builder.parse(bos.toByteArray());
+        final XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
-        XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
+        final XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
         assertNotNull(jt);
         assertEquals(2, jt.getJobs().size());
     }
@@ -59,26 +59,26 @@ class BasicJobTicketSchemaTest
     @Test
     void testAddWithDefaultPrefix() throws Exception
     {
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        XmpSerializer serializer = new XmpSerializer();
-        DomXmpParser builder = new DomXmpParser();
+        final XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        final XmpSerializer serializer = new XmpSerializer();
+        final DomXmpParser builder = new DomXmpParser();
 
-        XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
+        final XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
 
         basic.addJob("zeid2", "zename2", "zeurl2");
 
         // serializer.serialize(metadata, System.out, true);
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         serializer.serialize(metadata, bos, true);
-        XMPMetadata rxmp = builder.parse(bos.toByteArray());
+        final XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
-        XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
+        final XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
         assertNotNull(jt);
         assertEquals(1, jt.getJobs().size());
 
-        JobType job = jt.getJobs().get(0);
+        final JobType job = jt.getJobs().get(0);
         assertEquals("zeid2", job.getId());
         assertEquals("zename2", job.getName());
         assertEquals("zeurl2", job.getUrl());
@@ -87,11 +87,11 @@ class BasicJobTicketSchemaTest
     @Test
     void testAddWithDefinedPrefix() throws Exception
     {
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        XmpSerializer serializer = new XmpSerializer();
-        DomXmpParser builder = new DomXmpParser();
+        final XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        final XmpSerializer serializer = new XmpSerializer();
+        final DomXmpParser builder = new DomXmpParser();
 
-        XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
+        final XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
 
         basic.addJob("zeid2", "zename2", "zeurl2", "aaa");
 
@@ -99,15 +99,15 @@ class BasicJobTicketSchemaTest
 
         // serializer.serialize(metadata, System.out, true);
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serializer.serialize(metadata, bos, true);
-        XMPMetadata rxmp = builder.parse(bos.toByteArray());
+        final XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
-        XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
+        final XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
         assertNotNull(jt);
         assertEquals(1, jt.getJobs().size());
 
-        JobType job = jt.getJobs().get(0);
+        final JobType job = jt.getJobs().get(0);
         // SaveMetadataHelper.serialize(rxmp, System.out);
 
         // StructuredType stjob =

@@ -40,7 +40,7 @@ public class PDMarkedContent
      * @param properties the properties
      * @return the marked-content sequence
      */
-    public static PDMarkedContent create(COSName tag, COSDictionary properties)
+    public static PDMarkedContent create(final COSName tag, final COSDictionary properties)
     {
         if (COSName.ARTIFACT.equals(tag))
         {
@@ -61,7 +61,7 @@ public class PDMarkedContent
      * @param tag the tag
      * @param properties the properties
      */
-    public PDMarkedContent(COSName tag, COSDictionary properties)
+    public PDMarkedContent(final COSName tag, final COSDictionary properties)
     {
         this.tag = tag == null ? null : tag.getName();
         this.properties = properties;
@@ -164,7 +164,7 @@ public class PDMarkedContent
      * 
      * @param text the text position
      */
-    public void addText(TextPosition text)
+    public void addText(final TextPosition text)
     {
         this.getContents().add(text);
     }
@@ -174,7 +174,7 @@ public class PDMarkedContent
      * 
      * @param markedContent the marked content
      */
-    public void addMarkedContent(PDMarkedContent markedContent)
+    public void addMarkedContent(final PDMarkedContent markedContent)
     {
         this.getContents().add(markedContent);
     }
@@ -184,7 +184,7 @@ public class PDMarkedContent
      * 
      * @param xobject the XObject
      */
-    public void addXObject(PDXObject xobject)
+    public void addXObject(final PDXObject xobject)
     {
         this.getContents().add(xobject);
     }

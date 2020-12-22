@@ -43,7 +43,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * @param object The object that this encapsulates.
      *
      */
-    public COSObject(COSBase object)
+    public COSObject(final COSBase object)
     {
         baseObject = object;
     }
@@ -54,7 +54,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * @param object The object that this encapsulates.
      * @param objectKey The COSObjectKey of the encapsulated object
      */
-    public COSObject(COSBase object, COSObjectKey objectKey)
+    public COSObject(final COSBase object, final COSObjectKey objectKey)
     {
         this(objectKey, null);
         baseObject = object;
@@ -67,7 +67,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * @param parser The parser to be used to load the object on demand
      *
      */
-    public COSObject(COSBase object, ICOSParser parser)
+    public COSObject(final COSBase object, final ICOSParser parser)
     {
         baseObject = object;
         this.parser = parser;
@@ -80,7 +80,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * @param parser The parser to be used to load the object on demand
      *
      */
-    public COSObject(COSObjectKey key, ICOSParser parser)
+    public COSObject(final COSObjectKey key, final ICOSParser parser)
     {
         this.parser = parser;
         objectNumber = key.getNumber();
@@ -116,7 +116,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
                     parser = null;
                 }
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 // remove parser to avoid endless recursions
                 parser = null;
@@ -167,7 +167,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept( ICOSVisitor visitor ) throws IOException
+    public Object accept(final ICOSVisitor visitor ) throws IOException
     {
         return getObject() != null ? getObject().accept( visitor ) : COSNull.NULL.accept( visitor );
     }
@@ -189,7 +189,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * @param flag the update state.
      */
     @Override
-    public void setNeedToBeUpdated(boolean flag) 
+    public void setNeedToBeUpdated(final boolean flag)
     {
         needToBeUpdated = flag;
     }

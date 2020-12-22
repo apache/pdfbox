@@ -81,7 +81,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     /**
      * Constructor for Standard 14.
      */
-    PDFont(String baseFont)
+    PDFont(final String baseFont)
     {
         dict = new COSDictionary();
         dict.setItem(COSName.TYPE, COSName.FONT);
@@ -101,7 +101,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      *
      * @param fontDictionary Font dictionary.
      */
-    protected PDFont(COSDictionary fontDictionary)
+    protected PDFont(final COSDictionary fontDictionary)
     {
         dict = fontDictionary;
         codeToWidthMap = new HashMap<>();
@@ -114,7 +114,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
     private PDFontDescriptor loadFontDescriptor()
     {
-        COSDictionary fd = dict.getCOSDictionary(COSName.FONT_DESC);
+        final COSDictionary fd = dict.getCOSDictionary(COSName.FONT_DESC);
         if (fd != null)
         {
             return new PDFontDescriptor(fd);
@@ -132,7 +132,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
     private CMap loadUnicodeCmap()
     {
-        COSBase toUnicode = dict.getDictionaryObject(COSName.TO_UNICODE);
+        final COSBase toUnicode = dict.getDictionaryObject(COSName.TO_UNICODE);
         if (toUnicode == null)
         {
             return null;
@@ -144,9 +144,9 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             if (cmap != null && !cmap.hasUnicodeMappings())
             {
                 LOG.warn("Invalid ToUnicode CMap in font " + getName());
-                String cmapName = cmap.getName() != null ? cmap.getName() : "";
-                String ordering = cmap.getOrdering() != null ? cmap.getOrdering() : "";
-                COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
+                final String cmapName = cmap.getName() != null ? cmap.getName() : "";
+                final String ordering = cmap.getOrdering() != null ? cmap.getOrdering() : "";
+                final COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
                 if (cmapName.contains("Identity") //
                         || ordering.contains("Identity") //
                         || COSName.IDENTITY_H.equals(encoding) //
@@ -157,7 +157,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 }
             }
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             LOG.error("Could not read ToUnicode CMap in font " + getName(), ex);
         }
@@ -183,7 +183,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      *
      * @param fontDescriptor
      */
-    protected final void setFontDescriptor(PDFontDescriptor fontDescriptor)
+    protected final void setFontDescriptor(final PDFontDescriptor fontDescriptor)
     {
         this.fontDescriptor = fontDescriptor;
     }
@@ -194,12 +194,12 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @param base COSName or COSStream
      * @throws IOException
      */
-    protected final CMap readCMap(COSBase base) throws IOException
+    protected final CMap readCMap(final COSBase base) throws IOException
     {
         if (base instanceof COSName)
         {
             // predefined CMap
-            String name = ((COSName)base).getName();
+            final String name = ((COSName)base).getName();
             return CMapManager.getPredefinedCMap(name);
         }
         else if (base instanceof COSStream)
@@ -229,7 +229,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     }
 
     @Override
-    public Vector getPositionVector(int code)
+    public Vector getPositionVector(final int code)
     {
         throw new UnsupportedOperationException("Horizontal fonts have no position vector");
     }
@@ -242,13 +242,13 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @return displacement vector
      * @throws IOException
      */
-    public Vector getDisplacement(int code) throws IOException
+    public Vector getDisplacement(final int code) throws IOException
     {
         return new Vector(getWidth(code) / 1000, 0);
     }
 
     @Override
-    public float getWidth(int code) throws IOException
+    public float getWidth(final int code) throws IOException
     {
         Float width = codeToWidthMap.get(code);
         if (width != null)
@@ -265,10 +265,10 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         // Type1, Type1C, Type3
         if (dict.getDictionaryObject(COSName.WIDTHS) != null || dict.containsKey(COSName.MISSING_WIDTH))
         {
-            int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
-            int lastChar = dict.getInt(COSName.LAST_CHAR, -1);
-            int siz = getWidths().size();
-            int idx = code - firstChar;
+            final int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
+            final int lastChar = dict.getInt(COSName.LAST_CHAR, -1);
+            final int siz = getWidths().size();
+            final int idx = code - firstChar;
             if (siz > 0 && code >= firstChar && code <= lastChar && idx < siz)
             {
                 width = getWidths().get(idx);
@@ -280,7 +280,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 return width;
             }
 
-            PDFontDescriptor fd = getFontDescriptor();
+            final PDFontDescriptor fd = getFontDescriptor();
             if (fd != null)
             {
                 // get entry from /MissingWidth entry
@@ -320,16 +320,16 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @throws IOException If the text could not be encoded.
      * @throws IllegalArgumentException if a character isn't supported by the font.
      */
-    public final byte[] encode(String text) throws IOException
+    public final byte[] encode(final String text) throws IOException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         int offset = 0;
         while (offset < text.length())
         {
-            int codePoint = text.codePointAt(offset);
+            final int codePoint = text.codePointAt(offset);
 
             // multi-byte encoding with 1 to 4 bytes
-            byte[] bytes = encode(codePoint);
+            final byte[] bytes = encode(codePoint);
             out.write(bytes);
 
             offset += Character.charCount(codePoint);
@@ -358,15 +358,15 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @throws IOException If there is an error getting the width information.
      * @throws IllegalArgumentException if a character isn't supported by the font.
      */
-    public float getStringWidth(String text) throws IOException
+    public float getStringWidth(final String text) throws IOException
     {
-        byte[] bytes = encode(text);
-        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        final byte[] bytes = encode(text);
+        final ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         
         float width = 0;
         while (in.available() > 0)
         {
-            int code = readCode(in);
+            final int code = readCode(in);
             width += getWidth(code);
         }
         
@@ -382,7 +382,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     @Override
     public float getAverageFontWidth()
     {
-        float average;
+        final float average;
         if (Float.compare(avgFontWidth, 0.0f) != 0)
         {
             average = avgFontWidth;
@@ -391,12 +391,12 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         {
             float totalWidth = 0.0f;
             float characterCount = 0.0f;
-            COSArray widths = dict.getCOSArray(COSName.WIDTHS);
+            final COSArray widths = dict.getCOSArray(COSName.WIDTHS);
             if (widths != null)
             {
                 for (int i = 0; i < widths.size(); i++)
                 {
-                    COSNumber fontWidth = (COSNumber) widths.getObject(i);
+                    final COSNumber fontWidth = (COSNumber) widths.getObject(i);
                     if (fontWidth.floatValue() > 0)
                     {
                         totalWidth += fontWidth.floatValue();
@@ -434,7 +434,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @param customGlyphList a custom glyph list to use instead of the Adobe Glyph List
      * @return Unicode character(s)
      */
-    public String toUnicode(int code, GlyphList customGlyphList)
+    public String toUnicode(final int code, final GlyphList customGlyphList)
     {
         return toUnicode(code);
     }
@@ -445,7 +445,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @param code character code
      * @return Unicode character(s)
      */
-    public String toUnicode(int code)
+    public String toUnicode(final int code)
     {
         // if the font dictionary containsName a ToUnicode CMap, use that CMap
         if (toUnicodeCMap != null)
@@ -466,8 +466,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             {
                 if (code < 256 && !(this instanceof PDType0Font))
                 {
-                    COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
-                    boolean isIdentity = encoding instanceof COSName
+                    final COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
+                    final boolean isIdentity = encoding instanceof COSName
                             && ((COSName) encoding).getName().startsWith("Identity");
                     if (encoding != null && !isIdentity)
                     {
@@ -515,7 +515,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     {
         if (widths == null)
         {
-            COSArray array = dict.getCOSArray(COSName.WIDTHS);
+            final COSArray array = dict.getCOSArray(COSName.WIDTHS);
             if (array != null)
             {
                 widths = array.toCOSNumberFloatList();
@@ -543,12 +543,12 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     {
         if (Float.compare(fontWidthOfSpace, -1f) == 0)
         {
-            COSBase toUnicode = dict.getDictionaryObject(COSName.TO_UNICODE);
+            final COSBase toUnicode = dict.getDictionaryObject(COSName.TO_UNICODE);
             try
             {
                 if (toUnicode != null && toUnicodeCMap != null)
                 {
-                    int spaceMapping = toUnicodeCMap.getSpaceMapping();
+                    final int spaceMapping = toUnicodeCMap.getSpaceMapping();
                     if (spaceMapping > -1)
                     {
                         fontWidthOfSpace = getWidth(spaceMapping);
@@ -570,7 +570,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                     fontWidthOfSpace = getAverageFontWidth();
                 }
             }
-            catch (Exception e)
+            catch (final Exception e)
             {
                 LOG.error("Can't determine the width of the space character, assuming 250", e);
                 fontWidthOfSpace = 250f;
@@ -621,7 +621,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     public abstract boolean willBeSubset();
 
     @Override
-    public boolean equals(Object other)
+    public boolean equals(final Object other)
     {
         return other instanceof PDFont && ((PDFont) other).getCOSObject() == this.getCOSObject();
     }

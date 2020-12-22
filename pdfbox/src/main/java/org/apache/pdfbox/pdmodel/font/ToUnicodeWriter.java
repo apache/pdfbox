@@ -56,7 +56,7 @@ final class ToUnicodeWriter
      *
      * @param wMode 1 for vertical, 0 for horizontal (default)
      */
-    public void setWMode(int wMode)
+    public void setWMode(final int wMode)
     {
         this.wMode = wMode;
     }
@@ -67,7 +67,7 @@ final class ToUnicodeWriter
      * @param cid CID
      * @param text Unicode text, up to 512 bytes.
      */
-    public void add(int cid, String text)
+    public void add(final int cid, final String text)
     {
         if (cid < 0 || cid > 0xFFFF)
         {
@@ -88,9 +88,9 @@ final class ToUnicodeWriter
      * @param out ASCII output stream
      * @throws IOException if the stream could not be written
      */
-    public void writeTo(OutputStream out) throws IOException
+    public void writeTo(final OutputStream out) throws IOException
     {
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.US_ASCII));
+        final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.US_ASCII));
 
         writeLine(writer, "/CIDInit /ProcSet findresource begin");
         writeLine(writer, "12 dict begin\n");
@@ -116,19 +116,19 @@ final class ToUnicodeWriter
         writeLine(writer, "endcodespacerange\n");
 
         // CID -> Unicode mappings, we use ranges to generate a smaller CMap
-        List<Integer> srcFrom = new ArrayList<>();
-        List<Integer> srcTo = new ArrayList<>();
-        List<String> dstString = new ArrayList<>();
+        final List<Integer> srcFrom = new ArrayList<>();
+        final List<Integer> srcTo = new ArrayList<>();
+        final List<String> dstString = new ArrayList<>();
 
         int srcPrev = -1;
         String dstPrev = "";
 
         int srcCode1 = -1;
 
-        for (Map.Entry<Integer, String> entry : cidToUnicode.entrySet())
+        for (final Map.Entry<Integer, String> entry : cidToUnicode.entrySet())
         {
-            int cid = entry.getKey();
-            String text = entry.getValue();
+            final int cid = entry.getKey();
+            final String text = entry.getValue();
 
             if (cid == srcPrev + 1 &&                                 // CID must be last CID + 1
                 dstPrev.codePointCount(0, dstPrev.length()) == 1 &&   // no UTF-16 surrogates
@@ -151,17 +151,17 @@ final class ToUnicodeWriter
         }
 
         // limit entries per operator
-        int batchCount = (int) Math.ceil(srcFrom.size() /
+        final int batchCount = (int) Math.ceil(srcFrom.size() /
                                          (double) MAX_ENTRIES_PER_OPERATOR);
         for (int batch = 0; batch < batchCount; batch++)
         {
-            int count = batch == batchCount - 1 ?
+            final int count = batch == batchCount - 1 ?
                             srcFrom.size() - MAX_ENTRIES_PER_OPERATOR * batch :
                             MAX_ENTRIES_PER_OPERATOR;
             writer.write(count + " beginbfrange\n");
             for (int j = 0; j < count; j++)
             {
-                int index = batch * MAX_ENTRIES_PER_OPERATOR + j;
+                final int index = batch * MAX_ENTRIES_PER_OPERATOR + j;
                 writer.write('<');
                 writer.write(Hex.getChars(srcFrom.get(index).shortValue()));
                 writer.write("> ");
@@ -186,7 +186,7 @@ final class ToUnicodeWriter
         writer.flush();
     }
 
-    private void writeLine(BufferedWriter writer, String text) throws IOException
+    private void writeLine(final BufferedWriter writer, final String text) throws IOException
     {
         writer.write(text);
         writer.write('\n');

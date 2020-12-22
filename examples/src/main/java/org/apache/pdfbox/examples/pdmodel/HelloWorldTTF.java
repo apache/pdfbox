@@ -34,7 +34,7 @@ public final class HelloWorldTTF
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 3)
         {
@@ -43,16 +43,16 @@ public final class HelloWorldTTF
             System.exit(1);
         }
 
-        String pdfPath = args[0];
-        String message = args[1];
-        String ttfPath = args[2];
+        final String pdfPath = args[0];
+        final String message = args[1];
+        final String ttfPath = args[2];
         
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             
-            PDFont font = PDType0Font.load(doc, new File(ttfPath));
+            final PDFont font = PDType0Font.load(doc, new File(ttfPath));
 
             try (PDPageContentStream contents = new PDPageContentStream(doc, page))
             {

@@ -45,7 +45,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      * 
      * @param dictionary the corresponding dictionary
      */
-    public PDRectlinearMeasureDictionary(COSDictionary dictionary)
+    public PDRectlinearMeasureDictionary(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -65,7 +65,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      * 
      * @param scaleRatio the scale ratio.
      */
-    public void setScaleRatio(String scaleRatio)
+    public void setScaleRatio(final String scaleRatio)
     {
         this.getCOSObject().setString(COSName.R, scaleRatio);
     }
@@ -77,14 +77,14 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getChangeXs()
     {
-        COSArray x = (COSArray)this.getCOSObject().getDictionaryObject("X");
+        final COSArray x = (COSArray)this.getCOSObject().getDictionaryObject("X");
         if (x != null)
         {
-            PDNumberFormatDictionary[] retval =
+            final PDNumberFormatDictionary[] retval =
                 new PDNumberFormatDictionary[x.size()];
             for (int i = 0; i < x.size(); i++)
             {
-                COSDictionary dic = (COSDictionary) x.get(i);
+                final COSDictionary dic = (COSDictionary) x.get(i);
                 retval[i] = new PDNumberFormatDictionary(dic);
             }
             return retval;
@@ -97,10 +97,10 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      * 
      * @param changeXs changes along the x-axis
      */
-    public void setChangeXs(PDNumberFormatDictionary[] changeXs)
+    public void setChangeXs(final PDNumberFormatDictionary[] changeXs)
     {
-        COSArray array = new COSArray();
-        for (PDNumberFormatDictionary changeX : changeXs)
+        final COSArray array = new COSArray();
+        for (final PDNumberFormatDictionary changeX : changeXs)
         {
             array.add(changeX);
         }
@@ -114,14 +114,14 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getChangeYs()
     {
-        COSArray y = (COSArray)this.getCOSObject().getDictionaryObject("Y");
+        final COSArray y = (COSArray)this.getCOSObject().getDictionaryObject("Y");
         if (y != null)
         {
-            PDNumberFormatDictionary[] retval =
+            final PDNumberFormatDictionary[] retval =
                 new PDNumberFormatDictionary[y.size()];
             for (int i = 0; i < y.size(); i++)
             {
-                COSDictionary dic = (COSDictionary) y.get(i);
+                final COSDictionary dic = (COSDictionary) y.get(i);
                 retval[i] = new PDNumberFormatDictionary(dic);
             }
             return retval;
@@ -134,10 +134,10 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      * 
      * @param changeYs changes along the y-axis
      */
-    public void setChangeYs(PDNumberFormatDictionary[] changeYs)
+    public void setChangeYs(final PDNumberFormatDictionary[] changeYs)
     {
-        COSArray array = new COSArray();
-        for (PDNumberFormatDictionary changeY : changeYs)
+        final COSArray array = new COSArray();
+        for (final PDNumberFormatDictionary changeY : changeYs)
         {
             array.add(changeY);
         }
@@ -151,14 +151,14 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getDistances()
     {
-        COSArray d = (COSArray)this.getCOSObject().getDictionaryObject("D");
+        final COSArray d = (COSArray)this.getCOSObject().getDictionaryObject("D");
         if (d != null)
         {
-            PDNumberFormatDictionary[] retval =
+            final PDNumberFormatDictionary[] retval =
                 new PDNumberFormatDictionary[d.size()];
             for (int i = 0; i < d.size(); i++)
             {
-                COSDictionary dic = (COSDictionary) d.get(i);
+                final COSDictionary dic = (COSDictionary) d.get(i);
                 retval[i] = new PDNumberFormatDictionary(dic);
             }
             return retval;
@@ -171,10 +171,10 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      * 
      * @param distances distances
      */
-    public void setDistances(PDNumberFormatDictionary[] distances)
+    public void setDistances(final PDNumberFormatDictionary[] distances)
     {
-        COSArray array = new COSArray();
-        for (PDNumberFormatDictionary distance : distances)
+        final COSArray array = new COSArray();
+        for (final PDNumberFormatDictionary distance : distances)
         {
             array.add(distance);
         }
@@ -188,14 +188,14 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getAreas()
     {
-        COSArray a = (COSArray)this.getCOSObject().getDictionaryObject(COSName.A);
+        final COSArray a = (COSArray)this.getCOSObject().getDictionaryObject(COSName.A);
         if (a != null)
         {
-            PDNumberFormatDictionary[] retval =
+            final PDNumberFormatDictionary[] retval =
                 new PDNumberFormatDictionary[a.size()];
             for (int i = 0; i < a.size(); i++)
             {
-                COSDictionary dic = (COSDictionary) a.get(i);
+                final COSDictionary dic = (COSDictionary) a.get(i);
                 retval[i] = new PDNumberFormatDictionary(dic);
             }
             return retval;
@@ -208,10 +208,10 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      * 
      * @param areas areas
      */
-    public void setAreas(PDNumberFormatDictionary[] areas)
+    public void setAreas(final PDNumberFormatDictionary[] areas)
     {
-        COSArray array = new COSArray();
-        for (PDNumberFormatDictionary area : areas)
+        final COSArray array = new COSArray();
+        for (final PDNumberFormatDictionary area : areas)
         {
             array.add(area);
         }
@@ -225,14 +225,14 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getAngles()
     {
-        COSArray t = (COSArray)this.getCOSObject().getDictionaryObject("T");
+        final COSArray t = (COSArray)this.getCOSObject().getDictionaryObject("T");
         if (t != null)
         {
-            PDNumberFormatDictionary[] retval =
+            final PDNumberFormatDictionary[] retval =
                 new PDNumberFormatDictionary[t.size()];
             for (int i = 0; i < t.size(); i++)
             {
-                COSDictionary dic = (COSDictionary) t.get(i);
+                final COSDictionary dic = (COSDictionary) t.get(i);
                 retval[i] = new PDNumberFormatDictionary(dic);
             }
             return retval;
@@ -245,10 +245,10 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      * 
      * @param angles angles
      */
-    public void setAngles(PDNumberFormatDictionary[] angles)
+    public void setAngles(final PDNumberFormatDictionary[] angles)
     {
-        COSArray array = new COSArray();
-        for (PDNumberFormatDictionary angle : angles)
+        final COSArray array = new COSArray();
+        for (final PDNumberFormatDictionary angle : angles)
         {
             array.add(angle);
         }
@@ -262,14 +262,14 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getLineSloaps()
     {
-        COSArray s = (COSArray)this.getCOSObject().getDictionaryObject("S");
+        final COSArray s = (COSArray)this.getCOSObject().getDictionaryObject("S");
         if (s != null)
         {
-            PDNumberFormatDictionary[] retval =
+            final PDNumberFormatDictionary[] retval =
                 new PDNumberFormatDictionary[s.size()];
             for (int i = 0; i < s.size(); i++)
             {
-                COSDictionary dic = (COSDictionary) s.get(i);
+                final COSDictionary dic = (COSDictionary) s.get(i);
                 retval[i] = new PDNumberFormatDictionary(dic);
             }
             return retval;
@@ -282,10 +282,10 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      * 
      * @param lineSloaps the sloaps of a line
      */
-    public void setLineSloaps(PDNumberFormatDictionary[] lineSloaps)
+    public void setLineSloaps(final PDNumberFormatDictionary[] lineSloaps)
     {
-        COSArray array = new COSArray();
-        for (PDNumberFormatDictionary lineSloap : lineSloaps)
+        final COSArray array = new COSArray();
+        for (final PDNumberFormatDictionary lineSloap : lineSloaps)
         {
             array.add(lineSloap);
         }
@@ -299,7 +299,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public float[] getCoordSystemOrigin()
     {
-        COSArray o = (COSArray)this.getCOSObject().getDictionaryObject("O");
+        final COSArray o = (COSArray)this.getCOSObject().getDictionaryObject("O");
         if (o != null)
         {
             return o.toFloatArray();
@@ -312,9 +312,9 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      * 
      * @param coordSystemOrigin the origin
      */
-    public void setCoordSystemOrigin(float[] coordSystemOrigin)
+    public void setCoordSystemOrigin(final float[] coordSystemOrigin)
     {
-        COSArray array = new COSArray();
+        final COSArray array = new COSArray();
         array.setFloatArray(coordSystemOrigin);
         this.getCOSObject().setItem("O", array);
     }
@@ -334,7 +334,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      * 
      * @param cyx CYX factor
      */
-    public void setCYX(float cyx)
+    public void setCYX(final float cyx)
     {
         this.getCOSObject().setFloat("CYX", cyx);
     }

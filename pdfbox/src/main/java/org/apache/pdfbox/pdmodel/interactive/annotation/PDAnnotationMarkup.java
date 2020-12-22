@@ -58,7 +58,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      *
      * @param dict The annotations dictionary.
      */
-    public PDAnnotationMarkup(COSDictionary dict)
+    public PDAnnotationMarkup(final COSDictionary dict)
     {
         super(dict);
     }
@@ -80,7 +80,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      *
      * @param t The title of the popup.
      */
-    public void setTitlePopup(String t)
+    public void setTitlePopup(final String t)
     {
         getCOSObject().setString(COSName.T, t);
     }
@@ -92,7 +92,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDAnnotationPopup getPopup()
     {
-        COSDictionary popup = (COSDictionary) getCOSObject().getDictionaryObject("Popup");
+        final COSDictionary popup = (COSDictionary) getCOSObject().getDictionaryObject("Popup");
         if (popup != null)
         {
             return new PDAnnotationPopup(popup);
@@ -108,7 +108,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      *
      * @param popup the popup annotation.
      */
-    public void setPopup(PDAnnotationPopup popup)
+    public void setPopup(final PDAnnotationPopup popup)
     {
         getCOSObject().setItem("Popup", popup);
     }
@@ -128,7 +128,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      *
      * @param ca the constant opacity value.
      */
-    public void setConstantOpacity(float ca)
+    public void setConstantOpacity(final float ca)
     {
         getCOSObject().setFloat(COSName.CA, ca);
     }
@@ -140,7 +140,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public String getRichContents()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.RC);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.RC);
         if (base instanceof COSString)
         {
             return ((COSString) base).getString();
@@ -160,7 +160,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      *
      * @param rc the rich text stream.
      */
-    public void setRichContents(String rc)
+    public void setRichContents(final String rc)
     {
         getCOSObject().setItem(COSName.RC, new COSString(rc));
     }
@@ -180,7 +180,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      *
      * @param creationDate the date and time the annotation was created.
      */
-    public void setCreationDate(Calendar creationDate)
+    public void setCreationDate(final Calendar creationDate)
     {
         getCOSObject().setDate(COSName.CREATION_DATE, creationDate);
     }
@@ -194,7 +194,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDAnnotation getInReplyTo() throws IOException
     {
-        COSBase base = getCOSObject().getDictionaryObject("IRT");
+        final COSBase base = getCOSObject().getDictionaryObject("IRT");
         if (base instanceof COSDictionary)
         {
             return PDAnnotation.createAnnotation(base);
@@ -208,7 +208,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      *
      * @param irt the annotation this one is "In Reply To".
      */
-    public void setInReplyTo(PDAnnotation irt)
+    public void setInReplyTo(final PDAnnotation irt)
     {
         getCOSObject().setItem("IRT", irt);
     }
@@ -228,7 +228,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      *
      * @param subj short description of the subject.
      */
-    public void setSubject(String subj)
+    public void setSubject(final String subj)
     {
         getCOSObject().setString(COSName.SUBJ, subj);
     }
@@ -250,7 +250,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      *
      * @param rt the reply type.
      */
-    public void setReplyType(String rt)
+    public void setReplyType(final String rt)
     {
         getCOSObject().setName("RT", rt);
     }
@@ -272,7 +272,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      *
      * @param it the intent
      */
-    public void setIntent(String it)
+    public void setIntent(final String it)
     {
         getCOSObject().setName(COSName.IT, it);
     }
@@ -284,7 +284,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDExternalDataDictionary getExternalData()
     {
-        COSBase exData = this.getCOSObject().getDictionaryObject("ExData");
+        final COSBase exData = this.getCOSObject().getDictionaryObject("ExData");
         if (exData instanceof COSDictionary)
         {
             return new PDExternalDataDictionary((COSDictionary) exData);
@@ -297,7 +297,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      * 
      * @param externalData the external data dictionary
      */
-    public void setExternalData(PDExternalDataDictionary externalData)
+    public void setExternalData(final PDExternalDataDictionary externalData)
     {
         this.getCOSObject().setItem("ExData", externalData);
     }
@@ -308,7 +308,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      * @param bs the border style dictionary to set.
      *
      */
-    public void setBorderStyle(PDBorderStyleDictionary bs)
+    public void setBorderStyle(final PDBorderStyleDictionary bs)
     {
         this.getCOSObject().setItem(COSName.BS, bs);
     }
@@ -320,7 +320,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
+        final COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
         if (bs instanceof COSDictionary)
         {
             return new PDBorderStyleDictionary((COSDictionary) bs);

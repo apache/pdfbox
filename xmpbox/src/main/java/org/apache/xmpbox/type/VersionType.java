@@ -49,7 +49,7 @@ public class VersionType extends AbstractStructuredType
      * @param metadata
      *            The metadata to attach to this property
      */
-    public VersionType(XMPMetadata metadata)
+    public VersionType(final XMPMetadata metadata)
     {
         super(metadata);
         addNamespace(getNamespace(), getPreferedPrefix());
@@ -60,7 +60,7 @@ public class VersionType extends AbstractStructuredType
         return getPropertyValueAsString(COMMENTS);
     }
 
-    public void setComments(String value)
+    public void setComments(final String value)
     {
         addSimpleProperty(COMMENTS, value);
     }
@@ -70,7 +70,7 @@ public class VersionType extends AbstractStructuredType
         return (ResourceEventType) getFirstEquivalentProperty(EVENT, ResourceEventType.class);
     }
 
-    public void setEvent(ResourceEventType value)
+    public void setEvent(final ResourceEventType value)
     {
         this.addProperty(value);
     }
@@ -80,7 +80,7 @@ public class VersionType extends AbstractStructuredType
         return getDatePropertyAsCalendar(MODIFY_DATE);
     }
 
-    public void setModifyDate(Calendar value)
+    public void setModifyDate(final Calendar value)
     {
         addSimpleProperty(MODIFY_DATE, value);
     }
@@ -90,7 +90,7 @@ public class VersionType extends AbstractStructuredType
         return getPropertyValueAsString(VERSION);
     }
 
-    public void setVersion(String value)
+    public void setVersion(final String value)
     {
         addSimpleProperty(VERSION, value);
     }
@@ -100,7 +100,7 @@ public class VersionType extends AbstractStructuredType
         return getPropertyValueAsString(MODIFIER);
     }
 
-    public void setModifier(String value)
+    public void setModifier(final String value)
     {
         addSimpleProperty(MODIFIER, value);
     }

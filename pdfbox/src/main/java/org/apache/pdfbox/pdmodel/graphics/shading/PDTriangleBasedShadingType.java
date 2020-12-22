@@ -30,7 +30,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
     // value: same as the value of Range
     private COSArray decode = null;
 
-    PDTriangleBasedShadingType(COSDictionary shadingDictionary)
+    PDTriangleBasedShadingType(final COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -51,7 +51,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
      *
      * @param bitsPerComponent the number of bits per component
      */
-    public void setBitsPerComponent(int bitsPerComponent)
+    public void setBitsPerComponent(final int bitsPerComponent)
     {
         getCOSObject().setInt(COSName.BITS_PER_COMPONENT, bitsPerComponent);
     }
@@ -72,7 +72,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
      *
      * @param bitsPerComponent the number of bits per coordinate
      */
-    public void setBitsPerCoordinate(int bitsPerComponent)
+    public void setBitsPerCoordinate(final int bitsPerComponent)
     {
         getCOSObject().setInt(COSName.BITS_PER_COORDINATE, bitsPerComponent);
     }
@@ -96,7 +96,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
      *
      * @param decodeValues the new decode values
      */
-    public void setDecodeValues(COSArray decodeValues)
+    public void setDecodeValues(final COSArray decodeValues)
     {
         decode = decodeValues;
         getCOSObject().setItem(COSName.DECODE, decodeValues);
@@ -108,10 +108,10 @@ abstract class PDTriangleBasedShadingType extends PDShading
      * @param paramNum the function parameter number
      * @return the decode parameter range or null if none is set
      */
-    public PDRange getDecodeForParameter(int paramNum)
+    public PDRange getDecodeForParameter(final int paramNum)
     {
         PDRange retval = null;
-        COSArray decodeValues = getDecodeValues();
+        final COSArray decodeValues = getDecodeValues();
         if (decodeValues != null && decodeValues.size() >= paramNum * 2 + 1)
         {
             retval = new PDRange(decodeValues, paramNum);

@@ -36,26 +36,26 @@ public class PDFAFieldType extends AbstractStructuredType
     @PropertyType(type = Types.Text, card = Cardinality.Simple)
     public static final String DESCRIPTION = "description";
 
-    public PDFAFieldType(XMPMetadata metadata)
+    public PDFAFieldType(final XMPMetadata metadata)
     {
         super(metadata);
     }
 
     public String getName()
     {
-        TextType tt = (TextType) getProperty(NAME);
+        final TextType tt = (TextType) getProperty(NAME);
         return tt == null ? null : tt.getStringValue();
     }
 
     public String getValueType()
     {
-        TextType tt = (TextType) getProperty(VALUETYPE);
+        final TextType tt = (TextType) getProperty(VALUETYPE);
         return tt == null ? null : tt.getStringValue();
     }
 
     public String getDescription()
     {
-        TextType tt = (TextType) getProperty(DESCRIPTION);
+        final TextType tt = (TextType) getProperty(DESCRIPTION);
         return tt == null ? null : tt.getStringValue();
     }
 

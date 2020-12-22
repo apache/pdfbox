@@ -31,7 +31,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class Save extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments)
+    public void process(final Operator operator, final List<COSBase> arguments)
     {
         context.saveGraphicsState();
     }

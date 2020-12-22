@@ -63,7 +63,7 @@ public class KerningSubtable
      * @param version The version of the table to be read
      * @throws IOException If there is an error reading the data.
      */
-    void read(TTFDataStream data, int version) throws IOException
+    void read(final TTFDataStream data, final int version) throws IOException
     {
         if (version == 0)
         {
@@ -100,7 +100,7 @@ public class KerningSubtable
      * @param cross if true, then return cross stream designator in horizontal modes
      * @return true if subtable is for horizontal kerning in horizontal modes
      */
-    public boolean isHorizontalKerning(boolean cross)
+    public boolean isHorizontalKerning(final boolean cross)
     {
         if (!horizontal)
         {
@@ -130,20 +130,20 @@ public class KerningSubtable
      * @param glyphs a (possibly empty) array of glyph identifiers
      * @return a (possibly empty) array of kerning adjustments
      */
-    public int[] getKerning(int[] glyphs)
+    public int[] getKerning(final int[] glyphs)
     {
         int[] kerning = null;
         if (pairs != null)
         {
-            int ng = glyphs.length;
+            final int ng = glyphs.length;
             kerning = new int[ng];
             for (int i = 0; i < ng; ++i)
             {
-                int l = glyphs[i];
+                final int l = glyphs[i];
                 int r = -1;
                 for (int k = i + 1; k < ng; ++k)
                 {
-                    int g = glyphs[k];
+                    final int g = glyphs[k];
                     if (g >= 0)
                     {
                         r = g;
@@ -167,7 +167,7 @@ public class KerningSubtable
      * @param r right member of glyph pair
      * @return a (possibly zero) kerning adjustment
      */
-    public int getKerning(int l, int r)
+    public int getKerning(final int l, final int r)
     {
         if (pairs == null)
         {
@@ -177,21 +177,21 @@ public class KerningSubtable
         return pairs.getKerning(l, r);
     }
 
-    private void readSubtable0(TTFDataStream data) throws IOException
+    private void readSubtable0(final TTFDataStream data) throws IOException
     {
-        int version = data.readUnsignedShort();
+        final int version = data.readUnsignedShort();
         if (version != 0)
         {
             LOG.info("Unsupported kerning sub-table version: " + version);
             return;
         }
-        int length = data.readUnsignedShort();
+        final int length = data.readUnsignedShort();
         if (length < 6)
         {
             throw new IOException("Kerning sub-table too short, got " + length
                     + " bytes, expect 6 or more.");
         }
-        int coverage = data.readUnsignedShort();
+        final int coverage = data.readUnsignedShort();
         if (isBitsSet(coverage, COVERAGE_HORIZONTAL, COVERAGE_HORIZONTAL_SHIFT))
         {
             this.horizontal = true;
@@ -204,7 +204,7 @@ public class KerningSubtable
         {
             this.crossStream = true;
         }
-        int format = getBits(coverage, COVERAGE_FORMAT, COVERAGE_FORMAT_SHIFT);
+        final int format = getBits(coverage, COVERAGE_FORMAT, COVERAGE_FORMAT_SHIFT);
         if (format == 0)
         {
             readSubtable0Format0(data);
@@ -219,28 +219,28 @@ public class KerningSubtable
         }
     }
 
-    private void readSubtable0Format0(TTFDataStream data) throws IOException
+    private void readSubtable0Format0(final TTFDataStream data) throws IOException
     {
         pairs = new PairData0Format0();
         pairs.read(data);
     }
 
-    private void readSubtable0Format2(TTFDataStream data)
+    private void readSubtable0Format2(final TTFDataStream data)
     {
         LOG.info("Kerning subtable format 2 not yet supported.");
     }
 
-    private void readSubtable1(TTFDataStream data)
+    private void readSubtable1(final TTFDataStream data)
     {
         LOG.info("Kerning subtable format 1 not yet supported.");
     }
 
-    private static boolean isBitsSet(int bits, int mask, int shift)
+    private static boolean isBitsSet(final int bits, final int mask, final int shift)
     {
         return getBits(bits, mask, shift) != 0;
     }
 
-    private static int getBits(int bits, int mask, int shift)
+    private static int getBits(final int bits, final int mask, final int shift)
     {
         return (bits & mask) >> shift;
     }
@@ -258,18 +258,18 @@ public class KerningSubtable
         private int[][] pairs;
 
         @Override
-        public void read(TTFDataStream data) throws IOException
+        public void read(final TTFDataStream data) throws IOException
         {
-            int numPairs = data.readUnsignedShort();
+            final int numPairs = data.readUnsignedShort();
             searchRange = data.readUnsignedShort()/6;
-            int entrySelector = data.readUnsignedShort();
-            int rangeShift = data.readUnsignedShort();
+            final int entrySelector = data.readUnsignedShort();
+            final int rangeShift = data.readUnsignedShort();
             pairs = new int[numPairs][3];
             for (int i = 0; i < numPairs; ++i)
             {
-                int left = data.readUnsignedShort();
-                int right = data.readUnsignedShort();
-                int value = data.readSignedShort();
+                final int left = data.readUnsignedShort();
+                final int right = data.readUnsignedShort();
+                final int value = data.readSignedShort();
                 pairs[i][0] = left;
                 pairs[i][1] = right;
                 pairs[i][2] = value;
@@ -277,10 +277,10 @@ public class KerningSubtable
         }
 
         @Override
-        public int getKerning(int l, int r)
+        public int getKerning(final int l, final int r)
         {
-            int[] key = new int[] { l, r, 0 };
-            int index = Arrays.binarySearch(pairs, key, this);
+            final int[] key = new int[] { l, r, 0 };
+            final int index = Arrays.binarySearch(pairs, key, this);
             if (index >= 0)
             {
                 return pairs[index][2];
@@ -289,13 +289,13 @@ public class KerningSubtable
         }
 
         @Override
-        public int compare(int[] p1, int[] p2)
+        public int compare(final int[] p1, final int[] p2)
         {
             assert p1 != null;
             assert p1.length >= 2;
             assert p2 != null;
             assert p2.length >= 2;
-            int cmp1 = Integer.compare(p1[0], p2[0]);
+            final int cmp1 = Integer.compare(p1[0], p2[0]);
             if (cmp1 != 0)
             {
                 return cmp1;

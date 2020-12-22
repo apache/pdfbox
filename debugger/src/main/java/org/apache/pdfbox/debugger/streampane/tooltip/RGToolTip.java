@@ -29,17 +29,17 @@ final class RGToolTip extends ColorToolTip
      * Constructor.
      * @param rowText String instance.
      */
-    RGToolTip(String rowText)
+    RGToolTip(final String rowText)
     {
         createMarkUp(rowText);
     }
 
-    private void createMarkUp(String rowText)
+    private void createMarkUp(final String rowText)
     {
-            float[] rgbValues = extractColorValues(rowText);
+            final float[] rgbValues = extractColorValues(rowText);
             if (rgbValues != null)
             {
-                Color color = new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
+                final Color color = new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
                 setToolTipText(getMarkUp(colorHexValue(color)));
             }
     }

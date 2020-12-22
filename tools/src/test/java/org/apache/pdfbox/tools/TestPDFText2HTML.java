@@ -34,11 +34,11 @@ import org.junit.jupiter.api.Test;
 
 class TestPDFText2HTML
 {
-    private PDDocument createDocument(String title, PDFont font, String text) throws IOException
+    private PDDocument createDocument(final String title, final PDFont font, final String text) throws IOException
     {
-        PDDocument doc = new PDDocument();
+        final PDDocument doc = new PDDocument();
         doc.getDocumentInformation().setTitle(title);
-        PDPage page = new PDPage();
+        final PDPage page = new PDPage();
         doc.addPage(page);
         try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
         {
@@ -54,11 +54,11 @@ class TestPDFText2HTML
     @Test
     void testEscapeTitle() throws IOException
     {
-        PDFTextStripper stripper = new PDFText2HTML();
-        PDDocument doc = createDocument("<script>\u3042", PDType1Font.HELVETICA, "<foo>");
-        String text = stripper.getText(doc);
+        final PDFTextStripper stripper = new PDFText2HTML();
+        final PDDocument doc = createDocument("<script>\u3042", PDType1Font.HELVETICA, "<foo>");
+        final String text = stripper.getText(doc);
        
-        Matcher m = Pattern.compile("<title>(.*?)</title>").matcher(text);
+        final Matcher m = Pattern.compile("<title>(.*?)</title>").matcher(text);
         assertTrue(m.find());
         assertEquals("&lt;script&gt;&#12354;", m.group(1));
         assertTrue(text.contains("&lt;foo&gt;"));
@@ -67,11 +67,11 @@ class TestPDFText2HTML
     @Test
     void testStyle() throws IOException
     {
-        PDFTextStripper stripper = new PDFText2HTML();
-        PDDocument doc = createDocument("t", PDType1Font.HELVETICA_BOLD, "<bold>");
-        String text = stripper.getText(doc);
+        final PDFTextStripper stripper = new PDFText2HTML();
+        final PDDocument doc = createDocument("t", PDType1Font.HELVETICA_BOLD, "<bold>");
+        final String text = stripper.getText(doc);
 
-        Matcher bodyMatcher = Pattern.compile("<p>(.*?)</p>").matcher(text);
+        final Matcher bodyMatcher = Pattern.compile("<p>(.*?)</p>").matcher(text);
         assertTrue(bodyMatcher.find(), "body p exists");
         assertEquals("<b>&lt;bold&gt;</b>", bodyMatcher.group(1), "body p");
     }

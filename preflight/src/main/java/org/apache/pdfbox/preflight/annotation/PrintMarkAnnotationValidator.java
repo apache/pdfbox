@@ -35,7 +35,7 @@ public class PrintMarkAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationUnknown pdUnk = null;
 
-    public PrintMarkAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public PrintMarkAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdUnk = new PDAnnotationUnknown(annotDictionary);

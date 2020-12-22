@@ -45,7 +45,7 @@ public class XpacketParsingException extends Exception
      * @param cause
      *            the cause
      */
-    public XpacketParsingException(String message, Throwable cause)
+    public XpacketParsingException(final String message, final Throwable cause)
     {
         super(message, cause);
     }
@@ -56,12 +56,12 @@ public class XpacketParsingException extends Exception
      * @param message
      *            the message
      */
-    public XpacketParsingException(String message)
+    public XpacketParsingException(final String message)
     {
         super(message);
     }
 
-    public XpacketParsingException(String message, ValidationError error)
+    public XpacketParsingException(final String message, final ValidationError error)
     {
         super(message);
         this.error = error;

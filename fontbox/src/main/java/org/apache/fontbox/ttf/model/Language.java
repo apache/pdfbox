@@ -37,7 +37,7 @@ public enum Language
 
     private final String[] scriptNames;
 
-    private Language(String[] scriptNames)
+    private Language(final String[] scriptNames)
     {
         this.scriptNames = scriptNames;
     }

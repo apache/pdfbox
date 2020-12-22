@@ -37,7 +37,7 @@ public class COSFloat extends COSNumber
      *
      * @param aFloat The primitive float object that this object wraps.
      */
-    public COSFloat( float aFloat )
+    public COSFloat(final float aFloat )
     {
         value = aFloat;
     }
@@ -56,7 +56,7 @@ public class COSFloat extends COSNumber
             value = Float.parseFloat(aFloat);
             valueAsString = checkMinMaxValues() ? null : aFloat;
         }
-        catch( NumberFormatException e )
+        catch( final NumberFormatException e )
         {
             if (aFloat.startsWith("--"))
             {
@@ -80,7 +80,7 @@ public class COSFloat extends COSNumber
                 value = Float.parseFloat(aFloat);
                 checkMinMaxValues();
             }
-            catch (NumberFormatException e2)
+            catch (final NumberFormatException e2)
             {
                 throw new IOException("Error expected floating point number actual='" + aFloat + "'", e2);
             }
@@ -122,9 +122,9 @@ public class COSFloat extends COSNumber
      * 
      * @param plainStringValue a decimal number
      */
-    private String trimZeros(String plainStringValue)
+    private String trimZeros(final String plainStringValue)
     {
-        int lastIndex = plainStringValue.lastIndexOf('.');
+        final int lastIndex = plainStringValue.lastIndexOf('.');
         if (lastIndex > 0)
         {
             int i = plainStringValue.length() - 1;
@@ -174,7 +174,7 @@ public class COSFloat extends COSNumber
      * {@inheritDoc}
      */
     @Override
-    public boolean equals( Object o )
+    public boolean equals(final Object o )
     {
         return o instanceof COSFloat &&
                 Float.floatToIntBits(((COSFloat)o).value) == Float.floatToIntBits(value);
@@ -219,7 +219,7 @@ public class COSFloat extends COSNumber
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public Object accept(final ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromFloat(this);
     }
@@ -230,7 +230,7 @@ public class COSFloat extends COSNumber
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void writePDF( OutputStream output ) throws IOException
+    public void writePDF(final OutputStream output ) throws IOException
     {
         output.write(formatString().getBytes(StandardCharsets.ISO_8859_1));
     }

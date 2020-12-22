@@ -33,7 +33,7 @@ import org.apache.pdfbox.preflight.font.descriptor.Type1DescriptorHelper;
 
 public class Type1FontValidator extends SimpleFontValidator<Type1Container>
 {
-    public Type1FontValidator(PreflightContext context, PDSimpleFont font)
+    public Type1FontValidator(final PreflightContext context, final PDSimpleFont font)
     {
         super(context, font, font.getCOSObject(), new Type1Container(font));
     }
@@ -47,12 +47,12 @@ public class Type1FontValidator extends SimpleFontValidator<Type1Container>
     @Override
     protected void checkEncoding()
     {
-        COSBase encoding = fontDictionary.getDictionaryObject(COSName.ENCODING);
+        final COSBase encoding = fontDictionary.getDictionaryObject(COSName.ENCODING);
         if (encoding != null)
         {
             if (encoding instanceof COSName)
             {
-                COSName encodingName = (COSName) encoding;
+                final COSName encodingName = (COSName) encoding;
                 if (!(encodingName.equals(COSName.MAC_ROMAN_ENCODING)
                         || encodingName.equals(COSName.MAC_EXPERT_ENCODING)
                         || encodingName.equals(COSName.WIN_ANSI_ENCODING)

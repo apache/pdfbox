@@ -62,7 +62,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param prefix The field prefix of the namespace.
      * @param name The property name.
      */
-    public XMPSchema(XMPMetadata metadata, String namespaceURI, String prefix, String name)
+    public XMPSchema(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String name)
     {
         super(metadata, namespaceURI, prefix, name);
         addNamespace(getNamespace(), getPrefix());
@@ -73,7 +73,7 @@ public class XMPSchema extends AbstractStructuredType
      *
      * @param metadata The parent XMP metadata that this schema will be part of.
      */
-    public XMPSchema(XMPMetadata metadata)
+    public XMPSchema(final XMPMetadata metadata)
     {
         this(metadata, null, null, null);
     }
@@ -84,7 +84,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param metadata The parent XMP metadata that this schema will be part of.
      * @param prefix The field prefix of the namespace.
      */
-    public XMPSchema(XMPMetadata metadata, String prefix)
+    public XMPSchema(final XMPMetadata metadata, final String prefix)
     {
         this(metadata, null, prefix, null);
     }
@@ -96,7 +96,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param namespaceURI The URI of the namespace, e.g. "http://ns.adobe.com/pdf/1.3/"
      * @param prefix The field prefix of the namespace.
      */
-    public XMPSchema(XMPMetadata metadata, String namespaceURI, String prefix)
+    public XMPSchema(final XMPMetadata metadata, final String namespaceURI, final String prefix)
     {
         this(metadata, namespaceURI, prefix, null);
     }
@@ -108,9 +108,9 @@ public class XMPSchema extends AbstractStructuredType
      *            Full qualified name of property wanted
      * @return The generic simple type property according to its qualified name
      */
-    public AbstractField getAbstractProperty(String qualifiedName)
+    public AbstractField getAbstractProperty(final String qualifiedName)
     {
-        for (AbstractField child : getContainer().getAllProperties())
+        for (final AbstractField child : getContainer().getAllProperties())
         {
             if (child.getPropertyName().equals(qualifiedName))
             {
@@ -138,7 +138,7 @@ public class XMPSchema extends AbstractStructuredType
      */
     public String getAboutValue()
     {
-        Attribute prop = getAttribute(XmpConstants.ABOUT_NAME);
+        final Attribute prop = getAttribute(XmpConstants.ABOUT_NAME);
         if (prop != null)
         {
             return prop.getValue();
@@ -155,7 +155,7 @@ public class XMPSchema extends AbstractStructuredType
      * @throws BadFieldValueException
      *             Bad Attribute name (not corresponding to about attribute)
      */
-    public void setAbout(Attribute about) throws BadFieldValueException
+    public void setAbout(final Attribute about) throws BadFieldValueException
     {
         if (XmpConstants.RDF_NAMESPACE.equals(about.getNamespace())
                 && XmpConstants.ABOUT_NAME.equals(about.getName()))
@@ -172,7 +172,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param about
      *            The new RFD about value.
      */
-    public void setAboutAsSimple(String about)
+    public void setAboutAsSimple(final String about)
     {
         if (about == null)
         {
@@ -184,12 +184,12 @@ public class XMPSchema extends AbstractStructuredType
         }
     }
 
-    private void setSpecifiedSimpleTypeProperty(Types type, String qualifiedName, Object propertyValue)
+    private void setSpecifiedSimpleTypeProperty(final Types type, final String qualifiedName, final Object propertyValue)
     {
         if (propertyValue == null)
         {
             // Search in properties to erase
-            for (AbstractField child : getContainer().getAllProperties())
+            for (final AbstractField child : getContainer().getAllProperties())
             {
                 if (child.getPropertyName().equals(qualifiedName))
                 {
@@ -200,21 +200,21 @@ public class XMPSchema extends AbstractStructuredType
         }
         else
         {
-            AbstractSimpleProperty specifiedTypeProperty;
+            final AbstractSimpleProperty specifiedTypeProperty;
             try
             {
-                TypeMapping tm = getMetadata().getTypeMapping();
+                final TypeMapping tm = getMetadata().getTypeMapping();
                 specifiedTypeProperty = tm.instanciateSimpleProperty(null, getPrefix(), qualifiedName, propertyValue,
                         type);
             }
-            catch (Exception e)
+            catch (final Exception e)
             {
                 throw new IllegalArgumentException(
                         "Failed to create property with the specified type given in parameters", e);
             }
             // attribute placement for simple property has been removed
             // Search in properties to erase
-            for (AbstractField child : getAllProperties())
+            for (final AbstractField child : getAllProperties())
             {
                 if (child.getPropertyName().equals(qualifiedName))
                 {
@@ -233,11 +233,11 @@ public class XMPSchema extends AbstractStructuredType
      * @param prop
      *            The Property to add
      */
-    private void setSpecifiedSimpleTypeProperty(AbstractSimpleProperty prop)
+    private void setSpecifiedSimpleTypeProperty(final AbstractSimpleProperty prop)
     {
         // attribute placement for simple property has been removed
         // Search in properties to erase
-        for (AbstractField child : getAllProperties())
+        for (final AbstractField child : getAllProperties())
         {
             if (child.getPropertyName().equals(prop.getPropertyName()))
             {
@@ -255,7 +255,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param prop
      *            The text property to add
      */
-    public void setTextProperty(TextType prop)
+    public void setTextProperty(final TextType prop)
     {
         setSpecifiedSimpleTypeProperty(prop);
     }
@@ -268,7 +268,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param propertyValue
      *            The value for the property, can be any string. Passing null will remove the property.
      */
-    public void setTextPropertyValue(String qualifiedName, String propertyValue)
+    public void setTextPropertyValue(final String qualifiedName, final String propertyValue)
     {
         setSpecifiedSimpleTypeProperty(Types.Text, qualifiedName, propertyValue);
     }
@@ -281,7 +281,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param propertyValue
      *            The value for the property, can be any string. Passing null will remove the property.
      */
-    public void setTextPropertyValueAsSimple(String simpleName, String propertyValue)
+    public void setTextPropertyValueAsSimple(final String simpleName, final String propertyValue)
     {
         this.setTextPropertyValue(simpleName, propertyValue);
     }
@@ -293,9 +293,9 @@ public class XMPSchema extends AbstractStructuredType
      * @return The Text Type property wanted or null if not found.
      * @throws BadFieldValueException If the property is not a text property.
      */
-    public TextType getUnqualifiedTextProperty(String name) throws BadFieldValueException
+    public TextType getUnqualifiedTextProperty(final String name) throws BadFieldValueException
     {
-        AbstractField prop = getAbstractProperty(name);
+        final AbstractField prop = getAbstractProperty(name);
         if (prop != null)
         {
             if (prop instanceof TextType)
@@ -315,9 +315,9 @@ public class XMPSchema extends AbstractStructuredType
      * @throws BadFieldValueException If the property is not a text property.
      * 
      */
-    public String getUnqualifiedTextPropertyValue(String name) throws BadFieldValueException
+    public String getUnqualifiedTextPropertyValue(final String name) throws BadFieldValueException
     {
-        TextType tt = getUnqualifiedTextProperty(name);
+        final TextType tt = getUnqualifiedTextProperty(name);
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -330,9 +330,9 @@ public class XMPSchema extends AbstractStructuredType
      * @throws BadFieldValueException If the property is not a date property.
      * 
      */
-    public DateType getDateProperty(String qualifiedName) throws BadFieldValueException
+    public DateType getDateProperty(final String qualifiedName) throws BadFieldValueException
     {
-        AbstractField prop = getAbstractProperty(qualifiedName);
+        final AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
         {
             if (prop instanceof DateType)
@@ -353,7 +353,7 @@ public class XMPSchema extends AbstractStructuredType
      * @throws BadFieldValueException If the property is not a date property.
      * 
      */
-    public Calendar getDatePropertyValueAsSimple(String simpleName) throws BadFieldValueException
+    public Calendar getDatePropertyValueAsSimple(final String simpleName) throws BadFieldValueException
     {
         return this.getDatePropertyValue(simpleName);
     }
@@ -368,9 +368,9 @@ public class XMPSchema extends AbstractStructuredType
      * @throws BadFieldValueException If the property is not a date property.
      * 
      */
-    public Calendar getDatePropertyValue(String qualifiedName) throws BadFieldValueException
+    public Calendar getDatePropertyValue(final String qualifiedName) throws BadFieldValueException
     {
-        AbstractField prop = getAbstractProperty(qualifiedName);
+        final AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
         {
             if (prop instanceof DateType)
@@ -388,7 +388,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param date
      *            The DateType Property
      */
-    public void setDateProperty(DateType date)
+    public void setDateProperty(final DateType date)
     {
         setSpecifiedSimpleTypeProperty(date);
     }
@@ -401,7 +401,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param date
      *            The calendar value for the property, can be any string. Passing null will remove the property.
      */
-    public void setDatePropertyValueAsSimple(String simpleName, Calendar date)
+    public void setDatePropertyValueAsSimple(final String simpleName, final Calendar date)
     {
         this.setDatePropertyValue(simpleName, date);
     }
@@ -414,7 +414,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param date
      *            The date to set, or null to clear.
      */
-    public void setDatePropertyValue(String qualifiedName, Calendar date)
+    public void setDatePropertyValue(final String qualifiedName, final Calendar date)
     {
         setSpecifiedSimpleTypeProperty(Types.Date, qualifiedName, date);
     }
@@ -427,9 +427,9 @@ public class XMPSchema extends AbstractStructuredType
      * @return boolean Type property or null if it doesn't exist.
      * @throws BadFieldValueException If the property is not a boolean property.
      */
-    public BooleanType getBooleanProperty(String qualifiedName) throws BadFieldValueException
+    public BooleanType getBooleanProperty(final String qualifiedName) throws BadFieldValueException
     {
-        AbstractField prop = getAbstractProperty(qualifiedName);
+        final AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
         {
             if (prop instanceof BooleanType)
@@ -452,7 +452,7 @@ public class XMPSchema extends AbstractStructuredType
      * @return The value of the property as a boolean or null if the property does not exist.
      * @throws BadFieldValueException If the property is not a boolean property.
      */
-    public Boolean getBooleanPropertyValueAsSimple(String simpleName) throws BadFieldValueException
+    public Boolean getBooleanPropertyValueAsSimple(final String simpleName) throws BadFieldValueException
     {
         return this.getBooleanPropertyValue(simpleName);
     }
@@ -467,9 +467,9 @@ public class XMPSchema extends AbstractStructuredType
      * does not exist.
      * @throws BadFieldValueException If the property is not a boolean property.
      */
-    public Boolean getBooleanPropertyValue(String qualifiedName) throws BadFieldValueException
+    public Boolean getBooleanPropertyValue(final String qualifiedName) throws BadFieldValueException
     {
-        AbstractField prop = getAbstractProperty(qualifiedName);
+        final AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
         {
             if (prop instanceof BooleanType)
@@ -490,7 +490,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param bool
      *            the booleanType property
      */
-    public void setBooleanProperty(BooleanType bool)
+    public void setBooleanProperty(final BooleanType bool)
     {
         setSpecifiedSimpleTypeProperty(bool);
     }
@@ -503,7 +503,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param bool
      *            The value for the property, can be any string. Passing null will remove the property.
      */
-    public void setBooleanPropertyValueAsSimple(String simpleName, Boolean bool)
+    public void setBooleanPropertyValueAsSimple(final String simpleName, final Boolean bool)
     {
         this.setBooleanPropertyValue(simpleName, bool);
     }
@@ -516,7 +516,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param bool
      *            The boolean to set, or null to clear.
      */
-    public void setBooleanPropertyValue(String qualifiedName, Boolean bool)
+    public void setBooleanPropertyValue(final String qualifiedName, final Boolean bool)
     {
         setSpecifiedSimpleTypeProperty(Types.Boolean, qualifiedName, bool);
     }
@@ -529,9 +529,9 @@ public class XMPSchema extends AbstractStructuredType
      * @return Integer Type property or null if it doesn't exist.
      * @throws BadFieldValueException If the property is not an integer property.
      */
-    public IntegerType getIntegerProperty(String qualifiedName) throws BadFieldValueException
+    public IntegerType getIntegerProperty(final String qualifiedName) throws BadFieldValueException
     {
-        AbstractField prop = getAbstractProperty(qualifiedName);
+        final AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
         {
             if (prop instanceof IntegerType)
@@ -551,7 +551,7 @@ public class XMPSchema extends AbstractStructuredType
      * @return The value of the property as an integer or null if it doesn't exist.
      * @throws BadFieldValueException If the property is not an integer property.
      */
-    public Integer getIntegerPropertyValueAsSimple(String simpleName) throws BadFieldValueException
+    public Integer getIntegerPropertyValueAsSimple(final String simpleName) throws BadFieldValueException
     {
         return this.getIntegerPropertyValue(simpleName);
     }
@@ -565,9 +565,9 @@ public class XMPSchema extends AbstractStructuredType
      * @return The value of the property as an integer or null if it doesn't exist.
      * @throws BadFieldValueException If the property is not an integer property.
      */
-    public Integer getIntegerPropertyValue(String qualifiedName) throws BadFieldValueException
+    public Integer getIntegerPropertyValue(final String qualifiedName) throws BadFieldValueException
     {
-        AbstractField prop = getAbstractProperty(qualifiedName);
+        final AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
         {
             if (prop instanceof IntegerType)
@@ -585,7 +585,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param prop
      *            The Integer Type property
      */
-    public void setIntegerProperty(IntegerType prop)
+    public void setIntegerProperty(final IntegerType prop)
     {
         setSpecifiedSimpleTypeProperty(prop);
     }
@@ -598,7 +598,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param intValue
      *            The value for the property, can be any string. Passing null will remove the property.
      */
-    public void setIntegerPropertyValueAsSimple(String simpleName, Integer intValue)
+    public void setIntegerPropertyValueAsSimple(final String simpleName, final Integer intValue)
     {
         this.setIntegerPropertyValue(simpleName, intValue);
     }
@@ -611,7 +611,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param intValue
      *            The int to set, or null to clear.
      */
-    public void setIntegerPropertyValue(String qualifiedName, Integer intValue)
+    public void setIntegerPropertyValue(final String qualifiedName, final Integer intValue)
     {
         setSpecifiedSimpleTypeProperty(Types.Integer, qualifiedName, intValue);
     }
@@ -622,20 +622,20 @@ public class XMPSchema extends AbstractStructuredType
      * @param fieldValue
      *            the field value
      */
-    private void removeUnqualifiedArrayValue(String arrayName, String fieldValue)
+    private void removeUnqualifiedArrayValue(final String arrayName, final String fieldValue)
     {
-        AbstractField abstractProperty = getAbstractProperty(arrayName);
+        final AbstractField abstractProperty = getAbstractProperty(arrayName);
         if (!(abstractProperty instanceof ArrayProperty))
         {
             return;
         }
 
-        ArrayProperty array = (ArrayProperty) abstractProperty;
+        final ArrayProperty array = (ArrayProperty) abstractProperty;
 
-        List<AbstractField> toDelete = new ArrayList<>();
-        for (AbstractField abstractField : array.getContainer().getAllProperties())
+        final List<AbstractField> toDelete = new ArrayList<>();
+        for (final AbstractField abstractField : array.getContainer().getAllProperties())
         {
-            AbstractSimpleProperty tmp = (AbstractSimpleProperty) abstractField;
+            final AbstractSimpleProperty tmp = (AbstractSimpleProperty) abstractField;
             if (tmp.getStringValue().equals(fieldValue))
             {
                 toDelete.add(tmp);
@@ -651,7 +651,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param bagValue
      *            The value to remove from the bagList.
      */
-    public void removeUnqualifiedBagValue(String bagName, String bagValue)
+    public void removeUnqualifiedBagValue(final String bagName, final String bagValue)
     {
         removeUnqualifiedArrayValue(bagName, bagValue);
     }
@@ -664,22 +664,22 @@ public class XMPSchema extends AbstractStructuredType
      * @param bagValue
      *            the string value to add
      */
-    public void addBagValueAsSimple(String simpleName, String bagValue)
+    public void addBagValueAsSimple(final String simpleName, final String bagValue)
     {
         this.internalAddBagValue(simpleName, bagValue);
     }
 
-    private void internalAddBagValue(String qualifiedBagName, String bagValue)
+    private void internalAddBagValue(final String qualifiedBagName, final String bagValue)
     {
-        ArrayProperty bag = (ArrayProperty) getAbstractProperty(qualifiedBagName);
-        TextType li = createTextType(XmpConstants.LIST_NAME, bagValue);
+        final ArrayProperty bag = (ArrayProperty) getAbstractProperty(qualifiedBagName);
+        final TextType li = createTextType(XmpConstants.LIST_NAME, bagValue);
         if (bag != null)
         {
             bag.getContainer().addProperty(li);
         }
         else
         {
-            ArrayProperty newBag = createArrayProperty(qualifiedBagName, Cardinality.Bag);
+            final ArrayProperty newBag = createArrayProperty(qualifiedBagName, Cardinality.Bag);
             newBag.getContainer().addProperty(li);
             addProperty(newBag);
         }
@@ -693,7 +693,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param bagValue
      *            The value to add to the bagList.
      */
-    public void addQualifiedBagValue(String simpleName, String bagValue)
+    public void addQualifiedBagValue(final String simpleName, final String bagValue)
     {
         internalAddBagValue(simpleName, bagValue);
     }
@@ -705,9 +705,9 @@ public class XMPSchema extends AbstractStructuredType
      * @param bagName The bag name.
      * @return All values of the bag property in a list.
      */
-    public List<String> getUnqualifiedBagValueList(String bagName)
+    public List<String> getUnqualifiedBagValueList(final String bagName)
     {
-        AbstractField abstractProperty = getAbstractProperty(bagName);
+        final AbstractField abstractProperty = getAbstractProperty(bagName);
         if (abstractProperty instanceof ArrayProperty)
         {
             return ((ArrayProperty) getAbstractProperty(bagName)).getElementsAsString();
@@ -723,7 +723,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param seqValue
      *            The value to remove from the list.
      */
-    public void removeUnqualifiedSequenceValue(String qualifiedSeqName, String seqValue)
+    public void removeUnqualifiedSequenceValue(final String qualifiedSeqName, final String seqValue)
     {
         removeUnqualifiedArrayValue(qualifiedSeqName, seqValue);
     }
@@ -736,20 +736,20 @@ public class XMPSchema extends AbstractStructuredType
      * @param fieldValue
      *            the elementable field value
      */
-    public void removeUnqualifiedArrayValue(String arrayName, AbstractField fieldValue)
+    public void removeUnqualifiedArrayValue(final String arrayName, final AbstractField fieldValue)
     {
-        AbstractField abstractProperty = getAbstractProperty(arrayName);
+        final AbstractField abstractProperty = getAbstractProperty(arrayName);
         if (!(abstractProperty instanceof ArrayProperty))
         {
             return;
         }
 
-        ArrayProperty array = (ArrayProperty) abstractProperty;
+        final ArrayProperty array = (ArrayProperty) abstractProperty;
 
-        List<AbstractField> toDelete = new ArrayList<>();
-        for (AbstractField abstractField : array.getContainer().getAllProperties())
+        final List<AbstractField> toDelete = new ArrayList<>();
+        for (final AbstractField abstractField : array.getContainer().getAllProperties())
         {
-            AbstractSimpleProperty tmp = (AbstractSimpleProperty) abstractField;
+            final AbstractSimpleProperty tmp = (AbstractSimpleProperty) abstractField;
             if (tmp.equals(fieldValue))
             {
                 toDelete.add(tmp);
@@ -766,7 +766,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param seqValue
      *            The value to remove from the list.
      */
-    public void removeUnqualifiedSequenceValue(String qualifiedSeqName, AbstractField seqValue)
+    public void removeUnqualifiedSequenceValue(final String qualifiedSeqName, final AbstractField seqValue)
     {
         removeUnqualifiedArrayValue(qualifiedSeqName, seqValue);
     }
@@ -779,17 +779,17 @@ public class XMPSchema extends AbstractStructuredType
      * @param seqValue
      *            The value to add to the sequence.
      */
-    public void addUnqualifiedSequenceValue(String simpleSeqName, String seqValue)
+    public void addUnqualifiedSequenceValue(final String simpleSeqName, final String seqValue)
     {
-        ArrayProperty seq = (ArrayProperty) getAbstractProperty(simpleSeqName);
-        TextType li = createTextType(XmpConstants.LIST_NAME, seqValue);
+        final ArrayProperty seq = (ArrayProperty) getAbstractProperty(simpleSeqName);
+        final TextType li = createTextType(XmpConstants.LIST_NAME, seqValue);
         if (seq != null)
         {
             seq.getContainer().addProperty(li);
         }
         else
         {
-            ArrayProperty newSeq = createArrayProperty(simpleSeqName, Cardinality.Seq);
+            final ArrayProperty newSeq = createArrayProperty(simpleSeqName, Cardinality.Seq);
             newSeq.getContainer().addProperty(li);
             addProperty(newSeq);
         }
@@ -803,16 +803,16 @@ public class XMPSchema extends AbstractStructuredType
      * @param seqValue
      *            The value to add to the bag.
      */
-    public void addBagValue(String qualifiedSeqName, AbstractField seqValue)
+    public void addBagValue(final String qualifiedSeqName, final AbstractField seqValue)
     {
-        ArrayProperty bag = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
+        final ArrayProperty bag = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
         if (bag != null)
         {
             bag.getContainer().addProperty(seqValue);
         }
         else
         {
-            ArrayProperty newBag = createArrayProperty(qualifiedSeqName, Cardinality.Bag);
+            final ArrayProperty newBag = createArrayProperty(qualifiedSeqName, Cardinality.Bag);
             newBag.getContainer().addProperty(seqValue);
             addProperty(newBag);
         }
@@ -826,16 +826,16 @@ public class XMPSchema extends AbstractStructuredType
      * @param seqValue
      *            The value to add to the sequence.
      */
-    public void addUnqualifiedSequenceValue(String seqName, AbstractField seqValue)
+    public void addUnqualifiedSequenceValue(final String seqName, final AbstractField seqValue)
     {
-        ArrayProperty seq = (ArrayProperty) getAbstractProperty(seqName);
+        final ArrayProperty seq = (ArrayProperty) getAbstractProperty(seqName);
         if (seq != null)
         {
             seq.getContainer().addProperty(seqValue);
         }
         else
         {
-            ArrayProperty newSeq = createArrayProperty(seqName, Cardinality.Seq);
+            final ArrayProperty newSeq = createArrayProperty(seqName, Cardinality.Seq);
             newSeq.getContainer().addProperty(seqValue);
             addProperty(newSeq);
         }
@@ -849,9 +849,9 @@ public class XMPSchema extends AbstractStructuredType
      * 
      * @return A read-only list of java.lang.String objects or null if the property does not exist.
      */
-    public List<String> getUnqualifiedSequenceValueList(String seqName)
+    public List<String> getUnqualifiedSequenceValueList(final String seqName)
     {
-        AbstractField abstractProperty = getAbstractProperty(seqName);
+        final AbstractField abstractProperty = getAbstractProperty(seqName);
         if (abstractProperty instanceof ArrayProperty)
         {
             return ((ArrayProperty) abstractProperty).getElementsAsString();
@@ -867,18 +867,18 @@ public class XMPSchema extends AbstractStructuredType
      * @param date
      *            The date to remove from the sequence property.
      */
-    public void removeUnqualifiedSequenceDateValue(String seqName, Calendar date)
+    public void removeUnqualifiedSequenceDateValue(final String seqName, final Calendar date)
     {
-        AbstractField abstractProperty = getAbstractProperty(seqName);
+        final AbstractField abstractProperty = getAbstractProperty(seqName);
         if (!(abstractProperty instanceof ArrayProperty))
         {
             return;
         }
 
-        ArrayProperty seq = (ArrayProperty) abstractProperty;
+        final ArrayProperty seq = (ArrayProperty) abstractProperty;
 
-        List<AbstractField> toDelete = new ArrayList<>();
-        for (AbstractField tmp : seq.getContainer().getAllProperties())
+        final List<AbstractField> toDelete = new ArrayList<>();
+        for (final AbstractField tmp : seq.getContainer().getAllProperties())
         {
             if (tmp instanceof DateType && ((DateType) tmp).getValue().equals(date))
             {
@@ -896,7 +896,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param date
      *            the value to add
      */
-    public void addSequenceDateValueAsSimple(String simpleName, Calendar date)
+    public void addSequenceDateValueAsSimple(final String simpleName, final Calendar date)
     {
         addUnqualifiedSequenceDateValue(simpleName, date);
     }
@@ -909,7 +909,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param date
      *            The date to add to the sequence property.
      */
-    public void addUnqualifiedSequenceDateValue(String seqName, Calendar date)
+    public void addUnqualifiedSequenceDateValue(final String seqName, final Calendar date)
     {
         addUnqualifiedSequenceValue(
                 seqName,
@@ -926,16 +926,16 @@ public class XMPSchema extends AbstractStructuredType
      * @return A read-only list of java.util.Calendar objects or null if the property does not exist.
      * 
      */
-    public List<Calendar> getUnqualifiedSequenceDateValueList(String seqName)
+    public List<Calendar> getUnqualifiedSequenceDateValueList(final String seqName)
     {
-        AbstractField abstractProperty = getAbstractProperty(seqName);
+        final AbstractField abstractProperty = getAbstractProperty(seqName);
         if (!(abstractProperty instanceof ArrayProperty))
         {
             return null;
         }
-        ArrayProperty seq = (ArrayProperty) abstractProperty;
-        List<Calendar> retval = new ArrayList<>();
-        for (AbstractField child : seq.getContainer().getAllProperties())
+        final ArrayProperty seq = (ArrayProperty) abstractProperty;
+        final List<Calendar> retval = new ArrayList<>();
+        for (final AbstractField child : seq.getContainer().getAllProperties())
         {
             if (child instanceof DateType)
             {
@@ -951,7 +951,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param alt
      *            The property to reorganize
      */
-    public void reorganizeAltOrder(ComplexPropertyContainer alt)
+    public void reorganizeAltOrder(final ComplexPropertyContainer alt)
     {
         Iterator<AbstractField> it = alt.getAllProperties().iterator();
         AbstractField xdefault = null;
@@ -974,12 +974,12 @@ public class XMPSchema extends AbstractStructuredType
         if (xdefaultFound)
         {
             it = alt.getAllProperties().iterator();
-            List<AbstractField> reordered = new ArrayList<>();
-            List<AbstractField> toDelete = new ArrayList<>();
+            final List<AbstractField> reordered = new ArrayList<>();
+            final List<AbstractField> toDelete = new ArrayList<>();
             reordered.add(xdefault);
             while (it.hasNext())
             {
-                AbstractField tmp = it.next();
+                final AbstractField tmp = it.next();
                 reordered.add(tmp);
                 toDelete.add(tmp);
             }
@@ -1002,14 +1002,14 @@ public class XMPSchema extends AbstractStructuredType
      * @param value
      *            The value of the property in the specified language.
      */
-    public void setUnqualifiedLanguagePropertyValue(String name, String language, String value)
+    public void setUnqualifiedLanguagePropertyValue(final String name, String language, final String value)
     {
         if (language == null || language.isEmpty())
         {
             language = XmpConstants.X_DEFAULT;
         }
-        AbstractField property = getAbstractProperty(name);
-        ArrayProperty arrayProp;
+        final AbstractField property = getAbstractProperty(name);
+        final ArrayProperty arrayProp;
         if (property != null)
         {
             // Analyzing content of property
@@ -1017,7 +1017,7 @@ public class XMPSchema extends AbstractStructuredType
             {
                 arrayProp = (ArrayProperty) property;
                 // Try to find a definition
-                for (AbstractField child : arrayProp.getContainer().getAllProperties())
+                for (final AbstractField child : arrayProp.getContainer().getAllProperties())
                 {
                     // try to find the same lang definition
                     if (child.getAttribute(XmpConstants.LANG_NAME).getValue().equals(language))
@@ -1026,7 +1026,7 @@ public class XMPSchema extends AbstractStructuredType
                         arrayProp.getContainer().removeProperty(child);
                         if (value != null)
                         {
-                            TextType langValue = createTextType(XmpConstants.LIST_NAME, value);
+                            final TextType langValue = createTextType(XmpConstants.LIST_NAME, value);
                             langValue.setAttribute(new Attribute(XMLConstants.XML_NS_URI, XmpConstants.LANG_NAME,
                                     language));
                             arrayProp.getContainer().addProperty(langValue);
@@ -1036,7 +1036,7 @@ public class XMPSchema extends AbstractStructuredType
                     }
                 }
                 // if no definition found, we add a new one
-                TextType langValue = createTextType(XmpConstants.LIST_NAME, value);
+                final TextType langValue = createTextType(XmpConstants.LIST_NAME, value);
                 langValue.setAttribute(new Attribute(XMLConstants.XML_NS_URI, XmpConstants.LANG_NAME, language));
                 arrayProp.getContainer().addProperty(langValue);
                 reorganizeAltOrder(arrayProp.getContainer());
@@ -1045,7 +1045,7 @@ public class XMPSchema extends AbstractStructuredType
         else
         {
             arrayProp = createArrayProperty(name, Cardinality.Alt);
-            TextType langValue = createTextType(XmpConstants.LIST_NAME, value);
+            final TextType langValue = createTextType(XmpConstants.LIST_NAME, value);
             langValue.setAttribute(new Attribute(XMLConstants.XML_NS_URI, XmpConstants.LANG_NAME, language));
             arrayProp.getContainer().addProperty(langValue);
             addProperty(arrayProp);
@@ -1063,18 +1063,18 @@ public class XMPSchema extends AbstractStructuredType
      * @return The value of the language property or null if it doesn't exist.
      * @throws BadFieldValueException If the property is not a multi-lingual property.
      */
-    public String getUnqualifiedLanguagePropertyValue(String name, String expectedLanguage) throws BadFieldValueException
+    public String getUnqualifiedLanguagePropertyValue(final String name, final String expectedLanguage) throws BadFieldValueException
     {
-        String language = (expectedLanguage != null) ? expectedLanguage : XmpConstants.X_DEFAULT;
-        AbstractField property = getAbstractProperty(name);
+        final String language = (expectedLanguage != null) ? expectedLanguage : XmpConstants.X_DEFAULT;
+        final AbstractField property = getAbstractProperty(name);
         if (property != null)
         {
             if (property instanceof ArrayProperty)
             {
-                ArrayProperty arrayProp = (ArrayProperty) property;
-                for (AbstractField child : arrayProp.getContainer().getAllProperties())
+                final ArrayProperty arrayProp = (ArrayProperty) property;
+                for (final AbstractField child : arrayProp.getContainer().getAllProperties())
                 {
-                    Attribute text = child.getAttribute(XmpConstants.LANG_NAME);
+                    final Attribute text = child.getAttribute(XmpConstants.LANG_NAME);
                     if (text != null && text.getValue().equals(language))
                     {
                         return ((TextType) child).getStringValue();
@@ -1098,18 +1098,18 @@ public class XMPSchema extends AbstractStructuredType
      * if none have been defined, and null if the property doesn't exist.
      * @throws BadFieldValueException If the property is not a multi-lingual property.
      */
-    public List<String> getUnqualifiedLanguagePropertyLanguagesValue(String name) throws BadFieldValueException
+    public List<String> getUnqualifiedLanguagePropertyLanguagesValue(final String name) throws BadFieldValueException
     {
-        AbstractField property = getAbstractProperty(name);
+        final AbstractField property = getAbstractProperty(name);
         if (property != null)
         {
             if (property instanceof ArrayProperty)
             {
-                List<String> retval = new ArrayList<>();
-                ArrayProperty arrayProp = (ArrayProperty) property;
-                for (AbstractField child : arrayProp.getContainer().getAllProperties())
+                final List<String> retval = new ArrayList<>();
+                final ArrayProperty arrayProp = (ArrayProperty) property;
+                for (final AbstractField child : arrayProp.getContainer().getAllProperties())
                 {
-                    Attribute text = child.getAttribute(XmpConstants.LANG_NAME);
+                    final Attribute text = child.getAttribute(XmpConstants.LANG_NAME);
                     retval.add(text != null ? text.getValue() : XmpConstants.X_DEFAULT);
                 }
                 return retval;
@@ -1128,14 +1128,14 @@ public class XMPSchema extends AbstractStructuredType
      * @throws IOException
      *             If there is an error during the merge.
      */
-    public void merge(XMPSchema xmpSchema) throws IOException
+    public void merge(final XMPSchema xmpSchema) throws IOException
     {
         if (!xmpSchema.getClass().equals(this.getClass()))
         {
             throw new IOException("Can only merge schemas of the same type.");
         }
 
-        for (Attribute att : xmpSchema.getAllAttributes())
+        for (final Attribute att : xmpSchema.getAllAttributes())
         {
             if (att.getNamespace().equals(getNamespace()))
             {
@@ -1144,19 +1144,19 @@ public class XMPSchema extends AbstractStructuredType
         }
 
         String analyzedPropQualifiedName;
-        for (AbstractField child : xmpSchema.getContainer().getAllProperties())
+        for (final AbstractField child : xmpSchema.getContainer().getAllProperties())
         {
             if (child.getPrefix().equals(getPrefix()))
             {
                 if (child instanceof ArrayProperty)
                 {
                     analyzedPropQualifiedName = child.getPropertyName();
-                    for (AbstractField tmpEmbeddedProperty : getAllProperties())
+                    for (final AbstractField tmpEmbeddedProperty : getAllProperties())
                     {
                         if (tmpEmbeddedProperty instanceof ArrayProperty && 
                                 tmpEmbeddedProperty.getPropertyName().equals(analyzedPropQualifiedName))
                         {
-                            Iterator<AbstractField> itNewValues = ((ArrayProperty) child).getContainer().getAllProperties().iterator();
+                            final Iterator<AbstractField> itNewValues = ((ArrayProperty) child).getContainer().getAllProperties().iterator();
                             if (mergeComplexProperty(itNewValues, (ArrayProperty) tmpEmbeddedProperty)) 
                             {
                                 return;
@@ -1172,14 +1172,14 @@ public class XMPSchema extends AbstractStructuredType
         }
     }
 
-    private boolean mergeComplexProperty(Iterator<AbstractField> itNewValues, ArrayProperty arrayProperty)
+    private boolean mergeComplexProperty(final Iterator<AbstractField> itNewValues, final ArrayProperty arrayProperty)
     {
         while (itNewValues.hasNext())
         {
-            TextType tmpNewValue = (TextType) itNewValues.next();
-            for (AbstractField abstractField : arrayProperty.getContainer().getAllProperties())
+            final TextType tmpNewValue = (TextType) itNewValues.next();
+            for (final AbstractField abstractField : arrayProperty.getContainer().getAllProperties())
             {
-                TextType tmpOldValue = (TextType) abstractField;
+                final TextType tmpOldValue = (TextType) abstractField;
                 if (tmpOldValue.getStringValue().equals(tmpNewValue.getStringValue()))
                 {
                     return true;
@@ -1198,10 +1198,10 @@ public class XMPSchema extends AbstractStructuredType
      * @return List of properties contained in the array property.
      * @throws BadFieldValueException If the property with the requested name isn't an array.
      */
-    public List<AbstractField> getUnqualifiedArrayList(String name) throws BadFieldValueException
+    public List<AbstractField> getUnqualifiedArrayList(final String name) throws BadFieldValueException
     {
         ArrayProperty array = null;
-        for (AbstractField child : getAllProperties())
+        for (final AbstractField child : getAllProperties())
         {
             if (child.getPropertyName().equals(name))
             {
@@ -1220,9 +1220,9 @@ public class XMPSchema extends AbstractStructuredType
         return null;
     }
 
-    protected AbstractSimpleProperty instanciateSimple(String propertyName, Object value)
+    protected AbstractSimpleProperty instanciateSimple(final String propertyName, final Object value)
     {
-        TypeMapping tm = getMetadata().getTypeMapping();
+        final TypeMapping tm = getMetadata().getTypeMapping();
         return tm.instanciateSimpleField(getClass(), null, getPrefix(), propertyName, value);
     }
 

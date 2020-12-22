@@ -51,7 +51,7 @@ public class PDTextState implements Cloneable
      *
      * @param value The characterSpacing.
      */
-    public void setCharacterSpacing(float value)
+    public void setCharacterSpacing(final float value)
     {
         characterSpacing = value;
     }
@@ -71,7 +71,7 @@ public class PDTextState implements Cloneable
      *
      * @param value The wordSpacing.
      */
-    public void setWordSpacing(float value)
+    public void setWordSpacing(final float value)
     {
         wordSpacing = value;
     }
@@ -93,7 +93,7 @@ public class PDTextState implements Cloneable
      *
      * @param value The horizontalScaling.
      */
-    public void setHorizontalScaling(float value)
+    public void setHorizontalScaling(final float value)
     {
         horizontalScaling = value;
     }
@@ -113,7 +113,7 @@ public class PDTextState implements Cloneable
      *
      * @param value The leading.
      */
-    public void setLeading(float value)
+    public void setLeading(final float value)
     {
         leading = value;
     }
@@ -133,7 +133,7 @@ public class PDTextState implements Cloneable
      *
      * @param value The font.
      */
-    public void setFont(PDFont value)
+    public void setFont(final PDFont value)
     {
         font = value;
     }
@@ -153,7 +153,7 @@ public class PDTextState implements Cloneable
      *
      * @param value The fontSize.
      */
-    public void setFontSize(float value)
+    public void setFontSize(final float value)
     {
         fontSize = value;
     }
@@ -173,7 +173,7 @@ public class PDTextState implements Cloneable
      *
      * @param renderingMode The renderingMode.
      */
-    public void setRenderingMode(RenderingMode renderingMode)
+    public void setRenderingMode(final RenderingMode renderingMode)
     {
         this.renderingMode = renderingMode;
     }
@@ -193,7 +193,7 @@ public class PDTextState implements Cloneable
      *
      * @param value The rise.
      */
-    public void setRise(float value)
+    public void setRise(final float value)
     {
         rise = value;
     }
@@ -213,7 +213,7 @@ public class PDTextState implements Cloneable
      *
      * @param value The knockout.
      */
-    public void setKnockoutFlag(boolean value)
+    public void setKnockoutFlag(final boolean value)
     {
         knockout = value;
     }
@@ -225,7 +225,7 @@ public class PDTextState implements Cloneable
         {
             return (PDTextState)super.clone();
         }
-        catch (CloneNotSupportedException e)
+        catch (final CloneNotSupportedException e)
         {
             // should not happen
             throw new RuntimeException(e);

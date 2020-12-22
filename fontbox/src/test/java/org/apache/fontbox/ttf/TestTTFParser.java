@@ -41,16 +41,16 @@ class TestTTFParser
     void testUTCDate() throws IOException
     {
         final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
-        TimeZone utc = TimeZone.getTimeZone("UTC");
+        final TimeZone utc = TimeZone.getTimeZone("UTC");
         //Before PDFBOX-2122, TTFDataStream was using the default TimeZone
         //Set the default to something not UTC and see if a UTC timeZone is returned
         TimeZone.setDefault(TimeZone.getTimeZone("America/Los Angeles"));
-        TTFParser parser = new TTFParser();
-        TrueTypeFont ttf = parser.parse(testFile);
-        Calendar created = ttf.getHeader().getCreated();
+        final TTFParser parser = new TTFParser();
+        final TrueTypeFont ttf = parser.parse(testFile);
+        final Calendar created = ttf.getHeader().getCreated();
         assertEquals(created.getTimeZone(), utc);
 
-        Calendar target = Calendar.getInstance(utc);
+        final Calendar target = Calendar.getInstance(utc);
         target.set(2012, 9, 4, 11, 2, 31);
         target.set(Calendar.MILLISECOND, 0);
         assertEquals(target, created);

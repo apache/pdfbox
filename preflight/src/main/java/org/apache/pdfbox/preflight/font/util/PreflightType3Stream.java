@@ -50,13 +50,13 @@ public class PreflightType3Stream extends PreflightStreamEngine
     private PDInlineImage image = null;
     private BoundingBox box = null;
 
-    public PreflightType3Stream(PreflightContext context, PDPage page, PDType3CharProc charProc)
+    public PreflightType3Stream(final PreflightContext context, final PDPage page, final PDType3CharProc charProc)
     {
         super(context, page);
         this.charProc = charProc;
     }
 
-    public void showType3Character(PDType3CharProc charProc) throws IOException
+    public void showType3Character(final PDType3CharProc charProc) throws IOException
     {
         processChildStream(charProc, new PDPage()); // dummy page (resource lookup may fail)
     }
@@ -87,10 +87,10 @@ public class PreflightType3Stream extends PreflightStreamEngine
      *             If there is an error processing the operation.
      */
     @Override
-    protected void processOperator(Operator operator, List<COSBase> operands) throws IOException
+    protected void processOperator(final Operator operator, final List<COSBase> operands) throws IOException
     {
         super.processOperator(operator, operands);
-        String operation = operator.getName();
+        final String operation = operator.getName();
 
         if (operation.equals(OperatorName.BEGIN_INLINE_IMAGE))
         {
@@ -108,10 +108,10 @@ public class PreflightType3Stream extends PreflightStreamEngine
         }
         else if (operation.equals(OperatorName.TYPE3_D1))
         {
-            COSNumber llx = (COSNumber) operands.get(2);
-            COSNumber lly = (COSNumber) operands.get(3);
-            COSNumber urx = (COSNumber) operands.get(4);
-            COSNumber ury = (COSNumber) operands.get(5);
+            final COSNumber llx = (COSNumber) operands.get(2);
+            final COSNumber lly = (COSNumber) operands.get(3);
+            final COSNumber urx = (COSNumber) operands.get(4);
+            final COSNumber ury = (COSNumber) operands.get(5);
 
             box = new BoundingBox();
             box.setLowerLeftX(llx.floatValue());
@@ -136,14 +136,14 @@ public class PreflightType3Stream extends PreflightStreamEngine
      * @param arguments
      * @throws IOException
      */
-    private void checkType3FirstOperator(List<COSBase> arguments) throws IOException
+    private void checkType3FirstOperator(final List<COSBase> arguments) throws IOException
     {
         if (!firstOperator)
         {
             throw new IOException("Type3 CharProc : First operator must be d0 or d1");
         }
 
-        COSBase obj = arguments.get(0);
+        final COSBase obj = arguments.get(0);
         if (obj instanceof COSNumber)
         {
             width = ((COSNumber) obj).floatValue();

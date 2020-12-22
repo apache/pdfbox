@@ -49,7 +49,7 @@ class PlainText
      * 
      * @param textValue the text block string.
      */
-    PlainText(String textValue)
+    PlainText(final String textValue)
     {
         paragraphs = new ArrayList<>();
         if (textValue.isEmpty()) {
@@ -57,7 +57,7 @@ class PlainText
         }
         else
         {
-            List<String> parts = Arrays.asList(textValue.replaceAll("\t", " ").split("\\r\\n|\\n|\\r|\\u2028|\\u2029"));
+            final List<String> parts = Arrays.asList(textValue.replaceAll("\t", " ").split("\\r\\n|\\n|\\r|\\u2028|\\u2029"));
             for (String part : parts)
             {
                 // Acrobat prints a space for an empty paragraph
@@ -78,10 +78,10 @@ class PlainText
      * 
      * @param listValue the text block string.
      */
-    PlainText(List<String> listValue)
+    PlainText(final List<String> listValue)
     {
         paragraphs = new ArrayList<>();
-        for (String part : listValue)
+        for (final String part : listValue)
         {
             paragraphs.add(new Paragraph(part));
         }
@@ -116,7 +116,7 @@ class PlainText
          */
         public static final Attribute WIDTH = new TextAttribute("width");
         
-        protected TextAttribute(String name)
+        protected TextAttribute(final String name)
         {
             super(name);
         }
@@ -136,7 +136,7 @@ class PlainText
     {
         private final String textContent;
         
-        Paragraph(String text)
+        Paragraph(final String text)
         {
             textContent = text;
         }
@@ -160,9 +160,9 @@ class PlainText
          * @return the individual lines.
          * @throws IOException
          */
-        List<Line> getLines(PDFont font, float fontSize, float width) throws IOException
+        List<Line> getLines(final PDFont font, final float fontSize, final float width) throws IOException
         {
-            BreakIterator iterator = BreakIterator.getLineInstance();
+            final BreakIterator iterator = BreakIterator.getLineInstance();
             iterator.setText(textContent);
             
             final float scale = fontSize/FONTSCALE;
@@ -171,7 +171,7 @@ class PlainText
             int end = iterator.next();
             float lineWidth = 0;
             
-            List<Line> textLines = new ArrayList<>();
+            final List<Line> textLines = new ArrayList<>();
             Line textLine = new Line();
 
             while (end != BreakIterator.DONE)
@@ -187,7 +187,7 @@ class PlainText
                 // check if the last word would fit without the whitespace ending it
                 if (lineWidth >= width && Character.isWhitespace(word.charAt(word.length()-1)))
                 {
-                    float whitespaceWidth = font.getStringWidth(word.substring(word.length()-1)) * scale;
+                    final float whitespaceWidth = font.getStringWidth(word.substring(word.length()-1)) * scale;
                     lineWidth = lineWidth - whitespaceWidth;
                 }
                 
@@ -207,8 +207,8 @@ class PlainText
                     {
                         splitOffset--;
 
-                        String substring = word.substring(0, splitOffset);
-                        float substringWidth = font.getStringWidth(substring) * scale;
+                        final String substring = word.substring(0, splitOffset);
+                        final float substringWidth = font.getStringWidth(substring) * scale;
                         if (substringWidth < width)
                         {
                             word = substring;
@@ -219,9 +219,9 @@ class PlainText
                     }
                 }
 
-                AttributedString as = new AttributedString(word);
+                final AttributedString as = new AttributedString(word);
                 as.addAttribute(TextAttribute.WIDTH, wordWidth);
-                Word wordInstance = new Word(word);
+                final Word wordInstance = new Word(word);
                 wordInstance.setAttributes(as);
                 textLine.addWord(wordInstance);
 
@@ -254,23 +254,23 @@ class PlainText
             return lineWidth;
         }
         
-        void setWidth(float width)
+        void setWidth(final float width)
         {
             lineWidth = width;
         }
         
-        float calculateWidth(PDFont font, float fontSize) throws IOException
+        float calculateWidth(final PDFont font, final float fontSize) throws IOException
         {
             final float scale = fontSize/FONTSCALE;
             float calculatedWidth = 0f;
-            for (Word word : words)
+            for (final Word word : words)
             {
                 calculatedWidth = calculatedWidth + 
                         (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
-                String text = word.getText();
+                final String text = word.getText();
                 if (words.indexOf(word) == words.size() -1 && Character.isWhitespace(text.charAt(text.length()-1)))
                 {
-                    float whitespaceWidth = font.getStringWidth(text.substring(text.length()-1)) * scale;
+                    final float whitespaceWidth = font.getStringWidth(text.substring(text.length()-1)) * scale;
                     calculatedWidth = calculatedWidth - whitespaceWidth;
                 }
             }
@@ -282,12 +282,12 @@ class PlainText
             return words;
         }
         
-        float getInterWordSpacing(float width)
+        float getInterWordSpacing(final float width)
         {
             return (width - lineWidth)/(words.size()-1);
         }
 
-        void addWord(Word word)
+        void addWord(final Word word)
         {
             words.add(word);
         }
@@ -304,7 +304,7 @@ class PlainText
         private AttributedString attributedString;
         private final String textContent;
         
-        Word(String text)
+        Word(final String text)
         {
             textContent = text;
         }
@@ -319,7 +319,7 @@ class PlainText
             return attributedString;
         }
         
-        void setAttributes(AttributedString as)
+        void setAttributes(final AttributedString as)
         {
             this.attributedString = as;
         }

@@ -45,26 +45,26 @@ class DoubleSameTypeSchemaTest
     @Test
     void testDoubleDublinCore() throws Exception
     {
-        DublinCoreSchema dc1 = metadata.createAndAddDublinCoreSchema();
-        String ownPrefix = "test";
-        DublinCoreSchema dc2 = new DublinCoreSchema(metadata, ownPrefix);
+        final DublinCoreSchema dc1 = metadata.createAndAddDublinCoreSchema();
+        final String ownPrefix = "test";
+        final DublinCoreSchema dc2 = new DublinCoreSchema(metadata, ownPrefix);
         metadata.addSchema(dc2);
 
-        List<String> creators = new ArrayList<>();
+        final List<String> creators = new ArrayList<>();
         creators.add("creator1");
         creators.add("creator2");
 
-        String format = "application/pdf";
+        final String format = "application/pdf";
         dc1.setFormat(format);
         dc1.addCreator(creators.get(0));
         dc1.addCreator(creators.get(1));
 
-        String coverage = "Coverage";
+        final String coverage = "Coverage";
         dc2.setCoverage(coverage);
         dc2.addCreator(creators.get(0));
         dc2.addCreator(creators.get(1));
 
-        StructuredType stDub = DublinCoreSchema.class.getAnnotation(StructuredType.class);
+        final StructuredType stDub = DublinCoreSchema.class.getAnnotation(StructuredType.class);
 
         // We can't use metadata.getDublinCoreSchema() due to specification of
         // XMPBox (see Javadoc of XMPMetadata)
@@ -73,9 +73,9 @@ class DoubleSameTypeSchemaTest
         assertEquals(coverage,
                 ((DublinCoreSchema) metadata.getSchema(ownPrefix, stDub.namespace())).getCoverage());
 
-        List<XMPSchema> schems = metadata.getAllSchemas();
+        final List<XMPSchema> schems = metadata.getAllSchemas();
         DublinCoreSchema dc;
-        for (XMPSchema xmpSchema : schems)
+        for (final XMPSchema xmpSchema : schems)
         {
             dc = (DublinCoreSchema) xmpSchema;
             assertTrue(dc.getCreators().containsAll(creators));

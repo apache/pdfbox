@@ -27,7 +27,7 @@ public class CompositePart
     private final int xDisplacement;
     private final int yDisplacement;
 
-    public CompositePart(String name, int xDisplacement, int yDisplacement)
+    public CompositePart(final String name, final int xDisplacement, final int yDisplacement)
     {
         this.name = name;
         this.xDisplacement = xDisplacement;

@@ -49,7 +49,7 @@ public class GlyphTable extends TTFTable
      */
     private static final int MAX_CACHED_GLYPHS = 100;
 
-    GlyphTable(TrueTypeFont font)
+    GlyphTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -62,7 +62,7 @@ public class GlyphTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
         loca = ttf.getIndexToLocation();
         numGlyphs = ttf.getNumberOfGlyphs();
@@ -90,14 +90,14 @@ public class GlyphTable extends TTFTable
         synchronized (data)
         {
             // the glyph offsets
-            long[] offsets = loca.getOffsets();
+            final long[] offsets = loca.getOffsets();
 
             // the end of the glyph table
             // should not be 0, but sometimes is, see PDFBOX-2044
             // structure of this table: see
             // https://developer.apple.com/fonts/TTRefMan/RM06/Chap6loca.html
-            long endOfGlyphs = offsets[numGlyphs];
-            long offset = getOffset();
+            final long endOfGlyphs = offsets[numGlyphs];
+            final long offset = getOffset();
             if (glyphs == null)
             {
                 glyphs = new GlyphData[numGlyphs];
@@ -138,7 +138,7 @@ public class GlyphTable extends TTFTable
     /**
      * @param glyphsValue The glyphs to set.
      */
-    public void setGlyphs(GlyphData[] glyphsValue)
+    public void setGlyphs(final GlyphData[] glyphsValue)
     {
         glyphs = glyphsValue;
     }
@@ -149,7 +149,7 @@ public class GlyphTable extends TTFTable
      * @param gid GID
      * @throws IOException if the font cannot be read
      */
-    public GlyphData getGlyph(int gid) throws IOException
+    public GlyphData getGlyph(final int gid) throws IOException
     {
         if (gid < 0 || gid >= numGlyphs)
         {
@@ -166,7 +166,7 @@ public class GlyphTable extends TTFTable
         synchronized (data)
         {
             // read a single glyph
-            long[] offsets = loca.getOffsets();
+            final long[] offsets = loca.getOffsets();
 
             if (offsets[gid] == offsets[gid + 1])
             {
@@ -175,11 +175,11 @@ public class GlyphTable extends TTFTable
             }
             
             // save
-            long currentPosition = data.getCurrentPosition();
+            final long currentPosition = data.getCurrentPosition();
 
             data.seek(getOffset() + offsets[gid]);
 
-            GlyphData glyph = getGlyphData(gid);
+            final GlyphData glyph = getGlyphData(gid);
 
             // restore
             data.seek(currentPosition);
@@ -194,11 +194,11 @@ public class GlyphTable extends TTFTable
         }
     }
 
-    private GlyphData getGlyphData(int gid) throws IOException
+    private GlyphData getGlyphData(final int gid) throws IOException
     {
-        GlyphData glyph = new GlyphData();
-        HorizontalMetricsTable hmt = font.getHorizontalMetrics();
-        int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(gid);
+        final GlyphData glyph = new GlyphData();
+        final HorizontalMetricsTable hmt = font.getHorizontalMetrics();
+        final int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(gid);
         glyph.initData(this, data, leftSideBearing);
         // resolve composite glyph
         if (glyph.getDescription().isComposite())

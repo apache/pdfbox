@@ -32,7 +32,7 @@ public final class ShowColorBoxes
     {
     }
     
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 1)
         {
@@ -40,11 +40,11 @@ public final class ShowColorBoxes
             System.exit(1);
         }
         
-        String filename = args[0];
+        final String filename = args[0];
 
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
 
             // fill the entire background with cyan

@@ -133,25 +133,25 @@ class TestNumberFormatUtil
     void testFormattingInRange()
     {
         //Define a range to test
-        BigDecimal minVal = new BigDecimal("-10");
-        BigDecimal maxVal = new BigDecimal("10");
-        BigDecimal maxDelta = BigDecimal.ZERO;
+        final BigDecimal minVal = new BigDecimal("-10");
+        final BigDecimal maxVal = new BigDecimal("10");
+        final BigDecimal maxDelta = BigDecimal.ZERO;
         
-        Pattern pattern = Pattern.compile("^\\-?\\d+(\\.\\d+)?$");
+        final Pattern pattern = Pattern.compile("^\\-?\\d+(\\.\\d+)?$");
         
-        byte[] formatBuffer = new byte[32];
+        final byte[] formatBuffer = new byte[32];
         
         for (int maxFractionDigits = 0; maxFractionDigits <= 5; maxFractionDigits++)
         {
-            BigDecimal increment =  new BigDecimal(10).pow(-maxFractionDigits, MathContext.DECIMAL128);
+            final BigDecimal increment =  new BigDecimal(10).pow(-maxFractionDigits, MathContext.DECIMAL128);
             
             for (BigDecimal value = minVal; value.compareTo(maxVal) < 0; value = value.add(increment))
             {
                 //format with the formatFloatFast method and parse back
-                int byteCount = NumberFormatUtil.formatFloatFast(value.floatValue(), maxFractionDigits, formatBuffer);
+                final int byteCount = NumberFormatUtil.formatFloatFast(value.floatValue(), maxFractionDigits, formatBuffer);
                 assertNotEquals(-1, byteCount);
-                String newStringResult = new String(formatBuffer, 0, byteCount, StandardCharsets.US_ASCII);
-                BigDecimal formattedDecimal = new BigDecimal(newStringResult);
+                final String newStringResult = new String(formatBuffer, 0, byteCount, StandardCharsets.US_ASCII);
+                final BigDecimal formattedDecimal = new BigDecimal(newStringResult);
                 
                 //create new BigDecimal with float representation. This is needed because the float
                 //may not represent the 'value' BigDecimal precisely, in which case the formatFloatFast
@@ -159,7 +159,7 @@ class TestNumberFormatUtil
                 BigDecimal expectedDecimal = new BigDecimal(value.floatValue());
                 expectedDecimal = expectedDecimal.setScale(maxFractionDigits, RoundingMode.HALF_UP);
                 
-                BigDecimal diff = formattedDecimal.subtract(expectedDecimal).abs();
+                final BigDecimal diff = formattedDecimal.subtract(expectedDecimal).abs();
                 
                 assertTrue(pattern.matcher(newStringResult).matches());
                 
@@ -172,7 +172,7 @@ class TestNumberFormatUtil
         }
     }
     
-    private void assertArrayEquals(byte[] expected, byte[] actual)
+    private void assertArrayEquals(final byte[] expected, final byte[] actual)
     {
         assertEquals(expected.length, actual.length, "Length of byte array not equal");
         for (int idx = 0; idx < expected.length; idx++)

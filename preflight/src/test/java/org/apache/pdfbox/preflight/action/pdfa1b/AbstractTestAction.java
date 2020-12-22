@@ -52,10 +52,10 @@ public abstract class AbstractTestAction
      */
     protected PreflightContext createContext() throws Exception
     {
-        PDDocument doc = Loader
+        final PDDocument doc = Loader
                 .loadPDF(new File("src/test/resources/pdfa-with-annotations-square.pdf"));
-        PreflightDocument preflightDocument = new PreflightDocument(doc.getDocument(), Format.PDF_A1B);
-        PreflightContext ctx = new PreflightContext();
+        final PreflightDocument preflightDocument = new PreflightDocument(doc.getDocument(), Format.PDF_A1B);
+        final PreflightContext ctx = new PreflightContext();
         ctx.setDocument(preflightDocument);
         preflightDocument.setContext(ctx);
         return ctx;
@@ -70,12 +70,12 @@ public abstract class AbstractTestAction
      *            true if the Action must be valid, false if the action contains mistakes
      * @throws Exception
      */
-    protected void valid(PDAction action, boolean valid) throws Exception
+    protected void valid(final PDAction action, final boolean valid) throws Exception
     {
         valid(action, valid, null);
     }
 
-    protected void valid(COSDictionary action, boolean valid) throws Exception
+    protected void valid(final COSDictionary action, final boolean valid) throws Exception
     {
         valid(action, valid, null);
     }
@@ -91,27 +91,27 @@ public abstract class AbstractTestAction
      *            the expected error code (can be null)
      * @throws Exception
      */
-    protected void valid(PDAction action, boolean valid, String expectedCode) throws Exception
+    protected void valid(final PDAction action, final boolean valid, final String expectedCode) throws Exception
     {
         valid(action.getCOSObject(), valid, expectedCode);
     }
 
-    protected void valid(COSDictionary action, boolean valid, String expectedCode) throws Exception
+    protected void valid(final COSDictionary action, final boolean valid, final String expectedCode) throws Exception
     {
-        ActionManagerFactory fact = new ActionManagerFactory();
-        PreflightContext ctx = createContext();
+        final ActionManagerFactory fact = new ActionManagerFactory();
+        final PreflightContext ctx = createContext();
         ctx.setConfig(PreflightConfiguration.createPdfA1BConfiguration());
-        COSDictionary dict = new COSDictionary();
+        final COSDictionary dict = new COSDictionary();
         dict.setItem(COSName.A, action);
 
         // process the action validation
-        List<AbstractActionManager> actions = fact.getActionManagers(ctx, dict);
-        for (AbstractActionManager abstractActionManager : actions)
+        final List<AbstractActionManager> actions = fact.getActionManagers(ctx, dict);
+        for (final AbstractActionManager abstractActionManager : actions)
         {
             abstractActionManager.valid();
         }
 
-        List<ValidationError> errors = ctx.getDocument().getValidationErrors();
+        final List<ValidationError> errors = ctx.getDocument().getValidationErrors();
         // check the result
         if (!valid)
         {
@@ -119,7 +119,7 @@ public abstract class AbstractTestAction
             if (expectedCode != null && !expectedCode.isEmpty())
             {
                 boolean found = false;
-                for (ValidationError err : errors)
+                for (final ValidationError err : errors)
                 {
                     if (err.getErrorCode().equals(expectedCode))
                     {

@@ -33,10 +33,10 @@ class PDDocumentOutlineTest
     @Test
     void outlinesCountShouldNotBeNegative()
     {
-        PDDocumentOutline outline = new PDDocumentOutline();
-        PDOutlineItem firstLevelChild = new PDOutlineItem();
+        final PDDocumentOutline outline = new PDDocumentOutline();
+        final PDOutlineItem firstLevelChild = new PDOutlineItem();
         outline.addLast(firstLevelChild);
-        PDOutlineItem secondLevelChild = new PDOutlineItem();
+        final PDOutlineItem secondLevelChild = new PDOutlineItem();
         firstLevelChild.addLast(secondLevelChild);
         assertEquals(0, secondLevelChild.getOpenCount());
         assertEquals(-1, firstLevelChild.getOpenCount());
@@ -47,8 +47,8 @@ class PDDocumentOutlineTest
     @Test
     void outlinesCount()
     {
-        PDDocumentOutline outline = new PDDocumentOutline();
-        PDOutlineItem root = new PDOutlineItem();
+        final PDDocumentOutline outline = new PDDocumentOutline();
+        final PDOutlineItem root = new PDOutlineItem();
         outline.addLast(root);
         assertEquals(1, outline.getOpenCount());
         root.addLast(new PDOutlineItem());

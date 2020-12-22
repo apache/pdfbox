@@ -33,7 +33,7 @@ public class PageEntry
     private final int pageNum;
     private final String pageLabel;    
 
-    public PageEntry(COSDictionary page, int pageNum, String pageLabel)
+    public PageEntry(final COSDictionary page, final int pageNum, final String pageLabel)
     {
         dict = page;
         this.pageNum = pageNum;
@@ -58,7 +58,7 @@ public class PageEntry
     
     public String getPath()
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("Root/Pages");
         
         COSDictionary node = dict;
@@ -69,14 +69,14 @@ public class PageEntry
             {
                 return "";
             }
-            COSDictionary parent = (COSDictionary) base;
+            final COSDictionary parent = (COSDictionary) base;
             base = parent.getDictionaryObject(COSName.KIDS);
             if (!(base instanceof COSArray))
             {
                 return "";
             }
-            COSArray kids = (COSArray) base;
-            int idx = kids.indexOfObject(node);
+            final COSArray kids = (COSArray) base;
+            final int idx = kids.indexOfObject(node);
             sb.append("/Kids/[").append(idx).append("]");
             node = parent;
         }

@@ -43,7 +43,7 @@ public abstract class PDDestination implements PDDestinationOrAction
      *
      * @throws IOException If the base cannot be converted to a Destination.
      */
-    public static PDDestination create( COSBase base ) throws IOException
+    public static PDDestination create(final COSBase base ) throws IOException
     {
         PDDestination retval = null;
         if( base == null )
@@ -54,9 +54,9 @@ public abstract class PDDestination implements PDDestinationOrAction
                 && ((COSArray) base).size() > 1 
                 && ((COSArray) base).getObject(1) instanceof COSName)
         {
-            COSArray array = (COSArray) base;
-            COSName type = (COSName) array.getObject(1);
-            String typeString = type.getName();
+            final COSArray array = (COSArray) base;
+            final COSName type = (COSName) array.getObject(1);
+            final String typeString = type.getName();
             switch (typeString)
             {
                 case PDPageFitDestination.TYPE:

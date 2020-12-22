@@ -40,7 +40,7 @@ import org.apache.pdfbox.preflight.font.container.FontContainer;
 public abstract class DescendantFontValidator<T extends FontContainer> extends SimpleFontValidator<T>
 {
 
-    public DescendantFontValidator(PreflightContext context, PDCIDFont font, T fContainer)
+    public DescendantFontValidator(final PreflightContext context, final PDCIDFont font, final T fContainer)
     {
         super(context, font, font.getCOSObject(), fContainer);
     }
@@ -74,13 +74,13 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
      * 
      * @param sysinfo
      */
-    protected void checkCIDSystemInfo(COSDictionary sysinfo)
+    protected void checkCIDSystemInfo(final COSDictionary sysinfo)
     {
         if (sysinfo != null)
         {
-            String reg = sysinfo.getString(COSName.REGISTRY);
-            String ord = sysinfo.getString(COSName.ORDERING);
-            COSBase sup = sysinfo.getDictionaryObject(COSName.SUPPLEMENT);
+            final String reg = sysinfo.getString(COSName.REGISTRY);
+            final String ord = sysinfo.getString(COSName.ORDERING);
+            final COSBase sup = sysinfo.getDictionaryObject(COSName.SUPPLEMENT);
 
             if (!(reg != null && ord != null && sup instanceof COSInteger))
             {
@@ -116,7 +116,7 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
      * @param ctog
      * @param mandatory true for CIDType2 , false for CIDType0
      */
-    protected void checkCIDToGIDMap(COSBase ctog, boolean mandatory)
+    protected void checkCIDToGIDMap(final COSBase ctog, final boolean mandatory)
     {
         if (ctog instanceof COSName)
         {
@@ -132,10 +132,10 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
             try
             {
                 // todo: check the map's content? (won't pdfbox do this?)
-                InputStream is = ((COSStream) ctog).createInputStream();
+                final InputStream is = ((COSStream) ctog).createInputStream();
                 is.close();
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 // map can be invalid, return a Validation Error
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID, 

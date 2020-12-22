@@ -39,7 +39,7 @@ public final class SuperimposePage
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if (args.length != 2)
         {
@@ -47,17 +47,17 @@ public final class SuperimposePage
                     " <source-pdf> <dest-pdf>");
             System.exit(1);
         }
-        String sourcePath = args[0];
-        String destPath = args[1];
+        final String sourcePath = args[0];
+        final String destPath = args[1];
         
         try (PDDocument sourceDoc = Loader.loadPDF(new File(sourcePath)))
         {
-            int sourcePage = 1;
+            final int sourcePage = 1;
 
             // create a new PDF and add a blank page
             try (PDDocument doc = new PDDocument())
             {
-                PDPage page = new PDPage();
+                final PDPage page = new PDPage();
                 doc.addPage(page);
 
                 // write some sample text to the new page
@@ -70,15 +70,15 @@ public final class SuperimposePage
                     contents.endText();
                     
                     // Create a Form XObject from the source document using LayerUtility
-                    LayerUtility layerUtility = new LayerUtility(doc);
-                    PDFormXObject form = layerUtility.importPageAsForm(sourceDoc, sourcePage - 1);
+                    final LayerUtility layerUtility = new LayerUtility(doc);
+                    final PDFormXObject form = layerUtility.importPageAsForm(sourceDoc, sourcePage - 1);
                     
                     // draw the full form
                     contents.drawForm(form);
                     
                     // draw a scaled form
                     contents.saveGraphicsState();
-                    Matrix matrix = Matrix.getScaleInstance(0.5f, 0.5f);
+                    final Matrix matrix = Matrix.getScaleInstance(0.5f, 0.5f);
                     contents.transform(matrix);
                     contents.drawForm(form);
                     contents.restoreGraphicsState();

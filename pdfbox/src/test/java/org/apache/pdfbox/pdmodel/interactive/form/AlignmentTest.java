@@ -103,9 +103,9 @@ class AlignmentTest
         field.setValue(TEST_VALUE);
         
         // compare rendering
-        File file = new File(OUT_DIR, NAME_OF_PDF);
+        final File file = new File(OUT_DIR, NAME_OF_PDF);
         document.save(file);
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        final TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
         if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             // don't fail, rendering is different on different systems, result must be viewed manually

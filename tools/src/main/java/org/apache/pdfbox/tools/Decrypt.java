@@ -70,20 +70,20 @@ public final class Decrypt implements Callable<Integer>
      * @param args The command-line arguments.
      *
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new Decrypt()).execute(args);
+        final int exitCode = new CommandLine(new Decrypt()).execute(args);
         System.exit(exitCode);
     }
 
 
     public Integer call()
     {
-        try (InputStream keyStoreStream = keyStore == null ? null : new FileInputStream(keyStore); 
-                PDDocument document = Loader.loadPDF(infile, password, keyStoreStream, alias))
+        try (InputStream keyStoreStream = keyStore == null ? null : new FileInputStream(keyStore);
+             final PDDocument document = Loader.loadPDF(infile, password, keyStoreStream, alias))
         {
             // overwrite inputfile if no outputfile was specified
             if (outfile == null) {
@@ -92,7 +92,7 @@ public final class Decrypt implements Callable<Integer>
             
             if (document.isEncrypted())
             {
-                AccessPermission ap = document.getCurrentAccessPermission();
+                final AccessPermission ap = document.getCurrentAccessPermission();
                 if(ap.isOwnerPermission())
                 {
                     document.setAllSecurityToBeRemoved(true);
@@ -110,7 +110,7 @@ public final class Decrypt implements Callable<Integer>
                 return 1;
             }
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             SYSERR.println( "Error decrypting document: " + ioe.getMessage());
             return 4;

@@ -54,7 +54,7 @@ public final class Matrix implements Cloneable
      * Constructor. This produces a matrix with the given array as data.
      * The source array is not copied or cloned.
      */
-    private Matrix(float[] src)
+    private Matrix(final float[] src)
     {
         single = src;
     }
@@ -64,7 +64,7 @@ public final class Matrix implements Cloneable
      *
      * @param array source array, elements must be or extend COSNumber
      */
-    public Matrix(COSArray array)
+    public Matrix(final COSArray array)
     {
         single = new float[SIZE];
         single[0] = ((COSNumber)array.getObject(0)).floatValue();
@@ -98,7 +98,7 @@ public final class Matrix implements Cloneable
      * @param e the X coordinate translation element (m02) of the 3x3 matrix
      * @param f the Y coordinate translation element (m12) of the 3x3 matrix
      */
-    public Matrix(float a, float b, float c, float d, float e, float f)
+    public Matrix(final float a, final float b, final float c, final float d, final float e, final float f)
     {
         single = new float[SIZE];
         single[0] = a;
@@ -119,7 +119,7 @@ public final class Matrix implements Cloneable
      *           transX transY 1
      *
      */
-    public Matrix(AffineTransform at)
+    public Matrix(final AffineTransform at)
     {
         single = new float[SIZE];
         single[0] = (float)at.getScaleX();
@@ -140,13 +140,13 @@ public final class Matrix implements Cloneable
      *
      * @return a Matrix object.
      */
-    public static Matrix createMatrix(COSBase base)
+    public static Matrix createMatrix(final COSBase base)
     {
         if (!(base instanceof COSArray))
         {
             return new Matrix();
         }
-        COSArray array = (COSArray) base;
+        final COSArray array = (COSArray) base;
         if (array.size() < 6)
         {
             return new Matrix();
@@ -182,7 +182,7 @@ public final class Matrix implements Cloneable
      *
      * @return The value at the row/column position.
      */
-    public float getValue( int row, int column )
+    public float getValue(final int row, final int column )
     {
         return single[row*3+column];
     }
@@ -194,7 +194,7 @@ public final class Matrix implements Cloneable
      * @param column the column to set the value at.
      * @param value The value to set at the position.
      */
-    public void setValue( int row, int column, float value )
+    public void setValue(final int row, final int column, final float value )
     {
         single[row*3+column] = value;
     }
@@ -206,7 +206,7 @@ public final class Matrix implements Cloneable
      */
     public float[][] getValues()
     {
-        float[][] retval = new float[3][3];
+        final float[][] retval = new float[3][3];
         retval[0][0] = single[0];
         retval[0][1] = single[1];
         retval[0][2] = single[2];
@@ -224,7 +224,7 @@ public final class Matrix implements Cloneable
      *
      * @param matrix The matrix to concatenate.
      */
-    public void concatenate(Matrix matrix)
+    public void concatenate(final Matrix matrix)
     {
         single = checkFloatValues(multiplyArrays(matrix.single, single));
     }
@@ -234,7 +234,7 @@ public final class Matrix implements Cloneable
      *
      * @param vector 2D vector
      */
-    public void translate(Vector vector)
+    public void translate(final Vector vector)
     {
         translate(vector.getX(), vector.getY());
     }
@@ -245,7 +245,7 @@ public final class Matrix implements Cloneable
      * @param tx x-translation
      * @param ty y-translation
      */
-    public void translate(float tx, float ty)
+    public void translate(final float tx, final float ty)
     {
         single[6] += tx * single[0] + ty * single[3];
         single[7] += tx * single[1] + ty * single[4];
@@ -259,7 +259,7 @@ public final class Matrix implements Cloneable
      * @param sx x-scale
      * @param sy y-scale
      */
-    public void scale(float sx, float sy)
+    public void scale(final float sx, final float sy)
     {
         single[0] *= sx;
         single[1] *= sx;
@@ -275,7 +275,7 @@ public final class Matrix implements Cloneable
      *
      * @param theta The angle of rotation measured in radians
      */
-    public void rotate(double theta)
+    public void rotate(final double theta)
     {
         concatenate(Matrix.getRotateInstance(theta, 0, 0));
     }
@@ -287,12 +287,12 @@ public final class Matrix implements Cloneable
      * @param other the second operand Matrix in the multiplication; required
      * @return the product of the two matrices.
      */
-    public Matrix multiply(Matrix other)
+    public Matrix multiply(final Matrix other)
     {
         return new Matrix(checkFloatValues(multiplyArrays(single, other.single)));
     }
 
-    private float[] checkFloatValues(float[] values)
+    private float[] checkFloatValues(final float[] values)
     {
         if (!Float.isFinite(values[0]) || !Float.isFinite(values[1]) || !Float.isFinite(values[2])
                 || !Float.isFinite(values[3]) || !Float.isFinite(values[4]) || !Float.isFinite(values[5])
@@ -302,9 +302,9 @@ public final class Matrix implements Cloneable
     }
 
 
-    private float[] multiplyArrays(float[] a, float[] b)
+    private float[] multiplyArrays(final float[] a, final float[] b)
     {
-        float[] c = new float[SIZE];
+        final float[] c = new float[SIZE];
         c[0] = a[0] * b[0] + a[1] * b[3] + a[2] * b[6];
         c[1] = a[0] * b[1] + a[1] * b[4] + a[2] * b[7];
         c[2] = a[0] * b[2] + a[1] * b[5] + a[2] * b[8];
@@ -321,16 +321,16 @@ public final class Matrix implements Cloneable
      *
      * @param point point to transform
      */
-    public void transform(Point2D point)
+    public void transform(final Point2D point)
     {
-        float x = (float)point.getX();
-        float y = (float)point.getY();
-        float a = single[0];
-        float b = single[1];
-        float c = single[3];
-        float d = single[4];
-        float e = single[6];
-        float f = single[7];
+        final float x = (float)point.getX();
+        final float y = (float)point.getY();
+        final float a = single[0];
+        final float b = single[1];
+        final float c = single[3];
+        final float d = single[4];
+        final float e = single[6];
+        final float f = single[7];
         point.setLocation(x * a + y * c + e, x * b + y * d + f);
     }
 
@@ -340,14 +340,14 @@ public final class Matrix implements Cloneable
      * @param x x-coordinate
      * @param y y-coordinate
      */
-    public Point2D.Float transformPoint(float x, float y)
+    public Point2D.Float transformPoint(final float x, final float y)
     {
-        float a = single[0];
-        float b = single[1];
-        float c = single[3];
-        float d = single[4];
-        float e = single[6];
-        float f = single[7];
+        final float a = single[0];
+        final float b = single[1];
+        final float c = single[3];
+        final float d = single[4];
+        final float e = single[6];
+        final float f = single[7];
         return new Point2D.Float(x * a + y * c + e, x * b + y * d + f);
     }
 
@@ -356,16 +356,16 @@ public final class Matrix implements Cloneable
      *
      * @param vector 2D vector
      */
-    public Vector transform(Vector vector)
+    public Vector transform(final Vector vector)
     {
-        float a = single[0];
-        float b = single[1];
-        float c = single[3];
-        float d = single[4];
-        float e = single[6];
-        float f = single[7];
-        float x = vector.getX();
-        float y = vector.getY();
+        final float a = single[0];
+        final float b = single[1];
+        final float c = single[3];
+        final float d = single[4];
+        final float e = single[6];
+        final float f = single[7];
+        final float x = vector.getX();
+        final float y = vector.getY();
         return new Vector(x * a + y * c + e, x * b + y * d + f);
     }
 
@@ -381,7 +381,7 @@ public final class Matrix implements Cloneable
      * @param y The yscale operator.
      * @return A new matrix with just the x/y scaling
      */
-    public static Matrix getScaleInstance(float x, float y)
+    public static Matrix getScaleInstance(final float x, final float y)
     {
         return new Matrix(x, 0, 0, y, 0, 0);
     }
@@ -398,7 +398,7 @@ public final class Matrix implements Cloneable
      * @param y The y translating operator.
      * @return A new matrix with just the x/y translating.
      */
-    public static Matrix getTranslateInstance(float x, float y)
+    public static Matrix getTranslateInstance(final float x, final float y)
     {
         return new Matrix(1, 0, 0, 1, x, y);
     }
@@ -411,10 +411,10 @@ public final class Matrix implements Cloneable
      * @param ty The y translation.
      * @return A new matrix with the rotation and the x/y translating.
      */
-    public static Matrix getRotateInstance(double theta, float tx, float ty)
+    public static Matrix getRotateInstance(final double theta, final float tx, final float ty)
     {
-        float cosTheta = (float)Math.cos(theta);
-        float sinTheta = (float)Math.sin(theta);
+        final float cosTheta = (float)Math.cos(theta);
+        final float sinTheta = (float)Math.sin(theta);
 
         return new Matrix(cosTheta, sinTheta, -sinTheta, cosTheta, tx, ty);
     }
@@ -425,7 +425,7 @@ public final class Matrix implements Cloneable
      * @param a The matrix to copy.
      * @param b The matrix to concatenate.
      */
-    public static Matrix concatenate(Matrix a, Matrix b)
+    public static Matrix concatenate(final Matrix a, final Matrix b)
     {
         return b.multiply(a);
     }
@@ -547,7 +547,7 @@ public final class Matrix implements Cloneable
      */
     public COSArray toCOSArray()
     {
-        COSArray array = new COSArray();
+        final COSArray array = new COSArray();
         array.add(new COSFloat(single[0]));
         array.add(new COSFloat(single[1]));
         array.add(new COSFloat(single[3]));
@@ -576,7 +576,7 @@ public final class Matrix implements Cloneable
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(final Object obj)
     {
         if (this == obj)
         {

@@ -56,7 +56,7 @@ public class ContentStreamWriter
      *
      * @param out The stream to write the data to.
      */
-    public ContentStreamWriter( OutputStream out )
+    public ContentStreamWriter(final OutputStream out )
     {
         output = out;
     }
@@ -67,7 +67,7 @@ public class ContentStreamWriter
      * @param base The operand to write to the stream.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void writeToken(COSBase base) throws IOException
+    public void writeToken(final COSBase base) throws IOException
     {
         writeObject(base);
     }
@@ -78,7 +78,7 @@ public class ContentStreamWriter
      * @param op The operator to write to the stream.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void writeToken(Operator op) throws IOException
+    public void writeToken(final Operator op) throws IOException
     {
         writeObject(op);
     }
@@ -89,9 +89,9 @@ public class ContentStreamWriter
      * @param tokens The tokens to write to the stream.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void writeTokens(Object... tokens) throws IOException
+    public void writeTokens(final Object... tokens) throws IOException
     {
-        for (Object token : tokens)
+        for (final Object token : tokens)
         {
             writeObject(token);
         }
@@ -104,15 +104,15 @@ public class ContentStreamWriter
      * @param tokens The tokens to write to the stream.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void writeTokens( List<?> tokens ) throws IOException
+    public void writeTokens(final List<?> tokens ) throws IOException
     {
-        for (Object token : tokens)
+        for (final Object token : tokens)
         {
             writeObject(token);
         }
     }
 
-    private void writeObject( Object o ) throws IOException
+    private void writeObject(final Object o ) throws IOException
     {
         if( o instanceof COSString )
         {
@@ -141,7 +141,7 @@ public class ContentStreamWriter
         }
         else if( o instanceof COSArray )
         {
-            COSArray array = (COSArray)o;
+            final COSArray array = (COSArray)o;
             output.write(COSWriter.ARRAY_OPEN);
             for( int i=0; i<array.size(); i++ )
             {
@@ -152,9 +152,9 @@ public class ContentStreamWriter
         }
         else if( o instanceof COSDictionary )
         {
-            COSDictionary obj = (COSDictionary)o;
+            final COSDictionary obj = (COSDictionary)o;
             output.write( COSWriter.DICT_OPEN );
-            for (Map.Entry<COSName, COSBase> entry : obj.entrySet())
+            for (final Map.Entry<COSName, COSBase> entry : obj.entrySet())
             {
                 if (entry.getValue() != null)
                 {
@@ -167,15 +167,15 @@ public class ContentStreamWriter
         }
         else if( o instanceof Operator)
         {
-            Operator op = (Operator)o;
+            final Operator op = (Operator)o;
             if( op.getName().equals( OperatorName.BEGIN_INLINE_IMAGE ) )
             {
                 output.write( OperatorName.BEGIN_INLINE_IMAGE.getBytes(StandardCharsets.ISO_8859_1) );
                 output.write(EOL);
-                COSDictionary dic = op.getImageParameters();
-                for( COSName key : dic.keySet() )
+                final COSDictionary dic = op.getImageParameters();
+                for( final COSName key : dic.keySet() )
                 {
-                    Object value = dic.getDictionaryObject( key );
+                    final Object value = dic.getDictionaryObject( key );
                     key.writePDF( output );
                     output.write( SPACE );
                     writeObject( value );

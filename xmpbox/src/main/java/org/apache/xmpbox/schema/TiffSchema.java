@@ -110,12 +110,12 @@ public class TiffSchema extends XMPSchema
     @PropertyType(type = Types.ProperName, card = Cardinality.Simple)
     public static final String MODEL = "Model";
 
-    public TiffSchema(XMPMetadata metadata)
+    public TiffSchema(final XMPMetadata metadata)
     {
         super(metadata);
     }
 
-    public TiffSchema(XMPMetadata metadata, String prefix)
+    public TiffSchema(final XMPMetadata metadata, final String prefix)
     {
         super(metadata, prefix);
     }
@@ -136,7 +136,7 @@ public class TiffSchema extends XMPSchema
      */
     public String getArtist()
     {
-        ProperNameType tt = (ProperNameType) getProperty(ARTIST);
+        final ProperNameType tt = (ProperNameType) getProperty(ARTIST);
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -145,7 +145,7 @@ public class TiffSchema extends XMPSchema
      *
      * @param text
      */
-    public void setArtist(String text)
+    public void setArtist(final String text)
     {
         addProperty(createTextType(ARTIST, text));
     }
@@ -180,7 +180,7 @@ public class TiffSchema extends XMPSchema
      * @throws BadFieldValueException If the ImageDescription property is not a multi-lingual
      * property.
      */
-    public String getImageDescription(String lang) throws BadFieldValueException
+    public String getImageDescription(final String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(IMAGE_DESCRIPTION, lang);
     }
@@ -203,7 +203,7 @@ public class TiffSchema extends XMPSchema
      * @param lang language of the ImageDescription property.
      * @param value image description text
      */
-    public void addImageDescription(String lang, String value)
+    public void addImageDescription(final String lang, final String value)
     {
         setUnqualifiedLanguagePropertyValue(IMAGE_DESCRIPTION, lang, value);
     }
@@ -236,7 +236,7 @@ public class TiffSchema extends XMPSchema
      * @return copyright value or null if it doesn't exist.
      * @throws BadFieldValueException If the Copyright property is not a multi-lingual property
      */
-    public String getCopyright(String lang) throws BadFieldValueException
+    public String getCopyright(final String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(COPYRIGHT, lang);
     }
@@ -258,7 +258,7 @@ public class TiffSchema extends XMPSchema
      * @param lang language of the copyright
      * @param value copyright text
      */
-    public void addCopyright(String lang, String value)
+    public void addCopyright(final String lang, final String value)
     {
         setUnqualifiedLanguagePropertyValue(COPYRIGHT, lang, value);
     }

@@ -66,7 +66,7 @@ public final class RenderDestinationMenu extends MenuBase
      * Set the render destination selection.
      * @param selection String instance.
      */
-    public void setRenderDestinationSelection(String selection)
+    public void setRenderDestinationSelection(final String selection)
     {
         switch (selection)
         {
@@ -84,7 +84,7 @@ public final class RenderDestinationMenu extends MenuBase
         }
     }
 
-    public static boolean isRenderDestinationMenu(String actionCommand)
+    public static boolean isRenderDestinationMenu(final String actionCommand)
     {
         return RENDER_DESTINATION_EXPORT.equals(actionCommand) || RENDER_DESTINATION_PRINT.equals(actionCommand) ||
                 RENDER_DESTINATION_VIEW.equals(actionCommand);
@@ -103,7 +103,7 @@ public final class RenderDestinationMenu extends MenuBase
         return RenderDestination.EXPORT;
     }
 
-    public static RenderDestination getRenderDestination(String actionCommand)
+    public static RenderDestination getRenderDestination(final String actionCommand)
     {
         switch (actionCommand)
         {
@@ -120,7 +120,7 @@ public final class RenderDestinationMenu extends MenuBase
 
     private JMenu createMenu()
     {
-        JMenu menu = new JMenu();
+        final JMenu menu = new JMenu();
         menu.setText("Render destination");
 
         exportItem = new JRadioButtonMenuItem();
@@ -128,7 +128,7 @@ public final class RenderDestinationMenu extends MenuBase
         viewItem = new JRadioButtonMenuItem();
         exportItem.setSelected(true);
 
-        ButtonGroup bg = new ButtonGroup();
+        final ButtonGroup bg = new ButtonGroup();
         bg.add(exportItem);
         bg.add(printItem);
         bg.add(viewItem);

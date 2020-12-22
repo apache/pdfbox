@@ -56,7 +56,7 @@ public class SignatureOptions implements Closeable
      *
      * @param pageNo the page number
      */
-    public void setPage(int pageNo)
+    public void setPage(final int pageNo)
     {
         this.pageNo = pageNo;
     }
@@ -77,7 +77,7 @@ public class SignatureOptions implements Closeable
      * @param file the file containing the visual signature
      * @throws IOException when something went wrong during parsing
      */
-    public void setVisualSignature(File file) throws IOException
+    public void setVisualSignature(final File file) throws IOException
     {
         initFromRandomAccessRead(new RandomAccessReadBufferedFile(file));
     }
@@ -88,15 +88,15 @@ public class SignatureOptions implements Closeable
      * @param is the input stream containing the visual signature
      * @throws IOException when something went wrong during parsing
      */
-    public void setVisualSignature(InputStream is) throws IOException
+    public void setVisualSignature(final InputStream is) throws IOException
     {
         initFromRandomAccessRead(new RandomAccessReadBuffer(is));
     }
     
-    private void initFromRandomAccessRead(RandomAccessRead rar) throws IOException
+    private void initFromRandomAccessRead(final RandomAccessRead rar) throws IOException
     {
         pdfSource = rar;
-        PDFParser parser = new PDFParser(pdfSource);
+        final PDFParser parser = new PDFParser(pdfSource);
         visualSignature = parser.parse().getDocument();
     }
 
@@ -108,7 +108,7 @@ public class SignatureOptions implements Closeable
      *
      * @throws IOException when something went wrong during parsing
      */
-    public void setVisualSignature(PDVisibleSigProperties visSignatureProperties) throws IOException
+    public void setVisualSignature(final PDVisibleSigProperties visSignatureProperties) throws IOException
     {
         setVisualSignature(visSignatureProperties.getVisibleSignature());
     }
@@ -138,7 +138,7 @@ public class SignatureOptions implements Closeable
      *
      * @param size the size of the signature in bytes. Only values above 0 will be considered.
      */
-    public void setPreferredSignatureSize(int size)
+    public void setPreferredSignatureSize(final int size)
     {
         if (size > 0)
         {

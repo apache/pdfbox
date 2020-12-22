@@ -35,15 +35,15 @@ public class LookupTypeLigatureSubstitutionSubstFormat1 extends LookupSubTable
 {
     private final LigatureSetTable[] ligatureSetTables;
 
-    public LookupTypeLigatureSubstitutionSubstFormat1(int substFormat, CoverageTable coverageTable,
-            LigatureSetTable[] ligatureSetTables)
+    public LookupTypeLigatureSubstitutionSubstFormat1(final int substFormat, final CoverageTable coverageTable,
+                                                      final LigatureSetTable[] ligatureSetTables)
     {
         super(substFormat, coverageTable);
         this.ligatureSetTables = ligatureSetTables;
     }
 
     @Override
-    public int doSubstitution(int gid, int coverageIndex)
+    public int doSubstitution(final int gid, final int coverageIndex)
     {
         throw new UnsupportedOperationException();
     }

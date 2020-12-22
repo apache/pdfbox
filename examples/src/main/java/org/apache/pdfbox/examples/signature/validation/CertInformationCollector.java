@@ -79,12 +79,12 @@ public class CertInformationCollector
      * @throws CertificateProccessingException when there is an error processing the certificates
      * @throws IOException on a data processing error
      */
-    public CertSignatureInformation getLastCertInfo(PDSignature signature, String fileName)
+    public CertSignatureInformation getLastCertInfo(final PDSignature signature, final String fileName)
             throws CertificateProccessingException, IOException
     {
         try (FileInputStream documentInput = new FileInputStream(fileName))
         {
-            byte[] signatureContent = signature.getContents(documentInput);
+            final byte[] signatureContent = signature.getContents(documentInput);
             return getCertInfo(signatureContent);
         }
     }
@@ -97,7 +97,7 @@ public class CertInformationCollector
      * @throws IOException
      * @throws CertificateProccessingException
      */
-    private CertSignatureInformation getCertInfo(byte[] signatureContent)
+    private CertSignatureInformation getCertInfo(final byte[] signatureContent)
             throws CertificateProccessingException, IOException
     {
         rootCertInfo = new CertSignatureInformation();
@@ -106,11 +106,11 @@ public class CertInformationCollector
 
         try
         {
-            CMSSignedData signedData = new CMSSignedData(signatureContent);
-            SignerInformation signerInformation = processSignerStore(signedData, rootCertInfo);
+            final CMSSignedData signedData = new CMSSignedData(signatureContent);
+            final SignerInformation signerInformation = processSignerStore(signedData, rootCertInfo);
             addTimestampCerts(signerInformation);
         }
-        catch (CMSException e)
+        catch (final CMSException e)
         {
             LOG.error("Error occurred getting Certificate Information from Signature", e);
             throw new CertificateProccessingException(e);
@@ -126,34 +126,34 @@ public class CertInformationCollector
      * @throws IOException
      * @throws CertificateProccessingException
      */
-    private void addTimestampCerts(SignerInformation signerInformation)
+    private void addTimestampCerts(final SignerInformation signerInformation)
             throws IOException, CertificateProccessingException
     {
-        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
+        final AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
         if (unsignedAttributes == null)
         {
             return;
         }
-        Attribute tsAttribute = unsignedAttributes
+        final Attribute tsAttribute = unsignedAttributes
                 .get(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
         if (tsAttribute == null)
         {
             return;
         }
-        ASN1Encodable obj0 = tsAttribute.getAttrValues().getObjectAt(0);
+        final ASN1Encodable obj0 = tsAttribute.getAttrValues().getObjectAt(0);
         if (!(obj0 instanceof ASN1Object))
         {
             return;
         }
-        ASN1Object tsSeq = (ASN1Object) obj0;
+        final ASN1Object tsSeq = (ASN1Object) obj0;
 
         try
         {
-            CMSSignedData signedData = new CMSSignedData(tsSeq.getEncoded("DER"));
+            final CMSSignedData signedData = new CMSSignedData(tsSeq.getEncoded("DER"));
             rootCertInfo.tsaCerts = new CertSignatureInformation();
             processSignerStore(signedData, rootCertInfo.tsaCerts);
         }
-        catch (CMSException e)
+        catch (final CMSException e)
         {
             throw new IOException("Error parsing timestamp token", e);
         }
@@ -171,22 +171,20 @@ public class CertInformationCollector
      * @throws CertificateProccessingException on a specific error with a certificate
      */
     private SignerInformation processSignerStore(
-            CMSSignedData signedData, CertSignatureInformation certInfo)
+            final CMSSignedData signedData, final CertSignatureInformation certInfo)
             throws IOException, CertificateProccessingException
     {
-        Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
-        SignerInformation signerInformation = signers.iterator().next();
+        final Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
+        final SignerInformation signerInformation = signers.iterator().next();
 
-        @SuppressWarnings("unchecked")
-        Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
-        @SuppressWarnings("unchecked")
-        Collection<X509CertificateHolder> matches = certificatesStore
+        @SuppressWarnings("unchecked") final Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
+        @SuppressWarnings("unchecked") final Collection<X509CertificateHolder> matches = certificatesStore
                 .getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
 
-        X509Certificate certificate = getCertFromHolder(matches.iterator().next());
+        final X509Certificate certificate = getCertFromHolder(matches.iterator().next());
         certificateSet.add(certificate);
 
-        Collection<X509CertificateHolder> allCerts = certificatesStore.getMatches(null);
+        final Collection<X509CertificateHolder> allCerts = certificatesStore.getMatches(null);
         addAllCerts(allCerts);
         traverseChain(certificate, certInfo, MAX_CERTIFICATE_CHAIN_DEPTH);
         return signerInformation;
@@ -202,14 +200,14 @@ public class CertInformationCollector
      * @throws IOException on data-processing error
      * @throws CertificateProccessingException on a specific error with a certificate
      */
-    private void traverseChain(X509Certificate certificate, CertSignatureInformation certInfo,
-            int maxDepth) throws IOException, CertificateProccessingException
+    private void traverseChain(final X509Certificate certificate, final CertSignatureInformation certInfo,
+                               final int maxDepth) throws IOException, CertificateProccessingException
     {
         certInfo.certificate = certificate;
 
         // Certificate Authority Information Access
         // As described in https://tools.ietf.org/html/rfc3280.html#section-4.2.2.1
-        byte[] authorityExtensionValue = certificate.getExtensionValue(Extension.authorityInfoAccess.getId());
+        final byte[] authorityExtensionValue = certificate.getExtensionValue(Extension.authorityInfoAccess.getId());
         if (authorityExtensionValue != null)
         {
             CertInformationHelper.getAuthorityInfoExtensionValue(authorityExtensionValue, certInfo);
@@ -221,7 +219,7 @@ public class CertInformationCollector
         }
 
         // As described in https://tools.ietf.org/html/rfc3280.html#section-4.2.1.14
-        byte[] crlExtensionValue = certificate.getExtensionValue(Extension.cRLDistributionPoints.getId());
+        final byte[] crlExtensionValue = certificate.getExtensionValue(Extension.cRLDistributionPoints.getId());
         if (crlExtensionValue != null)
         {
             certInfo.crlUrl = CertInformationHelper.getCrlUrlFromExtensionValue(crlExtensionValue);
@@ -231,7 +229,7 @@ public class CertInformationCollector
         {
             certInfo.isSelfSigned = CertificateVerifier.isSelfSigned(certificate);
         }
-        catch (GeneralSecurityException ex)
+        catch (final GeneralSecurityException ex)
         {
             throw new CertificateProccessingException(ex);
         }
@@ -240,7 +238,7 @@ public class CertInformationCollector
             return;
         }
 
-        for (X509Certificate issuer : certificateSet)
+        for (final X509Certificate issuer : certificateSet)
         {
             try
             {
@@ -252,7 +250,7 @@ public class CertInformationCollector
                 traverseChain(issuer, certInfo.certChain, maxDepth - 1);
                 break;
             }
-            catch (GeneralSecurityException ex)
+            catch (final GeneralSecurityException ex)
             {
                 // not the issuer
             }                
@@ -276,7 +274,7 @@ public class CertInformationCollector
      * @param maxDepth Maximum depth to dig through the chain from here on.
      * @throws CertificateProccessingException on a specific error with a certificate
      */
-    private void getAlternativeIssuerCertificate(CertSignatureInformation certInfo, int maxDepth)
+    private void getAlternativeIssuerCertificate(final CertSignatureInformation certInfo, final int maxDepth)
             throws CertificateProccessingException
     {
         if (urlSet.contains(certInfo.issuerUrl))
@@ -287,11 +285,11 @@ public class CertInformationCollector
         LOG.info("Get alternative issuer certificate from: " + certInfo.issuerUrl);
         try
         {
-            URL certUrl = new URL(certInfo.issuerUrl);
-            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            final URL certUrl = new URL(certInfo.issuerUrl);
+            final CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
             try (InputStream in = certUrl.openStream())
             {
-                X509Certificate altIssuerCert = (X509Certificate) certFactory
+                final X509Certificate altIssuerCert = (X509Certificate) certFactory
                         .generateCertificate(in);
                 certificateSet.add(altIssuerCert);
 
@@ -299,7 +297,7 @@ public class CertInformationCollector
                 traverseChain(altIssuerCert, certInfo.alternativeCertChain, maxDepth - 1);
             }
         }
-        catch (IOException | CertificateException e)
+        catch (final IOException | CertificateException e)
         {
             LOG.error("Error getting alternative issuer certificate from " + certInfo.issuerUrl, e);
         }
@@ -313,14 +311,14 @@ public class CertInformationCollector
      * @throws CertificateProccessingException on failed conversion from X509CertificateHolder to
      * X509Certificate
      */
-    private X509Certificate getCertFromHolder(X509CertificateHolder certificateHolder)
+    private X509Certificate getCertFromHolder(final X509CertificateHolder certificateHolder)
             throws CertificateProccessingException
     {
         try
         {
             return certConverter.getCertificate(certificateHolder);
         }
-        catch (CertificateException e)
+        catch (final CertificateException e)
         {
             LOG.error("Certificate Exception getting Certificate from certHolder.", e);
             throw new CertificateProccessingException(e);
@@ -332,16 +330,16 @@ public class CertInformationCollector
      *
      * @param certHolders Collection of X509CertificateHolder
      */
-    private void addAllCerts(Collection<X509CertificateHolder> certHolders)
+    private void addAllCerts(final Collection<X509CertificateHolder> certHolders)
     {
-        for (X509CertificateHolder certificateHolder : certHolders)
+        for (final X509CertificateHolder certificateHolder : certHolders)
         {
             try
             {
-                X509Certificate certificate = getCertFromHolder(certificateHolder);
+                final X509Certificate certificate = getCertFromHolder(certificateHolder);
                 certificateSet.add(certificate);
             }
-            catch (CertificateProccessingException e)
+            catch (final CertificateProccessingException e)
             {
                 LOG.warn("Certificate Exception getting Certificate from certHolder.", e);
             }
@@ -355,7 +353,7 @@ public class CertInformationCollector
      * @param certHolders Array of X509CertificateHolder
      * @throws CertificateProccessingException when one of the Certificates could not be parsed.
      */
-    public void addAllCertsFromHolders(X509CertificateHolder[] certHolders)
+    public void addAllCertsFromHolders(final X509CertificateHolder[] certHolders)
             throws CertificateProccessingException
     {
         addAllCerts(Arrays.asList(certHolders));
@@ -368,15 +366,15 @@ public class CertInformationCollector
      * @return
      * @throws CertificateProccessingException 
      */
-    CertSignatureInformation getCertInfo(X509Certificate certificate) throws CertificateProccessingException
+    CertSignatureInformation getCertInfo(final X509Certificate certificate) throws CertificateProccessingException
     {
         try
         {
-            CertSignatureInformation certSignatureInformation = new CertSignatureInformation();
+            final CertSignatureInformation certSignatureInformation = new CertSignatureInformation();
             traverseChain(certificate, certSignatureInformation, MAX_CERTIFICATE_CHAIN_DEPTH);
             return certSignatureInformation;
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             throw new CertificateProccessingException(ex);
         }
@@ -413,12 +411,12 @@ public class CertInformationCollector
             return ocspUrl;
         }
 
-        public void setOcspUrl(String ocspUrl)
+        public void setOcspUrl(final String ocspUrl)
         {
             this.ocspUrl = ocspUrl;
         }
 
-        public void setIssuerUrl(String issuerUrl)
+        public void setIssuerUrl(final String issuerUrl)
         {
             this.issuerUrl = issuerUrl;
         }

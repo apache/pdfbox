@@ -54,8 +54,8 @@ class TestFields
     {
         try (PDDocument doc = new PDDocument())
         {
-            PDAcroForm form = new PDAcroForm( doc );
-            PDTextField textBox = new PDTextField(form);
+            final PDAcroForm form = new PDAcroForm( doc );
+            final PDTextField textBox = new PDTextField(form);
 
             //assert that default is false.
             assertFalse( textBox.isComb() );
@@ -103,7 +103,7 @@ class TestFields
         try (PDDocument doc = Loader.loadPDF(new File(PATH_OF_PDF)))
         {            
             // get and assert that there is a form
-            PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
+            final PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
             assertNotNull(form);
             
             // assert that there is no value, set the field value and
@@ -161,10 +161,10 @@ class TestFields
     {        
         try (PDDocument doc = Loader.loadPDF(new File(PATH_OF_PDF)))
         {            
-            PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
+            final PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
             
-            PDTextField textField = (PDTextField)form.getField("TextField-DefaultValue");
-            PDAnnotationWidget widget = textField.getWidgets().get(0);
+            final PDTextField textField = (PDTextField)form.getField("TextField-DefaultValue");
+            final PDAnnotationWidget widget = textField.getWidgets().get(0);
 
             // initially there is an Appearance Entry in the form
             assertNotNull(widget.getCOSObject().getDictionaryObject(COSName.AP));

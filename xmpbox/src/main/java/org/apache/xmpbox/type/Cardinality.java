@@ -28,7 +28,7 @@ public enum Cardinality
 
     private final boolean array;
 
-    private Cardinality(boolean a)
+    private Cardinality(final boolean a)
     {
         this.array = a;
     }

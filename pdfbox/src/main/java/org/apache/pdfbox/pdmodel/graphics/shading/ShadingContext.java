@@ -50,19 +50,19 @@ public abstract class ShadingContext
      * @throws java.io.IOException if there is an error getting the color space
      * or doing background color conversion.
      */
-    public ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
-                          Matrix matrix) throws IOException
+    public ShadingContext(final PDShading shading, final ColorModel cm, final AffineTransform xform,
+                          final Matrix matrix) throws IOException
     {
         this.shading = shading;
         shadingColorSpace = shading.getColorSpace();
 
         // create the output color model using RGB+alpha as color space
-        ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        final ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
                 DataBuffer.TYPE_BYTE);
 
         // get background values if available
-        COSArray bg = shading.getBackground();
+        final COSArray bg = shading.getBackground();
         if (bg != null)
         {
             background = bg.toFloatArray();
@@ -98,11 +98,11 @@ public abstract class ShadingContext
      * @return RGB values encoded in an integer.
      * @throws java.io.IOException if the color conversion fails.
      */
-    final int convertToRGB(float[] values) throws IOException
+    final int convertToRGB(final float[] values) throws IOException
     {
         int normRGBValues;
 
-        float[] rgbValues = shadingColorSpace.toRGB(values);
+        final float[] rgbValues = shadingColorSpace.toRGB(values);
         normRGBValues = (int) (rgbValues[0] * 255);
         normRGBValues |= (int) (rgbValues[1] * 255) << 8;
         normRGBValues |= (int) (rgbValues[2] * 255) << 16;

@@ -46,7 +46,7 @@ public class LinkAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationLink pdLink = null;
 
-    public LinkAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public LinkAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdLink = new PDAnnotationLink(annotDictionary);
@@ -81,14 +81,14 @@ public class LinkAnnotationValidator extends AnnotationValidator
                         "Dest can't be used due to A element"));
                 return false;
             }
-            COSDictionary dict = pdLink.getCOSObject();
-            COSBase dest = dict.getDictionaryObject(COSName.DEST);
+            final COSDictionary dict = pdLink.getCOSObject();
+            final COSBase dest = dict.getDictionaryObject(COSName.DEST);
             if (dest != null)
             {
                 ContextHelper.validateElement(ctx, dest, DESTINATION_PROCESS);    
             }
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_DEST, e.getMessage(), e));
             return false;

@@ -24,7 +24,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 
 public class AcroFormDefaultFixup extends AbstractFixup
 { 
-    public AcroFormDefaultFixup(PDDocument document)
+    public AcroFormDefaultFixup(final PDDocument document)
     { 
         super(document); 
     }
@@ -40,7 +40,7 @@ public class AcroFormDefaultFixup extends AbstractFixup
          * is part of. So keep the null parameter otherwise this will end
          * in an endless recursive call
          */
-        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
+        final PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
 
         // PDFBOX-4985
         // build the visual appearance as there is none for the widgets

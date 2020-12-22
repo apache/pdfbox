@@ -26,7 +26,7 @@ import org.apache.xmpbox.XMPMetadata;
 public class LocaleType extends TextType
 {
 
-    public LocaleType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    public LocaleType(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String propertyName, final Object value)
     {
         super(metadata, namespaceURI, prefix, propertyName, value);
     }

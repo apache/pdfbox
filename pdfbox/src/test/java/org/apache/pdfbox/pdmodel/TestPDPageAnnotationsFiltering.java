@@ -47,8 +47,8 @@ class TestPDPageAnnotationsFiltering
     @BeforeEach
     public void initMock()
     {
-        COSDictionary mockedPageWithAnnotations = new COSDictionary();
-        COSArray annotsDictionary = new COSArray();
+        final COSDictionary mockedPageWithAnnotations = new COSDictionary();
+        final COSArray annotsDictionary = new COSArray();
         annotsDictionary.add(new PDAnnotationRubberStamp().getCOSObject());
         annotsDictionary.add(new PDAnnotationSquare().getCOSObject());
         annotsDictionary.add(new PDAnnotationLink().getCOSObject());
@@ -59,7 +59,7 @@ class TestPDPageAnnotationsFiltering
     @Test
      void validateNoFiltering() throws IOException
     {
-        List<PDAnnotation> annotations = page.getAnnotations();
+        final List<PDAnnotation> annotations = page.getAnnotations();
         assertEquals(3, annotations.size());
         assertTrue(annotations.get(0) instanceof PDAnnotationRubberStamp);
         assertTrue(annotations.get(1) instanceof PDAnnotationSquare);
@@ -69,14 +69,14 @@ class TestPDPageAnnotationsFiltering
     @Test
      void validateAllFiltered() throws IOException
     {
-        List<PDAnnotation> annotations = page.getAnnotations(annotation -> false);
+        final List<PDAnnotation> annotations = page.getAnnotations(annotation -> false);
         assertEquals(0, annotations.size());
     }
 
     @Test
      void validateSelectedFew() throws IOException
     {
-        List<PDAnnotation> annotations = page.getAnnotations(annotation -> 
+        final List<PDAnnotation> annotations = page.getAnnotations(annotation ->
             (annotation instanceof PDAnnotationLink || annotation instanceof PDAnnotationSquare));
         assertEquals(2, annotations.size());
         assertTrue(annotations.get(0) instanceof PDAnnotationSquare);

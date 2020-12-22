@@ -44,7 +44,7 @@ class RC4Cipher
      *
      * @param key The RC4 key used during encryption.
      */
-    public void setKey( byte[] key )
+    public void setKey(final byte[] key )
     {
         b = 0;
         c = 0;
@@ -76,7 +76,7 @@ class RC4Cipher
      *
      * @return A value &gt;=0 and &lt; 256
      */
-    private static int fixByte( byte aByte )
+    private static int fixByte(final byte aByte )
     {
         return aByte < 0 ? 256 + aByte : aByte;
     }
@@ -88,9 +88,9 @@ class RC4Cipher
      * @param firstIndex The index of the first element to swap.
      * @param secondIndex The index of the second element to swap.
      */
-    private static void swap( int[] data, int firstIndex, int secondIndex )
+    private static void swap(final int[] data, final int firstIndex, final int secondIndex )
     {
-        int tmp = data[ firstIndex ];
+        final int tmp = data[ firstIndex ];
         data[ firstIndex ] = data[ secondIndex ];
         data[ secondIndex ] = tmp;
     }
@@ -103,12 +103,12 @@ class RC4Cipher
      *
      * @throws IOException If there is an error writing to the output stream.
      */
-    public void write( byte aByte, OutputStream output ) throws IOException
+    public void write(final byte aByte, final OutputStream output ) throws IOException
     {
         b = (b + 1) % 256;
         c = (salt[b] + c) % 256;
         swap( salt, b, c );
-        int saltIndex = (salt[b] + salt[c]) % 256;
+        final int saltIndex = (salt[b] + salt[c]) % 256;
         output.write(aByte ^ (byte)salt[saltIndex]);
     }
 
@@ -120,9 +120,9 @@ class RC4Cipher
      *
      * @throws IOException If there is an error writing to the output stream.
      */
-    public void write( byte[] data, OutputStream output ) throws IOException
+    public void write(final byte[] data, final OutputStream output ) throws IOException
     {
-        for (byte aData : data)
+        for (final byte aData : data)
         {
             write(aData, output);
         }
@@ -136,9 +136,9 @@ class RC4Cipher
      *
      * @throws IOException If there is an error writing to the output stream.
      */
-    public void write( InputStream data, OutputStream output ) throws IOException
+    public void write(final InputStream data, final OutputStream output ) throws IOException
     {
-        byte[] buffer = new byte[1024];
+        final byte[] buffer = new byte[1024];
         int amountRead;
         while( (amountRead = data.read( buffer )) != -1 )
         {
@@ -156,7 +156,7 @@ class RC4Cipher
      *
      * @throws IOException If there is an error writing to the output stream.
      */
-    public void write( byte[] data, int offset, int len, OutputStream output) throws IOException
+    public void write(final byte[] data, final int offset, final int len, final OutputStream output) throws IOException
     {
         for( int i = offset; i < offset + len; i++ )
         {

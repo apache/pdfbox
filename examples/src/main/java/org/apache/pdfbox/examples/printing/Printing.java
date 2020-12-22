@@ -47,7 +47,7 @@ public final class Printing
     /**
      * Entry point.
      */
-    public static void main(String[] args) throws PrinterException, IOException
+    public static void main(final String[] args) throws PrinterException, IOException
     {
         if (args.length != 1)
         {
@@ -55,7 +55,7 @@ public final class Printing
             System.exit(1);
         }
 
-        String filename = args[0];
+        final String filename = args[0];
         try (PDDocument document = Loader.loadPDF(new File(filename)))
         {
             // choose your printing method:
@@ -70,9 +70,9 @@ public final class Printing
     /**
      * Prints the document at its actual size. This is the recommended way to print.
      */
-    private static void print(PDDocument document) throws PrinterException
+    private static void print(final PDDocument document) throws PrinterException
     {
-        PrinterJob job = PrinterJob.getPrinterJob();
+        final PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PDFPageable(document));
         job.print();
     }
@@ -80,12 +80,12 @@ public final class Printing
     /**
      * Prints using custom PrintRequestAttribute values.
      */
-    private static void printWithAttributes(PDDocument document) throws PrinterException
+    private static void printWithAttributes(final PDDocument document) throws PrinterException
     {
-        PrinterJob job = PrinterJob.getPrinterJob();
+        final PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PDFPageable(document));
 
-        PrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
+        final PrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
         attr.add(new PageRanges(1, 1)); // pages 1 to 1
 
         job.print(attr);
@@ -94,9 +94,9 @@ public final class Printing
     /**
      * Prints with a print preview dialog.
      */
-    private static void printWithDialog(PDDocument document) throws PrinterException
+    private static void printWithDialog(final PDDocument document) throws PrinterException
     {
-        PrinterJob job = PrinterJob.getPrinterJob();
+        final PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PDFPageable(document));
 
         if (job.printDialog())
@@ -108,18 +108,18 @@ public final class Printing
     /**
      * Prints with a print preview dialog and custom PrintRequestAttribute values.
      */
-    private static void printWithDialogAndAttributes(PDDocument document) throws PrinterException
+    private static void printWithDialogAndAttributes(final PDDocument document) throws PrinterException
     {
-        PrinterJob job = PrinterJob.getPrinterJob();
+        final PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PDFPageable(document));
 
-        PrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
+        final PrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
         attr.add(new PageRanges(1, 1)); // pages 1 to 1
         
-        PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
+        final PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
         if (vp != null && vp.getDuplex() != null)
         {
-            String dp = vp.getDuplex();
+            final String dp = vp.getDuplex();
             if (PDViewerPreferences.DUPLEX.DuplexFlipLongEdge.toString().equals(dp))
             {
                 attr.add(Sides.TWO_SIDED_LONG_EDGE);
@@ -143,22 +143,22 @@ public final class Printing
     /**
      * Prints using a custom page size and custom margins.
      */
-    private static void printWithPaper(PDDocument document) throws PrinterException
+    private static void printWithPaper(final PDDocument document) throws PrinterException
     {
-        PrinterJob job = PrinterJob.getPrinterJob();
+        final PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PDFPageable(document));
 
         // define custom paper
-        Paper paper = new Paper();
+        final Paper paper = new Paper();
         paper.setSize(306, 396); // 1/72 inch
         paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight()); // no margins
 
         // custom page format
-        PageFormat pageFormat = new PageFormat();
+        final PageFormat pageFormat = new PageFormat();
         pageFormat.setPaper(paper);
         
         // override the page format
-        Book book = new Book();
+        final Book book = new Book();
         // append all pages
         book.append(new PDFPrintable(document), pageFormat, document.getNumberOfPages());
         job.setPageable(book);

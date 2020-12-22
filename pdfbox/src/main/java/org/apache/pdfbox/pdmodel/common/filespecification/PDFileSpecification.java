@@ -42,7 +42,7 @@ public abstract class PDFileSpecification implements COSObjectable
      *
      * @throws IOException If there is an error creating the file spec.
      */
-    public static PDFileSpecification createFS( COSBase base ) throws IOException
+    public static PDFileSpecification createFS(final COSBase base ) throws IOException
     {
         PDFileSpecification retval = null;
         if( base == null )

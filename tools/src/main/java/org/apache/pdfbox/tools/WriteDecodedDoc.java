@@ -81,13 +81,13 @@ public class WriteDecodedDoc implements Callable<Integer>
      *
      * @throws IOException if the output could not be written
      */
-    public void doIt(String in, String out, String password, boolean skipImages)
+    public void doIt(final String in, final String out, final String password, final boolean skipImages)
             throws IOException
     {
         try (PDDocument doc = Loader.loadPDF(new File(in), password))
         {
             doc.setAllSecurityToBeRemoved(true);
-            COSDocument cosDocument = doc.getDocument();
+            final COSDocument cosDocument = doc.getDocument();
             cosDocument.getXrefTable().keySet().stream()
                     .forEach(o -> processObject(cosDocument.getObjectFromPool(o), skipImages));
             doc.getDocumentCatalog();
@@ -96,12 +96,12 @@ public class WriteDecodedDoc implements Callable<Integer>
         }
     }
 
-    private void processObject(COSObject cosObject, boolean skipImages)
+    private void processObject(final COSObject cosObject, final boolean skipImages)
     {
-        COSBase base = cosObject.getObject();
+        final COSBase base = cosObject.getObject();
         if (base instanceof COSStream)
         {
-            COSStream stream = (COSStream) base;
+            final COSStream stream = (COSStream) base;
             if (skipImages && COSName.XOBJECT.equals(stream.getItem(COSName.TYPE))
                     && COSName.IMAGE.equals(stream.getItem(COSName.SUBTYPE)))
             {
@@ -109,14 +109,14 @@ public class WriteDecodedDoc implements Callable<Integer>
             }
             try
             {
-                byte[] bytes = new PDStream(stream).toByteArray();
+                final byte[] bytes = new PDStream(stream).toByteArray();
                 stream.removeItem(COSName.FILTER);
                 try (OutputStream streamOut = stream.createOutputStream())
                 {
                     streamOut.write(bytes);
                 }
             }
-            catch (IOException ex)
+            catch (final IOException ex)
             {
                 SYSERR.println("skip " + cosObject.getObjectNumber() + " "
                         + cosObject.getGenerationNumber() + " obj: " + ex.getMessage());
@@ -131,18 +131,18 @@ public class WriteDecodedDoc implements Callable<Integer>
      *
      * @param args command line arguments
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
         
-        int exitCode = new CommandLine(new WriteDecodedDoc()).execute(args);
+        final int exitCode = new CommandLine(new WriteDecodedDoc()).execute(args);
         System.exit(exitCode);
     }
 
     public Integer call()
     {
-        String outputFilename;
+        final String outputFilename;
 
         if (outfile == null)
         {
@@ -156,7 +156,7 @@ public class WriteDecodedDoc implements Callable<Integer>
         try {
             doIt(infile.getAbsolutePath(), outputFilename, password, skipImages);
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             SYSERR.println( "Error writing decoded PDF: " + ioe.getMessage());
             return 4;
@@ -164,7 +164,7 @@ public class WriteDecodedDoc implements Callable<Integer>
         return 0;
     }
 
-    private static String calculateOutputFilename(String filename) 
+    private static String calculateOutputFilename(final String filename)
     {
         String outputFilename;
         if (filename.toLowerCase().endsWith(".pdf"))

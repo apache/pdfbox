@@ -26,7 +26,7 @@ class TrackKernTest
     @Test
     void testTrackKern()
     {
-        TrackKern trackKern = new TrackKern(0, 1.0f, 1.0f, 10.0f, 10.0f);
+        final TrackKern trackKern = new TrackKern(0, 1.0f, 1.0f, 10.0f, 10.0f);
         assertEquals(0, trackKern.getDegree());
         assertEquals(1.0f, trackKern.getMinPointSize(), 0.0f);
         assertEquals(1.0f, trackKern.getMinKern(), 0.0f);

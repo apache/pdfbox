@@ -37,7 +37,7 @@ import javax.swing.tree.TreePath;
 public class TreeStatusPane implements TreeSelectionListener
 {
     private TreeStatus statusObj;
-    private JTree tree;
+    private final JTree tree;
 
     private JTextField statusField;
     private JPanel panel;
@@ -46,9 +46,9 @@ public class TreeStatusPane implements TreeSelectionListener
     private final Action textInputAction = new AbstractAction()
     {
         @Override
-        public void actionPerformed(ActionEvent actionEvent)
+        public void actionPerformed(final ActionEvent actionEvent)
         {
-            TreePath path = statusObj.getPathForString(statusField.getText());
+            final TreePath path = statusObj.getPathForString(statusField.getText());
             if (path != null)
             {
                 tree.setSelectionPath(path);
@@ -66,7 +66,7 @@ public class TreeStatusPane implements TreeSelectionListener
      * Constructor.
      * @param targetTree The tree instance that this status pane will correspond.
      */
-    public TreeStatusPane(JTree targetTree)
+    public TreeStatusPane(final JTree targetTree)
     {
         tree = targetTree;
         init();
@@ -97,14 +97,14 @@ public class TreeStatusPane implements TreeSelectionListener
      * In case of document changing this should be called to update TreeStatus value of the pane.
      * @param statusObj TreeStatus instance.
      */
-    public void updateTreeStatus(TreeStatus statusObj)
+    public void updateTreeStatus(final TreeStatus statusObj)
     {
         statusField.setEditable(true);
         this.statusObj = statusObj;
         updateText(null);
     }
 
-    private void updateText(String statusString)
+    private void updateText(final String statusString)
     {
         statusField.setText(statusString);
         if (!statusField.getBorder().equals(defaultBorder))
@@ -119,9 +119,9 @@ public class TreeStatusPane implements TreeSelectionListener
      */
 
     @Override
-    public void valueChanged(TreeSelectionEvent treeSelectionEvent)
+    public void valueChanged(final TreeSelectionEvent treeSelectionEvent)
     {
-        TreePath path = treeSelectionEvent.getPath();
+        final TreePath path = treeSelectionEvent.getPath();
         updateText(statusObj.getStringForPath(path));
     }
 }

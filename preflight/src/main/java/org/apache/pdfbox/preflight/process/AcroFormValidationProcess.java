@@ -49,12 +49,12 @@ public class AcroFormValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext ctx) throws ValidationException
+    public void validate(final PreflightContext ctx) throws ValidationException
     {
-        PDDocumentCatalog catalog = ctx.getDocument().getDocumentCatalog();
+        final PDDocumentCatalog catalog = ctx.getDocument().getDocumentCatalog();
         if (catalog != null)
         {
-            PDAcroForm acroForm = catalog.getAcroForm(null);
+            final PDAcroForm acroForm = catalog.getAcroForm(null);
             if (acroForm != null)
             {
                 checkNeedAppearences(ctx, acroForm);
@@ -62,7 +62,7 @@ public class AcroFormValidationProcess extends AbstractProcess
                 {
                     exploreFields(ctx, acroForm.getFields());
                 }
-                catch (IOException e)
+                catch (final IOException e)
                 {
                     throw new ValidationException("Unable to get the list of fields : " + e.getMessage(), e);
                 }
@@ -82,7 +82,7 @@ public class AcroFormValidationProcess extends AbstractProcess
      * @param ctx the preflight context.
      * @param acroForm the AcroForm.
      */
-    protected void checkNeedAppearences(PreflightContext ctx, PDAcroForm acroForm)
+    protected void checkNeedAppearences(final PreflightContext ctx, final PDAcroForm acroForm)
     {
         if (acroForm.getNeedAppearances())
         {
@@ -101,12 +101,12 @@ public class AcroFormValidationProcess extends AbstractProcess
      * @return the result of the validation.
      * @throws IOException
      */
-    protected boolean exploreFields(PreflightContext ctx, List<PDField> lFields) throws IOException
+    protected boolean exploreFields(final PreflightContext ctx, final List<PDField> lFields) throws IOException
     {
         if (lFields != null)
         {
             // the list can be null if the field doesn't have children
-            for (Object obj : lFields)
+            for (final Object obj : lFields)
             {
                 if (obj instanceof PDField)
                 {
@@ -140,9 +140,9 @@ public class AcroFormValidationProcess extends AbstractProcess
      * @return the result of the validation.
      * @throws IOException
      */
-    protected boolean exploreWidgets(PreflightContext ctx, List<PDAnnotationWidget> widgets) throws IOException
+    protected boolean exploreWidgets(final PreflightContext ctx, final List<PDAnnotationWidget> widgets) throws IOException
     {
-        for (PDAnnotationWidget widget : widgets)
+        for (final PDAnnotationWidget widget : widgets)
         {
             // "A field's children in the hierarchy may also include widget annotations"
             ContextHelper.validateElement(ctx, widget.getCOSObject(), ANNOTATIONS_PROCESS);
@@ -162,10 +162,10 @@ public class AcroFormValidationProcess extends AbstractProcess
      * @return the result of the check for A or AA entries.
      * @throws IOException
      */
-    protected boolean validateField(PreflightContext ctx, PDField field) throws IOException
+    protected boolean validateField(final PreflightContext ctx, final PDField field) throws IOException
     {
         boolean res = true;
-        PDFormFieldAdditionalActions aa = field.getActions();
+        final PDFormFieldAdditionalActions aa = field.getActions();
         if (aa != null)
         {
             addValidationError(ctx, new ValidationError(ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTIONS_FIELD,
@@ -176,13 +176,13 @@ public class AcroFormValidationProcess extends AbstractProcess
         if (field instanceof PDTerminalField)
         {
             // The widget validation will be done by the widget annotation, a widget contained in a Field can't have action. 
-            List<PDAnnotationWidget> widgets = field.getWidgets();
+            final List<PDAnnotationWidget> widgets = field.getWidgets();
             if (res && widgets != null)
             {
-                for (PDAnnotationWidget widget : widgets)
+                for (final PDAnnotationWidget widget : widgets)
                 {
                     ContextHelper.validateElement(ctx, widget.getCOSObject(), ANNOTATIONS_PROCESS);
-                    COSBase act = widget.getCOSObject().getDictionaryObject(COSName.A);
+                    final COSBase act = widget.getCOSObject().getDictionaryObject(COSName.A);
                     if (act != null)
                     {
                         addValidationError(ctx, new ValidationError(ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD,

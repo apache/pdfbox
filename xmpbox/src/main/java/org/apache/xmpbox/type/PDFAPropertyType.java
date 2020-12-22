@@ -39,32 +39,32 @@ public class PDFAPropertyType extends AbstractStructuredType
     @PropertyType(type = Types.Text, card = Cardinality.Simple)
     public static final String DESCRIPTION = "description";
 
-    public PDFAPropertyType(XMPMetadata metadata)
+    public PDFAPropertyType(final XMPMetadata metadata)
     {
         super(metadata);
     }
 
     public String getName()
     {
-        TextType tt = (TextType) getProperty(NAME);
+        final TextType tt = (TextType) getProperty(NAME);
         return tt == null ? null : tt.getStringValue();
     }
 
     public String getValueType()
     {
-        ChoiceType tt = (ChoiceType) getProperty(VALUETYPE);
+        final ChoiceType tt = (ChoiceType) getProperty(VALUETYPE);
         return tt == null ? null : tt.getStringValue();
     }
 
     public String getDescription()
     {
-        TextType tt = (TextType) getProperty(DESCRIPTION);
+        final TextType tt = (TextType) getProperty(DESCRIPTION);
         return tt == null ? null : tt.getStringValue();
     }
 
     public String getCategory()
     {
-        ChoiceType tt = (ChoiceType) getProperty(CATEGORY);
+        final ChoiceType tt = (ChoiceType) getProperty(CATEGORY);
         return tt == null ? null : tt.getStringValue();
     }
 

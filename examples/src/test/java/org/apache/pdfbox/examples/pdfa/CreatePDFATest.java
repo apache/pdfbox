@@ -58,23 +58,23 @@ class CreatePDFATest
     void testCreatePDFA() throws Exception
     {
         System.out.println("testCreatePDFA");
-        String pdfaFilename = outDir + "/PDFA.pdf";
-        String signedPdfaFilename = outDir + "/PDFA_signed.pdf";
-        String keystorePath = "src/test/resources/org/apache/pdfbox/examples/signature/keystore.p12";
-        String message = "The quick brown fox jumps over the lazy dog äöüÄÖÜß @°^²³ {[]}";
-        String dir = "../pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/";
-        String fontfile = dir + "LiberationSans-Regular.ttf";
+        final String pdfaFilename = outDir + "/PDFA.pdf";
+        final String signedPdfaFilename = outDir + "/PDFA_signed.pdf";
+        final String keystorePath = "src/test/resources/org/apache/pdfbox/examples/signature/keystore.p12";
+        final String message = "The quick brown fox jumps over the lazy dog äöüÄÖÜß @°^²³ {[]}";
+        final String dir = "../pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/";
+        final String fontfile = dir + "LiberationSans-Regular.ttf";
         CreatePDFA.main(new String[] { pdfaFilename, message, fontfile });
 
         // sign PDF - because we want to make sure that the signed PDF is also PDF/A-1b
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
+        final KeyStore keystore = KeyStore.getInstance("PKCS12");
         keystore.load(new FileInputStream(keystorePath), "123456".toCharArray());
-        CreateSignature signing = new CreateSignature(keystore, "123456".toCharArray());
+        final CreateSignature signing = new CreateSignature(keystore, "123456".toCharArray());
         signing.signDetached(new File(pdfaFilename), new File(signedPdfaFilename));
 
         // Verify that it is PDF/A-1b
-        ValidationResult result = PreflightParser.validate(new File(signedPdfaFilename));
-        for (ValidationError ve : result.getErrorsList())
+        final ValidationResult result = PreflightParser.validate(new File(signedPdfaFilename));
+        for (final ValidationError ve : result.getErrorsList())
         {
             System.err.println(ve.getErrorCode() + ": " + ve.getDetails());
         }
@@ -83,11 +83,11 @@ class CreatePDFATest
         // check the XMP metadata
         try (PDDocument document = Loader.loadPDF(new File(pdfaFilename)))
         {
-            PDDocumentCatalog catalog = document.getDocumentCatalog();
-            PDMetadata meta = catalog.getMetadata();
-            DomXmpParser xmpParser = new DomXmpParser();
-            XMPMetadata metadata = xmpParser.parse(meta.toByteArray());
-            DublinCoreSchema dc = metadata.getDublinCoreSchema();
+            final PDDocumentCatalog catalog = document.getDocumentCatalog();
+            final PDMetadata meta = catalog.getMetadata();
+            final DomXmpParser xmpParser = new DomXmpParser();
+            final XMPMetadata metadata = xmpParser.parse(meta.toByteArray());
+            final DublinCoreSchema dc = metadata.getDublinCoreSchema();
             assertEquals(pdfaFilename, dc.getTitle());
         }
     }

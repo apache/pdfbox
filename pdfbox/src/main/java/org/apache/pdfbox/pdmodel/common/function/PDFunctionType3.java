@@ -41,7 +41,7 @@ public class PDFunctionType3 extends PDFunction
      *
      * @param functionStream The function .
      */
-    public PDFunctionType3(COSBase functionStream)
+    public PDFunctionType3(final COSBase functionStream)
     {
         super( functionStream );
     }
@@ -59,20 +59,20 @@ public class PDFunctionType3 extends PDFunction
     * {@inheritDoc}
     */
     @Override
-    public float[] eval(float[] input) throws IOException
+    public float[] eval(final float[] input) throws IOException
     {
         //This function is known as a "stitching" function. Based on the input, it decides which child function to call.
         // All functions in the array are 1-value-input functions
         //See PDF Reference section 3.9.3.
         PDFunction function = null;
         float x = input[0];
-        PDRange domain = getDomainForInput(0);
+        final PDRange domain = getDomainForInput(0);
         // clip input value to domain
         x = clipToRange(x, domain.getMin(), domain.getMax());
         
         if (functionsArray == null)
         {
-            COSArray ar = getFunctions();
+            final COSArray ar = getFunctions();
             functionsArray = new PDFunction[ar.size()];
             for (int i = 0; i < ar.size(); ++i)
             {
@@ -84,7 +84,7 @@ public class PDFunctionType3 extends PDFunction
         {
             // This doesn't make sense but it may happen ...
             function = functionsArray[0];
-            PDRange encRange = getEncodeForParameter(0);
+            final PDRange encRange = getEncodeForParameter(0);
             x = interpolate(x, domain.getMin(), domain.getMax(), encRange.getMin(), encRange.getMax());
         }
         else 
@@ -93,11 +93,11 @@ public class PDFunctionType3 extends PDFunction
             {
                 boundsValues = getBounds().toFloatArray();
             }
-            int boundsSize = boundsValues.length;
+            final int boundsSize = boundsValues.length;
             // create a combined array containing the domain and the bounds values
             // domain.min, bounds[0], bounds[1], ...., bounds[boundsSize-1], domain.max
-            float[] partitionValues = new float[boundsSize+2];
-            int partitionValuesSize = partitionValues.length;
+            final float[] partitionValues = new float[boundsSize+2];
+            final int partitionValuesSize = partitionValues.length;
             partitionValues[0] = domain.getMin();
             partitionValues[partitionValuesSize-1] = domain.getMax();
             System.arraycopy(boundsValues, 0, partitionValues, 1, boundsSize);
@@ -108,7 +108,7 @@ public class PDFunctionType3 extends PDFunction
                         (x < partitionValues[i+1] || (i == partitionValuesSize - 2 && Float.compare(x,partitionValues[i+1]) == 0)))
                 {
                     function = functionsArray[i];
-                    PDRange encRange = getEncodeForParameter(i);
+                    final PDRange encRange = getEncodeForParameter(i);
                     x = interpolate(x, partitionValues[i], partitionValues[i+1], encRange.getMin(), encRange.getMax());
                     break;
                 }
@@ -118,9 +118,9 @@ public class PDFunctionType3 extends PDFunction
                 throw new IOException("partition not found in type 3 function");
             }
         }
-        float[] functionValues = new float[]{x};
+        final float[] functionValues = new float[]{x};
         // calculate the output values using the chosen function
-        float[] functionResult = function.eval(functionValues);
+        final float[] functionResult = function.eval(functionValues);
         // clip to range if available
         return clipToRange(functionResult);
     }
@@ -174,9 +174,9 @@ public class PDFunctionType3 extends PDFunction
      *
      * @return The encode parameter range or null if none is set.
      */
-    private PDRange getEncodeForParameter(int n) 
+    private PDRange getEncodeForParameter(final int n)
     {
-        COSArray encodeValues = getEncode();
+        final COSArray encodeValues = getEncode();
         return new PDRange( encodeValues, n );
     }
 

@@ -39,9 +39,9 @@ class PDLabTest
     @Test
     void testLAB()
     {
-        PDLab pdLab = new PDLab();
-        COSArray cosArray = (COSArray) pdLab.getCOSObject();
-        COSDictionary dict = (COSDictionary) cosArray.getObject(1);
+        final PDLab pdLab = new PDLab();
+        final COSArray cosArray = (COSArray) pdLab.getCOSObject();
+        final COSDictionary dict = (COSDictionary) cosArray.getObject(1);
         
         // test with default values
         assertEquals("Lab", pdLab.getName());

@@ -33,7 +33,7 @@ public class LigatureSetTable
     private final int ligatureCount;
     private final LigatureTable[] ligatureTables;
 
-    public LigatureSetTable(int ligatureCount, LigatureTable[] ligatureTables)
+    public LigatureSetTable(final int ligatureCount, final LigatureTable[] ligatureTables)
     {
         this.ligatureCount = ligatureCount;
         this.ligatureTables = ligatureTables;

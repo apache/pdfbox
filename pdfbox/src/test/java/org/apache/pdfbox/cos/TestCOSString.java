@@ -57,13 +57,13 @@ class TestCOSString extends TestCOSBase
     @Test
     void testSetForceHexLiteralForm()
     {
-        String inputString = "Test with a text and a few numbers 1, 2 and 3";
-        String pdfHex = "<" + createHex(inputString) + ">";
-        COSString cosStr = new COSString(inputString);
+        final String inputString = "Test with a text and a few numbers 1, 2 and 3";
+        final String pdfHex = "<" + createHex(inputString) + ">";
+        final COSString cosStr = new COSString(inputString);
         cosStr.setForceHexForm(true);
         writePDFTests(pdfHex, cosStr);
 
-        COSString escStr = new COSString(ESC_CHAR_STRING);
+        final COSString escStr = new COSString(ESC_CHAR_STRING);
         writePDFTests("(" + ESC_CHAR_STRING_PDF_FORMAT + ")", escStr);
         escStr.setForceHexForm(true);
         // Escape characters not escaped in hex version
@@ -76,14 +76,14 @@ class TestCOSString extends TestCOSBase
      * @param expected the String expected when writePDF() is invoked
      * @param testSubj the test subject
      */
-    private void writePDFTests(String expected, COSString testSubj)
+    private void writePDFTests(final String expected, final COSString testSubj)
     {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         try
         {
             COSWriter.writeString(testSubj, outStream);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             fail("IOException: " + e.getMessage());
         }
@@ -96,16 +96,16 @@ class TestCOSString extends TestCOSBase
     @Test
     void testFromHex()
     {
-        String expected = "Quick and simple test";
-        String hexForm = createHex(expected);
+        final String expected = "Quick and simple test";
+        final String hexForm = createHex(expected);
         try
         {
-            COSString test1 = COSString.parseHex(hexForm);
+            final COSString test1 = COSString.parseHex(hexForm);
             writePDFTests("(" + expected + ")", test1);
-            COSString test2 = COSString.parseHex(createHex(ESC_CHAR_STRING));
+            final COSString test2 = COSString.parseHex(createHex(ESC_CHAR_STRING));
             writePDFTests("(" + ESC_CHAR_STRING_PDF_FORMAT + ")", test2);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             fail("IOException thrown: " + e.getMessage());
         }
@@ -113,10 +113,10 @@ class TestCOSString extends TestCOSBase
                 "Should have thrown an IOException here");
     }
 
-    private String createHex(String str)
+    private String createHex(final String str)
     {
-        StringBuilder sb = new StringBuilder();
-        for (char c : str.toCharArray())
+        final StringBuilder sb = new StringBuilder();
+        for (final char c : str.toCharArray())
         {
             sb.append(Integer.toString(c, 16));
         }
@@ -129,11 +129,11 @@ class TestCOSString extends TestCOSBase
     @Test
     void testGetHex()
     {
-        String expected = "Test subject for testing getHex";
-        COSString test1 = new COSString(expected);
-        String hexForm = createHex(expected);
+        final String expected = "Test subject for testing getHex";
+        final COSString test1 = new COSString(expected);
+        final String hexForm = createHex(expected);
         assertEquals(hexForm, test1.toHexString());
-        COSString escCS = new COSString(ESC_CHAR_STRING);
+        final COSString escCS = new COSString(ESC_CHAR_STRING);
         // Not sure whether the escaped characters should be escaped or not, presumably since 
         // writePDF() gives you the proper formatted text, getHex() should ONLY convert to hex. 
         assertEquals(createHex(ESC_CHAR_STRING), escCS.toHexString());
@@ -148,20 +148,20 @@ class TestCOSString extends TestCOSBase
         try
         {
             String testStr = "Test subject for getString()";
-            COSString test1 = new COSString(testStr);
+            final COSString test1 = new COSString(testStr);
             assertEquals(testStr, test1.getString());
 
-            COSString hexStr = COSString.parseHex(createHex(testStr));
+            final COSString hexStr = COSString.parseHex(createHex(testStr));
             assertEquals(testStr, hexStr.getString());
 
-            COSString escapedString = new COSString(ESC_CHAR_STRING);
+            final COSString escapedString = new COSString(ESC_CHAR_STRING);
             assertEquals(ESC_CHAR_STRING, escapedString.getString());
 
             testStr = "Line1\nLine2\nLine3\n";
-            COSString lineFeedString = new COSString(testStr);
+            final COSString lineFeedString = new COSString(testStr);
             assertEquals(testStr, lineFeedString.getString());
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             fail("IOException thrown: " + e.getMessage());
         }
@@ -173,7 +173,7 @@ class TestCOSString extends TestCOSBase
     @Test
     void testGetBytes()
     {
-        COSString str = new COSString(ESC_CHAR_STRING);
+        final COSString str = new COSString(ESC_CHAR_STRING);
         testByteArrays(ESC_CHAR_STRING.getBytes(), str.getBytes());
     }
 
@@ -184,10 +184,10 @@ class TestCOSString extends TestCOSBase
     void testWritePDF()
     {
         // This has been tested quite thorougly above but do a couple tests anyway
-        COSString testSubj = new COSString(ESC_CHAR_STRING);
+        final COSString testSubj = new COSString(ESC_CHAR_STRING);
         writePDFTests("(" + ESC_CHAR_STRING_PDF_FORMAT + ")", testSubj);
-        String textString = "This is just an arbitrary piece of text for testing";
-        COSString testSubj2 = new COSString(textString);
+        final String textString = "This is just an arbitrary piece of text for testing";
+        final COSString testSubj2 = new COSString(textString);
         writePDFTests("(" + textString + ")", testSubj2);
     }
 
@@ -199,24 +199,24 @@ class TestCOSString extends TestCOSBase
     @Test
     void testUnicode() throws IOException
     {
-        String theString = "\u4e16";
-        COSString string = new COSString(theString);
+        final String theString = "\u4e16";
+        final COSString string = new COSString(theString);
         assertEquals(string.getString(), theString);
         
-        String textAscii = "This is some regular text. It should all be expressible in ASCII";
+        final String textAscii = "This is some regular text. It should all be expressible in ASCII";
         /** En français où les choses sont accentués. En español, así */
-        String text8Bit = "En fran\u00e7ais o\u00f9 les choses sont accentu\u00e9s. En espa\u00f1ol, as\u00ed";
+        final String text8Bit = "En fran\u00e7ais o\u00f9 les choses sont accentu\u00e9s. En espa\u00f1ol, as\u00ed";
          /** をクリックしてく */
-        String textHighBits =  "\u3092\u30af\u30ea\u30c3\u30af\u3057\u3066\u304f";
+        final String textHighBits =  "\u3092\u30af\u30ea\u30c3\u30af\u3057\u3066\u304f";
 
         // Testing the getString method
-        COSString stringAscii = new COSString( textAscii );
+        final COSString stringAscii = new COSString( textAscii );
         assertEquals( stringAscii.getString(), textAscii );
         
-        COSString string8Bit = new COSString( text8Bit );
+        final COSString string8Bit = new COSString( text8Bit );
         assertEquals( string8Bit.getString(), text8Bit );
 
-        COSString stringHighBits = new COSString( textHighBits );
+        final COSString stringHighBits = new COSString( textHighBits );
         assertEquals( stringHighBits.getString(), textHighBits );
         
 
@@ -231,14 +231,14 @@ class TestCOSString extends TestCOSBase
         
         
         // Test the writePDF method to ensure that the Strings are correct when written into PDF.
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         COSWriter.writeString(stringAscii, out);
         assertEquals("(" + textAscii + ")", new String(out.toByteArray(), "ASCII"));
         
         out.reset();
         COSWriter.writeString(string8Bit, out);
         StringBuffer hex = new StringBuffer();
-        for(char c : text8Bit.toCharArray())
+        for(final char c : text8Bit.toCharArray())
         {
            hex.append( Integer.toHexString(c).toUpperCase() );
         }
@@ -248,7 +248,7 @@ class TestCOSString extends TestCOSBase
         COSWriter.writeString(stringHighBits, out);
         hex = new StringBuffer();
         hex.append("FEFF"); // Byte Order Mark
-        for(char c : textHighBits.toCharArray())
+        for(final char c : textHighBits.toCharArray())
         {
            hex.append( Integer.toHexString(c).toUpperCase() );
         }
@@ -259,9 +259,9 @@ class TestCOSString extends TestCOSBase
     @Test
     void testAccept() throws IOException
     {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        ICOSVisitor visitor = new COSWriter(outStream);
-        COSString testSubj = new COSString(ESC_CHAR_STRING);
+        final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        final ICOSVisitor visitor = new COSWriter(outStream);
+        final COSString testSubj = new COSString(ESC_CHAR_STRING);
         testSubj.accept(visitor);
         assertEquals("(" + ESC_CHAR_STRING_PDF_FORMAT + ")", outStream.toString());
         outStream.reset();
@@ -280,21 +280,21 @@ class TestCOSString extends TestCOSBase
         for (int i = 0; i < 10; i++)
         {
             // Reflexive
-            COSString x1 = new COSString("Test");
+            final COSString x1 = new COSString("Test");
             assertEquals(x1, x1);
 
             // Symmetry i.e. if x == y then y == x
-            COSString y1 = new COSString("Test");
+            final COSString y1 = new COSString("Test");
             assertEquals(x1, y1);
             assertEquals(y1, x1);
-            COSString x2 = new COSString("Test");
+            final COSString x2 = new COSString("Test");
             x2.setForceHexForm(true);
             // also if x != y then y != x
             assertNotEquals(x1, x2);
             assertNotEquals(x2, x1);
 
             // Transitive if x == y && y == z then x == z
-            COSString z1 = new COSString("Test");
+            final COSString z1 = new COSString("Test");
             assertEquals(x1, y1);
             assertEquals(y1, z1);
             assertEquals(x1, z1);
@@ -311,10 +311,10 @@ class TestCOSString extends TestCOSBase
     @Test
     void testHashCode()
     {
-        COSString str1 = new COSString("Test1");
-        COSString str2 = new COSString("Test2");
+        final COSString str1 = new COSString("Test1");
+        final COSString str2 = new COSString("Test2");
         assertNotEquals(str1.hashCode(), str2.hashCode());
-        COSString str3 = new COSString("Test1");
+        final COSString str3 = new COSString("Test1");
         assertEquals(str1.hashCode(), str3.hashCode());
         str3.setForceHexForm(true);
         assertNotEquals(str1.hashCode(), str3.hashCode());
@@ -330,8 +330,8 @@ class TestCOSString extends TestCOSBase
     @Test
     void testCompareFromHexString() throws IOException
     {
-        COSString test1 = COSString.parseHex("000000FF000000");
-        COSString test2 = COSString.parseHex("000000FF00FFFF");
+        final COSString test1 = COSString.parseHex("000000FF000000");
+        final COSString test2 = COSString.parseHex("000000FF00FFFF");
         assertEquals(test1, test1);
         assertEquals(test2, test2);
         assertNotEquals(test1.toHexString(), test2.toHexString());

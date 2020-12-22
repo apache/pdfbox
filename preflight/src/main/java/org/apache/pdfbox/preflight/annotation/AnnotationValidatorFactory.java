@@ -45,13 +45,13 @@ public abstract class AnnotationValidatorFactory
         initializeClasses();
     }
 
-    public AnnotationValidatorFactory(ActionManagerFactory actionFact)
+    public AnnotationValidatorFactory(final ActionManagerFactory actionFact)
     {
         super();
         this.actionFact = actionFact;
     }
 
-    public final void setActionFact(ActionManagerFactory _actionFact)
+    public final void setActionFact(final ActionManagerFactory _actionFact)
     {
         this.actionFact = _actionFact;
     }
@@ -68,13 +68,13 @@ public abstract class AnnotationValidatorFactory
      * @param annotDic the annotation dictionary.
      * @return the AnnotationValidator instance.
      */
-    public final AnnotationValidator getAnnotationValidator(PreflightContext ctx, COSDictionary annotDic)
+    public final AnnotationValidator getAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDic)
             throws ValidationException
     {
 
         AnnotationValidator result = null;
-        String subtype = annotDic.getNameAsString(COSName.SUBTYPE);
-        Class<? extends AnnotationValidator> clazz = this.validatorClasses.get(subtype);
+        final String subtype = annotDic.getNameAsString(COSName.SUBTYPE);
+        final Class<? extends AnnotationValidator> clazz = this.validatorClasses.get(subtype);
 
         if (clazz == null)
         {
@@ -85,12 +85,12 @@ public abstract class AnnotationValidatorFactory
         {
             try
             {
-                Constructor<? extends AnnotationValidator> constructor =
+                final Constructor<? extends AnnotationValidator> constructor =
                         clazz.getDeclaredConstructor(PreflightContext.class, COSDictionary.class);
                 result = constructor.newInstance(ctx, annotDic);
                 result.setFactory(this);
             }
-            catch (Exception e)
+            catch (final Exception e)
             {
                 throw new ValidationException(e.getMessage(), e);
             }

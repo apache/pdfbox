@@ -64,8 +64,8 @@ final class ASCIIHexFilter extends Filter
     };
 
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded,
+                               final COSDictionary parameters, final int index) throws IOException
     {
         int value, firstByte, secondByte;
         while ((firstByte = encoded.read()) != -1)
@@ -114,18 +114,18 @@ final class ASCIIHexFilter extends Filter
     //  12  0x0C  Form feed (FF)
     //  13  0x0D  Carriage return (CR)
     //  32  0x20  Space (SP)
-    private boolean isWhitespace(int c)
+    private boolean isWhitespace(final int c)
     {
         return c == 0 || c == 9 || c == 10 || c == 12 || c == 13 || c == 32;
     }
 
-    private boolean isEOD(int c)
+    private boolean isEOD(final int c)
     {
         return c == '>';
     }
 
     @Override
-    public void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    public void encode(final InputStream input, final OutputStream encoded, final COSDictionary parameters)
         throws IOException
     {
         int byteRead;

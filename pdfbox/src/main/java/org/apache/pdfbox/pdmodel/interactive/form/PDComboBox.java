@@ -37,7 +37,7 @@ public final class PDComboBox extends PDChoice
      *
      * @param acroForm The acroform.
      */
-    public PDComboBox(PDAcroForm acroForm)
+    public PDComboBox(final PDAcroForm acroForm)
     {
         super(acroForm);
         setCombo(true);
@@ -50,7 +50,7 @@ public final class PDComboBox extends PDChoice
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDComboBox(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDComboBox(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -70,7 +70,7 @@ public final class PDComboBox extends PDChoice
      *
      * @param edit The value for Edit.
      */
-    public void setEdit(boolean edit)
+    public void setEdit(final boolean edit)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_EDIT, edit);
     }
@@ -78,9 +78,9 @@ public final class PDComboBox extends PDChoice
     @Override
     void constructAppearances() throws IOException
     {
-        AppearanceGeneratorHelper apHelper;
+        final AppearanceGeneratorHelper apHelper;
         apHelper = new AppearanceGeneratorHelper(this);
-        List<String> values = getValue();
+        final List<String> values = getValue();
         
         if (!values.isEmpty())
         {

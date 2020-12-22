@@ -38,7 +38,7 @@ public class XmpSerializationException extends Exception
      * @param message
      *            a description of the encountered problem
      */
-    public XmpSerializationException(String message)
+    public XmpSerializationException(final String message)
     {
         super(message);
     }
@@ -51,7 +51,7 @@ public class XmpSerializationException extends Exception
      * @param cause
      *            the cause of the exception
      */
-    public XmpSerializationException(String message, Throwable cause)
+    public XmpSerializationException(final String message, final Throwable cause)
     {
         super(message, cause);
 

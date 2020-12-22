@@ -47,21 +47,21 @@ public class UsingTextMatrix
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void doIt( String message, String  outfile ) throws IOException
+    public void doIt(final String message, final String  outfile ) throws IOException
     {
         // the document
         try (PDDocument doc = new PDDocument())
         {
             // Page 1
-            PDFont font = PDType1Font.HELVETICA;
+            final PDFont font = PDType1Font.HELVETICA;
             PDPage page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
             float fontSize = 12.0f;
 
-            PDRectangle pageSize = page.getMediaBox();
-            float centeredXPosition = (pageSize.getWidth() - fontSize/1000f)/2f;
-            float stringWidth = font.getStringWidth( message );
-            float centeredYPosition = (pageSize.getHeight() - (stringWidth*fontSize)/1000f)/3f;
+            final PDRectangle pageSize = page.getMediaBox();
+            final float centeredXPosition = (pageSize.getWidth() - fontSize/1000f)/2f;
+            final float stringWidth = font.getStringWidth( message );
+            final float centeredYPosition = (pageSize.getHeight() - (stringWidth*fontSize)/1000f)/3f;
 
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
             contentStream.setFont( font, fontSize );
@@ -138,9 +138,9 @@ public class UsingTextMatrix
      * 
      * @param args Command line arguments.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        UsingTextMatrix app = new UsingTextMatrix();
+        final UsingTextMatrix app = new UsingTextMatrix();
         if( args.length != 2 )
         {
             app.usage();

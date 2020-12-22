@@ -48,7 +48,7 @@ public class FDFAnnotationUnderline extends FDFAnnotationTextMarkup
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationUnderline(COSDictionary a)
+    public FDFAnnotationUnderline(final COSDictionary a)
     {
         super(a);
     }
@@ -60,7 +60,7 @@ public class FDFAnnotationUnderline extends FDFAnnotationTextMarkup
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationUnderline(Element element) throws IOException
+    public FDFAnnotationUnderline(final Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);

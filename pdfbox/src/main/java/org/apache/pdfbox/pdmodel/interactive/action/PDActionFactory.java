@@ -43,12 +43,12 @@ public final class PDActionFactory
      *
      * @return An action of the correct type.
      */
-    public static PDAction createAction( COSDictionary action )
+    public static PDAction createAction(final COSDictionary action )
     {
         PDAction retval = null;
         if( action != null)
         {
-            String type = action.getNameAsString(COSName.S);
+            final String type = action.getNameAsString(COSName.S);
             if (type != null)
             {
                 switch (type)

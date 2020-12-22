@@ -305,7 +305,7 @@ public final class CFFStandardEncoding extends CFFEncoding
 
     static
     {
-        for (int[] encodingEntry : CFF_STANDARD_ENCODING_TABLE)
+        for (final int[] encodingEntry : CFF_STANDARD_ENCODING_TABLE)
         {
             INSTANCE.add(encodingEntry[CHAR_CODE], encodingEntry[CHAR_SID]);
         }

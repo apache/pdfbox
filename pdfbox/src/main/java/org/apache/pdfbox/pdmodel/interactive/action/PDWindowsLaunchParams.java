@@ -55,7 +55,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      *
      * @param p The params dictionary.
      */
-    public PDWindowsLaunchParams( COSDictionary p )
+    public PDWindowsLaunchParams(final COSDictionary p )
     {
         params = p;
     }
@@ -86,7 +86,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      *
      * @param file The executable/document to launch.
      */
-    public void setFilename( String file )
+    public void setFilename(final String file )
     {
         params.setString( COSName.F, file );
     }
@@ -106,7 +106,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      *
      * @param dir The dir of the executable/document to launch.
      */
-    public void setDirectory( String dir )
+    public void setDirectory(final String dir )
     {
         params.setString( COSName.D, dir );
     }
@@ -129,7 +129,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      *
      * @param op The operation to perform on the file.
      */
-    public void setOperation( String op )
+    public void setOperation(final String op )
     {
         params.setString( COSName.D, op );
     }
@@ -149,7 +149,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      *
      * @param param The parameter for the executable.
      */
-    public void setExecuteParam( String param )
+    public void setExecuteParam(final String param )
     {
         params.setString( COSName.P, param );
     }

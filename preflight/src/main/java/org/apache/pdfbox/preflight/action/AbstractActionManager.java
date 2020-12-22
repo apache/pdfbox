@@ -60,7 +60,7 @@ public abstract class AbstractActionManager
      * @param aaKey
      *            The name of the key which identify the action in a additional action dictionary.
      */
-    AbstractActionManager(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
+    AbstractActionManager(final ActionManagerFactory amFact, final COSDictionary adict, final PreflightContext ctx, final String aaKey)
     {
         this.actionFact = amFact;
         this.actionDictionary = adict;
@@ -101,8 +101,8 @@ public abstract class AbstractActionManager
      */
     protected boolean validNextActions() throws ValidationException
     {
-        List<AbstractActionManager> lActions = this.actionFact.getNextActions(this.context, this.actionDictionary);
-        for (AbstractActionManager nAction : lActions)
+        final List<AbstractActionManager> lActions = this.actionFact.getNextActions(this.context, this.actionDictionary);
+        for (final AbstractActionManager nAction : lActions)
         {
             if (!nAction.innerValid())
             {
@@ -139,7 +139,7 @@ public abstract class AbstractActionManager
      * @return the validation state of the Action dictionary.
      * @throws ValidationException
      */
-    public boolean valid(boolean additionalActionAuth) throws ValidationException
+    public boolean valid(final boolean additionalActionAuth) throws ValidationException
     {
         if (isAdditionalAction() && !additionalActionAuth)
         {

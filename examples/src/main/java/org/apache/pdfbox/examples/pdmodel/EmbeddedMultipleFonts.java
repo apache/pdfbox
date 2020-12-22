@@ -46,25 +46,25 @@ public class EmbeddedMultipleFonts
     {
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         try (PDDocument document = new PDDocument();
-             TrueTypeCollection ttc2 = new TrueTypeCollection(new File("c:/windows/fonts/batang.ttc"));
-             TrueTypeCollection ttc3 = new TrueTypeCollection(new File("c:/windows/fonts/mingliu.ttc")))
+             final TrueTypeCollection ttc2 = new TrueTypeCollection(new File("c:/windows/fonts/batang.ttc"));
+             final TrueTypeCollection ttc3 = new TrueTypeCollection(new File("c:/windows/fonts/mingliu.ttc")))
         {
-            PDPage page = new PDPage(PDRectangle.A4);
+            final PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
 
-            PDFont font1 = PDType1Font.HELVETICA; // always have a simple font as first one
-            PDType0Font font2 = PDType0Font.load(document, ttc2.getFontByName("Batang"), true); // Korean
-            PDType0Font font3 = PDType0Font.load(document, ttc3.getFontByName("MingLiU"), true); // Chinese
-            PDType0Font font4 = PDType0Font.load(document, new File("c:/windows/fonts/mangal.ttf")); // Indian
-            PDType0Font font5 = PDType0Font.load(document, new File("c:/windows/fonts/ArialUni.ttf")); // Fallback
+            final PDFont font1 = PDType1Font.HELVETICA; // always have a simple font as first one
+            final PDType0Font font2 = PDType0Font.load(document, ttc2.getFontByName("Batang"), true); // Korean
+            final PDType0Font font3 = PDType0Font.load(document, ttc3.getFontByName("MingLiU"), true); // Chinese
+            final PDType0Font font4 = PDType0Font.load(document, new File("c:/windows/fonts/mangal.ttf")); // Indian
+            final PDType0Font font5 = PDType0Font.load(document, new File("c:/windows/fonts/ArialUni.ttf")); // Fallback
 
             try (PDPageContentStream cs = new PDPageContentStream(document, page))
             {
                 cs.beginText();
-                List<PDFont> fonts = new ArrayList<>();
+                final List<PDFont> fonts = new ArrayList<>();
                 fonts.add(font1);
                 fonts.add(font2);
                 fonts.add(font3);
@@ -79,7 +79,7 @@ public class EmbeddedMultipleFonts
         }
     }
 
-    static void showTextMultiple(PDPageContentStream cs, String text, List<PDFont> fonts, float size)
+    static void showTextMultiple(final PDPageContentStream cs, final String text, final List<PDFont> fonts, final float size)
             throws IOException
     {
         try
@@ -90,7 +90,7 @@ public class EmbeddedMultipleFonts
             cs.showText(text);
             return;
         }
-        catch (IllegalArgumentException ex)
+        catch (final IllegalArgumentException ex)
         {
             // do nothing
         }
@@ -99,7 +99,7 @@ public class EmbeddedMultipleFonts
         while (i < text.length())
         {
             boolean found = false;
-            for (PDFont font : fonts)
+            for (final PDFont font : fonts)
             {
                 try
                 {
@@ -109,7 +109,7 @@ public class EmbeddedMultipleFonts
                     int j = i + 1;
                     for (; j < text.length(); ++j)
                     {
-                        String s2 = text.substring(j, j + 1);
+                        final String s2 = text.substring(j, j + 1);
 
                         if (isWinAnsiEncoding(s2.codePointAt(0)) && font != fonts.get(0))
                         {
@@ -125,7 +125,7 @@ public class EmbeddedMultipleFonts
                         {
                             font.encode(s2);
                         }
-                        catch (IllegalArgumentException ex)
+                        catch (final IllegalArgumentException ex)
                         {
                             // it's over
                             break;
@@ -138,7 +138,7 @@ public class EmbeddedMultipleFonts
                     found = true;
                     break;
                 }
-                catch (IllegalArgumentException ex)
+                catch (final IllegalArgumentException ex)
                 {
                     // didn't work, will try next font
                 }
@@ -151,9 +151,9 @@ public class EmbeddedMultipleFonts
         }
     }
 
-    static boolean isWinAnsiEncoding(int unicode)
+    static boolean isWinAnsiEncoding(final int unicode)
     {
-        String name = GlyphList.getAdobeGlyphList().codePointToName(unicode);
+        final String name = GlyphList.getAdobeGlyphList().codePointToName(unicode);
         if (".notdef".equals(name))
         {
             return false;

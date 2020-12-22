@@ -38,19 +38,19 @@ final class SCNToolTip extends ColorToolTip
      * Constructor.
      * @param rowText String instance.
      */
-    SCNToolTip(PDResources resources, String colorSpaceName, String rowText)
+    SCNToolTip(final PDResources resources, final String colorSpaceName, final String rowText)
     {
         createMarkUp(resources, colorSpaceName.substring(1).trim(), rowText);
     }
 
-    private void createMarkUp(PDResources resources, String colorSpaceName, String rowText)
+    private void createMarkUp(final PDResources resources, final String colorSpaceName, final String rowText)
     {
         PDColorSpace colorSpace = null;
         try
         {
             colorSpace = resources.getColorSpace(COSName.getPDFName(colorSpaceName));
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOG.error(e.getMessage(), e);
         }
@@ -63,14 +63,14 @@ final class SCNToolTip extends ColorToolTip
         {
             try
             {
-                float[] rgbValues = colorSpace.toRGB(extractColorValues(rowText));
+                final float[] rgbValues = colorSpace.toRGB(extractColorValues(rowText));
                 if (rgbValues != null)
                 {
-                    Color color = new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
+                    final Color color = new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
                     setToolTipText(getMarkUp(colorHexValue(color)));
                 }
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 LOG.error(e.getMessage(), e);
             }

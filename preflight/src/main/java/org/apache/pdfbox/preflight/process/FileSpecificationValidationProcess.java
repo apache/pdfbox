@@ -37,9 +37,9 @@ public class FileSpecificationValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext ctx) throws ValidationException
+    public void validate(final PreflightContext ctx) throws ValidationException
     {
-        COSDocument cDoc = ctx.getDocument().getDocument();
+        final COSDocument cDoc = ctx.getDocument().getDocument();
 
         cDoc.getObjectsByType(COSName.FILESPEC, COSName.F)
                 .forEach(o -> validateFileSpecification(ctx, (COSDictionary) o.getObject()));
@@ -51,7 +51,7 @@ public class FileSpecificationValidationProcess extends AbstractProcess
      * @param ctx the preflight context.
      * @param fileSpec the FileSpec Dictionary.
      */
-    public void validateFileSpecification(PreflightContext ctx, COSDictionary fileSpec)
+    public void validateFileSpecification(final PreflightContext ctx, final COSDictionary fileSpec)
     {
         // ---- Check dictionary entries
         // ---- Only the EF entry is forbidden

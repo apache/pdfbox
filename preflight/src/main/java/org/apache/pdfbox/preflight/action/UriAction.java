@@ -43,7 +43,7 @@ public class UriAction extends AbstractActionManager
      * @param ctx the preflight context-
      * @param aaKey the name of the key which identify the action in a additional action dictionary.
      */
-    public UriAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
+    public UriAction(final ActionManagerFactory amFact, final COSDictionary adict, final PreflightContext ctx, final String aaKey)
     {
         super(amFact, adict, ctx, aaKey);
     }
@@ -56,7 +56,7 @@ public class UriAction extends AbstractActionManager
     @Override
     protected boolean innerValid()
     {
-        COSBase uri = this.actionDictionary.getDictionaryObject(COSName.URI);
+        final COSBase uri = this.actionDictionary.getDictionaryObject(COSName.URI);
         if (uri == null)
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,

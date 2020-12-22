@@ -40,7 +40,7 @@ public class Benchmark
     /**
      * @param args
      */
-    public static void main(String[] args) throws Exception
+    public static void main(final String[] args) throws Exception
     {
         if (args.length < 3)
         {
@@ -48,16 +48,16 @@ public class Benchmark
             System.exit(255);
         }
 
-        Integer loop = Integer.parseInt(args[0]);
-        FileWriter resFile = new FileWriter(new File(args[1]));
+        final Integer loop = Integer.parseInt(args[0]);
+        final FileWriter resFile = new FileWriter(new File(args[1]));
 
-        List<File> lfd = new ArrayList<>();
+        final List<File> lfd = new ArrayList<>();
         for (int i = 2; i < args.length; ++i)
         {
-            File fi = new File(args[i]);
+            final File fi = new File(args[i]);
             if (fi.isDirectory())
             {
-                Collection<File> cf = FileUtils.listFiles(fi, null, true); // Get All files contained by the dir
+                final Collection<File> cf = FileUtils.listFiles(fi, null, true); // Get All files contained by the dir
                 lfd.addAll(cf);
             }
             else
@@ -66,30 +66,30 @@ public class Benchmark
             }
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.Z");
+        final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.Z");
 
-        long startGTime = System.currentTimeMillis();
+        final long startGTime = System.currentTimeMillis();
 
-        int size = lfd.size();
+        final int size = lfd.size();
         for (int i = 0; i < loop; i++)
         {
-            File file = lfd.get(i % size);
-            long startLTime = System.currentTimeMillis();
-            ValidationResult result = PreflightParser.validate(file);
+            final File file = lfd.get(i % size);
+            final long startLTime = System.currentTimeMillis();
+            final ValidationResult result = PreflightParser.validate(file);
             if (!result.isValid())
             {
                 resFile.write(file.getAbsolutePath() + " isn't PDF/A\n");
-                for (ValidationError error : result.getErrorsList())
+                for (final ValidationError error : result.getErrorsList())
                 {
                     resFile.write(error.getErrorCode() + " : " + error.getDetails() + "\n");
                 }
             }
-            long endLTime = System.currentTimeMillis();
+            final long endLTime = System.currentTimeMillis();
             resFile.write(file.getName() + " (ms) : " + (endLTime - startLTime) + "\n");
             resFile.flush();
         }
 
-        long endGTime = System.currentTimeMillis();
+        final long endGTime = System.currentTimeMillis();
 
         resFile.write("Start : " + sdf.format(new Date(startGTime)) + "\n");
         resFile.write("End : " + sdf.format(new Date(endGTime)) + "\n");

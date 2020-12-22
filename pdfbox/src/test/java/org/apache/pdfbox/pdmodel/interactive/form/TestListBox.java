@@ -68,14 +68,14 @@ class TestListBox
         displayValues.add("display03");
         
         doc = new PDDocument();
-        PDPage page = new PDPage(PDRectangle.A4);
+        final PDPage page = new PDPage(PDRectangle.A4);
         doc.addPage(page);
-        PDAcroForm form = new PDAcroForm( doc );
+        final PDAcroForm form = new PDAcroForm( doc );
         
         // Adobe Acrobat uses Helvetica as a default font and 
         // stores that under the name '/Helv' in the resources dictionary
-        PDFont font = PDType1Font.HELVETICA;
-        PDResources resources = new PDResources();
+        final PDFont font = PDType1Font.HELVETICA;
+        final PDResources resources = new PDResources();
         resources.put(COSName.getPDFName("Helv"), font);
         
         // Add and set the resources and default appearance at the form level
@@ -83,7 +83,7 @@ class TestListBox
         
         // Acrobat sets the font size on the form level to be
         // auto sized as default. This is done by setting the font size to '0'
-        String defaultAppearanceString = "/Helv 0 Tf 0 g";
+        final String defaultAppearanceString = "/Helv 0 Tf 0 g";
         form.setDefaultAppearance(defaultAppearanceString);
         
         // the choice field for testing
@@ -93,8 +93,8 @@ class TestListBox
         
         
         // Specify the annotation associated with the field
-        PDAnnotationWidget widget = choice.getWidgets().get(0);
-        PDRectangle rect = new PDRectangle(50, 750, 200, 50);
+        final PDAnnotationWidget widget = choice.getWidgets().get(0);
+        final PDRectangle rect = new PDRectangle(50, 750, 200, 50);
         widget.setRectangle(rect);
         widget.setPage(page);
         
@@ -129,13 +129,13 @@ class TestListBox
         choice.setTopIndex(null); // reset
 
         // assert that the option values have been correctly set
-        COSArray optItem = (COSArray) choice.getCOSObject().getItem(COSName.OPT);
+        final COSArray optItem = (COSArray) choice.getCOSObject().getItem(COSName.OPT);
         assertNotNull(choice.getCOSObject().getItem(COSName.OPT));
         assertEquals(optItem.size(),exportValues.size());
         assertEquals(exportValues.get(0), optItem.getString(0));
             
         // assert that the option values can be retrieved correctly
-        List<String> retrievedOptions = choice.getOptions();
+        final List<String> retrievedOptions = choice.getOptions();
         assertEquals(retrievedOptions.size(),exportValues.size());
         assertEquals(retrievedOptions, exportValues);
         // assert that the field value can be set
@@ -153,7 +153,7 @@ class TestListBox
         choice.setValue(exportValues);
 
         // assert that the option values have been correctly set
-        COSArray valueItems = (COSArray) choice.getCOSObject().getItem(COSName.V);
+        final COSArray valueItems = (COSArray) choice.getCOSObject().getItem(COSName.V);
         assertNotNull(valueItems);
         assertEquals(valueItems.size(),exportValues.size());
         assertEquals(exportValues.get(0), valueItems.getString(0));
@@ -179,7 +179,7 @@ class TestListBox
         choice.setMultiSelect(false);
 
         // without multiselect setting multiple items shall fail
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        final Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             choice.setValue(exportValues);
         });
 
@@ -249,7 +249,7 @@ class TestListBox
         exportValues.remove(1);
 
         // without multiselect setting multiple items shall fail
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        final Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             choice.setOptions(exportValues, displayValues);
         });
         

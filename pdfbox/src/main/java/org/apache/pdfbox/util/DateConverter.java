@@ -162,13 +162,13 @@ public final class DateConverter
      * @return The date as a String to be used in a PDF document, 
      *      or null if the cal value is null
      */
-    public static String toString(Calendar cal)
+    public static String toString(final Calendar cal)
     {
         if (cal == null) 
         {
             return null;
         }
-        String offset = formatTZoffset(cal.get(Calendar.ZONE_OFFSET) +
+        final String offset = formatTZoffset(cal.get(Calendar.ZONE_OFFSET) +
                                        cal.get(Calendar.DST_OFFSET), "'");
         return String.format(Locale.US, "D:"
                 + "%1$4tY%1$2tm%1$2td"   // yyyyMMdd 
@@ -187,9 +187,9 @@ public final class DateConverter
      * 
      * @return The date represented as an ISO 8601 string.
      */
-    public static String toISO8601(Calendar cal)
+    public static String toISO8601(final Calendar cal)
     {
-        String offset = formatTZoffset(cal.get(Calendar.ZONE_OFFSET) +
+        final String offset = formatTZoffset(cal.get(Calendar.ZONE_OFFSET) +
                                        cal.get(Calendar.DST_OFFSET), ":");
         return String.format(Locale.US, 
                 "%1$4tY"                  // yyyy
@@ -283,11 +283,11 @@ public final class DateConverter
      *
      * package-private for testing
      */
-    static String formatTZoffset(long millis, String sep)
+    static String formatTZoffset(final long millis, final String sep)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("Z", Locale.ENGLISH); // #hhmm
+        final SimpleDateFormat sdf = new SimpleDateFormat("Z", Locale.ENGLISH); // #hhmm
         sdf.setTimeZone(new SimpleTimeZone(restrainTZoffset(millis),"unknown"));
-        String tz = sdf.format(new Date());
+        final String tz = sdf.format(new Date());
         return tz.substring(0,3) + sep + tz.substring(3);
     }
 
@@ -304,7 +304,7 @@ public final class DateConverter
      * year fields. If the field of length maxlen begins with a digit, but contains
      * a non-digit, no error is signaled and the integer value is returned.
      */
-    private static int parseTimeField(String text, ParsePosition where, int maxlen, int remedy)
+    private static int parseTimeField(final String text, final ParsePosition where, final int maxlen, final int remedy)
     {
         if (text == null) 
         {
@@ -314,11 +314,11 @@ public final class DateConverter
         // but that class blithely ignores setMaximumIntegerDigits
         int retval = 0;
         int index = where.getIndex();
-        int limit = index + Math.min(maxlen, text.length()-index);
+        final int limit = index + Math.min(maxlen, text.length()-index);
         for (; index < limit; index++)
         {
             // convert digit to integer
-            int cval = text.charAt(index) - '0';
+            final int cval = text.charAt(index) - '0';
             // test to see if we got a digit
             if (cval < 0 || cval > 9)
             {
@@ -346,7 +346,7 @@ public final class DateConverter
      * Returns the last non-space character passed over (even if space is not in
      * the optionals list.)
      */
-    private static char skipOptionals(String text, ParsePosition where, String optionals)
+    private static char skipOptionals(final String text, final ParsePosition where, final String optionals)
     {
         char retval = ' ';
         char currch;
@@ -367,7 +367,7 @@ public final class DateConverter
      * been incremented by the length of the victim if it was found. The error
      * index is ignored and unchanged.
      */
-    private static boolean skipString(String text, String victim, ParsePosition where)
+    private static boolean skipString(final String text, final String victim, final ParsePosition where)
     {
         if (text.startsWith(victim, where.getIndex()))
         {
@@ -387,7 +387,7 @@ public final class DateConverter
      */
     static GregorianCalendar newGreg()
     {
-        GregorianCalendar retCal = new GregorianCalendar(new SimpleTimeZone(0, "UTC"), Locale.ENGLISH);
+        final GregorianCalendar retCal = new GregorianCalendar(new SimpleTimeZone(0, "UTC"), Locale.ENGLISH);
         retCal.setLenient(false);
         retCal.set(Calendar.MILLISECOND, 0);
         return retCal;
@@ -399,10 +399,10 @@ public final class DateConverter
      * adjusts the Calendar.HOUR value to compensate. This is *BAD*
      * (not to say *EVIL*) when we have already set the time.
      */
-    private static void adjustTimeZoneNicely(GregorianCalendar cal, TimeZone tz)
+    private static void adjustTimeZoneNicely(final GregorianCalendar cal, final TimeZone tz)
     {
         cal.setTimeZone(tz);
-        int offset = (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 
+        final int offset = (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) /
                 MILLIS_PER_MINUTE;
         cal.add(Calendar.MINUTE, -offset);
     }
@@ -426,14 +426,15 @@ public final class DateConverter
      *
      * package-private for testing
      */
-    static boolean parseTZoffset(String text, GregorianCalendar cal,
-                                        ParsePosition initialWhere)
+    static boolean parseTZoffset(final String text, final GregorianCalendar cal,
+                                 final ParsePosition initialWhere)
     {
-        ParsePosition where = new ParsePosition(initialWhere.getIndex());
+        final ParsePosition where = new ParsePosition(initialWhere.getIndex());
         TimeZone tz = new SimpleTimeZone(0, "GMT");
-        int tzHours, tzMin;
+        final int tzHours;
+        final int tzMin;
         char sign = skipOptionals(text, where, "Z+- ");
-        boolean hadGMT = (sign == 'Z' || skipString(text, "GMT", where) ||
+        final boolean hadGMT = (sign == 'Z' || skipString(text, "GMT", where) ||
                          skipString(text, "UTC", where));
         sign = (!hadGMT) ? sign : skipOptionals(text, where, "+- ");
         
@@ -445,7 +446,7 @@ public final class DateConverter
         if (tzHours != -999) 
         {
             // we parsed a time zone in default format
-            int hrSign = (sign == '-' ? -1 : 1);
+            final int hrSign = (sign == '-' ? -1 : 1);
             tz.setRawOffset(restrainTZoffset(hrSign * (tzHours * MILLIS_PER_HOUR + tzMin *
                                                        (long) MILLIS_PER_MINUTE)));
             updateZoneId(tz);                       
@@ -453,7 +454,7 @@ public final class DateConverter
         else if ( ! hadGMT)
         {
             // try to process as a name; "GMT" or "UTC" has already been processed
-            String tzText = text.substring(initialWhere.getIndex()).trim();
+            final String tzText = text.substring(initialWhere.getIndex()).trim();
             tz = TimeZone.getTimeZone(tzText);
             // getTimeZone returns "GMT" for unknown ids
             if ("GMT".equals(tz.getID()))  
@@ -479,7 +480,7 @@ public final class DateConverter
      *
      * @param tz the time zone to update.
      */
-    private static void updateZoneId(TimeZone tz)
+    private static void updateZoneId(final TimeZone tz)
     {
         int offset = tz.getRawOffset();
         char pm = '+';
@@ -488,8 +489,8 @@ public final class DateConverter
             pm = '-';
             offset = -offset;
         }
-        int hh = offset / 3600000;
-        int mm = offset % 3600000 / 60000;
+        final int hh = offset / 3600000;
+        final int mm = offset % 3600000 / 60000;
         if (offset == 0)
         {
             tz.setID("GMT");
@@ -523,40 +524,40 @@ public final class DateConverter
      * is advanced to just beyond the last character processed.
      * The error index is ignored and unchanged.
      */
-    private static GregorianCalendar parseBigEndianDate(String text,
-            ParsePosition initialWhere) 
+    private static GregorianCalendar parseBigEndianDate(final String text,
+                                                        final ParsePosition initialWhere)
     {
-        ParsePosition where = new ParsePosition(initialWhere.getIndex());
-        int year = parseTimeField(text, where, 4, 0);
+        final ParsePosition where = new ParsePosition(initialWhere.getIndex());
+        final int year = parseTimeField(text, where, 4, 0);
         if (where.getIndex() != 4 + initialWhere.getIndex()) 
         {
             return null;
         }
         skipOptionals(text, where, "/- ");
-        int month = parseTimeField(text, where, 2, 1) - 1; // Calendar months are 0...11
+        final int month = parseTimeField(text, where, 2, 1) - 1; // Calendar months are 0...11
         skipOptionals(text, where, "/- ");
-        int day = parseTimeField(text, where, 2, 1);
+        final int day = parseTimeField(text, where, 2, 1);
         skipOptionals(text, where, " T");
-        int hour = parseTimeField(text, where, 2, 0);
+        final int hour = parseTimeField(text, where, 2, 0);
         skipOptionals(text, where, ": ");
-        int minute = parseTimeField(text, where, 2, 0);
+        final int minute = parseTimeField(text, where, 2, 0);
         skipOptionals(text, where, ": ");
-        int second = parseTimeField(text, where, 2, 0);
-        char nextC = skipOptionals(text, where, ".");
+        final int second = parseTimeField(text, where, 2, 0);
+        final char nextC = skipOptionals(text, where, ".");
         if (nextC == '.')
         {
             // fractions of a second: skip up to 19 digits
             parseTimeField(text, where, 19, 0);
         }
 
-        GregorianCalendar dest = newGreg();
+        final GregorianCalendar dest = newGreg();
         try 
         {
             dest.set(year, month, day, hour, minute, second);
             // trigger limit tests
             dest.getTimeInMillis();
         }
-        catch (IllegalArgumentException ill) 
+        catch (final IllegalArgumentException ill)
         {
             LOG.debug("Couldn't parse arguments text:" + text + " initialWhere:" + initialWhere, ill);
             return  null;
@@ -581,14 +582,14 @@ public final class DateConverter
      * for the date that was found. Unless a time zone was
      * part of the format, the time zone will be GMT+0
      */
-    private static GregorianCalendar parseSimpleDate(String text, String[] fmts,
-            ParsePosition initialWhere) 
+    private static GregorianCalendar parseSimpleDate(final String text, final String[] fmts,
+                                                     final ParsePosition initialWhere)
     {
-        for(String fmt : fmts)
+        for(final String fmt : fmts)
         {
-            ParsePosition where = new ParsePosition(initialWhere.getIndex());
-            SimpleDateFormat sdf = new SimpleDateFormat(fmt, Locale.ENGLISH);
-            GregorianCalendar retCal = newGreg();
+            final ParsePosition where = new ParsePosition(initialWhere.getIndex());
+            final SimpleDateFormat sdf = new SimpleDateFormat(fmt, Locale.ENGLISH);
+            final GregorianCalendar retCal = newGreg();
             sdf.setCalendar(retCal);
             if (sdf.parse(text, where) != null)
             {
@@ -618,7 +619,7 @@ public final class DateConverter
      * - The formats tried are alphaStartFormats or digitStartFormat and
      * any listed in the value of moreFmts.
      */
-    private static Calendar parseDate(String text, ParsePosition initialWhere)
+    private static Calendar parseDate(final String text, final ParsePosition initialWhere)
     {
         if (text == null || text.isEmpty() || "D:".equals(text.trim()))
         {
@@ -633,10 +634,10 @@ public final class DateConverter
         GregorianCalendar longestDate = null; // null says no date found yet
         int whereLen;   // tempcopy of where.getIndex()
         
-        ParsePosition where = new ParsePosition(initialWhere.getIndex());
+        final ParsePosition where = new ParsePosition(initialWhere.getIndex());
         // check for null (throws exception) and trim off surrounding spaces
         skipOptionals(text, where, " ");
-        int startPosition = where.getIndex();
+        final int startPosition = where.getIndex();
 
         // try big-endian parse
         GregorianCalendar retCal = parseBigEndianDate(text, where);
@@ -657,7 +658,7 @@ public final class DateConverter
 
         // try one of the sets of standard formats
         where.setIndex(startPosition);
-        String [] formats 
+        final String [] formats
                 = Character.isDigit(text.charAt(startPosition))
                 ? DIGIT_START_FORMATS
                 : ALPHA_START_FORMATS;
@@ -698,7 +699,7 @@ public final class DateConverter
      * @param text A COS string containing a date.
      * @return The Calendar that the text string represents, or {@code null} if it cannot be parsed.
      */
-    public static Calendar toCalendar(COSString text)
+    public static Calendar toCalendar(final COSString text)
     {
         if (text == null)
         {
@@ -716,17 +717,17 @@ public final class DateConverter
      * @param text A COS string containing a date.
      * @return The Calendar that the text string represents, or {@code null} if it cannot be parsed.
      */
-    public static Calendar toCalendar(String text)
+    public static Calendar toCalendar(final String text)
     {
         if (text == null || text.trim().isEmpty())
         {
             return null;
         }
 
-        ParsePosition where = new ParsePosition(0);
+        final ParsePosition where = new ParsePosition(0);
         skipOptionals(text, where, " ");
         skipString(text, "D:", where);
-        Calendar calendar = parseDate(text, where);
+        final Calendar calendar = parseDate(text, where);
 
         if (calendar == null || where.getIndex() != text.length())
         {

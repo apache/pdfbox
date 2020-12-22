@@ -65,12 +65,12 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         SUPPORTED_NAMES.add(PDAnnotationText.NAME_KEY);
     }
 
-    public PDTextAppearanceHandler(PDAnnotation annotation)
+    public PDTextAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDTextAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDTextAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -86,7 +86,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        PDAnnotationText annotation = (PDAnnotationText) getAnnotation();
+        final PDAnnotationText annotation = (PDAnnotationText) getAnnotation();
         if (!SUPPORTED_NAMES.contains(annotation.getName()))
         {
             return;
@@ -94,7 +94,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
-            PDColor bgColor = getColor();
+            final PDColor bgColor = getColor();
             if (bgColor == null)
             {
                 // White is used by Adobe when /C entry is missing
@@ -162,13 +162,13 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
                     break;
             }
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOG.error(e);
         }
     }
 
-    private PDRectangle adjustRectAndBBox(PDAnnotationText annotation, float width, float height)
+    private PDRectangle adjustRectAndBBox(final PDAnnotationText annotation, final float width, final float height)
     {
         // For /Note (other types have different values):
         // Adobe takes the left upper bound as anchor, and adjusts the rectangle to 18 x 20.
@@ -177,8 +177,8 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         // there the BBox is also set to fixed values, but the rectangle is left untouched.
         // When no flags are there, Adobe sets /F 24 = NoZoom NoRotate.
             
-        PDRectangle rect = getRectangle();
-        PDRectangle bbox;
+        final PDRectangle rect = getRectangle();
+        final PDRectangle bbox;
         if (!annotation.isNoZoom())
         {
             rect.setUpperRightX(rect.getLowerLeftX() + width);
@@ -196,10 +196,10 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         return bbox;
     }
 
-    private void drawNote(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawNote(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 18, 20);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 18, 20);
         contentStream.setMiterLimit(4);
 
         // get round edge the easy way. Adobe uses 4 lines with 4 arcs of radius 0.785 which is bigger.
@@ -219,10 +219,10 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.fillAndStroke();
     }
 
-    private void drawCircles(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawCircles(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
 
         // strategy used by Adobe:
         // 1) add small circle in white using /ca /CA 0.6 and width 1
@@ -232,15 +232,15 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         // 5) stroke + fill
         // with square width 20 small r = 6.36, large r = 9.756
 
-        float smallR = 6.36f;
-        float largeR = 9.756f;
+        final float smallR = 6.36f;
+        final float largeR = 9.756f;
 
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(1);
         contentStream.setLineCapStyle(0);
         contentStream.saveGraphicsState();
         contentStream.setLineWidth(1);
-        PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+        final PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
         gs.setAlphaSourceFlag(false);
         gs.setStrokingAlphaConstant(0.6f);
         gs.setNonStrokingAlphaConstant(0.6f);
@@ -257,10 +257,10 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.fillAndStroke();
     }
 
-    private void drawInsert(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawInsert(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 17, 20);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 17, 20);
 
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(0);
@@ -272,18 +272,18 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.closeAndFillAndStroke();
     }
 
-    private void drawCross(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawCross(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 19, 19);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 19, 19);
 
         // should be a square, but who knows...
-        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+        final float min = Math.min(bbox.getWidth(), bbox.getHeight());
 
         // small = offset nearest bbox edge
         // large = offset second nearest bbox edge
-        float small = min / 10;
-        float large = min / 5;
+        final float small = min / 10;
+        final float large = min / 5;
 
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(1);
@@ -308,12 +308,12 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         // see DrawStar()
     }
 
-    private void drawHelp(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawHelp(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
 
-        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+        final float min = Math.min(bbox.getWidth(), bbox.getHeight());
 
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(1);
@@ -323,7 +323,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         // Adobe first fills a white circle with CA ca 0.6, so do we
         contentStream.saveGraphicsState();
         contentStream.setLineWidth(1);
-        PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+        final PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
         gs.setAlphaSourceFlag(false);
         gs.setStrokingAlphaConstant(0.6f);
         gs.setNonStrokingAlphaConstant(0.6f);
@@ -342,7 +342,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of an Helvetica bold "?" and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.HELVETICA_BOLD.getPath("question");
+        final GeneralPath path = PDType1Font.HELVETICA_BOLD.getPath("question");
         addPath(contentStream, path);
         contentStream.restoreGraphicsState();
         // draw the outer circle counterclockwise to fill area between circle and "?"
@@ -350,12 +350,12 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.fillAndStroke();
     }
 
-    private void drawParagraph(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawParagraph(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
 
-        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+        final float min = Math.min(bbox.getWidth(), bbox.getHeight());
 
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(1);
@@ -365,7 +365,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         // Adobe first fills a white circle with CA ca 0.6, so do we
         contentStream.saveGraphicsState();
         contentStream.setLineWidth(1);
-        PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+        final PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
         gs.setAlphaSourceFlag(false);
         gs.setStrokingAlphaConstant(0.6f);
         gs.setNonStrokingAlphaConstant(0.6f);
@@ -384,7 +384,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of an Helvetica "?" and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.HELVETICA.getPath("paragraph");
+        final GeneralPath path = PDType1Font.HELVETICA.getPath("paragraph");
         addPath(contentStream, path);
         contentStream.restoreGraphicsState();
         contentStream.fillAndStroke();
@@ -392,7 +392,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.stroke();
     }
 
-    private void drawNewParagraph(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawNewParagraph(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
         adjustRectAndBBox(annotation, 13, 20);
@@ -418,12 +418,12 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.fill();
     }
 
-    private void drawStar(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawStar(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 20, 19);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 20, 19);
 
-        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+        final float min = Math.min(bbox.getWidth(), bbox.getHeight());
 
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(1);
@@ -434,7 +434,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of a Zapf Dingbats star (0x2605) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a35");
+        final GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a35");
         addPath(contentStream, path);
         contentStream.fillAndStroke();
     }
@@ -442,12 +442,12 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
     //TODO this is mostly identical to drawStar, except for scale, translation and symbol
     // maybe use a table with all values and draw from there
     // this could also optionally use outer circle
-    private void drawCheck(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawCheck(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 20, 19);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 20, 19);
 
-        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+        final float min = Math.min(bbox.getWidth(), bbox.getHeight());
 
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(1);
@@ -459,18 +459,18 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of a Zapf Dingbats check (0x2714) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a20");
+        final GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a20");
         addPath(contentStream, path);
         contentStream.fillAndStroke();
     }
 
     //TODO this is mostly identical to drawStar, except for scale, translation and symbol
-    private void drawRightPointer(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawRightPointer(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 20, 17);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 20, 17);
 
-        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+        final float min = Math.min(bbox.getWidth(), bbox.getHeight());
 
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(1);
@@ -482,17 +482,17 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of a Zapf Dingbats right pointer (0x27A4) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a174");
+        final GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a174");
         addPath(contentStream, path);
         contentStream.fillAndStroke();
     }
 
-    private void drawCrossHairs(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawCrossHairs(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
 
-        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+        final float min = Math.min(bbox.getWidth(), bbox.getHeight());
 
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(0);
@@ -504,12 +504,12 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of a Symbol crosshair (0x2295) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.SYMBOL.getPath("circleplus");
+        final GeneralPath path = PDType1Font.SYMBOL.getPath("circleplus");
         addPath(contentStream, path);
         contentStream.fillAndStroke();
     }
 
-    private void drawUpArrow(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawUpArrow(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
                  throws IOException
     {
         adjustRectAndBBox(annotation, 17, 20);
@@ -529,7 +529,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.closeAndFillAndStroke();
     }
 
-    private void drawUpLeftArrow(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawUpLeftArrow(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
                  throws IOException
     {
         adjustRectAndBBox(annotation, 17, 17);
@@ -551,12 +551,12 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.closeAndFillAndStroke();
     }
     
-    private void drawRightArrow(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawRightArrow(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
+        final PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
 
-        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+        final float min = Math.min(bbox.getWidth(), bbox.getHeight());
 
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(1);
@@ -566,7 +566,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         // Adobe first fills a white circle with CA ca 0.6, so do we
         contentStream.saveGraphicsState();
         contentStream.setLineWidth(1);
-        PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+        final PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
         gs.setAlphaSourceFlag(false);
         gs.setStrokingAlphaConstant(0.6f);
         gs.setNonStrokingAlphaConstant(0.6f);
@@ -585,7 +585,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of a Zapf Dingbats right arrow (0x2794) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a160");
+        final GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a160");
         addPath(contentStream, path);
         contentStream.restoreGraphicsState();
         // surprisingly, this one not counterclockwise.
@@ -593,7 +593,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.fillAndStroke();
     }
 
-    private void drawComment(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawComment(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
                  throws IOException
     {
         adjustRectAndBBox(annotation, 18, 18);
@@ -606,7 +606,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         // Adobe first fills a white rectangle with CA ca 0.6, so do we
         contentStream.saveGraphicsState();
         contentStream.setLineWidth(1);
-        PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+        final PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
         gs.setAlphaSourceFlag(false);
         gs.setStrokingAlphaConstant(0.6f);
         gs.setNonStrokingAlphaConstant(0.6f);
@@ -643,7 +643,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.closeAndFillAndStroke();
     }
     
-    private void drawKey(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+    private void drawKey(final PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
                  throws IOException
     {
         adjustRectAndBBox(annotation, 13, 18);
@@ -686,15 +686,15 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.fillAndStroke();
     }
     
-    private void addPath(final PDAppearanceContentStream contentStream, GeneralPath path) throws IOException
+    private void addPath(final PDAppearanceContentStream contentStream, final GeneralPath path) throws IOException
     {
         double curX = 0;
         double curY = 0;
-        PathIterator it = path.getPathIterator(new AffineTransform());
-        double[] coords = new double[6];
+        final PathIterator it = path.getPathIterator(new AffineTransform());
+        final double[] coords = new double[6];
         while (!it.isDone())
         {
-            int type = it.currentSegment(coords);
+            final int type = it.currentSegment(coords);
             switch (type)
             {
                 case PathIterator.SEG_CLOSE:
@@ -711,10 +711,10 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
                     // https://fontforge.github.io/bezier.html
                     // CP1 = QP0 + 2/3 *(QP1-QP0)
                     // CP2 = QP2 + 2/3 *(QP1-QP2)
-                    double cp1x = curX + 2d / 3d * (coords[0] - curX);
-                    double cp1y = curY + 2d / 3d * (coords[1] - curY);
-                    double cp2x = coords[2] + 2d / 3d * (coords[0] - coords[2]);
-                    double cp2y = coords[3] + 2d / 3d * (coords[1] - coords[3]);
+                    final double cp1x = curX + 2d / 3d * (coords[0] - curX);
+                    final double cp1y = curY + 2d / 3d * (coords[1] - curY);
+                    final double cp2x = coords[2] + 2d / 3d * (coords[0] - coords[2]);
+                    final double cp2y = coords[3] + 2d / 3d * (coords[1] - coords[3]);
                     contentStream.curveTo((float) cp1x, (float) cp1y,
                                           (float) cp2x, (float) cp2y,
                                           (float) coords[2], (float) coords[3]);

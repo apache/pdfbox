@@ -30,7 +30,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
     /**
      * {@inheritDoc}
      */
-    UnmodifiableCOSDictionary(COSDictionary dict)
+    UnmodifiableCOSDictionary(final COSDictionary dict)
     {
         super();
         items = dict.items;
@@ -49,7 +49,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setItem(COSName key, COSBase value)
+    public void setItem(final COSName key, final COSBase value)
     {
         throw new UnsupportedOperationException();
     }
@@ -58,7 +58,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setItem(COSName key, COSObjectable value)
+    public void setItem(final COSName key, final COSObjectable value)
     {
        throw new UnsupportedOperationException();
     }
@@ -67,7 +67,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setItem(String key, COSObjectable value)
+    public void setItem(final String key, final COSObjectable value)
     {
         throw new UnsupportedOperationException();
     }
@@ -76,7 +76,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setBoolean(String key, boolean value)
+    public void setBoolean(final String key, final boolean value)
     {
         throw new UnsupportedOperationException();
     }
@@ -85,7 +85,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setBoolean(COSName key, boolean value)
+    public void setBoolean(final COSName key, final boolean value)
     {
         throw new UnsupportedOperationException();
     }
@@ -94,7 +94,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setItem(String key, COSBase value)
+    public void setItem(final String key, final COSBase value)
     {
         throw new UnsupportedOperationException();
     }
@@ -103,7 +103,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setName(String key, String value)
+    public void setName(final String key, final String value)
     {
         throw new UnsupportedOperationException();
     }
@@ -112,7 +112,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setName(COSName key, String value)
+    public void setName(final COSName key, final String value)
     {
         throw new UnsupportedOperationException();
     }
@@ -121,7 +121,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setDate(String key, Calendar date)
+    public void setDate(final String key, final Calendar date)
     {
         throw new UnsupportedOperationException();
     }
@@ -130,7 +130,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setDate(COSName key, Calendar date)
+    public void setDate(final COSName key, final Calendar date)
     {
         throw new UnsupportedOperationException();
     }
@@ -139,7 +139,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setEmbeddedDate(String embedded, String key, Calendar date)
+    public void setEmbeddedDate(final String embedded, final String key, final Calendar date)
     {
         throw new UnsupportedOperationException();
     }
@@ -148,7 +148,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setEmbeddedDate(String embedded, COSName key, Calendar date)
+    public void setEmbeddedDate(final String embedded, final COSName key, final Calendar date)
     {
         throw new UnsupportedOperationException();
     }
@@ -157,7 +157,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setString(String key, String value)
+    public void setString(final String key, final String value)
     {
         throw new UnsupportedOperationException();
     }
@@ -166,7 +166,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setString(COSName key, String value)
+    public void setString(final COSName key, final String value)
     {
         throw new UnsupportedOperationException();
     }
@@ -175,7 +175,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setEmbeddedString(String embedded, String key, String value)
+    public void setEmbeddedString(final String embedded, final String key, final String value)
     {
         throw new UnsupportedOperationException();
     }
@@ -184,7 +184,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setEmbeddedString(String embedded, COSName key, String value)
+    public void setEmbeddedString(final String embedded, final COSName key, final String value)
     {
        throw new UnsupportedOperationException();
     }
@@ -193,7 +193,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setInt(String key, int value)
+    public void setInt(final String key, final int value)
     {
         throw new UnsupportedOperationException();
     }
@@ -202,7 +202,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setInt(COSName key, int value)
+    public void setInt(final COSName key, final int value)
     {
         throw new UnsupportedOperationException();
     }
@@ -211,7 +211,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setLong(String key, long value)
+    public void setLong(final String key, final long value)
     {
         throw new UnsupportedOperationException();
     }
@@ -220,7 +220,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setLong(COSName key, long value)
+    public void setLong(final COSName key, final long value)
     {
         throw new UnsupportedOperationException();
     }
@@ -229,7 +229,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setEmbeddedInt(String embeddedDictionary, String key, int value)
+    public void setEmbeddedInt(final String embeddedDictionary, final String key, final int value)
     {
         throw new UnsupportedOperationException();
     }
@@ -238,7 +238,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setEmbeddedInt(String embeddedDictionary, COSName key, int value)
+    public void setEmbeddedInt(final String embeddedDictionary, final COSName key, final int value)
     {
         throw new UnsupportedOperationException();
     }
@@ -247,7 +247,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setFloat(String key, float value)
+    public void setFloat(final String key, final float value)
     {
         throw new UnsupportedOperationException();
     }
@@ -256,7 +256,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setFloat(COSName key, float value)
+    public void setFloat(final COSName key, final float value)
     {
         throw new UnsupportedOperationException();
     }
@@ -265,7 +265,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void removeItem(COSName key)
+    public void removeItem(final COSName key)
     {
         throw new UnsupportedOperationException();
     }
@@ -274,7 +274,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void addAll(COSDictionary dic)
+    public void addAll(final COSDictionary dic)
     {
         throw new UnsupportedOperationException();
     }
@@ -283,7 +283,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setFlag(COSName field, int bitFlag, boolean value)
+    public void setFlag(final COSName field, final int bitFlag, final boolean value)
     {
         throw new UnsupportedOperationException();
     }
@@ -292,7 +292,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setNeedToBeUpdated(boolean flag)
+    public void setNeedToBeUpdated(final boolean flag)
     {
         throw new UnsupportedOperationException();
     }

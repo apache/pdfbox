@@ -37,7 +37,7 @@ public final class HelloWorld
     {
     }
     
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         if( args.length != 2 )
         {
@@ -45,15 +45,15 @@ public final class HelloWorld
             System.exit(1);
         }
 
-        String filename = args[0];
-        String message = args[1];
+        final String filename = args[0];
+        final String message = args[1];
         
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             
-            PDFont font = PDType1Font.HELVETICA_BOLD;
+            final PDFont font = PDType1Font.HELVETICA_BOLD;
 
             try (PDPageContentStream contents = new PDPageContentStream(doc, page))
             {

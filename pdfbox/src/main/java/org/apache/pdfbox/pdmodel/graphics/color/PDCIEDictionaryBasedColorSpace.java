@@ -41,7 +41,7 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
     protected float wpY = 1;
     protected float wpZ = 1;
 
-    protected PDCIEDictionaryBasedColorSpace(COSName cosName)
+    protected PDCIEDictionaryBasedColorSpace(final COSName cosName)
     {
         array = new COSArray();
         dictionary = new COSDictionary();
@@ -56,7 +56,7 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
      *
      * @param rgb the cos array which represents this color space
      */
-    protected PDCIEDictionaryBasedColorSpace(COSArray rgb)
+    protected PDCIEDictionaryBasedColorSpace(final COSArray rgb)
     {
         array = rgb;
         dictionary = (COSDictionary) array.getObject(1);
@@ -76,7 +76,7 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
                 Float.compare(wpZ, 1)  == 0;
     }
 
-    private void fillWhitepointCache(PDTristimulus whitepoint)
+    private void fillWhitepointCache(final PDTristimulus whitepoint)
     {
         wpX = whitepoint.getX();
         wpY = whitepoint.getY();
@@ -152,9 +152,9 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
      *
      * @param whitepoint the whitepoint tristimulus
      */
-    public void setWhitePoint(PDTristimulus whitepoint)
+    public void setWhitePoint(final PDTristimulus whitepoint)
     {
-        COSBase wpArray = whitepoint.getCOSObject();
+        final COSBase wpArray = whitepoint.getCOSObject();
         if (wpArray != null)
         {
             dictionary.setItem(COSName.WHITE_POINT, wpArray);
@@ -168,7 +168,7 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
      *
      * @param blackpoint the BlackPoint tristimulus
      */
-    public void setBlackPoint(PDTristimulus blackpoint)
+    public void setBlackPoint(final PDTristimulus blackpoint)
     {
         COSBase bpArray = null;
         if (blackpoint != null)

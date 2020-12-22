@@ -76,7 +76,7 @@ final class CCITTFaxEncoderStream extends OutputStream {
     }
 
     @Override
-    public void write(int b) throws IOException {
+    public void write(final int b) throws IOException {
         inputBuffer[currentBufferLength] = (byte) b;
         currentBufferLength++;
 
@@ -98,7 +98,7 @@ final class CCITTFaxEncoderStream extends OutputStream {
 
     private void encodeRow() throws IOException {
         currentRow++;
-        int[] tmp = changesReferenceRow;
+        final int[] tmp = changesReferenceRow;
         changesReferenceRow = changesCurrentRow;
         changesCurrentRow = tmp;
         changesReferenceRowLength = changesCurrentRowLength;
@@ -107,8 +107,8 @@ final class CCITTFaxEncoderStream extends OutputStream {
         int index = 0;
         boolean white = true;
         while (index < columns) {
-            int byteIndex = index / 8;
-            int bit = index % 8;
+            final int byteIndex = index / 8;
+            final int bit = index % 8;
             if ((((inputBuffer[byteIndex] >> (7 - bit)) & 1) == 1) == (white)) {
                 changesCurrentRow[changesCurrentRowLength] = index;
                 changesCurrentRowLength++;
@@ -131,8 +131,8 @@ final class CCITTFaxEncoderStream extends OutputStream {
         encode2D();
     }
 
-    private int[] getNextChanges(int pos, boolean white) {
-        int[] result = new int[] {columns, columns};
+    private int[] getNextChanges(final int pos, final boolean white) {
+        final int[] result = new int[] {columns, columns};
         for (int i = 0; i < changesCurrentRowLength; i++) {
             if (pos < changesCurrentRow[i] || (pos == 0 && white)) {
                 result[0] = changesCurrentRow[i];
@@ -146,9 +146,9 @@ final class CCITTFaxEncoderStream extends OutputStream {
         return result;
     }
 
-    private void writeRun(int runLength, boolean white) throws IOException {
+    private void writeRun(final int runLength, final boolean white) throws IOException {
         int nonterm = runLength / 64;
-        Code[] codes = white ? WHITE_NONTERMINATING_CODES : BLACK_NONTERMINATING_CODES;
+        final Code[] codes = white ? WHITE_NONTERMINATING_CODES : BLACK_NONTERMINATING_CODES;
         while (nonterm > 0) {
             if (nonterm >= codes.length) {
                 write(codes[codes.length - 1].code, codes[codes.length - 1].length);
@@ -160,7 +160,7 @@ final class CCITTFaxEncoderStream extends OutputStream {
             }
         }
 
-        Code c = white ? WHITE_TERMINATING_CODES[runLength % 64] : BLACK_TERMINATING_CODES[runLength % 64];
+        final Code c = white ? WHITE_TERMINATING_CODES[runLength % 64] : BLACK_TERMINATING_CODES[runLength % 64];
         write(c.code, c.length);
     }
 
@@ -168,11 +168,11 @@ final class CCITTFaxEncoderStream extends OutputStream {
         boolean white = true;
         int index = 0; // a0
         while (index < columns) {
-            int[] nextChanges = getNextChanges(index, white); // a1, a2
+            final int[] nextChanges = getNextChanges(index, white); // a1, a2
 
-            int[] nextRefs = getNextRefChanges(index, white); // b1, b2
+            final int[] nextRefs = getNextRefChanges(index, white); // b1, b2
 
-            int difference = nextChanges[0] - nextRefs[0];
+            final int difference = nextChanges[0] - nextRefs[0];
             if (nextChanges[0] > nextRefs[1]) {
                 // PMODE
                 write(1, 4);
@@ -219,8 +219,8 @@ final class CCITTFaxEncoderStream extends OutputStream {
         }
     }
 
-    private int[] getNextRefChanges(int a0, boolean white) {
-        int[] result = new int[] {columns, columns};
+    private int[] getNextRefChanges(final int a0, final boolean white) {
+        final int[] result = new int[] {columns, columns};
         for (int i = (white ? 0 : 1); i < changesReferenceRowLength; i += 2) {
             if (changesReferenceRow[i] > a0 || (a0 == 0 && i == 0)) {
                 result[0] = changesReferenceRow[i];
@@ -233,10 +233,10 @@ final class CCITTFaxEncoderStream extends OutputStream {
         return result;
     }
 
-    private void write(int code, int codeLength) throws IOException {
+    private void write(final int code, final int codeLength) throws IOException {
 
         for (int i = 0; i < codeLength; i++) {
-            boolean codeBit = ((code >> (codeLength - i - 1)) & 1) == 1;
+            final boolean codeBit = ((code >> (codeLength - i - 1)) & 1) == 1;
             if (fillOrder == TIFFExtension.FILL_LEFT_TO_RIGHT) {
                 outputBuffer |= (codeBit ? 1 << (7 - ((outputBufferBitLength) % 8)) : 0);
             }
@@ -269,7 +269,7 @@ final class CCITTFaxEncoderStream extends OutputStream {
     }
 
     private static class Code {
-        private Code(int code, int length) {
+        private Code(final int code, final int length) {
             this.code = code;
             this.length = length;
         }
@@ -291,10 +291,10 @@ final class CCITTFaxEncoderStream extends OutputStream {
         WHITE_TERMINATING_CODES = new Code[64];
         WHITE_NONTERMINATING_CODES = new Code[40];
         for (int i = 0; i < CCITTFaxDecoderStream.WHITE_CODES.length; i++) {
-            int bitLength = i + 4;
+            final int bitLength = i + 4;
             for (int j = 0; j < CCITTFaxDecoderStream.WHITE_CODES[i].length; j++) {
-                int value = CCITTFaxDecoderStream.WHITE_RUN_LENGTHS[i][j];
-                int code = CCITTFaxDecoderStream.WHITE_CODES[i][j];
+                final int value = CCITTFaxDecoderStream.WHITE_RUN_LENGTHS[i][j];
+                final int code = CCITTFaxDecoderStream.WHITE_CODES[i][j];
 
                 if (value < 64) {
                     WHITE_TERMINATING_CODES[value] = new Code(code, bitLength);
@@ -308,10 +308,10 @@ final class CCITTFaxEncoderStream extends OutputStream {
         BLACK_TERMINATING_CODES = new Code[64];
         BLACK_NONTERMINATING_CODES = new Code[40];
         for (int i = 0; i < CCITTFaxDecoderStream.BLACK_CODES.length; i++) {
-            int bitLength = i + 2;
+            final int bitLength = i + 2;
             for (int j = 0; j < CCITTFaxDecoderStream.BLACK_CODES[i].length; j++) {
-                int value = CCITTFaxDecoderStream.BLACK_RUN_LENGTHS[i][j];
-                int code = CCITTFaxDecoderStream.BLACK_CODES[i][j];
+                final int value = CCITTFaxDecoderStream.BLACK_RUN_LENGTHS[i][j];
+                final int code = CCITTFaxDecoderStream.BLACK_CODES[i][j];
 
                 if (value < 64) {
                     BLACK_TERMINATING_CODES[value] = new Code(code, bitLength);

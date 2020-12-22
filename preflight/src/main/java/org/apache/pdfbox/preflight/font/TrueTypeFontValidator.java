@@ -36,7 +36,7 @@ import org.apache.pdfbox.preflight.font.descriptor.TrueTypeDescriptorHelper;
 
 public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer>
 {
-    public TrueTypeFontValidator(PreflightContext context, PDTrueTypeFont font)
+    public TrueTypeFontValidator(final PreflightContext context, final PDTrueTypeFont font)
     {
         super(context, font, font.getCOSObject(), new TrueTypeContainer(font));
     }
@@ -50,9 +50,9 @@ public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer
     @Override
     protected void checkEncoding()
     {
-        PDTrueTypeFont ttFont = (PDTrueTypeFont) font;
+        final PDTrueTypeFont ttFont = (PDTrueTypeFont) font;
                 
-        PDFontDescriptor fd = ttFont.getFontDescriptor();
+        final PDFontDescriptor fd = ttFont.getFontDescriptor();
         if (fd != null)
         {
             /*
@@ -60,7 +60,7 @@ public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer
              */
             if (fd.isNonSymbolic())
             {
-                Encoding encodingValue = ttFont.getEncoding();
+                final Encoding encodingValue = ttFont.getEncoding();
                 if (!(encodingValue instanceof MacRomanEncoding || encodingValue instanceof WinAnsiEncoding))
                 {
                     this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING,

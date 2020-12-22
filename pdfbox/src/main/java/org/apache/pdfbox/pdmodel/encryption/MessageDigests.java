@@ -38,7 +38,7 @@ final class MessageDigests
         {
             return MessageDigest.getInstance("MD5");
         }
-        catch (NoSuchAlgorithmException e)
+        catch (final NoSuchAlgorithmException e)
         {
             // should never happen
             throw new RuntimeException(e);
@@ -54,7 +54,7 @@ final class MessageDigests
         {
             return MessageDigest.getInstance("SHA-1");
         }
-        catch (NoSuchAlgorithmException e)
+        catch (final NoSuchAlgorithmException e)
         {
             // should never happen
             throw new RuntimeException(e);
@@ -70,7 +70,7 @@ final class MessageDigests
         {
             return MessageDigest.getInstance("SHA-256");
         }
-        catch (NoSuchAlgorithmException e)
+        catch (final NoSuchAlgorithmException e)
         {
             // should never happen
             throw new RuntimeException(e);

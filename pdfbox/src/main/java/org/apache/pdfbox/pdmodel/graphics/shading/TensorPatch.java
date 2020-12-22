@@ -32,7 +32,7 @@ class TensorPatch extends Patch
      * @param tcp 16 control points
      * @param color 4 corner colors
      */
-    protected TensorPatch(Point2D[] tcp, float[][] color)
+    protected TensorPatch(final Point2D[] tcp, final float[][] color)
     {
         super(tcp, color);
         controlPoints = reshapeControlPoints(tcp);
@@ -44,9 +44,9 @@ class TensorPatch extends Patch
      order the 16 1d points to a square matrix which is as the one described 
      in p.199 of PDF3200_2008.pdf rotated 90 degrees clockwise
      */
-    private Point2D[][] reshapeControlPoints(Point2D[] tcp)
+    private Point2D[][] reshapeControlPoints(final Point2D[] tcp)
     {
-        Point2D[][] square = new Point2D[4][4];
+        final Point2D[][] square = new Point2D[4][4];
         for (int i = 0; i <= 3; i++)
         {
             square[0][i] = tcp[i];
@@ -66,13 +66,13 @@ class TensorPatch extends Patch
     // calculate the dividing level from the control points
     private int[] calcLevel()
     {
-        int[] l =
+        final int[] l =
         {
             4, 4
         };
 
-        Point2D[] ctlC1 = new Point2D[4];
-        Point2D[] ctlC2 = new Point2D[4];
+        final Point2D[] ctlC1 = new Point2D[4];
+        final Point2D[] ctlC2 = new Point2D[4];
         for (int j = 0; j < 4; j++)
         {
             ctlC1[j] = controlPoints[j][0];
@@ -94,7 +94,8 @@ class TensorPatch extends Patch
             else
             {
                 // length's unit is one pixel in device space
-                double lc1 = getLen(ctlC1[0], ctlC1[3]), lc2 = getLen(ctlC2[0], ctlC2[3]);
+                final double lc1 = getLen(ctlC1[0], ctlC1[3]);
+                final double lc2 = getLen(ctlC2[0], ctlC2[3]);
                 if (lc1 > 800 || lc2 > 800)
                 {
                     // keeps init value 4
@@ -124,8 +125,8 @@ class TensorPatch extends Patch
             }
             else
             {
-                double ld1 = getLen(controlPoints[0][0], controlPoints[0][3]);
-                double ld2 = getLen(controlPoints[3][0], controlPoints[3][3]);
+                final double ld1 = getLen(controlPoints[0][0], controlPoints[0][3]);
+                final double ld2 = getLen(controlPoints[3][0], controlPoints[3][3]);
                 if (ld1 > 800 || ld2 > 800)
                 {
                     // keeps init value 4
@@ -148,17 +149,17 @@ class TensorPatch extends Patch
     }
 
     // whether a point is on the same side of edge C1 and edge C2
-    private boolean isOnSameSideCC(Point2D p)
+    private boolean isOnSameSideCC(final Point2D p)
     {
-        double cc = edgeEquationValue(p, controlPoints[0][0], controlPoints[3][0])
+        final double cc = edgeEquationValue(p, controlPoints[0][0], controlPoints[3][0])
                 * edgeEquationValue(p, controlPoints[0][3], controlPoints[3][3]);
         return cc > 0;
     }
 
     // whether a point is on the same side of edge D1 and edge D2
-    private boolean isOnSameSideDD(Point2D p)
+    private boolean isOnSameSideDD(final Point2D p)
     {
-        double dd = edgeEquationValue(p, controlPoints[0][0], controlPoints[0][3])
+        final double dd = edgeEquationValue(p, controlPoints[0][0], controlPoints[0][3])
                 * edgeEquationValue(p, controlPoints[3][0], controlPoints[3][3]);
         return dd > 0;
     }
@@ -166,14 +167,14 @@ class TensorPatch extends Patch
     // get a list of triangles which compose this tensor patch
     private List<ShadedTriangle> getTriangles()
     {
-        CoordinateColorPair[][] patchCC = getPatchCoordinatesColor();
+        final CoordinateColorPair[][] patchCC = getPatchCoordinatesColor();
         return getShadedTriangles(patchCC);
     }
 
     @Override
     protected Point2D[] getFlag1Edge()
     {
-        Point2D[] implicitEdge = new Point2D[4];
+        final Point2D[] implicitEdge = new Point2D[4];
         for (int i = 0; i < 4; i++)
         {
             implicitEdge[i] = controlPoints[i][3];
@@ -184,7 +185,7 @@ class TensorPatch extends Patch
     @Override
     protected Point2D[] getFlag2Edge()
     {
-        Point2D[] implicitEdge = new Point2D[4];
+        final Point2D[] implicitEdge = new Point2D[4];
         for (int i = 0; i < 4; i++)
         {
             implicitEdge[i] = controlPoints[3][3 - i];
@@ -195,7 +196,7 @@ class TensorPatch extends Patch
     @Override
     protected Point2D[] getFlag3Edge()
     {
-        Point2D[] implicitEdge = new Point2D[4];
+        final Point2D[] implicitEdge = new Point2D[4];
         for (int i = 0; i < 4; i++)
         {
             implicitEdge[i] = controlPoints[3 - i][0];
@@ -211,15 +212,15 @@ class TensorPatch extends Patch
      */
     private CoordinateColorPair[][] getPatchCoordinatesColor()
     {
-        int numberOfColorComponents = cornerColor[0].length;
-        double[][] bernsteinPolyU = getBernsteinPolynomials(level[0]);
-        int szU = bernsteinPolyU[0].length;
-        double[][] bernsteinPolyV = getBernsteinPolynomials(level[1]);
-        int szV = bernsteinPolyV[0].length;
-        CoordinateColorPair[][] patchCC = new CoordinateColorPair[szV][szU];
+        final int numberOfColorComponents = cornerColor[0].length;
+        final double[][] bernsteinPolyU = getBernsteinPolynomials(level[0]);
+        final int szU = bernsteinPolyU[0].length;
+        final double[][] bernsteinPolyV = getBernsteinPolynomials(level[1]);
+        final int szV = bernsteinPolyV[0].length;
+        final CoordinateColorPair[][] patchCC = new CoordinateColorPair[szV][szU];
 
-        double stepU = 1.0 / (szU - 1);
-        double stepV = 1.0 / (szV - 1);
+        final double stepU = 1.0 / (szU - 1);
+        final double stepV = 1.0 / (szV - 1);
         double v = -stepV;
         for (int k = 0; k < szV; k++)
         {
@@ -239,10 +240,10 @@ class TensorPatch extends Patch
                         tmpy += controlPoints[i][j].getY() * bernsteinPolyU[i][l] * bernsteinPolyV[j][k];
                     }
                 }
-                Point2D tmpC = new Point2D.Double(tmpx, tmpy);
+                final Point2D tmpC = new Point2D.Double(tmpx, tmpy);
 
                 u += stepU;
-                float[] paramSC = new float[numberOfColorComponents];
+                final float[] paramSC = new float[numberOfColorComponents];
                 for (int ci = 0; ci < numberOfColorComponents; ci++)
                 {
                     paramSC[ci] = (float) ((1 - v) * ((1 - u) * cornerColor[0][ci] + u * cornerColor[3][ci])
@@ -255,11 +256,11 @@ class TensorPatch extends Patch
     }
 
     // Bernstein polynomials which are defined in page 119 of PDF32000_2008.pdf
-    private double[][] getBernsteinPolynomials(int lvl)
+    private double[][] getBernsteinPolynomials(final int lvl)
     {
-        int sz = (1 << lvl) + 1;
-        double[][] poly = new double[4][sz];
-        double step = 1.0 / (sz - 1);
+        final int sz = (1 << lvl) + 1;
+        final double[][] poly = new double[4][sz];
+        final double step = 1.0 / (sz - 1);
         double t = -step;
         for (int i = 0; i < sz; i++)
         {

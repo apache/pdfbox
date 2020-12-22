@@ -41,7 +41,7 @@ public abstract class PDTerminalField extends PDField
      * 
      * @param acroForm The form that this field is part of.
      */
-    protected PDTerminalField(PDAcroForm acroForm)
+    protected PDTerminalField(final PDAcroForm acroForm)
     {
         super(acroForm);
     }
@@ -53,7 +53,7 @@ public abstract class PDTerminalField extends PDField
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDTerminalField(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDTerminalField(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -63,7 +63,7 @@ public abstract class PDTerminalField extends PDField
      * 
      * @param actions The field actions.
      */
-    public void setActions(PDFormFieldAdditionalActions actions)
+    public void setActions(final PDFormFieldAdditionalActions actions)
     {
         getCOSObject().setItem(COSName.AA, actions);
     }
@@ -72,7 +72,7 @@ public abstract class PDTerminalField extends PDField
     public int getFieldFlags()
     {
         int retval = 0;
-        COSInteger ff = (COSInteger) getCOSObject().getDictionaryObject(COSName.FF);
+        final COSInteger ff = (COSInteger) getCOSObject().getDictionaryObject(COSName.FF);
         if (ff != null)
         {
             retval = ff.intValue();
@@ -96,15 +96,15 @@ public abstract class PDTerminalField extends PDField
     }
 
     @Override
-    public void importFDF(FDFField fdfField) throws IOException
+    public void importFDF(final FDFField fdfField) throws IOException
     {
         super.importFDF(fdfField);
         
-        PDAnnotationWidget widget = getWidgets().get(0); // fixme: ignores multiple widgets
+        final PDAnnotationWidget widget = getWidgets().get(0); // fixme: ignores multiple widgets
         if (widget != null)
         {
             int annotFlags = widget.getAnnotationFlags();
-            Integer f = fdfField.getWidgetFieldFlags();
+            final Integer f = fdfField.getWidgetFieldFlags();
             if (f != null)
             {
                 widget.setAnnotationFlags(f);
@@ -112,14 +112,14 @@ public abstract class PDTerminalField extends PDField
             else
             {
                 // these are suppose to be ignored if the F is set.
-                Integer setF = fdfField.getSetWidgetFieldFlags();
+                final Integer setF = fdfField.getSetWidgetFieldFlags();
                 if (setF != null)
                 {
                     annotFlags = annotFlags | setF;
                     widget.setAnnotationFlags(annotFlags);
                 }
 
-                Integer clrF = fdfField.getClearWidgetFieldFlags();
+                final Integer clrF = fdfField.getClearWidgetFieldFlags();
                 if (clrF != null)
                 {
                     // we have to clear the bits of the document fields for every bit that is
@@ -142,7 +142,7 @@ public abstract class PDTerminalField extends PDField
     @Override
     FDFField exportFDF() throws IOException
     {
-        FDFField fdfField = new FDFField();
+        final FDFField fdfField = new FDFField();
         fdfField.setPartialFieldName(getPartialName());
         fdfField.setValue(getCOSObject().getDictionaryObject(COSName.V));
 
@@ -163,8 +163,8 @@ public abstract class PDTerminalField extends PDField
     @Override
     public List<PDAnnotationWidget> getWidgets()
     {
-        List<PDAnnotationWidget> widgets = new ArrayList<>();
-        COSArray kids = (COSArray)getCOSObject().getDictionaryObject(COSName.KIDS);
+        final List<PDAnnotationWidget> widgets = new ArrayList<>();
+        final COSArray kids = (COSArray)getCOSObject().getDictionaryObject(COSName.KIDS);
         if (kids == null)
         {
             // the field itself is a widget
@@ -175,7 +175,7 @@ public abstract class PDTerminalField extends PDField
             // there are multiple widgets
             for (int i = 0; i < kids.size(); i++)
             {
-                COSBase kid = kids.getObject(i);
+                final COSBase kid = kids.getObject(i);
                 if (kid instanceof COSDictionary)
                 {
                     widgets.add(new PDAnnotationWidget((COSDictionary)kid));
@@ -190,11 +190,11 @@ public abstract class PDTerminalField extends PDField
      *
      * @param children The list of widget annotations.
      */
-    public void setWidgets(List<PDAnnotationWidget> children)
+    public void setWidgets(final List<PDAnnotationWidget> children)
     {
-        COSArray kidsArray = new COSArray(children);
+        final COSArray kidsArray = new COSArray(children);
         getCOSObject().setItem(COSName.KIDS, kidsArray);
-        for (PDAnnotationWidget widget : children)
+        for (final PDAnnotationWidget widget : children)
         {
             widget.getCOSObject().setItem(COSName.PARENT, this);
         }

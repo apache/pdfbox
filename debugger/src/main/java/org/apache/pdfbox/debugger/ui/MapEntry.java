@@ -46,7 +46,7 @@ public class MapEntry
      *
      * @param k the new key for this entry.
      */
-    public void setKey(COSName k)
+    public void setKey(final COSName k)
     {
         key = k;
     }
@@ -76,7 +76,7 @@ public class MapEntry
      *
      * @param val the new value for this entry.
      */
-    public void setValue(COSBase val)
+    public void setValue(final COSBase val)
     {
         this.value = val;
     }
@@ -86,7 +86,7 @@ public class MapEntry
      *
      * @param val the new value for this entry.
      */
-    public void setItem(COSBase val)
+    public void setItem(final COSBase val)
     {
         this.item = val;
     }

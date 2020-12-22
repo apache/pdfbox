@@ -50,7 +50,7 @@ public abstract class PDPageDestination extends PDDestination
      *
      * @param arr A page destination array.
      */
-    protected PDPageDestination( COSArray arr )
+    protected PDPageDestination(final COSArray arr )
     {
         array = arr;
     }
@@ -68,7 +68,7 @@ public abstract class PDPageDestination extends PDDestination
         PDPage retval = null;
         if( array.size() > 0 )
         {
-            COSBase page = array.getObject( 0 );
+            final COSBase page = array.getObject( 0 );
             if( page instanceof COSDictionary )
             {
                 retval = new PDPage( (COSDictionary)page );
@@ -82,7 +82,7 @@ public abstract class PDPageDestination extends PDDestination
      *
      * @param page The page for a local destination.
      */
-    public void setPage( PDPage page )
+    public void setPage(final PDPage page )
     {
         array.set( 0, page );
     }
@@ -100,7 +100,7 @@ public abstract class PDPageDestination extends PDDestination
         int retval = -1;
         if( array.size() > 0 )
         {
-            COSBase page = array.getObject( 0 );
+            final COSBase page = array.getObject( 0 );
             if( page instanceof COSNumber )
             {
                 retval = ((COSNumber)page).intValue();
@@ -121,7 +121,7 @@ public abstract class PDPageDestination extends PDDestination
         int retval = -1;
         if (array.size() > 0)
         {
-            COSBase page = array.getObject(0);
+            final COSBase page = array.getObject(0);
             if (page instanceof COSNumber)
             {
                 retval = ((COSNumber) page).intValue();
@@ -135,7 +135,7 @@ public abstract class PDPageDestination extends PDDestination
     }
 
     // climb up the page tree up to the top to be able to call PageTree.indexOf for a page dictionary
-    private int indexOfPageTree(COSDictionary pageDict)
+    private int indexOfPageTree(final COSDictionary pageDict)
     {
         COSDictionary parent = pageDict;
         while (parent.getDictionaryObject(COSName.PARENT, COSName.P) instanceof COSDictionary)
@@ -145,7 +145,7 @@ public abstract class PDPageDestination extends PDDestination
         if (parent.containsKey(COSName.KIDS) && COSName.PAGES.equals(parent.getItem(COSName.TYPE)))
         {
             // now parent is the highest pages node
-            PDPageTree pages = new PDPageTree(parent);
+            final PDPageTree pages = new PDPageTree(parent);
             return pages.indexOf(new PDPage(pageDict));
         }
         return -1;
@@ -157,7 +157,7 @@ public abstract class PDPageDestination extends PDDestination
      *
      * @param pageNumber The page for a remote destination.
      */
-    public void setPageNumber( int pageNumber )
+    public void setPageNumber(final int pageNumber )
     {
         array.set( 0, pageNumber );
     }

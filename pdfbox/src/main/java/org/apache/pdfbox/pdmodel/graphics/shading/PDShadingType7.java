@@ -31,7 +31,7 @@ public class PDShadingType7 extends PDShadingType6
      *
      * @param shadingDictionary the dictionary for this shading
      */
-    public PDShadingType7(COSDictionary shadingDictionary)
+    public PDShadingType7(final COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -43,7 +43,7 @@ public class PDShadingType7 extends PDShadingType6
     }
 
     @Override
-    public Paint toPaint(Matrix matrix)
+    public Paint toPaint(final Matrix matrix)
     {
         return new Type7ShadingPaint(this, matrix);
     }

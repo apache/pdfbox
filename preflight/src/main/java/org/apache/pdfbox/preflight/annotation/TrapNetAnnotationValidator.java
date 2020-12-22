@@ -35,7 +35,7 @@ public class TrapNetAnnotationValidator extends AnnotationValidator
      */
     protected PDAnnotationUnknown pdUnk = null;
 
-    public TrapNetAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public TrapNetAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdUnk = new PDAnnotationUnknown(annotDictionary);

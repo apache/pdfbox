@@ -43,9 +43,9 @@ class PDOutlineNodeTest
     @Test
     void getParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         root.addLast(child);
-        PDDocumentOutline outline = new PDDocumentOutline();
+        final PDDocumentOutline outline = new PDDocumentOutline();
         outline.addLast(root);
         assertNull(outline.getParent());
         assertEquals(outline, root.getParent());
@@ -67,7 +67,7 @@ class PDOutlineNodeTest
     @Test
     void openAlreadyOpenedRootNode()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         assertEquals(0, root.getOpenCount());
         root.addLast(child);
         root.openNode();
@@ -81,7 +81,7 @@ class PDOutlineNodeTest
     @Test
     void closeAlreadyClosedRootNode()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         assertEquals(0, root.getOpenCount());
         root.addLast(child);
         root.openNode();
@@ -96,7 +96,7 @@ class PDOutlineNodeTest
     @Test
     void openLeaf()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         root.addLast(child);
         child.openNode();
         assertFalse(child.isNodeOpen());
@@ -105,7 +105,7 @@ class PDOutlineNodeTest
     @Test
     void nodeClosedByDefault()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         root.addLast(child);
         assertFalse(root.isNodeOpen());
         assertEquals(-1, root.getOpenCount());
@@ -114,7 +114,7 @@ class PDOutlineNodeTest
     @Test
     void closeNodeWithOpendParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addLast(new PDOutlineItem());
         child.addLast(new PDOutlineItem());
         child.openNode();
@@ -130,7 +130,7 @@ class PDOutlineNodeTest
     @Test
     void closeNodeWithClosedParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addLast(new PDOutlineItem());
         child.addLast(new PDOutlineItem());
         child.openNode();
@@ -145,7 +145,7 @@ class PDOutlineNodeTest
     @Test
     void openNodeWithOpendParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addLast(new PDOutlineItem());
         child.addLast(new PDOutlineItem());
         root.addLast(child);
@@ -160,7 +160,7 @@ class PDOutlineNodeTest
     @Test
     void openNodeWithClosedParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addLast(new PDOutlineItem());
         child.addLast(new PDOutlineItem());
         root.addLast(child);
@@ -174,7 +174,7 @@ class PDOutlineNodeTest
     @Test
     void addLastSingleChild()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         root.addLast(child);
         assertEquals(child, root.getFirstChild());
         assertEquals(child, root.getLastChild());
@@ -183,7 +183,7 @@ class PDOutlineNodeTest
     @Test
     void addFirstSingleChild()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         root.addFirst(child);
         assertEquals(child, root.getFirstChild());
         assertEquals(child, root.getLastChild());
@@ -192,7 +192,7 @@ class PDOutlineNodeTest
     @Test
     void addLastOpenChildToOpenParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addLast(new PDOutlineItem());
         child.addLast(new PDOutlineItem());
         child.openNode();
@@ -209,7 +209,7 @@ class PDOutlineNodeTest
     @Test
     void addFirstOpenChildToOpenParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addFirst(new PDOutlineItem());
         child.addFirst(new PDOutlineItem());
         child.openNode();
@@ -226,7 +226,7 @@ class PDOutlineNodeTest
     @Test
     void addLastOpenChildToClosedParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addLast(new PDOutlineItem());
         child.addLast(new PDOutlineItem());
         child.openNode();
@@ -242,7 +242,7 @@ class PDOutlineNodeTest
     @Test
     void addFirstOpenChildToClosedParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addFirst(new PDOutlineItem());
         child.addFirst(new PDOutlineItem());
         child.openNode();
@@ -258,7 +258,7 @@ class PDOutlineNodeTest
     @Test
     void addLastClosedChildToOpenParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addLast(new PDOutlineItem());
         child.addLast(new PDOutlineItem());
         root.addLast(new PDOutlineItem());
@@ -274,7 +274,7 @@ class PDOutlineNodeTest
     @Test
     void addFirstClosedChildToOpenParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addFirst(new PDOutlineItem());
         child.addFirst(new PDOutlineItem());
         root.addFirst(new PDOutlineItem());
@@ -290,7 +290,7 @@ class PDOutlineNodeTest
     @Test
     void addLastClosedChildToClosedParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addLast(new PDOutlineItem());
         child.addLast(new PDOutlineItem());
         root.addLast(new PDOutlineItem());
@@ -305,7 +305,7 @@ class PDOutlineNodeTest
     @Test
     void addFirstClosedChildToClosedParent()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.addFirst(new PDOutlineItem());
         child.addFirst(new PDOutlineItem());
         root.addFirst(new PDOutlineItem());
@@ -320,7 +320,7 @@ class PDOutlineNodeTest
     @Test
     void cannotAddLastAList()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.insertSiblingAfter(new PDOutlineItem());
         child.insertSiblingAfter(new PDOutlineItem());
         assertThrows(IllegalArgumentException.class, () -> root.addLast(child));
@@ -329,7 +329,7 @@ class PDOutlineNodeTest
     @Test
     void cannotAddFirstAList()
     {
-        PDOutlineItem child = new PDOutlineItem();
+        final PDOutlineItem child = new PDOutlineItem();
         child.insertSiblingAfter(new PDOutlineItem());
         child.insertSiblingAfter(new PDOutlineItem());
         assertThrows(IllegalArgumentException.class, () -> root.addFirst(child));
@@ -345,13 +345,13 @@ class PDOutlineNodeTest
     @Test
     void iterator()
     {
-        PDOutlineItem first = new PDOutlineItem();
+        final PDOutlineItem first = new PDOutlineItem();
         root.addFirst(first);
         root.addLast(new PDOutlineItem());
-        PDOutlineItem second = new PDOutlineItem();
+        final PDOutlineItem second = new PDOutlineItem();
         first.insertSiblingAfter(second);
         int counter = 0;
-        for (PDOutlineItem current : root.children())
+        for (final PDOutlineItem current : root.children())
         {
             counter++;
         }
@@ -362,7 +362,7 @@ class PDOutlineNodeTest
     void iteratorNoChildre()
     {
         int counter = 0;
-        for (PDOutlineItem current : new PDOutlineItem().children())
+        for (final PDOutlineItem current : new PDOutlineItem().children())
         {
             counter++;
         }

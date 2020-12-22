@@ -44,7 +44,7 @@ public class PDDefaultAttributeObject extends PDAttributeObject
      * 
      * @param dictionary the dictionary
      */
-    public PDDefaultAttributeObject(COSDictionary dictionary)
+    public PDDefaultAttributeObject(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -57,7 +57,7 @@ public class PDDefaultAttributeObject extends PDAttributeObject
      */
     public List<String> getAttributeNames()
     {
-        List<String> attrNames = new ArrayList<>();
+        final List<String> attrNames = new ArrayList<>();
         this.getCOSObject().keySet().stream()
                 .filter(key -> !COSName.O.equals(key))
                 .map(COSName::getName)
@@ -71,7 +71,7 @@ public class PDDefaultAttributeObject extends PDAttributeObject
      * @param attrName the given attribute name
      * @return the attribute value for a given name
      */
-    public COSBase getAttributeValue(String attrName)
+    public COSBase getAttributeValue(final String attrName)
     {
         return this.getCOSObject().getDictionaryObject(attrName);
     }
@@ -83,9 +83,9 @@ public class PDDefaultAttributeObject extends PDAttributeObject
      * @param defaultValue the default value
      * @return the attribute value for a given name
      */
-    protected COSBase getAttributeValue(String attrName, COSBase defaultValue)
+    protected COSBase getAttributeValue(final String attrName, final COSBase defaultValue)
     {
-        COSBase value = this.getCOSObject().getDictionaryObject(attrName);
+        final COSBase value = this.getCOSObject().getDictionaryObject(attrName);
         if (value == null)
         {
             return defaultValue;
@@ -99,9 +99,9 @@ public class PDDefaultAttributeObject extends PDAttributeObject
      * @param attrName the attribute name
      * @param attrValue the attribute value
      */
-    public void setAttribute(String attrName, COSBase attrValue)
+    public void setAttribute(final String attrName, final COSBase attrValue)
     {
-        COSBase old = this.getAttributeValue(attrName);
+        final COSBase old = this.getAttributeValue(attrName);
         this.getCOSObject().setItem(COSName.getPDFName(attrName), attrValue);
         this.potentiallyNotifyChanged(old, attrValue);
     }
@@ -109,12 +109,12 @@ public class PDDefaultAttributeObject extends PDAttributeObject
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder().append(super.toString())
+        final StringBuilder sb = new StringBuilder().append(super.toString())
             .append(", attributes={");
-        Iterator<String> it = this.getAttributeNames().iterator();
+        final Iterator<String> it = this.getAttributeNames().iterator();
         while (it.hasNext())
         {
-            String name = it.next();
+            final String name = it.next();
             sb.append(name).append('=').append(this.getAttributeValue(name));
             if (it.hasNext())
             {

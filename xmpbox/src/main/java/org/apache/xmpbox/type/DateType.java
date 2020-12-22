@@ -52,7 +52,7 @@ public class DateType extends AbstractSimpleProperty
      * @param value
      *            The value to set for this property
      */
-    public DateType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    public DateType(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String propertyName, final Object value)
     {
         super(metadata, namespaceURI, prefix, propertyName, value);
     }
@@ -62,7 +62,7 @@ public class DateType extends AbstractSimpleProperty
      *
      * @param value the new Calendar element value
      */
-    private void setValueFromCalendar(Calendar value)
+    private void setValueFromCalendar(final Calendar value)
     {
         dateValue = value;
     }
@@ -85,7 +85,7 @@ public class DateType extends AbstractSimpleProperty
      *            Object value to check
      * @return True if types are compatibles
      */
-    private boolean isGoodType(Object value)
+    private boolean isGoodType(final Object value)
     {
         if (value instanceof Calendar)
         {
@@ -98,7 +98,7 @@ public class DateType extends AbstractSimpleProperty
                 DateConverter.toCalendar((String) value);
                 return true;
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 return false;
             }
@@ -113,7 +113,7 @@ public class DateType extends AbstractSimpleProperty
      *            The value to set
      */
     @Override
-    public void setValue(Object value)
+    public void setValue(final Object value)
     {
         if (!isGoodType(value))
         {
@@ -155,13 +155,13 @@ public class DateType extends AbstractSimpleProperty
      * @param value
      *            The String value
      */
-    private void setValueFromString(String value)
+    private void setValueFromString(final String value)
     {
         try
         {
             setValueFromCalendar(DateConverter.toCalendar(value));
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             // SHOULD NEVER HAPPEN
             // STRING HAS BEEN CHECKED BEFORE

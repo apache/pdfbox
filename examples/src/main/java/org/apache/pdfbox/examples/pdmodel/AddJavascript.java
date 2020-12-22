@@ -42,7 +42,7 @@ public final class AddJavascript
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
         if( args.length != 2 )
         {
@@ -52,7 +52,7 @@ public final class AddJavascript
         {
             try (PDDocument document = Loader.loadPDF(new File(args[0])))
             {
-                PDActionJavaScript javascript = new PDActionJavaScript(
+                final PDActionJavaScript javascript = new PDActionJavaScript(
                     "app.alert( {cMsg: 'PDFBox rocks!', nIcon: 3, nType: 0, cTitle: 'PDFBox Javascript example' } );");
                 document.getDocumentCatalog().setOpenAction( javascript );
                 if( document.isEncrypted() )

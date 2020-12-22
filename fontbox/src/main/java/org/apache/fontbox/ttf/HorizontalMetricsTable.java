@@ -35,7 +35,7 @@ public class HorizontalMetricsTable extends TTFTable
     private short[] nonHorizontalLeftSideBearing;
     private int numHMetrics;
 
-    HorizontalMetricsTable(TrueTypeFont font)
+    HorizontalMetricsTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -48,15 +48,15 @@ public class HorizontalMetricsTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
-        HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
+        final HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
         if (hHeader == null)
         {
             throw new IOException("Could not get hhea table");
         }
         numHMetrics = hHeader.getNumberOfHMetrics();
-        int numGlyphs = ttf.getNumberOfGlyphs();
+        final int numGlyphs = ttf.getNumberOfGlyphs();
 
         int bytesRead = 0;
         advanceWidth = new int[ numHMetrics ];
@@ -100,7 +100,7 @@ public class HorizontalMetricsTable extends TTFTable
      *
      * @param gid GID
      */
-    public int getAdvanceWidth(int gid)
+    public int getAdvanceWidth(final int gid)
     {
         if (gid < numHMetrics)
         {
@@ -119,7 +119,7 @@ public class HorizontalMetricsTable extends TTFTable
      *
      * @param gid GID
      */
-    public int getLeftSideBearing(int gid)
+    public int getLeftSideBearing(final int gid)
     {
         if (gid < numHMetrics)
         {

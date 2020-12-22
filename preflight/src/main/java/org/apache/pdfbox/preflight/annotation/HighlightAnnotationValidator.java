@@ -29,7 +29,7 @@ import org.apache.pdfbox.preflight.PreflightContext;
  */
 public class HighlightAnnotationValidator extends MarkupAnnotationValidator
 {
-    protected HighlightAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    protected HighlightAnnotationValidator(final PreflightContext ctx, final COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdMarkup = new PDAnnotationHighlight(annotDictionary);

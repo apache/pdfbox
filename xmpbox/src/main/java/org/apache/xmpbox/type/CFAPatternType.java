@@ -37,7 +37,7 @@ public class CFAPatternType extends AbstractStructuredType
     @PropertyType(type = Types.Integer, card = Cardinality.Seq)
     public static final String VALUES = "Values";
 
-    public CFAPatternType(XMPMetadata metadata)
+    public CFAPatternType(final XMPMetadata metadata)
     {
         super(metadata);
     }

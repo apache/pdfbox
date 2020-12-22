@@ -51,10 +51,10 @@ class PDFCloneUtilityTest
     void testClonePDFWithCosArrayStream() throws IOException
     {
         try (PDDocument srcDoc = new PDDocument();
-             PDDocument dstDoc = new PDDocument())
+             final PDDocument dstDoc = new PDDocument())
         {
 
-            PDPage pdPage = new PDPage();
+            final PDPage pdPage = new PDPage();
             srcDoc.addPage(pdPage);
             new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, true).close();
             new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, true).close();
@@ -76,8 +76,8 @@ class PDFCloneUtilityTest
 
         new File(TESTDIR).mkdirs();
 
-        PDDocument srcDoc = new PDDocument();
-        PDPage pdPage = new PDPage();
+        final PDDocument srcDoc = new PDDocument();
+        final PDPage pdPage = new PDPage();
         srcDoc.addPage(pdPage);
         try (PDPageContentStream pdPageContentStream1 = new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, false))
         {
@@ -99,8 +99,8 @@ class PDFCloneUtilityTest
         }
 
         srcDoc.save(TESTDIR + CLONESRC);
-        PDFMergerUtility merger = new PDFMergerUtility();
-        PDDocument dstDoc = new PDDocument();
+        final PDFMergerUtility merger = new PDFMergerUtility();
+        final PDDocument dstDoc = new PDDocument();
 
         // this calls PDFCloneUtility.cloneForNewDocument(), 
         // which would fail before the fix in PDFBOX-2052
@@ -127,11 +127,11 @@ class PDFCloneUtilityTest
         {
             doc1.addPage(new PDPage());
             doc1.getDocumentCatalog().setOCProperties(new PDOptionalContentProperties());
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             doc1.save(baos);
             try (PDDocument doc2 = Loader.loadPDF(baos.toByteArray()))
             {
-                PDFMergerUtility merger = new PDFMergerUtility();
+                final PDFMergerUtility merger = new PDFMergerUtility();
                 // The OCProperties is a direct object here, but gets saved as an indirect object.
                 assertTrue(doc1.getDocumentCatalog().getCOSObject().getItem(COSName.OCPROPERTIES) instanceof COSDictionary);
                 assertTrue(doc2.getDocumentCatalog().getCOSObject().getItem(COSName.OCPROPERTIES) instanceof COSObject);

@@ -215,7 +215,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     private int usBreakChar;
     private int usMaxContext;
 
-    OS2WindowsMetricsTable(TrueTypeFont font)
+    OS2WindowsMetricsTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -231,7 +231,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param achVendIdValue The achVendId to set.
      */
-    public void setAchVendId(String achVendIdValue)
+    public void setAchVendId(final String achVendIdValue)
     {
         this.achVendId = achVendIdValue;
     }
@@ -247,7 +247,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param averageCharWidthValue The averageCharWidth to set.
      */
-    public void setAverageCharWidth(short averageCharWidthValue)
+    public void setAverageCharWidth(final short averageCharWidthValue)
     {
         this.averageCharWidth = averageCharWidthValue;
     }
@@ -263,7 +263,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param codePageRange1Value The codePageRange1 to set.
      */
-    public void setCodePageRange1(long codePageRange1Value)
+    public void setCodePageRange1(final long codePageRange1Value)
     {
         this.codePageRange1 = codePageRange1Value;
     }
@@ -279,7 +279,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param codePageRange2Value The codePageRange2 to set.
      */
-    public void setCodePageRange2(long codePageRange2Value)
+    public void setCodePageRange2(final long codePageRange2Value)
     {
         this.codePageRange2 = codePageRange2Value;
     }
@@ -295,7 +295,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param familyClassValue The familyClass to set.
      */
-    public void setFamilyClass(int familyClassValue)
+    public void setFamilyClass(final int familyClassValue)
     {
         this.familyClass = familyClassValue;
     }
@@ -311,7 +311,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param firstCharIndexValue The firstCharIndex to set.
      */
-    public void setFirstCharIndex(int firstCharIndexValue)
+    public void setFirstCharIndex(final int firstCharIndexValue)
     {
         this.firstCharIndex = firstCharIndexValue;
     }
@@ -327,7 +327,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param fsSelectionValue The fsSelection to set.
      */
-    public void setFsSelection(int fsSelectionValue)
+    public void setFsSelection(final int fsSelectionValue)
     {
         this.fsSelection = fsSelectionValue;
     }
@@ -343,7 +343,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param fsTypeValue The fsType to set.
      */
-    public void setFsType(short fsTypeValue)
+    public void setFsType(final short fsTypeValue)
     {
         this.fsType = fsTypeValue;
     }
@@ -359,7 +359,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param lastCharIndexValue The lastCharIndex to set.
      */
-    public void setLastCharIndex(int lastCharIndexValue)
+    public void setLastCharIndex(final int lastCharIndexValue)
     {
         this.lastCharIndex = lastCharIndexValue;
     }
@@ -375,7 +375,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param panoseValue The panose to set.
      */
-    public void setPanose(byte[] panoseValue)
+    public void setPanose(final byte[] panoseValue)
     {
         this.panose = panoseValue;
     }
@@ -391,7 +391,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param strikeoutPositionValue The strikeoutPosition to set.
      */
-    public void setStrikeoutPosition(short strikeoutPositionValue)
+    public void setStrikeoutPosition(final short strikeoutPositionValue)
     {
         this.strikeoutPosition = strikeoutPositionValue;
     }
@@ -407,7 +407,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param strikeoutSizeValue The strikeoutSize to set.
      */
-    public void setStrikeoutSize(short strikeoutSizeValue)
+    public void setStrikeoutSize(final short strikeoutSizeValue)
     {
         this.strikeoutSize = strikeoutSizeValue;
     }
@@ -423,7 +423,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param subscriptXOffsetValue The subscriptXOffset to set.
      */
-    public void setSubscriptXOffset(short subscriptXOffsetValue)
+    public void setSubscriptXOffset(final short subscriptXOffsetValue)
     {
         this.subscriptXOffset = subscriptXOffsetValue;
     }
@@ -439,7 +439,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param subscriptXSizeValue The subscriptXSize to set.
      */
-    public void setSubscriptXSize(short subscriptXSizeValue)
+    public void setSubscriptXSize(final short subscriptXSizeValue)
     {
         this.subscriptXSize = subscriptXSizeValue;
     }
@@ -455,7 +455,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param subscriptYOffsetValue The subscriptYOffset to set.
      */
-    public void setSubscriptYOffset(short subscriptYOffsetValue)
+    public void setSubscriptYOffset(final short subscriptYOffsetValue)
     {
         this.subscriptYOffset = subscriptYOffsetValue;
     }
@@ -471,7 +471,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param subscriptYSizeValue The subscriptYSize to set.
      */
-    public void setSubscriptYSize(short subscriptYSizeValue)
+    public void setSubscriptYSize(final short subscriptYSizeValue)
     {
         this.subscriptYSize = subscriptYSizeValue;
     }
@@ -487,7 +487,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param superscriptXOffsetValue The superscriptXOffset to set.
      */
-    public void setSuperscriptXOffset(short superscriptXOffsetValue)
+    public void setSuperscriptXOffset(final short superscriptXOffsetValue)
     {
         this.superscriptXOffset = superscriptXOffsetValue;
     }
@@ -503,7 +503,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param superscriptXSizeValue The superscriptXSize to set.
      */
-    public void setSuperscriptXSize(short superscriptXSizeValue)
+    public void setSuperscriptXSize(final short superscriptXSizeValue)
     {
         this.superscriptXSize = superscriptXSizeValue;
     }
@@ -519,7 +519,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param superscriptYOffsetValue The superscriptYOffset to set.
      */
-    public void setSuperscriptYOffset(short superscriptYOffsetValue)
+    public void setSuperscriptYOffset(final short superscriptYOffsetValue)
     {
         this.superscriptYOffset = superscriptYOffsetValue;
     }
@@ -535,7 +535,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param superscriptYSizeValue The superscriptYSize to set.
      */
-    public void setSuperscriptYSize(short superscriptYSizeValue)
+    public void setSuperscriptYSize(final short superscriptYSizeValue)
     {
         this.superscriptYSize = superscriptYSizeValue;
     }
@@ -551,7 +551,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param typeLineGapValue The typoLineGap to set.
      */
-    public void setTypoLineGap(int typeLineGapValue)
+    public void setTypoLineGap(final int typeLineGapValue)
     {
         this.typoLineGap = typeLineGapValue;
     }
@@ -567,7 +567,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param typoAscenderValue The typoAscender to set.
      */
-    public void setTypoAscender(int typoAscenderValue)
+    public void setTypoAscender(final int typoAscenderValue)
     {
         this.typoAscender = typoAscenderValue;
     }
@@ -583,7 +583,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param typoDescenderValue The typoDescender to set.
      */
-    public void setTypoDescender(int typoDescenderValue)
+    public void setTypoDescender(final int typoDescenderValue)
     {
         this.typoDescender = typoDescenderValue;
     }
@@ -599,7 +599,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param unicodeRange1Value The unicodeRange1 to set.
      */
-    public void setUnicodeRange1(long unicodeRange1Value)
+    public void setUnicodeRange1(final long unicodeRange1Value)
     {
         this.unicodeRange1 = unicodeRange1Value;
     }
@@ -615,7 +615,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param unicodeRange2Value The unicodeRange2 to set.
      */
-    public void setUnicodeRange2(long unicodeRange2Value)
+    public void setUnicodeRange2(final long unicodeRange2Value)
     {
         this.unicodeRange2 = unicodeRange2Value;
     }
@@ -631,7 +631,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param unicodeRange3Value The unicodeRange3 to set.
      */
-    public void setUnicodeRange3(long unicodeRange3Value)
+    public void setUnicodeRange3(final long unicodeRange3Value)
     {
         this.unicodeRange3 = unicodeRange3Value;
     }
@@ -647,7 +647,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param unicodeRange4Value The unicodeRange4 to set.
      */
-    public void setUnicodeRange4(long unicodeRange4Value)
+    public void setUnicodeRange4(final long unicodeRange4Value)
     {
         this.unicodeRange4 = unicodeRange4Value;
     }
@@ -663,7 +663,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param versionValue The version to set.
      */
-    public void setVersion(int versionValue)
+    public void setVersion(final int versionValue)
     {
         this.version = versionValue;
     }
@@ -679,7 +679,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param weightClassValue The weightClass to set.
      */
-    public void setWeightClass(int weightClassValue)
+    public void setWeightClass(final int weightClassValue)
     {
         this.weightClass = weightClassValue;
     }
@@ -695,7 +695,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param widthClassValue The widthClass to set.
      */
-    public void setWidthClass(int widthClassValue)
+    public void setWidthClass(final int widthClassValue)
     {
         this.widthClass = widthClassValue;
     }
@@ -711,7 +711,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param winAscentValue The winAscent to set.
      */
-    public void setWinAscent(int winAscentValue)
+    public void setWinAscent(final int winAscentValue)
     {
         this.winAscent = winAscentValue;
     }
@@ -727,7 +727,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @param winDescentValue The winDescent to set.
      */
-    public void setWinDescent(int winDescentValue)
+    public void setWinDescent(final int winDescentValue)
     {
         this.winDescent = winDescentValue;
     }
@@ -785,7 +785,7 @@ public class OS2WindowsMetricsTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
         version = data.readUnsignedShort();
         averageCharWidth = data.readSignedShort();

@@ -64,7 +64,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      * Creates a Form XObject for reading.
      * @param stream The XObject stream
      */
-    public PDFormXObject(PDStream stream)
+    public PDFormXObject(final PDStream stream)
     {
         super(stream, COSName.FORM);
         cache = null;
@@ -74,7 +74,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      * Creates a Form XObject for reading.
      * @param stream The XObject stream
      */
-    public PDFormXObject(COSStream stream)
+    public PDFormXObject(final COSStream stream)
     {
         super(stream, COSName.FORM);
         cache = null;
@@ -84,7 +84,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      * Creates a Form XObject for reading.
      * @param stream The XObject stream
      */
-    public PDFormXObject(COSStream stream, ResourceCache cache)
+    public PDFormXObject(final COSStream stream, final ResourceCache cache)
     {
         super(stream, COSName.FORM);
         this.cache = cache;
@@ -94,7 +94,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      * Creates a Form Image XObject for writing, in the given document.
      * @param document The current document
      */
-    public PDFormXObject(PDDocument document)
+    public PDFormXObject(final PDDocument document)
     {
         super(document, COSName.FORM);
         cache = null;
@@ -113,7 +113,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      * Set the form type.
      * @param formType The new form type.
      */
-    public void setFormType(int formType)
+    public void setFormType(final int formType)
     {
         getCOSObject().setInt(COSName.FORMTYPE, formType);
     }
@@ -127,7 +127,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     {
         if( group == null ) 
         {
-            COSDictionary dic = (COSDictionary) getCOSObject().getDictionaryObject(COSName.GROUP);
+            final COSDictionary dic = (COSDictionary) getCOSObject().getDictionaryObject(COSName.GROUP);
             if( dic != null ) 
             {
                 group = new PDTransparencyGroupAttributes(dic);
@@ -161,7 +161,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     @Override
     public PDResources getResources()
     {
-        COSDictionary resources = getCOSObject().getCOSDictionary(COSName.RESOURCES);
+        final COSDictionary resources = getCOSObject().getCOSDictionary(COSName.RESOURCES);
         if (resources != null)
         {
             return new PDResources(resources, cache);
@@ -180,7 +180,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      * This will set the resources for this page.
      * @param resources The new resources for this page.
      */
-    public void setResources(PDResources resources)
+    public void setResources(final PDResources resources)
     {
         getCOSObject().setItem(COSName.RESOURCES, resources);
     }
@@ -196,7 +196,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     public PDRectangle getBBox()
     {
         PDRectangle retval = null;
-        COSArray array = (COSArray) getCOSObject().getDictionaryObject(COSName.BBOX);
+        final COSArray array = (COSArray) getCOSObject().getDictionaryObject(COSName.BBOX);
         if (array != null)
         {
             retval = new PDRectangle(array);
@@ -208,7 +208,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      * This will set the BBox (bounding box) for this form.
      * @param bbox The new BBox for this form.
      */
-    public void setBBox(PDRectangle bbox)
+    public void setBBox(final PDRectangle bbox)
     {
         if (bbox == null)
         {
@@ -234,12 +234,12 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      * Sets the optional Matrix entry for the form XObject.
      * @param transform the transformation matrix
      */
-    public void setMatrix(AffineTransform transform)
+    public void setMatrix(final AffineTransform transform)
     {
-        COSArray matrix = new COSArray();
-        double[] values = new double[6];
+        final COSArray matrix = new COSArray();
+        final double[] values = new double[6];
         transform.getMatrix(values);
-        for (double v : values)
+        for (final double v : values)
         {
             matrix.add(new COSFloat((float) v));
         }
@@ -262,7 +262,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      * This will set the key for this XObjectForm in the structural parent tree.
      * @param structParent The new key for this XObjectForm.
      */
-    public void setStructParents(int structParent)
+    public void setStructParents(final int structParent)
     {
         getCOSObject().setInt(COSName.STRUCT_PARENTS, structParent);
     }
@@ -275,7 +275,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      */
     public PDPropertyList getOptionalContent()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.OC);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.OC);
         if (base instanceof COSDictionary)
         {
             return PDPropertyList.create((COSDictionary) base);
@@ -288,7 +288,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      *
      * @param oc The optional content group or optional content membership dictionary.
      */
-    public void setOptionalContent(PDPropertyList oc)
+    public void setOptionalContent(final PDPropertyList oc)
     {
         getCOSObject().setItem(COSName.OC, oc);
     }

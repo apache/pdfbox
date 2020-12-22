@@ -30,7 +30,7 @@ class TestNamedAction extends AbstractTestAction
 {
     protected COSDictionary createNamedAction()
     {
-        COSDictionary namedAction = new COSDictionary();
+        final COSDictionary namedAction = new COSDictionary();
         namedAction.setItem(COSName.TYPE, COSName.getPDFName("Action"));
         namedAction.setItem(COSName.S, COSName.getPDFName("Named"));
 
@@ -40,7 +40,7 @@ class TestNamedAction extends AbstractTestAction
     @Test
     void testFirstPage() throws Exception
     {
-        COSDictionary namedAction = createNamedAction();
+        final COSDictionary namedAction = createNamedAction();
         namedAction
                 .setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_FIRST));
         valid(namedAction, true);
@@ -49,7 +49,7 @@ class TestNamedAction extends AbstractTestAction
     @Test
     void testLastPage() throws Exception
     {
-        COSDictionary namedAction = createNamedAction();
+        final COSDictionary namedAction = createNamedAction();
         namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_LAST));
         valid(namedAction, true);
     }
@@ -57,7 +57,7 @@ class TestNamedAction extends AbstractTestAction
     @Test
     void testNextPage() throws Exception
     {
-        COSDictionary namedAction = createNamedAction();
+        final COSDictionary namedAction = createNamedAction();
         namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_NEXT));
         valid(namedAction, true);
     }
@@ -65,7 +65,7 @@ class TestNamedAction extends AbstractTestAction
     @Test
     void testPrevPage() throws Exception
     {
-        COSDictionary namedAction = createNamedAction();
+        final COSDictionary namedAction = createNamedAction();
         namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_PREV));
         valid(namedAction, true);
     }
@@ -73,14 +73,14 @@ class TestNamedAction extends AbstractTestAction
     @Test
     void testMissingN() throws Exception
     {
-        COSDictionary namedAction = createNamedAction();
+        final COSDictionary namedAction = createNamedAction();
         valid(namedAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
     }
 
     @Test
     void testForbiddenN() throws Exception
     {
-        COSDictionary namedAction = createNamedAction();
+        final COSDictionary namedAction = createNamedAction();
         namedAction.setItem(COSName.N, COSName.getPDFName("unknown"));
         valid(namedAction, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_NAMED);
     }

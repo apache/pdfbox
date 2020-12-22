@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 class PageExtractorTest
 {
     
-    private void closeDoc(PDDocument doc)
+    private void closeDoc(final PDDocument doc)
     {
         if(doc != null)
         {
@@ -44,7 +44,7 @@ class PageExtractorTest
             {
                 doc.close(); 
             }
-            catch(Exception e)
+            catch(final Exception e)
             {
                 /* Can't do much about this... */ 
             }

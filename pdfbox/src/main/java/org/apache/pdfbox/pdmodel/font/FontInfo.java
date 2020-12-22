@@ -62,7 +62,7 @@ public abstract class FontInfo
      */
     final int getWeightClassAsPanose()
     {
-        int usWeightClass = getWeightClass();
+        final int usWeightClass = getWeightClass();
         switch (usWeightClass)
         {
             case -1: return 0;
@@ -95,8 +95,8 @@ public abstract class FontInfo
      */
     final long getCodePageRange()
     {
-        long range1 = getCodePageRange1() & 0x00000000ffffffffL;
-        long range2 = getCodePageRange2() & 0x00000000ffffffffL;
+        final long range1 = getCodePageRange1() & 0x00000000ffffffffL;
+        final long range2 = getCodePageRange2() & 0x00000000ffffffffL;
         return range2 << 32 | range1;
     }
 

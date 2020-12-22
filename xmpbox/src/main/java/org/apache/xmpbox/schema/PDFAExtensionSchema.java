@@ -47,12 +47,12 @@ public class PDFAExtensionSchema extends XMPSchema
      * @param metadata
      *            The metadata to attach this schema XMPMetadata
      */
-    public PDFAExtensionSchema(XMPMetadata metadata)
+    public PDFAExtensionSchema(final XMPMetadata metadata)
     {
         super(metadata);
     }
 
-    public PDFAExtensionSchema(XMPMetadata metadata, String prefix)
+    public PDFAExtensionSchema(final XMPMetadata metadata, final String prefix)
     {
         super(metadata, prefix);
     }

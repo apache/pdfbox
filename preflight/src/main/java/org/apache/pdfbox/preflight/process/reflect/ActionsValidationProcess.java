@@ -39,9 +39,9 @@ public class ActionsValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext context) throws ValidationException
+    public void validate(final PreflightContext context) throws ValidationException
     {
-        PreflightPath vPath = context.getValidationPath();
+        final PreflightPath vPath = context.getValidationPath();
         if (vPath.isEmpty()) 
         {
             return;
@@ -52,14 +52,14 @@ public class ActionsValidationProcess extends AbstractProcess
         }
         else 
         {
-            COSDictionary actionsDict = (COSDictionary) vPath.peek();
+            final COSDictionary actionsDict = (COSDictionary) vPath.peek();
             // AA entry is authorized only for Page, in this case A Page is just before the Action Dictionary in the path
-            boolean aaEntryAuth = ((vPath.size() - vPath.getClosestTypePosition(PDPage.class)) == 2);
+            final boolean aaEntryAuth = ((vPath.size() - vPath.getClosestTypePosition(PDPage.class)) == 2);
 
-            PreflightConfiguration config = context.getConfig();
-            ActionManagerFactory factory = config.getActionFact();
-            List<AbstractActionManager> la = factory.getActionManagers(context, actionsDict);
-            for (AbstractActionManager aMng : la)
+            final PreflightConfiguration config = context.getConfig();
+            final ActionManagerFactory factory = config.getActionFact();
+            final List<AbstractActionManager> la = factory.getActionManagers(context, actionsDict);
+            for (final AbstractActionManager aMng : la)
             {
                 aMng.valid(aaEntryAuth);
             }

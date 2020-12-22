@@ -87,7 +87,7 @@ public class GlyfCompositeComp
      * @param bais the stream to be read
      * @throws IOException is thrown if something went wrong
      */
-    GlyfCompositeComp(TTFDataStream bais) throws IOException
+    GlyfCompositeComp(final TTFDataStream bais) throws IOException
     {
         flags = bais.readSignedShort();
         glyphIndex = bais.readUnsignedShort();// number of glyph in a font is uint16
@@ -129,7 +129,7 @@ public class GlyfCompositeComp
         // Get the scale values (if any)
         if ((flags & WE_HAVE_A_SCALE) != 0)
         {
-            int i = bais.readSignedShort();
+            final int i = bais.readSignedShort();
             xscale = yscale = i / (double) 0x4000;
         }
         else if ((flags & WE_HAVE_AN_X_AND_Y_SCALE) != 0)
@@ -157,7 +157,7 @@ public class GlyfCompositeComp
      * 
      * @param idx the first index
      */
-    public void setFirstIndex(int idx)
+    public void setFirstIndex(final int idx)
     {
         firstIndex = idx;
     }
@@ -177,7 +177,7 @@ public class GlyfCompositeComp
      * 
      * @param idx the index of the first contour
      */
-    public void setFirstContour(int idx)
+    public void setFirstContour(final int idx)
     {
         firstContour = idx;
     }
@@ -299,7 +299,7 @@ public class GlyfCompositeComp
      * @param y The y-coordinate of the point to transform
      * @return The transformed x-coordinate
      */
-    public int scaleX(int x, int y)
+    public int scaleX(final int x, final int y)
     {
         return Math.round((float) (x * xscale + y * scale10));
     }
@@ -311,7 +311,7 @@ public class GlyfCompositeComp
      * @param y The y-coordinate of the point to transform
      * @return The transformed y-coordinate
      */
-    public int scaleY(int x, int y)
+    public int scaleY(final int x, final int y)
     {
         return Math.round((float) (x * scale01 + y * yscale));
     }

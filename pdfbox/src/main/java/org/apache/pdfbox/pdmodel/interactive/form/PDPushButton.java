@@ -37,7 +37,7 @@ public class PDPushButton extends PDButton
      *
      * @param acroForm The acroform.
      */
-    public PDPushButton(PDAcroForm acroForm)
+    public PDPushButton(final PDAcroForm acroForm)
     {
         super(acroForm);
         getCOSObject().setFlag(COSName.FF, FLAG_PUSHBUTTON, true);
@@ -50,7 +50,7 @@ public class PDPushButton extends PDButton
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDPushButton(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDPushButton(final PDAcroForm acroForm, final COSDictionary field, final PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -62,7 +62,7 @@ public class PDPushButton extends PDButton
     }
     
     @Override
-    public void setExportValues(List<String> values)
+    public void setExportValues(final List<String> values)
     {
         if (values != null && !values.isEmpty())
         {

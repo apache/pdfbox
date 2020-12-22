@@ -68,7 +68,7 @@ public final class OverlayPDF implements Callable<Integer>
     Map<Integer, String> specificPageOverlayFile = new HashMap<>();
 
     @Option(names = "-position", description = "where to put the overlay file: foreground or background (default: ${DEFAULT-VALUE})")    
-    private Position position = Position.BACKGROUND;
+    private final Position position = Position.BACKGROUND;
 
     @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF input file.")
     private File infile;
@@ -89,7 +89,7 @@ public final class OverlayPDF implements Callable<Integer>
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new OverlayPDF()).execute(args);
+        final int exitCode = new CommandLine(new OverlayPDF()).execute(args);
         System.exit(exitCode);
     }
 
@@ -98,7 +98,7 @@ public final class OverlayPDF implements Callable<Integer>
     {
         int retcode = 0;
 
-        Overlay overlayer = new Overlay();
+        final Overlay overlayer = new Overlay();
         overlayer.setOverlayPosition(position);
 
         if (firstPageOverlay != null)
@@ -131,7 +131,7 @@ public final class OverlayPDF implements Callable<Integer>
         {
             result.save(outfile);
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             SYSERR.println( "Error adding overlay(s) to PDF: " + ioe.getMessage());
             return 4;
@@ -144,7 +144,7 @@ public final class OverlayPDF implements Callable<Integer>
             {
                 overlayer.close();
             }
-            catch (IOException ioe)
+            catch (final IOException ioe)
             {
                 SYSERR.println( "Error adding overlay(s) to PDF: " + ioe.getMessage());
                 retcode = 4;

@@ -33,7 +33,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 public final class ShadingFill extends GraphicsOperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (operands.isEmpty())
         {

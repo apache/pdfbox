@@ -38,28 +38,28 @@ class TestMetadataFiles
     @Test()
     void validate() throws Exception
     {
-        String testfileDirectory = "src/test/resources/org/apache/pdfbox/preflight/metadata/";
+        final String testfileDirectory = "src/test/resources/org/apache/pdfbox/preflight/metadata/";
 
-        File validFile = new File(testfileDirectory + "PDFAMetaDataValidationTestTrailingNul.pdf");
+        final File validFile = new File(testfileDirectory + "PDFAMetaDataValidationTestTrailingNul.pdf");
         assertTrue(checkPDF(validFile), "Metadata test file " + validFile + " has to be valid ");
 
-        File invalidFile1 = new File(testfileDirectory
+        final File invalidFile1 = new File(testfileDirectory
                 + "PDFAMetaDataValidationTestTrailingSpaces.pdf");
         assertFalse(checkPDF(invalidFile1), "Metadata test file " + invalidFile1 + " has to be invalid ");
 
-        File invalidFile2 = new File(testfileDirectory
+        final File invalidFile2 = new File(testfileDirectory
                 + "PDFAMetaDataValidationTestTrailingControlChar.pdf");
         assertFalse(checkPDF(invalidFile2), "Metadata test file " + invalidFile2 + " has to be invalid ");
 
-        File invalidFile3 = new File(testfileDirectory + "PDFAMetaDataValidationTestMiddleNul.pdf");
+        final File invalidFile3 = new File(testfileDirectory + "PDFAMetaDataValidationTestMiddleNul.pdf");
         assertFalse(checkPDF(invalidFile3), "Metadata test file " + invalidFile3 + " has to be invalid ");
 
-        File invalidFile4 = new File(testfileDirectory
+        final File invalidFile4 = new File(testfileDirectory
                 + "PDFAMetaDataValidationTestMiddleControlChar.pdf");
         assertFalse(checkPDF(invalidFile4), "Metadata test file " + invalidFile4 + " has to be invalid ");
     }
 
-    private boolean checkPDF(File pdf)
+    private boolean checkPDF(final File pdf)
     {
         boolean testResult = false;
         if (pdf.exists())
@@ -69,7 +69,7 @@ class TestMetadataFiles
             {
                 result = PreflightParser.validate(pdf);
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 fail("An exception occurred while parsing the PDF " + pdf + ": " + e);
             }

@@ -33,8 +33,8 @@ class PDOutlineItemIteratorTest
     @Test
     void singleItem()
     {
-        PDOutlineItem first = new PDOutlineItem();
-        PDOutlineItemIterator iterator = new PDOutlineItemIterator(first);
+        final PDOutlineItem first = new PDOutlineItem();
+        final PDOutlineItemIterator iterator = new PDOutlineItemIterator(first);
         assertTrue(iterator.hasNext());
         assertEquals(first, iterator.next());
         assertFalse(iterator.hasNext());
@@ -43,10 +43,10 @@ class PDOutlineItemIteratorTest
     @Test
     void multipleItem()
     {
-        PDOutlineItem first = new PDOutlineItem();
-        PDOutlineItem second = new PDOutlineItem();
+        final PDOutlineItem first = new PDOutlineItem();
+        final PDOutlineItem second = new PDOutlineItem();
         first.setNextSibling(second);
-        PDOutlineItemIterator iterator = new PDOutlineItemIterator(first);
+        final PDOutlineItemIterator iterator = new PDOutlineItemIterator(first);
         assertTrue(iterator.hasNext());
         assertEquals(first, iterator.next());
         assertTrue(iterator.hasNext());
@@ -57,14 +57,14 @@ class PDOutlineItemIteratorTest
     @Test
     void removeUnsupported()
     {
-        PDOutlineItemIterator pdOutlineItemIterator = new PDOutlineItemIterator(new PDOutlineItem());
+        final PDOutlineItemIterator pdOutlineItemIterator = new PDOutlineItemIterator(new PDOutlineItem());
         assertThrows(UnsupportedOperationException.class, () -> pdOutlineItemIterator.remove());
     }
 
     @Test
     void noChildren()
     {
-        PDOutlineItemIterator iterator = new PDOutlineItemIterator(null);
+        final PDOutlineItemIterator iterator = new PDOutlineItemIterator(null);
         assertFalse(iterator.hasNext());
     }
 }

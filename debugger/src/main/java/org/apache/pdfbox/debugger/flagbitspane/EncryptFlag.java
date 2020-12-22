@@ -34,7 +34,7 @@ public class EncryptFlag extends Flag
      * Constructor
      * @param encryptDict COSDictionary instance.
      */
-    EncryptFlag(COSDictionary encryptDict)
+    EncryptFlag(final COSDictionary encryptDict)
     {
         encryptDictionary = encryptDict;
     }
@@ -54,7 +54,7 @@ public class EncryptFlag extends Flag
     @Override
     Object[][] getFlagBits()
     {
-        AccessPermission ap = new AccessPermission(encryptDictionary.getInt(COSName.P));
+        final AccessPermission ap = new AccessPermission(encryptDictionary.getInt(COSName.P));
         return new Object[][]{
                 new Object[]{3, "can print", ap.canPrint()},
                 new Object[]{4, "can modify", ap.canModify()},

@@ -39,31 +39,31 @@ public class SetLineDashPattern extends OperatorProcessor
     private static final Log LOG = LogFactory.getLog(SetLineDashPattern.class);
     
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws MissingOperandException
+    public void process(final Operator operator, final List<COSBase> arguments) throws MissingOperandException
     {
         if (arguments.size() < 2)
         {
             throw new MissingOperandException(operator, arguments);
         }
-        COSBase base0 = arguments.get(0);
+        final COSBase base0 = arguments.get(0);
         if (!(base0 instanceof COSArray))
         {
             return;
         }
-        COSBase base1 = arguments.get(1);
+        final COSBase base1 = arguments.get(1);
         if (!(base1 instanceof COSNumber))
         {
             return;
         }
         COSArray dashArray = (COSArray) base0;
-        int dashPhase = ((COSNumber) base1).intValue();
+        final int dashPhase = ((COSNumber) base1).intValue();
         
         boolean allZero = true;
-        for (COSBase base : dashArray)
+        for (final COSBase base : dashArray)
         {
             if (base instanceof COSNumber)
             {
-                COSNumber num = (COSNumber) base;
+                final COSNumber num = (COSNumber) base;
                 if (Float.compare(num.floatValue(), 0) != 0)
                 {
                     allZero = false;

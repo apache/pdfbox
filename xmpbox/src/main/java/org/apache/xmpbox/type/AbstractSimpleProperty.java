@@ -52,8 +52,8 @@ public abstract class AbstractSimpleProperty extends AbstractField
      * @param value
      *            the value to give
      */
-    public AbstractSimpleProperty(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
-            Object value)
+    public AbstractSimpleProperty(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String propertyName,
+                                  final Object value)
     {
         super(metadata, propertyName);
         setValue(value);

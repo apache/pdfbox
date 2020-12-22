@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
  */
 public class FDFIconFit implements COSObjectable
 {
-    private COSDictionary fit;
+    private final COSDictionary fit;
 
     /**
      * A scale option.
@@ -70,7 +70,7 @@ public class FDFIconFit implements COSObjectable
      *
      * @param f The icon fit dictionary.
      */
-    public FDFIconFit(COSDictionary f)
+    public FDFIconFit(final COSDictionary f)
     {
         fit = f;
     }
@@ -107,7 +107,7 @@ public class FDFIconFit implements COSObjectable
      *
      * @param option The scale option.
      */
-    public void setScaleOption(String option)
+    public void setScaleOption(final String option)
     {
         fit.setName(COSName.SW, option);
     }
@@ -133,7 +133,7 @@ public class FDFIconFit implements COSObjectable
      *
      * @param scale The scale type.
      */
-    public void setScaleType(String scale)
+    public void setScaleType(final String scale)
     {
         fit.setName(COSName.S, scale);
     }
@@ -151,7 +151,7 @@ public class FDFIconFit implements COSObjectable
     public PDRange getFractionalSpaceToAllocate()
     {
         PDRange retval = null;
-        COSArray array = (COSArray) fit.getDictionaryObject(COSName.A);
+        final COSArray array = (COSArray) fit.getDictionaryObject(COSName.A);
         if (array == null)
         {
             retval = new PDRange();
@@ -171,7 +171,7 @@ public class FDFIconFit implements COSObjectable
      *
      * @param space The space to allocate.
      */
-    public void setFractionalSpaceToAllocate(PDRange space)
+    public void setFractionalSpaceToAllocate(final PDRange space)
     {
         fit.setItem(COSName.A, space);
     }
@@ -191,7 +191,7 @@ public class FDFIconFit implements COSObjectable
      *
      * @param value The flag value.
      */
-    public void setScaleToFitAnnotation(boolean value)
+    public void setScaleToFitAnnotation(final boolean value)
     {
         fit.setBoolean(COSName.FB, value);
     }

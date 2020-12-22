@@ -42,7 +42,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      *            The appearance stream to write to.
      * @throws IOException If there is an error writing to the content stream.
      */
-    public PDAppearanceContentStream(PDAppearanceStream appearance) throws IOException
+    public PDAppearanceContentStream(final PDAppearanceStream appearance) throws IOException
     {
         this(appearance, appearance.getStream().createOutputStream());
     }
@@ -55,7 +55,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * creating long content streams.
      * @throws IOException If there is an error writing to the content stream.
      */
-    public PDAppearanceContentStream(PDAppearanceStream appearance, boolean compress) throws IOException
+    public PDAppearanceContentStream(final PDAppearanceStream appearance, final boolean compress) throws IOException
     {
         this(appearance, appearance.getStream().createOutputStream(compress ? COSName.FLATE_DECODE : null));
     }
@@ -68,7 +68,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * @param outputStream
      *            The appearances output stream to write to.
      */
-    public PDAppearanceContentStream(PDAppearanceStream appearance, OutputStream outputStream)
+    public PDAppearanceContentStream(final PDAppearanceStream appearance, final OutputStream outputStream)
     {
         super(null, outputStream, appearance.getResources());
     }
@@ -84,11 +84,11 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * @throws IOException If there is an error writing to the content stream.
      * @see PDAbstractContentStream#setStrokingColor(PDColor)
      */
-    public boolean setStrokingColorOnDemand(PDColor color) throws IOException
+    public boolean setStrokingColorOnDemand(final PDColor color) throws IOException
     {
         if (color != null)
         {
-            float[] components = color.getComponents();
+            final float[] components = color.getComponents();
             if (components.length > 0)
             {
                 setStrokingColor(components);
@@ -106,14 +106,14 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      *            the color components dependent on the color space being used.
      * @throws IOException If there is an error writing to the content stream.
      */
-    public void setStrokingColor(float[] components) throws IOException
+    public void setStrokingColor(final float[] components) throws IOException
     {
-        for (float value : components)
+        for (final float value : components)
         {
             writeOperand(value);
         }
 
-        int numComponents = components.length;
+        final int numComponents = components.length;
         switch (numComponents)
         {
         case 1:
@@ -143,11 +143,11 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * @throws IOException If there is an error writing to the content stream.
      * @see PDAbstractContentStream#setNonStrokingColor(PDColor)
      */
-    public boolean setNonStrokingColorOnDemand(PDColor color) throws IOException
+    public boolean setNonStrokingColorOnDemand(final PDColor color) throws IOException
     {
         if (color != null)
         {
-            float[] components = color.getComponents();
+            final float[] components = color.getComponents();
             if (components.length > 0)
             {
                 setNonStrokingColor(components);
@@ -165,14 +165,14 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      *            the color components dependent on the color space being used.
      * @throws IOException If there is an error writing to the content stream.
      */
-    public void setNonStrokingColor(float[] components) throws IOException
+    public void setNonStrokingColor(final float[] components) throws IOException
     {
-        for (float value : components)
+        for (final float value : components)
         {
             writeOperand(value);
         }
 
-        int numComponents = components.length;
+        final int numComponents = components.length;
         switch (numComponents)
         {
         case 1:
@@ -201,8 +201,8 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      *
      * @throws IOException If there is an error writing to the content stream.
      */
-    public void setBorderLine(float lineWidth, PDBorderStyleDictionary bs,
-                                               COSArray border) throws IOException
+    public void setBorderLine(final float lineWidth, final PDBorderStyleDictionary bs,
+                              final COSArray border) throws IOException
     {
         // Can't use PDBorderStyleDictionary.getDashStyle() as
         // this will return a default dash style if non is existing
@@ -226,7 +226,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * @throws IOException If there is an error writing to the content stream.
      * @see PDAbstractContentStream#setLineWidth(float)
      */
-    public void setLineWidthOnDemand(float lineWidth) throws IOException
+    public void setLineWidthOnDemand(final float lineWidth) throws IOException
     {
         // Acrobat doesn't write a line width command
         // for a line width of 1 as this is default.
@@ -249,7 +249,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * @param hasFill shall there be a fill color.
      * @throws IOException If there is an error writing to the content stream.
      */
-    public void drawShape(float lineWidth, boolean hasStroke, boolean hasFill) throws IOException
+    public void drawShape(final float lineWidth, final boolean hasStroke, final boolean hasFill) throws IOException
     {
         // initial setting if stroking shall be done
         boolean resolvedHasStroke = hasStroke;

@@ -43,7 +43,7 @@ final class TIFFUtil
      * @param image buffered image used to decide compression type
      * @param param ImageIO write parameter to update
      */
-    public static void setCompressionType(ImageWriteParam param, BufferedImage image)
+    public static void setCompressionType(final ImageWriteParam param, final BufferedImage image)
     {
         // avoid error: first compression type is RLE, not optimal and incorrect for color images
         // TODO expose this choice to the user?
@@ -72,10 +72,10 @@ final class TIFFUtil
      * @param dpi image dots per inch
      * @throws IIOInvalidTreeException if something goes wrong
      */
-    static void updateMetadata(IIOMetadata metadata, BufferedImage image, int dpi)
+    static void updateMetadata(final IIOMetadata metadata, final BufferedImage image, final int dpi)
             throws IIOInvalidTreeException
     {
-        String metaDataFormat = metadata.getNativeMetadataFormatName();
+        final String metaDataFormat = metadata.getNativeMetadataFormatName();
         if (metaDataFormat == null)
         {
             LOG.debug("TIFF image writer doesn't support any data format");
@@ -84,8 +84,8 @@ final class TIFFUtil
 
         debugLogMetadata(metadata, metaDataFormat);
 
-        IIOMetadataNode root = new IIOMetadataNode(metaDataFormat);
-        IIOMetadataNode ifd;
+        final IIOMetadataNode root = new IIOMetadataNode(metaDataFormat);
+        final IIOMetadataNode ifd;
         if (root.getElementsByTagName("TIFFIFD").getLength() == 0)
         {
             ifd = new IIOMetadataNode("TIFFIFD");
@@ -117,9 +117,11 @@ final class TIFFUtil
         debugLogMetadata(metadata, metaDataFormat);
     }
 
-    private static IIOMetadataNode createShortField(int tiffTagNumber, String name, int val)
+    private static IIOMetadataNode createShortField(final int tiffTagNumber, final String name, final int val)
     {
-        IIOMetadataNode field, arrayNode, valueNode;
+        final IIOMetadataNode field;
+        final IIOMetadataNode arrayNode;
+        final IIOMetadataNode valueNode;
         field = new IIOMetadataNode("TIFFField");
         field.setAttribute("number", Integer.toString(tiffTagNumber));
         field.setAttribute("name", name);
@@ -131,9 +133,11 @@ final class TIFFUtil
         return field;
     }
 
-    private static IIOMetadataNode createAsciiField(int number, String name, String val)
+    private static IIOMetadataNode createAsciiField(final int number, final String name, final String val)
     {
-        IIOMetadataNode field, arrayNode, valueNode;
+        final IIOMetadataNode field;
+        final IIOMetadataNode arrayNode;
+        final IIOMetadataNode valueNode;
         field = new IIOMetadataNode("TIFFField");
         field.setAttribute("number", Integer.toString(number));
         field.setAttribute("name", name);
@@ -145,9 +149,11 @@ final class TIFFUtil
         return field;
     }
 
-    private static IIOMetadataNode createLongField(int number, String name, long val)
+    private static IIOMetadataNode createLongField(final int number, final String name, final long val)
     {
-        IIOMetadataNode field, arrayNode, valueNode;
+        final IIOMetadataNode field;
+        final IIOMetadataNode arrayNode;
+        final IIOMetadataNode valueNode;
         field = new IIOMetadataNode("TIFFField");
         field.setAttribute("number", Integer.toString(number));
         field.setAttribute("name", name);
@@ -159,10 +165,12 @@ final class TIFFUtil
         return field;
     }
 
-    private static IIOMetadataNode createRationalField(int number, String name, int numerator,
-                                                       int denominator)
+    private static IIOMetadataNode createRationalField(final int number, final String name, final int numerator,
+                                                       final int denominator)
     {
-        IIOMetadataNode field, arrayNode, valueNode;
+        final IIOMetadataNode field;
+        final IIOMetadataNode arrayNode;
+        final IIOMetadataNode valueNode;
         field = new IIOMetadataNode("TIFFField");
         field.setAttribute("number", Integer.toString(number));
         field.setAttribute("name", name);

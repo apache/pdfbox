@@ -59,14 +59,14 @@ final class SampledImageReader
      * @throws IOException if the image cannot be read
      * @throws IllegalStateException if the image is not a stencil.
      */
-    public static BufferedImage getStencilImage(PDImage pdImage, Paint paint) throws IOException
+    public static BufferedImage getStencilImage(final PDImage pdImage, final Paint paint) throws IOException
     {
-        int width = pdImage.getWidth();
-        int height = pdImage.getHeight();
+        final int width = pdImage.getWidth();
+        final int height = pdImage.getHeight();
 
         // compose to ARGB
-        BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = masked.createGraphics();
+        final BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = masked.createGraphics();
 
         // draw the mask
         //g.drawImage(mask, 0, 0, null);
@@ -78,7 +78,7 @@ final class SampledImageReader
         g.dispose();
 
         // set the alpha
-        WritableRaster raster = masked.getRaster();
+        final WritableRaster raster = masked.getRaster();
 
         final int[] transparent = new int[4];
 
@@ -88,25 +88,25 @@ final class SampledImageReader
         try (InputStream iis = pdImage.createInputStream())
         {
             final float[] decode = getDecodeArray(pdImage);
-            int value = decode[0] < decode[1] ? 1 : 0;
+            final int value = decode[0] < decode[1] ? 1 : 0;
             int rowLen = width / 8;
             if (width % 8 > 0)
             {
                 rowLen++;
             }
-            byte[] buff = new byte[rowLen];
+            final byte[] buff = new byte[rowLen];
             for (int y = 0; y < height; y++)
             {
                 int x = 0;
-                int readLen = (int) IOUtils.populateBuffer(iis, buff);
+                final int readLen = (int) IOUtils.populateBuffer(iis, buff);
                 for (int r = 0; r < rowLen && r < readLen; r++)
                 {
-                    int byteValue = buff[r];
+                    final int byteValue = buff[r];
                     int mask = 128;
                     int shift = 7;
                     for (int i = 0; i < 8; i++)
                     {
-                        int bit = (byteValue & mask) >> shift;
+                        final int bit = (byteValue & mask) >> shift;
                         mask >>= 1;
                         --shift;
                         if (bit == value)
@@ -140,12 +140,12 @@ final class SampledImageReader
      * @return content of this image as an RGB buffered image
      * @throws IOException if the image cannot be read
      */
-    public static BufferedImage getRGBImage(PDImage pdImage, COSArray colorKey) throws IOException
+    public static BufferedImage getRGBImage(final PDImage pdImage, final COSArray colorKey) throws IOException
     {
         return getRGBImage(pdImage, null, 1, colorKey);
     }
 
-    private static Rectangle clipRegion(PDImage pdImage, Rectangle region)
+    private static Rectangle clipRegion(final PDImage pdImage, final Rectangle region)
     {
         if (region == null)
         {
@@ -153,10 +153,10 @@ final class SampledImageReader
         }
         else
         {
-            int x = Math.max(0, region.x);
-            int y = Math.max(0, region.y);
-            int width = Math.min(region.width, pdImage.getWidth() - x);
-            int height = Math.min(region.height, pdImage.getHeight() - y);
+            final int x = Math.max(0, region.x);
+            final int y = Math.max(0, region.y);
+            final int width = Math.min(region.width, pdImage.getWidth() - x);
+            final int height = Math.min(region.height, pdImage.getHeight() - y);
             return new Rectangle(x, y, width, height);
         }
     }
@@ -174,14 +174,14 @@ final class SampledImageReader
      * @return content of this image as an (A)RGB buffered image
      * @throws IOException if the image cannot be read
      */
-    public static BufferedImage getRGBImage(PDImage pdImage, Rectangle region, int subsampling,
-                                            COSArray colorKey) throws IOException
+    public static BufferedImage getRGBImage(final PDImage pdImage, final Rectangle region, final int subsampling,
+                                            final COSArray colorKey) throws IOException
     {
         if (pdImage.isEmpty())
         {
             throw new IOException("Image stream is empty");
         }
-        Rectangle clipped = clipRegion(pdImage, region);
+        final Rectangle clipped = clipRegion(pdImage, region);
 
         // get parameters, they must be valid or have been repaired
         final PDColorSpace colorSpace = pdImage.getColorSpace();
@@ -208,7 +208,7 @@ final class SampledImageReader
             // in depth to 8bpc as they will be drawn to TYPE_INT_RGB images anyway. All code
             // in PDColorSpace#toRGBImage expects an 8-bit range, i.e. 0-255.
             // Interleaved raster allows chunk-copying for 8-bit images.
-            WritableRaster raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, width, height,
+            final WritableRaster raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, width, height,
                     numComponents, new Point(0, 0));
             final float[] defaultDecode = pdImage.getColorSpace().getDefaultDecode(8);
             if (bitsPerComponent == 8 && Arrays.equals(decode, defaultDecode) && colorKey == null)
@@ -218,7 +218,7 @@ final class SampledImageReader
             }
             return fromAny(pdImage, raster, colorKey, clipped, subsampling, width, height);
         }
-        catch (NegativeArraySizeException ex)
+        catch (final NegativeArraySizeException ex)
         {
             throw new IOException(ex);
         }
@@ -230,7 +230,7 @@ final class SampledImageReader
      * @return the raw raster of this image
      * @throws IOException
      */
-    public static WritableRaster getRawRaster(PDImage pdImage) throws IOException
+    public static WritableRaster getRawRaster(final PDImage pdImage) throws IOException
     {
         if (pdImage.isEmpty())
         {
@@ -256,25 +256,25 @@ final class SampledImageReader
             {
                 dataBufferType = DataBuffer.TYPE_USHORT;
             }
-            WritableRaster raster = Raster.createInterleavedRaster(dataBufferType, width, height, numComponents,
+            final WritableRaster raster = Raster.createInterleavedRaster(dataBufferType, width, height, numComponents,
                     new Point(0, 0));
             readRasterFromAny(pdImage, raster);
             return raster;
         }
-        catch (NegativeArraySizeException ex)
+        catch (final NegativeArraySizeException ex)
         {
             throw new IOException(ex);
         }
     }
 
-    private static void readRasterFromAny(PDImage pdImage, WritableRaster raster)
+    private static void readRasterFromAny(final PDImage pdImage, final WritableRaster raster)
             throws IOException
     {
         final PDColorSpace colorSpace = pdImage.getColorSpace();
         final int numComponents = colorSpace.getNumberOfComponents();
         final int bitsPerComponent = pdImage.getBitsPerComponent();
         final float[] decode = getDecodeArray(pdImage);
-        DecodeOptions options = new DecodeOptions();
+        final DecodeOptions options = new DecodeOptions();
 
         // read bit stream
         try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options)))
@@ -305,14 +305,14 @@ final class SampledImageReader
                 {
                     for (int c = 0; c < numComponents; c++)
                     {
-                        int value = (int) iis.readBits(bitsPerComponent);
+                        final int value = (int) iis.readBits(bitsPerComponent);
 
                         // decode array
                         final float dMin = decode[c * 2];
                         final float dMax = decode[(c * 2) + 1];
 
                         // interpolate to domain
-                        float output = dMin + (value * ((dMax - dMin) / sampleMax));
+                        final float output = dMin + (value * ((dMax - dMin) / sampleMax));
 
                         if (isIndexed)
                         {
@@ -326,7 +326,7 @@ final class SampledImageReader
                             if (isShort)
                             {
                                 // interpolate to TYPE_SHORT
-                                int outputShort = Math
+                                final int outputShort = Math
                                         .round(((output - Math.min(dMin, dMax)) / Math.abs(dMax - dMin)) * 65535f);
 
                                 srcColorValuesShort[c] = (short) outputShort;
@@ -334,7 +334,7 @@ final class SampledImageReader
                             else
                             {
                                 // interpolate to TYPE_BYTE
-                                int outputByte = Math
+                                final int outputByte = Math
                                         .round(((output - Math.min(dMin, dMax)) / Math.abs(dMax - dMin)) * 255f);
 
                                 srcColorValuesBytes[c] = (byte) outputByte;
@@ -358,17 +358,17 @@ final class SampledImageReader
         }
     }
 
-    private static BufferedImage from1Bit(PDImage pdImage, Rectangle clipped, final int subsampling,
+    private static BufferedImage from1Bit(final PDImage pdImage, final Rectangle clipped, final int subsampling,
                                           final int width, final int height) throws IOException
     {
         int currentSubsampling = subsampling;
         final PDColorSpace colorSpace = pdImage.getColorSpace();
         final float[] decode = getDecodeArray(pdImage);
         BufferedImage bim = null;
-        WritableRaster raster;
-        byte[] output;
+        final WritableRaster raster;
+        final byte[] output;
 
-        DecodeOptions options = new DecodeOptions(currentSubsampling);
+        final DecodeOptions options = new DecodeOptions(currentSubsampling);
         options.setSourceRegion(clipped);
         // read bit stream
         try (InputStream iis = pdImage.createInputStream(options))
@@ -419,8 +419,8 @@ final class SampledImageReader
             }
 
             // read stream
-            byte value0;
-            byte value1;
+            final byte value0;
+            final byte value1;
             if (isIndexed || decode[0] < decode[1])
             {
                 value0 = 0;
@@ -431,19 +431,19 @@ final class SampledImageReader
                 value0 = (byte) 255;
                 value1 = 0;
             }
-            byte[] buff = new byte[rowLen];
+            final byte[] buff = new byte[rowLen];
             int idx = 0;
             for (int y = 0; y < starty + scanHeight; y++)
             {
                 int x = 0;
-                int readLen = (int) IOUtils.populateBuffer(iis, buff);
+                final int readLen = (int) IOUtils.populateBuffer(iis, buff);
                 if (y < starty || y % currentSubsampling > 0)
                 {
                     continue;
                 }
                 for (int r = 0; r < rowLen && r < readLen; r++)
                 {
-                    int value = buff[r];
+                    final int value = buff[r];
                     int mask = 128;
                     for (int i = 0; i < 8; i++)
                     {
@@ -451,7 +451,7 @@ final class SampledImageReader
                         {
                             break;
                         }
-                        int bit = value & mask;
+                        final int bit = value & mask;
                         mask >>= 1;
                         if (x >= startx && x % currentSubsampling == 0)
                         {
@@ -478,11 +478,11 @@ final class SampledImageReader
     }
 
     // faster, 8-bit non-decoded, non-colormasked image conversion
-    private static BufferedImage from8bit(PDImage pdImage, WritableRaster raster, Rectangle clipped, final int subsampling,
+    private static BufferedImage from8bit(final PDImage pdImage, final WritableRaster raster, final Rectangle clipped, final int subsampling,
                                           final int width, final int height) throws IOException
     {
         int currentSubsampling = subsampling;
-        DecodeOptions options = new DecodeOptions(currentSubsampling);
+        final DecodeOptions options = new DecodeOptions(currentSubsampling);
         options.setSourceRegion(clipped);
         try (InputStream input = pdImage.createInputStream(options))
         {
@@ -512,11 +512,11 @@ final class SampledImageReader
             }
             final int numComponents = pdImage.getColorSpace().getNumberOfComponents();
             // get the raster's underlying byte buffer
-            byte[] bank = ((DataBufferByte) raster.getDataBuffer()).getData();
+            final byte[] bank = ((DataBufferByte) raster.getDataBuffer()).getData();
             if (startx == 0 && starty == 0 && scanWidth == width && scanHeight == height && currentSubsampling == 1)
             {
                 // we just need to copy all sample data, then convert to RGB image.
-                long inputResult = IOUtils.populateBuffer(input, bank);
+                final long inputResult = IOUtils.populateBuffer(input, bank);
                 if (Long.compare(inputResult, width * height * (long) numComponents) != 0)
                 {
                     LOG.debug("Tried reading " + width * height * (long) numComponents + " bytes but only " + inputResult + " bytes read");
@@ -526,14 +526,14 @@ final class SampledImageReader
 
             // either subsampling is required, or reading only part of the image, so its
             // not possible to blindly copy all data.
-            byte[] tempBytes = new byte[numComponents * inputWidth];
+            final byte[] tempBytes = new byte[numComponents * inputWidth];
             // compromise between memory and time usage:
             // reading the whole image consumes too much memory
             // reading one pixel at a time makes it slow in our buffering infrastructure 
             int i = 0;
             for (int y = 0; y < starty + scanHeight; ++y)
             {
-                long inputResult = IOUtils.populateBuffer(input, tempBytes);
+                final long inputResult = IOUtils.populateBuffer(input, tempBytes);
 
                 if (Long.compare(inputResult, tempBytes.length) != 0)
                 {
@@ -569,7 +569,7 @@ final class SampledImageReader
     }
 
     // slower, general-purpose image conversion from any image format
-    private static BufferedImage fromAny(PDImage pdImage, WritableRaster raster, COSArray colorKey, Rectangle clipped,
+    private static BufferedImage fromAny(final PDImage pdImage, final WritableRaster raster, final COSArray colorKey, final Rectangle clipped,
                                          final int subsampling, final int width, final int height)
             throws IOException
     {
@@ -579,7 +579,7 @@ final class SampledImageReader
         final int bitsPerComponent = pdImage.getBitsPerComponent();
         final float[] decode = getDecodeArray(pdImage);
 
-        DecodeOptions options = new DecodeOptions(currentSubsampling);
+        final DecodeOptions options = new DecodeOptions(currentSubsampling);
         options.setSourceRegion(clipped);
         // read bit stream
         try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options)))
@@ -628,8 +628,8 @@ final class SampledImageReader
             }
 
             // read stream
-            byte[] srcColorValues = new byte[numComponents];
-            byte[] alpha = new byte[1];
+            final byte[] srcColorValues = new byte[numComponents];
+            final byte[] alpha = new byte[1];
             for (int y = 0; y < starty + scanHeight; y++)
             {
                 for (int x = 0; x < startx + scanWidth; x++)
@@ -637,7 +637,7 @@ final class SampledImageReader
                     boolean isMasked = true;
                     for (int c = 0; c < numComponents; c++)
                     {
-                        int value = (int)iis.readBits(bitsPerComponent);
+                        final int value = (int)iis.readBits(bitsPerComponent);
 
                         // color key mask requires values before they are decoded
                         if (colorKeyRanges != null)
@@ -651,7 +651,7 @@ final class SampledImageReader
                         final float dMax = decode[(c * 2) + 1];
 
                         // interpolate to domain
-                        float output = dMin + (value * ((dMax - dMin) / sampleMax));
+                        final float output = dMin + (value * ((dMax - dMin) / sampleMax));
 
                         if (isIndexed)
                         {
@@ -663,7 +663,7 @@ final class SampledImageReader
                         else
                         {
                             // interpolate to TYPE_BYTE
-                            int outputByte = Math.round(((output - Math.min(dMin, dMax)) /
+                            final int outputByte = Math.round(((output - Math.min(dMin, dMax)) /
                                     Math.abs(dMax - dMin)) * 255f);
 
                             srcColorValues[c] = (byte)outputByte;
@@ -688,7 +688,7 @@ final class SampledImageReader
             }
 
             // use the color space to convert the image to RGB
-            BufferedImage rgbImage = colorSpace.toRGBImage(raster);
+            final BufferedImage rgbImage = colorSpace.toRGBImage(raster);
 
             // apply color mask, if any
             if (colorKeyMask != null)
@@ -703,20 +703,20 @@ final class SampledImageReader
     }
 
     // color key mask: RGB + Binary -> ARGB
-    private static BufferedImage applyColorKeyMask(BufferedImage image, BufferedImage mask)
+    private static BufferedImage applyColorKeyMask(final BufferedImage image, final BufferedImage mask)
     {
-        int width = image.getWidth();
-        int height = image.getHeight();
+        final int width = image.getWidth();
+        final int height = image.getHeight();
 
         // compose to ARGB
-        BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-        WritableRaster src = image.getRaster();
-        WritableRaster dest = masked.getRaster();
-        WritableRaster alpha = mask.getRaster();
+        final WritableRaster src = image.getRaster();
+        final WritableRaster dest = masked.getRaster();
+        final WritableRaster alpha = mask.getRaster();
 
-        float[] rgb = new float[3];
-        float[] rgba = new float[4];
+        final float[] rgb = new float[3];
+        final float[] rgba = new float[4];
         float[] alphaPixel = null;
         for (int y = 0; y < height; y++)
         {
@@ -738,22 +738,22 @@ final class SampledImageReader
     }
 
     // gets decode array from dictionary or returns default
-    private static float[] getDecodeArray(PDImage pdImage) throws IOException
+    private static float[] getDecodeArray(final PDImage pdImage) throws IOException
     {
         final COSArray cosDecode = pdImage.getDecode();
         float[] decode = null;
 
         if (cosDecode != null)
         {
-            int numberOfComponents = pdImage.getColorSpace().getNumberOfComponents();
+            final int numberOfComponents = pdImage.getColorSpace().getNumberOfComponents();
             if (cosDecode.size() != numberOfComponents * 2)
             {
                 if (pdImage.isStencil() && cosDecode.size() >= 2
                         && cosDecode.get(0) instanceof COSNumber
                         && cosDecode.get(1) instanceof COSNumber)
                 {
-                    float decode0 = ((COSNumber) cosDecode.get(0)).floatValue();
-                    float decode1 = ((COSNumber) cosDecode.get(1)).floatValue();
+                    final float decode0 = ((COSNumber) cosDecode.get(0)).floatValue();
+                    final float decode1 = ((COSNumber) cosDecode.get(1)).floatValue();
                     if (decode0 >= 0 && decode0 <= 1 && decode1 >= 0 && decode1 <= 1)
                     {
                         LOG.warn("decode array " + cosDecode

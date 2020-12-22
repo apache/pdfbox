@@ -30,13 +30,13 @@ import org.apache.pdfbox.pdmodel.font.PDType3Font;
  */
 public class Type3Container extends FontContainer<PDType3Font>
 {
-    public Type3Container(PDType3Font font)
+    public Type3Container(final PDType3Font font)
     {
         super(font);
     }
 
     @Override
-    public boolean hasGlyph(int code) throws IOException
+    public boolean hasGlyph(final int code) throws IOException
     {
         return font.getCharProc(code) != null;
     }

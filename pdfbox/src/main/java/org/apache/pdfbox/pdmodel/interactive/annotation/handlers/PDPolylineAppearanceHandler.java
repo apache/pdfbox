@@ -42,12 +42,12 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDPolylineAppearanceHandler.class);
 
-    public PDPolylineAppearanceHandler(PDAnnotation annotation)
+    public PDPolylineAppearanceHandler(final PDAnnotation annotation)
     {
         super(annotation);
     }
 
-    public PDPolylineAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    public PDPolylineAppearanceHandler(final PDAnnotation annotation, final PDDocument document)
     {
         super(annotation, document);
     }
@@ -63,15 +63,15 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        PDAnnotationPolyline annotation = (PDAnnotationPolyline) getAnnotation();
-        PDRectangle rect = annotation.getRectangle();
-        float[] pathsArray = annotation.getVertices();
+        final PDAnnotationPolyline annotation = (PDAnnotationPolyline) getAnnotation();
+        final PDRectangle rect = annotation.getRectangle();
+        final float[] pathsArray = annotation.getVertices();
         if (pathsArray == null || pathsArray.length < 4)
         {
             return;
         }
-        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
-        PDColor color = annotation.getColor();
+        final AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
+        final PDColor color = annotation.getColor();
         if (color == null || color.getComponents().length == 0 || Float.compare(ab.width, 0) == 0)
         {
             return;
@@ -86,8 +86,8 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
         float maxY = Float.MIN_VALUE;
         for (int i = 0; i < pathsArray.length / 2; ++i)
         {
-            float x = pathsArray[i * 2];
-            float y = pathsArray[i * 2 + 1];
+            final float x = pathsArray[i * 2];
+            final float y = pathsArray[i * 2 + 1];
             minX = Math.min(minX, x);
             minY = Math.min(minY, y);
             maxX = Math.max(maxX, x);
@@ -102,9 +102,9 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
 
         try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
         {
-            boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
+            final boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
             setOpacity(cs, annotation.getConstantOpacity());
-            boolean hasStroke = cs.setStrokingColorOnDemand(color);
+            final boolean hasStroke = cs.setStrokingColorOnDemand(color);
 
             if (ab.dashArray != null)
             {
@@ -122,9 +122,9 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                     {
                         // modify coordinate to shorten the segment
                         // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
-                        float x1 = pathsArray[2];
-                        float y1 = pathsArray[3];
-                        float len = (float) (Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2)));
+                        final float x1 = pathsArray[2];
+                        final float y1 = pathsArray[3];
+                        final float len = (float) (Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2)));
                         if (Float.compare(len, 0) != 0)
                         {
                             x += (x1 - x) / len * ab.width;
@@ -140,9 +140,9 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                     {
                         // modify coordinate to shorten the segment
                         // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
-                        float x0 = pathsArray[pathsArray.length - 4];
-                        float y0 = pathsArray[pathsArray.length - 3];
-                        float len = (float) (Math.sqrt(Math.pow(x0 - x, 2) + Math.pow(y0 - y, 2)));
+                        final float x0 = pathsArray[pathsArray.length - 4];
+                        final float y0 = pathsArray[pathsArray.length - 3];
+                        final float len = (float) (Math.sqrt(Math.pow(x0 - x, 2) + Math.pow(y0 - y, 2)));
                         if (Float.compare(len, 0) != 0)
                         {
                             x -= (x - x0) / len * ab.width;
@@ -162,14 +162,14 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
             if (!LE_NONE.equals(annotation.getStartPointEndingStyle()))
             {
                 // check only needed to avoid q cm Q if LE_NONE
-                float x2 = pathsArray[2];
-                float y2 = pathsArray[3];
-                float x1 = pathsArray[0];
-                float y1 = pathsArray[1];
+                final float x2 = pathsArray[2];
+                final float y2 = pathsArray[3];
+                final float x1 = pathsArray[0];
+                final float y1 = pathsArray[1];
                 cs.saveGraphicsState();
                 if (ANGLED_STYLES.contains(annotation.getStartPointEndingStyle()))
                 {
-                    double angle = Math.atan2(y2 - y1, x2 - x1);
+                    final double angle = Math.atan2(y2 - y1, x2 - x1);
                     cs.transform(Matrix.getRotateInstance(angle, x1, y1));
                 }
                 else
@@ -183,14 +183,14 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
             if (!LE_NONE.equals(annotation.getEndPointEndingStyle()))
             {
                 // check only needed to avoid q cm Q if LE_NONE
-                float x1 = pathsArray[pathsArray.length - 4];
-                float y1 = pathsArray[pathsArray.length - 3];
-                float x2 = pathsArray[pathsArray.length - 2];
-                float y2 = pathsArray[pathsArray.length - 1];
+                final float x1 = pathsArray[pathsArray.length - 4];
+                final float y1 = pathsArray[pathsArray.length - 3];
+                final float x2 = pathsArray[pathsArray.length - 2];
+                final float y2 = pathsArray[pathsArray.length - 1];
                 // save / restore not needed because it's the last one
                 if (ANGLED_STYLES.contains(annotation.getEndPointEndingStyle()))
                 {
-                    double angle = Math.atan2(y2 - y1, x2 - x1);
+                    final double angle = Math.atan2(y2 - y1, x2 - x1);
                     cs.transform(Matrix.getRotateInstance(angle, x2, y2));
                 }
                 else
@@ -200,7 +200,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 drawStyle(annotation.getEndPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground, true);
             }
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             LOG.error(ex);
         }
@@ -237,19 +237,19 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
     // here and removed from the individual handlers.
     float getLineWidth()
     {
-        PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
+        final PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
 
-        PDBorderStyleDictionary bs = annotation.getBorderStyle();
+        final PDBorderStyleDictionary bs = annotation.getBorderStyle();
 
         if (bs != null)
         {
             return bs.getWidth();
         }
 
-        COSArray borderCharacteristics = annotation.getBorder();
+        final COSArray borderCharacteristics = annotation.getBorder();
         if (borderCharacteristics.size() >= 3)
         {
-            COSBase base = borderCharacteristics.getObject(2);
+            final COSBase base = borderCharacteristics.getObject(2);
             if (base instanceof COSNumber)
             {
                 return ((COSNumber) base).floatValue();

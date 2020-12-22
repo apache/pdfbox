@@ -42,7 +42,7 @@ public class SetNonStrokingColor extends SetColor
      * @param color The new non-stroking color.
      */
     @Override
-    protected void setColor(PDColor color)
+    protected void setColor(final PDColor color)
     {
         context.getGraphicsState().setNonStrokingColor(color);
     }

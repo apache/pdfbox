@@ -110,7 +110,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     // more ideas:
     // https://stackoverflow.com/questions/16440159/dragging-of-shapes-on-jpanel
 
-    public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
+    public PagePane(final PDDocument document, final COSDictionary pageDict, final JLabel statuslabel)
     {
         page = new PDPage(pageDict);
         pageIndex = document.getPages().indexOf(page);
@@ -127,7 +127,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             collectFieldLocations();
             collectLinkLocations();
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             LOG.error(ex.getMessage(), ex);
         }
@@ -135,7 +135,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void collectLinkLocations() throws IOException
     {
-        for (PDAnnotation annotation : page.getAnnotations())
+        for (final PDAnnotation annotation : page.getAnnotations())
         {
             if (annotation instanceof PDAnnotationLink)
             {
@@ -144,19 +144,19 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         }
     }
 
-    private void collectLinkLocation(PDAnnotationLink linkAnnotation) throws IOException
+    private void collectLinkLocation(final PDAnnotationLink linkAnnotation) throws IOException
     {
-        PDAction action = linkAnnotation.getAction();
+        final PDAction action = linkAnnotation.getAction();
         if (action instanceof PDActionURI)
         {
-            PDActionURI uriAction = (PDActionURI) action;
+            final PDActionURI uriAction = (PDActionURI) action;
             rectMap.put(linkAnnotation.getRectangle(), "URI: " + uriAction.getURI());
             return;
         }
         PDDestination destination;
         if (action instanceof PDActionGoTo)
         {
-            PDActionGoTo goToAction = (PDActionGoTo) action;
+            final PDActionGoTo goToAction = (PDActionGoTo) action;
             destination = goToAction.getDestination();
         }
         else
@@ -170,8 +170,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         }
         if (destination instanceof PDPageDestination)
         {
-            PDPageDestination pageDestination = (PDPageDestination) destination;
-            int pageNum = pageDestination.retrievePageNumber();
+            final PDPageDestination pageDestination = (PDPageDestination) destination;
+            final int pageNum = pageDestination.retrievePageNumber();
             if (pageNum != -1)
             {
                 rectMap.put(linkAnnotation.getRectangle(), "Page destination: " + (pageNum + 1));
@@ -182,20 +182,20 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private void collectFieldLocations() throws IOException
     {
         // get Acroform without applying fixups to enure that we get the original content
-        PDDocumentFixup fixup = ViewMenu.isRepairAcroformSelected() ? new AcroFormDefaultFixup(document) : null;
-        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(fixup);
+        final PDDocumentFixup fixup = ViewMenu.isRepairAcroformSelected() ? new AcroFormDefaultFixup(document) : null;
+        final PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(fixup);
         if (acroForm == null)
         {
             return;
         }
-        Set<COSDictionary> dictionarySet = new HashSet<>();
-        for (PDAnnotation annotation : page.getAnnotations())
+        final Set<COSDictionary> dictionarySet = new HashSet<>();
+        for (final PDAnnotation annotation : page.getAnnotations())
         {
             dictionarySet.add(annotation.getCOSObject());
         }
-        for (PDField field : acroForm.getFieldTree())
+        for (final PDField field : acroForm.getFieldTree())
         {
-            for (PDAnnotationWidget widget : field.getWidgets())
+            for (final PDAnnotationWidget widget : field.getWidgets())
             {
                 // check if the annotation widget is on this page
                 // (checking widget.getPage() also works, but it is sometimes null)
@@ -215,13 +215,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         String pageLabelText = pageIndex < 0 ? "Page number not found" : "Page " + (pageIndex + 1);
 
         // append PDF page label, if available
-        String lbl = PDFDebugger.getPageLabel(document, pageIndex);
+        final String lbl = PDFDebugger.getPageLabel(document, pageIndex);
         if (lbl != null)
         {
             pageLabelText += " - " + lbl;
         }
 
-        JLabel pageLabel = new JLabel(pageLabelText);
+        final JLabel pageLabel = new JLabel(pageLabelText);
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pageLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 20));
         pageLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0));
@@ -250,12 +250,12 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     }
 
     @Override
-    public void actionPerformed(ActionEvent actionEvent)
+    public void actionPerformed(final ActionEvent actionEvent)
     {
-        String actionCommand = actionEvent.getActionCommand();
+        final String actionCommand = actionEvent.getActionCommand();
         if (ViewMenu.isRepairAcroformEvent(actionEvent))
         {
-            PDDocumentFixup fixup = ViewMenu.isRepairAcroformSelected() ? new AcroFormDefaultFixup(document) : null;
+            final PDDocumentFixup fixup = ViewMenu.isRepairAcroformSelected() ? new AcroFormDefaultFixup(document) : null;
             document.getDocumentCatalog().getAcroForm(fixup);
             startRendering();
         }
@@ -275,27 +275,27 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void startExtracting()
     {
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        int screenWidth = gd.getDisplayMode().getWidth();
-        int screenHeight = gd.getDisplayMode().getHeight();
+        final GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        final int screenWidth = gd.getDisplayMode().getWidth();
+        final int screenHeight = gd.getDisplayMode().getHeight();
 
-        TextDialog textDialog = TextDialog.instance();
+        final TextDialog textDialog = TextDialog.instance();
         textDialog.setSize(screenWidth / 3, screenHeight / 3);
         textDialog.setVisible(true);
 
         // avoid that the text extraction window gets outside of the screen
-        int x = Math.min(getPanel().getLocationOnScreen().x + getPanel().getWidth() / 2, screenWidth * 3 / 4);
-        int y = Math.min(getPanel().getLocationOnScreen().y + getPanel().getHeight() / 2, screenHeight * 3 / 4);
+        final int x = Math.min(getPanel().getLocationOnScreen().x + getPanel().getWidth() / 2, screenWidth * 3 / 4);
+        final int y = Math.min(getPanel().getLocationOnScreen().y + getPanel().getHeight() / 2, screenHeight * 3 / 4);
         textDialog.setLocation(x, y);
 
         try
         {
-            PDFTextStripper stripper = new PDFTextStripper();
+            final PDFTextStripper stripper = new PDFTextStripper();
             stripper.setStartPage(pageIndex + 1);
             stripper.setEndPage(pageIndex + 1);
             textDialog.setText(stripper.getText(document));
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             LOG.error(ex.getMessage(), ex);
         }
@@ -310,7 +310,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     }
 
     @Override
-    public void ancestorAdded(AncestorEvent ancestorEvent)
+    public void ancestorAdded(final AncestorEvent ancestorEvent)
     {
         zoomMenu.addMenuListeners(this);
         zoomMenu.setEnableMenu(true);
@@ -329,12 +329,12 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
         viewMenu = ViewMenu.getInstance(null);
 
-        JMenu menuInstance = viewMenu.getMenu();
-        int itemCount = menuInstance.getItemCount();
+        final JMenu menuInstance = viewMenu.getMenu();
+        final int itemCount = menuInstance.getItemCount();
         
         for (int i = 0; i< itemCount; i++)
         {
-            JMenuItem item = menuInstance.getItem(i);
+            final JMenuItem item = menuInstance.getItem(i);
             if (item != null)
             {
                 item.setEnabled(true);
@@ -344,7 +344,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     }
 
     @Override
-    public void ancestorRemoved(AncestorEvent ancestorEvent)
+    public void ancestorRemoved(final AncestorEvent ancestorEvent)
     {
         boolean isFirstEntrySkipped = false;
         zoomMenu.setEnableMenu(false);
@@ -352,12 +352,12 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         imageTypeMenu.setEnableMenu(false);
         renderDestinationMenu.setEnableMenu(false);
 
-        JMenu menuInstance = viewMenu.getMenu();
-        int itemCount = menuInstance.getItemCount();
+        final JMenu menuInstance = viewMenu.getMenu();
+        final int itemCount = menuInstance.getItemCount();
         
         for (int i = 0; i< itemCount; i++)
         {
-            JMenuItem item = menuInstance.getItem(i);
+            final JMenuItem item = menuInstance.getItem(i);
             // skip the first JMenuItem as this shall always be shown
             if (item != null)
             {
@@ -375,13 +375,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     }
 
     @Override
-    public void ancestorMoved(AncestorEvent ancestorEvent)
+    public void ancestorMoved(final AncestorEvent ancestorEvent)
     {
         // do nothing
     }
 
     @Override
-    public void mouseDragged(MouseEvent e)
+    public void mouseDragged(final MouseEvent e)
     {
         // do nothing
     }
@@ -392,17 +392,17 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
      * @param e mouse event with position
      */
     @Override
-    public void mouseMoved(MouseEvent e)
+    public void mouseMoved(final MouseEvent e)
     {
-        float height = page.getCropBox().getHeight();
-        float width  = page.getCropBox().getWidth();
-        float offsetX = page.getCropBox().getLowerLeftX();
-        float offsetY = page.getCropBox().getLowerLeftY();
-        float zoomScale = zoomMenu.getPageZoomScale();
-        float x = e.getX() / zoomScale * (float) defaultTransform.getScaleX();
-        float y = e.getY() / zoomScale * (float) defaultTransform.getScaleY();
-        int x1;
-        int y1;
+        final float height = page.getCropBox().getHeight();
+        final float width  = page.getCropBox().getWidth();
+        final float offsetX = page.getCropBox().getLowerLeftX();
+        final float offsetY = page.getCropBox().getLowerLeftY();
+        final float zoomScale = zoomMenu.getPageZoomScale();
+        final float x = e.getX() / zoomScale * (float) defaultTransform.getScaleX();
+        final float y = e.getY() / zoomScale * (float) defaultTransform.getScaleY();
+        final int x1;
+        final int y1;
         switch ((RotationMenu.getRotationDegrees() + page.getRotation()) % 360)
         {
             case 90:
@@ -428,11 +428,11 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         // are we in a field widget or a link annotation?
         Cursor cursor = Cursor.getDefaultCursor();
         currentURI = "";
-        for (Entry<PDRectangle,String> entry : rectMap.entrySet())
+        for (final Entry<PDRectangle,String> entry : rectMap.entrySet())
         {
             if (entry.getKey().contains(x1, y1))
             {
-                String s = rectMap.get(entry.getKey());
+                final String s = rectMap.get(entry.getKey());
                 text += ", " + s;
                 if (s.startsWith("URI: "))
                 {
@@ -448,7 +448,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     }
 
     @Override
-    public void mouseClicked(MouseEvent e)
+    public void mouseClicked(final MouseEvent e)
     {
         if (!currentURI.isEmpty() &&
             Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
@@ -457,7 +457,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             {
                 Desktop.getDesktop().browse(new URI(currentURI));
             }
-            catch (URISyntaxException | IOException ex)
+            catch (final URISyntaxException | IOException ex)
             {
                 new ErrorDialog(ex).setVisible(true);
             }
@@ -465,25 +465,25 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     }
 
     @Override
-    public void mousePressed(MouseEvent e)
+    public void mousePressed(final MouseEvent e)
     {
         // do nothing
     }
 
     @Override
-    public void mouseReleased(MouseEvent e)
+    public void mouseReleased(final MouseEvent e)
     {
         // do nothing
     }
 
     @Override
-    public void mouseEntered(MouseEvent e)
+    public void mouseEntered(final MouseEvent e)
     {
         // do nothing
     }
 
     @Override
-    public void mouseExited(MouseEvent e)
+    public void mouseExited(final MouseEvent e)
     {
         statuslabel.setText(labelText);
     }
@@ -497,33 +497,33 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         protected BufferedImage doInBackground() throws IOException
         {
             // rendering can take a long time, so remember all options that are used later
-            float scale = ZoomMenu.getZoomScale();
-            boolean showTextStripper = ViewMenu.isShowTextStripper();
-            boolean showTextStripperBeads = ViewMenu.isShowTextStripperBeads();
-            boolean showFontBBox = ViewMenu.isShowFontBBox();
-            int rotation = RotationMenu.getRotationDegrees();
+            final float scale = ZoomMenu.getZoomScale();
+            final boolean showTextStripper = ViewMenu.isShowTextStripper();
+            final boolean showTextStripperBeads = ViewMenu.isShowTextStripperBeads();
+            final boolean showFontBBox = ViewMenu.isShowFontBBox();
+            final int rotation = RotationMenu.getRotationDegrees();
 
             label.setIcon(null);
             labelText = "Rendering...";
             label.setText(labelText);
             statuslabel.setText(labelText);
 
-            PDFRenderer renderer = new PDFRenderer(document);
+            final PDFRenderer renderer = new PDFRenderer(document);
             renderer.setSubsamplingAllowed(ViewMenu.isAllowSubsampling());
 
-            long t0 = System.nanoTime();
-            BufferedImage image = renderer.renderImage(pageIndex, scale, ImageTypeMenu.getImageType(), RenderDestinationMenu.getRenderDestination());
-            long t1 = System.nanoTime();
+            final long t0 = System.nanoTime();
+            final BufferedImage image = renderer.renderImage(pageIndex, scale, ImageTypeMenu.getImageType(), RenderDestinationMenu.getRenderDestination());
+            final long t1 = System.nanoTime();
 
-            long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+            final long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
             labelText = "Rendered in " + ms + " ms";
             statuslabel.setText(labelText);
 
             // debug overlays
-            DebugTextOverlay debugText = new DebugTextOverlay(document, pageIndex, scale, 
+            final DebugTextOverlay debugText = new DebugTextOverlay(document, pageIndex, scale,
                                                               showTextStripper, showTextStripperBeads,
                                                               showFontBBox, ViewMenu.isShowGlyphBounds());
-            Graphics2D g = image.createGraphics();
+            final Graphics2D g = image.createGraphics();
             debugText.renderTo(g);
             g.dispose();
             
@@ -535,7 +535,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             try
             {
-                BufferedImage image = get();
+                final BufferedImage image = get();
 
                 // We cannot use "label.setIcon(new ImageIcon(get()))" here 
                 // because of blurry upscaling in JDK9. Instead, the label is now created with 
@@ -547,7 +547,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 label.setIcon(new HighResolutionImageIcon(image, label.getWidth(), label.getHeight()));
                 label.setText(null);
             }
-            catch (InterruptedException | ExecutionException e)
+            catch (final InterruptedException | ExecutionException e)
             {
                 label.setText(e.getMessage());
                 throw new RuntimeException(e);

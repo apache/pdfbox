@@ -57,7 +57,7 @@ public class ArrayProperty extends AbstractComplexProperty
      * @param type
      *            type of complexProperty (Bag, Seq, Alt)
      */
-    public ArrayProperty(XMPMetadata metadata, String namespace, String prefix, String propertyName, Cardinality type)
+    public ArrayProperty(final XMPMetadata metadata, final String namespace, final String prefix, final String propertyName, final Cardinality type)
     {
         super(metadata, propertyName);
         this.arrayType = type;
@@ -74,7 +74,7 @@ public class ArrayProperty extends AbstractComplexProperty
     {
         List<String> retval;
         retval = new ArrayList<>();
-        Iterator<AbstractField> it = getContainer().getAllProperties().iterator();
+        final Iterator<AbstractField> it = getContainer().getAllProperties().iterator();
         AbstractSimpleProperty tmp;
         while (it.hasNext())
         {

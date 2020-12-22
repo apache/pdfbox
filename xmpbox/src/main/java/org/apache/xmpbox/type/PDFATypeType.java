@@ -42,32 +42,32 @@ public class PDFATypeType extends AbstractStructuredType
     @PropertyType(type = Types.PDFAField, card = Cardinality.Seq)
     public static final String FIELD = "field";
 
-    public PDFATypeType(XMPMetadata metadata)
+    public PDFATypeType(final XMPMetadata metadata)
     {
         super(metadata);
     }
 
     public String getNamespaceURI()
     {
-        URIType tt = (URIType) getProperty(NS_URI);
+        final URIType tt = (URIType) getProperty(NS_URI);
         return tt == null ? null : tt.getStringValue();
     }
 
     public String getType()
     {
-        TextType tt = (TextType) getProperty(TYPE);
+        final TextType tt = (TextType) getProperty(TYPE);
         return tt == null ? null : tt.getStringValue();
     }
 
     public String getPrefixValue()
     {
-        TextType tt = (TextType) getProperty(PREFIX);
+        final TextType tt = (TextType) getProperty(PREFIX);
         return tt == null ? null : tt.getStringValue();
     }
 
     public String getDescription()
     {
-        TextType tt = (TextType) getProperty(DESCRIPTION);
+        final TextType tt = (TextType) getProperty(DESCRIPTION);
         return tt == null ? null : tt.getStringValue();
     }
 

@@ -58,7 +58,7 @@ public class VerticalHeaderTable extends TTFTable
     private short metricDataFormat;
     private int numberOfVMetrics;
 
-    VerticalHeaderTable(TrueTypeFont font)
+    VerticalHeaderTable(final TrueTypeFont font)
     {
         super(font);
     }
@@ -71,7 +71,7 @@ public class VerticalHeaderTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(final TrueTypeFont ttf, final TTFDataStream data) throws IOException
     {
         version = data.read32Fixed();
         ascender = data.readSignedShort();

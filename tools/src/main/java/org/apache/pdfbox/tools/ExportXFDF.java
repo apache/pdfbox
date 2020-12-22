@@ -56,12 +56,12 @@ public final class ExportXFDF implements Callable<Integer>
      * @param args The command-line arguments.
      *
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new ExportXFDF()).execute(args);
+        final int exitCode = new CommandLine(new ExportXFDF()).execute(args);
         System.exit(exitCode);
     }
 
@@ -69,7 +69,7 @@ public final class ExportXFDF implements Callable<Integer>
     {
         try (PDDocument pdf = Loader.loadPDF(infile))
         {
-            PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
+            final PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
             if( form == null )
             {
                 SYSERR.println( "Error: This PDF does not contain a form." );
@@ -78,7 +78,7 @@ public final class ExportXFDF implements Callable<Integer>
             {
                 if (outfile == null)
                 {
-                    String outPath = FilenameUtils.removeExtension(infile.getAbsolutePath()) + ".xfdf";
+                    final String outPath = FilenameUtils.removeExtension(infile.getAbsolutePath()) + ".xfdf";
                     outfile = new File(outPath);
                 }
                 
@@ -88,7 +88,7 @@ public final class ExportXFDF implements Callable<Integer>
                 }
             }
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             SYSERR.println( "Error exporting XFDF data: " + ioe.getMessage());
             return 4;

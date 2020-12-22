@@ -47,16 +47,16 @@ public class SetField
      *
      * @throws IOException If there is an error setting the field.
      */
-    public void setField(PDDocument pdfDocument, String name, String value) throws IOException
+    public void setField(final PDDocument pdfDocument, final String name, final String value) throws IOException
     {
-        PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
-        PDAcroForm acroForm = docCatalog.getAcroForm();
-        PDField field = acroForm.getField(name);
+        final PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
+        final PDAcroForm acroForm = docCatalog.getAcroForm();
+        final PDField field = acroForm.getField(name);
         if (field != null)
         {
             if (field instanceof PDCheckBox)
             {
-                PDCheckBox checkbox = (PDCheckBox) field;
+                final PDCheckBox checkbox = (PDCheckBox) field;
                 if (value.isEmpty())
                 {
                     checkbox.unCheck();
@@ -98,13 +98,13 @@ public class SetField
      *
      * @throws IOException If there is an error importing the FDF document.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
-        SetField setter = new SetField();
+        final SetField setter = new SetField();
         setter.setField(args);
     }
 
-    private void setField(String[] args) throws IOException
+    private void setField(final String[] args) throws IOException
     {
         PDDocument pdf = null;
         try
@@ -115,7 +115,7 @@ public class SetField
             }
             else
             {
-                SetField example = new SetField();
+                final SetField example = new SetField();
                 pdf = Loader.loadPDF(new File(args[0]));
                 example.setField(pdf, args[1], args[2]);
                 pdf.save(args[0]);

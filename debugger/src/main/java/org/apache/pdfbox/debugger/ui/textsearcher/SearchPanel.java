@@ -52,10 +52,10 @@ class SearchPanel
     private JLabel counterLabel;
     private JPanel panel;
     
-    private Action closeAction = new AbstractAction()
+    private final Action closeAction = new AbstractAction()
     {
         @Override
-        public void actionPerformed(ActionEvent actionEvent)
+        public void actionPerformed(final ActionEvent actionEvent)
         {
             panel.setVisible(false);
             closeAction.setEnabled(false);
@@ -66,7 +66,7 @@ class SearchPanel
     private final Action findAction = new AbstractAction()
     {
         @Override
-        public void actionPerformed(ActionEvent actionEvent)
+        public void actionPerformed(final ActionEvent actionEvent)
         {
             if (!panel.isVisible())
             {
@@ -86,16 +86,16 @@ class SearchPanel
      * @param nextAction Action instance for next find.
      * @param previousAction Action instance for previous find.
      */
-    SearchPanel(DocumentListener documentListener, ChangeListener changeListener,
-                ComponentListener compListener, Action nextAction, Action previousAction)
+    SearchPanel(final DocumentListener documentListener, final ChangeListener changeListener,
+                final ComponentListener compListener, final Action nextAction, final Action previousAction)
     {
         this.nextAction = nextAction;
         this.previousAction = previousAction;
         initUI(documentListener, changeListener, compListener);
     }
 
-    private void initUI(DocumentListener documentListener, ChangeListener changeListener,
-                        ComponentListener compListener)
+    private void initUI(final DocumentListener documentListener, final ChangeListener changeListener,
+                        final ComponentListener compListener)
     {
         searchField = new JTextField();
         searchField.getDocument().addDocumentListener(documentListener);
@@ -103,11 +103,11 @@ class SearchPanel
         counterLabel = new JLabel();
         counterLabel.setVisible(false);
 
-        JButton nextButton = new JButton();
+        final JButton nextButton = new JButton();
         nextButton.setAction(nextAction);
         nextButton.setText("Next");
 
-        JButton previousButton = new JButton();
+        final JButton previousButton = new JButton();
         previousButton.setAction(previousAction);
         previousButton.setText("Previous");
 
@@ -116,7 +116,7 @@ class SearchPanel
         caseSensitive.addChangeListener(changeListener);
         caseSensitive.setToolTipText("Check for case sensitive search");
 
-        JButton crossButton = new JButton();
+        final JButton crossButton = new JButton();
         crossButton.setAction(closeAction);
         crossButton.setText("Done");
         closeAction.setEnabled(false);
@@ -156,7 +156,7 @@ class SearchPanel
         counterLabel.setVisible(false);
     }
 
-    void updateCounterLabel(int now, int total)
+    void updateCounterLabel(final int now, final int total)
     {
         if (!counterLabel.isVisible())
         {
@@ -179,7 +179,7 @@ class SearchPanel
     public void reFocus()
     {
         searchField.requestFocus();
-        String searchKey = searchField.getText();
+        final String searchKey = searchField.getText();
         searchField.setText(searchKey);
         searchField.setSelectionStart(0);
         searchField.setSelectionEnd(searchField.getText().length());
@@ -187,7 +187,7 @@ class SearchPanel
         closeAction.setEnabled(true);
     }
 
-    public void addMenuListeners(PDFDebugger frame)
+    public void addMenuListeners(final PDFDebugger frame)
     {
         frame.getFindMenu().setEnabled(true);
         frame.getFindMenuItem().addActionListener(findAction);
@@ -195,7 +195,7 @@ class SearchPanel
         frame.getFindPreviousMenuItem().addActionListener(previousAction);
     }
 
-    public void removeMenuListeners(PDFDebugger frame)
+    public void removeMenuListeners(final PDFDebugger frame)
     {
         frame.getFindMenu().setEnabled(false);
         frame.getFindMenuItem().removeActionListener(findAction);

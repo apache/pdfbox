@@ -41,7 +41,7 @@ public class CIDKeyedType2CharString extends Type2CharString
      * @param defaultWidthX default width
      * @param nomWidthX nominal width
      */
-    public CIDKeyedType2CharString(Type1CharStringReader font, String fontName, int cid, int gid, List<Object> sequence, int defaultWidthX, int nomWidthX)
+    public CIDKeyedType2CharString(final Type1CharStringReader font, final String fontName, final int cid, final int gid, final List<Object> sequence, final int defaultWidthX, final int nomWidthX)
     {
         // glyph name is for debugging only
         super(font, fontName, String.format(Locale.US, "%04x", cid), gid, sequence, defaultWidthX, nomWidthX);

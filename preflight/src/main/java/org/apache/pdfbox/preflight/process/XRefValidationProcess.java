@@ -33,9 +33,9 @@ public class XRefValidationProcess extends AbstractProcess
 {
 
     @Override
-    public void validate(PreflightContext ctx) throws ValidationException
+    public void validate(final PreflightContext ctx) throws ValidationException
     {
-        COSDocument document = ctx.getDocument().getDocument();
+        final COSDocument document = ctx.getDocument().getDocument();
         if (document.isXRefStream())
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER, "/XRef cross reference streams are not allowed"));

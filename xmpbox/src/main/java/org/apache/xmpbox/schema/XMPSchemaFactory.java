@@ -53,7 +53,7 @@ public class XMPSchemaFactory
      * @param propDef
      *            Properties Types list associated
      */
-    public XMPSchemaFactory(String namespace, Class<? extends XMPSchema> schemaClass, PropertiesDescription propDef)
+    public XMPSchemaFactory(final String namespace, final Class<? extends XMPSchema> schemaClass, final PropertiesDescription propDef)
     {
         this.namespace = namespace;
         this.schemaClass = schemaClass;
@@ -77,7 +77,7 @@ public class XMPSchemaFactory
      *            The property name
      * @return null if property name is unknown
      */
-    public PropertyType getPropertyType(String name)
+    public PropertyType getPropertyType(final String name)
     {
         return propDef.getPropertyType(name);
     }
@@ -93,11 +93,11 @@ public class XMPSchemaFactory
      * @throws XmpSchemaException
      *             When Instancing specified Object Schema failed
      */
-    public XMPSchema createXMPSchema(XMPMetadata metadata, String prefix) throws XmpSchemaException
+    public XMPSchema createXMPSchema(final XMPMetadata metadata, final String prefix) throws XmpSchemaException
     {
-        XMPSchema schema;
-        Class<?>[] argsClass;
-        Object[] schemaArgs;
+        final XMPSchema schema;
+        final Class<?>[] argsClass;
+        final Object[] schemaArgs;
 
         if (schemaClass == XMPSchema.class)
         {
@@ -124,7 +124,7 @@ public class XMPSchemaFactory
             }
             return schema;
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             throw new XmpSchemaException("Cannot instanciate specified object schema", e);
         }

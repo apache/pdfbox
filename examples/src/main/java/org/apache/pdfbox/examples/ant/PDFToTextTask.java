@@ -40,7 +40,7 @@ public class PDFToTextTask extends Task
      *
      * @param set Another fileset to add.
      */
-    public void addFileset( FileSet set )
+    public void addFileset(final FileSet set )
     {
         fileSets.add( set );
     }
@@ -58,14 +58,14 @@ public class PDFToTextTask extends Task
             forEachOrdered(dirScanner ->
             {
                 dirScanner.scan();
-                for (String file : dirScanner.getIncludedFiles())
+                for (final String file : dirScanner.getIncludedFiles())
                 {
-                    File f = new File(dirScanner.getBasedir(), file);
+                    final File f = new File(dirScanner.getBasedir(), file);
                     log("processing: " + f.getAbsolutePath());
-                    String pdfFile = f.getAbsolutePath();
+                    final String pdfFile = f.getAbsolutePath();
                     if (pdfFile.toUpperCase().endsWith(".PDF"))
                     {
-                        String textFile = pdfFile.substring(0, pdfFile.length() - 3) + "txt";
+                        final String textFile = pdfFile.substring(0, pdfFile.length() - 3) + "txt";
                         ExtractText.main(new String[] {pdfFile, textFile});
                     }
                 }

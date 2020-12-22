@@ -34,42 +34,42 @@ public class GlyphArraySplitterRegexImpl implements GlyphArraySplitter
 
     private final CompoundCharacterTokenizer compoundCharacterTokenizer;
 
-    public GlyphArraySplitterRegexImpl(Set<List<Integer>> matchers)
+    public GlyphArraySplitterRegexImpl(final Set<List<Integer>> matchers)
     {
         compoundCharacterTokenizer = new CompoundCharacterTokenizer(getMatchersAsStrings(matchers));
     }
 
     @Override
-    public List<List<Integer>> split(List<Integer> glyphIds)
+    public List<List<Integer>> split(final List<Integer> glyphIds)
     {
-        String originalGlyphsAsText = convertGlyphIdsToString(glyphIds);
-        List<String> tokens = compoundCharacterTokenizer.tokenize(originalGlyphsAsText);
+        final String originalGlyphsAsText = convertGlyphIdsToString(glyphIds);
+        final List<String> tokens = compoundCharacterTokenizer.tokenize(originalGlyphsAsText);
 
-        List<List<Integer>> modifiedGlyphs = new ArrayList<>();
+        final List<List<Integer>> modifiedGlyphs = new ArrayList<>();
         tokens.forEach(token -> modifiedGlyphs.add(convertGlyphIdsToList(token)));
         return modifiedGlyphs;
     }
 
-    private Set<String> getMatchersAsStrings(Set<List<Integer>> matchers)
+    private Set<String> getMatchersAsStrings(final Set<List<Integer>> matchers)
     {
-        Set<String> stringMatchers = new HashSet<>(matchers.size());
+        final Set<String> stringMatchers = new HashSet<>(matchers.size());
         matchers.forEach(glyphIds -> stringMatchers.add(convertGlyphIdsToString(glyphIds)));
         return stringMatchers;
     }
 
-    private String convertGlyphIdsToString(List<Integer> glyphIds)
+    private String convertGlyphIdsToString(final List<Integer> glyphIds)
     {
-        StringBuilder sb = new StringBuilder(20);
+        final StringBuilder sb = new StringBuilder(20);
         sb.append(GLYPH_ID_SEPARATOR);
         glyphIds.forEach(glyphId -> sb.append(glyphId).append(GLYPH_ID_SEPARATOR));
         return sb.toString();
     }
 
-    private List<Integer> convertGlyphIdsToList(String glyphIdsAsString)
+    private List<Integer> convertGlyphIdsToList(final String glyphIdsAsString)
     {
-        List<Integer> gsubProcessedGlyphsIds = new ArrayList<>();
+        final List<Integer> gsubProcessedGlyphsIds = new ArrayList<>();
 
-        for (String glyphId : glyphIdsAsString.split(GLYPH_ID_SEPARATOR))
+        for (final String glyphId : glyphIdsAsString.split(GLYPH_ID_SEPARATOR))
         {
             if (glyphId.trim().length() == 0)
             {

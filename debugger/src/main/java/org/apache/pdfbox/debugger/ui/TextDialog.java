@@ -36,19 +36,19 @@ public class TextDialog extends JDialog
     private final JTextPane textPane;
     private final JScrollPane scrollPane;
 
-    private TextDialog(Frame owner)
+    private TextDialog(final Frame owner)
     {
         super(owner);
 
         textPane = new JTextPane();
-        Font font = textPane.getFont();
+        final Font font = textPane.getFont();
         textPane.setFont(font.deriveFont(font.getSize2D() * 1.5f));
         scrollPane = new JScrollPane(textPane);
         getContentPane().add(scrollPane);
         pack();
     }
 
-    public static void init(Frame owner)
+    public static void init(final Frame owner)
     {
         instance = new TextDialog(owner);
     }
@@ -63,7 +63,7 @@ public class TextDialog extends JDialog
         textPane.setText("");
     }
 
-    public void setText(String text)
+    public void setText(final String text)
     {
         textPane.setText(text);
     }

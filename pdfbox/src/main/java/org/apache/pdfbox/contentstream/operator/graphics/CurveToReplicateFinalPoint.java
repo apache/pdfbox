@@ -34,7 +34,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 public final class CurveToReplicateFinalPoint extends GraphicsOperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (operands.size() < 4)
         {
@@ -44,13 +44,13 @@ public final class CurveToReplicateFinalPoint extends GraphicsOperatorProcessor
         {
             return;
         }
-        COSNumber x1 = (COSNumber)operands.get(0);
-        COSNumber y1 = (COSNumber)operands.get(1);
-        COSNumber x3 = (COSNumber)operands.get(2);
-        COSNumber y3 = (COSNumber)operands.get(3);
+        final COSNumber x1 = (COSNumber)operands.get(0);
+        final COSNumber y1 = (COSNumber)operands.get(1);
+        final COSNumber x3 = (COSNumber)operands.get(2);
+        final COSNumber y3 = (COSNumber)operands.get(3);
 
-        Point2D.Float point1 = context.transformedPoint(x1.floatValue(), y1.floatValue());
-        Point2D.Float point3 = context.transformedPoint(x3.floatValue(), y3.floatValue());
+        final Point2D.Float point1 = context.transformedPoint(x1.floatValue(), y1.floatValue());
+        final Point2D.Float point3 = context.transformedPoint(x3.floatValue(), y3.floatValue());
 
         context.curveTo(point1.x, point1.y,
                         point3.x, point3.y,

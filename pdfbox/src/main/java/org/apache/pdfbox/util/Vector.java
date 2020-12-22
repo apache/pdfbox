@@ -25,7 +25,7 @@ public final class Vector
 {
     private final float x, y;
 
-    public Vector(float x, float y)
+    public Vector(final float x, final float y)
     {
         this.x = x;
         this.y = y;
@@ -52,7 +52,7 @@ public final class Vector
      *
      * @param sxy x and y scale
      */
-    public Vector scale(float sxy)
+    public Vector scale(final float sxy)
     {
         return new Vector(x * sxy, y * sxy);
     }

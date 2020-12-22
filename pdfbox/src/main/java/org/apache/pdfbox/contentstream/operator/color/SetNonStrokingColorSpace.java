@@ -35,14 +35,14 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class SetNonStrokingColorSpace extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public void process(final Operator operator, final List<COSBase> arguments) throws IOException
     {
-        COSBase base = arguments.get(0);
+        final COSBase base = arguments.get(0);
         if (!(base instanceof COSName))
         {
             return;
         }
-        PDColorSpace cs = context.getResources().getColorSpace((COSName) base);
+        final PDColorSpace cs = context.getResources().getColorSpace((COSName) base);
         context.getGraphicsState().setNonStrokingColorSpace(cs);
         context.getGraphicsState().setNonStrokingColor(cs.getInitialColor());
     }

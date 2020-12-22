@@ -42,7 +42,7 @@ class TestCOSArray
             cosArray = new COSArray(null);
             fail("Constructor should have thrown an exception");
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
         }
 
@@ -56,14 +56,14 @@ class TestCOSArray
     @Test
     void testConvertString2COSNameAndBack()
     {
-        COSArray cosArray = COSArray.ofCOSNames(
+        final COSArray cosArray = COSArray.ofCOSNames(
                 Arrays.asList(COSName.A.getName(), COSName.B.getName(), COSName.C.getName()));
         assertEquals(3, cosArray.size());
         assertEquals(COSName.A, cosArray.get(0));
         assertEquals(COSName.B, cosArray.get(1));
         assertEquals(COSName.C, cosArray.get(2));
 
-        List<String> cosNameStringList = cosArray.toCOSNameStringList();
+        final List<String> cosNameStringList = cosArray.toCOSNameStringList();
         assertEquals(3, cosNameStringList.size());
         assertEquals(COSName.A.getName(), cosNameStringList.get(0));
         assertEquals(COSName.B.getName(), cosNameStringList.get(1));
@@ -73,14 +73,14 @@ class TestCOSArray
     @Test
     void testConvertString2COSStringAndBack()
     {
-        COSArray cosArray = COSArray
+        final COSArray cosArray = COSArray
                 .ofCOSStrings(Arrays.asList("A", "B", "C"));
         assertEquals(3, cosArray.size());
         assertEquals("A", cosArray.getString(0));
         assertEquals("B", cosArray.getString(1));
         assertEquals("C", cosArray.getString(2));
 
-        List<String> cosStringStringList = cosArray.toCOSStringStringList();
+        final List<String> cosStringStringList = cosArray.toCOSStringStringList();
         assertEquals(3, cosStringStringList.size());
         assertEquals("A", cosStringStringList.get(0));
         assertEquals("B", cosStringStringList.get(1));
@@ -118,7 +118,7 @@ class TestCOSArray
     @Test
     void testConvertFloat2COSStringAndBack()
     {
-        float[] floatArrayStart = new float[] { 1.0f, 0.1f, 0.02f };
+        final float[] floatArrayStart = new float[] { 1.0f, 0.1f, 0.02f };
         COSArray cosArray = new COSArray();
         cosArray.setFloatArray(floatArrayStart);
 
@@ -161,7 +161,7 @@ class TestCOSArray
     @Test
     void testGetSetName()
     {
-        COSArray cosArray = new COSArray();
+        final COSArray cosArray = new COSArray();
         cosArray.growToSize(3);
         cosArray.setName(0, "A");
         cosArray.setName(1, "B");
@@ -183,7 +183,7 @@ class TestCOSArray
     @Test
     void testGetSetInt()
     {
-        COSArray cosArray = new COSArray();
+        final COSArray cosArray = new COSArray();
         cosArray.growToSize(3);
         cosArray.setInt(0, 0);
         cosArray.setInt(1, 1);
@@ -205,7 +205,7 @@ class TestCOSArray
     @Test
     void testGetSetString()
     {
-        COSArray cosArray = new COSArray();
+        final COSArray cosArray = new COSArray();
         cosArray.growToSize(3);
         cosArray.setString(0, "Test1");
         cosArray.setString(1, "Test2");
@@ -265,7 +265,7 @@ class TestCOSArray
     @Test
     void testGrowToSize()
     {
-        COSArray cosArray = new COSArray();
+        final COSArray cosArray = new COSArray();
         assertEquals(0, cosArray.size());
         cosArray.growToSize(2);
         // COSArray has 2 empty elements
@@ -276,7 +276,7 @@ class TestCOSArray
         // increase size, fill the new elements with the given value
         cosArray.growToSize(4, COSInteger.get(1));
         assertEquals(4, cosArray.size());
-        List<Integer> cosNumberIntegerList = cosArray.toCOSNumberIntegerList();
+        final List<Integer> cosNumberIntegerList = cosArray.toCOSNumberIntegerList();
         assertEquals(4, cosNumberIntegerList.size());
         assertNull(cosNumberIntegerList.get(0));
         assertEquals(1, (int) cosNumberIntegerList.get(2));
@@ -286,9 +286,9 @@ class TestCOSArray
     @Test
     void testToList()
     {
-        COSArray cosArray = COSArray
+        final COSArray cosArray = COSArray
                 .ofCOSIntegers(Arrays.asList(0, 1, 2, 3, 4, 5));
-        List<? extends COSBase> list = cosArray.toList();
+        final List<? extends COSBase> list = cosArray.toList();
         assertEquals(6, list.size());
         assertEquals(COSInteger.get(0), list.get(0));
         assertEquals(COSInteger.get(5), list.get(5));

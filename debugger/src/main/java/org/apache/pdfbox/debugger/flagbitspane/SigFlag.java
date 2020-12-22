@@ -37,7 +37,7 @@ public class SigFlag extends Flag
      *
      * @param acroFormDictionary COSDictionary instance.
      */
-    SigFlag(PDDocument document, COSDictionary acroFormDictionary)
+    SigFlag(final PDDocument document, final COSDictionary acroFormDictionary)
     {
         this.document = document;
         this.acroFormDictionary = acroFormDictionary;
@@ -58,7 +58,7 @@ public class SigFlag extends Flag
     @Override
     Object[][] getFlagBits()
     {
-        PDAcroForm acroForm = new PDAcroForm(document, acroFormDictionary);
+        final PDAcroForm acroForm = new PDAcroForm(document, acroFormDictionary);
         return new Object[][]{
                 new Object[]{1, "SignaturesExist", acroForm.isSignaturesExist()},
                 new Object[]{2, "AppendOnly", acroForm.isAppendOnly()},

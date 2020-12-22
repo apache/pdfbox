@@ -33,25 +33,25 @@ public class ValidationException extends IOException
     
     protected Integer pageNumber = null;
 
-    public ValidationException(String message, Throwable cause, Integer pageNumber)
+    public ValidationException(final String message, final Throwable cause, final Integer pageNumber)
     {
         super(message);
         initCause(cause);
         this.pageNumber = pageNumber;
     }
 
-    public ValidationException(String message, Throwable cause)
+    public ValidationException(final String message, final Throwable cause)
     {
         super(message);
         initCause(cause);
     }
 
-    public ValidationException(String message)
+    public ValidationException(final String message)
     {
         super(message);
     }
 
-    public ValidationException(Throwable cause)
+    public ValidationException(final Throwable cause)
     {
         super();
         initCause(cause);

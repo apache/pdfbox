@@ -31,12 +31,12 @@ public class PDParentTreeValue implements COSObjectable
 {
     COSObjectable obj;
 
-    public PDParentTreeValue(COSArray obj)
+    public PDParentTreeValue(final COSArray obj)
     {
         this.obj = obj;
     }
 
-    public PDParentTreeValue(COSDictionary obj)
+    public PDParentTreeValue(final COSDictionary obj)
     {
         this.obj = obj;
     }

@@ -54,7 +54,7 @@ public class XObjImageValidator extends AbstractXObjValidator
 
     protected PDImageXObject xImage = null;
 
-    public XObjImageValidator(PreflightContext context, PDImageXObject xobj)
+    public XObjImageValidator(final PreflightContext context, final PDImageXObject xobj)
     {
         super(context, xobj.getCOSObject());
         this.xImage = xobj;
@@ -101,7 +101,7 @@ public class XObjImageValidator extends AbstractXObjValidator
      */
     protected void checkIntent()
     {
-        COSName renderingIntent = xobject.getCOSName(COSName.INTENT);
+        final COSName renderingIntent = xobject.getCOSName(COSName.INTENT);
         if (renderingIntent != null && !RenderingIntents.contains(renderingIntent))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
@@ -116,9 +116,9 @@ public class XObjImageValidator extends AbstractXObjValidator
      */
     protected void checkColorSpaceAndImageMask() throws ValidationException
     {
-        COSBase csImg = this.xobject.getItem(COSName.COLORSPACE);
-        COSBase bitsPerComp = this.xobject.getDictionaryObject(COSName.BITS_PER_COMPONENT);
-        COSBase mask = this.xobject.getItem(COSName.MASK);
+        final COSBase csImg = this.xobject.getItem(COSName.COLORSPACE);
+        final COSBase bitsPerComp = this.xobject.getDictionaryObject(COSName.BITS_PER_COMPONENT);
+        final COSBase mask = this.xobject.getItem(COSName.MASK);
 
         if (isImageMaskTrue())
         {
@@ -139,13 +139,13 @@ public class XObjImageValidator extends AbstractXObjValidator
         {
             try
             {
-                PreflightConfiguration config = context.getConfig();
-                ColorSpaceHelperFactory csFact = config.getColorSpaceHelperFact();
-                PDColorSpace pdCS = PDColorSpace.create(csImg);
-                ColorSpaceHelper csh = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.NO_PATTERN);
+                final PreflightConfiguration config = context.getConfig();
+                final ColorSpaceHelperFactory csFact = config.getColorSpaceHelperFact();
+                final PDColorSpace pdCS = PDColorSpace.create(csImg);
+                final ColorSpaceHelper csh = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.NO_PATTERN);
                 csh.validate();
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 LOGGER.debug("Couldn't create PDColorSpace " + csImg, e);
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE));
@@ -155,7 +155,7 @@ public class XObjImageValidator extends AbstractXObjValidator
 
     private boolean isImageMaskTrue()
     {
-        COSBase imgMask = this.xobject.getItem("ImageMask");
+        final COSBase imgMask = this.xobject.getItem("ImageMask");
         if (imgMask instanceof COSBoolean)
         {
             return ((COSBoolean) imgMask).getValue();

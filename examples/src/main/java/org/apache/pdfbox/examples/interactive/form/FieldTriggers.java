@@ -43,76 +43,76 @@ public final class FieldTriggers
     {
     }
     
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         // Load the PDF document created by SimpleForm.java
         try (PDDocument document = Loader.loadPDF(new File("target/SimpleForm.pdf")))
         {
-            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            final PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             
             // Get the field and the widget associated to it.
             // Note: there might be multiple widgets
-            PDField field = acroForm.getField("SampleField");
-            PDAnnotationWidget widget = field.getWidgets().get(0);
+            final PDField field = acroForm.getField("SampleField");
+            final PDAnnotationWidget widget = field.getWidgets().get(0);
             
             // Some of the actions are available to the widget, some are available to the form field.
             // See Table 8.44 and Table 8.46 in the PDF 1.7 specification
             
             // Actions for the widget
-            PDAnnotationAdditionalActions annotationActions = new PDAnnotationAdditionalActions();
+            final PDAnnotationAdditionalActions annotationActions = new PDAnnotationAdditionalActions();
             
             // Create an action when entering the annotations active area
-            PDActionJavaScript jsEnterAction = new PDActionJavaScript();
+            final PDActionJavaScript jsEnterAction = new PDActionJavaScript();
             jsEnterAction.setAction("app.alert(\"On 'enter' action\")");
             annotationActions.setE(jsEnterAction);
             
             // Create an action when exiting the annotations active area
-            PDActionJavaScript jsExitAction = new PDActionJavaScript();
+            final PDActionJavaScript jsExitAction = new PDActionJavaScript();
             jsExitAction.setAction("app.alert(\"On 'exit' action\")");
             annotationActions.setX(jsExitAction);
             
             // Create an action when the mouse button is pressed inside the annotations active area
-            PDActionJavaScript jsMouseDownAction = new PDActionJavaScript();
+            final PDActionJavaScript jsMouseDownAction = new PDActionJavaScript();
             jsMouseDownAction.setAction("app.alert(\"On 'mouse down' action\")");
             annotationActions.setD(jsMouseDownAction);
             
             // Create an action when the mouse button is released inside the annotations active area
-            PDActionJavaScript jsMouseUpAction = new PDActionJavaScript();
+            final PDActionJavaScript jsMouseUpAction = new PDActionJavaScript();
             jsMouseUpAction.setAction("app.alert(\"On 'mouse up' action\")");
             annotationActions.setU(jsMouseUpAction);
             
             // Create an action when the annotation gets the input focus
-            PDActionJavaScript jsFocusAction = new PDActionJavaScript();
+            final PDActionJavaScript jsFocusAction = new PDActionJavaScript();
             jsFocusAction.setAction("app.alert(\"On 'focus' action\")");
             annotationActions.setFo(jsFocusAction);
             
             // Create an action when the annotation loses the input focus
-            PDActionJavaScript jsBlurredAction = new PDActionJavaScript();
+            final PDActionJavaScript jsBlurredAction = new PDActionJavaScript();
             jsBlurredAction.setAction("app.alert(\"On 'blurred' action\")");
             annotationActions.setBl(jsBlurredAction);
             
             widget.setActions(annotationActions);
             
             // Actions for the field
-            PDFormFieldAdditionalActions fieldActions = new PDFormFieldAdditionalActions();
+            final PDFormFieldAdditionalActions fieldActions = new PDFormFieldAdditionalActions();
             
             // Create an action when the user types a keystroke in the field
-            PDActionJavaScript jsKeystrokeAction = new PDActionJavaScript();
+            final PDActionJavaScript jsKeystrokeAction = new PDActionJavaScript();
             jsKeystrokeAction.setAction("app.alert(\"On 'keystroke' action\")");
             fieldActions.setK(jsKeystrokeAction);
             
             // Create an action when the field is formatted to display the current value
-            PDActionJavaScript jsFormattedAction = new PDActionJavaScript();
+            final PDActionJavaScript jsFormattedAction = new PDActionJavaScript();
             jsFormattedAction.setAction("app.alert(\"On 'formatted' action\")");
             fieldActions.setF(jsFormattedAction);
             
             // Create an action when the field value changes
-            PDActionJavaScript jsChangedAction = new PDActionJavaScript();
+            final PDActionJavaScript jsChangedAction = new PDActionJavaScript();
             jsChangedAction.setAction("app.alert(\"On 'change' action\")");
             // fieldActions.setV(jsChangedAction);
             
             // Create an action when the field value changes
-            PDActionJavaScript jsRecalculateAction = new PDActionJavaScript();
+            final PDActionJavaScript jsRecalculateAction = new PDActionJavaScript();
             jsRecalculateAction.setAction("app.alert(\"On 'recalculate' action\")");
             fieldActions.setC(jsRecalculateAction);
             

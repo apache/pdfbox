@@ -51,7 +51,7 @@ public class PDActionRemoteGoTo extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionRemoteGoTo( COSDictionary a )
+    public PDActionRemoteGoTo(final COSDictionary a )
     {
         super( a );
     }
@@ -73,7 +73,7 @@ public class PDActionRemoteGoTo extends PDAction
      *
      * @param fs The file specification.
      */
-    public void setFile( PDFileSpecification fs )
+    public void setFile(final PDFileSpecification fs )
     {
         action.setItem( COSName.F, fs );
     }
@@ -105,7 +105,7 @@ public class PDActionRemoteGoTo extends PDAction
      */
 
     // In case the value is an array.
-    public void setD( COSBase d )
+    public void setD(final COSBase d )
     {
         action.setItem( COSName.D, d );
     }
@@ -120,7 +120,7 @@ public class PDActionRemoteGoTo extends PDAction
     {
         if (getCOSObject().getDictionaryObject(COSName.NEW_WINDOW) instanceof COSBoolean)
         {
-            COSBoolean b = (COSBoolean) getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
+            final COSBoolean b = (COSBoolean) getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
             return b.getValue() ? OpenMode.NEW_WINDOW : OpenMode.SAME_WINDOW;
         }
         return OpenMode.USER_PREFERENCE;
@@ -131,7 +131,7 @@ public class PDActionRemoteGoTo extends PDAction
      *
      * @param value The flag value.
      */
-    public void setOpenInNewWindow(OpenMode value)
+    public void setOpenInNewWindow(final OpenMode value)
     {
         if (null == value)
         {

@@ -35,13 +35,13 @@ import org.apache.pdfbox.pdmodel.graphics.state.RenderingIntent;
 public class SetRenderingIntent extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public void process(final Operator operator, final List<COSBase> operands) throws IOException
     {
         if (operands.isEmpty())
         {
             throw new MissingOperandException(operator, operands);
         }
-        COSBase base = operands.get(0);
+        final COSBase base = operands.get(0);
         if (!(base instanceof COSName))
         {
             return;

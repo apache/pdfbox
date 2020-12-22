@@ -31,7 +31,7 @@ class TestHideAction extends AbstractTestAction
 
     protected COSDictionary createHideAction()
     {
-        COSDictionary hideAction = new COSDictionary();
+        final COSDictionary hideAction = new COSDictionary();
         hideAction.setItem(COSName.TYPE, COSName.getPDFName("Action"));
         hideAction.setItem(COSName.S, COSName.getPDFName("Hide"));
         hideAction.setBoolean(COSName.H, false);
@@ -42,14 +42,14 @@ class TestHideAction extends AbstractTestAction
     @Test
     void testHideAction() throws Exception
     {
-        COSDictionary action = createHideAction();
+        final COSDictionary action = createHideAction();
         valid(action, true);
     }
 
     @Test
     void testHideAction_InvalideH() throws Exception
     {
-        COSDictionary action = createHideAction();
+        final COSDictionary action = createHideAction();
         action.setBoolean(COSName.H, true);
         valid(action, false, PreflightConstants.ERROR_ACTION_HIDE_H_INVALID);
     }
@@ -57,7 +57,7 @@ class TestHideAction extends AbstractTestAction
     @Test
     void testHideAction_InvalideT() throws Exception
     {
-        COSDictionary action = createHideAction();
+        final COSDictionary action = createHideAction();
         action.setBoolean(COSName.T, true);
         valid(action, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
     }
@@ -65,7 +65,7 @@ class TestHideAction extends AbstractTestAction
     @Test
     void testHideAction_MissingT() throws Exception
     {
-        COSDictionary action = createHideAction();
+        final COSDictionary action = createHideAction();
         action.removeItem(COSName.T);
         valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
     }

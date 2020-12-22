@@ -43,7 +43,7 @@ public class PDSeedValueTimeStamp
      *
      * @param dict The signature dictionary.
      */
-    public PDSeedValueTimeStamp(COSDictionary dict)
+    public PDSeedValueTimeStamp(final COSDictionary dict)
     {
         dictionary = dict;
         dictionary.setDirect(true);
@@ -73,7 +73,7 @@ public class PDSeedValueTimeStamp
      * Sets the URL.
      * @param url the URL to be set as URL
      */
-    public void setURL(String url)
+    public void setURL(final String url)
     {
         dictionary.setString(COSName.URL, url);
     }
@@ -93,7 +93,7 @@ public class PDSeedValueTimeStamp
      * 
      * @param flag true if a timestamp is required
      */
-    public void setTimestampRequired(boolean flag)
+    public void setTimestampRequired(final boolean flag)
     {
         dictionary.setInt(COSName.FT, flag ? 1 : 0);
     }

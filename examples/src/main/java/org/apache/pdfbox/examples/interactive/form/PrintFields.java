@@ -43,23 +43,23 @@ public class PrintFields
      * 
      * @throws IOException If there is an error getting the fields.
      */
-    public void printFields(PDDocument pdfDocument) throws IOException
+    public void printFields(final PDDocument pdfDocument) throws IOException
     {
-        PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
-        PDAcroForm acroForm = docCatalog.getAcroForm();
-        List<PDField> fields = acroForm.getFields();
+        final PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
+        final PDAcroForm acroForm = docCatalog.getAcroForm();
+        final List<PDField> fields = acroForm.getFields();
 
         System.out.println(fields.size() + " top-level fields were found on the form");
 
-        for (PDField field : fields)
+        for (final PDField field : fields)
         {
             processField(field, "|--", field.getPartialName());
         }
     }
 
-    private void processField(PDField field, String sLevel, String sParent) throws IOException
+    private void processField(final PDField field, final String sLevel, String sParent) throws IOException
     {
-        String partialName = field.getPartialName();
+        final String partialName = field.getPartialName();
         
         if (field instanceof PDNonTerminalField)
         {
@@ -69,15 +69,15 @@ public class PrintFields
             }
             System.out.println(sLevel + sParent);
 
-            for (PDField child : ((PDNonTerminalField)field).getChildren())
+            for (final PDField child : ((PDNonTerminalField)field).getChildren())
             {
                 processField(child, "|  " + sLevel, sParent);
             }
         }
         else
         {
-            String fieldValue = field.getValueAsString();
-            StringBuilder outputString = new StringBuilder(sLevel);
+            final String fieldValue = field.getValueAsString();
+            final StringBuilder outputString = new StringBuilder(sLevel);
             outputString.append(sParent);
             if (partialName != null)
             {
@@ -97,7 +97,7 @@ public class PrintFields
      * 
      * @throws IOException If there is an error importing the FDF document.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         PDDocument pdf = null;
         try
@@ -109,7 +109,7 @@ public class PrintFields
             else
             {
                 pdf = Loader.loadPDF(new File(args[0]));
-                PrintFields exporter = new PrintFields();
+                final PrintFields exporter = new PrintFields();
                 exporter.printFields(pdf);
             }
         }

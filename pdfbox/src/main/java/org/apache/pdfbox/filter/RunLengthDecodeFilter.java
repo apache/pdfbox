@@ -34,11 +34,11 @@ final class RunLengthDecodeFilter extends Filter
     private static final int RUN_LENGTH_EOD = 128;
 
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(final InputStream encoded, final OutputStream decoded,
+                               final COSDictionary parameters, final int index) throws IOException
     {
         int dupAmount;
-        byte[] buffer = new byte[128];
+        final byte[] buffer = new byte[128];
         while ((dupAmount = encoded.read()) != -1 && dupAmount != RUN_LENGTH_EOD)
         {
             if (dupAmount <= 127)
@@ -59,7 +59,7 @@ final class RunLengthDecodeFilter extends Filter
             }
             else
             {
-                int dupByte = encoded.read();
+                final int dupByte = encoded.read();
                 // EOF reached?
                 if (dupByte == -1)
                 {
@@ -75,7 +75,7 @@ final class RunLengthDecodeFilter extends Filter
     }
 
     @Override
-    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(final InputStream input, final OutputStream encoded, final COSDictionary parameters)
             throws IOException
     {
         // Not used in PDFBox except for testing the decoder.
@@ -85,7 +85,7 @@ final class RunLengthDecodeFilter extends Filter
         boolean equality = false;
 
         // buffer for "unequal" runs, size between 2 and 128
-        byte[] buf = new byte[128];
+        final byte[] buf = new byte[128];
 
         while ((byt = input.read()) != -1)
         {

@@ -45,7 +45,7 @@ public final class GoToSecondBookmarkOnOpen
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(final String[] args ) throws IOException
     {
         if( args.length != 2 )
         {
@@ -65,14 +65,14 @@ public final class GoToSecondBookmarkOnOpen
                 {
                     throw new IOException( "Error: The PDF must have at least 2 pages.");
                 }
-                PDDocumentOutline bookmarks = document.getDocumentCatalog().getDocumentOutline();
+                final PDDocumentOutline bookmarks = document.getDocumentCatalog().getDocumentOutline();
                 if( bookmarks == null )
                 {
                     throw new IOException( "Error: The PDF does not contain any bookmarks" );
                 }
-                PDOutlineItem item = bookmarks.getFirstChild().getNextSibling();
-                PDDestination dest = item.getDestination();
-                PDActionGoTo action = new PDActionGoTo();
+                final PDOutlineItem item = bookmarks.getFirstChild().getNextSibling();
+                final PDDestination dest = item.getDestination();
+                final PDActionGoTo action = new PDActionGoTo();
                 action.setDestination(dest);
                 document.getDocumentCatalog().setOpenAction(action);
 

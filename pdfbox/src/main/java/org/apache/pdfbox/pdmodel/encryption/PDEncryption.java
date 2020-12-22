@@ -91,7 +91,7 @@ public class PDEncryption implements COSObjectable
      * creates a new encryption dictionary from the low level dictionary provided.
      * @param dictionary a COS encryption dictionary
      */
-    public PDEncryption(COSDictionary dictionary)
+    public PDEncryption(final COSDictionary dictionary)
     {
         this.dictionary = dictionary;
         securityHandler = SecurityHandlerFactory.INSTANCE.newSecurityHandlerForFilter(getFilter());
@@ -115,7 +115,7 @@ public class PDEncryption implements COSObjectable
      * Sets the security handler used in this encryption dictionary
      * @param securityHandler new security handler
      */
-    public void setSecurityHandler(SecurityHandler<ProtectionPolicy> securityHandler)
+    public void setSecurityHandler(final SecurityHandler<ProtectionPolicy> securityHandler)
     {
         this.securityHandler = securityHandler;
         // TODO set Filter (currently this is done by the security handlers)
@@ -146,7 +146,7 @@ public class PDEncryption implements COSObjectable
      *
      * @param filter The filter name.
      */
-    public void setFilter(String filter)
+    public void setFilter(final String filter)
     {
         dictionary.setItem(COSName.FILTER, COSName.getPDFName(filter));
     }
@@ -176,7 +176,7 @@ public class PDEncryption implements COSObjectable
      *
      * @param subfilter The value of the subfilter field.
      */
-    public void setSubFilter(String subfilter)
+    public void setSubFilter(final String subfilter)
     {
         dictionary.setName(COSName.SUB_FILTER, subfilter);
     }
@@ -189,7 +189,7 @@ public class PDEncryption implements COSObjectable
      *
      * @param version The new encryption version.
      */
-    public void setVersion(int version)
+    public void setVersion(final int version)
     {
         dictionary.setInt(COSName.V, version);
     }
@@ -210,7 +210,7 @@ public class PDEncryption implements COSObjectable
      *
      * @param length The new key length.
      */
-    public void setLength(int length)
+    public void setLength(final int length)
     {
         dictionary.setInt(COSName.LENGTH, length);
     }
@@ -235,7 +235,7 @@ public class PDEncryption implements COSObjectable
      *
      * @param revision The new encryption version.
      */
-    public void setRevision(int revision)
+    public void setRevision(final int revision)
     {
         dictionary.setInt(COSName.R, revision);
     }
@@ -258,7 +258,7 @@ public class PDEncryption implements COSObjectable
      *
      * @throws IOException If there is an error setting the data.
      */
-    public void setOwnerKey(byte[] o) throws IOException
+    public void setOwnerKey(final byte[] o) throws IOException
     {
         dictionary.setItem(COSName.O, new COSString(o));
     }
@@ -273,7 +273,7 @@ public class PDEncryption implements COSObjectable
     public byte[] getOwnerKey() throws IOException
     {
         byte[] o = null;
-        COSString owner = (COSString) dictionary.getDictionaryObject( COSName.O );
+        final COSString owner = (COSString) dictionary.getDictionaryObject( COSName.O );
         if( owner != null )
         {
             o = owner.getBytes();
@@ -288,7 +288,7 @@ public class PDEncryption implements COSObjectable
      *
      * @throws IOException If there is an error setting the data.
      */
-    public void setUserKey(byte[] u) throws IOException
+    public void setUserKey(final byte[] u) throws IOException
     {
         dictionary.setItem(COSName.U, new COSString(u));
     }
@@ -303,7 +303,7 @@ public class PDEncryption implements COSObjectable
     public byte[] getUserKey() throws IOException
     {
         byte[] u = null;
-        COSString user = (COSString) dictionary.getDictionaryObject( COSName.U );
+        final COSString user = (COSString) dictionary.getDictionaryObject( COSName.U );
         if( user != null )
         {
             u = user.getBytes();
@@ -318,7 +318,7 @@ public class PDEncryption implements COSObjectable
      *
      * @throws IOException If there is an error setting the data.
      */
-    public void setOwnerEncryptionKey(byte[] oe) throws IOException
+    public void setOwnerEncryptionKey(final byte[] oe) throws IOException
     {
         dictionary.setItem( COSName.OE, new COSString(oe) );
     }
@@ -333,7 +333,7 @@ public class PDEncryption implements COSObjectable
     public byte[] getOwnerEncryptionKey() throws IOException
     {
         byte[] oe = null;
-        COSString ownerEncryptionKey = (COSString)dictionary.getDictionaryObject( COSName.OE );
+        final COSString ownerEncryptionKey = (COSString)dictionary.getDictionaryObject( COSName.OE );
         if( ownerEncryptionKey != null )
         {
             oe = ownerEncryptionKey.getBytes();
@@ -348,7 +348,7 @@ public class PDEncryption implements COSObjectable
      *
      * @throws IOException If there is an error setting the data.
      */
-    public void setUserEncryptionKey(byte[] ue) throws IOException
+    public void setUserEncryptionKey(final byte[] ue) throws IOException
     {
         dictionary.setItem( COSName.UE, new COSString(ue) );
     }
@@ -363,7 +363,7 @@ public class PDEncryption implements COSObjectable
     public byte[] getUserEncryptionKey() throws IOException
     {
         byte[] ue = null;
-        COSString userEncryptionKey = (COSString)dictionary.getDictionaryObject( COSName.UE );
+        final COSString userEncryptionKey = (COSString)dictionary.getDictionaryObject( COSName.UE );
         if( userEncryptionKey != null )
         {
             ue = userEncryptionKey.getBytes();
@@ -376,7 +376,7 @@ public class PDEncryption implements COSObjectable
      *
      * @param permissions The new permissions bit mask
      */
-    public void setPermissions(int permissions)
+    public void setPermissions(final int permissions)
     {
         dictionary.setInt(COSName.P, permissions);
     }
@@ -401,7 +401,7 @@ public class PDEncryption implements COSObjectable
         // default is true (see 7.6.3.2 Standard Encryption Dictionary PDF 32000-1:2008)
         boolean encryptMetaData = true;
         
-        COSBase value = dictionary.getDictionaryObject(COSName.ENCRYPT_META_DATA);
+        final COSBase value = dictionary.getDictionaryObject(COSName.ENCRYPT_META_DATA);
         
         if (value instanceof COSBoolean)
         {
@@ -417,12 +417,12 @@ public class PDEncryption implements COSObjectable
      * @param recipients the array of bytes arrays to put in the Recipients field.
      * @throws IOException If there is an error setting the data.
      */
-    public void setRecipients(byte[][] recipients) throws IOException
+    public void setRecipients(final byte[][] recipients) throws IOException
     {
-        COSArray array = new COSArray();
-        for (byte[] recipient : recipients)
+        final COSArray array = new COSArray();
+        for (final byte[] recipient : recipients)
         {
-            COSString recip = new COSString(recipient);
+            final COSString recip = new COSString(recipient);
             array.add(recip);
         }
         dictionary.setItem(COSName.RECIPIENTS, array);
@@ -436,7 +436,7 @@ public class PDEncryption implements COSObjectable
      */
     public int getRecipientsLength()
     {
-        COSArray array = (COSArray) dictionary.getItem(COSName.RECIPIENTS);
+        final COSArray array = (COSArray) dictionary.getItem(COSName.RECIPIENTS);
         return array.size();
     }
 
@@ -447,9 +447,9 @@ public class PDEncryption implements COSObjectable
      *
      * @return a COSString object containing information about the recipient number i.
      */
-    public COSString getRecipientStringAt(int i)
+    public COSString getRecipientStringAt(final int i)
     {
-        COSArray array = (COSArray) dictionary.getItem(COSName.RECIPIENTS);
+        final COSArray array = (COSArray) dictionary.getItem(COSName.RECIPIENTS);
         return (COSString)array.get(i);
     }
     
@@ -480,13 +480,13 @@ public class PDEncryption implements COSObjectable
      * 
      * @return the crypt filter with the given name if available
      */
-    public PDCryptFilterDictionary getCryptFilterDictionary(COSName cryptFilterName)
+    public PDCryptFilterDictionary getCryptFilterDictionary(final COSName cryptFilterName)
     {
         // See CF in "Table 20 – Entries common to all encryption dictionaries"
-        COSBase base = dictionary.getDictionaryObject(COSName.CF);
+        final COSBase base = dictionary.getDictionaryObject(COSName.CF);
         if (base instanceof COSDictionary)
         {
-            COSBase base2 = ((COSDictionary) base).getDictionaryObject(cryptFilterName);
+            final COSBase base2 = ((COSDictionary) base).getDictionaryObject(cryptFilterName);
             if (base2 instanceof COSDictionary)
             {
                 return new PDCryptFilterDictionary((COSDictionary) base2);
@@ -501,7 +501,7 @@ public class PDEncryption implements COSObjectable
      * @param cryptFilterName the name of the crypt filter
      * @param cryptFilterDictionary the crypt filter to set
      */
-    public void setCryptFilterDictionary(COSName cryptFilterName, PDCryptFilterDictionary cryptFilterDictionary)
+    public void setCryptFilterDictionary(final COSName cryptFilterName, final PDCryptFilterDictionary cryptFilterDictionary)
     {
         COSDictionary cfDictionary = dictionary.getCOSDictionary(COSName.CF);
         if (cfDictionary == null)
@@ -518,7 +518,7 @@ public class PDEncryption implements COSObjectable
      * 
      * @param cryptFilterDictionary the standard crypt filter to set
      */
-    public void setStdCryptFilterDictionary(PDCryptFilterDictionary cryptFilterDictionary)
+    public void setStdCryptFilterDictionary(final PDCryptFilterDictionary cryptFilterDictionary)
     {
         cryptFilterDictionary.getCOSObject().setDirect(true); // PDFBOX-4436
         setCryptFilterDictionary(COSName.STD_CF, cryptFilterDictionary);
@@ -529,7 +529,7 @@ public class PDEncryption implements COSObjectable
      *
      * @param defaultFilterDictionary the standard crypt filter to set
      */
-    public void setDefaultCryptFilterDictionary(PDCryptFilterDictionary defaultFilterDictionary)
+    public void setDefaultCryptFilterDictionary(final PDCryptFilterDictionary defaultFilterDictionary)
     {
         defaultFilterDictionary.getCOSObject().setDirect(true); // PDFBOX-4436
         setCryptFilterDictionary(COSName.DEFAULT_CRYPT_FILTER, defaultFilterDictionary);
@@ -556,7 +556,7 @@ public class PDEncryption implements COSObjectable
      * 
      * @param streamFilterName the name of the filter
      */
-    public void setStreamFilterName(COSName streamFilterName)
+    public void setStreamFilterName(final COSName streamFilterName)
     {
         dictionary.setItem(COSName.STM_F, streamFilterName);
     }
@@ -582,7 +582,7 @@ public class PDEncryption implements COSObjectable
      * 
      * @param stringFilterName the name of the filter
      */
-    public void setStringFilterName(COSName stringFilterName)
+    public void setStringFilterName(final COSName stringFilterName)
     {
         dictionary.setItem(COSName.STR_F, stringFilterName);
     }
@@ -594,7 +594,7 @@ public class PDEncryption implements COSObjectable
      *
      * @throws IOException If there is an error setting the data.
      */
-    public void setPerms(byte[] perms) throws IOException
+    public void setPerms(final byte[] perms) throws IOException
     {
         dictionary.setItem( COSName.PERMS, new COSString(perms) );
     }
@@ -609,7 +609,7 @@ public class PDEncryption implements COSObjectable
     public byte[] getPerms() throws IOException
     {
         byte[] perms = null;
-        COSString permsCosString = (COSString)dictionary.getDictionaryObject( COSName.PERMS );
+        final COSString permsCosString = (COSString)dictionary.getDictionaryObject( COSName.PERMS );
         if( permsCosString != null )
         {
             perms = permsCosString.getBytes();

@@ -66,7 +66,7 @@ public class PropertiesDescription
      * @param type
      *            Valuetype of the new property
      */
-    public void addNewProperty(String name, PropertyType type)
+    public void addNewProperty(final String name, final PropertyType type)
     {
         types.put(name, type);
     }
@@ -78,7 +78,7 @@ public class PropertiesDescription
      *            The name of the property concerned
      * @return Type of property or null
      */
-    public PropertyType getPropertyType(String name)
+    public PropertyType getPropertyType(final String name)
     {
         return types.get(name);
     }

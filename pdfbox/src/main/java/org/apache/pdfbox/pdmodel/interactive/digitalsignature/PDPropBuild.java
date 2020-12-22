@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDPropBuild implements COSObjectable
 {
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Default constructor.
@@ -49,7 +49,7 @@ public class PDPropBuild implements COSObjectable
      *
      * @param dict The signature dictionary.
      */
-    public PDPropBuild(COSDictionary dict)
+    public PDPropBuild(final COSDictionary dict)
     {
         dictionary = dict;
         dictionary.setDirect(true); // the specification claim to use direct objects
@@ -75,7 +75,7 @@ public class PDPropBuild implements COSObjectable
     public PDPropBuildDataDict getFilter()
     {
         PDPropBuildDataDict filter = null;
-        COSDictionary filterDic = dictionary.getCOSDictionary(COSName.FILTER);
+        final COSDictionary filterDic = dictionary.getCOSDictionary(COSName.FILTER);
         if (filterDic != null)
         {
             filter = new PDPropBuildDataDict(filterDic);
@@ -89,7 +89,7 @@ public class PDPropBuild implements COSObjectable
      *
      * @param filter is the PDPropBuildFilter
      */
-    public void setPDPropBuildFilter(PDPropBuildDataDict filter)
+    public void setPDPropBuildFilter(final PDPropBuildDataDict filter)
     {
         dictionary.setItem(COSName.FILTER, filter);
     }
@@ -103,7 +103,7 @@ public class PDPropBuild implements COSObjectable
     public PDPropBuildDataDict getPubSec()
     {
         PDPropBuildDataDict pubSec = null;
-        COSDictionary pubSecDic = dictionary.getCOSDictionary(COSName.PUB_SEC);
+        final COSDictionary pubSecDic = dictionary.getCOSDictionary(COSName.PUB_SEC);
         if (pubSecDic != null)
         {
             pubSec = new PDPropBuildDataDict(pubSecDic);
@@ -116,7 +116,7 @@ public class PDPropBuild implements COSObjectable
      *
      * @param pubSec is the PDPropBuildPubSec
      */
-    public void setPDPropBuildPubSec(PDPropBuildDataDict pubSec)
+    public void setPDPropBuildPubSec(final PDPropBuildDataDict pubSec)
     {
         dictionary.setItem(COSName.PUB_SEC, pubSec);
     }
@@ -130,7 +130,7 @@ public class PDPropBuild implements COSObjectable
     public PDPropBuildDataDict getApp()
     {
         PDPropBuildDataDict app = null;
-        COSDictionary appDic = dictionary.getCOSDictionary(COSName.APP);
+        final COSDictionary appDic = dictionary.getCOSDictionary(COSName.APP);
         if (appDic != null)
         {
             app = new PDPropBuildDataDict(appDic);
@@ -144,7 +144,7 @@ public class PDPropBuild implements COSObjectable
      *
      * @param app is the PDPropBuildApp
      */
-    public void setPDPropBuildApp(PDPropBuildDataDict app)
+    public void setPDPropBuildApp(final PDPropBuildDataDict app)
     {
         dictionary.setItem(COSName.APP, app);
     }

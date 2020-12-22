@@ -35,12 +35,12 @@ public final class Type1FontUtil
      * @param bytes the byte array
      * @return the string with the hex value
      */
-    public static String hexEncode(byte[] bytes)
+    public static String hexEncode(final byte[] bytes)
     {
-        StringBuilder sb = new StringBuilder();
-        for (byte aByte : bytes)
+        final StringBuilder sb = new StringBuilder();
+        for (final byte aByte : bytes)
         {
-            String string = Integer.toHexString(aByte & 0xff);
+            final String string = Integer.toHexString(aByte & 0xff);
             if (string.length() == 1)
             {
                 sb.append("0");
@@ -55,13 +55,13 @@ public final class Type1FontUtil
      * @param string the string representing the hex value
      * @return the hex value as byte array
      */
-    public static byte[] hexDecode(String string)
+    public static byte[] hexDecode(final String string)
     {
         if (string.length() % 2 != 0)
         {
             throw new IllegalArgumentException();
         }
-        byte[] bytes = new byte[string.length() / 2];
+        final byte[] bytes = new byte[string.length() / 2];
         for (int i = 0; i < string.length(); i += 2)
         {
             bytes[i / 2] = (byte) Integer.parseInt(string.substring(i, i + 2), 16);
@@ -74,7 +74,7 @@ public final class Type1FontUtil
      * @param buffer the given data
      * @return the encrypted data
      */
-    public static byte[] eexecEncrypt(byte[] buffer)
+    public static byte[] eexecEncrypt(final byte[] buffer)
     {
         return encrypt(buffer, 55665, 4);
     }
@@ -85,14 +85,14 @@ public final class Type1FontUtil
      * @param n blocksize?
      * @return the encrypted data
      */
-    public static byte[] charstringEncrypt(byte[] buffer, int n)
+    public static byte[] charstringEncrypt(final byte[] buffer, final int n)
     {
         return encrypt(buffer, 4330, n);
     }
 
-    private static byte[] encrypt(byte[] plaintextBytes, int r, int n)
+    private static byte[] encrypt(final byte[] plaintextBytes, int r, final int n)
     {
-        byte[] buffer = new byte[plaintextBytes.length + n];
+        final byte[] buffer = new byte[plaintextBytes.length + n];
 
         for (int i = 0; i < n; i++)
         {
@@ -101,15 +101,15 @@ public final class Type1FontUtil
 
         System.arraycopy(plaintextBytes, 0, buffer, n, buffer.length - n);
 
-        int c1 = 52845;
-        int c2 = 22719;
+        final int c1 = 52845;
+        final int c2 = 22719;
 
-        byte[] ciphertextBytes = new byte[buffer.length];
+        final byte[] ciphertextBytes = new byte[buffer.length];
 
         for (int i = 0; i < buffer.length; i++)
         {
-            int plain = buffer[i] & 0xff;
-            int cipher = plain ^ r >> 8;
+            final int plain = buffer[i] & 0xff;
+            final int cipher = plain ^ r >> 8;
 
             ciphertextBytes[i] = (byte) cipher;
 
@@ -124,7 +124,7 @@ public final class Type1FontUtil
      * @param buffer the given encrypted data
      * @return the decrypted data
      */
-    public static byte[] eexecDecrypt(byte[] buffer)
+    public static byte[] eexecDecrypt(final byte[] buffer)
     {
         return decrypt(buffer, 55665, 4);
     }
@@ -135,29 +135,29 @@ public final class Type1FontUtil
      * @param n blocksize?
      * @return the decrypted data
      */
-    public static byte[] charstringDecrypt(byte[] buffer, int n)
+    public static byte[] charstringDecrypt(final byte[] buffer, final int n)
     {
         return decrypt(buffer, 4330, n);
     }
 
-    private static byte[] decrypt(byte[] ciphertextBytes, int r, int n)
+    private static byte[] decrypt(final byte[] ciphertextBytes, int r, final int n)
     {
-        byte[] buffer = new byte[ciphertextBytes.length];
+        final byte[] buffer = new byte[ciphertextBytes.length];
 
-        int c1 = 52845;
-        int c2 = 22719;
+        final int c1 = 52845;
+        final int c2 = 22719;
 
         for (int i = 0; i < ciphertextBytes.length; i++)
         {
-            int cipher = ciphertextBytes[i] & 0xff;
-            int plain = cipher ^ r >> 8;
+            final int cipher = ciphertextBytes[i] & 0xff;
+            final int plain = cipher ^ r >> 8;
 
             buffer[i] = (byte) plain;
 
             r = (cipher + r) * c1 + c2 & 0xffff;
         }
 
-        byte[] plaintextBytes = new byte[ciphertextBytes.length - n];
+        final byte[] plaintextBytes = new byte[ciphertextBytes.length - n];
         System.arraycopy(buffer, n, plaintextBytes, 0, plaintextBytes.length);
 
         return plaintextBytes;

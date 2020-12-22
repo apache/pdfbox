@@ -32,20 +32,20 @@ public class CoverageTableFormat1 extends CoverageTable
 
     private final int[] glyphArray;
 
-    public CoverageTableFormat1(int coverageFormat, int[] glyphArray)
+    public CoverageTableFormat1(final int coverageFormat, final int[] glyphArray)
     {
         super(coverageFormat);
         this.glyphArray = glyphArray;
     }
 
     @Override
-    public int getCoverageIndex(int gid)
+    public int getCoverageIndex(final int gid)
     {
         return Arrays.binarySearch(glyphArray, gid);
     }
 
     @Override
-    public int getGlyphId(int index)
+    public int getGlyphId(final int index)
     {
         return glyphArray[index];
     }

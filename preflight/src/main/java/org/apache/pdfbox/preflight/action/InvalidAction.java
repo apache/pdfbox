@@ -48,8 +48,8 @@ public class InvalidAction extends AbstractActionManager
      * @param name
      *            the action type
      */
-    public InvalidAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey,
-            String name)
+    public InvalidAction(final ActionManagerFactory amFact, final COSDictionary adict, final PreflightContext ctx, final String aaKey,
+                         final String name)
     {
         super(amFact, adict, ctx, aaKey);
         this.actionName = name;

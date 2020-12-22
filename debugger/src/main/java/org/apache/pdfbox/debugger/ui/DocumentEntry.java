@@ -31,7 +31,7 @@ public class DocumentEntry
     private final PDDocument doc;
     private final String filename;
     
-    public DocumentEntry(PDDocument doc, String filename)
+    public DocumentEntry(final PDDocument doc, final String filename)
     {
         this.doc = doc;
         this.filename = filename;
@@ -42,14 +42,14 @@ public class DocumentEntry
         return doc.getPages().getCount();
     }
     
-    public PageEntry getPage(int index)
+    public PageEntry getPage(final int index)
     {
-        PDPage page = doc.getPages().get(index);
-        String pageLabel = PDFDebugger.getPageLabel(doc, index);
+        final PDPage page = doc.getPages().get(index);
+        final String pageLabel = PDFDebugger.getPageLabel(doc, index);
         return new PageEntry(page.getCOSObject(), index + 1, pageLabel);
     }
     
-    public int indexOf(PageEntry page)
+    public int indexOf(final PageEntry page)
     {
         return page.getPageNum() - 1;
     }

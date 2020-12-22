@@ -38,7 +38,7 @@ class TestPDFBox3741
     @Test
     void testPDFBox3741() throws IOException
     {
-        ValidationResult result = PreflightParser
+        final ValidationResult result = PreflightParser
                 .validate(new File("src/test/resources/PDFBOX-3741.pdf"));
         // Error should be:
         // 2.4.3: Invalid Color space, /DeviceGray default for operator "Tj" can't be used without Color Profile

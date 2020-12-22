@@ -41,7 +41,7 @@ public class PDActionNamed extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionNamed(COSDictionary a)
+    public PDActionNamed(final COSDictionary a)
     {
         super(a);
     }
@@ -61,7 +61,7 @@ public class PDActionNamed extends PDAction
      *
      * @param name The name of the action to be performed.
      */
-    public void setN(String name)
+    public void setN(final String name)
     {
         action.setName("N", name);
     }

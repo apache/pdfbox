@@ -43,7 +43,7 @@ class TestPDPageTransitions
         try (PDDocument doc = Loader.loadPDF(new File(this.getClass().getResource(
                 "/org/apache/pdfbox/pdmodel/interactive/pagenavigation/transitions_test.pdf").toURI())))
         {
-            PDTransition firstTransition = doc.getPages().get(0).getTransition();
+            final PDTransition firstTransition = doc.getPages().get(0).getTransition();
             assertEquals(PDTransitionStyle.Glitter.name(), firstTransition.getStyle());
             assertEquals(2, firstTransition.getDuration(), 0);
             assertEquals(PDTransitionDirection.TOP_LEFT_TO_BOTTOM_RIGHT.getCOSBase(),
@@ -54,14 +54,14 @@ class TestPDPageTransitions
     @Test
     void saveAndReadTransitions() throws IOException
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         // save
         try (PDDocument document = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             document.addPage(page);
-            PDTransition transition = new PDTransition(PDTransitionStyle.Fly);
+            final PDTransition transition = new PDTransition(PDTransitionStyle.Fly);
             transition.setDirection(PDTransitionDirection.NONE);
             transition.setFlyScale(0.5f);
             page.setTransition(transition, 2);
@@ -71,8 +71,8 @@ class TestPDPageTransitions
         // read
         try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
         {
-            PDPage page = doc.getPages().get(0);
-            PDTransition loadedTransition = page.getTransition();
+            final PDPage page = doc.getPages().get(0);
+            final PDTransition loadedTransition = page.getTransition();
             assertEquals(PDTransitionStyle.Fly.name(), loadedTransition.getStyle());
             assertEquals(2, page.getCOSObject().getFloat(COSName.DUR), 0);
             assertEquals(PDTransitionDirection.NONE.getCOSBase(), loadedTransition.getDirection());

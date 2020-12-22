@@ -40,7 +40,7 @@ public class XmpParsingException extends Exception
                                                       // prefix used
     }
 
-    private ErrorType errorType;
+    private final ErrorType errorType;
 
     /**
      * serial version uid
@@ -55,7 +55,7 @@ public class XmpParsingException extends Exception
      * @param cause
      *            the cause of the exception
      */
-    public XmpParsingException(ErrorType error, String message, Throwable cause)
+    public XmpParsingException(final ErrorType error, final String message, final Throwable cause)
     {
         super(message, cause);
         this.errorType = error;
@@ -67,7 +67,7 @@ public class XmpParsingException extends Exception
      * @param message
      *            a description of the encountered problem
      */
-    public XmpParsingException(ErrorType error, String message)
+    public XmpParsingException(final ErrorType error, final String message)
     {
         super(message);
         this.errorType = error;

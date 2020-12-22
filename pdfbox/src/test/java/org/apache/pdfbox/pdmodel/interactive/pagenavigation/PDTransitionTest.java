@@ -35,7 +35,7 @@ class PDTransitionTest
     @Test
     void defaultStyle()
     {
-        PDTransition transition = new PDTransition();
+        final PDTransition transition = new PDTransition();
         assertEquals(COSName.TRANS, transition.getCOSObject().getCOSName(COSName.TYPE));
         assertEquals(PDTransitionStyle.R.name(), transition.getStyle());
     }
@@ -43,7 +43,7 @@ class PDTransitionTest
     @Test
     void getStyle()
     {
-        PDTransition transition = new PDTransition(PDTransitionStyle.Fade);
+        final PDTransition transition = new PDTransition(PDTransitionStyle.Fade);
         assertEquals(COSName.TRANS, transition.getCOSObject().getCOSName(COSName.TYPE));
         assertEquals(PDTransitionStyle.Fade.name(), transition.getStyle());
     }
@@ -51,7 +51,7 @@ class PDTransitionTest
     @Test
     void defaultValues()
     {
-        PDTransition transition = new PDTransition(new COSDictionary());
+        final PDTransition transition = new PDTransition(new COSDictionary());
         assertEquals(PDTransitionStyle.R.name(), transition.getStyle());
         assertEquals(PDTransitionDimension.H.name(), transition.getDimension());
         assertEquals(PDTransitionMotion.I.name(), transition.getMotion());
@@ -64,7 +64,7 @@ class PDTransitionTest
     @Test
     void dimension()
     {
-        PDTransition transition = new PDTransition();
+        final PDTransition transition = new PDTransition();
         transition.setDimension(PDTransitionDimension.H);
         assertEquals(PDTransitionDimension.H.name(), transition.getDimension());
     }
@@ -72,7 +72,7 @@ class PDTransitionTest
     @Test
     void directionNone()
     {
-        PDTransition transition = new PDTransition();
+        final PDTransition transition = new PDTransition();
         transition.setDirection(PDTransitionDirection.NONE);
         assertEquals(COSName.class.getName(), transition.getDirection().getClass().getName());
         assertEquals(COSName.NONE, transition.getDirection());
@@ -81,7 +81,7 @@ class PDTransitionTest
     @Test
     void directionNumber()
     {
-        PDTransition transition = new PDTransition();
+        final PDTransition transition = new PDTransition();
         transition.setDirection(PDTransitionDirection.LEFT_TO_RIGHT);
         assertEquals(COSInteger.class.getName(), transition.getDirection().getClass().getName());
         assertEquals(COSInteger.ZERO, transition.getDirection());
@@ -90,7 +90,7 @@ class PDTransitionTest
     @Test
     void motion()
     {
-        PDTransition transition = new PDTransition();
+        final PDTransition transition = new PDTransition();
         transition.setMotion(PDTransitionMotion.O);
         assertEquals(PDTransitionMotion.O.name(), transition.getMotion());
     }
@@ -98,7 +98,7 @@ class PDTransitionTest
     @Test
     void duration()
     {
-        PDTransition transition = new PDTransition();
+        final PDTransition transition = new PDTransition();
         transition.setDuration(4);
         assertEquals(4, transition.getDuration(), 0);
     }
@@ -106,7 +106,7 @@ class PDTransitionTest
     @Test
     void flyScale()
     {
-        PDTransition transition = new PDTransition();
+        final PDTransition transition = new PDTransition();
         transition.setFlyScale(4);
         assertEquals(4, transition.getFlyScale(), 0);
     }
@@ -114,7 +114,7 @@ class PDTransitionTest
     @Test
     void flyArea()
     {
-        PDTransition transition = new PDTransition();
+        final PDTransition transition = new PDTransition();
         transition.setFlyAreaOpaque(true);
         assertTrue(transition.isFlyAreaOpaque());
     }

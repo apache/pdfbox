@@ -50,7 +50,7 @@ public class ViewMenu extends MenuBase
     /**
      * Constructor.
      */
-    private ViewMenu(PDFDebugger pdfDebugger)
+    private ViewMenu(final PDFDebugger pdfDebugger)
     {
         this.pdfDebugger = pdfDebugger;
         setMenu(createViewMenu());
@@ -63,7 +63,7 @@ public class ViewMenu extends MenuBase
      *
      * @return ViewMenu instance.
      */
-    public static ViewMenu getInstance(PDFDebugger pdfDebugger)
+    public static ViewMenu getInstance(final PDFDebugger pdfDebugger)
     {
         if (instance == null)
         {
@@ -78,7 +78,7 @@ public class ViewMenu extends MenuBase
      * @param actionCommand the actioCommand of the menu event 
      * @return true if the actionCommand matches one of the rendering options
      */
-    public static boolean isRenderingOption(String actionCommand)
+    public static boolean isRenderingOption(final String actionCommand)
     {
         return SHOW_TEXT_STRIPPER.equals(actionCommand) ||
                 SHOW_TEXT_STRIPPER_BEADS.equals(actionCommand) ||
@@ -133,7 +133,7 @@ public class ViewMenu extends MenuBase
      * @param actionEvent
      * @return true if the "Extract Text" menu entry was hit.
      */
-    public static boolean isExtractTextEvent(ActionEvent actionEvent)
+    public static boolean isExtractTextEvent(final ActionEvent actionEvent)
     {
         return EXTRACT_TEXT.equals(actionEvent.getActionCommand());
     }
@@ -154,7 +154,7 @@ public class ViewMenu extends MenuBase
      * @param actionEvent
      * @return true if the "Repair AcroForm" menu entry was hit.
      */
-    public static boolean isRepairAcroformEvent(ActionEvent actionEvent)
+    public static boolean isRepairAcroformEvent(final ActionEvent actionEvent)
     {
         return REPAIR_ACROFORM.equals(actionEvent.getActionCommand());
     }
@@ -171,7 +171,7 @@ public class ViewMenu extends MenuBase
 
     private JMenu createViewMenu()
     {
-        JMenu viewMenu = new JMenu("View");
+        final JMenu viewMenu = new JMenu("View");
         viewMenu.setMnemonic('V');
         
         if (pdfDebugger.isPageMode())
@@ -201,19 +201,19 @@ public class ViewMenu extends MenuBase
         });
         viewMenu.add(viewModeItem);
            
-        ZoomMenu zoomMenu = ZoomMenu.getInstance();
+        final ZoomMenu zoomMenu = ZoomMenu.getInstance();
         zoomMenu.setEnableMenu(false);
         viewMenu.add(zoomMenu.getMenu());
 
-        RotationMenu rotationMenu = RotationMenu.getInstance();
+        final RotationMenu rotationMenu = RotationMenu.getInstance();
         rotationMenu.setEnableMenu(false);
         viewMenu.add(rotationMenu.getMenu());
 
-        ImageTypeMenu imageTypeMenu = ImageTypeMenu.getInstance();
+        final ImageTypeMenu imageTypeMenu = ImageTypeMenu.getInstance();
         imageTypeMenu.setEnableMenu(false);
         viewMenu.add(imageTypeMenu.getMenu());
 
-        RenderDestinationMenu renderDestinationMenu = RenderDestinationMenu.getInstance();
+        final RenderDestinationMenu renderDestinationMenu = RenderDestinationMenu.getInstance();
         renderDestinationMenu.setEnableMenu(false);
         viewMenu.add(renderDestinationMenu.getMenu());
 

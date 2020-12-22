@@ -36,7 +36,7 @@ public final class ZoomMenu extends MenuBase
     {
         private final int zoom;
 
-        ZoomMenuItem(String text, int zoom)
+        ZoomMenuItem(final String text, final int zoom)
         {
             super(text);
             this.zoom = zoom;
@@ -56,10 +56,10 @@ public final class ZoomMenu extends MenuBase
     private ZoomMenu()
     {
         menu = new JMenu("Zoom");
-        ButtonGroup bg = new ButtonGroup();
-        for (int zoom : ZOOMS)
+        final ButtonGroup bg = new ButtonGroup();
+        for (final int zoom : ZOOMS)
         {
-            ZoomMenuItem zoomItem = new ZoomMenuItem(zoom + "%", zoom);
+            final ZoomMenuItem zoomItem = new ZoomMenuItem(zoom + "%", zoom);
             bg.add(zoomItem);
             menu.add(zoomItem);
         }
@@ -86,12 +86,12 @@ public final class ZoomMenu extends MenuBase
      * @param zoomValue, e.g. 1, 0.25, 4.
      * @throws IllegalArgumentException if the parameter doesn't belong to a zoom menu item.
      */
-    public void changeZoomSelection(float zoomValue)
+    public void changeZoomSelection(final float zoomValue)
     {
-        String selection = (int)(zoomValue*100) +"%";
-        for (Component comp : menu.getMenuComponents())
+        final String selection = (int)(zoomValue*100) +"%";
+        for (final Component comp : menu.getMenuComponents())
         {
-            JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) comp;
+            final JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) comp;
             if (menuItem.getText().equals(selection))
             {
                 menuItem.setSelected(true);
@@ -107,13 +107,13 @@ public final class ZoomMenu extends MenuBase
      * @param actionCommand a menu command string.
      * @return true if the command is a zoom menu command, e.g. "100%", false if not.
      */
-    public static boolean isZoomMenu(String actionCommand)
+    public static boolean isZoomMenu(final String actionCommand)
     {
         if (!actionCommand.matches("^\\d+%$"))
         {
             return false;
         }
-        int zoom = Integer.parseInt(actionCommand.substring(0, actionCommand.length() - 1));
+        final int zoom = Integer.parseInt(actionCommand.substring(0, actionCommand.length() - 1));
         return Arrays.binarySearch(ZOOMS, zoom) >= 0;
     }
 
@@ -125,9 +125,9 @@ public final class ZoomMenu extends MenuBase
      */
     public static float getZoomScale()
     {
-        for (Component comp : instance.menu.getMenuComponents())
+        for (final Component comp : instance.menu.getMenuComponents())
         {
-            ZoomMenuItem menuItem = (ZoomMenuItem) comp;
+            final ZoomMenuItem menuItem = (ZoomMenuItem) comp;
             if (menuItem.isSelected())
             {
                 return menuItem.zoom / 100f;
@@ -141,7 +141,7 @@ public final class ZoomMenu extends MenuBase
         return pageZoomScale;
     }
 
-    public void setPageZoomScale(float pageZoomValue)
+    public void setPageZoomScale(final float pageZoomValue)
     {
         pageZoomScale = pageZoomValue;
     }
@@ -151,7 +151,7 @@ public final class ZoomMenu extends MenuBase
         return imageZoomScale;
     }
 
-    public void setImageZoomScale(float imageZoomValue)
+    public void setImageZoomScale(final float imageZoomValue)
     {
         imageZoomScale = imageZoomValue;
     }

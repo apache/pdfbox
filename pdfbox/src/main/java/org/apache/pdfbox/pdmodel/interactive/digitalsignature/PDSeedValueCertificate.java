@@ -80,7 +80,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param dict The certificate seed value dictionary.
      */
-    public PDSeedValueCertificate(COSDictionary dict)
+    public PDSeedValueCertificate(final COSDictionary dict)
     {
         dictionary = dict;
         dictionary.setDirect(true);
@@ -111,7 +111,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param flag if true, the specified Subject shall be enforced as a constraint.
      */
-    public void setSubjectRequired(boolean flag)
+    public void setSubjectRequired(final boolean flag)
     {
         dictionary.setFlag(COSName.FF, FLAG_SUBJECT, flag);
     }
@@ -130,7 +130,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param flag if true, the specified Issuer shall be enforced as a constraint.
      */
-    public void setIssuerRequired(boolean flag)
+    public void setIssuerRequired(final boolean flag)
     {
         dictionary.setFlag(COSName.FF, FLAG_ISSUER, flag);
     }
@@ -149,7 +149,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param flag if true, the specified OID shall be enforced as a constraint.
      */
-    public void setOIDRequired(boolean flag)
+    public void setOIDRequired(final boolean flag)
     {
         dictionary.setFlag(COSName.FF, FLAG_OID, flag);
     }
@@ -168,7 +168,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param flag if true, the specified Subject DN shall be enforced as a constraint.
      */
-    public void setSubjectDNRequired(boolean flag)
+    public void setSubjectDNRequired(final boolean flag)
     {
         dictionary.setFlag(COSName.FF, FLAG_SUBJECT_DN, flag);
     }
@@ -187,7 +187,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param flag if true, the specified KeyUsage shall be enforced as a constraint.
      */
-    public void setKeyUsageRequired(boolean flag)
+    public void setKeyUsageRequired(final boolean flag)
     {
         dictionary.setFlag(COSName.FF, FLAG_KEY_USAGE, flag);
     }
@@ -206,7 +206,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param flag if true, the specified URL shall be enforced as a constraint.
      */
-    public void setURLRequired(boolean flag)
+    public void setURLRequired(final boolean flag)
     {
         dictionary.setFlag(COSName.FF, FLAG_URL, flag);
     }
@@ -216,7 +216,7 @@ public class PDSeedValueCertificate implements COSObjectable
      */
     public List<byte[]> getSubject()
     {
-        COSArray array = dictionary.getCOSArray(COSName.SUBJECT);
+        final COSArray array = dictionary.getCOSArray(COSName.SUBJECT);
         return array != null ? getListOfByteArraysFromCOSArray(array) : null;
     }
 
@@ -229,7 +229,7 @@ public class PDSeedValueCertificate implements COSObjectable
      * @param subjects list of byte arrays containing DER-encoded X.509v3 certificates that are
      * acceptable for signing.
      */
-    public void setSubject(List<byte[]> subjects)
+    public void setSubject(final List<byte[]> subjects)
     {
         dictionary.setItem(COSName.SUBJECT, convertListOfByteArraysToCOSArray(subjects));
     }
@@ -240,7 +240,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param subject byte array containing DER-encoded X.509v3 certificate
      */
-    public void addSubject(byte[] subject)
+    public void addSubject(final byte[] subject)
     {
         COSArray array = dictionary.getCOSArray(COSName.SUBJECT);
         if (array == null)
@@ -256,9 +256,9 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param subject byte array containing DER-encoded X.509v3 certificate
      */
-    public void removeSubject(byte[] subject)
+    public void removeSubject(final byte[] subject)
     {
-        COSArray array = dictionary.getCOSArray(COSName.SUBJECT);
+        final COSArray array = dictionary.getCOSArray(COSName.SUBJECT);
         if (array != null)
         {
             array.remove(new COSString(subject));
@@ -272,18 +272,18 @@ public class PDSeedValueCertificate implements COSObjectable
      */
     public List<Map<String, String>> getSubjectDN()
     {
-        COSArray cosArray = dictionary.getCOSArray(COSName.SUBJECT_DN);
+        final COSArray cosArray = dictionary.getCOSArray(COSName.SUBJECT_DN);
         if (cosArray != null)
         {
-            List<? extends COSBase> subjectDNList = cosArray.toList();
-            List<Map<String, String>> result = new LinkedList<>();
-            for (COSBase subjectDNItem : subjectDNList)
+            final List<? extends COSBase> subjectDNList = cosArray.toList();
+            final List<Map<String, String>> result = new LinkedList<>();
+            for (final COSBase subjectDNItem : subjectDNList)
             {
                 if (subjectDNItem instanceof COSDictionary)
                 {
-                    COSDictionary subjectDNItemDict = (COSDictionary) subjectDNItem;
-                    Map<String, String> subjectDNMap = new HashMap<>();
-                    for (COSName key : subjectDNItemDict.keySet())
+                    final COSDictionary subjectDNItemDict = (COSDictionary) subjectDNItem;
+                    final Map<String, String> subjectDNMap = new HashMap<>();
+                    for (final COSName key : subjectDNItemDict.keySet())
                     {
                         subjectDNMap.put(key.getName(), subjectDNItemDict.getString(key));
                     }
@@ -303,12 +303,12 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param subjectDN list of maps that contains subject distinguished names
      */
-    public void setSubjectDN(List<Map<String, String>> subjectDN)
+    public void setSubjectDN(final List<Map<String, String>> subjectDN)
     {
-        List<COSDictionary> subjectDNDict = new LinkedList<>();
-        for (Map<String, String> subjectDNItem : subjectDN)
+        final List<COSDictionary> subjectDNDict = new LinkedList<>();
+        for (final Map<String, String> subjectDNItem : subjectDN)
         {
-            COSDictionary dict = new COSDictionary();
+            final COSDictionary dict = new COSDictionary();
             subjectDNItem.forEach((key, value) -> dict.setItem(key, new COSString(value)));
             subjectDNDict.add(dict);
         }
@@ -333,11 +333,11 @@ public class PDSeedValueCertificate implements COSObjectable
      */
     public List<String> getKeyUsage()
     {
-        COSArray array = dictionary.getCOSArray(COSName.KEY_USAGE);
+        final COSArray array = dictionary.getCOSArray(COSName.KEY_USAGE);
         if (array != null)
         {
-            List<String> keyUsageExtensions = new LinkedList<>();
-            for (COSBase item : array)
+            final List<String> keyUsageExtensions = new LinkedList<>();
+            for (final COSBase item : array)
             {
                 if (item instanceof COSString)
                 {
@@ -369,7 +369,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param keyUsageExtensions list of ASCII strings that consists only of {0, 1, X}
      */
-    public void setKeyUsage(List<String> keyUsageExtensions)
+    public void setKeyUsage(final List<String> keyUsageExtensions)
     {
         dictionary.setItem(COSName.KEY_USAGE,
                 COSArray.ofCOSStrings(keyUsageExtensions));
@@ -381,9 +381,9 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param keyUsageExtension String that consist only of {0, 1, X}
      */
-    public void addKeyUsage(String keyUsageExtension)
+    public void addKeyUsage(final String keyUsageExtension)
     {
-        String allowedChars = "01X";
+        final String allowedChars = "01X";
         for (int c = 0; c < keyUsageExtension.length(); c++)
         {
             if (allowedChars.indexOf(keyUsageExtension.charAt(c)) == -1)
@@ -413,11 +413,11 @@ public class PDSeedValueCertificate implements COSObjectable
      * @param encipherOnly char that is one of {0, 1, X}
      * @param decipherOnly char that is one of {0, 1, X}
      */
-    public void addKeyUsage(char digitalSignature, char nonRepudiation, char keyEncipherment,
-            char dataEncipherment, char keyAgreement, char keyCertSign, char cRLSign,
-            char encipherOnly, char decipherOnly)
+    public void addKeyUsage(final char digitalSignature, final char nonRepudiation, final char keyEncipherment,
+                            final char dataEncipherment, final char keyAgreement, final char keyCertSign, final char cRLSign,
+                            final char encipherOnly, final char decipherOnly)
     {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append(digitalSignature);
         builder.append(nonRepudiation);
         builder.append(keyEncipherment);
@@ -436,9 +436,9 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param keyUsageExtension ASCII string that consists of {0, 1, X}
      */
-    public void removeKeyUsage(String keyUsageExtension)
+    public void removeKeyUsage(final String keyUsageExtension)
     {
-        COSArray array = dictionary.getCOSArray(COSName.KEY_USAGE);
+        final COSArray array = dictionary.getCOSArray(COSName.KEY_USAGE);
         if (array != null)
         {
             array.remove(new COSString(keyUsageExtension));
@@ -450,7 +450,7 @@ public class PDSeedValueCertificate implements COSObjectable
      */
     public List<byte[]> getIssuer()
     {
-        COSArray array = dictionary.getCOSArray(COSName.ISSUER);
+        final COSArray array = dictionary.getCOSArray(COSName.ISSUER);
         return array != null ? getListOfByteArraysFromCOSArray(array) : null;
     }
 
@@ -461,7 +461,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param issuers A list of byte array containing DER-encoded X.509v3 certificates
      */
-    public void setIssuer(List<byte[]> issuers)
+    public void setIssuer(final List<byte[]> issuers)
     {
         dictionary.setItem(COSName.ISSUER, convertListOfByteArraysToCOSArray(issuers));
     }
@@ -473,7 +473,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param issuer A byte array containing DER-encoded X.509v3 certificate
      */
-    public void addIssuer(byte[] issuer)
+    public void addIssuer(final byte[] issuer)
     {
         COSArray array = dictionary.getCOSArray(COSName.ISSUER);
         if (array == null)
@@ -489,9 +489,9 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param issuer A byte array containing DER-encoded X.509v3 certificate
      */
-    public void removeIssuer(byte[] issuer)
+    public void removeIssuer(final byte[] issuer)
     {
-        COSArray array = dictionary.getCOSArray(COSName.ISSUER);
+        final COSArray array = dictionary.getCOSArray(COSName.ISSUER);
         if (array != null)
         {
             array.remove(new COSString(issuer));
@@ -504,7 +504,7 @@ public class PDSeedValueCertificate implements COSObjectable
      */
     public List<byte[]> getOID()
     {
-        COSArray array = dictionary.getCOSArray(COSName.OID);
+        final COSArray array = dictionary.getCOSArray(COSName.OID);
         return array != null ? getListOfByteArraysFromCOSArray(array) : null;
     }
 
@@ -515,7 +515,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param oidByteStrings list of byte arrays that contain OIDs
      */
-    public void setOID(List<byte[]> oidByteStrings)
+    public void setOID(final List<byte[]> oidByteStrings)
     {
         dictionary.setItem(COSName.OID, convertListOfByteArraysToCOSArray(oidByteStrings));
     }
@@ -525,7 +525,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param oid
      */
-    public void addOID(byte[] oid)
+    public void addOID(final byte[] oid)
     {
         COSArray array = dictionary.getCOSArray(COSName.OID);
         if (array == null)
@@ -541,9 +541,9 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param oid
      */
-    public void removeOID(byte[] oid)
+    public void removeOID(final byte[] oid)
     {
-        COSArray array = dictionary.getCOSArray(COSName.OID);
+        final COSArray array = dictionary.getCOSArray(COSName.OID);
         if (array != null)
         {
             array.remove(new COSString(oid));
@@ -563,7 +563,7 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param url String of the URL
      */
-    public void setURL(String url)
+    public void setURL(final String url)
     {
         dictionary.setString(COSName.URL, url);
     }
@@ -608,15 +608,15 @@ public class PDSeedValueCertificate implements COSObjectable
      *
      * @param urlType String of the urlType
      */
-    public void setURLType(String urlType)
+    public void setURLType(final String urlType)
     {
         dictionary.setName(COSName.URL_TYPE, urlType);
     }
 
-    private static List<byte[]> getListOfByteArraysFromCOSArray(COSArray array)
+    private static List<byte[]> getListOfByteArraysFromCOSArray(final COSArray array)
     {
-        List<byte[]> result = new LinkedList<>();
-        for (COSBase item : array)
+        final List<byte[]> result = new LinkedList<>();
+        for (final COSBase item : array)
         {
             if (item instanceof COSString)
             {
@@ -626,9 +626,9 @@ public class PDSeedValueCertificate implements COSObjectable
         return result;
     }
 
-    private static COSArray convertListOfByteArraysToCOSArray(List<byte[]> strings)
+    private static COSArray convertListOfByteArraysToCOSArray(final List<byte[]> strings)
     {
-        COSArray array = new COSArray();
+        final COSArray array = new COSArray();
         strings.forEach(s -> array.add(new COSString(s)));
         return array;
     }

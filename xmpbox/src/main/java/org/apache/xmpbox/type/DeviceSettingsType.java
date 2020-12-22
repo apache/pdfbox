@@ -37,7 +37,7 @@ public class DeviceSettingsType extends AbstractStructuredType
     @PropertyType(type = Types.Text, card = Cardinality.Seq)
     public static final String SETTINGS = "Settings";
 
-    public DeviceSettingsType(XMPMetadata metadata)
+    public DeviceSettingsType(final XMPMetadata metadata)
     {
         super(metadata);
     }

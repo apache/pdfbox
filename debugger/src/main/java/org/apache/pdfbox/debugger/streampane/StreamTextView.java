@@ -51,13 +51,13 @@ class StreamTextView implements MouseMotionListener, AncestorListener
      * @param document StyledDocument instance which is supposed to be shown in the pane.
      * @param controller ToolTipController instance.
      */
-    StreamTextView(StyledDocument document, ToolTipController controller)
+    StreamTextView(final StyledDocument document, final ToolTipController controller)
     {
         tTController = controller;
         initUI(document);
     }
 
-    private void initUI(StyledDocument document)
+    private void initUI(final StyledDocument document)
     {
         mainPanel = new JPanel();
 
@@ -66,9 +66,9 @@ class StreamTextView implements MouseMotionListener, AncestorListener
         textPane.setFont(new Font("monospaced", Font.PLAIN, 13));
         searcher = new Searcher(textPane);
 
-        JScrollPane scrollPane = new JScrollPane(textPane);
+        final JScrollPane scrollPane = new JScrollPane(textPane);
 
-        BoxLayout boxLayout = new BoxLayout(mainPanel, BoxLayout.Y_AXIS);
+        final BoxLayout boxLayout = new BoxLayout(mainPanel, BoxLayout.Y_AXIS);
 
         mainPanel.setLayout(boxLayout);
 
@@ -87,45 +87,45 @@ class StreamTextView implements MouseMotionListener, AncestorListener
     }
 
     @Override
-    public void mouseDragged(MouseEvent mouseEvent)
+    public void mouseDragged(final MouseEvent mouseEvent)
     {
         // do nothing
     }
 
     @Override
-    public void mouseMoved(MouseEvent mouseEvent)
+    public void mouseMoved(final MouseEvent mouseEvent)
     {
         if (tTController != null)
         {
-            int offset = textPane.viewToModel(mouseEvent.getPoint());
+            final int offset = textPane.viewToModel(mouseEvent.getPoint());
             textPane.setToolTipText(tTController.getToolTip(offset, textPane));
         }
     }
 
     @Override
-    public void ancestorAdded(AncestorEvent ancestorEvent)
+    public void ancestorAdded(final AncestorEvent ancestorEvent)
     {
         if (ancestorEvent.getAncestor().equals(mainPanel))
         {
-            PDFDebugger debugger = (PDFDebugger) SwingUtilities.getRoot(mainPanel);
+            final PDFDebugger debugger = (PDFDebugger) SwingUtilities.getRoot(mainPanel);
             debugger.getFindMenu().setEnabled(true);
             searcher.addMenuListeners(debugger);
         }
     }
 
     @Override
-    public void ancestorRemoved(AncestorEvent ancestorEvent)
+    public void ancestorRemoved(final AncestorEvent ancestorEvent)
     {
         if (ancestorEvent.getAncestor().equals(mainPanel))
         {
-            PDFDebugger debugger = (PDFDebugger) SwingUtilities.getRoot(mainPanel);
+            final PDFDebugger debugger = (PDFDebugger) SwingUtilities.getRoot(mainPanel);
             debugger.getFindMenu().setEnabled(false);
             searcher.removeMenuListeners(debugger);
         }
     }
 
     @Override
-    public void ancestorMoved(AncestorEvent ancestorEvent)
+    public void ancestorMoved(final AncestorEvent ancestorEvent)
     {
         // do nothing
     }

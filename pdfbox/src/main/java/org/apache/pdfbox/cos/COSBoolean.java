@@ -52,7 +52,7 @@ public final class COSBoolean extends COSBase
      *
      * @param aValue The boolean value.
      */
-    private COSBoolean(boolean aValue)
+    private COSBoolean(final boolean aValue)
     {
         value = aValue;
     }
@@ -84,7 +84,7 @@ public final class COSBoolean extends COSBase
      *
      * @return The single boolean instance that matches the parameter.
      */
-    public static COSBoolean getBoolean( boolean value )
+    public static COSBoolean getBoolean(final boolean value )
     {
         return value ? TRUE : FALSE;
     }
@@ -96,7 +96,7 @@ public final class COSBoolean extends COSBase
      *
      * @return The single boolean instance that matches the parameter.
      */
-    public static COSBoolean getBoolean( Boolean value )
+    public static COSBoolean getBoolean(final Boolean value )
     {
         return getBoolean( value.booleanValue() );
     }
@@ -109,7 +109,7 @@ public final class COSBoolean extends COSBase
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor  visitor) throws IOException
+    public Object accept(final ICOSVisitor  visitor) throws IOException
     {
         return visitor.visitFromBoolean(this);
     }
@@ -137,7 +137,7 @@ public final class COSBoolean extends COSBase
     /**
      * {@inheritDoc}
      */
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof COSBoolean) {
             return value == ((COSBoolean)obj).getValue();
         }
@@ -151,7 +151,7 @@ public final class COSBoolean extends COSBase
      *
      * @throws IOException If an error occurs while writing out this object.
      */
-    public void writePDF( OutputStream output ) throws IOException
+    public void writePDF(final OutputStream output ) throws IOException
     {
         if( value )
         {

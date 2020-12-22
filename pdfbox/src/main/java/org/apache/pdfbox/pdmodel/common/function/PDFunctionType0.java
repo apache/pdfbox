@@ -72,7 +72,7 @@ public class PDFunctionType0 extends PDFunction
      *
      * @param function The function.
      */
-    public PDFunctionType0(COSBase function)
+    public PDFunctionType0(final COSBase function)
     {
         super(function);
     }
@@ -131,7 +131,7 @@ public class PDFunctionType0 extends PDFunction
      *
      * @param bps The number of bits for each output value.
      */
-    public void setBitsPerSample(int bps)
+    public void setBitsPerSample(final int bps)
     {
         getCOSObject().setInt(COSName.BITS_PER_SAMPLE, bps);
     }
@@ -150,8 +150,8 @@ public class PDFunctionType0 extends PDFunction
             if (encode == null)
             {
                 encode = new COSArray();
-                COSArray sizeValues = getSize();
-                int sizeValuesSize = sizeValues.size();
+                final COSArray sizeValues = getSize();
+                final int sizeValuesSize = sizeValues.size();
                 for (int i = 0; i < sizeValuesSize; i++)
                 {
                     encode.add(COSInteger.ZERO);
@@ -188,10 +188,10 @@ public class PDFunctionType0 extends PDFunction
      *
      * @return The encode parameter range or null if none is set.
      */
-    public PDRange getEncodeForParameter(int paramNum)
+    public PDRange getEncodeForParameter(final int paramNum)
     {
         PDRange retval = null;
-        COSArray encodeValues = getEncodeValues();
+        final COSArray encodeValues = getEncodeValues();
         if (encodeValues != null && encodeValues.size() >= paramNum * 2 + 1)
         {
             retval = new PDRange(encodeValues, paramNum);
@@ -204,7 +204,7 @@ public class PDFunctionType0 extends PDFunction
      *
      * @param encodeValues The new encode values.
      */
-    public void setEncodeValues(COSArray encodeValues)
+    public void setEncodeValues(final COSArray encodeValues)
     {
         encode = encodeValues;
         getCOSObject().setItem(COSName.ENCODE, encodeValues);
@@ -217,10 +217,10 @@ public class PDFunctionType0 extends PDFunction
      *
      * @return The decode parameter range or null if none is set.
      */
-    public PDRange getDecodeForParameter(int paramNum)
+    public PDRange getDecodeForParameter(final int paramNum)
     {
         PDRange retval = null;
-        COSArray decodeValues = getDecodeValues();
+        final COSArray decodeValues = getDecodeValues();
         if (decodeValues != null && decodeValues.size() >= paramNum * 2 + 1)
         {
             retval = new PDRange(decodeValues, paramNum);
@@ -233,7 +233,7 @@ public class PDFunctionType0 extends PDFunction
      *
      * @param decodeValues The new decode values.
      */
-    public void setDecodeValues(COSArray decodeValues)
+    public void setDecodeValues(final COSArray decodeValues)
     {
         decode = decodeValues;
         getCOSObject().setItem(COSName.DECODE, decodeValues);
@@ -268,7 +268,7 @@ public class PDFunctionType0 extends PDFunction
          * @param inputNext coordinate of the "floor" point
          *
          */
-        Rinterpol(float[] input, int[] inputPrev, int[] inputNext)
+        Rinterpol(final float[] input, final int[] inputPrev, final int[] inputNext)
         {
             in = input;
             inPrev = inputPrev;
@@ -296,16 +296,16 @@ public class PDFunctionType0 extends PDFunction
          * @param step between 0 (first call) and dimension - 1
          * @return interpolated result sample
          */
-        private float[] rinterpol(int[] coord, int step)
+        private float[] rinterpol(final int[] coord, final int step)
         {
-            float[] resultSample = new float[numberOfOutputValues];
+            final float[] resultSample = new float[numberOfOutputValues];
             if (step == in.length - 1)
             {
                 // leaf
                 if (inPrev[step] == inNext[step])
                 {
                     coord[step] = inPrev[step];
-                    int[] tmpSample = getSamples()[calcSampleIndex(coord)];
+                    final int[] tmpSample = getSamples()[calcSampleIndex(coord)];
                     for (int i = 0; i < numberOfOutputValues; ++i)
                     {
                         resultSample[i] = tmpSample[i];
@@ -313,9 +313,9 @@ public class PDFunctionType0 extends PDFunction
                     return resultSample;
                 }
                 coord[step] = inPrev[step];
-                int[] sample1 = getSamples()[calcSampleIndex(coord)];
+                final int[] sample1 = getSamples()[calcSampleIndex(coord)];
                 coord[step] = inNext[step];
-                int[] sample2 = getSamples()[calcSampleIndex(coord)];
+                final int[] sample2 = getSamples()[calcSampleIndex(coord)];
                 for (int i = 0; i < numberOfOutputValues; ++i)
                 {
                     resultSample[i] = interpolate(in[step], inPrev[step], inNext[step], sample1[i], sample2[i]);
@@ -331,9 +331,9 @@ public class PDFunctionType0 extends PDFunction
                     return rinterpol(coord, step + 1);
                 }
                 coord[step] = inPrev[step];
-                float[] sample1 = rinterpol(coord, step + 1);
+                final float[] sample1 = rinterpol(coord, step + 1);
                 coord[step] = inNext[step];
-                float[] sample2 = rinterpol(coord, step + 1);
+                final float[] sample2 = rinterpol(coord, step + 1);
                 for (int i = 0; i < numberOfOutputValues; ++i)
                 {
                     resultSample[i] = interpolate(in[step], inPrev[step], inNext[step], sample1[i], sample2[i]);
@@ -348,14 +348,14 @@ public class PDFunctionType0 extends PDFunction
          * @param vector with coordinates
          * @return index in flat array
          */
-        private int calcSampleIndex(int[] vector)
+        private int calcSampleIndex(final int[] vector)
         {
             // inspiration: http://stackoverflow.com/a/12113479/535646
             // but used in reverse
-            float[] sizeValues = getSize().toFloatArray();
+            final float[] sizeValues = getSize().toFloatArray();
             int index = 0;
             int sizeProduct = 1;
-            int dimension = vector.length;
+            final int dimension = vector.length;
             for (int i = dimension - 2; i >= 0; --i)
             {
                 sizeProduct *= sizeValues[i];
@@ -381,15 +381,15 @@ public class PDFunctionType0 extends PDFunction
             if (samples == null)
             {
                 int arraySize = 1;
-                int nIn = getNumberOfInputParameters();
-                int nOut = getNumberOfOutputParameters();
-                COSArray sizes = getSize();
+                final int nIn = getNumberOfInputParameters();
+                final int nOut = getNumberOfOutputParameters();
+                final COSArray sizes = getSize();
                 for (int i = 0; i < nIn; i++)
                 {
                     arraySize *= sizes.getInt(i);
                 }
                 samples = new int[arraySize][nOut];
-                int bitsPerSample = getBitsPerSample();
+                final int bitsPerSample = getBitsPerSample();
                 int index = 0;
                 try (InputStream is = getPDStream().createInputStream())
                 {
@@ -409,7 +409,7 @@ public class PDFunctionType0 extends PDFunction
                         }
                     }
                 }
-                catch (IOException exception)
+                catch (final IOException exception)
                 {
                     LOG.error("IOException while reading the sample values of this function.", exception);
                 }
@@ -427,20 +427,20 @@ public class PDFunctionType0 extends PDFunction
         //This involves linear interpolation based on a set of sample points.
         //Theoretically it's not that difficult ... see section 3.9.1 of the PDF Reference.
 
-        float[] sizeValues = getSize().toFloatArray();
-        int bitsPerSample = getBitsPerSample();
-        float maxSample = (float) (Math.pow(2, bitsPerSample) - 1.0);
-        int numberOfInputValues = input.length;
-        int numberOfOutputValues = getNumberOfOutputParameters();
+        final float[] sizeValues = getSize().toFloatArray();
+        final int bitsPerSample = getBitsPerSample();
+        final float maxSample = (float) (Math.pow(2, bitsPerSample) - 1.0);
+        final int numberOfInputValues = input.length;
+        final int numberOfOutputValues = getNumberOfOutputParameters();
 
-        int[] inputPrev = new int[numberOfInputValues];
-        int[] inputNext = new int[numberOfInputValues];
+        final int[] inputPrev = new int[numberOfInputValues];
+        final int[] inputNext = new int[numberOfInputValues];
         input = input.clone(); // PDFBOX-4461
 
         for (int i = 0; i < numberOfInputValues; i++)
         {
-            PDRange domain = getDomainForInput(i);
-            PDRange encodeValues = getEncodeForParameter(i);
+            final PDRange domain = getDomainForInput(i);
+            final PDRange encodeValues = getEncodeForParameter(i);
             input[i] = clipToRange(input[i], domain.getMin(), domain.getMax());
             input[i] = interpolate(input[i], domain.getMin(), domain.getMax(), 
                     encodeValues.getMin(), encodeValues.getMax());
@@ -449,12 +449,12 @@ public class PDFunctionType0 extends PDFunction
             inputNext[i] = (int) Math.ceil(input[i]);
         }
         
-        float[] outputValues = new Rinterpol(input, inputPrev, inputNext).rinterpolate();
+        final float[] outputValues = new Rinterpol(input, inputPrev, inputNext).rinterpolate();
 
         for (int i = 0; i < numberOfOutputValues; i++)
         {
-            PDRange range = getRangeForOutput(i);
-            PDRange decodeValues = getDecodeForParameter(i);
+            final PDRange range = getRangeForOutput(i);
+            final PDRange decodeValues = getDecodeForParameter(i);
             outputValues[i] = interpolate(outputValues[i], 0, maxSample, decodeValues.getMin(), decodeValues.getMax());
             outputValues[i] = clipToRange(outputValues[i], range.getMin(), range.getMax());
         }

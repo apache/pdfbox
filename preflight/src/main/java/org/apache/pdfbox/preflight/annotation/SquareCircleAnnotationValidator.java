@@ -39,7 +39,7 @@ public abstract class SquareCircleAnnotationValidator extends AnnotationValidato
      */
     protected PDAnnotationSquareCircle pdSquareCircle = null;
 
-    public SquareCircleAnnotationValidator(PreflightContext ctx, PDAnnotationSquareCircle annotation)
+    public SquareCircleAnnotationValidator(final PreflightContext ctx, final PDAnnotationSquareCircle annotation)
     {
         super(ctx, annotation.getCOSObject());
         this.pdSquareCircle = annotation;

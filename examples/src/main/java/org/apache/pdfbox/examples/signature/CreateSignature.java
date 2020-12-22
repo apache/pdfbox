@@ -61,7 +61,7 @@ public class CreateSignature extends CreateSignatureBase
      * @throws CertificateException if the certificate is not valid as signing time
      * @throws IOException if no certificate could be found
      */
-    public CreateSignature(KeyStore keystore, char[] pin)
+    public CreateSignature(final KeyStore keystore, final char[] pin)
             throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, CertificateException, IOException
     {
         super(keystore, pin);
@@ -72,7 +72,7 @@ public class CreateSignature extends CreateSignatureBase
      * @param file the PDF file to sign
      * @throws IOException if the file could not be read or written
      */
-    public void signDetached(File file) throws IOException
+    public void signDetached(final File file) throws IOException
     {
         signDetached(file, file, null);
     }
@@ -83,7 +83,7 @@ public class CreateSignature extends CreateSignatureBase
      * @param outFile output PDF file
      * @throws IOException if the input file could not be read
      */
-    public void signDetached(File inFile, File outFile) throws IOException
+    public void signDetached(final File inFile, final File outFile) throws IOException
     {
         signDetached(inFile, outFile, null);
     }
@@ -95,7 +95,7 @@ public class CreateSignature extends CreateSignatureBase
      * @param tsaUrl optional TSA url
      * @throws IOException if the input file could not be read
      */
-    public void signDetached(File inFile, File outFile, String tsaUrl) throws IOException
+    public void signDetached(final File inFile, final File outFile, final String tsaUrl) throws IOException
     {
         if (inFile == null || !inFile.exists())
         {
@@ -106,23 +106,23 @@ public class CreateSignature extends CreateSignatureBase
 
         // sign
         try (FileOutputStream fos = new FileOutputStream(outFile);
-                PDDocument doc = Loader.loadPDF(inFile))
+             final PDDocument doc = Loader.loadPDF(inFile))
         {
             signDetached(doc, fos);
         }
     }
 
-    public void signDetached(PDDocument document, OutputStream output)
+    public void signDetached(final PDDocument document, final OutputStream output)
             throws IOException
     {
-        int accessPermissions = SigUtils.getMDPPermission(document);
+        final int accessPermissions = SigUtils.getMDPPermission(document);
         if (accessPermissions == 1)
         {
             throw new IllegalStateException("No changes to the document are permitted due to DocMDP transform parameters dictionary");
         }     
 
         // create signature dictionary
-        PDSignature signature = new PDSignature();
+        final PDSignature signature = new PDSignature();
         signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
         signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
         signature.setName("Example User");
@@ -142,16 +142,16 @@ public class CreateSignature extends CreateSignatureBase
         if (isExternalSigning())
         {
             document.addSignature(signature);
-            ExternalSigningSupport externalSigning =
+            final ExternalSigningSupport externalSigning =
                     document.saveIncrementalForExternalSigning(output);
             // invoke external signature service
-            byte[] cmsSignature = sign(externalSigning.getContent());
+            final byte[] cmsSignature = sign(externalSigning.getContent());
             // set signature bytes received from the service
             externalSigning.setSignature(cmsSignature);
         }
         else
         {
-            SignatureOptions signatureOptions = new SignatureOptions();
+            final SignatureOptions signatureOptions = new SignatureOptions();
             // Size can vary, but should be enough for purpose.
             signatureOptions.setPreferredSignatureSize(SignatureOptions.DEFAULT_SIGNATURE_SIZE * 2);
             // register signature dictionary and sign interface
@@ -162,7 +162,7 @@ public class CreateSignature extends CreateSignatureBase
         }
     }
 
-    public static void main(String[] args) throws IOException, GeneralSecurityException
+    public static void main(final String[] args) throws IOException, GeneralSecurityException
     {
         if (args.length < 3)
         {
@@ -191,20 +191,20 @@ public class CreateSignature extends CreateSignatureBase
         }
 
         // load the keystore
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        char[] password = args[1].toCharArray(); // TODO use Java 6 java.io.Console.readPassword
+        final KeyStore keystore = KeyStore.getInstance("PKCS12");
+        final char[] password = args[1].toCharArray(); // TODO use Java 6 java.io.Console.readPassword
         keystore.load(new FileInputStream(args[0]), password);
         // TODO alias command line argument
 
         // sign PDF
-        CreateSignature signing = new CreateSignature(keystore, password);
+        final CreateSignature signing = new CreateSignature(keystore, password);
         signing.setExternalSigning(externalSig);
 
-        File inFile = new File(args[2]);
-        String name = inFile.getName();
-        String substring = name.substring(0, name.lastIndexOf('.'));
+        final File inFile = new File(args[2]);
+        final String name = inFile.getName();
+        final String substring = name.substring(0, name.lastIndexOf('.'));
 
-        File outFile = new File(inFile.getParent(), substring + "_signed.pdf");
+        final File outFile = new File(inFile.getParent(), substring + "_signed.pdf");
         signing.signDetached(inFile, outFile, tsaUrl);
     }
 

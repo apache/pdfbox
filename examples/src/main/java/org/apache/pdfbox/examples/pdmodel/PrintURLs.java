@@ -57,7 +57,7 @@ public final class PrintURLs
      *
      * @throws IOException If there is an error extracting the URLs.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(final String[] args) throws IOException
     {
         PDDocument doc = null;
         try
@@ -70,28 +70,28 @@ public final class PrintURLs
             {
                 doc = Loader.loadPDF(new File(args[0]));
                 int pageNum = 0;
-                for( PDPage page : doc.getPages() )
+                for( final PDPage page : doc.getPages() )
                 {
                     pageNum++;
-                    PDFTextStripperByArea stripper = new PDFTextStripperByArea();
-                    List<PDAnnotation> annotations = page.getAnnotations();
+                    final PDFTextStripperByArea stripper = new PDFTextStripperByArea();
+                    final List<PDAnnotation> annotations = page.getAnnotations();
                     //first setup text extraction regions
                     for( int j=0; j<annotations.size(); j++ )
                     {
-                        PDAnnotation annot = annotations.get(j);
+                        final PDAnnotation annot = annotations.get(j);
 
                         if (getActionURI(annot) != null)
                         {
-                            PDRectangle rect = annot.getRectangle();
+                            final PDRectangle rect = annot.getRectangle();
                             //need to reposition link rectangle to match text space
-                            float x = rect.getLowerLeftX();
+                            final float x = rect.getLowerLeftX();
                             float y = rect.getUpperRightY();
-                            float width = rect.getWidth();
-                            float height = rect.getHeight();
-                            int rotation = page.getRotation();
+                            final float width = rect.getWidth();
+                            final float height = rect.getHeight();
+                            final int rotation = page.getRotation();
                             if( rotation == 0 )
                             {
-                                PDRectangle pageSize = page.getMediaBox();
+                                final PDRectangle pageSize = page.getMediaBox();
                                 // area stripper uses java coordinates, not PDF coordinates
                                 y = pageSize.getHeight() - y;
                             }
@@ -101,7 +101,7 @@ public final class PrintURLs
                                 // please send us a sample file
                             }
 
-                            Rectangle2D.Float awtRect = new Rectangle2D.Float( x,y,width,height );
+                            final Rectangle2D.Float awtRect = new Rectangle2D.Float( x,y,width,height );
                             stripper.addRegion( "" + j, awtRect );
                         }
                     }
@@ -110,11 +110,11 @@ public final class PrintURLs
 
                     for( int j=0; j<annotations.size(); j++ )
                     {
-                        PDAnnotation annot = annotations.get(j);
-                        PDActionURI uri = getActionURI(annot);
+                        final PDAnnotation annot = annotations.get(j);
+                        final PDActionURI uri = getActionURI(annot);
                         if (uri != null)
                         {
-                            String urlText = stripper.getTextForRegion("" + j);
+                            final String urlText = stripper.getTextForRegion("" + j);
                             System.out.println("Page " + pageNum + ":'" + urlText.trim() + "'=" + uri.getURI());
                         }
                     }
@@ -130,7 +130,7 @@ public final class PrintURLs
         }
     }
 
-    private static PDActionURI getActionURI(PDAnnotation annot)
+    private static PDActionURI getActionURI(final PDAnnotation annot)
     {
         // use reflection to catch all annotation types that have getAction()
         // If you can't use reflection, then check for classes
@@ -138,17 +138,17 @@ public final class PrintURLs
         // PDActionURI result type
         try
         {
-            Method actionMethod = annot.getClass().getDeclaredMethod("getAction");
+            final Method actionMethod = annot.getClass().getDeclaredMethod("getAction");
             if (actionMethod.getReturnType().equals(PDAction.class))
             {
-                PDAction action = (PDAction) actionMethod.invoke(annot);
+                final PDAction action = (PDAction) actionMethod.invoke(annot);
                 if (action instanceof PDActionURI)
                 {
                     return (PDActionURI) action;
                 }
             }
         }
-        catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
+        catch (final NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
         {
         }
         return null;

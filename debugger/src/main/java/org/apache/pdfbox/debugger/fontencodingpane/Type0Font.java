@@ -50,12 +50,12 @@ class Type0Font extends FontPane
      * @param parentFont PDFont instance.
      * @throws IOException If fails to parse cidtogid map.
      */
-    Type0Font(PDCIDFont descendantFont, PDType0Font parentFont) throws IOException
+    Type0Font(final PDCIDFont descendantFont, final PDType0Font parentFont) throws IOException
     {
-        Object[][] cidtogid = readCIDToGIDMap(descendantFont, parentFont);
+        final Object[][] cidtogid = readCIDToGIDMap(descendantFont, parentFont);
         if (cidtogid != null)
         {
-            Map<String, String> attributes = new LinkedHashMap<>();
+            final Map<String, String> attributes = new LinkedHashMap<>();
             attributes.put("Font", descendantFont.getName());
             attributes.put("CIDs", Integer.toString(cidtogid.length));
 
@@ -64,8 +64,8 @@ class Type0Font extends FontPane
         }
         else
         {
-            Object[][] tab = readMap(descendantFont, parentFont);
-            Map<String, String> attributes = new LinkedHashMap<>();
+            final Object[][] tab = readMap(descendantFont, parentFont);
+            final Map<String, String> attributes = new LinkedHashMap<>();
             attributes.put("Font", descendantFont.getName());
             attributes.put("CIDs", Integer.toString(tab.length));
             attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
@@ -76,7 +76,7 @@ class Type0Font extends FontPane
         }
     }
 
-    private Object[][] readMap(PDCIDFont descendantFont, PDType0Font parentFont) throws IOException
+    private Object[][] readMap(final PDCIDFont descendantFont, final PDType0Font parentFont) throws IOException
     {
         int codes = 0;
         for (int code = 0; code < 65535; ++code)
@@ -86,7 +86,7 @@ class Type0Font extends FontPane
                 ++codes;
             }
         }
-        Object[][] tab = new Object[codes][5];
+        final Object[][] tab = new Object[codes][5];
         int index = 0;
         for (int code = 0; code < 65535; ++code)
         {
@@ -96,7 +96,7 @@ class Type0Font extends FontPane
                 tab[index][1] = descendantFont.codeToCID(code);
                 tab[index][2] = descendantFont.codeToGID(code);
                 tab[index][3] = parentFont.toUnicode(code);
-                GeneralPath path = descendantFont.getPath(code);
+                final GeneralPath path = descendantFont.getPath(code);
                 tab[index][4] = path;
                 if (!path.getBounds2D().isEmpty())
                 {
@@ -108,31 +108,31 @@ class Type0Font extends FontPane
         return tab;
     }
 
-    private Object[][] readCIDToGIDMap(PDCIDFont font, PDFont parentFont) throws IOException
+    private Object[][] readCIDToGIDMap(final PDCIDFont font, final PDFont parentFont) throws IOException
     {
         Object[][] cid2gid = null;
-        COSDictionary dict = font.getCOSObject();
-        COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
+        final COSDictionary dict = font.getCOSObject();
+        final COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
         if (map instanceof COSStream)
         {
-            COSStream stream = (COSStream) map;
+            final COSStream stream = (COSStream) map;
 
-            InputStream is = stream.createInputStream();
-            byte[] mapAsBytes = IOUtils.toByteArray(is);
+            final InputStream is = stream.createInputStream();
+            final byte[] mapAsBytes = IOUtils.toByteArray(is);
             IOUtils.closeQuietly(is);
-            int numberOfInts = mapAsBytes.length / 2;
+            final int numberOfInts = mapAsBytes.length / 2;
             cid2gid = new Object[numberOfInts][4];
             int offset = 0;
             for (int index = 0; index < numberOfInts; index++)
             {
-                int gid = (mapAsBytes[offset] & 0xff) << 8 | mapAsBytes[offset + 1] & 0xff;
+                final int gid = (mapAsBytes[offset] & 0xff) << 8 | mapAsBytes[offset + 1] & 0xff;
                 cid2gid[index][0] = index;
                 cid2gid[index][1] = gid;
                 if (gid != 0 && parentFont.toUnicode(index) != null)
                 {
                     cid2gid[index][2] = parentFont.toUnicode(index);
                 }
-                GeneralPath path = font.getPath(index);
+                final GeneralPath path = font.getPath(index);
                 cid2gid[index][3] = path;
                 if (!path.getBounds2D().isEmpty())
                 {
@@ -151,7 +151,7 @@ class Type0Font extends FontPane
         {
             return view.getPanel();
         }
-        JPanel panel = new JPanel();
+        final JPanel panel = new JPanel();
         panel.setPreferredSize(new Dimension(300, 500));
         return panel;
     }

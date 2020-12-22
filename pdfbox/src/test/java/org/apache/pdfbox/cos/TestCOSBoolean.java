@@ -69,9 +69,9 @@ class TestCOSBoolean extends TestCOSBase
     @Test
     void testEquals()
     {
-        COSBoolean test1 = COSBoolean.TRUE;
-        COSBoolean test2 = COSBoolean.TRUE;
-        COSBoolean test3 = COSBoolean.TRUE;
+        final COSBoolean test1 = COSBoolean.TRUE;
+        final COSBoolean test2 = COSBoolean.TRUE;
+        final COSBoolean test3 = COSBoolean.TRUE;
         // Reflexive (x == x)
         assertEquals(test1, test1);
         // Symmetric is preserved ( x==y then y===x)
@@ -94,9 +94,9 @@ class TestCOSBoolean extends TestCOSBase
     @Test
     void testAccept()
     {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        COSWriter visitor = new COSWriter(outStream);
-        int index = 0;
+        final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        final COSWriter visitor = new COSWriter(outStream);
+        final int index = 0;
         try
         {
             cosBooleanTrue.accept(visitor);
@@ -106,7 +106,7 @@ class TestCOSBoolean extends TestCOSBase
             testByteArrays(String.valueOf(cosBooleanFalse).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
             outStream.reset();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             fail("Failed to write " + index + " exception: " + e.getMessage());
         }

@@ -52,7 +52,7 @@ public class BooleanType extends AbstractSimpleProperty
      * @param value
      *            the value to give
      */
-    public BooleanType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    public BooleanType(final XMPMetadata metadata, final String namespaceURI, final String prefix, final String propertyName, final Object value)
     {
         super(metadata, namespaceURI, prefix, propertyName, value);
     }
@@ -76,7 +76,7 @@ public class BooleanType extends AbstractSimpleProperty
      * 
      */
     @Override
-    public void setValue(Object value)
+    public void setValue(final Object value)
     {
         if (value instanceof Boolean)
         {
@@ -85,7 +85,7 @@ public class BooleanType extends AbstractSimpleProperty
         else if (value instanceof String)
         {
             // NumberFormatException is thrown (sub of InvalidArgumentException)
-            String s = value.toString().trim().toUpperCase();
+            final String s = value.toString().trim().toUpperCase();
             if ("TRUE".equals(s))
             {
                 booleanValue = true;

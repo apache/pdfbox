@@ -123,7 +123,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationLine(COSDictionary field)
+    public PDAnnotationLine(final COSDictionary field)
     {
         super(field);
     }
@@ -133,9 +133,9 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      *
      * @param l array of 4 floats [x1, y1, x2, y2] line start and end points in default user space.
      */
-    public void setLine(float[] l)
+    public void setLine(final float[] l)
     {
-        COSArray newL = new COSArray();
+        final COSArray newL = new COSArray();
         newL.setFloatArray(l);
         getCOSObject().setItem(COSName.L, newL);
     }
@@ -147,7 +147,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public float[] getLine()
     {
-        COSArray l = (COSArray) getCOSObject().getDictionaryObject(COSName.L);
+        final COSArray l = (COSArray) getCOSObject().getDictionaryObject(COSName.L);
         return l.toFloatArray();
     }
 
@@ -156,11 +156,11 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      *
      * @param style The new style.
      */
-    public void setStartPointEndingStyle(String style)
+    public void setStartPointEndingStyle(final String style)
     {
-        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
-        COSArray array;
+        final String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        final COSArray array;
         if (!(base instanceof COSArray) || ((COSArray) base).size() == 0)
         {
             array = new COSArray();
@@ -182,7 +182,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public String getStartPointEndingStyle()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
         if (base instanceof COSArray && ((COSArray) base).size() >= 2)
         {
             return ((COSArray) base).getName(0, LE_NONE);
@@ -195,11 +195,11 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      *
      * @param style The new style.
      */
-    public void setEndPointEndingStyle(String style)
+    public void setEndPointEndingStyle(final String style)
     {
-        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
-        COSArray array;
+        final String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        final COSArray array;
         if (!(base instanceof COSArray) || ((COSArray) base).size() < 2)
         {
             array = new COSArray();
@@ -221,7 +221,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public String getEndPointEndingStyle()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        final COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
         if (base instanceof COSArray && ((COSArray) base).size() >= 2)
         {
             return ((COSArray) base).getName(1, LE_NONE);
@@ -234,7 +234,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      *
      * @param ic color in the DeviceRGB color space.
      */
-    public void setInteriorColor(PDColor ic)
+    public void setInteriorColor(final PDColor ic)
     {
         getCOSObject().setItem(COSName.IC, ic.toCOSArray());
     }
@@ -255,7 +255,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      *
      * @param cap Boolean value.
      */
-    public void setCaption(boolean cap)
+    public void setCaption(final boolean cap)
     {
         getCOSObject().setBoolean(COSName.CAP, cap);
     }
@@ -286,7 +286,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      * 
      * @param leaderLineLength length of the leader line
      */
-    public void setLeaderLineLength(float leaderLineLength)
+    public void setLeaderLineLength(final float leaderLineLength)
     {
         this.getCOSObject().setFloat(COSName.LL, leaderLineLength);
     }
@@ -306,7 +306,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      * 
      * @param leaderLineExtensionLength length of the leader line extensions
      */
-    public void setLeaderLineExtensionLength(float leaderLineExtensionLength)
+    public void setLeaderLineExtensionLength(final float leaderLineExtensionLength)
     {
         this.getCOSObject().setFloat(COSName.LLE, leaderLineExtensionLength);
     }
@@ -326,7 +326,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      * 
      * @param leaderLineOffsetLength length of the leader line offset
      */
-    public void setLeaderLineOffsetLength(float leaderLineOffsetLength)
+    public void setLeaderLineOffsetLength(final float leaderLineOffsetLength)
     {
         this.getCOSObject().setFloat(COSName.LLO, leaderLineOffsetLength);
     }
@@ -346,7 +346,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      * 
      * @param captionPositioning caption positioning
      */
-    public void setCaptionPositioning(String captionPositioning)
+    public void setCaptionPositioning(final String captionPositioning)
     {
         this.getCOSObject().setName(COSName.CP, captionPositioning);
     }
@@ -356,7 +356,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      * 
      * @param offset the horizontal offset of the caption
      */
-    public void setCaptionHorizontalOffset(float offset)
+    public void setCaptionHorizontalOffset(final float offset)
     {
         COSArray array = (COSArray) this.getCOSObject().getDictionaryObject(COSName.CO);
         if (array == null)
@@ -379,7 +379,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     public float getCaptionHorizontalOffset()
     {
         float retval = 0.f;
-        COSArray array = (COSArray) this.getCOSObject().getDictionaryObject(COSName.CO);
+        final COSArray array = (COSArray) this.getCOSObject().getDictionaryObject(COSName.CO);
         if (array != null)
         {
             retval = array.toFloatArray()[0];
@@ -393,7 +393,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      * 
      * @param offset vertical offset of the caption
      */
-    public void setCaptionVerticalOffset(float offset)
+    public void setCaptionVerticalOffset(final float offset)
     {
         COSArray array = (COSArray) this.getCOSObject().getDictionaryObject(COSName.CO);
         if (array == null)
@@ -416,7 +416,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     public float getCaptionVerticalOffset()
     {
         float retval = 0.f;
-        COSArray array = (COSArray) this.getCOSObject().getDictionaryObject(COSName.CO);
+        final COSArray array = (COSArray) this.getCOSObject().getDictionaryObject(COSName.CO);
         if (array != null)
         {
             retval = array.toFloatArray()[1];
@@ -429,7 +429,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(final PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
     }
@@ -441,11 +441,11 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     }
 
     @Override
-    public void constructAppearances(PDDocument document)
+    public void constructAppearances(final PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDLineAppearanceHandler appearanceHandler = new PDLineAppearanceHandler(this, document);
+            final PDLineAppearanceHandler appearanceHandler = new PDLineAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

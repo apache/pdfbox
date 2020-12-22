@@ -362,7 +362,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param dictionary the dictionary
      */
-    public PDLayoutAttributeObject(COSDictionary dictionary)
+    public PDLayoutAttributeObject(final COSDictionary dictionary)
     {
         super(dictionary);
     }
@@ -393,7 +393,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param placement the placement
      */
-    public void setPlacement(String placement)
+    public void setPlacement(final String placement)
     {
         this.setName(PLACEMENT, placement);
     }
@@ -419,7 +419,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param writingMode the writing mode
      */
-    public void setWritingMode(String writingMode)
+    public void setWritingMode(final String writingMode)
     {
         this.setName(WRITING_MODE, writingMode);
     }
@@ -439,7 +439,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param backgroundColor the background colour
      */
-    public void setBackgroundColor(PDGamma backgroundColor)
+    public void setBackgroundColor(final PDGamma backgroundColor)
     {
         this.setColor(BACKGROUND_COLOR, backgroundColor);
     }
@@ -460,7 +460,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param borderColor the border colour
      */
-    public void setAllBorderColors(PDGamma borderColor)
+    public void setAllBorderColors(final PDGamma borderColor)
     {
         this.setColor(BORDER_COLOR, borderColor);
     }
@@ -470,7 +470,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param borderColors the border colours
      */
-    public void setBorderColors(PDFourColours borderColors)
+    public void setBorderColors(final PDFourColours borderColors)
     {
         this.setFourColors(BORDER_COLOR, borderColors);
     }
@@ -504,7 +504,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param borderStyle the border style
      */
-    public void setAllBorderStyles(String borderStyle)
+    public void setAllBorderStyles(final String borderStyle)
     {
         this.setName(BORDER_STYLE, borderStyle);
     }
@@ -527,7 +527,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param borderStyles the border styles (an array of four Strings)
      */
-    public void setBorderStyles(String[] borderStyles)
+    public void setBorderStyles(final String[] borderStyles)
     {
         this.setArrayOfName(BORDER_STYLE, borderStyles);
     }
@@ -547,7 +547,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param borderThickness the border thickness
      */
-    public void setAllBorderThicknesses(float borderThickness)
+    public void setAllBorderThicknesses(final float borderThickness)
     {
         this.setNumber(BORDER_THICKNESS, borderThickness);
     }
@@ -557,7 +557,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param borderThickness the border thickness
      */
-    public void setAllBorderThicknesses(int borderThickness)
+    public void setAllBorderThicknesses(final int borderThickness)
     {
         this.setNumber(BORDER_THICKNESS, borderThickness);
     }
@@ -567,7 +567,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param borderThicknesses the border thickness (an array of four floats)
      */
-    public void setBorderThicknesses(float[] borderThicknesses)
+    public void setBorderThicknesses(final float[] borderThicknesses)
     {
         this.setArrayOfNumber(BORDER_THICKNESS, borderThicknesses);
     }
@@ -587,7 +587,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param padding the padding
      */
-    public void setAllPaddings(float padding)
+    public void setAllPaddings(final float padding)
     {
         this.setNumber(PADDING, padding);
     }
@@ -597,7 +597,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param padding the padding
      */
-    public void setAllPaddings(int padding)
+    public void setAllPaddings(final int padding)
     {
         this.setNumber(PADDING, padding);
     }
@@ -607,7 +607,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param paddings the paddings (an array of four floats)
      */
-    public void setPaddings(float[] paddings)
+    public void setPaddings(final float[] paddings)
     {
         this.setArrayOfNumber(PADDING, paddings);
     }
@@ -629,7 +629,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param color the colour
      */
-    public void setColor(PDGamma color)
+    public void setColor(final PDGamma color)
     {
         this.setColor(COLOR, color);
     }
@@ -651,7 +651,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param spaceBefore the space before
      */
-    public void setSpaceBefore(float spaceBefore)
+    public void setSpaceBefore(final float spaceBefore)
     {
         this.setNumber(SPACE_BEFORE, spaceBefore);
     }
@@ -662,7 +662,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param spaceBefore the space before
      */
-    public void setSpaceBefore(int spaceBefore)
+    public void setSpaceBefore(final int spaceBefore)
     {
         this.setNumber(SPACE_BEFORE, spaceBefore);
     }
@@ -684,7 +684,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param spaceAfter the space after
      */
-    public void setSpaceAfter(float spaceAfter)
+    public void setSpaceAfter(final float spaceAfter)
     {
         this.setNumber(SPACE_AFTER, spaceAfter);
     }
@@ -695,7 +695,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param spaceAfter the space after
      */
-    public void setSpaceAfter(int spaceAfter)
+    public void setSpaceAfter(final int spaceAfter)
     {
         this.setNumber(SPACE_AFTER, spaceAfter);
     }
@@ -717,7 +717,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param startIndent the start indent
      */
-    public void setStartIndent(float startIndent)
+    public void setStartIndent(final float startIndent)
     {
         this.setNumber(START_INDENT, startIndent);
     }
@@ -728,7 +728,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param startIndent the start indent
      */
-    public void setStartIndent(int startIndent)
+    public void setStartIndent(final int startIndent)
     {
         this.setNumber(START_INDENT, startIndent);
     }
@@ -751,7 +751,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param endIndent the end indent
      */
-    public void setEndIndent(float endIndent)
+    public void setEndIndent(final float endIndent)
     {
         this.setNumber(END_INDENT, endIndent);
     }
@@ -762,7 +762,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param endIndent the end indent
      */
-    public void setEndIndent(int endIndent)
+    public void setEndIndent(final int endIndent)
     {
         this.setNumber(END_INDENT, endIndent);
     }
@@ -786,7 +786,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param textIndent the text indent
      */
-    public void setTextIndent(float textIndent)
+    public void setTextIndent(final float textIndent)
     {
         this.setNumber(TEXT_INDENT, textIndent);
     }
@@ -798,7 +798,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param textIndent the text indent
      */
-    public void setTextIndent(int textIndent)
+    public void setTextIndent(final int textIndent)
     {
         this.setNumber(TEXT_INDENT, textIndent);
     }
@@ -828,7 +828,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param textIndent the text alignment
      */
-    public void setTextAlign(String textIndent)
+    public void setTextAlign(final String textIndent)
     {
         this.setName(TEXT_ALIGN, textIndent);
     }
@@ -840,7 +840,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      */
     public PDRectangle getBBox()
     {
-        COSArray array =
+        final COSArray array =
             (COSArray) this.getCOSObject().getDictionaryObject(BBOX);
         if (array != null)
         {
@@ -854,12 +854,12 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param bbox the bounding box
      */
-    public void setBBox(PDRectangle bbox)
+    public void setBBox(final PDRectangle bbox)
     {
-        String name = BBOX;
-        COSBase oldValue = this.getCOSObject().getDictionaryObject(name);
+        final String name = BBOX;
+        final COSBase oldValue = this.getCOSObject().getDictionaryObject(name);
         this.getCOSObject().setItem(name, bbox);
-        COSBase newValue = bbox == null ? null : bbox.getCOSObject();
+        final COSBase newValue = bbox == null ? null : bbox.getCOSObject();
         this.potentiallyNotifyChanged(oldValue, newValue);
     }
 
@@ -890,7 +890,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param width the width
      */
-    public void setWidth(float width)
+    public void setWidth(final float width)
     {
         this.setNumber(WIDTH, width);
     }
@@ -901,7 +901,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param width the width
      */
-    public void setWidth(int width)
+    public void setWidth(final int width)
     {
         this.setNumber(WIDTH, width);
     }
@@ -933,7 +933,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param height the height
      */
-    public void setHeight(float height)
+    public void setHeight(final float height)
     {
         this.setNumber(HEIGHT, height);
     }
@@ -944,7 +944,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param height the height
      */
-    public void setHeight(int height)
+    public void setHeight(final int height)
     {
         this.setNumber(HEIGHT, height);
     }
@@ -973,7 +973,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param blockAlign the block alignment
      */
-    public void setBlockAlign(String blockAlign)
+    public void setBlockAlign(final String blockAlign)
     {
         this.setName(BLOCK_ALIGN, blockAlign);
     }
@@ -1001,7 +1001,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param inlineAlign the inline alignment
      */
-    public void setInlineAlign(String inlineAlign)
+    public void setInlineAlign(final String inlineAlign)
     {
         this.setName(INLINE_ALIGN, inlineAlign);
     }
@@ -1035,7 +1035,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param tBorderStyle the table border style
      */
-    public void setAllTBorderStyles(String tBorderStyle)
+    public void setAllTBorderStyles(final String tBorderStyle)
     {
         this.setName(T_BORDER_STYLE, tBorderStyle);
     }
@@ -1058,7 +1058,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param tBorderStyles
      */
-    public void setTBorderStyles(String[] tBorderStyles)
+    public void setTBorderStyles(final String[] tBorderStyles)
     {
         this.setArrayOfName(T_BORDER_STYLE, tBorderStyles);
     }
@@ -1080,7 +1080,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param tPadding the table padding
      */
-    public void setAllTPaddings(float tPadding)
+    public void setAllTPaddings(final float tPadding)
     {
         this.setNumber(T_PADDING, tPadding);
     }
@@ -1090,7 +1090,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param tPadding the table padding
      */
-    public void setAllTPaddings(int tPadding)
+    public void setAllTPaddings(final int tPadding)
     {
         this.setNumber(T_PADDING, tPadding);
     }
@@ -1100,7 +1100,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param tPaddings the table paddings (an array of four floats)
      */
-    public void setTPaddings(float[] tPaddings)
+    public void setTPaddings(final float[] tPaddings)
     {
         this.setArrayOfNumber(T_PADDING, tPaddings);
     }
@@ -1123,7 +1123,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param baselineShift the baseline shift
      */
-    public void setBaselineShift(float baselineShift)
+    public void setBaselineShift(final float baselineShift)
     {
         this.setNumber(BASELINE_SHIFT, baselineShift);
     }
@@ -1134,7 +1134,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param baselineShift the baseline shift
      */
-    public void setBaselineShift(int baselineShift)
+    public void setBaselineShift(final int baselineShift)
     {
         this.setNumber(BASELINE_SHIFT, baselineShift);
     }
@@ -1174,7 +1174,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param lineHeight the line height
      */
-    public void setLineHeight(float lineHeight)
+    public void setLineHeight(final float lineHeight)
     {
         this.setNumber(LINE_HEIGHT, lineHeight);
     }
@@ -1185,7 +1185,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param lineHeight the line height
      */
-    public void setLineHeight(int lineHeight)
+    public void setLineHeight(final int lineHeight)
     {
         this.setNumber(LINE_HEIGHT, lineHeight);
     }
@@ -1207,7 +1207,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param textDecorationColor the text decoration colour
      */
-    public void setTextDecorationColor(PDGamma textDecorationColor)
+    public void setTextDecorationColor(final PDGamma textDecorationColor)
     {
         this.setColor(TEXT_DECORATION_COLOR, textDecorationColor);
     }
@@ -1229,7 +1229,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param textDecorationThickness the text decoration thickness
      */
-    public void setTextDecorationThickness(float textDecorationThickness)
+    public void setTextDecorationThickness(final float textDecorationThickness)
     {
         this.setNumber(TEXT_DECORATION_THICKNESS, textDecorationThickness);
     }
@@ -1240,7 +1240,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param textDecorationThickness the text decoration thickness
      */
-    public void setTextDecorationThickness(int textDecorationThickness)
+    public void setTextDecorationThickness(final int textDecorationThickness)
     {
         this.setNumber(TEXT_DECORATION_THICKNESS, textDecorationThickness);
     }
@@ -1268,7 +1268,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param textDecorationType the type of text decoration
      */
-    public void setTextDecorationType(String textDecorationType)
+    public void setTextDecorationType(final String textDecorationType)
     {
         this.setName(TEXT_DECORATION_TYPE, textDecorationType);
     }
@@ -1297,7 +1297,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param rubyAlign the ruby alignment
      */
-    public void setRubyAlign(String rubyAlign)
+    public void setRubyAlign(final String rubyAlign)
     {
         this.setName(RUBY_ALIGN, rubyAlign);
     }
@@ -1326,7 +1326,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param rubyPosition the ruby position
      */
-    public void setRubyPosition(String rubyPosition)
+    public void setRubyPosition(final String rubyPosition)
     {
         this.setName(RUBY_POSITION, rubyPosition);
     }
@@ -1361,7 +1361,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param glyphOrientationVertical the vertical glyph orientation
      */
-    public void setGlyphOrientationVertical(String glyphOrientationVertical)
+    public void setGlyphOrientationVertical(final String glyphOrientationVertical)
     {
         this.setName(GLYPH_ORIENTATION_VERTICAL, glyphOrientationVertical);
     }
@@ -1383,7 +1383,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param columnCount the column count
      */
-    public void setColumnCount(int columnCount)
+    public void setColumnCount(final int columnCount)
     {
         this.setInteger(COLUMN_COUNT, columnCount);
     }
@@ -1405,7 +1405,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param columnGap the column gap
      */
-    public void setColumnGap(float columnGap)
+    public void setColumnGap(final float columnGap)
     {
         this.setNumber(COLUMN_GAP, columnGap);
     }
@@ -1416,7 +1416,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param columnGap the column gap
      */
-    public void setColumnGap(int columnGap)
+    public void setColumnGap(final int columnGap)
     {
         this.setNumber(COLUMN_GAP, columnGap);
     }
@@ -1429,7 +1429,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param columnGaps the column gaps
      */
-    public void setColumnGaps(float[] columnGaps)
+    public void setColumnGaps(final float[] columnGaps)
     {
         this.setArrayOfNumber(COLUMN_GAP, columnGaps);
     }
@@ -1450,7 +1450,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param columnWidth the column width
      */
-    public void setAllColumnWidths(float columnWidth)
+    public void setAllColumnWidths(final float columnWidth)
     {
         this.setNumber(COLUMN_WIDTHS, columnWidth);
     }
@@ -1460,7 +1460,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param columnWidth the column width
      */
-    public void setAllColumnWidths(int columnWidth)
+    public void setAllColumnWidths(final int columnWidth)
     {
         this.setNumber(COLUMN_WIDTHS, columnWidth);
     }
@@ -1470,7 +1470,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * 
      * @param columnWidths the column widths
      */
-    public void setColumnWidths(float[] columnWidths)
+    public void setColumnWidths(final float[] columnWidths)
     {
         this.setArrayOfNumber(COLUMN_WIDTHS, columnWidths);
     }
@@ -1478,7 +1478,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder().append(super.toString());
+        final StringBuilder sb = new StringBuilder().append(super.toString());
         if (this.isSpecified(PLACEMENT))
         {
             sb.append(", Placement=").append(this.getPlacement());
@@ -1497,7 +1497,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(BORDER_STYLE))
         {
-            Object borderStyle = this.getBorderStyle();
+            final Object borderStyle = this.getBorderStyle();
             sb.append(", BorderStyle=");
             if (borderStyle instanceof String[])
             {
@@ -1510,7 +1510,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(BORDER_THICKNESS))
         {
-            Object borderThickness = this.getBorderThickness();
+            final Object borderThickness = this.getBorderThickness();
             sb.append(", BorderThickness=");
             if (borderThickness instanceof float[])
             {
@@ -1523,7 +1523,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(PADDING))
         {
-            Object padding = this.getPadding();
+            final Object padding = this.getPadding();
             sb.append(", Padding=");
             if (padding instanceof float[])
             {
@@ -1573,7 +1573,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(WIDTH))
         {
-            Object width = this.getWidth();
+            final Object width = this.getWidth();
             sb.append(", Width=");
             if (width instanceof Float)
             {
@@ -1586,7 +1586,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(HEIGHT))
         {
-            Object height = this.getHeight();
+            final Object height = this.getHeight();
             sb.append(", Height=");
             if (height instanceof Float)
             {
@@ -1607,7 +1607,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(T_BORDER_STYLE))
         {
-            Object tBorderStyle = this.getTBorderStyle();
+            final Object tBorderStyle = this.getTBorderStyle();
             sb.append(", TBorderStyle=");
             if (tBorderStyle instanceof String[])
             {
@@ -1620,7 +1620,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(T_PADDING))
         {
-            Object tPadding = this.getTPadding();
+            final Object tPadding = this.getTPadding();
             sb.append(", TPadding=");
             if (tPadding instanceof float[])
             {
@@ -1638,7 +1638,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(LINE_HEIGHT))
         {
-            Object lineHeight = this.getLineHeight();
+            final Object lineHeight = this.getLineHeight();
             sb.append(", LineHeight=");
             if (lineHeight instanceof Float)
             {
@@ -1684,7 +1684,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(COLUMN_GAP))
         {
-            Object columnGap = this.getColumnGap();
+            final Object columnGap = this.getColumnGap();
             sb.append(", ColumnGap=");
             if (columnGap instanceof float[])
             {
@@ -1697,7 +1697,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(COLUMN_WIDTHS))
         {
-            Object columnWidth = this.getColumnWidths();
+            final Object columnWidth = this.getColumnWidths();
             sb.append(", ColumnWidths=");
             if (columnWidth instanceof float[])
             {

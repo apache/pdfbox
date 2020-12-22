@@ -72,10 +72,10 @@ class PDFontTest
     @Test
     void testPDFBox988() throws IOException, URISyntaxException
     {
-        try (PDDocument doc = 
+        try (PDDocument doc =
                 Loader.loadPDF(new File(PDFontTest.class.getResource("F001u_3_7j.pdf").toURI())))
         {
-            PDFRenderer renderer = new PDFRenderer(doc);
+            final PDFRenderer renderer = new PDFRenderer(doc);
             renderer.renderImage(0);
             // the allegation is that renderImage() will crash the JVM or hang
         }
@@ -91,18 +91,18 @@ class PDFontTest
     @Test
     void testPDFBox3747() throws IOException
     {
-        File file = new File("c:/windows/fonts", "calibri.ttf");
+        final File file = new File("c:/windows/fonts", "calibri.ttf");
         if (!file.exists())
         {
             System.out.println("testPDFBox3747 skipped");
             return;
         }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
-            PDFont font = PDType0Font.load(doc, file);
+            final PDFont font = PDType0Font.load(doc, file);
             try (PDPageContentStream cs = new PDPageContentStream(doc, page))
             {
                 cs.beginText();
@@ -115,8 +115,8 @@ class PDFontTest
 
         try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
         {
-            PDFTextStripper stripper = new PDFTextStripper();
-            String text = stripper.getText(doc);
+            final PDFTextStripper stripper = new PDFTextStripper();
+            final String text = stripper.getText(doc);
             assertEquals("PDFBOX-3747", text.trim());
         }
     }
@@ -132,9 +132,9 @@ class PDFontTest
     @Test
     void testPDFBox3826() throws IOException, URISyntaxException
     {
-        URL url = PDFont.class.getResource(
+        final URL url = PDFont.class.getResource(
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
-        File fontFile = new File(url.toURI());
+        final File fontFile = new File(url.toURI());
 
         try (TrueTypeFont ttf1 = new TTFParser().parse(fontFile))
         {
@@ -156,16 +156,16 @@ class PDFontTest
     @Test
     void testPDFBOX4115() throws IOException
     {
-        File fontFile = new File("target/fonts", "n019003l.pfb");
-        File outputFile = new File(OUT_DIR, "FontType1.pdf");
-        String text = "äöüÄÖÜ";
+        final File fontFile = new File("target/fonts", "n019003l.pfb");
+        final File outputFile = new File(OUT_DIR, "FontType1.pdf");
+        final String text = "äöüÄÖÜ";
 
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
             {
-                PDType1Font font = new PDType1Font(doc, new FileInputStream(fontFile), WinAnsiEncoding.INSTANCE);
+                final PDType1Font font = new PDType1Font(doc, new FileInputStream(fontFile), WinAnsiEncoding.INSTANCE);
 
                 contentStream.beginText();
                 contentStream.setFont(font, 10);
@@ -180,17 +180,17 @@ class PDFontTest
         }
         try (PDDocument doc = Loader.loadPDF(outputFile))
         {
-            PDType1Font font = (PDType1Font) doc.getPage(0).getResources().getFont(COSName.getPDFName("F1"));
+            final PDType1Font font = (PDType1Font) doc.getPage(0).getResources().getFont(COSName.getPDFName("F1"));
             assertEquals(WinAnsiEncoding.INSTANCE, font.getEncoding());
             
-            for (char c : text.toCharArray())
+            for (final char c : text.toCharArray())
             {
-                String name = font.getEncoding().getName(c);
+                final String name = font.getEncoding().getName(c);
                 assertEquals("dieresis", name.substring(1));
                 assertFalse(font.getPath(name).getBounds2D().isEmpty());
             }
 
-            PDFTextStripper stripper = new PDFTextStripper();
+            final PDFTextStripper stripper = new PDFTextStripper();
             assertEquals(text, stripper.getText(doc).trim());
         }
     }
@@ -214,13 +214,13 @@ class PDFontTest
     @Test
     void testFullEmbeddingTTC() throws IOException
     {
-        FontFileFinder fff = new FontFileFinder();
+        final FontFileFinder fff = new FontFileFinder();
         TrueTypeCollection ttc = null;
-        for (URI uri : fff.find())
+        for (final URI uri : fff.find())
         {
             if (uri.getPath().endsWith(".ttc"))
             {
-                File file = new File(uri);
+                final File file = new File(uri);
                 System.out.println("TrueType collection file: " + file);
                 ttc = new TrueTypeCollection(file);
                 break;
@@ -239,10 +239,10 @@ class PDFontTest
             names.add(ttf.getName());
         });
 
-        TrueTypeFont ttf = ttc.getFontByName(names.get(0)); // take the first one
+        final TrueTypeFont ttf = ttc.getFontByName(names.get(0)); // take the first one
         System.out.println("TrueType font used for test: " + ttf.getName());
 
-        IOException ex = assertThrows(IOException.class,
+        final IOException ex = assertThrows(IOException.class,
                 () -> PDType0Font.load(new PDDocument(), ttf, false),
                 "should have thrown IOException");
         assertEquals("Full embedding of TrueType font collections not supported", ex.getMessage());
@@ -257,52 +257,52 @@ class PDFontTest
     void testPDFox5048() throws IOException
     {
         try (InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf").openStream();
-             PDDocument doc = Loader.loadPDF(is))
+             final PDDocument doc = Loader.loadPDF(is))
         {
-            PDPage page = doc.getPage(0);
-            PDFont font = page.getResources().getFont(COSName.getPDFName("F70"));
+            final PDPage page = doc.getPage(0);
+            final PDFont font = page.getResources().getFont(COSName.getPDFName("F70"));
             assertTrue(font.isDamaged());
             assertEquals(0, font.getHeight(0));
             assertEquals(0, font.getStringWidth("Pa"));
         }
     }
 
-    private void testPDFBox3826checkFonts(byte[] byteArray, File fontFile) throws IOException
+    private void testPDFBox3826checkFonts(final byte[] byteArray, final File fontFile) throws IOException
     {
         try (PDDocument doc = Loader.loadPDF(byteArray))
         {
-            PDPage page2 = doc.getPage(0);
+            final PDPage page2 = doc.getPage(0);
             
             // F1 = type0 subset
-            PDType0Font fontF1 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F1"));
+            final PDType0Font fontF1 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F1"));
             assertTrue(fontF1.getName().contains("+"));
             assertTrue(fontFile.length() > fontF1.getFontDescriptor().getFontFile2().toByteArray().length);
             
             // F2 = type0 full embed
-            PDType0Font fontF2 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F2"));
+            final PDType0Font fontF2 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F2"));
             assertFalse(fontF2.getName().contains("+"));
             assertEquals(fontFile.length(), fontF2.getFontDescriptor().getFontFile2().toByteArray().length);
             
             // F3 = tt full embed
-            PDTrueTypeFont fontF3 = (PDTrueTypeFont) page2.getResources().getFont(COSName.getPDFName("F3"));
+            final PDTrueTypeFont fontF3 = (PDTrueTypeFont) page2.getResources().getFont(COSName.getPDFName("F3"));
             assertFalse(fontF3.getName().contains("+"));
             assertEquals(fontFile.length(), fontF3.getFontDescriptor().getFontFile2().toByteArray().length);
             
             new PDFRenderer(doc).renderImage(0);
             
-            PDFTextStripper stripper = new PDFTextStripper();
+            final PDFTextStripper stripper = new PDFTextStripper();
             stripper.setLineSeparator("\n");
-            String text = stripper.getText(doc);
+            final String text = stripper.getText(doc);
             assertEquals("testMultipleFontFileReuse1\ntestMultipleFontFileReuse2\ntestMultipleFontFileReuse3", text.trim());
         }
     }
 
-    private byte[] testPDFBox3826createDoc(TrueTypeFont ttf) throws IOException
+    private byte[] testPDFBox3826createDoc(final TrueTypeFont ttf) throws IOException
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             // type 0 subset embedding
             PDFont font = PDType0Font.load(doc, ttf, true);
@@ -342,9 +342,9 @@ class PDFontTest
     @Test
     void testDeleteFont() throws IOException
     {
-        File tempFontFile = new File(OUT_DIR, "LiberationSans-Regular.ttf");
-        File tempPdfFile = new File(OUT_DIR, "testDeleteFont.pdf");
-        String text = "Test PDFBOX-4823";
+        final File tempFontFile = new File(OUT_DIR, "LiberationSans-Regular.ttf");
+        final File tempPdfFile = new File(OUT_DIR, "testDeleteFont.pdf");
+        final String text = "Test PDFBOX-4823";
 
         try (InputStream is = PDFont.class.getResourceAsStream(
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
@@ -354,11 +354,11 @@ class PDFontTest
 
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page = new PDPage();
+            final PDPage page = new PDPage();
             doc.addPage(page);
             try (PDPageContentStream cs = new PDPageContentStream(doc, page))
             {
-                PDFont font = PDType0Font.load(doc, tempFontFile);
+                final PDFont font = PDType0Font.load(doc, tempFontFile);
                 cs.beginText();
                 cs.setFont(font, 50);
                 cs.newLineAtOffset(50, 700);
@@ -372,8 +372,8 @@ class PDFontTest
 
         try (PDDocument doc = Loader.loadPDF(tempPdfFile))
         {
-            PDFTextStripper stripper = new PDFTextStripper();
-            String extractedText = stripper.getText(doc);
+            final PDFTextStripper stripper = new PDFTextStripper();
+            final String extractedText = stripper.getText(doc);
             assertEquals(text, extractedText.trim());
         }
 

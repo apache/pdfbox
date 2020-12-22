@@ -48,8 +48,8 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
-                               Matrix matrix) throws IOException
+    Type1ShadingContext(final PDShadingType1 shading, final ColorModel colorModel, final AffineTransform xform,
+                        final Matrix matrix) throws IOException
     {
         super(shading, colorModel, xform, matrix);
         this.type1ShadingType = shading;
@@ -75,7 +75,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
             rat.concatenate(matrix.createAffineTransform().createInverse());
             rat.concatenate(xform.createInverse());
         }
-        catch (NoninvertibleTransformException ex)
+        catch (final NoninvertibleTransformException ex)
         {
             LOG.error(ex.getMessage() + ", matrix: " + matrix, ex);
             rat = new AffineTransform();
@@ -97,15 +97,15 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
     }
 
     @Override
-    public Raster getRaster(int x, int y, int w, int h)
+    public Raster getRaster(final int x, final int y, final int w, final int h)
     {
-        WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
-        int[] data = new int[w * h * 4];
+        final WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
+        final int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
             for (int i = 0; i < w; i++)
             {
-                int index = (j * w + i) * 4;
+                final int index = (j * w + i) * 4;
                 boolean useBackground = false;
                 float[] values = new float[] { x + i, y + j };
                 rat.transform(values, 0, values, 0, 1);
@@ -130,21 +130,21 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                     {
                         values = type1ShadingType.evalFunction(values);
                     }
-                    catch (IOException e)
+                    catch (final IOException e)
                     {
                         LOG.error("error while processing a function", e);
                     }
                 }
 
                 // convert color values from shading color space to RGB
-                PDColorSpace shadingColorSpace = getShadingColorSpace();
+                final PDColorSpace shadingColorSpace = getShadingColorSpace();
                 if (shadingColorSpace != null)
                 {
                     try
                     {
                         values = shadingColorSpace.toRGB(values);
                     }
-                    catch (IOException e)
+                    catch (final IOException e)
                     {
                         LOG.error("error processing color space", e);
                     }

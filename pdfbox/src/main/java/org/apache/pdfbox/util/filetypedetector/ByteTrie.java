@@ -42,7 +42,7 @@ class ByteTrie<T>
         private final Map<Byte, ByteTrieNode<T>> children = new HashMap<>();
         private T value = null;
 
-        public void setValue(T value)
+        public void setValue(final T value)
         {
             if (this.value != null)
             {
@@ -67,13 +67,13 @@ class ByteTrie<T>
      * @param bytes
      * @return 
      */
-    public T find(byte[] bytes)
+    public T find(final byte[] bytes)
     {
         ByteTrieNode<T> node = root;
         T val = node.getValue();
-        for (byte b : bytes)
+        for (final byte b : bytes)
         {
-            ByteTrieNode<T> child = node.children.get(b);
+            final ByteTrieNode<T> child = node.children.get(b);
             if (child == null)
             {
                 break;
@@ -92,13 +92,13 @@ class ByteTrie<T>
      * @param value
      * @param parts
      */
-    public void addPath(T value, byte[]... parts)
+    public void addPath(final T value, final byte[]... parts)
     {
         int depth = 0;
         ByteTrieNode<T> node = root;
-        for (byte[] part : parts)
+        for (final byte[] part : parts)
         {
-            for (byte b : part)
+            for (final byte b : part)
             {
                 ByteTrieNode<T> child = node.children.get(b);
                 if (child == null)
@@ -118,7 +118,7 @@ class ByteTrie<T>
      * Sets the default value to use in {@link ByteTrie#find(byte[])} when no path matches.
      * @param defaultValue
      */
-    public void setDefaultValue(T defaultValue)
+    public void setDefaultValue(final T defaultValue)
     {
         root.setValue(defaultValue);
     }

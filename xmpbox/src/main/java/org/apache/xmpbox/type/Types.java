@@ -53,7 +53,7 @@ public enum Types
 
     private final Class<? extends AbstractField> clz;
 
-    private Types(boolean s, Types b, Class<? extends AbstractField> c)
+    private Types(final boolean s, final Types b, final Class<? extends AbstractField> c)
     {
         this.simple = s;
         this.basic = b;
