@@ -22,8 +22,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -52,11 +50,6 @@ public class TextToPDF implements Callable<Integer>
      * The scaling factor for font units to PDF units
      */
     private static final int FONTSCALE = 1000;
-    
-    /**
-     * The default font
-     */
-    private static final PDType1Font DEFAULT_FONT = PDType1Font.HELVETICA;
 
     /**
      * The default font size
@@ -69,7 +62,7 @@ public class TextToPDF implements Callable<Integer>
     private static final float LINE_HEIGHT_FACTOR = 1.05f;
 
     private PDRectangle mediaBox = PDRectangle.LETTER;
-    private PDFont font = DEFAULT_FONT;
+    private PDFont font = Standard14Fonts.HELVETICA.getFont();
 
     // Expected for CLI app to write to System.out/Sytem.err
     @SuppressWarnings("squid:S106")
@@ -84,8 +77,9 @@ public class TextToPDF implements Callable<Integer>
     @Option(names = "-pageSize", description = "the page size to use: Letter, Legal, A0, A1, A2, A3, A4, A5, A6 (default: ${DEFAULT-VALUE})")
     private String pageSize = "Letter";
 
-    @Option(names = "-standardFont", description = "the font to use for the text. Either this or -ttf should be specified but not both.")
-    private String standardFont;
+    @Option(names = "-standardFont", 
+        description = "the font to use for the text. Either this or -ttf should be specified but not both.\nCandidates: ${COMPLETION-CANDIDATES} (default: ${DEFAULT-VALUE})")
+    private Standard14Fonts standardFont = Standard14Fonts.HELVETICA;
 
     @Option(names = "-ttf", paramLabel="<ttf file>", description = "the TTF font to use for the text. Either this or -standardFont should be specified but not both.")
     private File ttf;
@@ -99,25 +93,43 @@ public class TextToPDF implements Callable<Integer>
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
-    private static final Map<String, PDType1Font> STANDARD_14 = new HashMap<>();
-    static
+    private enum Standard14Fonts
     {
-        STANDARD_14.put(PDType1Font.TIMES_ROMAN.getBaseFont(), PDType1Font.TIMES_ROMAN);
-        STANDARD_14.put(PDType1Font.TIMES_BOLD.getBaseFont(), PDType1Font.TIMES_BOLD);
-        STANDARD_14.put(PDType1Font.TIMES_ITALIC.getBaseFont(), PDType1Font.TIMES_ITALIC);
-        STANDARD_14.put(PDType1Font.TIMES_BOLD_ITALIC.getBaseFont(), PDType1Font.TIMES_BOLD_ITALIC);
-        STANDARD_14.put(PDType1Font.HELVETICA.getBaseFont(), PDType1Font.HELVETICA);
-        STANDARD_14.put(PDType1Font.HELVETICA_BOLD.getBaseFont(), PDType1Font.HELVETICA_BOLD);
-        STANDARD_14.put(PDType1Font.HELVETICA_OBLIQUE.getBaseFont(), PDType1Font.HELVETICA_OBLIQUE);
-        STANDARD_14.put(PDType1Font.HELVETICA_BOLD_OBLIQUE.getBaseFont(), PDType1Font.HELVETICA_BOLD_OBLIQUE);
-        STANDARD_14.put(PDType1Font.COURIER.getBaseFont(), PDType1Font.COURIER);
-        STANDARD_14.put(PDType1Font.COURIER_BOLD.getBaseFont(), PDType1Font.COURIER_BOLD);
-        STANDARD_14.put(PDType1Font.COURIER_OBLIQUE.getBaseFont(), PDType1Font.COURIER_OBLIQUE);
-        STANDARD_14.put(PDType1Font.COURIER_BOLD_OBLIQUE.getBaseFont(), PDType1Font.COURIER_BOLD_OBLIQUE);
-        STANDARD_14.put(PDType1Font.SYMBOL.getBaseFont(), PDType1Font.SYMBOL);
-        STANDARD_14.put(PDType1Font.ZAPF_DINGBATS.getBaseFont(), PDType1Font.ZAPF_DINGBATS);
-    }
+        TIMES_ROMAN(PDType1Font.TIMES_ROMAN.getBaseFont(), PDType1Font.TIMES_ROMAN),
+        TIMES_BOLD(PDType1Font.TIMES_BOLD.getBaseFont(), PDType1Font.TIMES_BOLD),
+        TIMES_ITALIC(PDType1Font.TIMES_ITALIC.getBaseFont(), PDType1Font.TIMES_ITALIC),
+        TIMES_BOLD_ITALIC(PDType1Font.TIMES_BOLD_ITALIC.getBaseFont(), PDType1Font.TIMES_BOLD_ITALIC),
+        HELVETICA(PDType1Font.HELVETICA.getBaseFont(), PDType1Font.HELVETICA),
+        HELVETICA_BOLD(PDType1Font.HELVETICA_BOLD.getBaseFont(), PDType1Font.HELVETICA_BOLD),
+        HELVETICA_OBLIQUE(PDType1Font.HELVETICA_OBLIQUE.getBaseFont(), PDType1Font.HELVETICA_OBLIQUE),
+        HELVETICA_BOLD_OBLIQUE(PDType1Font.HELVETICA_BOLD_OBLIQUE.getBaseFont(), PDType1Font.HELVETICA_BOLD_OBLIQUE),
+        COURIER(PDType1Font.COURIER.getBaseFont(), PDType1Font.COURIER),
+        COURIER_BOLD(PDType1Font.COURIER_BOLD.getBaseFont(), PDType1Font.COURIER_BOLD),
+        COURIER_OBLIQUE(PDType1Font.COURIER_OBLIQUE.getBaseFont(), PDType1Font.COURIER_OBLIQUE),
+        COURIER_BOLD_OBLIQUE(PDType1Font.COURIER_BOLD_OBLIQUE.getBaseFont(), PDType1Font.COURIER_BOLD_OBLIQUE),
+        SYMBOL(PDType1Font.SYMBOL.getBaseFont(), PDType1Font.SYMBOL),
+        ZAPF_DINGBATS(PDType1Font.ZAPF_DINGBATS.getBaseFont(), PDType1Font.ZAPF_DINGBATS);
 
+        final String displayName;
+        final PDFont font;
+
+        private Standard14Fonts(String displayName, PDFont font)
+        {
+            this.displayName = displayName;
+            this.font = font;
+        }
+
+        public PDFont getFont()
+        {
+            return font;
+        }
+        
+
+        @Override 
+        public String toString() { 
+            return this.displayName; 
+        }
+    }
 
     /**
      * This will create a PDF document with some text in it.
@@ -143,9 +155,9 @@ public class TextToPDF implements Callable<Integer>
             {
                 font = PDType0Font.load(doc, ttf);
             }
-            else if (standardFont != null && getStandardFont(standardFont) != null)
+            else
             {
-                font = getStandardFont(standardFont);
+                font = standardFont.getFont();
             }
 
             setFont(font);
@@ -391,18 +403,6 @@ public class TextToPDF implements Callable<Integer>
         {
             return null;
         }
-    }
-
-    /**
-     * A convenience method to get one of the standard 14 font from name.
-     *
-     * @param name The name of the font to get.
-     *
-     * @return The font that matches the name or null if it does not exist.
-     */
-    private static PDType1Font getStandardFont(String name)
-    {
-        return STANDARD_14.get(name);
     }
 
     /**

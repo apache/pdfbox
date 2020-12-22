@@ -41,10 +41,10 @@ public final class PDFMerger implements Callable<Integer>
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 
-    @Parameters(paramLabel = "inputfile", arity = "2..*", description = "the PDF files to merge.")
+    @Parameters(paramLabel = "inputfile", index="0", arity = "2..*", description = "the PDF files to merge.")
     private File[] infiles;
 
-    @Parameters(paramLabel = "outputfile", index="1", description = "the merged PDF file.")
+    @Parameters(paramLabel = "outputfile", index="1", arity="1", description = "the merged PDF file.")
     private File outfile;
 
     /**
