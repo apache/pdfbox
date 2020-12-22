@@ -559,7 +559,7 @@ public class AFMParser
     /**
      * This will convert and angle bracket hex string to a string.
      *
-     * @param hexString An angle bracket string.
+     * @param hexToString An angle bracket string.
      *
      * @return The bytes of the hex string.
      *

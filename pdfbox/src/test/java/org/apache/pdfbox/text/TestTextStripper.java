@@ -118,11 +118,9 @@ class TestTextStripper
     private static final String ENCODING = "UTF-8";
 
     /**
-     * Test class constructor.
+     * Test class initialization.
      *
-     * @param name The name of the test class.
-     *
-     * @throws IOException If there is an error creating the test.
+     * @throws IOException If there is an error initializing the test.
      */
     @BeforeAll
     static void init() throws IOException

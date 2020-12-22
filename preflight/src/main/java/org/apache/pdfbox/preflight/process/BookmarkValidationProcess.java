@@ -102,7 +102,6 @@ public class BookmarkValidationProcess extends AbstractProcess
     /**
      * return true if Count entry &gt; 0
      * 
-     * @param ctx the preflight context.
      * @param outline the dictionary representing the document outline.
      * @return true if the Count entry &gt; 0.
      */
