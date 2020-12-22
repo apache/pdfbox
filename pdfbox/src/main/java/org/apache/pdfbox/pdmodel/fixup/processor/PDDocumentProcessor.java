@@ -18,5 +18,5 @@ package org.apache.pdfbox.pdmodel.fixup.processor;
 
 public interface PDDocumentProcessor
 { 
-    public void process(); 
+    void process(); 
 }  	
