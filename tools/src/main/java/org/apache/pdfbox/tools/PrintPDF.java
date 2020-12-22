@@ -152,6 +152,7 @@ public final class PrintPDF implements Callable<Integer>
         return 0;
     }
 
+    @Command(name = "listPrinters", description = "list available printers", helpCommand = true)
     private static void showAvailablePrinters()
     {
         SYSERR.println("Available printer names:");
