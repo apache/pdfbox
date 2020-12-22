@@ -136,7 +136,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
     /**
      * This will create an Appearance dictionary from an appearance XML document.
      *
-     * @param fdfXML The XML document that contains the appearance data.
+     * @param appearanceXML The XML document that contains the appearance data.
      */
     private COSDictionary parseStampAnnotationAppearanceXML(Element appearanceXML) throws IOException
     {

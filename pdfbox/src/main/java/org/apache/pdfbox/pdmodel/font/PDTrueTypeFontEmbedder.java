@@ -47,7 +47,7 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
      *
      * @param document The parent document
      * @param dict Font dictionary
-     * @param ttfStream TTF stream
+     * @param ttf TTF stream
      * @param encoding The PostScript encoding vector to be used for embedding.
      * @throws IOException if the TTF could not be read
      */

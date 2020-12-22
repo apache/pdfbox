@@ -499,8 +499,8 @@ public class PDDocument implements Closeable
     /**
      * Check if the widget already exists in the annotation list
      *
-     * @param acroFormFields the list of AcroForm fields.
-     * @param signatureField the signature field.
+     * @param annotations the list of PDAnnotation fields.
+     * @param widget the annotation widget.
      * @return true if the widget already existed in the annotation list, false if not.
      */
     private boolean checkSignatureAnnotation(List<PDAnnotation> annotations, PDAnnotationWidget widget)

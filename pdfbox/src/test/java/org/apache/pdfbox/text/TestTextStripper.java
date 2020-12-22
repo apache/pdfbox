@@ -120,8 +120,6 @@ class TestTextStripper
     /**
      * Test class constructor.
      *
-     * @param name The name of the test class.
-     *
      * @throws IOException If there is an error creating the test.
      */
     @BeforeAll
