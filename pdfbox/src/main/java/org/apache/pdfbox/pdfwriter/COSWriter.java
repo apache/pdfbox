@@ -492,9 +492,10 @@ public class COSWriter implements ICOSVisitor, Closeable
     protected void doWriteBody(COSDocument doc) throws IOException
     {
         COSDictionary trailer = doc.getTrailer();
-        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
-        COSDictionary info = trailer.getCOSDictionary(COSName.INFO);
-        COSDictionary encrypt = trailer.getCOSDictionary(COSName.ENCRYPT);
+        // get the COSObjects to preserve the origin object numbers
+        COSBase root = trailer.getItem(COSName.ROOT);
+        COSBase info = trailer.getItem(COSName.INFO);
+        COSBase encrypt = trailer.getItem(COSName.ENCRYPT);
         if( root != null )
         {
             addObjectToWrite( root );
@@ -503,7 +504,6 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             addObjectToWrite( info );
         }
-
         doWriteObjects();
         willEncrypt = false;
         if( encrypt != null )
@@ -523,11 +523,10 @@ public class COSWriter implements ICOSVisitor, Closeable
     private void doWriteBodyCompressed(COSDocument document) throws IOException
     {
         COSDictionary trailer = document.getTrailer();
-        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
         COSDictionary encrypt = trailer.getCOSDictionary(COSName.ENCRYPT);
         blockAddingObject = true;
         willEncrypt = encrypt != null;
-        if (root != null)
+        if (trailer.containsKey(COSName.ROOT))
         {
             COSWriterCompressionPool compressionPool = new COSWriterCompressionPool(pdDocument,
                     compressParameters);
