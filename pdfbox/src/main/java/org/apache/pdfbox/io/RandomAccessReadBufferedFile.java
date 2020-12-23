@@ -34,23 +34,23 @@ import java.util.Map;
  */
 public class RandomAccessReadBufferedFile implements RandomAccessRead
 {
-    private final int pageSizeShift = 12;
-    private final int pageSize = 1 << pageSizeShift;
-    private final long pageOffsetMask = -1L << pageSizeShift;
-    private final int maxCachedPages = 1000;
+    private static final int PAGE_SIZE_SHIFT = 12;
+    private static final int PAGE_SIZE = 1 << PAGE_SIZE_SHIFT;
+    private static final long PAGE_OFFSET_MASK = -1L << PAGE_SIZE_SHIFT;
+    private static final int MAX_CACHED_PAGES = 1000;
 
     private ByteBuffer lastRemovedCachePage = null;
 
     /** Create a LRU page cache. */
     private final Map<Long, ByteBuffer> pageCache = new LinkedHashMap<Long, ByteBuffer>(
-            maxCachedPages, 0.75f, true)
+            MAX_CACHED_PAGES, 0.75f, true)
     {
         private static final long serialVersionUID = -6302488539257741101L;
 
         @Override
         protected boolean removeEldestEntry(Map.Entry<Long, ByteBuffer> eldest)
         {
-            final boolean doRemove = size() > maxCachedPages;
+            final boolean doRemove = size() > MAX_CACHED_PAGES;
             if (doRemove)
             {
                 lastRemovedCachePage = eldest.getValue();
@@ -115,7 +115,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
         {
             throw new IOException("Invalid position " + position);
         }
-        final long newPageOffset = position & pageOffsetMask;
+        final long newPageOffset = position & PAGE_OFFSET_MASK;
         if ( newPageOffset != curPageOffset )
         {
             ByteBuffer newPage = pageCache.get(newPageOffset);
@@ -149,11 +149,11 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
         }
         else
         {
-            page = ByteBuffer.allocate(pageSize);
+            page = ByteBuffer.allocate(PAGE_SIZE);
         }
 
         int readBytes = 0;
-        while ( readBytes < pageSize )
+        while (readBytes < PAGE_SIZE)
         {
             int curBytesRead = fileChannel.read(page);
             if (curBytesRead < 0)
@@ -176,7 +176,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
             return -1;
         }
 
-        if ( offsetWithinPage == pageSize )
+        if (offsetWithinPage == PAGE_SIZE)
         {
             seek( fileOffset );
         }
@@ -194,13 +194,13 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
             return -1;
         }
 
-        if ( offsetWithinPage == pageSize )
+        if (offsetWithinPage == PAGE_SIZE)
         {
             seek( fileOffset );
         }
 
-        int commonLen = Math.min( pageSize - offsetWithinPage, len );
-        if ( ( fileLength - fileOffset ) < pageSize )
+        int commonLen = Math.min(PAGE_SIZE - offsetWithinPage, len);
+        if ((fileLength - fileOffset) < PAGE_SIZE)
         {
             commonLen = Math.min( commonLen, (int) ( fileLength - fileOffset ) );
         }

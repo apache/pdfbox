@@ -53,7 +53,7 @@ public final class LosslessFactory
     /** 
      * Internal, only for benchmark purpose
      */
-    static final boolean usePredictorEncoder = true;
+    static final boolean USE_PREDICTOR_ENCODER = true;
 
     private LosslessFactory()
     {
@@ -85,7 +85,7 @@ public final class LosslessFactory
         }
 
         // We try to encode the image with predictor
-        if (usePredictorEncoder)
+        if (USE_PREDICTOR_ENCODER)
         {
             PDImageXObject pdImageXObject = new PredictorEncoder(document, image).encode();
             if (pdImageXObject != null)
