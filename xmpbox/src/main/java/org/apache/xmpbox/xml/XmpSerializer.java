@@ -56,8 +56,6 @@ public class XmpSerializer
     private final TransformerFactory transformerFactory;
     private final DocumentBuilder documentBuilder;
 
-    private final boolean parseTypeResourceForLi = true;
-
     /**
      * Default constructor.
      */
@@ -178,20 +176,10 @@ public class XmpSerializer
                 // element li
                 Element estructured = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX + ":" + XmpConstants.LIST_NAME);
                 listParent.appendChild(estructured);
-                if (parseTypeResourceForLi)
-                {
-                    estructured.setAttribute("rdf:parseType", "Resource");
-                    // all properties
-                    serializeFields(doc, estructured, innerFields,resourceNS, null, true);
-                }
-                else
-                {
-                    // element description
-                    Element econtainer = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX + ":" + "Description");
-                    estructured.appendChild(econtainer);
-                    // all properties
-                    serializeFields(doc, econtainer, innerFields,resourceNS, null, true);
-                }
+                estructured.setAttribute("rdf:parseType", "Resource");
+
+                // all properties
+                serializeFields(doc, estructured, innerFields,resourceNS, null, true);
             }
             else
             {
@@ -199,7 +187,6 @@ public class XmpSerializer
                 System.err.println(">> TODO >> " + field.getClass());
             }
         }
-
     }
 
     private void fillElementWithAttributes(Element target, AbstractComplexProperty property)
