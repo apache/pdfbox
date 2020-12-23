@@ -40,7 +40,7 @@ class TestXmlResultParser
 
     public static final String ERROR_CODE = "000";
 
-    protected XmlResultParser parser = new XmlResultParser();
+    protected final XmlResultParser parser = new XmlResultParser();
 
     protected Document document;
 

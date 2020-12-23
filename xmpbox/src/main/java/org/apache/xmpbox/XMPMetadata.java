@@ -61,9 +61,9 @@ public class XMPMetadata
 
     private String xpacketEndData = XmpConstants.DEFAULT_XPACKET_END;
 
-    private List<XMPSchema> schemas;
+    private final List<XMPSchema> schemas;
 
-    private TypeMapping typeMapping;
+    private final TypeMapping typeMapping;
 
     /**
      * Constructor of an empty default XMPMetaData.

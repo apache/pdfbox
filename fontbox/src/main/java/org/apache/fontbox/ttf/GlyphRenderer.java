@@ -41,7 +41,7 @@ class GlyphRenderer
 {
     private static final Log LOG = LogFactory.getLog(GlyphRenderer.class);
 
-    private GlyphDescription glyphDescription;
+    private final GlyphDescription glyphDescription;
 
     GlyphRenderer(GlyphDescription glyphDescription)
     {

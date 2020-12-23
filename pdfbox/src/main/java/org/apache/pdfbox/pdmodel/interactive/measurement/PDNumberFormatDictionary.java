@@ -58,7 +58,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public static final String FRACTIONAL_DISPLAY_TRUNCATE = "T";
 
-    private COSDictionary numberFormatDictionary;
+    private final COSDictionary numberFormatDictionary;
 
     /**
      * Constructor.

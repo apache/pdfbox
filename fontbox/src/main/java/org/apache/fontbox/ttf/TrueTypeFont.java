@@ -47,7 +47,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     private float version;
     private int numberOfGlyphs = -1;
     private int unitsPerEm = -1;
-    protected Map<String,TTFTable> tables = new HashMap<>();
+    protected final Map<String,TTFTable> tables = new HashMap<>();
     private final TTFDataStream data;
     private volatile Map<String, Integer> postScriptNames;
     

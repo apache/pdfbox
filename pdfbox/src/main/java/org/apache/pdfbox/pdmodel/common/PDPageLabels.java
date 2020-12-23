@@ -42,9 +42,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 public class PDPageLabels implements COSObjectable
 {
 
-    private Map<Integer, PDPageLabelRange> labels;
+    private final Map<Integer, PDPageLabelRange> labels;
 
-    private PDDocument doc;
+    private final PDDocument doc;
 
     /**
      * Creates an empty page label dictionary for the given document.

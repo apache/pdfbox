@@ -25,7 +25,7 @@ import java.io.IOException;
 public class DataOutput
 {
 
-    private ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
 
     private String outputEncoding = null;
 

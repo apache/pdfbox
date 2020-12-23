@@ -29,8 +29,8 @@ import org.apache.pdfbox.preflight.font.descriptor.FontDescriptorHelper;
 
 public abstract class FontValidator<T extends FontContainer>
 {
-    protected T fontContainer;
-    protected PreflightContext context;
+    protected final T fontContainer;
+    protected final PreflightContext context;
     protected FontDescriptorHelper<T> descriptorHelper;
 
     public FontValidator(PreflightContext context, COSDictionary dict, T fContainer)

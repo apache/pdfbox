@@ -55,7 +55,7 @@ import org.apache.pdfbox.preflight.font.container.Type0Container;
 
 public class Type0FontValidator extends FontValidator<Type0Container>
 {
-    protected PDFont font;
+    protected final PDFont font;
 
     public Type0FontValidator(PreflightContext context, PDFont font)
     {

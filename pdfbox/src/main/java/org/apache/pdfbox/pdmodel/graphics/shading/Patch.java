@@ -28,7 +28,7 @@ import java.util.List;
 abstract class Patch
 {
     protected Point2D[][] controlPoints;
-    protected float[][] cornerColor;
+    protected final float[][] cornerColor;
 
     /*
      level = {levelU, levelV}, levelU defines the patch's u direction edges should be 

@@ -223,8 +223,8 @@ class TestCOSFloat extends TestCOSNumber
 
     class AcceptTester extends BaseTester
     {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        COSWriter visitor = new COSWriter(outStream);
+        final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        final COSWriter visitor = new COSWriter(outStream);
 
         @Override
         void runTest(float num)
@@ -254,7 +254,7 @@ class TestCOSFloat extends TestCOSNumber
 
     class WritePDFTester extends BaseTester
     {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
         WritePDFTester()
         {

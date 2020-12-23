@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDParentTreeValue implements COSObjectable
 {
-    COSObjectable obj;
+    final COSObjectable obj;
 
     public PDParentTreeValue(COSArray obj)
     {

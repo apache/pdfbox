@@ -30,7 +30,7 @@ public class PDThread implements COSObjectable
 {
 
 
-    private COSDictionary thread;
+    private final COSDictionary thread;
 
     /**
      * Constructor that is used for a preexisting dictionary.

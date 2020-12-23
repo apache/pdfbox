@@ -750,7 +750,7 @@ class PDFMergerUtilityTest
     private class ElementCounter
     {
         int cnt = 0;
-        Set<COSBase> set = new HashSet<>();
+        final Set<COSBase> set = new HashSet<>();
 
         void walk(COSBase base)
         {

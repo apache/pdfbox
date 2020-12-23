@@ -40,7 +40,7 @@ public class PDWindowsLaunchParams implements COSObjectable
     /**
      * The params dictionary.
      */
-    protected COSDictionary params;
+    protected final COSDictionary params;
 
     /**
      * Default constructor.

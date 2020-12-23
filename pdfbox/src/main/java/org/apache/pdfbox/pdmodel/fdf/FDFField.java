@@ -46,7 +46,7 @@ import org.w3c.dom.NodeList;
  */
 public class FDFField implements COSObjectable
 {
-    private COSDictionary field;
+    private final COSDictionary field;
 
     /**
      * Default constructor.

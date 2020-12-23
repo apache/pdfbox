@@ -357,9 +357,9 @@ public final class ShowSignature
     }
 
     /**
-     * Verify ETSI.RFC3161 TImeStampToken
+     * Verify ETSI.RFC3161 TimeStampToken
      *
-     * @param byteArray the byte sequence that has been signed
+     * @param buf the byte sequence that has been signed
      * @param contents the /Contents field as a COSString
      * @throws CMSException
      * @throws NoSuchAlgorithmException

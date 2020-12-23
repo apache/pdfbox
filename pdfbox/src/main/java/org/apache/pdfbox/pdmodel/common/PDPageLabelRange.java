@@ -30,7 +30,7 @@ import org.apache.pdfbox.cos.COSName;
 public class PDPageLabelRange implements COSObjectable
 {
 
-    private COSDictionary root;
+    private final COSDictionary root;
 
     // Page label dictionary (PDF32000-1:2008 Section 12.4.2, Table 159)
     private static final COSName KEY_START = COSName.ST;

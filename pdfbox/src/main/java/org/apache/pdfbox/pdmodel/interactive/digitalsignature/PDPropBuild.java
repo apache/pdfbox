@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDPropBuild implements COSObjectable
 {
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Default constructor.

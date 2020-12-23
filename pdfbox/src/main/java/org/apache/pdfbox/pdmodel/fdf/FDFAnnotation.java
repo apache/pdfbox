@@ -99,7 +99,7 @@ public abstract class FDFAnnotation implements COSObjectable
     /**
      * Annotation dictionary.
      */
-    protected COSDictionary annot;
+    protected final COSDictionary annot;
 
     /**
      * Default constructor.

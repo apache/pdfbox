@@ -30,7 +30,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpace
 {
-    protected COSDictionary dictionary;
+    protected final COSDictionary dictionary;
 
     private static final ColorSpace CIEXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
 

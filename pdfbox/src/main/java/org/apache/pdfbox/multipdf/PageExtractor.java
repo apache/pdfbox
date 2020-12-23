@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
  */
 public class PageExtractor
 {
-    private PDDocument sourceDocument;
+    private final PDDocument sourceDocument;
     
     // first page to extract is page 1 (by default)
     private int startPage = 1;

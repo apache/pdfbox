@@ -92,7 +92,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     private long highestXRefObjectNumber;
 
-    private ICOSParser parser;
+    private final ICOSParser parser;
 
     /**
      * Constructor. Uses main memory to buffer PDF streams.
