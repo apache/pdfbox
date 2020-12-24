@@ -112,12 +112,12 @@ public final class Predictor
                             if (((sub + left) & 1) == 0)
                             {
                                 // reset bit
-                                actline[p] = (byte) (actline[p] & ~(1 << bit));
+                                actline[p] &= ~(1 << bit);
                             }
                             else
                             {
                                 // set bit
-                                actline[p] = (byte) (actline[p] | (1 << bit));
+                                actline[p] |= 1 << bit;
                             }
                         }
                     }
