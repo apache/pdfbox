@@ -36,7 +36,8 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
     
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
-    private volatile ColorSpace awtColorSpace;
+    private ColorSpace awtColorSpace;
+    private volatile boolean initDone = false;
 
     private PDDeviceRGB()
     {
@@ -48,7 +49,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     private void init()
     {
         // no need to synchronize this check as it is atomic
-        if (awtColorSpace != null)
+        if (initDone)
         {
             return;
         }
@@ -56,7 +57,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
         synchronized (this)
         {
             // we might have been waiting for another thread, so check again
-            if (awtColorSpace != null)
+            if (initDone)
             {
                 return;
             }
@@ -66,6 +67,9 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
             // condition caused by lazy initialization of the color transform, so we perform
             // an initial color conversion while we're still synchronized, see PDFBOX-2184
             awtColorSpace.toRGB(new float[] { 0, 0, 0, 0 });
+
+            // This volatile write must be the LAST statement in the synchronized block!
+            initDone = true;
         }
     }
     
