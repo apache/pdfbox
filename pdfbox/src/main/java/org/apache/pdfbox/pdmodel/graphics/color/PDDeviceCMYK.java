@@ -47,7 +47,8 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     }
 
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0, 1 }, this);
-    private volatile ICC_ColorSpace awtColorSpace;
+    private ICC_ColorSpace awtColorSpace;
+    private volatile boolean initDone = false;
     private boolean usePureJavaCMYKConversion = false;
 
     protected PDDeviceCMYK()
@@ -60,14 +61,14 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     protected void init() throws IOException
     {
         // no need to synchronize this check as it is atomic
-        if (awtColorSpace != null)
+        if (initDone)
         {
             return;
         }
         synchronized (this)
         {
             // we might have been waiting for another thread, so check again
-            if (awtColorSpace != null)
+            if (initDone)
             {
                 return;
             }
@@ -85,6 +86,9 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
             awtColorSpace.toRGB(new float[] { 0, 0, 0, 0 });
             usePureJavaCMYKConversion = System
                     .getProperty("org.apache.pdfbox.rendering.UsePureJavaCMYKConversion") != null;
+
+            // Assignment to volatile must be the LAST statement in this block!
+            initDone = true;
         }
     }
 
