@@ -36,7 +36,6 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
     
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
-    private ColorSpace awtColorSpace;
     private volatile boolean initDone = false;
 
     private PDDeviceRGB()
@@ -61,12 +60,11 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
             {
                 return;
             }
-            awtColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-            
+
             // there is a JVM bug which results in a CMMException which appears to be a race
             // condition caused by lazy initialization of the color transform, so we perform
             // an initial color conversion while we're still synchronized, see PDFBOX-2184
-            awtColorSpace.toRGB(new float[] { 0, 0, 0, 0 });
+            ColorSpace.getInstance(ColorSpace.CS_sRGB).toRGB(new float[] { 0, 0, 0, 0 });
 
             // This volatile write must be the LAST statement in the synchronized block!
             initDone = true;
