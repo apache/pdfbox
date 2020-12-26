@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
@@ -43,6 +44,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Callable;
+
 import javax.imageio.spi.IIORegistry;
 
 import javax.print.attribute.HashPrintRequestAttributeSet;
@@ -63,6 +66,7 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.filechooser.FileFilter;
@@ -124,6 +128,10 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 import org.apache.pdfbox.printing.PDFPageable;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+
 /**
  * PDF Debugger.
  * 
@@ -131,25 +139,18 @@ import org.apache.pdfbox.printing.PDFPageable;
  * @author Ben Litchfield
  * @author Khyrul Bashar
  */
-@SuppressWarnings({"serial","squid:MaximumInheritanceDepth","squid:S1948"})
-public class PDFDebugger extends JFrame
-{
-    private static final Set<COSName> SPECIALCOLORSPACES =
-            new HashSet<>(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
+@SuppressWarnings({ "serial", "squid:MaximumInheritanceDepth", "squid:S1948" })
+public class PDFDebugger extends JFrame implements Callable<Integer> {
+    private static final Set<COSName> SPECIALCOLORSPACES = new HashSet<>(
+            Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
-    private static final Set<COSName> OTHERCOLORSPACES =
-            new HashSet<>(Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY,
-                                 COSName.CALRGB, COSName.LAB));
+    private static final Set<COSName> OTHERCOLORSPACES = new HashSet<>(
+            Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY, COSName.CALRGB, COSName.LAB));
 
-    @SuppressWarnings({"squid:S2068"})
-    private static final String PASSWORD = "-password";
-    private static final String VIEW_STRUCTURE = "-viewstructure";
-
-    private static final int SHORCUT_KEY_MASK =
-            Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    private static final int SHORCUT_KEY_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     private static final boolean IS_MAC_OS = OS_NAME.startsWith("mac os x");
-    
+
     private final JPanel documentPanel = new JPanel();
     private TreeStatusPane statusPane;
     private RecentFiles recentFiles;
@@ -168,32 +169,47 @@ public class PDFDebugger extends JFrame
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
     private JMenuItem reopenMenuItem;
-    
+
     // edit > find menu
     private JMenu findMenu;
     private JMenuItem findMenuItem;
     private JMenuItem findNextMenuItem;
     private JMenuItem findPreviousMenuItem;
-    
+
+    // cli options
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
+
+    @Option(names = { "-h", "--help" }, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
+    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.")
+    private String password;
+
+    @Option(names = "-viewstructure", description = "activate structure mode on startup")
+    private boolean viewstructure;
+
+    @Parameters(paramLabel = "inputfile", arity="0..1", description = "the PDF file to be loaded")
+    private File infile;
+
     // configuration
     public static final Properties configuration = new Properties();
-    
+
     /**
      * Constructor.
      */
-    public PDFDebugger()
-    {
+    public PDFDebugger() {
         this(false);
     }
 
     /**
      * Constructor.
      *
-     * @param isPageMode true if pages are to be displayed, false if internal structure is to be
-     * displayed.
+     * @param isPageMode true if pages are to be displayed, false if internal
+     *                   structure is to be displayed.
      */
-    public PDFDebugger(boolean isPageMode)
-    {
+    public PDFDebugger(boolean isPageMode) {
         this.isPageMode = isPageMode;
         loadConfiguration();
         initComponents();
@@ -203,7 +219,7 @@ public class PDFDebugger extends JFrame
      * Entry point.
      * 
      * @param args the command line arguments
-     * @throws Exception If anything goes wrong.
+     * @throws Exception if anything goes wrong.
      */
     public static void main(String[] args) throws Exception
     {
@@ -217,65 +233,56 @@ public class PDFDebugger extends JFrame
         Thread.setDefaultUncaughtExceptionHandler(
                 (thread, throwable) -> new ErrorDialog(throwable).setVisible(true));
 
-        // open file, if any
-        String filename = null;
-        @SuppressWarnings({"squid:S2068"})
-        String password = "";
-        boolean viewPages = true;
-        
-        for( int i = 0; i < args.length; i++ )
-        {
-            switch (args[i])
-            {
-                case PASSWORD:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    password = args[i];
-                    break;
-                case VIEW_STRUCTURE:
-                    viewPages = false;
-                    break;
-                default:
-                    filename = args[i];
-                    break;
-            }
-        }
-        final PDFDebugger viewer = new PDFDebugger(viewPages);
-
-        // use our custom logger
-        // this works only if there is no "LogFactory.getLog()" in this class,
-        // and if there are no methods that call logging, even invisible
-        // use reduced file from PDFBOX-3653 to see logging
-        LogDialog.init(viewer, viewer.statusBar.getLogLabel());
-        System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
-
-        TextDialog.init(viewer);
-
-        // trigger premature initializations for more accurate rendering benchmarks
-        // See discussion in PDFBOX-3988
-        if (PDType1Font.COURIER.isStandard14())
-        {
-            // Yes this is always true
-            PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
-            PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
-            IIORegistry.getDefaultInstance();
-            FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
-        }
-
-        if (filename != null)
-        {
-            File file = new File(filename);
-            if (file.exists())
-            {
-                viewer.readPDFFile(filename, password);
-            }
-        }
-        viewer.setVisible(true);
+        int exitCode = new CommandLine(new PDFDebugger()).execute(args);
+        if (exitCode > 0) System.exit(exitCode);
     }
-    
+
+    public Integer call()
+    {
+        boolean viewPages = true;
+        if (viewstructure)
+        {
+            viewPages = false;
+        }
+
+        try
+        {
+            final PDFDebugger viewer = new PDFDebugger(viewPages);
+
+            // use our custom logger
+            // this works only if there is no "LogFactory.getLog()" in this class,
+            // and if there are no methods that call logging, even invisible
+            // use reduced file from PDFBOX-3653 to see logging
+            LogDialog.init(viewer, viewer.statusBar.getLogLabel());
+            System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
+
+            TextDialog.init(viewer);
+
+            // trigger premature initializations for more accurate rendering benchmarks
+            // See discussion in PDFBOX-3988
+            if (PDType1Font.COURIER.isStandard14())
+            {
+                // Yes this is always true
+                PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
+                PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
+                IIORegistry.getDefaultInstance();
+                FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
+            }
+
+            if (infile != null && infile.exists())
+            {
+                viewer.readPDFFile(infile, password);
+            }
+            viewer.setVisible(true);
+        }
+        catch (Exception ex)
+        {
+            SYSERR.println( "Error viewing document: " + ex.getMessage());
+            return 4;
+        }
+        return 0;
+    }
+
     public boolean isPageMode()
     {
         return this.isPageMode;
@@ -289,21 +296,6 @@ public class PDFDebugger extends JFrame
     public boolean hasDocument()
     {
         return document != null;
-    }
-    
-    /**
-     * This will print out a message telling how to use this utility.
-     */
-    private static void usage()
-    {
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [options] <inputfile>\n"
-                + "\nOptions:\n"
-                + "  -password <password> : Password to decrypt the document\n"
-                + "  -viewstructure       : activate structure mode on startup\n"
-                + "  <inputfile>          : The PDF document to be loaded\n";
-        
-        System.err.println(message);
-        System.exit(1);
     }
     
     /**
