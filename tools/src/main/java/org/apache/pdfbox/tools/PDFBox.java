@@ -18,6 +18,8 @@ package org.apache.pdfbox.tools;
 
 import java.io.PrintStream;
 
+import org.apache.pdfbox.debugger.PDFDebugger;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -26,6 +28,7 @@ import picocli.CommandLine.Command;
  * Used as the main class in the runnable standalone PDFBox jar.
  */
 @Command(name="PDFBox", subcommands = {
+    PDFDebugger.class,
     Decrypt.class,
     Encrypt.class,
     ExtractText.class,
