@@ -19,6 +19,8 @@ package org.apache.pdfbox.filter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PushbackInputStream;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
@@ -63,28 +65,43 @@ final class CCITTFaxFilter extends Filter
         byte[] decompressed = new byte[arraySize];
         CCITTFaxDecoderStream s;
         int type;
-        long tiffOptions;
+        long tiffOptions = 0;
         if (k == 0)
         {
-            tiffOptions = encodedByteAlign ? TIFFExtension.GROUP3OPT_BYTEALIGNED : 0;
-            type = TIFFExtension.COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE;
+            type = TIFFExtension.COMPRESSION_CCITT_T4; // Group 3 1D
+            byte[] streamData = new byte[20];
+            encoded.read(streamData);
+            encoded = new PushbackInputStream(encoded, streamData.length);
+            ((PushbackInputStream) encoded).unread(streamData);
+            if (streamData[0] != 0 || (streamData[1] >> 4 != 1 && streamData[1] != 1))
+            {
+                // leading EOL (0b000000000001) not found, search further and try RLE if not
+                // found
+                type = TIFFExtension.COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE;
+                short b = (short) (((streamData[0] << 8) + streamData[1]) >> 4);
+                for (int i = 12; i < 160; i++)
+                {
+                    b = (short) ((b << 1) + ((streamData[(i / 8)] >> (7 - (i % 8))) & 0x01));
+                    if ((b & 0xFFF) == 1)
+                    {
+                        type = TIFFExtension.COMPRESSION_CCITT_T4;
+                        break;
+                    }
+                }
+            }
+        }
+        else if (k > 0)
+        {
+            // Group 3 2D
+            type = TIFFExtension.COMPRESSION_CCITT_T4;
+            tiffOptions = TIFFExtension.GROUP3OPT_2DENCODING;
         }
         else
         {
-            if (k > 0)
-            {
-                tiffOptions = encodedByteAlign ? TIFFExtension.GROUP3OPT_BYTEALIGNED : 0;
-                tiffOptions |= TIFFExtension.GROUP3OPT_2DENCODING;
-                type = TIFFExtension.COMPRESSION_CCITT_T4;
-            }
-            else
-            {
-                // k < 0
-                tiffOptions = encodedByteAlign ? TIFFExtension.GROUP4OPT_BYTEALIGNED : 0;
-                type = TIFFExtension.COMPRESSION_CCITT_T6;
-            }
+            // Group 4
+            type = TIFFExtension.COMPRESSION_CCITT_T6;
         }
-        s = new CCITTFaxDecoderStream(encoded, cols, type, TIFFExtension.FILL_LEFT_TO_RIGHT, tiffOptions);
+        s = new CCITTFaxDecoderStream(encoded, cols, type, TIFFExtension.FILL_LEFT_TO_RIGHT, tiffOptions, encodedByteAlign);
         readFromDecoderStream(s, decompressed);
 
         // invert bitmap

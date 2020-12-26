@@ -4,28 +4,29 @@
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name "TwelveMonkeys" nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * * Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * * Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.apache.pdfbox.filter;
 
 
@@ -43,10 +44,9 @@ import java.util.Arrays;
  * @author last modified by $Author: haraldk$
  * @version $Id: CCITTFaxDecoderStream.java,v 1.0 23.05.12 15:55 haraldk Exp$
  * 
- * Taken from commit fa0341f30237effe523e9905e672d709ffe9c6bd of 7.5.2016 from twelvemonkeys/imageio/plugins/tiff/CCITTFaxDecoderStream.java
+ * Taken from commit 24c6682236e5a02151359486aa4075ddc5ab1534 of 18.08.2018 from twelvemonkeys/imageio/plugins/tiff/CCITTFaxDecoderStream.java
  * 
  * Initial changes for PDFBox, discussed in PDFBOX-3338:
- * - added optionByteAligned to constructor and to each decodeRowType() method
  * - removed Validate() usages
  * - catch VALUE_EOL in decode1D()
  */
@@ -56,59 +56,92 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     private final int columns;
     private final byte[] decodedRow;
 
-    private int decodedLength;
-    private int decodedPos;
+    private final boolean optionG32D;
+    // Leading zeros for aligning EOL
+    private final boolean optionG3Fill;
+    private final boolean optionUncompressed;
+    private final boolean optionByteAligned;
 
     // Need to take fill order into account (?) (use flip table?)
     private final int fillOrder;
     private final int type;
 
+    private int decodedLength;
+    private int decodedPos;
+
     private int[] changesReferenceRow;
     private int[] changesCurrentRow;
     private int changesReferenceRowCount;
     private int changesCurrentRowCount;
+
     private int lastChangingElement = 0;
 
-    private boolean optionG32D = false;
-
-    @SuppressWarnings("unused") // Leading zeros for aligning EOL
-    private boolean optionG3Fill = false;
-
-    private boolean optionUncompressed = false;
-    private boolean optionByteAligned = false;
-
-    CCITTFaxDecoderStream(final InputStream stream, final int columns, final int type, final int fillOrder,
-                                 final long options) {
+    /**
+     * Creates a CCITTFaxDecoderStream.
+     * This constructor may be used for CCITT streams embedded in PDF files,
+     * which use EncodedByteAlign.
+     *
+     * @param stream the compressed CCITT stream.
+     * @param columns the number of columns in the stream.
+     * @param type the type of stream, must be one of {@code COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE},
+     *             {@code COMPRESSION_CCITT_T4} or {@code COMPRESSION_CCITT_T6}.
+     * @param fillOrder fillOrder, must be {@code FILL_LEFT_TO_RIGHT} or
+     * {@code FILL_RIGHT_TO_LEFT}.
+     * @param options CCITT T.4 or T.6 options.
+     * @param byteAligned enable byte alignment used in PDF files (EncodedByteAlign).
+     */
+    public CCITTFaxDecoderStream(final InputStream stream, final int columns, final int type, final int fillOrder,
+                                 final long options, final boolean byteAligned) {
         super(stream);
 
         this.columns = columns;
-        // We know this is only used for b/w (1 bit)
-        this.decodedRow = new byte[(columns + 7) / 8];
         this.type = type;
-        
         this.fillOrder = fillOrder;
 
-        this.changesReferenceRow = new int[columns + 2];
-        this.changesCurrentRow = new int[columns + 2];
+        // We know this is only used for b/w (1 bit)
+        decodedRow = new byte[(columns + 7) / 8];
+        changesReferenceRow = new int[columns + 2];
+        changesCurrentRow = new int[columns + 2];
 
         switch (type) {
             case TIFFExtension.COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE:
-                optionByteAligned = (options & TIFFExtension.GROUP3OPT_BYTEALIGNED) != 0;
+                optionByteAligned = byteAligned;
+                optionG32D = false;
+                optionG3Fill = false;
+                optionUncompressed = false;
                 break;
             case TIFFExtension.COMPRESSION_CCITT_T4:
+                optionByteAligned = byteAligned;
                 optionG32D = (options & TIFFExtension.GROUP3OPT_2DENCODING) != 0;
                 optionG3Fill = (options & TIFFExtension.GROUP3OPT_FILLBITS) != 0;
                 optionUncompressed = (options & TIFFExtension.GROUP3OPT_UNCOMPRESSED) != 0;
-                optionByteAligned = (options & TIFFExtension.GROUP3OPT_BYTEALIGNED) != 0;
                 break;
             case TIFFExtension.COMPRESSION_CCITT_T6:
+                optionByteAligned = byteAligned;
+                optionG32D = false;
+                optionG3Fill = false;
                 optionUncompressed = (options & TIFFExtension.GROUP4OPT_UNCOMPRESSED) != 0;
-                optionByteAligned = (options & TIFFExtension.GROUP4OPT_BYTEALIGNED) != 0;
                 break;
             default:
-                break;
+                throw new AssertionError();
         }
 
+    }
+
+    /**
+     * Creates a CCITTFaxDecoderStream.
+     *
+     * @param stream the compressed CCITT stream.
+     * @param columns the number of columns in the stream.
+     * @param type the type of stream, must be one of {@code COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE},
+     *             {@code COMPRESSION_CCITT_T4} or {@code COMPRESSION_CCITT_T6}.
+     * @param fillOrder fillOrder, must be {@code FILL_LEFT_TO_RIGHT} or
+     * {@code FILL_RIGHT_TO_LEFT}.
+     * @param options CCITT T.4 or T.6 options.
+     */
+    public CCITTFaxDecoderStream(final InputStream stream, final int columns, final int type, final int fillOrder,
+                                 final long options) {
+        this(stream, columns, type, fillOrder, options, type == TIFFExtension.COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE);
     }
 
     private void fetch() throws IOException {
@@ -124,8 +157,8 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
                     throw e;
                 }
 
-                // ..otherwise, just client code trying to read past the end of
-                // stream
+                // ..otherwise, just let client code try to read past the
+                // end of stream
                 decodedLength = -1;
             }
 
@@ -146,11 +179,6 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
             }
             else {
                 completeRun = decodeRun(blackRunTree);
-            }
-            
-            if (completeRun == VALUE_EOL)
-            {
-                continue;
             }
 
             index += completeRun;
@@ -251,15 +279,14 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     }
 
     private void decodeRowType2() throws IOException {
-        if (optionByteAligned)
-        {
+        if (optionByteAligned) {
             resetBuffer();
         }
         decode1D();
     }
 
     private void decodeRowType4() throws IOException {
-        if(optionByteAligned) {
+        if (optionByteAligned) {
             resetBuffer();
         }
         eof: while (true) {
@@ -288,7 +315,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     }
 
     private void decodeRowType6() throws IOException {
-        if(optionByteAligned) {
+        if (optionByteAligned) {
             resetBuffer();
         }
         decode2D();
@@ -305,15 +332,13 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
             case TIFFExtension.COMPRESSION_CCITT_T6:
                 decodeRowType6();
                 break;
-            default:
-                break;
         }
 
         int index = 0;
         boolean white = true;
 
-            lastChangingElement = 0;
-            for (int i = 0; i <= changesCurrentRowCount; i++) {
+        lastChangingElement = 0;
+        for (int i = 0; i <= changesCurrentRowCount; i++) {
             int nextChange = columns;
 
             if (i != changesCurrentRowCount) {
@@ -361,7 +386,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
         decodedLength = (index + 7) / 8;
     }
 
-    private int decodeRun(final Tree tree) throws IOException {     
+    private int decodeRun(final Tree tree) throws IOException {
         int total = 0;
 
         Node n = tree.root;
@@ -376,18 +401,20 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
 
             if (n.isLeaf) {
                 total += n.value;
-                if (n.value < 64) {
+                if (n.value >= 64) {
+                    n = tree.root;
+                }
+                else if (n.value >= 0) {
                     return total;
                 }
                 else {
-                    n = tree.root;
+                    return columns;
                 }
             }
         }
     }
 
-    private void resetBuffer()
-    {
+    private void resetBuffer() {
         bufferPos = -1;
     }
 
@@ -443,7 +470,6 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         if (decodedLength < 0) {
-            //TODO better? Math.min(off + len, b.length)
             Arrays.fill(b, off, off + len, (byte) 0x0);
             return len;
         }
@@ -811,4 +837,3 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
         }
     }
 }
-
