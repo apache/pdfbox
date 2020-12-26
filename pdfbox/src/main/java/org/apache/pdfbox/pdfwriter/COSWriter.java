@@ -351,7 +351,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                 }
             }
           }
-          setNumber(highestNumber);
+          number = highestNumber;
         }
     }
     
@@ -381,16 +381,6 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             incrementalOutput.close();
         }
-    }
-
-    /**
-     * This will get the current object number.
-     *
-     * @return The current object number.
-     */
-    protected long getNumber()
-    {
-        return number;
     }
 
     /**
@@ -440,16 +430,6 @@ public class COSWriter implements ICOSVisitor, Closeable
     protected List<XReferenceEntry> getXRefEntries()
     {
         return xRefEntries;
-    }
-
-    /**
-     * This will set the current object number.
-     *
-     * @param newNumber The new object number.
-     */
-    protected void setNumber(long newNumber)
-    {
-        number = newNumber;
     }
 
     /**
@@ -581,7 +561,6 @@ public class COSWriter implements ICOSVisitor, Closeable
             {
                 highestXRefObjectNumber++;
                 COSObjectKey encryptKey = new COSObjectKey(highestXRefObjectNumber, 0);
-                setNumber(encryptKey.getNumber());
                 currentObjectKey = encryptKey;
                 number = currentObjectKey.getNumber();
                 writtenObjects.add(encrypt);
@@ -590,7 +569,7 @@ public class COSWriter implements ICOSVisitor, Closeable
 
                 doWriteObject(encryptKey, encrypt);
             }
-            this.blockAddingObject = false;
+            blockAddingObject = false;
         }
     }
 
@@ -804,7 +783,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             pdfxRefStream.addTrailerInfo(trailer);
             // the size is the highest object number+1. we add one more
             // for the xref stream object we are going to write
-            pdfxRefStream.setSize(getNumber() + 2);
+            pdfxRefStream.setSize(number + 2);
 
             setStartxref(getStandardOutput().getPos());
             COSStream stream2 = pdfxRefStream.getStream();
@@ -1093,8 +1072,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         }
         if (key == null)
         {
-            setNumber(getNumber()+1);
-            key = new COSObjectKey(getNumber(),0);
+            key = new COSObjectKey(++number, 0);
             objectKeys.put(obj, key);
             if( actual != null )
             {
@@ -1127,7 +1105,10 @@ public class COSWriter implements ICOSVisitor, Closeable
             else if( current instanceof COSObject )
             {
                 COSBase subValue = ((COSObject)current).getObject();
-                if (willEncrypt || incrementalUpdate || subValue instanceof COSDictionary || subValue == null)
+                if (willEncrypt || incrementalUpdate //
+                        || subValue instanceof COSDictionary //
+                        || subValue instanceof COSArray //
+                        || subValue == null)
                 {
                     // PDFBOX-4308: added willEncrypt to prevent an object
                     // that is referenced several times from being written
@@ -1229,7 +1210,10 @@ public class COSWriter implements ICOSVisitor, Closeable
                 else if( value instanceof COSObject )
                 {
                     COSBase subValue = ((COSObject)value).getObject();
-                    if (willEncrypt || incrementalUpdate || subValue instanceof COSDictionary || subValue == null)
+                    if (willEncrypt || incrementalUpdate //
+                            || subValue instanceof COSDictionary //
+                            || subValue instanceof COSArray //
+                            || subValue == null)
                     {
                         // PDFBOX-4308: added willEncrypt to prevent an object
                         // that is referenced several times from being written

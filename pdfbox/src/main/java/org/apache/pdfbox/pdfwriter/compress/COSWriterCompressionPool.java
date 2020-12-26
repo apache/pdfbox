@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * An instance of this class compresses the contents of a given {@link PDDocument}.
@@ -72,10 +73,8 @@ public class COSWriterCompressionPool
         COSDocument cosDocument = document.getDocument();
 
         COSDictionary trailer = cosDocument.getTrailer();
-        addStructure(
-                new TraversedCOSElement(new COSObject(trailer.getCOSDictionary(COSName.ROOT))));
-        addStructure(
-                new TraversedCOSElement(new COSObject(trailer.getCOSDictionary(COSName.INFO))));
+        addStructure(new TraversedCOSElement(trailer.getItem(COSName.ROOT)));
+        addStructure(new TraversedCOSElement(trailer.getItem(COSName.INFO)));
 
         Collections.sort(objectStreamObjects);
         Collections.sort(topLevelObjects);
@@ -153,7 +152,7 @@ public class COSWriterCompressionPool
         else if (current instanceof COSObject)
         {
             base = ((COSObject) current).getObject();
-            if (base instanceof COSDictionary)
+            if (base instanceof COSDictionary || base instanceof COSArray)
             {
                 base = addObjectToPool(current.getKey(), traversedObject);
             }
@@ -165,46 +164,41 @@ public class COSWriterCompressionPool
 
         if (base instanceof COSArray)
         {
-            COSArray array = (COSArray) base;
-            for (int i = 0; i < array.size(); i++)
-            {
-                COSBase value = array.get(i);
-                if ((value instanceof COSDictionary || value instanceof COSObject
-                        || value instanceof COSArray)
-                        && !traversedObject.getAllTraversedObjects().contains(value))
-                {
-                    COSBase writtenValue = addStructure(
-                            traversedObject.appendTraversedElement(value));
-                    if ((value instanceof COSStream || value instanceof COSObject)
-                            && !value.equals(writtenValue))
-                    {
-                        array.set(i, writtenValue);
-                    }
-                }
-            }
+            addCOSArray(traversedObject, (COSArray) base);
         }
         else if (base instanceof COSDictionary)
         {
-            COSDictionary dictionary = (COSDictionary) base;
-            for (COSName name : dictionary.keySet())
+            addCOSDictionary(traversedObject, (COSDictionary) base);
+        }
+        return retVal;
+    }
+
+    private void addCOSArray(TraversedCOSElement traversedObject, COSArray array) throws IOException
+    {
+        for (COSBase value : array)
+        {
+            if ((value instanceof COSDictionary || value instanceof COSObject
+                    || value instanceof COSArray)
+                    && !traversedObject.getAllTraversedObjects().contains(value))
             {
-                COSBase value = dictionary.getItem(name);
-                if ((value instanceof COSDictionary || value instanceof COSObject
-                        || value instanceof COSArray)
-                        && !traversedObject.getAllTraversedObjects().contains(value))
-                {
-                    COSBase writtenValue = addStructure(
-                            traversedObject.appendTraversedElement(value));
-                    if ((value instanceof COSStream || value instanceof COSObject)
-                            && !value.equals(writtenValue))
-                    {
-                        dictionary.setItem(name, writtenValue);
-                    }
-                }
+                addStructure(traversedObject.appendTraversedElement(value));
             }
         }
+    }
 
-        return retVal;
+    private void addCOSDictionary(TraversedCOSElement traversedObject, COSDictionary dictionary)
+            throws IOException
+    {
+        for (Entry<COSName, COSBase> entry : dictionary.entrySet())
+        {
+            COSBase value = entry.getValue();
+            if ((value instanceof COSDictionary || value instanceof COSObject
+                    || value instanceof COSArray)
+                    && !traversedObject.getAllTraversedObjects().contains(value))
+            {
+                addStructure(traversedObject.appendTraversedElement(value));
+            }
+        }
     }
 
     /**
