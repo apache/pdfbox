@@ -114,15 +114,14 @@ public class MockHttpServer extends Thread {
     private boolean                      serverStarted           = false;
     private ServerSocketFactory          serverSocketFactory     = null;
     private int                          serverPort;
-    private int                          readTimeOut             = 5000;                                     // 5
-    // seconds
+    private int                          readTimeOut             = 5000; // 5 seconds
     private int                          delayResponseTime       = 0;
-    private static final byte[]                NEW_LINE                = "\r\n".getBytes();
+    private static final byte[]          NEW_LINE                = "\r\n".getBytes();
     // request data
     private String                       requestMethod           = null;
     private String                       requestUrl              = null;
-    private final Map<String, List<String>>    requestHeaders          = new HashMap<>();
-    private final ByteArrayOutputStream        requestContent          = new ByteArrayOutputStream();
+    private final Map<String, List<String>>    requestHeaders    = new HashMap<>();
+    private final ByteArrayOutputStream        requestContent    = new ByteArrayOutputStream();
     private final List<MockHttpServerResponse> mockHttpServerResponses = new ArrayList<>();
     private int                          responseCounter         = 0;
 
