@@ -21,6 +21,9 @@ import java.util.concurrent.Callable;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.IVersionProvider;
+import picocli.CommandLine.Spec;
+import picocli.CommandLine.Model.CommandSpec;
 
 /**
  * A simple command line utility to get the version of PDFBox.
@@ -28,11 +31,13 @@ import picocli.CommandLine.Command;
  * @author Ben Litchfield
  */
 @Command(name = "Version", description = "Get the version of PDFBox.")
-final class Version implements Callable<Integer>
+final class Version implements Callable<Integer>, IVersionProvider
 {
     // Expected for CLI app to write to System.out/Sytem.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSOUT = System.out;
+
+    @Spec CommandSpec spec;
 
     private Version()
     {
@@ -44,16 +49,16 @@ final class Version implements Callable<Integer>
      *
      * @return The version of pdfbox that is being used.
      */
-    public static String getVersion()
+    public String[] getVersion()
     {
         String version = org.apache.pdfbox.util.Version.getVersion();
         if (version != null)
         {
-            return version;
+            return new String[] { spec.qualifiedName() + " [" + version + "]" };
         }
         else
         {
-            return "unknown";
+            return new String[] { "unknown" };
         }
     }
 
@@ -73,7 +78,7 @@ final class Version implements Callable<Integer>
 
     public Integer call()
     {
-        SYSOUT.println("Version:" + getVersion());
+        SYSOUT.println(getVersion()[0]);
         return 0;
     }
 }

@@ -38,7 +38,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author  Ben Litchfield
  */
-@Command(name = "Decrypt", description = "Decrypts a PDF file.")
+@Command(name = "Decrypt", description = "Decrypts a PDF file.", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class Decrypt implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err
@@ -47,9 +47,6 @@ public final class Decrypt implements Callable<Integer>
 
     @Option(names = "-alias", description = "the alias to the certificate in the keystore.")
     private String alias;
-
-    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
 
     @Option(names = "-keyStore", description = "the path to the keystore that holds the certificate to decrypt the document. " + 
         "This is only required if the document is encrypted with a certificate, otherwise only the password is required.")

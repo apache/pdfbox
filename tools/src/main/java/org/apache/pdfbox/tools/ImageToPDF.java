@@ -35,7 +35,7 @@ import picocli.CommandLine.Parameters;
 /**
  * Create a PDF document from images.
  */
-@Command(name = "ImageToPDF", description = "Create a PDF document from images.")
+@Command(name = "ImageToPDF", description = "Create a PDF document from images.", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ImageToPDF implements Callable<Integer>
 {
     private PDRectangle mediaBox = PDRectangle.LETTER;
@@ -61,9 +61,6 @@ public final class ImageToPDF implements Callable<Integer>
 
     @Parameters(paramLabel = "outputfile", index = "1", description = "the generated PDF file.")
     private File outfile;
-
-    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
 
     public static void main(String[] args)
     {

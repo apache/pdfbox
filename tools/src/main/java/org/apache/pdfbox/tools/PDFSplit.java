@@ -39,15 +39,12 @@ import picocli.CommandLine.Parameters;
  *
  * @author Ben Litchfield
  */
-@Command(name = "PDFSplit", description = "Split a PDF into number of new documents.")
+@Command(name = "PDFSplit", description = "Split a PDF into number of new documents.", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PDFSplit implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
-
-    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
 
     @Option(names = "-password", description = "the password to decrypt the document.")    
     private String password;

@@ -46,7 +46,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author  Ben Litchfield
  */
-@Command(name = "Encrypt", description = "Encrypt a PDF file.")
+@Command(name = "Encrypt", description = "Encrypt a PDF file.", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class Encrypt implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err
@@ -94,9 +94,6 @@ public final class Encrypt implements Callable<Integer>
 
     @Parameters(paramLabel = "outputfile", index = "1", description = "the encrypted PDF file. If left blank the original file will be overwritten.")
     private File outfile;
-
-    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
 
     private Encrypt()
     {

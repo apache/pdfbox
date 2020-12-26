@@ -41,7 +41,7 @@ import picocli.CommandLine.Command;
     ImageToPDF.class,
     TextToPDF.class,
     WriteDecodedDoc.class,
-})
+}, versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PDFBox implements Runnable
 {
     // Expected for CLI app to write to System.out/Sytem.err

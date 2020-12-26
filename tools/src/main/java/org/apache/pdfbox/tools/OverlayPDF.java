@@ -39,15 +39,12 @@ import picocli.CommandLine.Parameters;
  * Based on code contributed by Balazs Jerk. 
  * 
  */
-@Command(name = "OverlayPDF", description = "Add an overlay to an existing PDF document.")
+@Command(name = "OverlayPDF", description = "Add an overlay to an existing PDF document.", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class OverlayPDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
-
-    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
 
     @Option(names = "-odd", description = "overlay file used for odd pages")
     private File oddPageOverlay;

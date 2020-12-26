@@ -59,7 +59,7 @@ import picocli.CommandLine.Parameters;
  * @author Ben Litchfield
  * @author Tilman Hausherr
  */
-@Command(name = "ExtractText", description = "Extract all text from the given PDF document.")
+@Command(name = "ExtractText", description = "Extract all text from the given PDF document.", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ExtractText  implements Callable<Integer>
 {
     private static final Log LOG = LogFactory.getLog(ExtractText.class);
@@ -93,9 +93,6 @@ public final class ExtractText  implements Callable<Integer>
 
     @Option(names = "-ignoreBeads", description = "Disables the separation by beads")
     private boolean ignoreBeads = false;
-
-    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
 
     @Option(names = "-password", description = "the password for the PDF or certificate in keystore.")    
     private String password = "";

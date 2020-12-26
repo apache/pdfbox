@@ -66,7 +66,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author Ben Litchfield
  */
-@Command(name = "ExtractImages", description = "Extracts the images from a PDF file.")
+@Command(name = "ExtractImages", description = "Extracts the images from a PDF file.", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ExtractImages implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err
@@ -78,9 +78,6 @@ public final class ExtractImages implements Callable<Integer>
     private static final List<String> JPEG = Arrays.asList(
             COSName.DCT_DECODE.getName(),
             COSName.DCT_DECODE_ABBREVIATION.getName());
-
-    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
 
     @Option(names = "-password", description = "the password for the PDF or certificate in keystore.")    
     private String password;

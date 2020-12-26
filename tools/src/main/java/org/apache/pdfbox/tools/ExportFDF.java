@@ -37,7 +37,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author Ben Litchfield
  */
-@Command(name = "ExportFDF", description = "Exports AcroForm form data to FDF.")
+@Command(name = "ExportFDF", description = "Exports AcroForm form data to FDF.", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ExportFDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err

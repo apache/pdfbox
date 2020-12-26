@@ -42,15 +42,12 @@ import picocli.CommandLine.Parameters;
  * 
  * @author Ben Litchfield
  */
-@Command(name = "PrintPDF", description = "Print a PDF.")
+@Command(name = "PrintPDF", description = "Print a PDF.", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PrintPDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
-
-    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
 
     @Option(names = "-password", description = "the password to decrypt the document.")    
     private String password;

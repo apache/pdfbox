@@ -43,7 +43,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author Ben Litchfield
  */
-@Command(name = "TextToPDF", description = "Create a PDF document from a text file.")
+@Command(name = "TextToPDF", description = "Create a PDF document from a text file.", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public class TextToPDF implements Callable<Integer>
 {
     /**
@@ -89,9 +89,6 @@ public class TextToPDF implements Callable<Integer>
 
     @Parameters(paramLabel = "outputfile", index="1", description = "the generated PDF file.")
     private File outfile;
-
-    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
 
     private enum PageSizes
     {
