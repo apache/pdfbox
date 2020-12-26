@@ -123,7 +123,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
                 optionUncompressed = (options & TIFFExtension.GROUP4OPT_UNCOMPRESSED) != 0;
                 break;
             default:
-                throw new AssertionError();
+                throw new IllegalArgumentException("Illegal parameter: " + type);
         }
 
     }
@@ -332,6 +332,8 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
             case TIFFExtension.COMPRESSION_CCITT_T6:
                 decodeRowType6();
                 break;
+            default:
+                throw new IllegalArgumentException("Illegal parameter: " + type);
         }
 
         int index = 0;
