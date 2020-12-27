@@ -16,39 +16,44 @@
  */
 package org.apache.pdfbox.tools;
 
-import java.io.PrintStream;
-
 import org.apache.pdfbox.debugger.PDFDebugger;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ParameterException;
+import picocli.CommandLine.Spec;
 
 /**
  * Simple wrapper around all the command line utilities included in PDFBox.
  * Used as the main class in the runnable standalone PDFBox jar.
  */
-@Command(name="PDFBox", subcommands = {
-    PDFDebugger.class,
-    Decrypt.class,
-    Encrypt.class,
-    ExtractText.class,
-    ExtractImages.class,
-    OverlayPDF.class,
-    PrintPDF.class,
-    PDFMerger.class,
-    PDFSplit.class,
-    PDFToImage.class,
-    ImageToPDF.class,
-    TextToPDF.class,
-    WriteDecodedDoc.class,
-}, versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name="PDFBox",
+    customSynopsis = "PDFBox [COMMAND] [OPTIONS]",
+    footer = {
+        "See 'PDFBox help <command>' to read about a specific subcommand."
+    },
+    subcommands = {
+        PDFDebugger.class,
+        Decrypt.class,
+        Encrypt.class,
+        ExtractText.class,
+        ExtractImages.class,
+        OverlayPDF.class,
+        PrintPDF.class,
+        PDFMerger.class,
+        PDFSplit.class,
+        PDFToImage.class,
+        ImageToPDF.class,
+        TextToPDF.class,
+        WriteDecodedDoc.class,
+        CommandLine.HelpCommand.class
+    },
+    versionProvider = Version.class)
 public final class PDFBox implements Runnable
 {
-    // Expected for CLI app to write to System.out/Sytem.err
-    @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSOUT = System.out;
-  
-    /**
+    @Spec CommandLine.Model.CommandSpec spec;
+
+      /**
      * Main method.
      * 
      * @param args command line arguments
@@ -58,15 +63,12 @@ public final class PDFBox implements Runnable
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        CommandLine cmd = new CommandLine(new PDFBox());
-        cmd.execute(args);
-    
-        if (args.length == 0) { cmd.usage(SYSOUT); }
+        new CommandLine(new PDFBox()).execute(args);
     }
 
     @Override
     public void run()
     {
-        // stub method to please the Runnable interface needed by picocli
+        throw new ParameterException(spec.commandLine(), "Error: Subcommand required");
     }
 }
