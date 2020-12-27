@@ -63,25 +63,6 @@ public final class GlyphList
         }
     }
 
-    static
-    {
-        // not supported in PDFBox 2.0, but we issue a warning, see PDFBOX-2379
-        try
-        {
-            String location = System.getProperty("glyphlist_ext");
-            if (location != null)
-            {
-                throw new UnsupportedOperationException("glyphlist_ext is no longer supported, "
-                        + "use GlyphList.DEFAULT.addGlyphs(Properties) instead");
-            }
-        }
-        catch (SecurityException e)  // can occur on System.getProperty
-        {
-            // PDFBOX-1946 ignore and continue
-            LOG.debug("Error getting system property 'glyphlist_ext' - ignoring", e);
-        }
-    }
-    
     /**
      * Returns the Adobe Glyph List (AGL).
      */
