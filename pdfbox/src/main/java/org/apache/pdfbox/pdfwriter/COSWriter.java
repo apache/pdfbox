@@ -539,9 +539,11 @@ public class COSWriter implements ICOSVisitor, Closeable
             {
                 highestXRefObjectNumber++;
                 // Create new COSObject for object stream.
-                COSStream stream = finalizedObjectStream.update();
+                COSStream stream = finalizedObjectStream
+                        .writeObjectsToStream(document.createCOSStream());
                 // Determine key for object stream.
                 COSObjectKey objectStreamKey = new COSObjectKey(highestXRefObjectNumber, 0);
+                // Create new COSObject for object stream.
                 COSObject objectStream = new COSObject(stream, objectStreamKey);
                 // Add object stream entries to xref - stream.
                 int i = 0;

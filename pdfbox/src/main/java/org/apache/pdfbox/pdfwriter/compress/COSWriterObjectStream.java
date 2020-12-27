@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -37,9 +38,8 @@ import java.util.Map;
  *
  * @author Christian Appl
  */
-public class COSWriterObjectStream extends COSStream
+public class COSWriterObjectStream
 {
-
     private final COSWriterCompressionPool compressionPool;
     private final List<COSObjectKey> preparedKeys = new ArrayList<>();
     private final List<COSBase> preparedObjects = new ArrayList<>();
@@ -48,54 +48,13 @@ public class COSWriterObjectStream extends COSStream
      * Creates an object stream for compressible objects from the given {@link COSWriterCompressionPool}. The objects
      * must first be prepared for this object stream, by adding them via calling
      * {@link COSWriterObjectStream#prepareStreamObject(COSObjectKey, COSBase)} and will be written to this
-     * {@link COSStream}, when {@link COSWriterObjectStream#update()} is called.
+     * {@link COSStream}, when {@link COSWriterObjectStream#writeObjectsToStream()} is called.
      *
      * @param compressionPool The compression pool an object stream shall be created for.
      */
     public COSWriterObjectStream(COSWriterCompressionPool compressionPool)
     {
         this.compressionPool = compressionPool;
-        setItem(COSName.TYPE, COSName.OBJ_STM);
-    }
-
-    /**
-     * Returns the number of objects, that have been written to this object stream. ({@link COSName#N})
-     *
-     * @return The number of objects, that have been written to this object stream.
-     */
-    public int getObjectCount()
-    {
-        return getInt(COSName.N, 0);
-    }
-
-    /**
-     * Sets the number of objects, that have been written to this object stream. ({@link COSName#N})
-     *
-     * @param size The number of objects, that have been written to this object stream.
-     */
-    public void setObjectCount(int size)
-    {
-        setInt(COSName.N, size);
-    }
-
-    /**
-     * Returns the byte offset of the first object contained in this object stream. ({@link COSName#FIRST})
-     *
-     * @return The byte offset of the first object contained in this object stream.
-     */
-    public int getFirstEntryOffset()
-    {
-        return getInt(COSName.FIRST, 0);
-    }
-
-    /**
-     * Sets the byte offset of the first object contained in this object stream. ({@link COSName#FIRST})
-     *
-     * @param firstEntryOffset The byte offset of the first object contained in this object stream.
-     */
-    public void setFirstEntryOffset(int firstEntryOffset)
-    {
-        setInt(COSName.FIRST, firstEntryOffset);
     }
 
     /**
@@ -117,39 +76,31 @@ public class COSWriterObjectStream extends COSStream
 
     /**
      * Returns all {@link COSObjectKey}s, that shall be added to the object stream, when
-     * {@link COSWriterObjectStream#update()} is called.
+     * {@link COSWriterObjectStream#writeObjectsToStream()} is called.
      *
      * @return All {@link COSObjectKey}s, that shall be added to the object stream.
      */
     public List<COSObjectKey> getPreparedKeys()
     {
-        return preparedKeys;
+        return Collections.unmodifiableList(preparedKeys);
     }
 
     /**
-     * Returns all {@link COSObject}s, that shall be added to the object stream, when
-     * {@link COSWriterObjectStream#update()} is called.
+     * Writes all prepared {@link COSObject}s to the given {@link COSStream}.
      *
-     * @return All {@link COSObject}s, that shall be added to the object stream.
-     */
-    public List<COSBase> getPreparedObjects()
-    {
-        return preparedObjects;
-    }
-
-    /**
-     * Updates the underlying {@link COSStream} by writing all prepared {@link COSObject}s to this object stream.
-     *
-     * @return The underlying {@link COSStream} dictionary of this object stream.
+     * @param stream The stream for the compressed objects.
+     * @return The given {@link COSStream} of this object stream.
      * @throws IOException Shall be thrown, if writing the object stream failed.
      */
-    public COSStream update() throws IOException
+    public COSStream writeObjectsToStream(COSStream stream) throws IOException
     {
-        setObjectCount(preparedKeys.size());
+        int objectCount = preparedKeys.size();
+        stream.setItem(COSName.TYPE, COSName.OBJ_STM);
+        stream.setInt(COSName.N, objectCount);
         // Prepare the compressible objects for writing.
         List<Long> objectNumbers = new ArrayList<>();
         List<byte[]> objectsBuffer = new ArrayList<>();
-        for (int i = 0; i < getObjectCount(); i++)
+        for (int i = 0; i < objectCount; i++)
         {
             try (ByteArrayOutputStream partialOutput = new ByteArrayOutputStream())
             {
@@ -179,16 +130,16 @@ public class COSWriterObjectStream extends COSStream
         }
 
         // Write Flate compressed object stream data.
-        try (OutputStream output = createOutputStream(COSName.FLATE_DECODE))
+        try (OutputStream output = stream.createOutputStream(COSName.FLATE_DECODE))
         {
             output.write(offsetsMapBuffer);
-            setFirstEntryOffset(offsetsMapBuffer.length);
+            stream.setInt(COSName.FIRST, offsetsMapBuffer.length);
             for (byte[] rawObject : objectsBuffer)
             {
                 output.write(rawObject);
             }
         }
-        return this;
+        return stream;
     }
 
     /**
