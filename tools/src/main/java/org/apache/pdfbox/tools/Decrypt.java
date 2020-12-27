@@ -38,7 +38,13 @@ import picocli.CommandLine.Parameters;
  *
  * @author  Ben Litchfield
  */
-@Command(name = "Decrypt", description = "Decrypts a PDF file.", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(
+    name = "Decrypt",
+    header = "${COMMAND-NAME} - decrypts a PDF file.%n",
+    description = "This will read an encrypted document and decrypt it either using a password or a certificate.",
+    versionProvider = Version.class,
+    mixinStandardHelpOptions = true
+)
 public final class Decrypt implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err
