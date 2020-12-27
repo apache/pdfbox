@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,6 +47,7 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadView;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -415,6 +417,13 @@ public class COSParser extends BaseParser implements ICOSParser
         checkXrefOffsets();
         // copy xref table
         document.addXRefTable(xrefTrailerResolver.getXrefTable());
+
+        // remember the highest XRef object number to avoid it being reused in incremental saving
+        Optional<Long> maxValue = document.getXrefTable().keySet().stream() //
+                .map(COSObjectKey::getNumber) //
+                .reduce(Long::max);
+        document.setHighestXRefObjectNumber(maxValue.isPresent() ? maxValue.get() : 0);
+
         return trailer;
     }
 
@@ -426,12 +435,7 @@ public class COSParser extends BaseParser implements ICOSParser
     private long parseXrefObjStream(long objByteOffset, boolean isStandalone) throws IOException
     {
         // ---- parse indirect object head
-        long objectNumber = readObjectNumber();
-
-        // remember the highest XRef object number to avoid it being reused in incremental saving
-        long currentHighestXRefObjectNumber = document.getHighestXRefObjectNumber();
-        document.setHighestXRefObjectNumber(Math.max(currentHighestXRefObjectNumber, objectNumber));
-
+        readObjectNumber();
         readGenerationNumber();
         readExpectedString(OBJ_MARKER, true);
 

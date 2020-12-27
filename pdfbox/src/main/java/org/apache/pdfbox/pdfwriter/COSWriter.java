@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -322,36 +323,19 @@ public class COSWriter implements ICOSVisitor, Closeable
 
     private void prepareIncrement(PDDocument doc)
     {
-        if (doc != null)
+        COSDocument cosDoc = doc.getDocument();
+        Set<COSObjectKey> keySet = cosDoc.getXrefTable().keySet();
+        for (COSObjectKey cosObjectKey : keySet)
         {
-          COSDocument cosDoc = doc.getDocument();
-          
-          Map<COSObjectKey, Long> xrefTable = cosDoc.getXrefTable();
-          Set<COSObjectKey> keySet = xrefTable.keySet();
-          long highestNumber = doc.getDocument().getHighestXRefObjectNumber();
-          for ( COSObjectKey cosObjectKey : keySet ) 
-          {
             COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
-            if (object != null && cosObjectKey!= null && !(object instanceof COSNumber))
+            if (object != null && cosObjectKey != null && !(object instanceof COSNumber))
             {
-                //FIXME see PDFBOX-4997: objectKeys is (theoretically) risky because a COSName in
+                // FIXME see PDFBOX-4997: objectKeys is (theoretically) risky because a COSName in
                 // different objects would appear only once. Rev 1092855 considered this
                 // but only for COSNumber.
-
                 objectKeys.put(object, cosObjectKey);
-                keyObject.put(cosObjectKey,object);
+                keyObject.put(cosObjectKey, object);
             }
-
-            if (cosObjectKey != null)
-            {
-                long num = cosObjectKey.getNumber();
-                if (num > highestNumber)
-                {
-                    highestNumber = num;
-                }
-            }
-          }
-          number = highestNumber;
         }
     }
     
@@ -529,20 +513,18 @@ public class COSWriter implements ICOSVisitor, Closeable
             for (COSObjectKey key : compressionPool.getTopLevelObjects())
             {
                 currentObjectKey = key;
-                number = this.currentObjectKey.getNumber();
                 doWriteObject(key, keyObject.get(key));
             }
             // Append object streams to document.
-            long highestXRefObjectNumber = compressionPool.getHighestXRefObjectNumber();
+            number = compressionPool.getHighestXRefObjectNumber();
             for (COSWriterObjectStream finalizedObjectStream : compressionPool
                     .createObjectStreams())
             {
-                highestXRefObjectNumber++;
                 // Create new COSObject for object stream.
                 COSStream stream = finalizedObjectStream
                         .writeObjectsToStream(document.createCOSStream());
                 // Determine key for object stream.
-                COSObjectKey objectStreamKey = new COSObjectKey(highestXRefObjectNumber, 0);
+                COSObjectKey objectStreamKey = new COSObjectKey(++number, 0);
                 // Create new COSObject for object stream.
                 COSObject objectStream = new COSObject(stream, objectStreamKey);
                 // Add object stream entries to xref - stream.
@@ -555,16 +537,13 @@ public class COSWriter implements ICOSVisitor, Closeable
                 }
                 // Include object stream in document.
                 currentObjectKey = objectStreamKey;
-                number = objectStreamKey.getNumber();
                 doWriteObject(objectStreamKey, objectStream);
             }
             willEncrypt = false;
             if (encrypt != null)
             {
-                highestXRefObjectNumber++;
-                COSObjectKey encryptKey = new COSObjectKey(highestXRefObjectNumber, 0);
+                COSObjectKey encryptKey = new COSObjectKey(++number, 0);
                 currentObjectKey = encryptKey;
-                number = currentObjectKey.getNumber();
                 writtenObjects.add(encrypt);
                 keyObject.put(encryptKey, encrypt);
                 objectKeys.put(encrypt, encryptKey);
@@ -1473,7 +1452,8 @@ public class COSWriter implements ICOSVisitor, Closeable
 
         pdDocument = doc;
         signatureInterface = signInterface;
-        
+        number = pdDocument.getDocument().getHighestXRefObjectNumber();
+
         if(incrementalUpdate)
         {
             prepareIncrement(doc);
