@@ -48,7 +48,7 @@ public class COSWriterObjectStream
      * Creates an object stream for compressible objects from the given {@link COSWriterCompressionPool}. The objects
      * must first be prepared for this object stream, by adding them via calling
      * {@link COSWriterObjectStream#prepareStreamObject(COSObjectKey, COSBase)} and will be written to this
-     * {@link COSStream}, when {@link COSWriterObjectStream#writeObjectsToStream()} is called.
+     * {@link COSStream}, when {@link COSWriterObjectStream#writeObjectsToStream(COSStream)} is called.
      *
      * @param compressionPool The compression pool an object stream shall be created for.
      */
@@ -76,7 +76,7 @@ public class COSWriterObjectStream
 
     /**
      * Returns all {@link COSObjectKey}s, that shall be added to the object stream, when
-     * {@link COSWriterObjectStream#writeObjectsToStream()} is called.
+     * {@link COSWriterObjectStream#writeObjectsToStream(COSStream)} is called.
      *
      * @return All {@link COSObjectKey}s, that shall be added to the object stream.
      */
