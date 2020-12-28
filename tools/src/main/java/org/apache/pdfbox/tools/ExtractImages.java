@@ -79,7 +79,7 @@ public final class ExtractImages implements Callable<Integer>
             COSName.DCT_DECODE.getName(),
             COSName.DCT_DECODE_ABBREVIATION.getName());
 
-    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.")    
+    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.", arity = "0..1", interactive = true)    
     private String password;
 
     @Option(names = "-prefix", description = "the image prefix (default to pdf name).")    

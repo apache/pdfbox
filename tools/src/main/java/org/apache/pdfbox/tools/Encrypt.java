@@ -62,10 +62,10 @@ public final class Encrypt implements Callable<Integer>
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 
-    @Option(names = "-O", description = "set the owner password (ignored if certFile is set)")
+    @Option(names = "-O", description = "set the owner password (ignored if certFile is set)", arity = "0..1", interactive = true)
     private String ownerPassword;
 
-    @Option(names = "-U", description = "set the user password (ignored if certFile is set)")
+    @Option(names = "-U", description = "set the user password (ignored if certFile is set)", arity = "0..1", interactive = true)
     private String userPassword;
 
     @Option(names = "-certFile", paramLabel="certFile", description = "Path to X.509 certificate (repeat both if needed)")
@@ -103,10 +103,6 @@ public final class Encrypt implements Callable<Integer>
 
     @Parameters(paramLabel = "outputfile", index = "1", arity="0..1", description = "the encrypted PDF file. If left blank the original file will be overwritten.")
     private File outfile;
-
-    private Encrypt()
-    {
-    }
 
     /**
      * This is the entry point for the application.

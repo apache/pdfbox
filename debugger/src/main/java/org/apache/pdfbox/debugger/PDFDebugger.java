@@ -186,7 +186,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer> {
     @Option(names = { "-h", "--help" }, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
-    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.")
+    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.", arity = "0..1", interactive = true)
     private String password;
 
     @Option(names = "-viewstructure", description = "activate structure mode on startup")

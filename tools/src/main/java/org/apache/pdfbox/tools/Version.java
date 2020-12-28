@@ -39,11 +39,6 @@ final class Version implements Callable<Integer>, IVersionProvider
 
     @Spec CommandSpec spec;
 
-    private Version()
-    {
-        //should not be constructed.
-    }
-
     /**
      * Get the version of PDFBox or unknown if it is not known.
      *

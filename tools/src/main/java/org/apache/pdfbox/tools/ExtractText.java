@@ -94,7 +94,7 @@ public final class ExtractText  implements Callable<Integer>
     @Option(names = "-ignoreBeads", description = "Disables the separation by beads")
     private boolean ignoreBeads = false;
 
-    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.")    
+    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.", arity = "0..1", interactive = true)    
     private String password = "";
 
     @Option(names = "-rotationMagic", description = "Analyze each page for rotated/skewed text, rotate to 0° " +

@@ -48,7 +48,7 @@ public class WriteDecodedDoc implements Callable<Integer>
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 
-    @Option(names = "-password", description = "the password to decrypt the document")
+    @Option(names = "-password", description = "the password to decrypt the document", arity = "0..1", interactive = true)
     private String password;
 
     @Option(names = "-skipImages", description = "don't uncompress images")

@@ -58,7 +58,7 @@ public final class Decrypt implements Callable<Integer>
         "This is only required if the document is encrypted with a certificate, otherwise only the password is required.")
     private String keyStore;
 
-    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.")    
+    @Option(names = "-password", arity="0..1", interactive = true, description = "the password for the PDF or certificate in keystore.")    
     private String password;
 
     @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to decrypt.")
