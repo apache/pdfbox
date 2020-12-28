@@ -27,7 +27,6 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * This is the main program that will take a list of pdf documents and merge them,
