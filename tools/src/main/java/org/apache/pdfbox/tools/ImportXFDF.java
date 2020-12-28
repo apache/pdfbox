@@ -24,7 +24,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Option;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,14 +44,14 @@ public class ImportXFDF
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 
-    @Parameters(paramLabel = "pdffile", index = "0", arity = "1", description = "the PDF file to import to.")
+    @Option(names = {"-i", "--input"}, description = "the PDF file to import to", required = true)
     private File infile;
 
-    @Parameters(paramLabel = "xfdffile", index = "1", arity = "1", description = "the XFDF data file to import from.")
-    private File xfdffile;
-
-    @Parameters(paramLabel = "outputfile", index = "2", arity = "0..1", description = "the PDF file to save to. If omitted the orginal PDF will be used.")
+    @Option(names = {"-o", "--output"}, description = "the PDF file to save to. If omitted the original file will be used")
     private File outfile;
+
+    @Option(names = {"--data"}, description = "the XFDF data file to import from", required = true)
+    private File xfdffile;
 
     /**
      * This will takes the values from the fdf document and import them into the
