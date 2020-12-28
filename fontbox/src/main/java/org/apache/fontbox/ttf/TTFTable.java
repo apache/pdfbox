@@ -33,7 +33,7 @@ public class TTFTable
     /**
      * Indicates if the table is initialized or not.
      */
-    protected boolean initialized;
+    protected volatile boolean initialized;
 
     /**
      * The font which contains this table.
