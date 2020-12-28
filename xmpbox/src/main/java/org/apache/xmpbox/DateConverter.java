@@ -373,7 +373,7 @@ public final class DateConverter
             {
                 toParse = dateString.substring(0, tzIndex) + ":00";
             }
-            Calendar cal = javax.xml.bind.DatatypeConverter.parseDateTime(toParse);
+            Calendar cal = jakarta.xml.bind.DatatypeConverter.parseDateTime(toParse);
 
             TimeZone z = TimeZone.getTimeZone(timeZoneString);
             cal.setTimeZone(z);            
@@ -385,21 +385,21 @@ public final class DateConverter
             int teeIndex = dateString.indexOf('T');
             if (teeIndex == -1)
             {
-                return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
+                return jakarta.xml.bind.DatatypeConverter.parseDateTime(dateString);
             }
             int plusIndex = dateString.indexOf('+', teeIndex + 1);
             int minusIndex = dateString.indexOf('-', teeIndex + 1);
             if (plusIndex == -1 && minusIndex == -1)
             {
-                return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
+                return jakarta.xml.bind.DatatypeConverter.parseDateTime(dateString);
             }
             plusIndex = Math.max(plusIndex, minusIndex);
             if (plusIndex - teeIndex == 6)
             {
                 String toParse = dateString.substring(0, plusIndex) + ":00" + dateString.substring(plusIndex);
-                return javax.xml.bind.DatatypeConverter.parseDateTime(toParse);
+                return jakarta.xml.bind.DatatypeConverter.parseDateTime(toParse);
             }
-            return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
+            return jakarta.xml.bind.DatatypeConverter.parseDateTime(dateString);
         }
     }
 }

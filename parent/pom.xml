@@ -50,6 +50,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <bouncycastle.version>1.68</bouncycastle.version>
+        <bind-api.version>3.0.0</bind-api.version>
 
         <!-- This is a default value to avoid problems when running single tests
              see also https://stackoverflow.com/a/28695766/535646 
@@ -163,8 +164,6 @@
             </build>
         </profile>
         <profile>
-            <!-- from jdk11 onwards java.xml.bind is no longer part of the jdk -->
-            <!-- must be set to "test" or "provided" in subprojects --> 
             <id>jdk11</id>
             <activation>
                 <jdk>[11,)</jdk>
@@ -173,15 +172,6 @@
                 <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
                 <addmod></addmod>
             </properties>
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <version>2.3.1</version>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
         </profile>
         <profile>
             <id>pedantic</id>

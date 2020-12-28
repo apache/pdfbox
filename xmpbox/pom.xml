@@ -31,30 +31,20 @@
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
-        <profiles>
-            <profile>
-                <activation>
-                    <jdk>[11,)</jdk>
-                </activation>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <scope>provided</scope>
-                    </dependency>
-                </dependencies>
-            </profile>
-        </profiles>
-
 	<dependencies>
-	    <dependency>
-	      <groupId>org.junit.jupiter</groupId>
-	      <artifactId>junit-jupiter</artifactId>
-	    </dependency> 
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>${bind-api.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>

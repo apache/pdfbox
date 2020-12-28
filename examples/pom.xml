@@ -42,21 +42,6 @@
     <!-- be careful when updating this, because Lucene 8 requires jdk11 -->
   </properties>
 
-  <profiles>
-      <profile>
-          <activation>
-              <jdk>[11,)</jdk>
-          </activation>
-          <dependencies>
-              <dependency>
-                  <groupId>javax.xml.bind</groupId>
-                  <artifactId>jaxb-api</artifactId>
-                  <scope>provided</scope>
-              </dependency>
-          </dependencies>
-      </profile>
-  </profiles>
-
   <dependencies>
     <dependency>
       <groupId>org.bouncycastle</groupId>
@@ -88,7 +73,12 @@
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-analyzers-common</artifactId>
         <version>${lucene.version}</version>
-    </dependency>  
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>${bind-api.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
