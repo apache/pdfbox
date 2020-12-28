@@ -30,7 +30,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * 
@@ -64,16 +63,16 @@ public final class OverlayPDF implements Callable<Integer>
     @Option(names = "-page", description = "overlay file used for the given page number, may occur more than once")    
     Map<Integer, String> specificPageOverlayFile = new HashMap<>();
 
+    @Option(names = {"-default"}, description = "the default overlay file")
+    private File defaultOverlay;
+
     @Option(names = "-position", description = "where to put the overlay file: foreground or background (default: ${DEFAULT-VALUE})")    
     private Position position = Position.BACKGROUND;
 
-    @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF input file.")
+    @Option(names = {"-i", "--input"}, description = "the PDF input file", required = true)
     private File infile;
 
-    @Parameters(paramLabel = "defaultOverlay", index = "1", arity = "0..1", description = "the default overlay file.")
-    private File defaultOverlay;
-
-    @Parameters(paramLabel = "outputfile", index = "2", arity = "1", description = "the PDF output file.")
+    @Option(names = {"-o", "--output"}, description = "the PDF output file", required = true)
     private File outfile;
 
     /**

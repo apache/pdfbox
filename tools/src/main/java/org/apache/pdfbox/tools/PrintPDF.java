@@ -35,7 +35,6 @@ import org.apache.pdfbox.printing.PDFPageable;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * This is a command line program that will print a PDF document.
@@ -70,7 +69,7 @@ public final class PrintPDF implements Callable<Integer>
     @Option(names = "-noColorOpt", description = "disable color optimizations (useful when printing barcodes)")
     private boolean noColorOpt;
 
-    @Parameters(paramLabel = "inputfile", description = "the PDF file to print.")
+    @Option(names = {"-i", "--input"}, description = "the PDF files to print.", required = true)
     private File infile;
 
     /**

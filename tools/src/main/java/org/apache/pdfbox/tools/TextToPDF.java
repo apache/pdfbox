@@ -36,7 +36,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * This will take a text file and output a pdf with that text.
@@ -84,11 +83,12 @@ public class TextToPDF implements Callable<Integer>
     @Option(names = "-ttf", paramLabel="<ttf file>", description = "the TTF font to use for the text. Either this or -standardFont should be specified but not both.")
     private File ttf;
 
-    @Parameters(paramLabel = "textfile", description = "the text file to convert.")
+    @Option(names = {"-i", "--input"}, description = "the text file to convert", required = true)
     private File infile;
 
-    @Parameters(paramLabel = "outputfile", index="1", description = "the generated PDF file.")
+    @Option(names = {"-o", "--output"}, description = "the generated PDF file", required = true)
     private File outfile;
+
 
     private enum PageSizes
     {

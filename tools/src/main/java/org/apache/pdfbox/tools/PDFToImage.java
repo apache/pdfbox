@@ -39,7 +39,6 @@ import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * Convert a PDF document to an image.
@@ -90,7 +89,7 @@ public final class PDFToImage implements Callable<Integer>
     @Option(names = "-subsampling", description = "activate subsampling (for PDFs with huge images)")
     private boolean subsampling;
 
-    @Parameters(paramLabel = "inputfile", description = "the PDF file to convert.")
+    @Option(names = {"-i", "--input"}, description = "the PDF files to convert.", required = true)
     private File infile;
 
     /**

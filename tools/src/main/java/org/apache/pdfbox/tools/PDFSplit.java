@@ -31,7 +31,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * This is the main program that will take a pdf document and split it into
@@ -61,7 +60,7 @@ public final class PDFSplit implements Callable<Integer>
     @Option(names = "-outputPrefix", description = "the filename prefix for split files.")    
     private String outputPrefix;
 
-    @Parameters(paramLabel = "inputfile", description = "the PDF file to split.")
+    @Option(names = {"-i", "--input"}, description = "the PDF file to split", required = true)
     private File infile;
 
     /**
