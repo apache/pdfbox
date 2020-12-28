@@ -26,6 +26,7 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 /**
@@ -41,10 +42,10 @@ public final class PDFMerger implements Callable<Integer>
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 
-    @Parameters(paramLabel = "inputfile", index="0", arity = "2..*", description = "the PDF files to merge.")
+    @Option(names = {"-i", "--input"}, description = "the PDF files to merge.", paramLabel = "<infile>", required = true)
     private File[] infiles;
 
-    @Parameters(paramLabel = "outputfile", index="1", arity="1", description = "the merged PDF file.")
+    @Option(names = {"-o", "--output"}, description = "the merged PDF file.", required = true)
     private File outfile;
 
     /**
