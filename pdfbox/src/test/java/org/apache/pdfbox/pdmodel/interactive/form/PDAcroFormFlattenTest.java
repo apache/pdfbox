@@ -99,10 +99,6 @@ class PDAcroFormFlattenTest
         // PDFBOX-3396 Signed Document 4.
         "https://issues.apache.org/jira/secure/attachment/12821308/Signed-Document-4.pdf,Signed-Document-4.pdf",
 
-        // PDFBOX-3587 Empty template.
-        // disabled as there is a missing character with the available fonts on the test server
-        // "https://issues.apache.org/jira/secure/attachment/12839977/OpenOfficeForm.pdf,OpenOfficeForm.pdf",
-
         // PDFBOX-3587 Filled template.
         // disabled as there is a small difference which can not be seen visually
         // "https://issues.apache.org/jira/secure/attachment/12840280/OpenOfficeForm_filled.pdf,OpenOfficeForm_filled.pdf",
