@@ -63,7 +63,7 @@ public abstract class Encoding implements COSObjectable
 
     protected final Map<Integer, String> codeToName = new HashMap<>(250);
     protected final Map<String, Integer> inverted = new HashMap<>(250);
-    private Set<String> names;
+    private volatile Set<String> names;
 
     /**
      * Returns an unmodifiable view of the code -&gt; name mapping.
@@ -137,11 +137,13 @@ public abstract class Encoding implements COSObjectable
         {
             synchronized(this)
             {
-                // PDFBOX-3404: avoid possibility that one thread ends up with newly created empty map from other thread
-                Set<String> tmpSet = new HashSet<>(codeToName.values());
-                // make sure that assignment is done after initialisation is complete
-                names = tmpSet;
-                // note that it might still happen that 'names' is initialized twice, but this is harmless
+                if (names == null)
+                {
+                    // PDFBOX-3404: avoid possibility that one thread ends up with newly created empty map from other thread
+                    Set<String> tmpSet = new HashSet<>(codeToName.values());
+                    // make sure that assignment is done after initialisation is complete
+                    names = tmpSet;
+                }
             }
             // at this point, names will never be null.
         }
