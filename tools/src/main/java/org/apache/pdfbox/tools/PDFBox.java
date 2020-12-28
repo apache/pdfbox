@@ -36,6 +36,10 @@ import picocli.CommandLine.Spec;
         PDFDebugger.class,
         Decrypt.class,
         Encrypt.class,
+        ExportFDF.class,
+        ExportXFDF.class,
+        ImportFDF.class,
+        ImportXFDF.class,
         ExtractText.class,
         ExtractImages.class,
         OverlayPDF.class,
@@ -46,6 +50,7 @@ import picocli.CommandLine.Spec;
         ImageToPDF.class,
         TextToPDF.class,
         WriteDecodedDoc.class,
+        Version.class,
         CommandLine.HelpCommand.class
     },
     versionProvider = Version.class)
