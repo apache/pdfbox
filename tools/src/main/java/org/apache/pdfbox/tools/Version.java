@@ -30,7 +30,7 @@ import picocli.CommandLine.Model.CommandSpec;
  *
  * @author Ben Litchfield
  */
-@Command(name = "Version", description = "Get the version of PDFBox.")
+@Command(name = "version", description = "Gets the version of PDFBox")
 final class Version implements Callable<Integer>, IVersionProvider
 {
     // Expected for CLI app to write to System.out/Sytem.err

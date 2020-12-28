@@ -27,10 +27,10 @@ import picocli.CommandLine.Spec;
  * Simple wrapper around all the command line utilities included in PDFBox.
  * Used as the main class in the runnable standalone PDFBox jar.
  */
-@Command(name="PDFBox",
-    customSynopsis = "PDFBox [COMMAND] [OPTIONS]",
+@Command(name="pdfbox",
+    customSynopsis = "pdfbox [COMMAND] [OPTIONS]",
     footer = {
-        "See 'PDFBox help <command>' to read about a specific subcommand."
+        "See 'pdfbox help <command>' to read about a specific subcommand"
     },
     subcommands = {
         PDFDebugger.class,
@@ -63,7 +63,7 @@ public final class PDFBox implements Runnable
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        new CommandLine(new PDFBox()).execute(args);
+        new CommandLine(new PDFBox()).setSubcommandsCaseInsensitive(true).execute(args);
     }
 
     @Override

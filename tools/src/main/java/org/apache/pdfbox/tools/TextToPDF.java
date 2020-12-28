@@ -43,7 +43,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author Ben Litchfield
  */
-@Command(name = "TextToPDF", description = "Create a PDF document from a text file.", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "texttopdf", description = "Creates a PDF document from text", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public class TextToPDF implements Callable<Integer>
 {
     /**

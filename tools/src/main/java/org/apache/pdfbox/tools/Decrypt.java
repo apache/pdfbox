@@ -39,8 +39,8 @@ import picocli.CommandLine.Parameters;
  * @author  Ben Litchfield
  */
 @Command(
-    name = "Decrypt",
-    header = "${COMMAND-NAME} - decrypts a PDF file.%n",
+    name = "decrpyt",
+    header = "Decrypts a PDF document",
     description = "This will read an encrypted document and decrypt it either using a password or a certificate.",
     versionProvider = Version.class,
     mixinStandardHelpOptions = true

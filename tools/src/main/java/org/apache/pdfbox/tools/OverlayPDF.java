@@ -39,7 +39,7 @@ import picocli.CommandLine.Parameters;
  * Based on code contributed by Balazs Jerk. 
  * 
  */
-@Command(name = "OverlayPDF", description = "Add an overlay to an existing PDF document.", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "overlaypdf", description = "Adds an overlay to a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class OverlayPDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err

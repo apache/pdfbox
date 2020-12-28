@@ -66,7 +66,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author Ben Litchfield
  */
-@Command(name = "ExtractImages", description = "Extracts the images from a PDF file.", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "extractimages", description = "Extracts the images from a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ExtractImages implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err

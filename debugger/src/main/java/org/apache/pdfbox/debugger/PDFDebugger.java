@@ -141,7 +141,7 @@ import picocli.CommandLine.Parameters;
  * @author Khyrul Bashar
  */
 @SuppressWarnings({ "serial", "squid:MaximumInheritanceDepth", "squid:S1948" })
-@Command(name = "PDFDebugger", description = "Analyze and inspect the internal structure of a PDF.")
+@Command(name = "pdfdebugger", description = "Analyzes and inspects the internal structure of a PDF document")
 public class PDFDebugger extends JFrame implements Callable<Integer> {
     private static final Set<COSName> SPECIALCOLORSPACES = new HashSet<>(
             Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));

@@ -42,7 +42,7 @@ import picocli.CommandLine.Parameters;
  * 
  * @author Ben Litchfield
  */
-@Command(name = "PrintPDF", description = "Print a PDF.", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "printpdf", description = "Prints a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PrintPDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err

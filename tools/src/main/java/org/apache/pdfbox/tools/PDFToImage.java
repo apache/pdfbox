@@ -46,7 +46,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author Ben Litchfield
  */
-@Command(name = "PDFToImage", description = "Convert a PDF document to image(s).", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "pdftoimage", description = "Converts a PDF document to image(s)", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PDFToImage implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err

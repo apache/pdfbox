@@ -47,8 +47,8 @@ import picocli.CommandLine.Parameters;
  * @author  Ben Litchfield
  */
 @Command(
-    name = "Encrypt",
-    header = "${COMMAND-NAME} - encrypts a PDF file.%n",
+    name = "encrypt",
+    header = "Encrypts a PDF document",
     description = {
         "${COMMAND-NAME} will read an unencrypted document and encrypt it either using a password or a certificate.%n",
         "While encypting the document permissions can be set which will allow/disallow certain functionality"

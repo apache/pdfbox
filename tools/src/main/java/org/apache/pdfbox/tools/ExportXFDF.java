@@ -37,7 +37,7 @@ import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
  *
  * @author Ben Litchfield
  */
-@Command(name = "ExportXFDF", description = "Exports AcroForm form data to XFDF.", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "exportxfdf", description = "Exports AcroForm form data to XFDF", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ExportXFDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err

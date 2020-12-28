@@ -59,7 +59,7 @@ import picocli.CommandLine.Parameters;
  * @author Ben Litchfield
  * @author Tilman Hausherr
  */
-@Command(name = "ExtractText", description = "Extract all text from the given PDF document.", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "extracttext", description = "Extracts the text from a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ExtractText  implements Callable<Integer>
 {
     private static final Log LOG = LogFactory.getLog(ExtractText.class);

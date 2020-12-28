@@ -39,7 +39,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author Ben Litchfield
  */
-@Command(name = "PDFSplit", description = "Split a PDF into number of new documents.", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "pdfsplit", description = "Splits a PDF document into number of new documents", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PDFSplit implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err
