@@ -142,7 +142,7 @@ import picocli.CommandLine.Parameters;
  */
 @SuppressWarnings({ "serial", "squid:MaximumInheritanceDepth", "squid:S1948" })
 @Command(name = "pdfdebugger", description = "Analyzes and inspects the internal structure of a PDF document")
-public class PDFDebugger extends JFrame implements Callable<Integer> {
+public class PDFDebugger extends JFrame {
     private static final Set<COSName> SPECIALCOLORSPACES = new HashSet<>(
             Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
@@ -157,7 +157,6 @@ public class PDFDebugger extends JFrame implements Callable<Integer> {
     private TreeStatusPane statusPane;
     private RecentFiles recentFiles;
     private WindowPrefs windowPrefs;
-    private boolean isPageMode;
     private PDDocument document;
     private String currentFilePath;
     private JScrollPane jScrollPaneRight;
@@ -182,6 +181,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer> {
     // Expected for CLI app to write to System.out/Sytem.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
+    private static final PrintStream SYSOUT = System.out;
 
     @Option(names = { "-h", "--help" }, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
@@ -190,7 +190,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer> {
     private String password;
 
     @Option(names = "-viewstructure", description = "activate structure mode on startup")
-    private boolean viewstructure;
+    private boolean viewstructure = false;
 
     @Parameters(paramLabel = "inputfile", arity="0..1", description = "the PDF file to be loaded")
     private File infile;
@@ -202,7 +202,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer> {
      * Constructor.
      */
     public PDFDebugger() {
-        this(false);
+        loadConfiguration();
+        initComponents();
     }
 
     /**
@@ -212,7 +213,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer> {
      *                   structure is to be displayed.
      */
     public PDFDebugger(boolean isPageMode) {
-        this.isPageMode = isPageMode;
+        this.viewstructure = !isPageMode;
         loadConfiguration();
         initComponents();
     }
@@ -235,21 +236,19 @@ public class PDFDebugger extends JFrame implements Callable<Integer> {
         Thread.setDefaultUncaughtExceptionHandler(
                 (thread, throwable) -> new ErrorDialog(throwable).setVisible(true));
 
-        int exitCode = new CommandLine(new PDFDebugger()).execute(args);
-        if (exitCode > 0) System.exit(exitCode);
-    }
-
-    public Integer call()
-    {
-        boolean viewPages = true;
-        if (viewstructure)
-        {
-            viewPages = false;
-        }
 
         try
         {
-            final PDFDebugger viewer = new PDFDebugger(viewPages);
+            CommandLine commandLine  = new CommandLine(PDFDebugger.class);
+            commandLine.parseArgs(args);
+            PDFDebugger viewer = commandLine.getCommand();
+            
+            if (viewer.usageHelpRequested)
+            {
+                commandLine.usage(SYSOUT);
+                System.exit(0);
+            }
+
 
             // use our custom logger
             // this works only if there is no "LogFactory.getLog()" in this class,
@@ -271,28 +270,29 @@ public class PDFDebugger extends JFrame implements Callable<Integer> {
                 FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
             }
 
-            if (infile != null && infile.exists())
+            if (viewer.infile != null && viewer.infile.exists())
             {
-                viewer.readPDFFile(infile, password);
+                viewer.readPDFFile(viewer.infile, viewer.password);
             }
+
+            viewer.setPageMode(true);
             viewer.setVisible(true);
         }
         catch (Exception ex)
         {
             SYSERR.println( "Error viewing document: " + ex.getMessage());
-            return 4;
+            System.exit(4);
         }
-        return 0;
     }
 
     public boolean isPageMode()
     {
-        return this.isPageMode;
+        return this.viewstructure ? false : true;
     }
     
     public void setPageMode(boolean isPageMode)
     {
-        this.isPageMode = isPageMode;
+        this.viewstructure = isPageMode ? false : true;
     }
     
     public boolean hasDocument()
@@ -1299,7 +1299,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer> {
         TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
         statusPane.updateTreeStatus(treeStatus);
         
-        if (isPageMode)
+        if (!viewstructure)
         {
             File file = new File(currentFilePath);
             DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
