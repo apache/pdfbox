@@ -109,7 +109,7 @@ public final class ExtractText  implements Callable<Integer>
     @Option(names = {"-i", "--input"}, description = "the PDF file", required = true)
     private File infile;
 
-    @Option(names = {"-o", "--output"}, description = "the exported text file", required = true)
+    @Option(names = {"-o", "--output"}, description = "the exported text file")
     private File outfile;
 
     /**
@@ -124,15 +124,6 @@ public final class ExtractText  implements Callable<Integer>
 
         int exitCode = new CommandLine(new ExtractText()).execute(args);
         System.exit(exitCode);
-    }
-
-    /*
-     * For testing as SureFire doesn't support testing methods which 
-     * call System.exit 
-     */
-    static int test (String[] args)
-    {
-        return new CommandLine(new ExtractText()).execute(args);
     }
 
     /**
@@ -256,7 +247,8 @@ public final class ExtractText  implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error extracting test for document: " + ioe.getMessage());
+            System.out.println(ioe.getMessage());
+            SYSERR.println( "Error extracting text for document: " + ioe.getMessage());
             return 4;
         }
 

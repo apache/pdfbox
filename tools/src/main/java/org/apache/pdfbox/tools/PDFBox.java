@@ -32,27 +32,6 @@ import picocli.CommandLine.Spec;
     footer = {
         "See 'pdfbox help <command>' to read about a specific subcommand"
     },
-    subcommands = {
-        PDFDebugger.class,
-        Decrypt.class,
-        Encrypt.class,
-        ExportFDF.class,
-        ExportXFDF.class,
-        ImportFDF.class,
-        ImportXFDF.class,
-        ExtractText.class,
-        ExtractImages.class,
-        OverlayPDF.class,
-        PrintPDF.class,
-        PDFMerger.class,
-        PDFSplit.class,
-        PDFToImage.class,
-        ImageToPDF.class,
-        TextToPDF.class,
-        WriteDecodedDoc.class,
-        Version.class,
-        CommandLine.HelpCommand.class
-    },
     versionProvider = Version.class)
 public final class PDFBox implements Runnable
 {
@@ -68,7 +47,28 @@ public final class PDFBox implements Runnable
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        new CommandLine(new PDFBox()).setSubcommandsCaseInsensitive(true).execute(args);
+        CommandLine commandLine = new CommandLine(new PDFBox()).setSubcommandsCaseInsensitive(true);
+        commandLine.addSubcommand("debug", PDFDebugger.class);
+        commandLine.addSubcommand("decrypt", Decrypt.class);
+        commandLine.addSubcommand("encrypt", Encrypt.class);
+        commandLine.addSubcommand("decode", WriteDecodedDoc.class);
+        commandLine.addSubcommand("export:images", ExtractText.class);
+        commandLine.addSubcommand("export:text", ExtractImages.class);
+        commandLine.addSubcommand("export:fdf", ExportFDF.class);
+        commandLine.addSubcommand("export:xfdf", ExportXFDF.class);
+        commandLine.addSubcommand("import:fdf", ImportFDF.class);
+        commandLine.addSubcommand("import:xfdf", ImportXFDF.class);
+        commandLine.addSubcommand("overlay", OverlayPDF.class);
+        commandLine.addSubcommand("print", PrintPDF.class);
+        commandLine.addSubcommand("render", PDFToImage.class);
+        commandLine.addSubcommand("merge", PDFMerger.class);
+        commandLine.addSubcommand("split", PDFSplit.class);
+        commandLine.addSubcommand("fromimage", ImageToPDF.class);
+        commandLine.addSubcommand("fromtext", TextToPDF.class);
+        commandLine.addSubcommand("version", Version.class);
+        commandLine.addSubcommand("help", CommandLine.HelpCommand.class);
+        
+        commandLine.execute(args);
     }
 
     @Override

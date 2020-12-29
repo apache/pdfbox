@@ -16,12 +16,15 @@
  */
 package org.apache.pdfbox.tools;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import org.junit.jupiter.api.Test;
+
+import picocli.CommandLine;
 
 
 /**
@@ -43,8 +46,11 @@ class TestExtractText
         System.setOut(new PrintStream(outBytes));
         try 
         {
-            ExtractText.test(new String[]{"src/test/resources/org/apache/pdfbox/testPDFPackage.pdf",
-                    "-console", "-encoding", "UTF-8"});
+            ExtractText app = new ExtractText();
+            CommandLine cmd = new CommandLine(app);
+            int exitCode = cmd.execute("-i", "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf",
+            "-console", "-encoding", "UTF-8");
+            assertEquals(0, exitCode);
         } 
         finally 
         {
