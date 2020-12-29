@@ -52,8 +52,8 @@ public final class PDFBox implements Runnable
         commandLine.addSubcommand("decrypt", Decrypt.class);
         commandLine.addSubcommand("encrypt", Encrypt.class);
         commandLine.addSubcommand("decode", WriteDecodedDoc.class);
-        commandLine.addSubcommand("export:images", ExtractText.class);
-        commandLine.addSubcommand("export:text", ExtractImages.class);
+        commandLine.addSubcommand("export:images", ExtractImages.class);
+        commandLine.addSubcommand("export:text", ExtractText.class);
         commandLine.addSubcommand("export:fdf", ExportFDF.class);
         commandLine.addSubcommand("export:xfdf", ExportXFDF.class);
         commandLine.addSubcommand("import:fdf", ImportFDF.class);
