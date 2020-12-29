@@ -28,7 +28,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Option;
 
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
@@ -44,10 +44,10 @@ public final class ExportXFDF implements Callable<Integer>
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 
-    @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to export.")
+    @Option(names = {"-i", "--input"}, description = "the PDF file to export", required = true)
     private File infile;
 
-    @Parameters(paramLabel = "outputfile", index = "1", arity = "0..1", description = "the XFDF data file.")
+    @Option(names = {"-o", "--output"}, description = "the XFDF data file", required = true)
     private File outfile;
     
     /**

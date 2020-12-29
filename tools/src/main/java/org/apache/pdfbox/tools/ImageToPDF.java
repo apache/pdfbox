@@ -30,7 +30,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * Create a PDF document from images.
@@ -56,10 +55,10 @@ public final class ImageToPDF implements Callable<Integer>
     @Option(names = "-resize", description = "resize to page size")
     private boolean resize = false;
 
-    @Parameters(paramLabel = "image-file", arity="1", description = "the image files to convert.")
+    @Option(names = {"-i", "--input"}, description = "the image files to convert", paramLabel="image-file", required = true)
     private File[] infiles;
 
-    @Parameters(paramLabel = "outputfile", index = "1", description = "the generated PDF file.")
+    @Option(names = {"-o", "--output"}, description = "the generated PDF file", required = true)
     private File outfile;
 
     public static void main(String[] args)

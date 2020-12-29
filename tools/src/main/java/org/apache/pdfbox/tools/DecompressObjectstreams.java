@@ -27,7 +27,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * This program will just save the loaded pdf without any changes. As PDFBox doesn't support writing compressed object
@@ -47,11 +46,10 @@ public final class DecompressObjectstreams implements Callable<Integer>
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
     
-    @Parameters(paramLabel = "inputfile", index = "0", description = "the PDF file to decompress.")
+    @Option(names = {"-i", "--input"}, description = "the PDF file to decompress", required = true)
     private File infile;
 
-    @Parameters(paramLabel = "outputfile", index = "1", arity = "0..1", description = "the decompressed PDF file. " +
-        "If omitted the original file is overwritten.")
+    @Option(names = {"-o", "--output"}, description = "the decompressed PDF file. If omitted the original file is overwritten.")
     private File outfile;
     
     /**

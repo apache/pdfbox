@@ -30,7 +30,6 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * This will read a document from the filesystem, decrypt it and and then write
@@ -61,12 +60,12 @@ public final class Decrypt implements Callable<Integer>
     @Option(names = "-password", arity="0..1", interactive = true, description = "the password for the PDF or certificate in keystore.")    
     private String password;
 
-    @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to decrypt.")
+    @Option(names = {"-i", "--input"}, description = "the PDF file to decrypt", required = true)
     private File infile;
 
-    @Parameters(paramLabel = "outputfile", index = "1", arity = "0..1", description = "the decrypted PDF file.")
+    @Option(names = {"-o", "--output"}, description = "the decrypted PDF file. If omitted the original file is overwritten.")
     private File outfile;
-    
+   
     /**
      * This is the entry point for the application.
      *

@@ -59,7 +59,6 @@ import org.apache.pdfbox.util.Vector;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * Extracts the images from a PDF file.
@@ -93,7 +92,7 @@ public final class ExtractImages implements Callable<Integer>
         "original colorspace if possible.")    
     private boolean noColorConvert;
 
-    @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to decrypt.")
+    @Option(names = {"-i", "--input"}, description = "the PDF file", required = true)
     private File infile;
 
     private final Set<COSStream> seen = new HashSet<>();

@@ -50,7 +50,6 @@ import org.apache.pdfbox.util.Matrix;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * This is the main program that simply parses the pdf document and transforms it
@@ -107,10 +106,10 @@ public final class ExtractText  implements Callable<Integer>
     @Option(names = "-startPage", description = "The first page to start extraction (1 based)")
     private int startPage = 1;
 
-    @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to decrypt.")
+    @Option(names = {"-i", "--input"}, description = "the PDF file", required = true)
     private File infile;
 
-    @Parameters(paramLabel = "outputfile", index = "1", arity = "0..1", description = "the decrypted PDF file.")
+    @Option(names = {"-o", "--output"}, description = "the exported text file", required = true)
     private File outfile;
 
     /**

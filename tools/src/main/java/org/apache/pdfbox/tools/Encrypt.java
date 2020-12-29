@@ -38,7 +38,6 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * This will read a document from the filesystem, encrypt it and and then write
@@ -98,10 +97,10 @@ public final class Encrypt implements Callable<Integer>
     @Option(names = "-keyLength", description = "Key length in bits (valid values: 40, 128 or 256) (default: ${DEFAULT-VALUE})")
     private int keyLength = 256;
 
-    @Parameters(paramLabel = "inputfile", arity="1", description = "the PDF file to encyrpt.")
+    @Option(names = {"-i", "--input"}, description = "the PDF file to encrypt", required = true)
     private File infile;
 
-    @Parameters(paramLabel = "outputfile", index = "1", arity="0..1", description = "the encrypted PDF file. If left blank the original file will be overwritten.")
+    @Option(names = {"-o", "--output"}, description = "the encrypted PDF file. If omitted the original file is overwritten.")
     private File outfile;
 
     /**
