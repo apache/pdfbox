@@ -132,6 +132,8 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
+import picocli.CommandLine.Model.CommandSpec;
 
 /**
  * PDF Debugger.
@@ -142,7 +144,8 @@ import picocli.CommandLine.Parameters;
  */
 @SuppressWarnings({ "serial", "squid:MaximumInheritanceDepth", "squid:S1948" })
 @Command(name = "pdfdebugger", description = "Analyzes and inspects the internal structure of a PDF document")
-public class PDFDebugger extends JFrame {
+public class PDFDebugger extends JFrame implements Callable<Integer>
+{
     private static final Set<COSName> SPECIALCOLORSPACES = new HashSet<>(
             Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
@@ -181,12 +184,11 @@ public class PDFDebugger extends JFrame {
     // Expected for CLI app to write to System.out/Sytem.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
-    private static final PrintStream SYSOUT = System.out;
 
     @Option(names = { "-h", "--help" }, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
-    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.", arity = "0..1", interactive = true)
+    @Option(names = "-password", description = "password to decrypt the document", arity = "0..1", interactive = true)
     private String password;
 
     @Option(names = "-viewstructure", description = "activate structure mode on startup")
@@ -198,12 +200,12 @@ public class PDFDebugger extends JFrame {
     // configuration
     public static final Properties configuration = new Properties();
 
+    @Spec CommandSpec spec;
+
     /**
      * Constructor.
      */
     public PDFDebugger() {
-        loadConfiguration();
-        initComponents();
     }
 
     /**
@@ -213,51 +215,48 @@ public class PDFDebugger extends JFrame {
      *                   structure is to be displayed.
      */
     public PDFDebugger(boolean isPageMode) {
-        this.viewstructure = !isPageMode;
-        loadConfiguration();
-        initComponents();
+        this.viewstructure = isPageMode ? false : true;
     }
 
     /**
      * Entry point.
      * 
      * @param args the command line arguments
-     * @throws Exception if anything goes wrong.
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        if (System.getProperty("apple.laf.useScreenMenuBar") == null)
+        int exitCode = new CommandLine(new PDFDebugger()).execute(args);
+        if (exitCode > 0)
         {
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.exit(exitCode);
         }
+    }
 
-        // handle uncaught exceptions
-        Thread.setDefaultUncaughtExceptionHandler(
-                (thread, throwable) -> new ErrorDialog(throwable).setVisible(true));
-
-
+    public Integer call()
+    {
         try
         {
-            CommandLine commandLine  = new CommandLine(PDFDebugger.class);
-            commandLine.parseArgs(args);
-            PDFDebugger viewer = commandLine.getCommand();
-            
-            if (viewer.usageHelpRequested)
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            if (System.getProperty("apple.laf.useScreenMenuBar") == null)
             {
-                commandLine.usage(SYSOUT);
-                System.exit(0);
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
             }
-
+    
+            // handle uncaught exceptions
+            Thread.setDefaultUncaughtExceptionHandler(
+                    (thread, throwable) -> new ErrorDialog(throwable).setVisible(true));
+    
+            loadConfiguration();
+            initComponents();
 
             // use our custom logger
             // this works only if there is no "LogFactory.getLog()" in this class,
             // and if there are no methods that call logging, even invisible
             // use reduced file from PDFBOX-3653 to see logging
-            LogDialog.init(viewer, viewer.statusBar.getLogLabel());
+            LogDialog.init(this,statusBar.getLogLabel());
             System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
 
-            TextDialog.init(viewer);
+            TextDialog.init(this);
 
             // trigger premature initializations for more accurate rendering benchmarks
             // See discussion in PDFBOX-3988
@@ -270,19 +269,19 @@ public class PDFDebugger extends JFrame {
                 FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
             }
 
-            if (viewer.infile != null && viewer.infile.exists())
+            if (infile != null && infile.exists())
             {
-                viewer.readPDFFile(viewer.infile, viewer.password);
+                readPDFFile(infile, password);
             }
 
-            viewer.setPageMode(true);
-            viewer.setVisible(true);
+            setVisible(true);
         }
         catch (Exception ex)
         {
             SYSERR.println( "Error viewing document: " + ex.getMessage());
-            System.exit(4);
+            return 4;
         }
+        return 0;
     }
 
     public boolean isPageMode()
