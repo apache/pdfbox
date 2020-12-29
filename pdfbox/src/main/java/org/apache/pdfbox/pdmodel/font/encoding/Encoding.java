@@ -18,9 +18,8 @@ package org.apache.pdfbox.pdmodel.font.encoding;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -61,9 +60,15 @@ public abstract class Encoding implements COSObjectable
         }
     }
 
+    /**
+     * code-to-name map. Derived classes should not modify the map after class construction.
+     */
     protected final Map<Integer, String> codeToName = new HashMap<Integer, String>(250);
+
+    /**
+     * name-to-code map. Derived classes should not modify the map after class construction.
+     */
     protected final Map<String, Integer> inverted = new HashMap<String, Integer>(250);
-    private volatile Set<String> names;
 
     /**
      * Returns an unmodifiable view of the code -&gt; name mapping.
@@ -87,8 +92,9 @@ public abstract class Encoding implements COSObjectable
     }
 
     /**
-     * This will add a character encoding. An already existing mapping is preservered when creating the reverse mapping.
-     * 
+     * This will add a character encoding. An already existing mapping is preserved when creating
+     * the reverse mapping. Should only be used during construction of the class.
+     *
      * @see #overwrite(int, String)
      * 
      * @param code character code
@@ -104,8 +110,9 @@ public abstract class Encoding implements COSObjectable
     }
 
     /**
-     * This will add a character encoding. An already existing mapping is overwritten when creating the reverse mapping.
-     * 
+     * This will add a character encoding. An already existing mapping is overwritten when creating
+     * the reverse mapping.
+     *
      * @see Encoding#add(int, String)
      *
      * @param code character code
@@ -134,23 +141,7 @@ public abstract class Encoding implements COSObjectable
      */
     public boolean contains(String name)
     {
-        // we have to wait until all add() calls are done before building the name cache
-        // otherwise /Differences won't be accounted for
-        if (names == null)
-        {
-            synchronized(this)
-            {
-                if (names == null)
-                {
-                    // PDFBOX-3404: avoid possibility that one thread ends up with newly created empty map from other thread
-                    Set<String> tmpSet = new HashSet<String>(codeToName.values());
-                    // make sure that assignment is done after initialisation is complete
-                    names = tmpSet;
-                }
-            }
-            // at this point, names will never be null.
-        }
-        return names.contains(name);
+        return inverted.containsKey(name);
     }
 
     /**
