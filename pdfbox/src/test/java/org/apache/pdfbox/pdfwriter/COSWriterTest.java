@@ -26,12 +26,12 @@ import org.junit.jupiter.api.Test;
 class COSWriterTest
 {
     /**
-     * PDFBOX-4241: check whether the output stream is closed twice.
+     * PDFBOX-4321: check whether the output stream is closed after saving.
      * 
-     * @throws IOException 
+     * @throws IOException
      */
     @Test
-    void testPDFBox4241() throws IOException
+    void testPDFBox4321() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -40,26 +40,10 @@ class COSWriterTest
             doc.addPage(page);
             doc.save(new BufferedOutputStream(new ByteArrayOutputStream(1024)
             {
-                private boolean open = true;
-
                 @Override
                 public void close() throws IOException
                 {
-                    //Thread.dumpStack();
-
-                    open = false;
-                    super.close();
-                }
-
-                @Override
-                public void flush() throws IOException
-                {
-                    if (!open)
-                    {
-                        throw new IOException("Stream already closed");
-                    }
-
-                    //Thread.dumpStack();
+                    throw new IOException("Stream was closed");
                 }
             }));
         }
