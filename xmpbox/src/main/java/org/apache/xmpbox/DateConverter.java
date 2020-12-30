@@ -346,6 +346,8 @@ public final class DateConverter
      */
     private static Calendar fromISO8601(String dateString)
     {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX][zzz]");
+
         // Pattern to test for a time zone string
         Pattern timeZonePattern = Pattern.compile(
                     "[\\d-]*T?[\\d-\\.]([A-Z]{1,4})$|(.*\\d*)([A-Z][a-z]+\\/[A-Z][a-z]+)$"
@@ -376,7 +378,6 @@ public final class DateConverter
                 toParse = dateString.substring(0, tzIndex) + ":00";
             }
 
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX][zzz]");
             ZonedDateTime zonedDateTime = ZonedDateTime.parse(toParse + timeZoneString, dateTimeFormatter);
 
             return GregorianCalendar.from(zonedDateTime);
@@ -387,21 +388,25 @@ public final class DateConverter
             int teeIndex = dateString.indexOf('T');
             if (teeIndex == -1)
             {
-                return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
+                ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString, dateTimeFormatter);
+                return GregorianCalendar.from(zonedDateTime);
             }
             int plusIndex = dateString.indexOf('+', teeIndex + 1);
             int minusIndex = dateString.indexOf('-', teeIndex + 1);
             if (plusIndex == -1 && minusIndex == -1)
             {
-                return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
+                ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString, dateTimeFormatter);
+                return GregorianCalendar.from(zonedDateTime);
             }
             plusIndex = Math.max(plusIndex, minusIndex);
             if (plusIndex - teeIndex == 6)
             {
                 String toParse = dateString.substring(0, plusIndex) + ":00" + dateString.substring(plusIndex);
-                return javax.xml.bind.DatatypeConverter.parseDateTime(toParse);
+                ZonedDateTime zonedDateTime = ZonedDateTime.parse(toParse, dateTimeFormatter);
+                return GregorianCalendar.from(zonedDateTime);
             }
-            return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString, dateTimeFormatter);
+            return GregorianCalendar.from(zonedDateTime);
         }
     }
 }
