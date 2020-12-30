@@ -530,6 +530,12 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         {
             encryptData(objNum, genNum, encryptedStream, output, true /* decrypt */);
         }
+        catch (IOException ex)
+        {
+            LOG.error(ex.getClass().getSimpleName() + " thrown when decrypting object " +
+                    objNum + " " + genNum + " obj");
+            throw ex;
+        }
     }
 
     /**
