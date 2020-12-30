@@ -24,6 +24,8 @@ package org.apache.xmpbox;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -373,11 +375,11 @@ public final class DateConverter
             {
                 toParse = dateString.substring(0, tzIndex) + ":00";
             }
-            Calendar cal = javax.xml.bind.DatatypeConverter.parseDateTime(toParse);
 
-            TimeZone z = TimeZone.getTimeZone(timeZoneString);
-            cal.setTimeZone(z);            
-            return cal;
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX][zzz]");
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(toParse + timeZoneString, dateTimeFormatter);
+
+            return GregorianCalendar.from(zonedDateTime);
         }
         else
         {
