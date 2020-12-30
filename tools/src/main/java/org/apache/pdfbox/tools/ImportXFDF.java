@@ -37,7 +37,7 @@ import java.io.PrintStream;
  *
  * @author Ben Litchfield
  */
-@Command(name = "importxfdf", description = "Imports AcroForm form data from XFDF", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "importxfdf", header = "Imports AcroForm form data from XFDF", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public class ImportXFDF
 {
     // Expected for CLI app to write to System.out/Sytem.err

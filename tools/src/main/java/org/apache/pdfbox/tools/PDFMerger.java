@@ -34,7 +34,7 @@ import picocli.CommandLine.Option;
  *
  * @author Ben Litchfield
  */
-@Command(name = "pdfmerger", description = "Merges multiple PDF documents into one", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "pdfmerger", header = "Merges multiple PDF documents into one", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PDFMerger implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err

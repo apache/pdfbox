@@ -36,7 +36,7 @@ import picocli.CommandLine.Option;
  * 
  * @author Adam Nichols
  */
-@Command(name = "DecompressObjectstreams", description = "Decompresses object streams in a PDF file.")
+@Command(name = "DecompressObjectstreams", header = "Decompresses object streams in a PDF file.")
 public final class DecompressObjectstreams implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err

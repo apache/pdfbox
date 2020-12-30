@@ -34,7 +34,7 @@ import picocli.CommandLine.Option;
 /**
  * Create a PDF document from images.
  */
-@Command(name = "imagetopdf", description = "Creates a PDF document from images", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "imagetopdf", header = "Creates a PDF document from images", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ImageToPDF implements Callable<Integer>
 {
     private PDRectangle mediaBox = PDRectangle.LETTER;
