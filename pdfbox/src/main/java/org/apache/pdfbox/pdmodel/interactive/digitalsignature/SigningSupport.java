@@ -51,16 +51,6 @@ public class SigningSupport implements ExternalSigningSupport, Closeable
     @Override
     public void close() throws IOException
     {
-        if (cosWriter != null)
-        {
-            try
-            {
-                cosWriter.close();
-            }
-            finally
-            {
-                cosWriter = null;
-            }
-        }
+        cosWriter = null;
     }
 }

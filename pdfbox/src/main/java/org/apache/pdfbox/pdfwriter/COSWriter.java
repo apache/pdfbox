@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdfwriter;
 
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,7 +38,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -84,7 +82,7 @@ import org.apache.pdfbox.util.Hex;
  * @author Michael Traut
  * @author Ben Litchfield
  */
-public class COSWriter implements ICOSVisitor, Closeable
+public class COSWriter implements ICOSVisitor
 {
     /**
      * The dictionary open token.
@@ -346,24 +344,6 @@ public class COSWriter implements ICOSVisitor, Closeable
     protected void addXRefEntry(XReferenceEntry entry)
     {
         getXRefEntries().add(entry);
-    }
-
-    /**
-     * This will close the stream.
-     *
-     * @throws IOException If the underlying stream throws an exception.
-     */
-    @Override
-    public void close() throws IOException
-    {
-        if (getStandardOutput() != null)
-        {
-            getStandardOutput().close();
-        }
-        if (incrementalOutput != null)
-        {
-            incrementalOutput.close();
-        }
     }
 
     /**

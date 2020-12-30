@@ -902,8 +902,8 @@ public class PDDocument implements Closeable
     /**
      * This will save the document to an output stream.
      *
-     * @param output The stream to write to. It will be closed when done. It is recommended to wrap
-     * it in a {@link java.io.BufferedOutputStream}, unless it is already buffered.
+     * @param output The stream to write to. It is recommended to wrap it in a {@link java.io.BufferedOutputStream},
+     * unless it is already buffered.
      *
      * @throws IOException if the output could not be written
      */
@@ -921,7 +921,11 @@ public class PDDocument implements Closeable
      */
     public void save(File file, CompressParameters compressParameters) throws IOException
     {
-        save(new BufferedOutputStream(new FileOutputStream(file)), compressParameters);
+        try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
+                new FileOutputStream(file)))
+        {
+            save(bufferedOutputStream, compressParameters);
+        }
     }
 
     /**
@@ -940,8 +944,8 @@ public class PDDocument implements Closeable
     /**
      * Save the document using the given compression.
      *
-     * @param output The stream to write to. It will be closed when done. It is recommended to wrap it in a
-     * {@link java.io.BufferedOutputStream}, unless it is already buffered.
+     * @param output The stream to write to. It is recommended to wrap it in a {@link java.io.BufferedOutputStream},
+     * unless it is already buffered.
      * @param compressParameters The parameters for the document's compression.
      * @throws IOException if the output could not be written
      */
@@ -964,10 +968,8 @@ public class PDDocument implements Closeable
         fontsToSubset.clear();
 
         // save PDF
-        try (COSWriter writer = new COSWriter(output, compressParameters))
-        {
-            writer.write(this);
-        }
+        COSWriter writer = new COSWriter(output, compressParameters);
+        writer.write(this);
     }
 
     /**
@@ -991,10 +993,8 @@ public class PDDocument implements Closeable
         {
             throw new IllegalStateException("document was not loaded from a file or a stream");
         }
-        try (COSWriter writer = new COSWriter(output, pdfSource))
-        {
-            writer.write(this, signInterface);
-        }
+        COSWriter writer = new COSWriter(output, pdfSource);
+        writer.write(this, signInterface);
     }
 
     /**
@@ -1024,11 +1024,8 @@ public class PDDocument implements Closeable
         {
             throw new IllegalStateException("document was not loaded from a file or a stream");
         }
-        
-        try (COSWriter writer = new COSWriter(output, pdfSource, objectsToWrite))
-        {
-            writer.write(this, signInterface);
-        }
+        COSWriter writer = new COSWriter(output, pdfSource, objectsToWrite);
+        writer.write(this, signInterface);
     }
 
     /**

@@ -182,10 +182,8 @@ public class FDFDocument implements Closeable
      */
     public void save(OutputStream output) throws IOException
     {
-        try (COSWriter writer = new COSWriter(output))
-        {
-            writer.write(this);
-        }
+        COSWriter writer = new COSWriter(output);
+        writer.write(this);
     }
 
     /**
