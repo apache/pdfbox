@@ -40,7 +40,6 @@ public class COSWriterCompressionPool
     private final CompressParameters parameters;
 
     private final COSObjectPool objectPool;
-    private final COSObjectPool originalPool;
 
     // A list containing all objects, that shall be directly appended to the document's top level container.
     private final List<COSObjectKey> topLevelObjects = new ArrayList<>();
@@ -67,7 +66,6 @@ public class COSWriterCompressionPool
         this.document = document;
         this.parameters = parameters != null ? parameters : new CompressParameters();
         objectPool = new COSObjectPool(document.getDocument().getHighestXRefObjectNumber());
-        originalPool = new COSObjectPool(document.getDocument().getHighestXRefObjectNumber());
 
         // Initialize object pool.
         COSDocument cosDocument = document.getDocument();
@@ -109,7 +107,6 @@ public class COSWriterCompressionPool
                 || base == this.document.getDocument().getTrailer().getCOSDictionary(COSName.ROOT)
                 || base instanceof COSStream)
         {
-            originalPool.put(key, base);
             COSObjectKey actualKey = objectPool.put(key, base);
             if (actualKey == null)
             {
@@ -232,7 +229,7 @@ public class COSWriterCompressionPool
      */
     public boolean contains(COSBase object)
     {
-        return objectPool.contains(object) || originalPool.contains(object);
+        return objectPool.contains(object);
     }
 
     /**
@@ -244,12 +241,7 @@ public class COSWriterCompressionPool
      */
     public COSObjectKey getKey(COSBase object)
     {
-        COSObjectKey key = objectPool.getKey(object);
-        if (key == null)
-        {
-            key = originalPool.getKey(object);
-        }
-        return key;
+        return objectPool.getKey(object);
     }
 
     /**
