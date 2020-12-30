@@ -196,7 +196,6 @@ public class COSWriter implements ICOSVisitor, Closeable
 
     // the list of x ref entries to be made so far
     private final List<XReferenceEntry> xRefEntries = new ArrayList<>();
-    private final Set<COSBase> objectsToWriteSet = new HashSet<>();
 
     //A list of objects to write.
     private final Deque<COSBase> objectsToWrite = new LinkedList<>();
@@ -365,16 +364,6 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             incrementalOutput.close();
         }
-    }
-
-    /**
-     * This will get all available object keys.
-     *
-     * @return A map of all object keys.
-     */
-    public Map<COSBase,COSObjectKey> getObjectKeys()
-    {
-        return objectKeys;
     }
 
     /**
@@ -558,9 +547,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     {
         while (!objectsToWrite.isEmpty())
         {
-            COSBase nextObject = objectsToWrite.removeFirst();
-            objectsToWriteSet.remove(nextObject);
-            doWriteObject( nextObject );
+            doWriteObject(objectsToWrite.removeFirst());
         }
     }
 
@@ -576,30 +563,29 @@ public class COSWriter implements ICOSVisitor, Closeable
             actual = ((COSObject)actual).getObject();
         }
 
-        if( !writtenObjects.contains( object ) &&
-            !objectsToWriteSet.contains( object ) &&
-            !actualsAdded.contains( actual ) )
+        if (!writtenObjects.contains(object) //
+                && !objectsToWrite.contains(object) //
+                && !actualsAdded.contains(actual))
         {
-            COSBase cosBase=null;
+            COSBase cosBase = null;
             COSObjectKey cosObjectKey = null;
-            if(actual != null)
+            if (actual != null)
             {
-                cosObjectKey= objectKeys.get(actual);
+                cosObjectKey = objectKeys.get(actual);
             }
-            if(cosObjectKey!=null)
+            if (cosObjectKey != null)
             {
                 cosBase = keyObject.get(cosObjectKey);
             }
-            if (actual != null && objectKeys.containsKey(actual) 
-                    && !isNeedToBeUpdated(object) && !isNeedToBeUpdated(cosBase))
+            if (actual != null && objectKeys.containsKey(actual) && !isNeedToBeUpdated(object)
+                    && !isNeedToBeUpdated(cosBase))
             {
                 return;
             }
-            objectsToWrite.add( object );
-            objectsToWriteSet.add( object );
-            if( actual != null )
+            objectsToWrite.add(object);
+            if (actual != null)
             {
-                actualsAdded.add( actual );
+                actualsAdded.add(actual);
             }
         }
     }
