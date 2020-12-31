@@ -167,17 +167,23 @@ public class CreateCheckBox
                 Rectangle2D bounds = PDType1Font.ZAPF_DINGBATS.getPath(name).getBounds2D();
                 if (bounds.isEmpty())
                 {
+                    // ZapfDingbats font missing, let's use AFM resources instead.
                     AFMParser parser = new AFMParser(PDType1Font.class.getResourceAsStream("/org/apache/pdfbox/resources/afm/ZapfDingbats.afm"));
                     FontMetrics metric = parser.parse();
                     for (CharMetric cm : metric.getCharMetrics())
                     {
-                        BoundingBox bb = cm.getBoundingBox();
                         if (normalCaption.codePointAt(0) == cm.getCharacterCode())
                         {
-                            bounds = new Rectangle2D.Float(bb.getLowerLeftX(), bb.getLowerLeftY(), bb.getWidth(), bb.getHeight());
+                            BoundingBox bb = cm.getBoundingBox();
+                            bounds = new Rectangle2D.Float(bb.getLowerLeftX(), bb.getLowerLeftY(), 
+                                                           bb.getWidth(), bb.getHeight());
                             unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(cm.getName());
                         }
                     }
+                }
+                if (bounds.isEmpty())
+                {
+                    throw new IOException("Bounds rectangle for chosen glyph is empty");
                 }
                 float size = (float) Math.min(bounds.getWidth(), bounds.getHeight()) / 1000;
                 // assume that checkmark has square size
