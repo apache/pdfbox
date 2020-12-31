@@ -163,8 +163,16 @@ public class CreateCheckBox
                 Rectangle2D bounds = PDType1Font.ZAPF_DINGBATS.getPath(name).getBounds2D();
                 if (bounds.isEmpty())
                 {
-                    System.out.println("bounds: " + bounds + ", name: " + name);
-                    System.out.println("FontBoxFont: " + PDType1Font.ZAPF_DINGBATS.getFontBoxFont());
+                    AFMParser parser = new AFMParser(PDType1Font.class.getResourceAsStream("/org/apache/pdfbox/resources/afm/ZapfDingbats.afm"));
+                    FontMetrics metric = parser.parse();
+                    for (CharMetric cm : metric.getCharMetrics())
+                    {
+                        BoundingBox bb = cm.getBoundingBox();
+                        if (normalCaption.codePointAt(0) == cm.getCharacterCode())
+                        {
+                            bounds = new Rectangle2D.Float(bb.getLowerLeftX(), bb.getLowerLeftY(), bb.getWidth(), bb.getHeight());
+                        }
+                    }
                 }
                 float size = (float) Math.min(bounds.getWidth(), bounds.getHeight()) / 1000;
                 // assume that checkmark has square size
