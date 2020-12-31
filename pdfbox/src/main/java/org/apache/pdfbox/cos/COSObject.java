@@ -34,6 +34,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     private int generationNumber;
     private boolean needToBeUpdated;
     private ICOSParser parser;
+    private boolean isDereferenced = false;
 
     private static final Log LOG = LogFactory.getLog(COSObject.class);
 
@@ -105,27 +106,29 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSBase getObject()
     {
-        if ((baseObject == null || baseObject instanceof COSNull) && parser != null)
+        if (!isDereferenced && parser != null)
         {
             try
             {
+                // mark as dereferenced to avoid endless recursions
+                isDereferenced = true;
                 baseObject = parser.dereferenceCOSObject(this);
-                if (baseObject != null)
-                {
-                    // remove parser to avoid endless recursions
-                    parser = null;
-                }
             }
             catch (IOException e)
             {
-                // remove parser to avoid endless recursions
-                parser = null;
                 LOG.error("Can't dereference " + this, e);
+            }
+            finally
+            {
+                parser = null;
             }
         }
         return baseObject;
     }
 
+    /**
+     * Sets the referenced object to COSNull and removes the initially assigned parser.
+     */
     public final void setToNull()
     {
         baseObject = COSNull.NULL;
