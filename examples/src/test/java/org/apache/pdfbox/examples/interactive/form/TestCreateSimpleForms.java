@@ -188,7 +188,15 @@ class TestCreateSimpleForms
     @Test
     void testCreateCheckBox() throws IOException
     {
-        CreateCheckBox.main(null);
+        try
+        {
+            CreateCheckBox.main(null);
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            throw t;
+        }
         try (PDDocument doc = Loader.loadPDF(new File("target/CheckBoxSample.pdf")))
         {
             new PDFRenderer(doc).renderImage(0);
