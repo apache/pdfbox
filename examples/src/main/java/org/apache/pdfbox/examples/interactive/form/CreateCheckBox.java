@@ -18,6 +18,10 @@ package org.apache.pdfbox.examples.interactive.form;
 
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import org.apache.fontbox.afm.AFMParser;
+import org.apache.fontbox.afm.CharMetric;
+import org.apache.fontbox.afm.FontMetrics;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
@@ -161,6 +165,28 @@ public class CreateCheckBox
                 String name = PDType1Font.ZAPF_DINGBATS.codeToName(normalCaption.codePointAt(0));
                 String unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(name);
                 Rectangle2D bounds = PDType1Font.ZAPF_DINGBATS.getPath(name).getBounds2D();
+                if (bounds.isEmpty())
+                {
+                    // ZapfDingbats font missing, let's use AFM resources instead.
+                    // You can remove this code block if you know that you have the font.
+                    AFMParser parser = new AFMParser(PDType1Font.class.getResourceAsStream(
+                            "/org/apache/pdfbox/resources/afm/ZapfDingbats.afm"));
+                    FontMetrics metric = parser.parse();
+                    for (CharMetric cm : metric.getCharMetrics())
+                    {
+                        if (normalCaption.codePointAt(0) == cm.getCharacterCode())
+                        {
+                            BoundingBox bb = cm.getBoundingBox();
+                            bounds = new Rectangle2D.Float(bb.getLowerLeftX(), bb.getLowerLeftY(), 
+                                                           bb.getWidth(), bb.getHeight());
+                            unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(cm.getName());
+                        }
+                    }
+                }
+                if (bounds.isEmpty())
+                {
+                    throw new IOException("Bounds rectangle for chosen glyph is empty");
+                }
                 float size = (float) Math.min(bounds.getWidth(), bounds.getHeight()) / 1000;
                 // assume that checkmark has square size
                 // the calculations approximate what Adobe is doing, i.e. put the glyph in the middle
