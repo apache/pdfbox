@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.fontbox.ttf.TTFParser;
@@ -349,7 +350,7 @@ class PDFontTest
         try (InputStream is = PDFont.class.getResourceAsStream(
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
         {
-            Files.copy(is, tempFontFile.toPath());
+            Files.copy(is, tempFontFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
 
         try (PDDocument doc = new PDDocument())
