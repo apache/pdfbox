@@ -161,6 +161,11 @@ public class CreateCheckBox
                 String name = PDType1Font.ZAPF_DINGBATS.codeToName(normalCaption.codePointAt(0));
                 String unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(name);
                 Rectangle2D bounds = PDType1Font.ZAPF_DINGBATS.getPath(name).getBounds2D();
+                if (bounds.isEmpty())
+                {
+                    System.out.println("bounds: " + bounds + ", name: " + name);
+                    System.out.println("FontBoxFont: " + PDType1Font.ZAPF_DINGBATS.getFontBoxFont());
+                }
                 float size = (float) Math.min(bounds.getWidth(), bounds.getHeight()) / 1000;
                 // assume that checkmark has square size
                 // the calculations approximate what Adobe is doing, i.e. put the glyph in the middle
