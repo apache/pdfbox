@@ -294,8 +294,8 @@ public class PDFRenderer
         // PDFBOX-4518 the maximum size (w*h) of a buffered image is limited to Integer.MAX_VALUE
         if ((long) widthPx * (long) heightPx > Integer.MAX_VALUE)
         {
-            throw new IOException("Maximum size of image exceeded (w * h * scale) = "//
-                    + widthPt + " * " + heightPt + " * " + scale + " > " + Integer.MAX_VALUE);
+            throw new IOException("Maximum size of image exceeded (w * h * scale ^ 2) = "//
+                    + widthPt + " * " + heightPt + " * " + scale + " ^ 2 > " + Integer.MAX_VALUE);
         }
 
         int rotationAngle = page.getRotation();
