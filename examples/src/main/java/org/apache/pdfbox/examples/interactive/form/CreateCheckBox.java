@@ -175,6 +175,7 @@ public class CreateCheckBox
                         if (normalCaption.codePointAt(0) == cm.getCharacterCode())
                         {
                             bounds = new Rectangle2D.Float(bb.getLowerLeftX(), bb.getLowerLeftY(), bb.getWidth(), bb.getHeight());
+                            unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(cm.getName());
                         }
                     }
                 }
