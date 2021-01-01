@@ -63,7 +63,8 @@ class SequenceRandomAccessReadTest
         assertThrows(IllegalArgumentException.class, () -> new SequenceRandomAccessRead(null));
 
         // test empty list
-        assertThrows(IllegalArgumentException.class, () -> new SequenceRandomAccessRead(Collections.emptyList()));
+        List emptyList = Collections.emptyList();
+        assertThrows(IllegalArgumentException.class, () -> new SequenceRandomAccessRead(emptyList));
 
         // test problematic list
         assertThrows(IllegalArgumentException.class, () -> new SequenceRandomAccessRead(inputList));
