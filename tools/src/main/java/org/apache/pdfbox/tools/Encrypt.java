@@ -138,6 +138,11 @@ public final class Encrypt implements Callable<Integer>
         {
             if( !document.isEncrypted() )
             {
+                if (!document.getSignatureDictionaries().isEmpty())
+                {
+                    SYSERR.println( "Warning: Document contains signatures which will be invalidated by encryption." );
+                }
+
                 if (!certFileList.isEmpty())
                 {
                     PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
