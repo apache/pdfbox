@@ -56,19 +56,6 @@ public class PDFText2HTML extends PDFTextStripper
         setArticleEnd(LINE_SEPARATOR);
     }
 
-    /**
-     * Write the header to the output document. Now also writes the tag defining
-     * the character encoding.
-     *
-     * @throws IOException
-     *             If there is a problem writing out the header to the document.
-     * @deprecated use {@link #startDocument(PDDocument)}
-     */
-    @Deprecated
-    protected void writeHeader() throws IOException
-    {
-    }
-
     @Override
     protected void startDocument(PDDocument document) throws IOException
     {
