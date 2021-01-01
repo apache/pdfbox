@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
@@ -89,7 +90,7 @@ public class WriteDecodedDoc implements Callable<Integer>
                     .forEach(o -> processObject(cosDocument.getObjectFromPool(o), skipImages));
             doc.getDocumentCatalog();
             doc.getDocument().setIsXRefStream(false);
-            doc.save( out );
+            doc.save(out, CompressParameters.NO_COMPRESSION);
         }
     }
 
