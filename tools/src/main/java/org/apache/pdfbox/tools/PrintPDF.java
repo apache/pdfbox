@@ -142,7 +142,7 @@ public final class PrintPDF implements Callable<Integer>
         }
         catch (IOException | PrinterException ex)
         {
-            SYSERR.println("Error printing document: " + ex.getMessage());
+            SYSERR.println("Error printing document [" + ex.getClass().getSimpleName() + "]: " + ex.getMessage());
             return 4;
         }
         return 0;

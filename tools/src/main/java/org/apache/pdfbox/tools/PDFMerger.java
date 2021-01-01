@@ -77,7 +77,7 @@ public final class PDFMerger implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error merging documents: " + ioe.getMessage());
+            SYSERR.println( "Error merging documents [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         return 0;

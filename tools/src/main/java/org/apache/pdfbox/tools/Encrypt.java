@@ -176,7 +176,7 @@ public final class Encrypt implements Callable<Integer>
         }
         catch (IOException | CertificateException ex)
         {
-            SYSERR.println( "Error encrypting PDF: " + ex.getMessage());
+            SYSERR.println( "Error encrypting PDF [" + ex.getClass().getSimpleName() + "]: " + ex.getMessage());
             return 4;
         }
         return 0;

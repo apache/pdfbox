@@ -129,7 +129,7 @@ public final class OverlayPDF implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error adding overlay(s) to PDF: " + ioe.getMessage());
+            SYSERR.println( "Error adding overlay(s) to PDF [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         finally
@@ -142,7 +142,7 @@ public final class OverlayPDF implements Callable<Integer>
             }
             catch (IOException ioe)
             {
-                SYSERR.println( "Error adding overlay(s) to PDF: " + ioe.getMessage());
+                SYSERR.println( "Error adding overlay(s) to PDF [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
                 retcode = 4;
             }
         }

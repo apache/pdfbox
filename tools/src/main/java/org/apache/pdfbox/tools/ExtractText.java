@@ -247,8 +247,7 @@ public final class ExtractText  implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            System.out.println(ioe.getMessage());
-            SYSERR.println( "Error extracting text for document: " + ioe.getMessage());
+            SYSERR.println( "Error extracting text for document [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
 

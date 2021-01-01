@@ -155,7 +155,7 @@ public class WriteDecodedDoc implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error writing decoded PDF: " + ioe.getMessage());
+            SYSERR.println( "Error writing decoded PDF [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         return 0;

@@ -178,7 +178,7 @@ public final class PDFToImage implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error converting document: " + ioe.getMessage());
+            SYSERR.println( "Error converting document [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         return 0;

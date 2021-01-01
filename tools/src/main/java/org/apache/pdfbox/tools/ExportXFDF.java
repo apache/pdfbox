@@ -90,7 +90,7 @@ public final class ExportXFDF implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error exporting XFDF data: " + ioe.getMessage());
+            SYSERR.println( "Error exporting XFDF data [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         return 0;

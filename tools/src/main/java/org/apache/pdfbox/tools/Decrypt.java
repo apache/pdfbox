@@ -114,7 +114,7 @@ public final class Decrypt implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error decrypting document: " + ioe.getMessage());
+            SYSERR.println( "Error decrypting document [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         return 0;

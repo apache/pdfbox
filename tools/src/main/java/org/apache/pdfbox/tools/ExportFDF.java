@@ -89,7 +89,7 @@ public final class ExportFDF implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error exporting FDF data: " + ioe.getMessage());
+            SYSERR.println( "Error exporting FDF data [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         return 0;

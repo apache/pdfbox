@@ -110,7 +110,7 @@ public class ImportFDF implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error importing FDF data: " + ioe.getMessage());
+            SYSERR.println( "Error importing FDF data [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         return 0;

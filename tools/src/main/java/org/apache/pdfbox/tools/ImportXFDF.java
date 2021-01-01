@@ -103,7 +103,7 @@ public class ImportXFDF
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error importing XFDF data: " + ioe.getMessage());
+            SYSERR.println( "Error importing XFDF data [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         return 0;

@@ -84,10 +84,10 @@ public final class DecompressObjectstreams implements Callable<Integer>
 
             doc.save(outfile, CompressParameters.NO_COMPRESSION);
         }
-        catch (IOException e)
+        catch (IOException ioe)
         {
-            SYSERR.println("Error processing file: " + e.getMessage());
-            return 1;
+            SYSERR.println("Error processing file [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
+            return 4;
         }
         return 0;
     }

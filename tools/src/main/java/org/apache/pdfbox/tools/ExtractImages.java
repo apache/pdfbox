@@ -136,7 +136,7 @@ public final class ExtractImages implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println("Error extracting images: " + ioe.getMessage());
+            SYSERR.println("Error extracting images [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         return 0;

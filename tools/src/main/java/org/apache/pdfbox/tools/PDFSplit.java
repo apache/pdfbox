@@ -133,7 +133,7 @@ public final class PDFSplit implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error splitting document: " + ioe.getMessage());
+            SYSERR.println( "Error splitting document [" + ioe.getClass().getSimpleName() + "]: " + ioe.getMessage());
             return 4;
         }
         finally
