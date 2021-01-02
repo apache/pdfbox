@@ -63,7 +63,7 @@ final class DebugTextOverlay
     private class DebugTextStripper extends PDFTextStripper
     {
         private final Graphics2D graphics;
-        private AffineTransform flip;
+        private AffineTransform flipAT;
         private AffineTransform transAT;
         
         DebugTextStripper(Graphics2D graphics) throws IOException
@@ -75,9 +75,9 @@ final class DebugTextOverlay
         {
             // flip y-axis
             PDRectangle cropBox = page.getCropBox();
-            this.flip = new AffineTransform();
-            flip.translate(0, cropBox.getHeight());
-            flip.scale(1, -1);
+            flipAT = new AffineTransform();
+            flipAT.translate(0, cropBox.getHeight());
+            flipAT.scale(1, -1);
 
             // cropbox, can be tested with file from PDFBOX-3774
             transAT = AffineTransform.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY());
@@ -106,7 +106,7 @@ final class DebugTextOverlay
                     }
                     PDRectangle r = bead.getRectangle();
                     GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
-                    Shape s = flip.createTransformedShape(p);
+                    Shape s = flipAT.createTransformedShape(p);
                     graphics.setColor(Color.green);
                     graphics.draw(s);
                 }
@@ -152,7 +152,7 @@ final class DebugTextOverlay
             {
                 if (DebugTextOverlay.this.showTextStripper)
                 {
-                    AffineTransform at = (AffineTransform) flip.clone();
+                    AffineTransform at = (AffineTransform) flipAT.clone();
                     at.concatenate(text.getTextMatrix().createAffineTransform());
 
                     // in red:
@@ -179,7 +179,7 @@ final class DebugTextOverlay
 
                     // glyph space -> user space
                     // note: text.getTextMatrix() is *not* the Text Matrix, it's the Text Rendering Matrix
-                    AffineTransform at = (AffineTransform) flip.clone();
+                    AffineTransform at = (AffineTransform) flipAT.clone();
                     at.concatenate(text.getTextMatrix().createAffineTransform());
 
                     if (font instanceof PDType3Font)
@@ -216,7 +216,7 @@ final class DebugTextOverlay
                 return;
             }
 
-            Shape transformedBBox = flip.createTransformedShape(bbox);
+            Shape transformedBBox = flipAT.createTransformedShape(bbox);
             transformedBBox = transAT.createTransformedShape(transformedBBox);
 
             // save
