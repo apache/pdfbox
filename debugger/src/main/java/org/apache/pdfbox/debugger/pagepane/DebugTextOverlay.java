@@ -64,6 +64,7 @@ final class DebugTextOverlay
     {
         private final Graphics2D graphics;
         private AffineTransform flip;
+        private AffineTransform transAT;
         
         DebugTextStripper(Graphics2D graphics) throws IOException
         {
@@ -77,13 +78,16 @@ final class DebugTextOverlay
             this.flip = new AffineTransform();
             flip.translate(0, cropBox.getHeight());
             flip.scale(1, -1);
-            
+
+            // cropbox, can be tested with file from PDFBOX-3774
+            transAT = AffineTransform.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY());
+
             // scale and rotate
             transform(graphics, page, scale);
 
             // set stroke width
             graphics.setStroke(new BasicStroke(0.5f));
-            
+
             setStartPage(pageIndex + 1);
             setEndPage(pageIndex + 1);
 
@@ -213,6 +217,7 @@ final class DebugTextOverlay
             }
 
             Shape transformedBBox = flip.createTransformedShape(bbox);
+            transformedBBox = transAT.createTransformedShape(transformedBBox);
 
             // save
             Color color = graphics.getColor();
