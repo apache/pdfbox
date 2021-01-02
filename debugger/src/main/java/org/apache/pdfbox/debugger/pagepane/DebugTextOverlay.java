@@ -105,8 +105,8 @@ final class DebugTextOverlay
                         continue;
                     }
                     PDRectangle r = bead.getRectangle();
-                    GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
-                    Shape s = flipAT.createTransformedShape(p);
+                    Shape s = r.toGeneralPath().createTransformedShape(transAT);
+                    s = flipAT.createTransformedShape(s);
                     graphics.setColor(Color.green);
                     graphics.draw(s);
                 }
