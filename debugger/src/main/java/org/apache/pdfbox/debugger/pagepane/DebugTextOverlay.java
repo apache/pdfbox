@@ -222,18 +222,15 @@ final class DebugTextOverlay
             // save
             Color color = graphics.getColor();
             Stroke stroke = graphics.getStroke();
-            Shape clip = graphics.getClip();
 
             // draw
-            graphics.setClip(graphics.getDeviceConfiguration().getBounds());
             graphics.setColor(Color.cyan);
-            graphics.setStroke(new BasicStroke(.5f));                
+            graphics.setStroke(new BasicStroke(.5f));
             graphics.draw(transformedBBox);
 
             // restore
             graphics.setStroke(stroke);
             graphics.setColor(color);
-            graphics.setClip(clip);
         }
 
         private Shape calculateGlyphBounds(
