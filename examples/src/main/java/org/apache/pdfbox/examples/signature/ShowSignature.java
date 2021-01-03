@@ -185,7 +185,7 @@ public final class ShowSignature
                                     {
                                         while (dis.read() != -1)                                        
                                         {
-                                            
+                                            // do nothing
                                         }
                                     }
                                     byte [] hash = md.digest();
@@ -401,7 +401,7 @@ public final class ShowSignature
         {
             while (dis.read() != -1)
             {
-
+                // do nothing
             }
         }
         if (Arrays.equals(md.digest(),
