@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.DigestInputStream;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
@@ -60,6 +61,7 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.COSFilterInputStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -70,7 +72,6 @@ import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
-import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
@@ -149,140 +150,147 @@ public final class ShowSignature
                     byte[] contents = sig.getContents();
 
                     // download the signed content
-                    byte[] buf;
-                    try (FileInputStream fis = new FileInputStream(infile))
+                    // we're doing this as a stream, to be able to handle huge files                    
+                    try (FileInputStream fis = new FileInputStream(infile);
+                         InputStream signedContentAsStream = new COSFilterInputStream(fis, sig.getByteRange()))
                     {
-                        buf = sig.getSignedContent(fis); // alternatively, pass a byte array here
-                    }
-
-                    System.out.println("Signature found");
-
-                    if (sig.getName() != null)
-                    {
-                        System.out.println("Name:     " + sig.getName());
-                    }
-                    if (sig.getSignDate() != null)
-                    {
-                        System.out.println("Modified: " + sdf.format(sig.getSignDate().getTime()));
-                    }
-                    String subFilter = sig.getSubFilter();
-                    if (subFilter != null)
-                    {
-                        switch (subFilter)
+                        System.out.println("Signature found");
+                        
+                        if (sig.getName() != null)
                         {
-                            case "adbe.pkcs7.detached":
-                            case "ETSI.CAdES.detached":
-                                verifyPKCS7(buf, contents, sig);
-                                break;
-                            case "adbe.pkcs7.sha1":
+                            System.out.println("Name:     " + sig.getName());
+                        }
+                        if (sig.getSignDate() != null)
+                        {
+                            System.out.println("Modified: " + sdf.format(sig.getSignDate().getTime()));
+                        }
+                        String subFilter = sig.getSubFilter();
+                        if (subFilter != null)
+                        {
+                            switch (subFilter)
                             {
-                                // example: PDFBOX-1452.pdf
-                                CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                                ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
-                                Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
-                                System.out.println("certs=" + certs);
-                                byte[] hash = MessageDigest.getInstance("SHA1").digest(buf);
-                                verifyPKCS7(hash, contents, sig);
-                                break;
-                            }
-                            case "adbe.x509.rsa_sha1":
-                            {
-                                // example: PDFBOX-2693.pdf
-                                COSString certString = (COSString) sigDict.getDictionaryObject(COSName.CERT);
-                                //TODO this could also be an array.
-                                if (certString == null)
+                                case "adbe.pkcs7.detached":
+                                case "ETSI.CAdES.detached":
+                                    verifyPKCS7(signedContentAsStream, contents, sig);
+                                    break;
+                                case "adbe.pkcs7.sha1":
                                 {
-                                    System.err.println("The /Cert certificate string is missing in the signature dictionary");
-                                    return;
-                                }
-                                byte[] certData = certString.getBytes();
-                                CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                                ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
-                                Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
-                                System.out.println("certs=" + certs);
-                                
-                                X509Certificate cert = (X509Certificate) certs.iterator().next();
-
-                                // to verify signature, see code at 
-                                // https://stackoverflow.com/questions/43383859/
-                                
-                                try
-                                {
-                                    if (sig.getSignDate() != null)
+                                    // example: PDFBOX-1452.pdf
+                                    CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                                    ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
+                                    Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+                                    System.out.println("certs=" + certs);
+                                    MessageDigest md = MessageDigest.getInstance("SHA1");
+                                    try (DigestInputStream dis = new DigestInputStream(signedContentAsStream, md))
                                     {
-                                        cert.checkValidity(sig.getSignDate().getTime());
-                                        System.out.println("Certificate valid at signing time");
+                                        while (dis.read() != -1)                                        
+                                        {
+                                            
+                                        }
+                                    }
+                                    byte [] hash = md.digest();
+                                    verifyPKCS7(new ByteArrayInputStream(hash), contents, sig);
+                                    break;
+                                }
+                                case "adbe.x509.rsa_sha1":
+                                {
+                                    // example: PDFBOX-2693.pdf
+                                    COSString certString = (COSString) sigDict.getDictionaryObject(COSName.CERT);
+                                    //TODO this could also be an array.
+                                    if (certString == null)
+                                    {
+                                        System.err.println("The /Cert certificate string is missing in the signature dictionary");
+                                        return;
+                                    }
+                                    byte[] certData = certString.getBytes();
+                                    CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                                    ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
+                                    Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+                                    System.out.println("certs=" + certs);
+                                    
+                                    X509Certificate cert = (X509Certificate) certs.iterator().next();
+                                    
+                                    // to verify signature, see code at
+                                    // https://stackoverflow.com/questions/43383859/
+                                    
+                                    try
+                                    {
+                                        if (sig.getSignDate() != null)
+                                        {
+                                            cert.checkValidity(sig.getSignDate().getTime());
+                                            System.out.println("Certificate valid at signing time");
+                                        }
+                                        else
+                                        {
+                                            System.err.println("Certificate cannot be verified without signing time");
+                                        }
+                                    }
+                                    catch (CertificateExpiredException ex)
+                                    {
+                                        System.err.println("Certificate expired at signing time");
+                                    }
+                                    catch (CertificateNotYetValidException ex)
+                                    {
+                                        System.err.println("Certificate not yet valid at signing time");
+                                    }
+                                    if (CertificateVerifier.isSelfSigned(cert))
+                                    {
+                                        System.err.println("Certificate is self-signed, LOL!");
                                     }
                                     else
                                     {
-                                        System.err.println("Certificate cannot be verified without signing time");
+                                        System.out.println("Certificate is not self-signed");
+                                        
+                                        if (sig.getSignDate() != null)
+                                        {
+                                            @SuppressWarnings("unchecked")
+                                                    Store<X509CertificateHolder> store = new JcaCertStore(certs);
+                                            SigUtils.verifyCertificateChain(store, cert, sig.getSignDate().getTime());
+                                        }
                                     }
+                                    break;
                                 }
-                                catch (CertificateExpiredException ex)
-                                {
-                                    System.err.println("Certificate expired at signing time");
-                                }
-                                catch (CertificateNotYetValidException ex)
-                                {
-                                    System.err.println("Certificate not yet valid at signing time");
-                                }
-                                if (CertificateVerifier.isSelfSigned(cert))
-                                {
-                                    System.err.println("Certificate is self-signed, LOL!");
-                                }
-                                else
-                                {
-                                    System.out.println("Certificate is not self-signed");
-
-                                    if (sig.getSignDate() != null)
-                                    {
-                                        @SuppressWarnings("unchecked")
-                                        Store<X509CertificateHolder> store = new JcaCertStore(certs);
-                                        SigUtils.verifyCertificateChain(store, cert, sig.getSignDate().getTime());
-                                    }
-                                }
-                                break;
+                                case "ETSI.RFC3161":
+                                    // e.g. PDFBOX-1848, file_timestamped.pdf
+                                    verifyETSIdotRFC3161(signedContentAsStream, contents);
+                                    
+                                    // verifyPKCS7(hash, contents, sig) does not work
+                                    break;
+                                    
+                                default:
+                                    System.err.println("Unknown certificate type: " + subFilter);
+                                    break;
                             }
-                            case "ETSI.RFC3161":
-                                // e.g. PDFBOX-1848, file_timestamped.pdf
-                                verifyETSIdotRFC3161(buf, contents);
-
-                                // verifyPKCS7(hash, contents, sig) does not work
-                                break;
-
-                            default:
-                                System.err.println("Unknown certificate type: " + subFilter);
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        throw new IOException("Missing subfilter for cert dictionary");
-                    }
-
-                    int[] byteRange = sig.getByteRange();
-                    if (byteRange.length != 4)
-                    {
-                        System.err.println("Signature byteRange must have 4 items");
-                    }
-                    else
-                    {
-                        long fileLen = infile.length();
-                        long rangeMax = byteRange[2] + (long) byteRange[3];
-                        // multiply content length with 2 (because it is in hex in the PDF) and add 2 for < and >
-                        int contentLen = contents.length * 2 + 2;
-                        if (fileLen != rangeMax || byteRange[0] != 0 || byteRange[1] + contentLen != byteRange[2])
-                        {
-                            // a false result doesn't necessarily mean that the PDF is a fake
-                            // see this answer why:
-                            // https://stackoverflow.com/a/48185913/535646
-                            System.out.println("Signature does not cover whole document");
                         }
                         else
                         {
-                            System.out.println("Signature covers whole document");
+                            throw new IOException("Missing subfilter for cert dictionary");
                         }
-                        checkContentValueWithFile(infile, byteRange, contents);
+                        
+                        int[] byteRange = sig.getByteRange();
+                        if (byteRange.length != 4)
+                        {
+                            System.err.println("Signature byteRange must have 4 items");
+                        }
+                        else
+                        {
+                            long fileLen = infile.length();
+                            long rangeMax = byteRange[2] + (long) byteRange[3];
+                            // multiply content length with 2 (because it is in hex in the PDF) and add 2 for < and >
+                            int contentLen = contents.length * 2 + 2;
+                            if (fileLen != rangeMax || byteRange[0] != 0 || byteRange[1] + contentLen != byteRange[2])
+                            {
+                                // a false result doesn't necessarily mean that the PDF is a fake
+                                // see this answer why:
+                                // https://stackoverflow.com/a/48185913/535646
+                                System.out.println("Signature does not cover whole document");
+                            }
+                            else
+                            {
+                                System.out.println("Signature covers whole document");
+                            }
+                            checkContentValueWithFile(infile, byteRange, contents);
+                        }
                     }
                 }
                 analyseDSS(document);
@@ -359,7 +367,7 @@ public final class ShowSignature
     /**
      * Verify ETSI.RFC3161 TimeStampToken
      *
-     * @param buf the byte sequence that has been signed
+     * @param signedContentAsStream the byte sequence that has been signed
      * @param contents the /Contents field as a COSString
      * @throws CMSException
      * @throws NoSuchAlgorithmException
@@ -369,7 +377,7 @@ public final class ShowSignature
      * @throws CertificateVerificationException
      * @throws CertificateException 
      */
-    private void verifyETSIdotRFC3161(byte[] buf, byte[] contents)
+    private void verifyETSIdotRFC3161(InputStream signedContentAsStream, byte[] contents)
             throws CMSException, NoSuchAlgorithmException, IOException, TSPException,
             OperatorCreationException, CertificateVerificationException, CertificateException
     {
@@ -388,7 +396,15 @@ public final class ShowSignature
         
         String hashAlgorithm = timeStampInfo.getMessageImprintAlgOID().getId();
         // compare the hash of the signed content with the hash in the timestamp
-        if (Arrays.equals(MessageDigest.getInstance(hashAlgorithm).digest(buf),
+        MessageDigest md = MessageDigest.getInstance(hashAlgorithm);
+        try (DigestInputStream dis = new DigestInputStream(signedContentAsStream, md))
+        {
+            while (dis.read() != -1)
+            {
+
+            }
+        }
+        if (Arrays.equals(md.digest(),
                 timeStampInfo.getMessageImprintDigest()))
         {
             System.out.println("ETSI.RFC3161 timestamp signature verified");
@@ -409,7 +425,7 @@ public final class ShowSignature
     /**
      * Verify a PKCS7 signature.
      *
-     * @param byteArray the byte sequence that has been signed
+     * @param signedContentAsStream the byte sequence that has been signed
      * @param contents the /Contents field as a COSString
      * @param sig the PDF signature (the /V dictionary)
      * @throws CMSException
@@ -417,7 +433,7 @@ public final class ShowSignature
      * @throws GeneralSecurityException
      * @throws CertificateVerificationException
      */
-    private void verifyPKCS7(byte[] byteArray, byte[] contents, PDSignature sig)
+    private void verifyPKCS7(InputStream signedContentAsStream, byte[] contents, PDSignature sig)
             throws CMSException, OperatorCreationException,
                    CertificateVerificationException, GeneralSecurityException,
                    TSPException, IOException
@@ -425,7 +441,7 @@ public final class ShowSignature
         // inspiration:
         // http://stackoverflow.com/a/26702631/535646
         // http://stackoverflow.com/a/9261365/535646
-        CMSProcessable signedContent = new CMSProcessableByteArray(byteArray);
+        CMSProcessable signedContent = new CMSProcessableInputStream(signedContentAsStream);
         CMSSignedData signedData = new CMSSignedData(signedContent, contents);
         Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
         if (certificatesStore.getMatches(null).isEmpty())
