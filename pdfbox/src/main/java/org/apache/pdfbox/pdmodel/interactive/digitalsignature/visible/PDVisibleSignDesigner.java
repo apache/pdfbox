@@ -29,6 +29,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
@@ -64,11 +65,27 @@ public class PDVisibleSignDesigner
     public PDVisibleSignDesigner(String filename, InputStream imageStream, int page)
             throws IOException
     {
+        this(filename, imageStream, page, MemoryUsageSetting.setupMainMemoryOnly());
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param filename Path of the PDF file
+     * @param imageStream image as a stream
+     * @param page The 1-based page number for which the page size should be calculated.
+     * @param memoryUsageSetting if the file to be signed is big, use this to manage memory consumption
+     * @throws IOException
+     */
+    public PDVisibleSignDesigner(String filename, InputStream imageStream, int page,
+    		MemoryUsageSetting memoryUsageSetting)
+            throws IOException
+    {
         // set visible signature image Input stream
         readImageStream(imageStream);
 
         // calculate height and width of document page
-        calculatePageSizeFromFile(filename, page);
+        calculatePageSizeFromFile(filename, page, memoryUsageSetting);
     }
 
     /**
@@ -166,7 +183,14 @@ public class PDVisibleSignDesigner
 
     private void calculatePageSizeFromFile(String filename, int page) throws IOException
     {
-        try (PDDocument document = Loader.loadPDF(new File(filename)))
+        MemoryUsageSetting memoryUsageSetting = MemoryUsageSetting.setupMainMemoryOnly();
+        calculatePageSizeFromFile(filename, page, memoryUsageSetting);
+    }
+
+    private void calculatePageSizeFromFile(String filename, int page,
+            MemoryUsageSetting memoryUsageSetting) throws IOException
+    {
+        try (PDDocument document = Loader.loadPDF(new File(filename), memoryUsageSetting))
         {
             // calculate height and width of document page
             calculatePageSize(document, page);
