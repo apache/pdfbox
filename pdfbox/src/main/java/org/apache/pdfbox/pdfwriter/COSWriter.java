@@ -760,7 +760,7 @@ public class COSWriter implements ICOSVisitor
         // Filter for NormalXReferences
         // sort xref, needed only if object keys not regenerated
         List<XReferenceEntry> normalXReferences = getXRefEntries().stream() //
-                .filter(e -> e instanceof NormalXReference) //
+                .filter(e -> e instanceof NormalXReference || e instanceof FreeXReference) //
                 .sorted() //
                 .collect(Collectors.toList());
 
