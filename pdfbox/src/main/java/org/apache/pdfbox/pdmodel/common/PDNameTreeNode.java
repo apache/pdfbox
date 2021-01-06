@@ -258,7 +258,11 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
         if( namesArray != null )
         {
             Map<String, T> names = new LinkedHashMap<>();
-            for( int i=0; i<namesArray.size(); i+=2 )
+            if (namesArray.size() % 2 != 0)
+            {
+                LOG.warn("Names array has odd size: " + namesArray.size());
+            }
+            for (int i = 0; i + 1 < namesArray.size(); i += 2)
             {
                 COSBase base = namesArray.getObject(i);
                 if (!(base instanceof COSString))
