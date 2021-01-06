@@ -272,7 +272,11 @@ public class PDNameTreeNode implements COSObjectable
         if( namesArray != null )
         {
             Map<String, COSObjectable> names = new LinkedHashMap<String, COSObjectable>();
-            for( int i=0; i<namesArray.size(); i+=2 )
+            if (namesArray.size() % 2 != 0)
+            {
+                LOG.warn("Names array has odd size: " + namesArray.size());
+            }
+            for (int i = 0; i + 1 < namesArray.size(); i += 2)
             {
                 COSString key = (COSString)namesArray.getObject(i);
                 COSBase cosValue = namesArray.getObject( i+1 );
