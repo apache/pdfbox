@@ -57,6 +57,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
     private final PDVisibleSigProperties visibleSignatureProperties = new PDVisibleSigProperties();
     private boolean lateExternalSigning = false;
     private MemoryUsageSetting memoryUsageSetting = MemoryUsageSetting.setupMainMemoryOnly();
+    private PDDocument doc = null;
 
     public boolean isLateExternalSigning()
     {
@@ -96,9 +97,9 @@ public class CreateVisibleSignature extends CreateSignatureBase
     }
 
     /**
-     * Set visible signature designer for a new signature field.
+     * Open the PDF, create and set the visible signature designer for a new signature field.
      * 
-     * @param filename
+     * @param filename path of the PDF file
      * @param x position of the signature field
      * @param y position of the signature field
      * @param zoomPercent increase (positive value) or decrease (negative value) image with x percent.
@@ -110,7 +111,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
             InputStream imageStream, int page) 
             throws IOException
     {
-        visibleSignDesigner = new PDVisibleSignDesigner(filename, imageStream, page, memoryUsageSetting);
+        doc = Loader.loadPDF(new File(filename), memoryUsageSetting);
+        visibleSignDesigner = new PDVisibleSignDesigner(doc, imageStream, page);
         visibleSignDesigner.xAxis(x).yAxis(y).zoom(zoomPercent).adjustForRotation();
     }
 
@@ -195,7 +197,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
     /**
      * Sign pdf file and create new file that ends with "_signed.pdf".
      *
-     * @param inputFile The source pdf document file.
+     * @param inputFile The source pdf document file. It will be opened if it hasn't been opened
+     * before in {@link #setVisibleSignDesigner(java.lang.String, int, int, int, java.io.InputStream, int)}.
      * @param signedFile The file to be signed.
      * @param tsaUrl optional TSA url
      * @param signatureFieldName optional name of an existing (unsigned) signature field
@@ -211,9 +214,12 @@ public class CreateVisibleSignature extends CreateSignatureBase
         setTsaUrl(tsaUrl);
 
         // creating output document and prepare the IO streams.
+        if (doc == null)
+        {
+            doc = Loader.loadPDF(inputFile, memoryUsageSetting);
+        }
         
-        try (FileOutputStream fos = new FileOutputStream(signedFile);
-             PDDocument doc = Loader.loadPDF(inputFile, memoryUsageSetting))
+        try (FileOutputStream fos = new FileOutputStream(signedFile))
         {
             int accessPermissions = SigUtils.getMDPPermission(doc);
             if (accessPermissions == 1)
@@ -348,6 +354,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // in signature options might by closed by gc, which would close COSStream objects prematurely.
         // See https://issues.apache.org/jira/browse/PDFBOX-3743
         IOUtils.closeQuietly(signatureOptions);
+        IOUtils.closeQuietly(doc);
     }
 
     // Find an existing signature (assumed to be empty). You will usually not need this.
