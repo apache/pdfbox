@@ -204,7 +204,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     /**
      * Constructor.
      */
-    public PDFDebugger() {
+    public PDFDebugger()
+    {
     }
 
     /**
@@ -213,8 +214,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
      * @param isPageMode true if pages are to be displayed, false if internal
      *                   structure is to be displayed.
      */
-    public PDFDebugger(boolean isPageMode) {
-        this.viewstructure = isPageMode ? false : true;
+    public PDFDebugger(boolean isPageMode)
+    {
+        viewstructure = !isPageMode;
     }
 
     /**
@@ -231,6 +233,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
     }
 
+    @Override
     public Integer call()
     {
         try
@@ -285,12 +288,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
 
     public boolean isPageMode()
     {
-        return this.viewstructure ? false : true;
+        return !viewstructure;
     }
     
     public void setPageMode(boolean isPageMode)
     {
-        this.viewstructure = isPageMode ? false : true;
+        viewstructure = !isPageMode;
     }
     
     public boolean hasDocument()
