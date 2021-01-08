@@ -32,6 +32,7 @@ import java.util.Calendar;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -55,6 +56,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
     private PDVisibleSignDesigner visibleSignDesigner;
     private final PDVisibleSigProperties visibleSignatureProperties = new PDVisibleSigProperties();
     private boolean lateExternalSigning = false;
+    private MemoryUsageSetting memoryUsageSetting = MemoryUsageSetting.setupMainMemoryOnly();
 
     public boolean isLateExternalSigning()
     {
@@ -74,6 +76,26 @@ public class CreateVisibleSignature extends CreateSignatureBase
     }
 
     /**
+     * Get the memory usage setting.
+     *
+     * @return the memory usage setting.
+     */
+    public MemoryUsageSetting getMemoryUsageSetting()
+    {
+        return memoryUsageSetting;
+    }
+
+    /**
+     * Set the memory usage setting.
+     *
+     * @param memoryUsageSetting the memory usage setting.
+     */
+    public void setMemoryUsageSetting(MemoryUsageSetting memoryUsageSetting)
+    {
+        this.memoryUsageSetting = memoryUsageSetting;
+    }
+
+    /**
      * Set visible signature designer for a new signature field.
      * 
      * @param filename
@@ -88,10 +110,10 @@ public class CreateVisibleSignature extends CreateSignatureBase
             InputStream imageStream, int page) 
             throws IOException
     {
-        visibleSignDesigner = new PDVisibleSignDesigner(filename, imageStream, page);
+        visibleSignDesigner = new PDVisibleSignDesigner(filename, imageStream, page, memoryUsageSetting);
         visibleSignDesigner.xAxis(x).yAxis(y).zoom(zoomPercent).adjustForRotation();
     }
-    
+
     /**
      * Set visible signature designer for an existing signature field.
      * 
@@ -105,7 +127,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         visibleSignDesigner = new PDVisibleSignDesigner(imageStream);
         visibleSignDesigner.zoom(zoomPercent);
     }
-    
+
     /**
      * Set visible signature properties for new signature fields.
      * 
@@ -123,7 +145,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
                 preferredSize(preferredSize).page(page).visualSignEnabled(visualSignEnabled).
                 setPdVisibleSignature(visibleSignDesigner);
     }
-    
+
     /**
      * Set visible signature properties for existing signature fields.
      * 
@@ -191,7 +213,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // creating output document and prepare the IO streams.
         
         try (FileOutputStream fos = new FileOutputStream(signedFile);
-                PDDocument doc = Loader.loadPDF(inputFile))
+             PDDocument doc = Loader.loadPDF(inputFile, memoryUsageSetting))
         {
             int accessPermissions = SigUtils.getMDPPermission(doc);
             if (accessPermissions == 1)
