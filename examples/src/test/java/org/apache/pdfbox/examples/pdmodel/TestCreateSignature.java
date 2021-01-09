@@ -226,7 +226,7 @@ class TestCreateSignature
         byte[] content = Files.readAllBytes(Paths.get(IN_DIR, TSA_RESPONSE));
 
         // mock TSA server (RFC 3161)
-        MockHttpServer mockServer = new MockHttpServer(15371);
+        MockHttpServer mockServer = new MockHttpServer(externallySign ? 15371 : 15372);
         mockServer.startServer();
         String brokenMockTSA = "http://localhost:" + mockServer.getServerPort() + "/";
         MockHttpServer.MockHttpServerResponse response = new MockHttpServer.MockHttpServerResponse();
