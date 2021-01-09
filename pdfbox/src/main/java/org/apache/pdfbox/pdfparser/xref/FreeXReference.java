@@ -27,18 +27,22 @@ import org.apache.pdfbox.pdfparser.PDFXRefStream;
 public class FreeXReference extends AbstractXReference
 {
 
-    public static final FreeXReference NULL_ENTRY = new FreeXReference(new COSObjectKey(0, 65535));
-    private final COSObjectKey nextFreeKey;
+    public static final FreeXReference NULL_ENTRY = //
+            new FreeXReference(new COSObjectKey(0, 65535), 0);
+    private final COSObjectKey key;
+    private final long nextFreeObject;
 
     /**
      * Sets the given {@link COSObjectKey} as a free reference in a PDF's crossreference stream ({@link PDFXRefStream}).
      *
-     * @param nextFreeKey The key, that shall be set as the free reference of the document.
+     * @param key The key, that shall be set as the free reference of the document.
+     * @param nextFreeObject The object number of the next freee object.
      */
-    public FreeXReference(COSObjectKey nextFreeKey)
+    public FreeXReference(COSObjectKey key, long nextFreeObject)
     {
         super(XReferenceType.FREE);
-        this.nextFreeKey = nextFreeKey;
+        this.key = key;
+        this.nextFreeObject = nextFreeObject;
     }
 
     /**
@@ -49,7 +53,7 @@ public class FreeXReference extends AbstractXReference
     @Override
     public COSObjectKey getReferencedKey()
     {
-        return nextFreeKey;
+        return key;
     }
 
     /**
@@ -61,7 +65,7 @@ public class FreeXReference extends AbstractXReference
     @Override
     public long getSecondColumnValue()
     {
-        return getReferencedKey().getNumber();
+        return nextFreeObject;
     }
 
     /**
@@ -84,7 +88,7 @@ public class FreeXReference extends AbstractXReference
     @Override
     public String toString()
     {
-        return "FreeReference{" + "nextFreeKey=" + nextFreeKey + ", type="
+        return "FreeReference{" + "key=" + key + ", nextFreeObject=" + nextFreeObject + ", type="
                 + getType().getNumericValue() + " }";
     }
 }

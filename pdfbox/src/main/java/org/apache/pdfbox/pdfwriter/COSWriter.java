@@ -755,11 +755,20 @@ public class COSWriter implements ICOSVisitor
     // writes the "xref" table
     private void doWriteXRefTable() throws IOException
     {
-        addXRefEntry(FreeXReference.NULL_ENTRY);
+        if (!incrementalUpdate)
+        {
+            // fill gaps with free entries
+            fillGapsWithFreeEntries();
+        }
+        else
+        {
+            // add free entry with object number 0
+            addXRefEntry(FreeXReference.NULL_ENTRY);
+        }
 
-        // Filter for NormalXReferences
+        // Filter for NormalXReferences and FreeXReferences
         // sort xref, needed only if object keys not regenerated
-        List<XReferenceEntry> normalXReferences = getXRefEntries().stream() //
+        List<XReferenceEntry> xRefEntries = getXRefEntries().stream() //
                 .filter(e -> e instanceof NormalXReference || e instanceof FreeXReference) //
                 .sorted() //
                 .collect(Collectors.toList());
@@ -772,7 +781,7 @@ public class COSWriter implements ICOSVisitor
         // write start object number and object count for this x ref section
         // we assume starting from scratch
 
-        Long[] xRefRanges = getXRefRanges(normalXReferences);
+        Long[] xRefRanges = getXRefRanges(xRefEntries);
         int xRefLength = xRefRanges.length;
         int x = 0;
         int j = 0;
@@ -782,9 +791,54 @@ public class COSWriter implements ICOSVisitor
 
             for (int i = 0; i < xRefRanges[x + 1]; ++i)
             {
-                writeXrefEntry(normalXReferences.get(j++));
+                writeXrefEntry(xRefEntries.get(j++));
             }
             x += 2;
+        }
+    }
+
+    private void fillGapsWithFreeEntries()
+    {
+        List<NormalXReference> normalXReferences = getXRefEntries().stream() //
+                .filter(e -> e instanceof NormalXReference) //
+                .map(e -> (NormalXReference) e) //
+                .sorted() //
+                .collect(Collectors.toList());
+        long last = 0;
+        List<Long> freeNumbers = new ArrayList<>();
+        for (NormalXReference entry : normalXReferences)
+        {
+            long nr = entry.getReferencedKey().getNumber();
+            if (nr != last)
+            {
+                for (long i = last; i < nr; i++)
+                {
+                    freeNumbers.add(i);
+                }
+            }
+            last = nr + 1;
+        }
+        int numberOfFreeNumbers = freeNumbers.size();
+        if (numberOfFreeNumbers == 0)
+        {
+            // no gaps found -> add free entry with object number 0
+            addXRefEntry(FreeXReference.NULL_ENTRY);
+            return;
+        }
+        // add free entries for all but the last one
+        for (int i = 0; i < numberOfFreeNumbers - 1; i++)
+        {
+            addXRefEntry(new FreeXReference(new COSObjectKey(freeNumbers.get(i), 65535),
+                    freeNumbers.get(i + 1)));
+        }
+        // add free entry for the last one referencing object 0 as next free one
+        addXRefEntry(new FreeXReference(
+                new COSObjectKey(freeNumbers.get(numberOfFreeNumbers - 1), 65535), 0));
+        long firstObjectNumber = freeNumbers.get(0);
+        // add free entry for object number 0 if not already present
+        if (firstObjectNumber > 0)
+        {
+            addXRefEntry(new FreeXReference(new COSObjectKey(0, 65535), firstObjectNumber));
         }
     }
 
