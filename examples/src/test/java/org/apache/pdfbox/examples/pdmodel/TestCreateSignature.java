@@ -111,6 +111,7 @@ import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -272,22 +273,17 @@ class TestCreateSignature
      * @throws TSPException
      * @throws CertificateVerificationException 
      */
-    @ParameterizedTest
-	@MethodSource("signingTypes")
-    void testCreateSignedTimeStamp(boolean externallySign)
+    @Test
+    void testCreateSignedTimeStamp()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
-        if (externallySign)
-        {
-            return; // runs only once, independent of externallySign
-        }
         if (tsa == null || tsa.isEmpty())
         {
             System.err.println("No TSA URL defined, test skipped");
             return;
         }
-        final String fileName = getOutputFileName("timestamped{0}.pdf", externallySign);
+        final String fileName = getOutputFileName("timestamped{0}.pdf", false);
         CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsa);
         signing.signDetached(new File(IN_DIR + "sign_me.pdf"), new File(OUT_DIR + fileName));
 
@@ -744,15 +740,10 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      * @throws NoSuchAlgorithmException 
      */
-    @ParameterizedTest
-	@MethodSource("signingTypes")
-    void testCRL(boolean externallySign) throws IOException, CMSException, CertificateException, TSPException,
+    @Test
+    void testCRL() throws IOException, CMSException, CertificateException, TSPException,
             OperatorCreationException, CertificateVerificationException, NoSuchAlgorithmException
     {
-        if (externallySign)
-        {
-            return; // runs only once, independent of externallySign
-        }
         String hexSignature;
         try (BufferedReader bfr = 
             new BufferedReader(new InputStreamReader(new FileInputStream(IN_DIR + "hexsignature.txt"))))
@@ -810,15 +801,10 @@ class TestCreateSignature
      * @throws org.bouncycastle.operator.OperatorCreationException
      * @throws org.bouncycastle.cms.CMSException
      */
-    @ParameterizedTest
-	@MethodSource("signingTypes")
-    void testAddValidationInformation(boolean externallySign)
+    @Test
+    void testAddValidationInformation()
             throws IOException, GeneralSecurityException, OCSPException, OperatorCreationException, CMSException
     {
-        if (externallySign)
-        {
-            return; // runs only once, independent of externallySign
-        }
         File inFile = new File("target/pdfs", "notCertified_368835_Sig_en_201026090509.pdf");
         String name = inFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
