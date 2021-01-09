@@ -36,12 +36,15 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Test merging different PDFs with AcroForms.
  * 
  * 
  */
+@Execution(ExecutionMode.CONCURRENT)
 class MergeAcroFormsTest
 {
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/multipdf");

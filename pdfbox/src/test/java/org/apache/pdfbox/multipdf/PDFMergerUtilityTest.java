@@ -57,6 +57,8 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Test suite for PDFMergerUtility.
@@ -64,6 +66,7 @@ import org.junit.jupiter.api.Test;
  * @author Maruan Sahyoun (PDF files)
  * @author Tilman Hausherr (code)
  */
+@Execution(ExecutionMode.CONCURRENT)
 class PDFMergerUtilityTest
 {
     final String SRCDIR = "src/test/resources/input/merge/";
@@ -94,7 +97,7 @@ class PDFMergerUtilityTest
     {
         checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
                 "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf",
-                "GlobalResourceMergeTestResult.pdf", 
+                "GlobalResourceMergeTestResult1.pdf", 
                 MemoryUsageSetting.setupMainMemoryOnly());
         
         // once again, with scratch file
@@ -104,6 +107,22 @@ class PDFMergerUtilityTest
                 MemoryUsageSetting.setupTempFileOnly());
     }
 
+    // see PDFBOX-2893
+    @Test
+    void testPDFMergerUtility2() throws IOException
+    {
+        checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.pdf",
+                "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
+                "GlobalResourceMergeTestResult3.pdf",
+                MemoryUsageSetting.setupMainMemoryOnly());
+
+        // once again, with scratch file
+        checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.pdf",
+                "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
+                "GlobalResourceMergeTestResult4.pdf",
+                MemoryUsageSetting.setupTempFileOnly());
+    }
+    
     /**
      * Tests whether the merge of two PDF files with JPEG and CCITT works. A few revisions before
      * 1704911 this test failed because the clone utility attempted to decode and re-encode the
@@ -126,22 +145,6 @@ class PDFMergerUtilityTest
                 MemoryUsageSetting.setupTempFileOnly());
     }
 
-    // see PDFBOX-2893
-    @Test
-    void testPDFMergerUtility2() throws IOException
-    {
-        checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.pdf",
-                "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
-                "GlobalResourceMergeTestResult.pdf",
-                MemoryUsageSetting.setupMainMemoryOnly());
-
-        // once again, with scratch file
-        checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.pdf",
-                "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
-                "GlobalResourceMergeTestResult2.pdf",
-                MemoryUsageSetting.setupTempFileOnly());
-    }
-    
     /**
      * PDFBOX-3972: Test that OpenAction page destination isn't lost after merge.
      * 
