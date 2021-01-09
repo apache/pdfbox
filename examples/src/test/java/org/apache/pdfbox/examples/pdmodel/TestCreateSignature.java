@@ -391,9 +391,8 @@ class TestCreateSignature
      * @throws TSPException
      * @throws CertificateVerificationException
      */
-    @ParameterizedTest
-	@MethodSource("signingTypes")
-    void testPDFBox3978(boolean externallySign) throws IOException, NoSuchAlgorithmException, 
+    @Test
+    void testPDFBox3978() throws IOException, NoSuchAlgorithmException, 
                                         CertificateException, UnrecoverableKeyException, 
                                         CMSException, OperatorCreationException, GeneralSecurityException,
                                         TSPException, CertificateVerificationException
@@ -401,11 +400,6 @@ class TestCreateSignature
         String filename        = OUT_DIR + "EmptySignatureForm.pdf";
         String filenameSigned1 = OUT_DIR + "EmptySignatureForm-signed1.pdf";
         String filenameSigned2 = OUT_DIR + "EmptySignatureForm-signed2.pdf";
-
-        if (!externallySign)
-        {
-            return;
-        }
 
         // create file with empty signature
         CreateEmptySignatureForm.main(new String[]{filename});
@@ -552,15 +546,9 @@ class TestCreateSignature
      * @throws IOException
      * @throws NoSuchAlgorithmException 
      */
-    @ParameterizedTest
-	@MethodSource("signingTypes")
-    void testPDFBox3811(boolean externallySign) throws IOException, NoSuchAlgorithmException
-    {
-        if (!externallySign)
-        {
-            return;
-        }
-        
+    @Test
+    void testPDFBox3811() throws IOException, NoSuchAlgorithmException
+    {        
         // create simple PDF
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
@@ -709,14 +697,9 @@ class TestCreateSignature
         }
     }
 
-    @ParameterizedTest
-	@MethodSource("signingTypes")
-    void testPDFBox4784(boolean externallySign) throws Exception
+    @Test
+    void testPDFBox4784() throws Exception
     {
-        if (!externallySign)
-        {
-            return;
-        }
         Date signingTime = new Date();
 
         byte[] defaultSignedOne = signEncrypted(null, signingTime);
