@@ -299,7 +299,7 @@ class TestFontEmbedding
                 stream.showText(text);
                 stream.endText();
             }
-            file = new File(OUT_DIR, "CIDFontType2.pdf");
+            file = new File(OUT_DIR, "CIDFontType2" + (useSubset ? "-useSubset" : "") + ".pdf");
             document.save(file);
         }
 
