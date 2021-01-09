@@ -112,6 +112,8 @@ import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -119,16 +121,18 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Test for CreateSignature. Each test case will run twice: once with SignatureInterface
  * and once using external signature creation scenario.
  */
+@Execution(ExecutionMode.CONCURRENT)
 class TestCreateSignature
 {
-    private static CertificateFactory certificateFactory = null;
-    private static KeyStore keyStore = null;
     private static final String IN_DIR = "src/test/resources/org/apache/pdfbox/examples/signature/";
     private static final String OUT_DIR = "target/test-output/";
     private static final String KEYSTORE_PATH = IN_DIR + "keystore.p12";
     private static final String JPEG_PATH = IN_DIR + "stamp.jpg";
     private static final String PASSWORD = "123456";
     private static final String TSA_RESPONSE = "tsa_response.asn1";
+
+    private static CertificateFactory certificateFactory = null;
+    private static KeyStore keyStore = null;
     private static Certificate certificate;
     private static String tsa;
 
