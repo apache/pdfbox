@@ -131,9 +131,6 @@ class TestCreateSignature
     private static Certificate certificate;
     private static String tsa;
 
-
-    public boolean externallySign;
-
     /**
      * Values for {@link #externallySign} test parameter to specify if signing should be conducted
      * using externally signing scenario ({@code true}) or SignatureInterface ({@code false}).
@@ -180,8 +177,8 @@ class TestCreateSignature
         CreateSignature signing = new CreateSignature(keyStore, PASSWORD.toCharArray());
         signing.setExternalSigning(externallySign);
 
-        final String fileName = getOutputFileName("signed{0}.pdf");
-        final String fileName2 = getOutputFileName("signed{0}-late-tsa.pdf");
+        final String fileName = getOutputFileName("signed{0}.pdf", externallySign);
+        final String fileName2 = getOutputFileName("signed{0}-late-tsa.pdf", externallySign);
         signing.signDetached(new File(IN_DIR + "sign_me.pdf"), new File(OUT_DIR + fileName));
 
         checkSignature(new File(IN_DIR, "sign_me.pdf"), new File(OUT_DIR, fileName), false);
@@ -234,7 +231,7 @@ class TestCreateSignature
         mockServer.setMockHttpServerResponses(response);
 
         String inPath = IN_DIR + "sign_me_tsa.pdf";
-        String outPath = OUT_DIR + getOutputFileName("signed{0}_tsa.pdf");
+        String outPath = OUT_DIR + getOutputFileName("signed{0}_tsa.pdf", externallySign);
 
         // sign PDF (will fail due to nonce and timestamp differing)
         CreateSignature signing1 = new CreateSignature(keyStore, PASSWORD.toCharArray());
@@ -290,7 +287,7 @@ class TestCreateSignature
             System.err.println("No TSA URL defined, test skipped");
             return;
         }
-        final String fileName = getOutputFileName("timestamped{0}.pdf");
+        final String fileName = getOutputFileName("timestamped{0}.pdf", externallySign);
         CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsa);
         signing.signDetached(new File(IN_DIR + "sign_me.pdf"), new File(OUT_DIR + fileName));
 
@@ -343,7 +340,7 @@ class TestCreateSignature
             signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
             signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
             signing.setExternalSigning(externallySign);
-            destFile = new File(OUT_DIR + getOutputFileName("signed{0}_visible.pdf"));
+            destFile = new File(OUT_DIR + getOutputFileName("signed{0}_visible.pdf", externallySign));
             signing.signPDF(new File(inPath), destFile, null);
         }
 
@@ -374,7 +371,7 @@ class TestCreateSignature
         Rectangle2D humanRect = new Rectangle2D.Float(100, 200, 150, 50);
         signing.setImageFile(new File(JPEG_PATH));
         signing.setExternalSigning(externallySign);
-        destFile = new File(OUT_DIR + getOutputFileName("signed{0}_visible2.pdf"));
+        destFile = new File(OUT_DIR + getOutputFileName("signed{0}_visible2.pdf", externallySign));
         signing.signPDF(new File(inPath), destFile, humanRect, null);
 
         checkSignature(new File(inPath), destFile, false);
@@ -445,9 +442,9 @@ class TestCreateSignature
         }
     }
 
-    private String getOutputFileName(String filePattern)
+    private String getOutputFileName(String filePattern, boolean externallySign)
     {
-        return MessageFormat.format(filePattern,(externallySign ? "_ext" : ""));
+        return MessageFormat.format(filePattern, (externallySign ? "_ext" : ""));
     }
 
     // This check fails with a file created with the code before PDFBOX-3011 was solved.
@@ -617,9 +614,9 @@ class TestCreateSignature
         CreateSignature signing = new CreateSignature(keyStore, PASSWORD.toCharArray());
         signing.setExternalSigning(externallySign);
 
-        final String fileNameSigned = getOutputFileName("SimpleForm_signed{0}.pdf");
-        final String fileNameResaved1 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved1.pdf");
-        final String fileNameResaved2 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved2.pdf");
+        final String fileNameSigned = getOutputFileName("SimpleForm_signed{0}.pdf", externallySign);
+        final String fileNameResaved1 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved1.pdf", externallySign);
+        final String fileNameResaved2 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved2.pdf", externallySign);
         signing.signDetached(new File("target/SimpleForm.pdf"), new File(OUT_DIR + fileNameSigned));
 
         checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameSigned), false);
