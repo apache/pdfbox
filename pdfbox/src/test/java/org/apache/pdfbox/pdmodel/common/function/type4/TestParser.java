@@ -19,11 +19,14 @@ package org.apache.pdfbox.pdmodel.common.function.type4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Tests the type 4 function parser.
  *
  */
+@Execution(ExecutionMode.CONCURRENT)
 class TestParser
 {
 

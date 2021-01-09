@@ -22,11 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Tests all implemented PostScript operators.
  *
  */
+@Execution(ExecutionMode.CONCURRENT)
 class TestOperators
 {
 
