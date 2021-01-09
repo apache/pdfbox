@@ -38,6 +38,8 @@ import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Tests font embedding.
@@ -45,6 +47,7 @@ import org.junit.jupiter.api.Test;
  * @author John Hewson
  * @author Tilman Hausherr
  */
+@Execution(ExecutionMode.CONCURRENT)
 class TestFontEmbedding
 {
     private static final File OUT_DIR = new File("target/test-output");

@@ -48,12 +48,15 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * 
  * @author adam
  * @author Tilman Hausherr
  */
+@Execution(ExecutionMode.CONCURRENT)
 class PDFontTest
 {
     private static final File OUT_DIR = new File("target/test-output");
