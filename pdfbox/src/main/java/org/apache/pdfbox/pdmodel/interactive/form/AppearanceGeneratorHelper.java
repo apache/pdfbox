@@ -180,7 +180,7 @@ class AppearanceGeneratorHelper
         // see PDFBOX-3911
         if (field instanceof PDTextField && !((PDTextField) field).isMultiline())
         {
-            value = apValue.replaceAll("\\u000D\\u000A|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]", " ");
+            value = value.replaceAll("\\u000D\\u000A|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]", " ");
         }
 
         for (PDAnnotationWidget widget : field.getWidgets())
