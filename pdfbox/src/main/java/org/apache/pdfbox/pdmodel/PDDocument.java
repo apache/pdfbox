@@ -348,7 +348,7 @@ public class PDDocument implements Closeable
 
         // Get the AcroForm from the Root-Dictionary and append the annotation
         PDDocumentCatalog catalog = getDocumentCatalog();
-        PDAcroForm acroForm = catalog.getAcroForm();
+        PDAcroForm acroForm = catalog.getAcroForm(null);
         catalog.getCOSObject().setNeedToBeUpdated(true);
 
         if (acroForm == null)
@@ -822,7 +822,7 @@ public class PDDocument implements Closeable
     public List<PDSignatureField> getSignatureFields()
     {
         List<PDSignatureField> fields = new ArrayList<>();
-        PDAcroForm acroForm = getDocumentCatalog().getAcroForm();
+        PDAcroForm acroForm = getDocumentCatalog().getAcroForm(null);
         if (acroForm != null)
         {
             for (PDField field : acroForm.getFieldTree())
