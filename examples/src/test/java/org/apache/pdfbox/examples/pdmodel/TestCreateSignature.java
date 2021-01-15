@@ -160,6 +160,8 @@ class TestCreateSignature
 
         certificate = keyStore.getCertificateChain(keyStore.aliases().nextElement())[0];
         tsa = System.getProperty("org.apache.pdfbox.examples.pdmodel.tsa");
+        
+        CreateSimpleForm.main(new String[0]); // creates "target/SimpleForm.pdf"
     }
 
     /**
@@ -595,8 +597,6 @@ class TestCreateSignature
     void testSaveIncrementalAfterSign(boolean externallySign) throws Exception
     {
         BufferedImage oldImage, expectedImage1, actualImage1, expectedImage2, actualImage2;
-
-        CreateSimpleForm.main(new String[0]); // creates "target/SimpleForm.pdf"
 
         // sign PDF
         CreateSignature signing = new CreateSignature(keyStore, PASSWORD.toCharArray());
