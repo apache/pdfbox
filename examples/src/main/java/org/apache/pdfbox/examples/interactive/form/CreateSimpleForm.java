@@ -44,6 +44,8 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
  */
 public final class CreateSimpleForm
 {
+    static final String DEFAULT_FILENAME = "target/SimpleForm.pdf";
+
     private CreateSimpleForm()
     {
     }
@@ -125,7 +127,14 @@ public final class CreateSimpleForm
                 cs.endText();
             }
 
-            document.save("target/SimpleForm.pdf");
+            if (args == null || args.length == 0)
+            {
+                document.save(DEFAULT_FILENAME);
+            }
+            else
+            {
+                document.save(args[0]); // used for concurrent build tests
+            }
         }
     }
 }

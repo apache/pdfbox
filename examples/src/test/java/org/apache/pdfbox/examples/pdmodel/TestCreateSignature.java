@@ -134,6 +134,7 @@ class TestCreateSignature
     private static final String JPEG_PATH = IN_DIR + "stamp.jpg";
     private static final String PASSWORD = "123456";
     private static final String TSA_RESPONSE = "tsa_response.asn1";
+    private static final String SIMPLE_FORM_FILENAME = "target/TestCreateSignatureSimpleForm.pdf";
 
     private static CertificateFactory certificateFactory = null;
     private static KeyStore keyStore = null;
@@ -165,7 +166,7 @@ class TestCreateSignature
         certificate = keyStore.getCertificateChain(keyStore.aliases().nextElement())[0];
         tsa = System.getProperty("org.apache.pdfbox.examples.pdmodel.tsa");
         
-        CreateSimpleForm.main(new String[0]); // creates "target/SimpleForm.pdf"
+        CreateSimpleForm.main(new String[] { SIMPLE_FORM_FILENAME });
     }
 
     /**
@@ -613,9 +614,9 @@ class TestCreateSignature
         try
         {
             LOG.info("huhu1: " + new File(OUT_DIR + fileNameSigned));
-            signing.signDetached(new File("target/SimpleForm.pdf"), new File(OUT_DIR + fileNameSigned));
+            signing.signDetached(new File(SIMPLE_FORM_FILENAME), new File(OUT_DIR + fileNameSigned));
             
-            checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameSigned), false);
+            checkSignature(new File(SIMPLE_FORM_FILENAME), new File(OUT_DIR, fileNameSigned), false);
             LOG.info("huhu3: " + new File(OUT_DIR + fileNameSigned));
         }
         catch (Exception ex)
@@ -658,7 +659,7 @@ class TestCreateSignature
             appearance.getNormalAppearance().getCOSObject().setNeedToBeUpdated(true);
             doc.saveIncremental(fileOutputStream);
         }
-        checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameResaved1), false);
+        checkSignature(new File(SIMPLE_FORM_FILENAME), new File(OUT_DIR, fileNameResaved1), false);
         try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameResaved1)))
         {
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
@@ -696,7 +697,7 @@ class TestCreateSignature
             objectsToWrite.add(field.getWidgets().get(0).getAppearance().getNormalAppearance().getCOSObject());
             doc.saveIncremental(fileOutputStream, objectsToWrite);
         }
-        checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameResaved2), false);
+        checkSignature(new File(SIMPLE_FORM_FILENAME), new File(OUT_DIR, fileNameResaved2), false);
         try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameResaved2)))
         {
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");

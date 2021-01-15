@@ -40,6 +40,8 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
  */
 public final class AddBorderToField
 {
+    static final String RESULT_FILENAME = "target/AddBorderToField.pdf";
+
     private AddBorderToField()
     {
     }
@@ -47,7 +49,7 @@ public final class AddBorderToField
     public static void main(String[] args) throws IOException
     {
         // Load the PDF document created by SimpleForm.java
-        try (PDDocument document = Loader.loadPDF(new File("target/SimpleForm.pdf")))
+        try (PDDocument document = Loader.loadPDF(new File(CreateSimpleForm.DEFAULT_FILENAME)))
         {
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             
@@ -66,7 +68,7 @@ public final class AddBorderToField
             // for the visual style of the form field.
             widget.setAppearanceCharacteristics(fieldAppearance);
             
-            document.save("target/AddBorderToField.pdf");
+            document.save(RESULT_FILENAME);
         }
     }
 }

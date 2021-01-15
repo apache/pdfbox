@@ -44,12 +44,15 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Test of some the form examples.
  *
  * @author Tilman Hausherr
  */
+@Execution(ExecutionMode.CONCURRENT)
 class TestCreateSimpleForms
 {
 
@@ -61,8 +64,10 @@ class TestCreateSimpleForms
     @Test
     void testCreateSimpleForm() throws IOException
     {
-        CreateSimpleForm.main(null);
-        try (PDDocument doc = Loader.loadPDF(new File("target/SimpleForm.pdf")))
+        String filename = "target/TestCreateSimpleForm.pdf";
+        CreateSimpleForm.main(new String[] { filename });
+
+        try (PDDocument doc = Loader.loadPDF(new File(filename)))
         {
             new PDFRenderer(doc).renderImage(0);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
@@ -88,7 +93,7 @@ class TestCreateSimpleForms
     {
         CreateSimpleForm.main(null);
 
-        try (PDDocument doc = Loader.loadPDF(new File("target/SimpleForm.pdf")))
+        try (PDDocument doc = Loader.loadPDF(new File(CreateSimpleForm.DEFAULT_FILENAME)))
         {
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
@@ -104,7 +109,7 @@ class TestCreateSimpleForms
 
         AddBorderToField.main(null);
 
-        try (PDDocument doc = Loader.loadPDF(new File("target/AddBorderToField.pdf")))
+        try (PDDocument doc = Loader.loadPDF(new File(AddBorderToField.RESULT_FILENAME)))
         {
             new PDFRenderer(doc).renderImage(0);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
