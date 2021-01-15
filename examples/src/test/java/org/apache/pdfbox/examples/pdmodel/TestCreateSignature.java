@@ -58,8 +58,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -126,8 +124,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 @Execution(ExecutionMode.CONCURRENT)
 class TestCreateSignature
 {
-    private static final Log LOG = LogFactory.getLog(TestCreateSignature.class);
-
     private static final String IN_DIR = "src/test/resources/org/apache/pdfbox/examples/signature/";
     private static final String OUT_DIR = "target/test-output/";
     private static final String KEYSTORE_PATH = IN_DIR + "keystore.p12";
@@ -165,7 +161,8 @@ class TestCreateSignature
 
         certificate = keyStore.getCertificateChain(keyStore.aliases().nextElement())[0];
         tsa = System.getProperty("org.apache.pdfbox.examples.pdmodel.tsa");
-        
+
+        // don't use the default file name, because it's used by other tests that run concurrently
         CreateSimpleForm.main(new String[] { SIMPLE_FORM_FILENAME });
     }
 
@@ -454,7 +451,6 @@ class TestCreateSignature
             TSPException, CertificateVerificationException
     {
         String origPageKey;
-        LOG.info("Size and date of " + origFile + ": " + origFile.length() + ", " + origFile.lastModified());
         try (PDDocument document = Loader.loadPDF(origFile))
         {
             // get string representation of pages COSObject
@@ -611,20 +607,11 @@ class TestCreateSignature
         final String fileNameSigned = getOutputFileName("SimpleForm_signed{0}.pdf", externallySign);
         final String fileNameResaved1 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved1.pdf", externallySign);
         final String fileNameResaved2 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved2.pdf", externallySign);
-        try
-        {
-            LOG.info("huhu1: " + new File(OUT_DIR + fileNameSigned));
-            signing.signDetached(new File(SIMPLE_FORM_FILENAME), new File(OUT_DIR + fileNameSigned));
-            
-            checkSignature(new File(SIMPLE_FORM_FILENAME), new File(OUT_DIR, fileNameSigned), false);
-            LOG.info("huhu3: " + new File(OUT_DIR + fileNameSigned));
-        }
-        catch (Exception ex)
-        {
-            LOG.error("huhu2", ex);
-            throw ex;
-        }
-        
+
+        signing.signDetached(new File(SIMPLE_FORM_FILENAME), new File(OUT_DIR + fileNameSigned));
+
+        checkSignature(new File(SIMPLE_FORM_FILENAME), new File(OUT_DIR, fileNameSigned), false);
+
         try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned)))
         {
             oldImage = new PDFRenderer(doc).renderImage(0);
