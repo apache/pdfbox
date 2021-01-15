@@ -769,8 +769,8 @@ public class PDDocument implements Closeable
         PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
         importedPage.setContents(dest);
         addPage(importedPage);
-        importedPage.setCropBox(page.getCropBox());
-        importedPage.setMediaBox(page.getMediaBox());
+        importedPage.setCropBox(new PDRectangle(page.getCropBox().getCOSArray()));
+        importedPage.setMediaBox(new PDRectangle(page.getMediaBox().getCOSArray()));
         importedPage.setRotation(page.getRotation());
         if (page.getResources() != null && !page.getCOSObject().containsKey(COSName.RESOURCES))
         {
