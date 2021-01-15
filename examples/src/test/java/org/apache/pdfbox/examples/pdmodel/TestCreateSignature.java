@@ -605,9 +605,18 @@ class TestCreateSignature
         final String fileNameSigned = getOutputFileName("SimpleForm_signed{0}.pdf", externallySign);
         final String fileNameResaved1 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved1.pdf", externallySign);
         final String fileNameResaved2 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved2.pdf", externallySign);
-        signing.signDetached(new File("target/SimpleForm.pdf"), new File(OUT_DIR + fileNameSigned));
-
-        checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameSigned), false);
+        try
+        {
+            signing.signDetached(new File("target/SimpleForm.pdf"), new File(OUT_DIR + fileNameSigned));
+            
+            checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameSigned), false);
+        }
+        catch (Exception ex)
+        {
+            System.out.println("huhu");
+            ex.printStackTrace();
+            throw ex;
+        }
         
         try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned)))
         {
