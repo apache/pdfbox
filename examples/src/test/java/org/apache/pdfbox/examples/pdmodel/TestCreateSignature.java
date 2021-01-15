@@ -453,6 +453,7 @@ class TestCreateSignature
             TSPException, CertificateVerificationException
     {
         String origPageKey;
+        LOG.info("Size and date of " + origFile + ": " + origFile.length() + ", " + origFile.lastModified());
         try (PDDocument document = Loader.loadPDF(origFile))
         {
             // get string representation of pages COSObject
