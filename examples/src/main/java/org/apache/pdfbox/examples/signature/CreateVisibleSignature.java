@@ -222,7 +222,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
             SigUtils.setMDPPermission(doc, signature, 2);
         }
 
-        PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+        PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm(null);
         if (acroForm != null && acroForm.getNeedAppearances())
         {
             // PDFBOX-3738 NeedAppearances true results in visible signature becoming invisible 
@@ -332,7 +332,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
     {
         PDSignature signature = null;
         PDSignatureField signatureField;
-        PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+        PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm(null);
         if (acroForm != null)
         {
             signatureField = (PDSignatureField) acroForm.getField(sigFieldName);
