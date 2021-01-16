@@ -768,7 +768,7 @@ public class COSWriter implements ICOSVisitor
 
         // Filter for NormalXReferences and FreeXReferences
         // sort xref, needed only if object keys not regenerated
-        List<XReferenceEntry> xRefEntries = getXRefEntries().stream() //
+        List<XReferenceEntry> tmpXRefEntries = getXRefEntries().stream() //
                 .filter(e -> e instanceof NormalXReference || e instanceof FreeXReference) //
                 .sorted() //
                 .collect(Collectors.toList());
@@ -781,7 +781,7 @@ public class COSWriter implements ICOSVisitor
         // write start object number and object count for this x ref section
         // we assume starting from scratch
 
-        Long[] xRefRanges = getXRefRanges(xRefEntries);
+        Long[] xRefRanges = getXRefRanges(tmpXRefEntries);
         int xRefLength = xRefRanges.length;
         int x = 0;
         int j = 0;
@@ -791,7 +791,7 @@ public class COSWriter implements ICOSVisitor
 
             for (int i = 0; i < xRefRanges[x + 1]; ++i)
             {
-                writeXrefEntry(xRefEntries.get(j++));
+                writeXrefEntry(tmpXRefEntries.get(j++));
             }
             x += 2;
         }
@@ -801,7 +801,7 @@ public class COSWriter implements ICOSVisitor
     {
         List<NormalXReference> normalXReferences = getXRefEntries().stream() //
                 .filter(e -> e instanceof NormalXReference) //
-                .map(e -> (NormalXReference) e) //
+                .map(NormalXReference.class::cast) //
                 .sorted() //
                 .collect(Collectors.toList());
         long last = 0;
