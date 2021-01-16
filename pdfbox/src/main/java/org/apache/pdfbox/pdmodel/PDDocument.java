@@ -877,7 +877,11 @@ public class PDDocument implements Closeable
     
     /**
      * Save the document to a file using default compression.
-     * 
+     * <p>
+     * If encryption has been activated (with
+     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
+     * do not use the document after saving because the contents are now encrypted.
+     *
      * @param fileName The file to save as.
      *
      * @throws IOException if the output could not be written
@@ -889,6 +893,10 @@ public class PDDocument implements Closeable
 
     /**
      * Save the document to a file using default compression.
+     * <p>
+     * If encryption has been activated (with
+     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
+     * do not use the document after saving because the contents are now encrypted.
      * 
      * @param file The file to save as.
      *
@@ -901,6 +909,10 @@ public class PDDocument implements Closeable
 
     /**
      * This will save the document to an output stream.
+     * <p>
+     * If encryption has been activated (with
+     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
+     * do not use the document after saving because the contents are now encrypted.
      *
      * @param output The stream to write to. It is recommended to wrap it in a {@link java.io.BufferedOutputStream},
      * unless it is already buffered.
@@ -914,6 +926,10 @@ public class PDDocument implements Closeable
 
     /**
      * Save the document using the given compression.
+     * <p>
+     * If encryption has been activated (with
+     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
+     * do not use the document after saving because the contents are now encrypted.
      *
      * @param file The file to save as.
      * @param compressParameters The parameters for the document's compression.
@@ -930,6 +946,10 @@ public class PDDocument implements Closeable
 
     /**
      * Save the document to a file using the given compression.
+     * <p>
+     * If encryption has been activated (with
+     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
+     * do not use the document after saving because the contents are now encrypted.
      * 
      * @param fileName The file to save as.
      * @param compressParameters The parameters for the document's compression.
@@ -943,6 +963,10 @@ public class PDDocument implements Closeable
 
     /**
      * Save the document using the given compression.
+     * <p>
+     * If encryption has been activated (with
+     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
+     * do not use the document after saving because the contents are now encrypted.
      *
      * @param output The stream to write to. It is recommended to wrap it in a {@link java.io.BufferedOutputStream},
      * unless it is already buffered.
@@ -1185,6 +1209,8 @@ public class PDDocument implements Closeable
      * encrypted when it will be saved. This method only marks the document for encryption. It also
      * calls {@link #setAllSecurityToBeRemoved(boolean)} with a false argument if it was set to true
      * previously and logs a warning.
+     * <p>
+     * Do not use the document after saving, because the structures are encrypted.
      *
      * @see org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy
      * @see org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy
