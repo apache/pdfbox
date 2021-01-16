@@ -630,36 +630,6 @@ public class CmapSubtable implements CmapLookup
         return glyphId == null ? 0 : glyphId;
     }
 
-    /**
-     * Returns the character code for the given GID, or null if there is none.
-     *
-     * @param gid glyph id
-     * @return character code
-     * 
-     * @deprecated the mapping may be ambiguous, see {@link #getCharCodes(int)}. The first mapped value is returned by
-     * default.
-     */
-    @Deprecated
-    public Integer getCharacterCode(int gid)
-    {
-        int code = getCharCode(gid);
-        if (code == -1)
-        {
-            return null;
-        }
-        // ambiguous mapping
-        if (code == Integer.MIN_VALUE)
-        {
-            List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
-            if (mappedValues != null)
-            {
-                // use the first mapping
-                return mappedValues.get(0);
-            }
-        }
-        return code;
-    }
-
     private int getCharCode(int gid)
     {
         if (gid < 0 || gid >= glyphIdToCharacterCode.length)
