@@ -73,14 +73,14 @@ final class Type1Parser
     {
         if (bytes.length == 0)
         {
-            throw new IllegalArgumentException("byte[] is empty");
+            throw new IOException("ASCII segment of type 1 font is empty");
         }
 
         // %!FontType1-1.0
         // %!PS-AdobeFont-1.0
         if (bytes.length < 2 || (bytes[0] != '%' && bytes[1] != '!'))
         {
-            throw new IOException("Invalid start of ASCII segment");
+            throw new IOException("Invalid start of ASCII segment of type 1 font");
         }
 
         lexer = new Type1Lexer(bytes);
