@@ -176,7 +176,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
             // be careful with such files.
 
             PDSignature signature = null;
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm(null);
             PDRectangle rect = null;
 
             // sign a PDF with an existing empty signature, as created by the CreateEmptySignatureForm example.
