@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
+import org.bouncycastle.tsp.TimeStampToken;
 
 public abstract class CreateSignedTimestampBase implements SignatureInterface
 {
@@ -51,6 +52,7 @@ public abstract class CreateSignedTimestampBase implements SignatureInterface
     @Override
     public byte[] sign(InputStream content) throws IOException
     {
-        return getTsaClient().getTimeStampToken(IOUtils.toByteArray(content));
+        TimeStampToken timeStampToken = getTsaClient().getTimeStampToken(IOUtils.toByteArray(content));
+        return timeStampToken.getEncoded();
     }
 }
