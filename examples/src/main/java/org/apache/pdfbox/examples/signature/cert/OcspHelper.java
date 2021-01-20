@@ -88,7 +88,7 @@ public class OcspHelper
     private final JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
 
     // SecureRandom.getInstanceStrong() would be better, but sometimes blocks on Linux
-    private static final Random rand = new SecureRandom();
+    private static final Random RANDOM = new SecureRandom();
 
     /**
      * @param checkCertificate Certificate to be OCSP-checked
@@ -588,7 +588,7 @@ public class OcspHelper
     private byte[] create16BytesNonce()
     {
         byte[] nonce = new byte[16];
-        rand.nextBytes(nonce);
+        RANDOM.nextBytes(nonce);
         return nonce;
     }
 
