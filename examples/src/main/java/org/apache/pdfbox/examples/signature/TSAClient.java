@@ -24,6 +24,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,6 +52,9 @@ public class TSAClient
     private final String username;
     private final String password;
     private final MessageDigest digest;
+
+    // SecureRandom.getInstanceStrong() would be better, but sometimes blocks on Linux
+    private static final Random RANDOM = new SecureRandom();
 
     /**
      *
@@ -80,8 +84,7 @@ public class TSAClient
         byte[] hash = digest.digest(content);
 
         // 32-bit cryptographic nonce
-        SecureRandom random = new SecureRandom();
-        int nonce = random.nextInt();
+        int nonce = RANDOM.nextInt();
 
         // generate TSA request
         TimeStampRequestGenerator tsaGenerator = new TimeStampRequestGenerator();
