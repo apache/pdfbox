@@ -72,11 +72,11 @@ public class TSAClient
     /**
      *
      * @param content
-     * @return the encoded time stamp token
+     * @return the time stamp token
      * @throws IOException if there was an error with the connection or data from the TSA server,
      *                     or if the time stamp response could not be validated
      */
-    public byte[] getTimeStampToken(byte[] content) throws IOException
+    public TimeStampToken getTimeStampToken(byte[] content) throws IOException
     {
         digest.reset();
         byte[] hash = digest.digest(content);
@@ -104,9 +104,9 @@ public class TSAClient
         {
             throw new IOException(e);
         }
-        
-        TimeStampToken token = response.getTimeStampToken();
-        if (token == null)
+
+        TimeStampToken timeStampToken = response.getTimeStampToken();
+        if (timeStampToken == null)
         {
             // https://www.ietf.org/rfc/rfc3161.html#section-2.4.2
             throw new IOException("Response from " + url +
@@ -114,7 +114,7 @@ public class TSAClient
                     " (" + response.getStatusString() + ")");
         }
 
-        return token.getEncoded();
+        return timeStampToken;
     }
 
     // gets response data for the given encoded TimeStampRequest data
