@@ -400,7 +400,8 @@ public class CFFParser
                     done = true;
                     break;
                 default:
-                    throw new IllegalArgumentException();
+                    // can only be a programming error because a nibble is between 0 and F 
+                    throw new IllegalArgumentException("illegal nibble " + nibble);
                 }
             }
         }
