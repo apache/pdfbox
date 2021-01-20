@@ -69,15 +69,15 @@ public class TSAClient
 
     /**
      *
-     * @param messageImprint imprint of message contents
+     * @param content
      * @return the encoded time stamp token
      * @throws IOException if there was an error with the connection or data from the TSA server,
      *                     or if the time stamp response could not be validated
      */
-    public byte[] getTimeStampToken(byte[] messageImprint) throws IOException
+    public byte[] getTimeStampToken(byte[] content) throws IOException
     {
         digest.reset();
-        byte[] hash = digest.digest(messageImprint);
+        byte[] hash = digest.digest(content);
 
         // 32-bit cryptographic nonce
         SecureRandom random = new SecureRandom();
