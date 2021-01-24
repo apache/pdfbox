@@ -477,11 +477,7 @@ public final class ShowSignature
             // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
             // also 021496.pdf and 036351.pdf from digitalcorpora
             SigUtils.validateTimestampToken(timeStampToken);
-            @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
-            Collection<X509CertificateHolder> tstMatches =
-                timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
-            X509CertificateHolder tstCertHolder = tstMatches.iterator().next();
-            X509Certificate certFromTimeStamp = new JcaX509CertificateConverter().getCertificate(tstCertHolder);
+            X509Certificate certFromTimeStamp = SigUtils.getCertificateFromTimeStampToken(timeStampToken);
             // merge both stores using a set to remove duplicates
             HashSet<X509CertificateHolder> certificateHolderSet = new HashSet<>();
             certificateHolderSet.addAll(certificatesStore.getMatches(null));
