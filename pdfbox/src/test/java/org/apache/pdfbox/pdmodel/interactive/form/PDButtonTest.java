@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -108,11 +107,9 @@ class PDButtonTest
      * Test a radio button with options.
      * This was causing an ArrayIndexOutOfBoundsException when trying to set to "Off", as this
      * wasn't treated to be a valid option.
-     * 
-     * @throws IOException
      */
     @Test
-    void testRadioButtonWithOptions() throws MalformedURLException
+    void testRadioButtonWithOptions()
     {
         File file = new File(TARGET_PDF_DIR, "PDFBOX-3656.pdf");
         
@@ -125,7 +122,6 @@ class PDButtonTest
             {
                 assertEquals(COSName.Off, widget.getCOSObject().getItem(COSName.AS), "The widget should be set to Off");
             }
-            
         }
         catch (IOException e)
         {
@@ -140,10 +136,9 @@ class PDButtonTest
      * Special handling for a radio button with /Opt and the On state not being named
      * after the index.
      * 
-     * @throws IOException
      */
     @Test
-    void testOptionsAndNamesNotNumbers() throws MalformedURLException
+    void testOptionsAndNamesNotNumbers()
     {
         File file = new File(TARGET_PDF_DIR, "PDFBOX-3682.pdf");
         try (InputStream is = new FileInputStream(file);
