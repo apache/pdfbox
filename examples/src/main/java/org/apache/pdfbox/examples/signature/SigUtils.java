@@ -17,6 +17,9 @@
 package org.apache.pdfbox.examples.signature;
 
 import java.io.IOException;
+import java.net.URL;
+import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
@@ -346,5 +349,39 @@ public class SigUtils
         // For the EU, get a list here:
         // https://ec.europa.eu/digital-single-market/en/eu-trusted-lists-trust-service-providers
         // ( getRootCertificates() is not helpful because these are SSL certificates)
+    }
+
+    /**
+     * Get certificate of a TSA.
+     * 
+     * @param tsaUrl URL
+     * @return the X.509 certificate.
+     *
+     * @throws GeneralSecurityException
+     * @throws IOException 
+     */
+    public static X509Certificate getTsaCertificate(String tsaUrl)
+            throws GeneralSecurityException, IOException
+    {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        TSAClient tsaClient = new TSAClient(new URL(tsaUrl), null, null, digest);
+        TimeStampToken timeStampToken = tsaClient.getTimeStampToken(new byte[0]);
+        return getCertificateFromTimeStampToken(timeStampToken);
+    }
+
+    /**
+     * Extract X.509 certificate from a timestamp
+     * @param timeStampToken
+     * @return the X.509 certificate.
+     * @throws CertificateException 
+     */
+    public static X509Certificate getCertificateFromTimeStampToken(TimeStampToken timeStampToken)
+            throws CertificateException
+    {
+        @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
+        Collection<X509CertificateHolder> tstMatches =
+                timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
+        X509CertificateHolder tstCertHolder = tstMatches.iterator().next();
+        return new JcaX509CertificateConverter().getCertificate(tstCertHolder);
     }
 }
