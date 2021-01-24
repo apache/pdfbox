@@ -47,7 +47,6 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author <a href="mailto:chris@oezbek.net">Christopher Oezbek</a>
  * 
- * @version $Revision: 1.4 $
  */
 public class XMLUtil 
 {
@@ -68,25 +67,7 @@ public class XMLUtil
      */
     public static Document parse( InputStream is ) throws IOException
     {
-        try
-        {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            builderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            builderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            builderFactory.setXIncludeAware(false);
-            builderFactory.setExpandEntityReferences(false);
-            DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            // prevents validation messages polluting the console
-            builder.setErrorHandler(null);
-            return builder.parse( is );
-        }
-        catch( Exception e )
-        {
-            IOException thrown = new IOException( e.getMessage() );
-            throw thrown;
-        }
+        return parse(new InputSource(is));
     }
     
     /**
@@ -101,6 +82,14 @@ public class XMLUtil
         try
         {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            builderFactory.setFeature("http://xml.org/sax/features/external-general-entities",
+                    false);
+            builderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities",
+                    false);
+            builderFactory.setFeature(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            builderFactory.setXIncludeAware(false);
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             // prevents validation messages polluting the console
             builder.setErrorHandler(null);
@@ -122,19 +111,7 @@ public class XMLUtil
      */
     public static Document parse( String fileName ) throws IOException
     {
-        try
-        {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            // prevents validation messages polluting the console
-            builder.setErrorHandler(null);
-            return builder.parse( fileName );
-        }
-        catch( Exception e )
-        {
-            IOException thrown = new IOException( e.getMessage() );
-            throw thrown;
-        }
+        return parse(new InputSource(fileName));
     }
     
     /**
@@ -371,8 +348,7 @@ public class XMLUtil
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-    //        initialize StreamResult with File object to save to file
-            
+            // initialize StreamResult with File object to save to file
             Result result = new StreamResult(new File(file));
             DOMSource source = new DOMSource(doc);
             transformer.transform(source, result);
@@ -401,7 +377,6 @@ public class XMLUtil
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            
             // initialize StreamResult with File object to save to file
             Result result = new StreamResult(outStream);
             DOMSource source = new DOMSource(doc);
