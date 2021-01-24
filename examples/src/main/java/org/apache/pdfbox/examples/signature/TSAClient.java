@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Random;
@@ -80,10 +81,15 @@ public class TSAClient
      * @throws IOException if there was an error with the connection or data from the TSA server,
      *                     or if the time stamp response could not be validated
      */
-    public TimeStampToken getTimeStampToken(byte[] content) throws IOException
+    public TimeStampToken getTimeStampToken(InputStream content) throws IOException
     {
         digest.reset();
-        byte[] hash = digest.digest(content);
+        DigestInputStream dis = new DigestInputStream(content, digest);
+        while (dis.read() != -1)
+        {
+            // do nothing
+        }
+        byte[] hash = digest.digest();
 
         // 32-bit cryptographic nonce
         int nonce = RANDOM.nextInt();

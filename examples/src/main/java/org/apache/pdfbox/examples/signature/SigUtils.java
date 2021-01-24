@@ -16,7 +16,9 @@
 
 package org.apache.pdfbox.examples.signature;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -365,7 +367,8 @@ public class SigUtils
     {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         TSAClient tsaClient = new TSAClient(new URL(tsaUrl), null, null, digest);
-        TimeStampToken timeStampToken = tsaClient.getTimeStampToken(new byte[0]);
+        InputStream emptyStream = new ByteArrayInputStream(new byte[0]);
+        TimeStampToken timeStampToken = tsaClient.getTimeStampToken(emptyStream);
         return getCertificateFromTimeStampToken(timeStampToken);
     }
 
