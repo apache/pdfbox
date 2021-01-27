@@ -402,7 +402,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 
             try (PDPageContentStream cs = new PDPageContentStream(doc, appearanceStream))
             {
-                // for 90Â° and 270Â° scale ratio of width / height
+                // for 90° and 270° scale ratio of width / height
                 // not really sure about this
                 // why does scale have no effect when done in the form matrix???
                 if (initialScale != null)
