@@ -197,7 +197,14 @@ class TestCMapParser
         assertEquals("A", cMap.toUnicode(new byte[] { 2, 0x32 }),
                 "bytes 02 32 from bfrange <0232> <0432> <0041>");
 
-        // check border values
+        // check border values for non strict mode
+        assertNotNull(cMap.toUnicode(new byte[] { 2, (byte) 0xF0 }));
+        assertNotNull(cMap.toUnicode(new byte[] { 2, (byte) 0xF1 }));
+
+        // use strict mode
+        cMap = new CMapParser(true)
+                .parse(new File("src/test/resources/cmap", "CMapMalformedbfrange2"));
+        // check border values for strict mode
         assertNotNull(cMap.toUnicode(new byte[] { 2, (byte) 0xF0 }));
         assertNull(cMap.toUnicode(new byte[] { 2, (byte) 0xF1 }));
 
