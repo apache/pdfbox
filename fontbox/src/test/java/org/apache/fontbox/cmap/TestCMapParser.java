@@ -162,4 +162,18 @@ public class TestCMapParser extends TestCase
         assertNull(cMap.toUnicode(0x2F1));
     }
 
+    public void testPredefinedMap() throws IOException
+    {
+        CMap cMap = new CMapParser().parsePredefined("Adobe-Korea1-UCS2");
+        assertNotNull("Failed to parse predefined CMap Adobe-Korea1-UCS2", cMap);
+
+        assertEquals("wrong CMap name", "Adobe-Korea1-UCS2", cMap.getName());
+        assertEquals("wrong WMode", 0, cMap.getWMode());
+        assertFalse(cMap.hasCIDMappings());
+        assertTrue(cMap.hasUnicodeMappings());
+
+        cMap = new CMapParser().parsePredefined("Identity-V");
+        assertNotNull("Failed to parse predefined CMap Identity-V", cMap);
+    }
+
 }
