@@ -17,9 +17,11 @@
 package org.apache.fontbox.cmap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -210,4 +212,19 @@ class TestCMapParser
 
     }
 
+    @Test
+    void testPredefinedMap() throws IOException
+    {
+        CMap cMap = new CMapParser().parsePredefined("Adobe-Korea1-UCS2");
+        assertNotNull(cMap, "Failed to parse predefined CMap Adobe-Korea1-UCS2");
+
+        assertEquals("Adobe-Korea1-UCS2", cMap.getName(), "wrong CMap name");
+        assertEquals(0, cMap.getWMode(), "wrong WMode");
+        assertFalse(cMap.hasCIDMappings());
+        assertTrue(cMap.hasUnicodeMappings());
+
+        cMap = new CMapParser().parsePredefined("Identity-V");
+        assertNotNull(cMap, "Failed to parse predefined CMap Identity-V");
+
+    }
 }
