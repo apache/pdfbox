@@ -407,10 +407,11 @@ public class CMapParser
                     {
                         for (int i = 0; i < 256; i++)
                         {
-                            startCode[1] = (byte) i;
-                            tokenBytes[1] = (byte) i;
-                            addMappingFrombfrange(result, startCode, 0xff, tokenBytes);
-
+                            startCode[0] = (byte) i;
+                            startCode[1] = 0;
+                            tokenBytes[0] = (byte) i;
+                            tokenBytes[1] = 0;
+                            addMappingFrombfrange(result, startCode, 256, tokenBytes);
                         }
                     }
                     else
@@ -439,12 +440,12 @@ public class CMapParser
         {
             String value = createStringFromBytes(tokenBytes);
             cmap.addCharMapping(startCode, value);
-            increment(startCode, startCode.length - 1, false);
             if (!increment(tokenBytes, tokenBytes.length - 1, strictMode))
             {
                 // overflow detected -> stop adding further mappings
                 break;
             }
+            increment(startCode, startCode.length - 1, false);
         }
     }
 
