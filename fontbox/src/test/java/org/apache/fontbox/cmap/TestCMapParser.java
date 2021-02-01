@@ -18,6 +18,7 @@ package org.apache.fontbox.cmap;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import junit.framework.TestCase;
 
@@ -37,11 +38,7 @@ public class TestCMapParser extends TestCase
      */
     public void testLookup() throws IOException
     {
-        final String resourceDir = "src/test/resources/cmap";
-        File inDir = new File(resourceDir);
-
-        CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse(new File(inDir, "CMapTest"));
+        CMap cMap = new CMapParser().parse(new File("src/test/resources/cmap", "CMapTest"));
 
         // char mappings
         byte[] bytes1 = {0, 1};
@@ -90,11 +87,7 @@ public class TestCMapParser extends TestCase
 
     public void testIdentity() throws IOException
     {
-        final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
-        File inDir = new File(resourceDir);
-
-        CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse(new File(inDir, "Identity-H"));
+        CMap cMap = new CMapParser().parsePredefined("Identity-H");
 
         assertEquals("Indentity-H CID 65", 65, cMap.toCID(65));
         assertEquals("Indentity-H CID 12345", 12345, cMap.toCID(12345));
@@ -103,11 +96,7 @@ public class TestCMapParser extends TestCase
 
     public void testUniJIS_UCS2_H() throws IOException
     {
-        final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
-        File inDir = new File(resourceDir);
-
-        CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse(new File(inDir, "UniJIS-UCS2-H"));
+        CMap cMap = new CMapParser().parsePredefined("UniJIS-UCS2-H");
 
         assertEquals("UniJIS-UCS2-H CID 65 -> 34", 34, cMap.toCID(65));
     }
@@ -174,6 +163,33 @@ public class TestCMapParser extends TestCase
 
         cMap = new CMapParser().parsePredefined("Identity-V");
         assertNotNull("Failed to parse predefined CMap Identity-V", cMap);
+    }
+
+    public void testIdentitybfrange() throws IOException
+    {
+        // use strict mode
+        CMap cMap = new CMapParser(true)
+                .parse(new File("src/test/resources/cmap", "Identitybfrange"));
+        assertEquals("wrong CMap name", "Adobe-Identity-UCS", cMap.getName());
+
+        Charset UTF_16BE = Charset.forName("UTF-16BE");
+        
+        byte[] bytes = new byte[] { 0, 0x48 };
+        assertEquals("Indentity 0x0048", new String(bytes, UTF_16BE), cMap.toUnicode(0x0048));
+        
+        bytes = new byte[] { 0x30, 0x39 };
+        assertEquals("Indentity 0x3039", new String(bytes, UTF_16BE), cMap.toUnicode(0x3039));
+        
+        // check border values for strict mode
+        bytes = new byte[] { 0x30, (byte) 0xFF };
+        assertEquals("Indentity 0x30FF", new String(bytes, UTF_16BE), cMap.toUnicode(0x30FF));
+        // check border values for strict mode
+        bytes = new byte[] { 0x31, 0x00 };
+        assertEquals("Indentity 0x3100", new String(bytes, UTF_16BE), cMap.toUnicode(0x3100));
+        
+        bytes = new byte[] { (byte) 0xFF, (byte) 0xFF };
+        assertEquals("Indentity 0xFFFF", new String(bytes, UTF_16BE), cMap.toUnicode(0xFFFF));
+
     }
 
 }
