@@ -987,8 +987,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // only when scaled up do we use nearest neighbour, eg PDFBOX-2302 / mori-cvpr01.pdf
             // PDFBOX-4930: we use the sizes of the ARGB image. These can be different
             // than the original sizes of the base image, when the mask is bigger.
-            boolean isScaledUp = pdImage.getImage().getWidth() < Math.round(at.getScaleX()) ||
-                                 pdImage.getImage().getHeight() < Math.round(at.getScaleY());
+            // PDFBOX-5091: also consider subsampling, the sizes are different too.
+            BufferedImage bim;
+            if (subsamplingAllowed)
+            {
+                bim = pdImage.getImage(null, getSubsampling(pdImage, at));
+            }
+            else
+            {
+                bim = pdImage.getImage();
+            }
+            boolean isScaledUp = bim.getWidth() < Math.round(at.getScaleX()) ||
+                                 bim.getHeight() < Math.round(at.getScaleY());
 
             if (isScaledUp)
             {
