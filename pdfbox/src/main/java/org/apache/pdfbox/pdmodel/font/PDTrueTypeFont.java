@@ -41,6 +41,7 @@ import org.apache.pdfbox.pdmodel.font.encoding.BuiltInEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.font.encoding.MacOSRomanEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.MacRomanEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
@@ -548,7 +549,8 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         extractCmapTable();
         int gid = 0;
 
-        if (!isSymbolic()) // non-symbolic
+        if (!isSymbolic() // non-symbolic
+                || encoding instanceof WinAnsiEncoding || encoding instanceof MacRomanEncoding)
         {
             String name = encoding.getName(code);
             if (".notdef".equals(name))
