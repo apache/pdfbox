@@ -112,8 +112,25 @@ public final class PDFPrintable implements Printable
     public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi,
                         boolean center)
     {
+        this(document, scaling, showPageBorder, dpi, center, new PDFRenderer(document));
+    }
+
+    /**
+     * Creates a new PDFPrintable with the given page scaling and with optional page borders shown.
+     * The image will be rasterized at the given DPI before being sent to the printer.
+     *
+     * @param document the document to print
+     * @param scaling page scaling policy
+     * @param showPageBorder true if page borders are to be printed
+     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @param center true if the content is to be centered on the page (otherwise top-left).
+     * @param renderer the document renderer. Useful if {@link PDFRenderer} has been subclassed.
+     */
+    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi,
+                        boolean center, PDFRenderer renderer)
+    {
         this.document = document;
-        this.renderer = new PDFRenderer(document);
+        this.renderer = renderer;
         this.scaling = scaling;
         this.showPageBorder = showPageBorder;
         this.dpi = dpi;
