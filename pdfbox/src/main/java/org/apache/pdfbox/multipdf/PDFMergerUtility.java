@@ -598,9 +598,9 @@ public class PDFMergerUtility
             }
         }
         
-        if (destNames != null)
+        if (destNames != null && destNames.getCOSObject().containsKey(COSName.ID_TREE))
         {
-            // found in 054080.pdf from PDFBOX-4417 and doesn't belong there
+            // found in 001031.pdf from PDFBOX-4417 and doesn't belong there
             destNames.getCOSObject().removeItem(COSName.ID_TREE);
             LOG.warn("Removed /IDTree from /Names dictionary, doesn't belong there");
         }
