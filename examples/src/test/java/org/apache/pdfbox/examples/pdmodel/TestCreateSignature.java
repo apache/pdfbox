@@ -121,7 +121,6 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Test for CreateSignature. Each test case will run twice: once with SignatureInterface
  * and once using external signature creation scenario.
  */
-@Execution(ExecutionMode.CONCURRENT)
 class TestCreateSignature
 {
     private static final String IN_DIR = "src/test/resources/org/apache/pdfbox/examples/signature/";
