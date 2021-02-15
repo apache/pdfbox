@@ -878,9 +878,10 @@ public class PDDocument implements Closeable
     /**
      * Save the document to a file using default compression.
      * <p>
-     * If encryption has been activated (with
-     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
-     * do not use the document after saving because the contents are now encrypted.
+     * Don't use the input file as target as this will produce a corrupted file.
+     * <p>
+     * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
+     * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
      *
      * @param fileName The file to save as.
      *
@@ -894,9 +895,10 @@ public class PDDocument implements Closeable
     /**
      * Save the document to a file using default compression.
      * <p>
-     * If encryption has been activated (with
-     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
-     * do not use the document after saving because the contents are now encrypted.
+     * Don't use the input file as target as this will produce a corrupted file.
+     * <p>
+     * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
+     * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
      * 
      * @param file The file to save as.
      *
@@ -910,9 +912,10 @@ public class PDDocument implements Closeable
     /**
      * This will save the document to an output stream.
      * <p>
-     * If encryption has been activated (with
-     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
-     * do not use the document after saving because the contents are now encrypted.
+     * Don't use the input file as target as this will produce a corrupted file.
+     * <p>
+     * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
+     * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
      *
      * @param output The stream to write to. It is recommended to wrap it in a {@link java.io.BufferedOutputStream},
      * unless it is already buffered.
@@ -927,9 +930,10 @@ public class PDDocument implements Closeable
     /**
      * Save the document using the given compression.
      * <p>
-     * If encryption has been activated (with
-     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
-     * do not use the document after saving because the contents are now encrypted.
+     * Don't use the input file as target as this will produce a corrupted file.
+     * <p>
+     * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
+     * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
      *
      * @param file The file to save as.
      * @param compressParameters The parameters for the document's compression.
@@ -937,6 +941,11 @@ public class PDDocument implements Closeable
      */
     public void save(File file, CompressParameters compressParameters) throws IOException
     {
+        if (file.exists())
+        {
+            LOG.warn(
+                    "You are overwriting an existing file, this will produce a corrupted file if you're also reading from it");
+        }
         try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
                 new FileOutputStream(file)))
         {
@@ -947,9 +956,10 @@ public class PDDocument implements Closeable
     /**
      * Save the document to a file using the given compression.
      * <p>
-     * If encryption has been activated (with
-     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
-     * do not use the document after saving because the contents are now encrypted.
+     * Don't use the input file as target as this will produce a corrupted file.
+     * <p>
+     * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
+     * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
      * 
      * @param fileName The file to save as.
      * @param compressParameters The parameters for the document's compression.
@@ -964,9 +974,10 @@ public class PDDocument implements Closeable
     /**
      * Save the document using the given compression.
      * <p>
-     * If encryption has been activated (with
-     * {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy) protect(ProtectionPolicy)}),
-     * do not use the document after saving because the contents are now encrypted.
+     * Don't use the input file as target as this will produce a corrupted file.
+     * <p>
+     * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
+     * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
      *
      * @param output The stream to write to. It is recommended to wrap it in a {@link java.io.BufferedOutputStream},
      * unless it is already buffered.
@@ -1005,6 +1016,8 @@ public class PDDocument implements Closeable
      * Other usages of this method are for experienced users only. You will usually never need it. It is useful only if
      * you are required to keep the current revision and append the changes. A typical use case is changing a signed
      * file without invalidating the signature.
+     * <p>
+     * Don't use the input file as target as this will produce a corrupted file.
      *
      * @param output stream to write to. It will be closed when done. It <i><b>must never</b></i> point to the source
      * file or that one will be harmed!
@@ -1022,22 +1035,21 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a
-     * file or a stream, not if the document was created in PDFBox itself. This allows to include
-     * objects even if there is no path of objects that have
-     * {@link COSUpdateInfo#isNeedToBeUpdated()} set so the incremental update gets smaller. Only
-     * dictionaries are supported; if you need to update other objects classes, then add their
-     * parent dictionary.
+     * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a file or a stream, not
+     * if the document was created in PDFBox itself. This allows to include objects even if there is no path of objects
+     * that have {@link COSUpdateInfo#isNeedToBeUpdated()} set so the incremental update gets smaller. Only dictionaries
+     * are supported; if you need to update other objects classes, then add their parent dictionary.
      * <p>
-     * This method is for experienced users only. You will usually never need it. It is useful only
-     * if you are required to keep the current revision and append the changes. A typical use case
-     * is changing a signed file without invalidating the signature. To know which objects are
-     * getting changed, you need to have some understanding of the PDF specification, and look at
-     * the saved file with an editor to verify that you are updating the correct objects. You should
-     * also inspect the page and document structures of the file with PDFDebugger.
+     * This method is for experienced users only. You will usually never need it. It is useful only if you are required
+     * to keep the current revision and append the changes. A typical use case is changing a signed file without
+     * invalidating the signature. To know which objects are getting changed, you need to have some understanding of the
+     * PDF specification, and look at the saved file with an editor to verify that you are updating the correct objects.
+     * You should also inspect the page and document structures of the file with PDFDebugger.
+     * <p>
+     * Don't use the input file as target as this will produce a corrupted file.
      *
-     * @param output stream to write to. It will be closed when done. It
-     * <i><b>must never</b></i> point to the source file or that one will be harmed!
+     * @param output stream to write to. It will be closed when done. It <i><b>must never</b></i> point to the source
+     * file or that one will be harmed!
      * @param objectsToWrite objects that <b>must</b> be part of the incremental saving.
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream.
@@ -1053,8 +1065,8 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Save PDF incrementally without closing for external signature creation scenario. The general
-     * sequence is:
+     * Save PDF incrementally without closing for external signature creation scenario. The general sequence is:
+     * 
      * <pre>
      *    PDDocument pdDocument = ...;
      *    OutputStream outputStream = ...;
@@ -1076,17 +1088,18 @@ public class PDDocument implements Closeable
      *    pdDocument.close();
      * </pre>
      * <p>
-     * Note that after calling this method, only {@code close()} method may invoked for
-     * {@code PDDocument} instance and only AFTER {@link ExternalSigningSupport} instance is used.
+     * Note that after calling this method, only {@code close()} method may invoked for {@code PDDocument} instance and
+     * only AFTER {@link ExternalSigningSupport} instance is used.
      * </p>
+     * <p>
+     * Don't use the input file as target as this will produce a corrupted file.
      *
-     * @param output stream to write the final PDF. It will be closed when the
-     * document is closed. It <i><b>must never</b></i> point to the source file
-     * or that one will be harmed!
+     * @param output stream to write the final PDF. It will be closed when the document is closed. It <i><b>must
+     * never</b></i> point to the source file or that one will be harmed!
      * @return instance to be used for external signing and setting CMS signature
      * @throws IOException if the output could not be written
-     * @throws IllegalStateException if the document was not loaded from a file or a stream or
-     * signature options were not set.
+     * @throws IllegalStateException if the document was not loaded from a file or a stream or signature options were
+     * not set.
      */
     public ExternalSigningSupport saveIncrementalForExternalSigning(OutputStream output) throws IOException
     {
