@@ -20,6 +20,7 @@ package org.apache.pdfbox.pdmodel.font;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
@@ -313,5 +315,58 @@ class TestFontEmbedding
         PDDocument document = Loader.loadPDF(file);
         PDFTextStripper stripper = new PDFTextStripper();
         return stripper.getText(document);
+    }
+
+    /**
+     * Test that an embedded and subsetted font can be reused.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testReuseEmbeddedSubsettedFont() throws IOException
+    {
+        String text1 = "The quick brown fox";
+        String text2 = "xof nworb kciuq ehT";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            document.addPage(page);
+            InputStream input = PDFont.class.getResourceAsStream(
+                    "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+            PDType0Font font = PDType0Font.load(document, input);
+            try (PDPageContentStream stream = new PDPageContentStream(document, page))
+            {
+                stream.beginText();
+                stream.setFont(font, 20);
+                stream.newLineAtOffset(50, 600);
+                stream.showText(text1);
+                stream.endText();
+            }
+            document.save(baos);
+        }
+        // Append, while reusing the font subset
+        try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDPage page = document.getPage(0);
+            PDFont font = page.getResources().getFont(COSName.getPDFName("F1"));
+            try (PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true))
+            {
+                stream.beginText();
+                stream.setFont(font, 20);
+                stream.newLineAtOffset(250, 600);
+                stream.showText(text2);
+                stream.endText();
+            }
+            baos.reset();
+            document.save(baos);
+        }
+        // Test that both texts are there
+        try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String extractedText = stripper.getText(document);
+            assertEquals(text1 + " " + text2, extractedText.trim());
+        }
     }
 }
