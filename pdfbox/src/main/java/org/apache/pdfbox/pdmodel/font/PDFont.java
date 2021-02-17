@@ -109,11 +109,6 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         // standard 14 fonts use an AFM
         afmStandard14 = Standard14Fonts.getAFM(getName()); // may be null (it usually is)
         fontDescriptor = loadFontDescriptor();
-//        System.out.println(getName() + " " + isStandard14());
-//        if (isStandard14())
-//        toUnicodeCMap = loadUnicodeCmap();
-//        else
-//            toUnicodeCMap = null;
         toUnicodeCMap = loadUnicodeCmap();
     }
 
