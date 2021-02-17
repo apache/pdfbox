@@ -52,6 +52,9 @@ public class CMap
     // Unicode mappings
     private final Map<Integer,String> charToUnicode = new HashMap<Integer,String>();
 
+    // inverted map
+    Map <String, byte[]> unicodeToByteCodes = new HashMap<String, byte[]>();
+
     // CID mappings
     private final Map<Integer,Integer> codeToCid = new HashMap<Integer,Integer>();
     private final List<CIDRange> codeToCidRanges = new ArrayList<CIDRange>();
@@ -208,6 +211,7 @@ public class CMap
      */
     void addCharMapping(byte[] codes, String unicode)
     {
+        unicodeToByteCodes.put(unicode, codes.clone()); // clone needed, bytes is modified later
         int code = getCodeFromArray(codes, 0, codes.length);
         charToUnicode.put(code, unicode);
 
@@ -216,6 +220,17 @@ public class CMap
         {
             spaceMapping = code;
         }
+    }
+
+    /**
+     * Get the code bytes for an unicode string.
+     *
+     * @param unicode
+     * @return the code bytes or null if there is none.
+     */
+    public byte[] getCodesFromUnicode(String unicode)
+    {
+        return unicodeToByteCodes.get(unicode);
     }
 
     /**
@@ -277,6 +292,9 @@ public class CMap
         charToUnicode.putAll(cmap.charToUnicode);
         codeToCid.putAll(cmap.codeToCid);
         codeToCidRanges.addAll(cmap.codeToCidRanges);
+
+        // unicodeToByteCodes should be filled too, but this isn't possible in 2.0.*
+        // because we don't know the code length
     }
 
     /**

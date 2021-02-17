@@ -623,4 +623,14 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     {
         return getClass().getSimpleName() + " " + getName();
     }
+
+    /**
+     * Get the /ToUnicode CMap.
+     *
+     * @return The /ToUnicode CMap or null if there is none.
+     */
+    protected CMap getToUnicodeCMap()
+    {
+        return toUnicodeCMap;
+    }
 }
