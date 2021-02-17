@@ -323,7 +323,7 @@ class TestFontEmbedding
      * @throws IOException 
      */
     @Test
-    public void testReuseEmbeddedSubsettedFont() throws IOException
+    void testReuseEmbeddedSubsettedFont() throws IOException
     {
         String text1 = "The quick brown fox";
         String text2 = "xof nworb kciuq ehT";

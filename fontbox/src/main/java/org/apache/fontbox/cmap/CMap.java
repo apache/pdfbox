@@ -463,9 +463,7 @@ public class CMap
         charToUnicodeOneByte.putAll(cmap.charToUnicodeOneByte);
         charToUnicodeTwoBytes.putAll(cmap.charToUnicodeTwoBytes);
         cmap.charToUnicodeOneByte.entrySet().forEach(entry ->
-        {
-            unicodeToByteCodes.put(entry.getValue(), new byte[] {(byte) (entry.getKey() % 0xFF)});
-        });
+            unicodeToByteCodes.put(entry.getValue(), new byte[] {(byte) (entry.getKey() % 0xFF)}));
         cmap.charToUnicodeTwoBytes.entrySet().forEach(entry ->
         {
             Integer key = entry.getKey();
