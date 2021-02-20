@@ -35,6 +35,7 @@ import java.util.ListIterator;
  * This is an implementation of a List that will sync its contents to a COSArray.
  *
  * @author Ben Litchfield
+ * @param <E> Element type.
  */
 public class COSArrayList<E> implements List<E>
 {
@@ -350,7 +351,7 @@ public class COSArrayList<E> implements List<E>
     private List<COSBase> toCOSObjectList( Collection<?> list )
     {
         List<COSBase> cosObjects = new ArrayList<>();
-        for (Object next : list)
+        list.forEach(next ->
         {
             if( next instanceof String )
             {
@@ -361,7 +362,7 @@ public class COSArrayList<E> implements List<E>
                 COSObjectable cos = (COSObjectable)next;
                 cosObjects.add( cos.getCOSObject() );
             }
-        }
+        });
         return cosObjects;
     }
 
