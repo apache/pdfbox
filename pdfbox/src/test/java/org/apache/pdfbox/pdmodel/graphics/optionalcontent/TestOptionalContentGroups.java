@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.Loader;
@@ -108,45 +109,45 @@ class TestOptionalContentGroups
             assertFalse(ocprops.isGroupEnabled("disabled"));
 
             //Setup page content stream and paint background/title
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
-            PDFont font = PDType1Font.HELVETICA_BOLD;
-            contentStream.beginMarkedContent(COSName.OC, background);
-            contentStream.beginText();
-            contentStream.setFont(font, 14);
-            contentStream.newLineAtOffset(80, 700);
-            contentStream.showText("PDF 1.5: Optional Content Groups");
-            contentStream.endText();
-            font = PDType1Font.HELVETICA;
-            contentStream.beginText();
-            contentStream.setFont(font, 12);
-            contentStream.newLineAtOffset(80, 680);
-            contentStream.showText("You should see a green textline, but no red text line.");
-            contentStream.endText();
-            contentStream.endMarkedContent();
-
-            //Paint enabled layer
-            contentStream.beginMarkedContent(COSName.OC, enabled);
-            contentStream.setNonStrokingColor(Color.GREEN);
-            contentStream.beginText();
-            contentStream.setFont(font, 12);
-            contentStream.newLineAtOffset(80, 600);
-            contentStream.showText(
-                    "This is from an enabled layer. If you see this, that's good.");
-            contentStream.endText();
-            contentStream.endMarkedContent();
-
-            //Paint disabled layer
-            contentStream.beginMarkedContent(COSName.OC, disabled);
-            contentStream.setNonStrokingColor(Color.RED);
-            contentStream.beginText();
-            contentStream.setFont(font, 12);
-            contentStream.newLineAtOffset(80, 500);
-            contentStream.showText(
-                    "This is from a disabled layer. If you see this, that's NOT good!");
-            contentStream.endText();
-            contentStream.endMarkedContent();
-
-            contentStream.close();
+            try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
+            {
+                PDFont font = PDType1Font.HELVETICA_BOLD;
+                contentStream.beginMarkedContent(COSName.OC, background);
+                contentStream.beginText();
+                contentStream.setFont(font, 14);
+                contentStream.newLineAtOffset(80, 700);
+                contentStream.showText("PDF 1.5: Optional Content Groups");
+                contentStream.endText();
+                font = PDType1Font.HELVETICA;
+                contentStream.beginText();
+                contentStream.setFont(font, 12);
+                contentStream.newLineAtOffset(80, 680);
+                contentStream.showText("You should see a green textline, but no red text line.");
+                contentStream.endText();
+                contentStream.endMarkedContent();
+                
+                //Paint enabled layer
+                contentStream.beginMarkedContent(COSName.OC, enabled);
+                contentStream.setNonStrokingColor(Color.GREEN);
+                contentStream.beginText();
+                contentStream.setFont(font, 12);
+                contentStream.newLineAtOffset(80, 600);
+                contentStream.showText(
+                        "This is from an enabled layer. If you see this, that's good.");
+                contentStream.endText();
+                contentStream.endMarkedContent();
+                
+                //Paint disabled layer
+                contentStream.beginMarkedContent(COSName.OC, disabled);
+                contentStream.setNonStrokingColor(Color.RED);
+                contentStream.beginText();
+                contentStream.setFont(font, 12);
+                contentStream.newLineAtOffset(80, 500);
+                contentStream.showText(
+                        "This is from a disabled layer. If you see this, that's NOT good!");
+                contentStream.endText();
+                contentStream.endMarkedContent();
+            }
 
             File targetFile = new File(testResultsDir, "ocg-generation.pdf");
             doc.save(targetFile.getAbsolutePath());
@@ -200,11 +201,8 @@ class TestOptionalContentGroups
 
             Collection<PDOptionalContentGroup> coll = ocgs.getOptionalContentGroups();
             assertEquals(3, coll.size());
-            Set<String> nameSet = new HashSet<>();
-            for (PDOptionalContentGroup ocg2 : coll)
-            {
-                nameSet.add(ocg2.getName());
-            }
+            HashSet<String> nameSet = coll.stream().map(PDOptionalContentGroup::getName).
+                    collect(Collectors.toCollection(HashSet::new));
             assertTrue(nameSet.contains("background"));
             assertTrue(nameSet.contains("enabled"));
             assertTrue(nameSet.contains("disabled"));
