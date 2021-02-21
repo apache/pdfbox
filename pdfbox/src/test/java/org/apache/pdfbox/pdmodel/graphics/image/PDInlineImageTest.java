@@ -169,26 +169,28 @@ class PDInlineImageTest
             }
         }        
 
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
-        document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
-        contentStream.drawImage(inlineImage1, 150, 400);
-        contentStream.drawImage(inlineImage1, 150, 500, inlineImage1.getWidth() * 2, inlineImage1.getHeight() * 2);
-        contentStream.drawImage(inlineImage1, 150, 600, inlineImage1.getWidth() * 4, inlineImage1.getHeight() * 4);
-        contentStream.drawImage(inlineImage2, 350, 400);
-        contentStream.drawImage(inlineImage2, 350, 500, inlineImage2.getWidth() * 2, inlineImage2.getHeight() * 2);
-        contentStream.drawImage(inlineImage2, 350, 600, inlineImage2.getWidth() * 4, inlineImage2.getHeight() * 4);
-        contentStream.close();
-
         File pdfFile = new File(testResultsDir, "inline.pdf");
-        document.save(pdfFile);
-        document.close();
 
-        document = Loader.loadPDF(pdfFile);
-        new PDFRenderer(document).renderImage(0);
-        document.close();
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            document.addPage(page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+            {
+                contentStream.drawImage(inlineImage1, 150, 400);
+                contentStream.drawImage(inlineImage1, 150, 500, inlineImage1.getWidth() * 2, inlineImage1.getHeight() * 2);
+                contentStream.drawImage(inlineImage1, 150, 600, inlineImage1.getWidth() * 4, inlineImage1.getHeight() * 4);
+                contentStream.drawImage(inlineImage2, 350, 400);
+                contentStream.drawImage(inlineImage2, 350, 500, inlineImage2.getWidth() * 2, inlineImage2.getHeight() * 2);
+                contentStream.drawImage(inlineImage2, 350, 600, inlineImage2.getWidth() * 4, inlineImage2.getHeight() * 4);
+            }
+            document.save(pdfFile);
+        }
 
+        try (PDDocument document = Loader.loadPDF(pdfFile))
+        {
+            new PDFRenderer(document).renderImage(0);
+        }
     }
 }
 

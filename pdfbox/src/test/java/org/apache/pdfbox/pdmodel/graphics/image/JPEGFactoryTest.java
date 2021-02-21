@@ -277,17 +277,19 @@ class JPEGFactoryTest
     private void checkJpegStream(File testResultsDir, String filename, InputStream resourceStream)
             throws IOException
     {
-        PDDocument doc = Loader.loadPDF(new File(testResultsDir, filename));
-        PDImageXObject img =
-                (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("Im1"));
-        InputStream dctStream = img.createInputStream(Arrays.asList(COSName.DCT_DECODE.getName()));
-        ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-        IOUtils.copy(resourceStream, baos1);
-        IOUtils.copy(dctStream, baos2);
-        resourceStream.close();
-        dctStream.close();
-        assertArrayEquals(baos1.toByteArray(), baos2.toByteArray());
-        doc.close();
+        try (PDDocument doc = Loader.loadPDF(new File(testResultsDir, filename)))
+        {
+            PDImageXObject img =
+                    (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("Im1"));
+            ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+            ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+            try (InputStream dctStream = img.createInputStream(Arrays.asList(COSName.DCT_DECODE.getName())))
+            {
+                IOUtils.copy(resourceStream, baos1);
+                IOUtils.copy(dctStream, baos2);
+            }
+            resourceStream.close();
+            assertArrayEquals(baos1.toByteArray(), baos2.toByteArray());
+        }
     }
 }
