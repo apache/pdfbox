@@ -167,7 +167,7 @@ class TestCOSStream
         try (COSStream stream = new COSStream())
         {
             assertFalse(stream.hasData());
-            Assertions.assertThrows(IOException.class, () -> stream.createInputStream().close(),
+            Assertions.assertThrows(IOException.class, () -> stream.createInputStream(),
                 "createInputStream should have thrown an IOException");
 
             byte[] testString = "This is a test string to be used as input for TestCOSStream"

@@ -62,7 +62,7 @@ public abstract class COSNumber extends COSBase
             char digit = number.charAt(0);
             if ('0' <= digit && digit <= '9') 
             {
-                return COSInteger.get(digit - '0');
+                return COSInteger.get((long) digit - '0');
             } 
             else if (digit == '-' || digit == '.') 
             {
