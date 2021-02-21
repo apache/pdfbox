@@ -20,11 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -37,14 +37,8 @@ class TestCOSArray
     {
         COSArray cosArray = new COSArray();
         assertEquals(0, cosArray.size());
-        try
-        {
-            cosArray = new COSArray(null);
-            fail("Constructor should have thrown an exception");
-        }
-        catch (IllegalArgumentException e)
-        {
-        }
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new COSArray(null),
+                "Constructor should have thrown an exception");
 
         cosArray = new COSArray(Arrays.asList(COSName.A, COSName.B, COSName.C));
         assertEquals(3, cosArray.size());
