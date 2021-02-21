@@ -81,9 +81,7 @@ class ControlCharacterTest
     void characterNUL() throws IOException
     {
         PDField field = acroForm.getField("pdfbox-nul");
-        assertThrows(IllegalArgumentException.class, () -> {
-            field.setValue("NUL\0NUL");
-          });
+        assertThrows(IllegalArgumentException.class, () -> field.setValue("NUL\0NUL"));
     }
 
     /*
@@ -97,10 +95,7 @@ class ControlCharacterTest
     	field.setValue("TAB\tTAB");
 
         List<String> pdfboxValues = getStringsFromStream(field);
-        for (String token : pdfboxValues)
-        {
-            assertEquals("TAB", token);
-        }
+        pdfboxValues.forEach(token -> assertEquals("TAB", token));
     }
 
     private static Stream<Arguments> provideParameters()

@@ -32,7 +32,6 @@ import java.io.InputStream;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,8 +44,6 @@ import org.junit.jupiter.api.Test;
  */
 class PDButtonTest
 {
-    
-    
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
     private static final String NAME_OF_PDF = "AcroFormsBasicFields.pdf";
     private static final File TARGET_PDF_DIR = new File("target/pdfs");
@@ -118,10 +115,9 @@ class PDButtonTest
         {   
             PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("Checking/Savings");
             radioButton.setValue("Off");
-            for (PDAnnotationWidget widget : radioButton.getWidgets())
-            {
-                assertEquals(COSName.Off, widget.getCOSObject().getItem(COSName.AS), "The widget should be set to Off");
-            }
+            radioButton.getWidgets().forEach(widget ->
+                assertEquals(COSName.Off, widget.getCOSObject().getItem(COSName.AS),
+                        "The widget should be set to Off"));
         }
         catch (IOException e)
         {
@@ -296,9 +292,7 @@ class PDButtonTest
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox");
         // Set a value which doesn't match the radio button list 
-        assertThrows(IllegalArgumentException.class, () -> {
-            checkbox.setValue("InvalidValue");
-        });
+        assertThrows(IllegalArgumentException.class, () -> checkbox.setValue("InvalidValue"));
     }    
 
     @Test
@@ -306,9 +300,7 @@ class PDButtonTest
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("CheckboxGroup");
         // Set a value which doesn't match the radio button list 
-        assertThrows(IllegalArgumentException.class, () -> {
-            checkbox.setValue("InvalidValue");
-        });
+        assertThrows(IllegalArgumentException.class, () -> checkbox.setValue("InvalidValue"));
     }    
 
     @Test
@@ -316,9 +308,7 @@ class PDButtonTest
     {
         PDField checkbox = acrobatAcroForm.getField("Checkbox");
         // Set a value which doesn't match the radio button list 
-        assertThrows(IllegalArgumentException.class, () -> {
-            checkbox.setValue("InvalidValue");
-        });
+        assertThrows(IllegalArgumentException.class, () -> checkbox.setValue("InvalidValue"));
     }    
 
     @Test
@@ -326,9 +316,7 @@ class PDButtonTest
     {
         PDField checkbox = acrobatAcroForm.getField("CheckboxGroup");
         // Set a value which doesn't match the radio button list
-        assertThrows(IllegalArgumentException.class, () -> {
-            checkbox.setValue("InvalidValue");
-        });
+        assertThrows(IllegalArgumentException.class, () -> checkbox.setValue("InvalidValue"));
     }    
 
     @Test
@@ -394,9 +382,7 @@ class PDButtonTest
     {
         PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
         // Set a value which doesn't match the radio button list
-        assertThrows(IllegalArgumentException.class, () -> {
-            radioButton.setValue("InvalidValue");
-        });
+        assertThrows(IllegalArgumentException.class, () -> radioButton.setValue("InvalidValue"));
     }
 
     @Test
@@ -404,9 +390,7 @@ class PDButtonTest
     {
         PDField radioButton = acrobatAcroForm.getField("RadioButtonGroup");
         // Set a value which doesn't match the radio button list
-        assertThrows(IllegalArgumentException.class, () -> {
-            radioButton.setValue("InvalidValue");
-        });
+        assertThrows(IllegalArgumentException.class, () -> radioButton.setValue("InvalidValue"));
     }
     
     @AfterEach

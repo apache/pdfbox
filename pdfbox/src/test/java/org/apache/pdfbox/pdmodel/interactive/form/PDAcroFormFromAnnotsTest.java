@@ -214,10 +214,7 @@ class PDAcroFormFromAnnotsTest
             }
 
             // test all fields in the map are also found in the AcroForm
-            for (String fieldName : fieldsByName.keySet())
-            {
-                assertNotNull(acroForm.getField(fieldName));
-            }
+            fieldsByName.keySet().forEach(fieldName -> assertNotNull(acroForm.getField(fieldName)));
         }
     }
 
