@@ -1317,7 +1317,9 @@ public class COSWriter implements ICOSVisitor
         getStandardOutput().write(String.valueOf(getStartxref()).getBytes(StandardCharsets.ISO_8859_1));
         getStandardOutput().writeEOL();
         getStandardOutput().write(EOF);
-        getStandardOutput().writeEOL();
+        // ISO 32000-1:2008
+        // The last line of the file shall contain only the end-of-file marker, %%EOF.
+        // PDFBOX-4147
 
         if (incrementalUpdate)
         {
