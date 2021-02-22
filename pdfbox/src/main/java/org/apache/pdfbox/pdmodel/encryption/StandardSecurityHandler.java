@@ -719,6 +719,10 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
 
         if (isOwnerPassword)
         {
+            if (oe == null)
+            {
+                throw new IOException("/Encrypt/OE entry is missing");
+            }
             byte[] oKeySalt = new byte[8];
             System.arraycopy(o, 40, oKeySalt, 0, 8);
 
@@ -735,6 +739,10 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         }
         else
         {
+            if (ue == null)
+            {
+                throw new IOException("/Encrypt/UE entry is missing");
+            }
             byte[] uKeySalt = new byte[8];
             System.arraycopy(u, 40, uKeySalt, 0, 8);
 
