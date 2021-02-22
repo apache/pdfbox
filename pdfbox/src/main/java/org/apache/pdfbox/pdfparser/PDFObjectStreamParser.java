@@ -65,11 +65,19 @@ public class PDFObjectStreamParser extends BaseParser
         {
             throw new IOException("/N entry missing in object stream");
         }
+        if (numberOfObjects < 0)
+        {
+            throw new IOException("Illegal /N entry in object stream: " + numberOfObjects);
+        }
         // get mandatory stream offset of the first object
         firstObject = stream.getInt(COSName.FIRST);
         if (firstObject == -1)
         {
             throw new IOException("/First entry missing in object stream");
+        }
+        if (firstObject < 0)
+        {
+            throw new IOException("Illegal /First entry in object stream: " + firstObject);
         }
     }
 
