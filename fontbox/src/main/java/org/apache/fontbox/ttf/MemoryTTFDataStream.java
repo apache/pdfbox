@@ -118,7 +118,7 @@ class MemoryTTFDataStream extends TTFDataStream
         {
             throw new EOFException();
         }
-        return (ch1 << 8) + (ch2 << 0);
+        return (ch1 << 8) + ch2;
     }
     
     /**
