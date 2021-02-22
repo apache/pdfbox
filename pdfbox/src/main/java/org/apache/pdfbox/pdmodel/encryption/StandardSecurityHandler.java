@@ -563,6 +563,11 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             
             byte[] oHash = new byte[32];
             byte[] oValidationSalt = new byte[8];
+            if (owner.length < 40)
+            {
+                // PDFBOX-5104
+                throw new IOException("Owner password is too short");
+            }
             System.arraycopy(owner, 0, oHash, 0, 32);
             System.arraycopy(owner, 32, oValidationSalt, 0, 8);
             
