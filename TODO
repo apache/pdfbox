@@ -4,11 +4,11 @@ DONE
  - Make the project plan for implementing the project
  - Use the ZenHub board in Google Chrome to organize the board
  - Configure the continuous integration platform 
-
-TODO
  - User stories assigned to all members
  - Implement bugfix
  - Commit the code with message “New Feature Implemented”
+
+TODO
  - Perceived quality issues
  - Unit tests
  - Connect SonarCloud to your CI/CD pipeline.
