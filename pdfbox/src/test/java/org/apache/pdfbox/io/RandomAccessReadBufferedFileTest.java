@@ -23,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import org.junit.jupiter.api.Assertions;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -170,17 +170,14 @@ class RandomAccessReadBufferedFileTest
     void testView() throws IOException, URISyntaxException
     {
         try (RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
-                new File(getClass().getResource("RandomAccessReadFile1.txt").toURI())))
+                new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
+             RandomAccessReadView view = randomAccessSource.createView(3, 10))
         {
-            RandomAccessReadView view = randomAccessSource.createView(3, 10);
             assertEquals(0, view.getPosition());
             assertEquals('3', view.read());
             assertEquals('4', view.read());
             assertEquals('5', view.read());
             assertEquals(3, view.getPosition());
-
-            view.close();
         }
     }
-
 }
