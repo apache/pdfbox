@@ -1,0 +1,20 @@
+DONE
+ - Report the issue / Bug-Fix you planned to implement
+ - Fork the selected project in GitHub
+ - Make the project plan for implementing the project
+ - Use the ZenHub board in Google Chrome to organize the board
+ - Configure the continuous integration platform 
+
+TODO
+ - User stories assigned to all members
+ - Implement bugfix
+ - Commit the code with message “New Feature Implemented”
+ - Perceived quality issues
+ - Unit tests
+ - Connect SonarCloud to your CI/CD pipeline.
+ - Fill-inn the quality diary (diary.xlsx) listing the sonar issues affecting ONLY the code you implemented
+ - Refactor the code removing all the sonar issues in the code you need to change 
+ - Commit the changes with commit message “Sonar Refactoring ...”
+ - Complete the quality diary listing the refactorings applied.
+ - Submit a pull request to close the issue
+ - Submit the project in Moodle
