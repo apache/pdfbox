@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdfparser;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -74,6 +75,10 @@ public class PDFXrefStreamParser extends BaseParser
         for (int i = 0; i < 3; i++)
         {
             w[i] = wArray.getInt(i, 0);
+        }
+        if (w[0] < 0 || w[1] < 0 || w[2] < 0)
+        {
+            throw new IOException("Incorrect /W array in XRef: " + Arrays.toString(w));
         }
 
         COSArray indexArray = stream.getCOSArray(COSName.INDEX);
@@ -177,5 +182,4 @@ public class PDFXrefStreamParser extends BaseParser
         }
         return value;
     }
-
 }
