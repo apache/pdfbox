@@ -21,47 +21,45 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 
 /**
  * A filtered stream that includes the bytes that are in the (begin,length) intervals passed in the
  * constructor.
+ *
+ * @author boix_jor
+ *
  */
 public class COSFilterInputStream extends FilterInputStream
 {
-
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(COSFilterInputStream.class);
-
-    private final int[] byteRange;
+    private int[][] ranges;
+    private int range;
     private long position = 0;
 
     public COSFilterInputStream(InputStream in, int[] byteRange)
     {
         super(in);
-        this.byteRange = byteRange;
+        calculateRanges(byteRange);
     }
 
     public COSFilterInputStream(byte[] in, int[] byteRange)
     {
-        super(new ByteArrayInputStream(in));
-        this.byteRange = byteRange;
+        this(new ByteArrayInputStream(in), byteRange);
     }
 
     @Override
     public int read() throws IOException
     {
-        nextAvailable();
-        int i = super.read();
-        if (i > -1)
+        if (this.range == -1 || getRemaining() <= 0)
         {
-            ++position;
+            if (!nextRange())
+            {
+                return -1; // EOF
+            }
         }
-        return i;
+        int result = super.read();
+        this.position++;
+        return result;
     }
 
     @Override
@@ -73,65 +71,53 @@ public class COSFilterInputStream extends FilterInputStream
     @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
-        if (len == 0)
+        if (this.range == -1 || getRemaining() <= 0)
         {
-            return 0;
-        }
-
-        int c = read();
-        if (c == -1)
-        {
-            return -1;
-        }
-        b[off] = (byte) c;
-
-        int i = 1;
-        try
-        {
-            for (; i < len; i++)
+            if (!nextRange())
             {
-                c = read();
-                if (c == -1)
-                {
-                    break;
-                }
-                b[off + i] = (byte) c;
+                return -1; // EOF
             }
         }
-        catch (IOException ee)
-        {
-            LOG.debug("An exception occurred while trying to fill byte[] - ignoring", ee);
-        }
-        return i;
-    }
-
-    private boolean inRange()
-    {
-        long pos = position;
-        for (int i = 0; i < byteRange.length / 2; ++i)
-        {
-            if (byteRange[i * 2] <= pos && byteRange[i * 2] + byteRange[i * 2 + 1] > pos)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void nextAvailable() throws IOException
-    {
-        while (!inRange())
-        {
-            ++position;
-            if (super.read() < 0)
-            {
-                break;
-            }
-        }
+        int bytesRead = super.read(b, off, (int) Math.min(len, getRemaining()));
+        this.position += bytesRead;
+        return bytesRead;
     }
 
     public byte[] toByteArray() throws IOException
     {
         return IOUtils.toByteArray(this);
+    }
+
+    private void calculateRanges(int[] byteRange)
+    {
+        this.ranges = new int[byteRange.length / 2][];
+        for (int i = 0; i < byteRange.length / 2; i++)
+        {
+            this.ranges[i] = new int[] { byteRange[i * 2], byteRange[i * 2] + byteRange[i * 2 + 1] };
+        }
+        this.range = -1;
+    }
+
+    private long getRemaining()
+    {
+        return this.ranges[this.range][1] - this.position;
+    }
+
+    private boolean nextRange() throws IOException
+    {
+        if (this.ranges.length > this.range + 1)
+        {
+            this.range++;
+            while (this.position < this.ranges[this.range][0])
+            {
+                long skipped = super.skip(this.ranges[this.range][0] - this.position);
+                this.position += skipped;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
