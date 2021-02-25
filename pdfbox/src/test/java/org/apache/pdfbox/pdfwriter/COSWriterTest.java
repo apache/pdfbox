@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 
 class COSWriterTest
@@ -46,6 +47,34 @@ class COSWriterTest
                     throw new IOException("Stream was closed");
                 }
             }));
+        }
+    }
+    /**
+     * PDFBOX-4147: check that last line of the file contains only the end-of-file marker.
+     *
+     * @throws IOException
+     */
+    void testPDFBox4147() throws IOException
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+
+            PDPage page = new PDPage();
+            doc.addPage(page);
+
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            pdfStripper.setStartPage(0);
+            pdfStripper.setEndPage(doc.getNumberOfPages());
+
+            String pages = pdfStripper.getText(doc);
+            String[] lines = pages.split("\r\n|\r|\n");
+
+            String lastLine = lines[lines.length - 1];
+            if(lastLine == "%%EOF")
+            {
+                throw  new IOException("Last line contains only end-of-file marker");
+            }
+
         }
     }
 }
