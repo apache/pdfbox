@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.io;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -243,7 +244,7 @@ public class RandomAccessBuffer implements RandomAccess, Cloneable
         checkClosed();
         if (pointer >= size)
         {
-            return 0;
+            return -1;
         }
         int bytesRead = readRemainingBytes(b, offset, length);
         while (bytesRead < length && available() > 0)
@@ -259,10 +260,6 @@ public class RandomAccessBuffer implements RandomAccess, Cloneable
 
     private int readRemainingBytes(byte[] b, int offset, int length)
     {
-        if (pointer >= size)
-        {
-            return 0;
-        }
         int maxLength = (int) Math.min(length, size-pointer);
         int remainingBytes = chunkSize - currentBufferPointer;
         // no more bytes left
@@ -500,13 +497,18 @@ public class RandomAccessBuffer implements RandomAccess, Cloneable
     @Override
     public byte[] readFully(int length) throws IOException
     {
-        byte[] b = new byte[length];
-        int bytesRead = read(b);
-        while (bytesRead < length)
+        byte[] bytes = new byte[length];
+        int bytesRead = 0;
+        do
         {
-            bytesRead += read(b, bytesRead, length - bytesRead);
-        }
-        return b;
+            int count = read(bytes, bytesRead, length - bytesRead);
+            if (count < 0)
+            {
+                throw new EOFException();
+            }
+            bytesRead += count;
+        } while (bytesRead < length);
+        return bytes;
     }
 
     /**

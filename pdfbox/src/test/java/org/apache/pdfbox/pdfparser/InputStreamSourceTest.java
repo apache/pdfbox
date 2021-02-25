@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,6 +38,16 @@ public class InputStreamSourceTest
         Assert.assertEquals(0, inputStreamSource.getPosition());
         inputStreamSource.readFully(5);
         Assert.assertEquals(5, inputStreamSource.getPosition());
+
+        try
+        {
+            inputStreamSource.readFully(10);
+            Assert.fail("readFully beyond EOF should have triggered an EOFException");
+        }
+        catch(EOFException exception)
+        {
+
+        }
 
         inputStreamSource.close();
     }

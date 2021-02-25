@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.pdfparser;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
@@ -120,21 +121,16 @@ final class InputStreamSource implements SequentialSource
     public byte[] readFully(int length) throws IOException
     {
         byte[] bytes = new byte[length];
-        int off = 0;
-        int len = length;
-        while (len > 0)
+        int bytesRead = 0;
+        do
         {
-            int n = this.read(bytes, off, len);
-            if (n > 0)
+            int count = read(bytes, bytesRead, length - bytesRead);
+            if (count < 0)
             {
-                off += n;
-                len -= n;
+                throw new EOFException();
             }
-            else
-            {
-                break;
-            }
-        }
+            bytesRead += count;
+        } while (bytesRead < length);
         return bytes;
     }
 

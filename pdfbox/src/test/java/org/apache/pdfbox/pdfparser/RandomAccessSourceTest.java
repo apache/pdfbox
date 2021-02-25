@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 
 import org.apache.pdfbox.io.RandomAccessBuffer;
@@ -40,6 +41,16 @@ public class RandomAccessSourceTest
         Assert.assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.readFully(5);
         Assert.assertEquals(5, randomAccessSource.getPosition());
+
+        try
+        {
+            randomAccessSource.readFully(10);
+            Assert.fail("readFully beyond EOF should have triggered an EOFException");
+        }
+        catch (EOFException exception)
+        {
+
+        }
 
         randomAccessSource.close();
     }

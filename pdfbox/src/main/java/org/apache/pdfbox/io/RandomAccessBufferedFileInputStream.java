@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.io;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -336,13 +337,18 @@ extends InputStream implements RandomAccessRead
     @Override
     public byte[] readFully(int length) throws IOException
     {
-        byte[] b = new byte[length];
-        int bytesRead = read(b);
-        while(bytesRead < length)
+        byte[] bytes = new byte[length];
+        int bytesRead = 0;
+        do
         {
-            bytesRead += read(b, bytesRead, length-bytesRead);
-        }
-        return b;
+            int count = read(bytes, bytesRead, length - bytesRead);
+            if (count < 0)
+            {
+                throw new EOFException();
+            }
+            bytesRead += count;
+        } while (bytesRead < length);
+        return bytes;
     }
 
     @Override
