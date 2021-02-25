@@ -31,106 +31,107 @@ import org.apache.pdfbox.io.IOUtils;
  */
 public class COSFilterInputStream extends FilterInputStream
 {
-  /**
-  * Log instance.
-   */
-  private static final Log LOG = LogFactory.getLog(COSFilterInputStream.class);
 
-  private final int[] byteRange;
-  private long position = 0;
-  
-  public COSFilterInputStream(InputStream in, int[] byteRange)
-  {
-    super(in);
-    this.byteRange = byteRange;
-  }
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(COSFilterInputStream.class);
 
-  public COSFilterInputStream(byte[] in, int[] byteRange)
-  {
-    super(new ByteArrayInputStream(in));
-    this.byteRange = byteRange;
-  }
+    private final int[] byteRange;
+    private long position = 0;
 
-  @Override
-  public int read() throws IOException
-  {
-    nextAvailable();
-    int i = super.read();
-    if (i>-1)
+    public COSFilterInputStream(InputStream in, int[] byteRange)
     {
-      ++position;
+        super(in);
+        this.byteRange = byteRange;
     }
-    return i;
-  }
-  
-  @Override
-  public int read(byte[] b) throws IOException
-  {
-    return read(b,0,b.length);
-  }
-  
-  @Override
-  public int read(byte[] b, int off, int len) throws IOException
-  {
-    if (len == 0)
+
+    public COSFilterInputStream(byte[] in, int[] byteRange)
     {
-        return 0;
+        super(new ByteArrayInputStream(in));
+        this.byteRange = byteRange;
     }
-    
-    int c = read();
-    if (c == -1)
+
+    @Override
+    public int read() throws IOException
     {
-        return -1;
-    }
-    b[off] = (byte)c;
-  
-    int i = 1;
-    try
-    {
-        for (; i < len; i++)
+        nextAvailable();
+        int i = super.read();
+        if (i > -1)
         {
-            c = read();
-            if (c == -1)
+            ++position;
+        }
+        return i;
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException
+    {
+        return read(b, 0, b.length);
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException
+    {
+        if (len == 0)
+        {
+            return 0;
+        }
+
+        int c = read();
+        if (c == -1)
+        {
+            return -1;
+        }
+        b[off] = (byte) c;
+
+        int i = 1;
+        try
+        {
+            for (; i < len; i++)
+            {
+                c = read();
+                if (c == -1)
+                {
+                    break;
+                }
+                b[off + i] = (byte) c;
+            }
+        }
+        catch (IOException ee)
+        {
+            LOG.debug("An exception occurred while trying to fill byte[] - ignoring", ee);
+        }
+        return i;
+    }
+
+    private boolean inRange()
+    {
+        long pos = position;
+        for (int i = 0; i < byteRange.length / 2; ++i)
+        {
+            if (byteRange[i * 2] <= pos && byteRange[i * 2] + byteRange[i * 2 + 1] > pos)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void nextAvailable() throws IOException
+    {
+        while (!inRange())
+        {
+            ++position;
+            if (super.read() < 0)
             {
                 break;
             }
-            b[off + i] = (byte)c;
         }
     }
-    catch (IOException ee) 
-    {
-      LOG.debug("An exception occurred while trying to fill byte[] - ignoring", ee);
-    }
-    return i;
-  }
 
-  private boolean inRange()
-  {
-    long pos = position;
-    for (int i = 0; i<byteRange.length/2;++i)
+    public byte[] toByteArray() throws IOException
     {
-      if(byteRange[i*2] <= pos &&  byteRange[i*2]+byteRange[i*2+1]>pos)
-      {
-        return true;
-      }
+        return IOUtils.toByteArray(this);
     }
-    return false;
-  }
-
-  private void nextAvailable() throws IOException
-  {
-    while (!inRange())
-    {
-      ++position;
-      if(super.read()<0)
-      {
-        break;
-      }
-    }
-  }
-  
-  public byte[] toByteArray() throws IOException 
-  {
-      return IOUtils.toByteArray(this);
-  }
 }
