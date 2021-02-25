@@ -3,7 +3,7 @@ name: Java CI
 on: [push]
 
 jobs:
-  build and test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,15 +15,15 @@ jobs:
       - name: Build with Maven
         run: mvn clean install
 
-  # sonarcloud:
-  #   runs-on: ubuntu-latest
-  #   environment: sweng
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #     with:
-  #       fetch-depth: 0
-  #   - name: SonarCloud
-  #     uses: sonarsource/sonarcloud-github-action@master
-  #     env:
-  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  sonarcloud:
+    runs-on: ubuntu-latest
+    environment: sonarcloud
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: SonarCloud
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
