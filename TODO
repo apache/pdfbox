@@ -7,11 +7,11 @@ DONE
  - User stories assigned to all members
  - Implement bugfix
  - Commit the code with message “New Feature Implemented”
-
-TODO
  - Perceived quality issues
  - Unit tests
  - Connect SonarCloud to your CI/CD pipeline.
+
+TODO
  - Fill-inn the quality diary (diary.xlsx) listing the sonar issues affecting ONLY the code you implemented
  - Refactor the code removing all the sonar issues in the code you need to change 
  - Commit the changes with commit message “Sonar Refactoring ...”
