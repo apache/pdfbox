@@ -3,7 +3,7 @@ name: Java CI
 on: [push]
 
 jobs:
-  build and test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
