@@ -25,103 +25,98 @@ import org.apache.pdfbox.io.IOUtils;
 /**
  * A filtered stream that includes the bytes that are in the (begin,length) intervals passed in the
  * constructor.
+ *
+ * @author boix_jor
+ *
  */
 public class COSFilterInputStream extends FilterInputStream
 {
-  private final int[] byteRange;
-  private long position = 0;
-  
-  public COSFilterInputStream(InputStream in, int[] byteRange)
-  {
-    super(in);
-    this.byteRange = byteRange;
-  }
+    private int[][] ranges;
+    private int range;
+    private long position = 0;
 
-  public COSFilterInputStream(byte[] in, int[] byteRange)
-  {
-    super(new ByteArrayInputStream(in));
-    this.byteRange = byteRange;
-  }
+    public COSFilterInputStream(InputStream in, int[] byteRange)
+    {
+        super(in);
+        calculateRanges(byteRange);
+    }
 
-  @Override
-  public int read() throws IOException
-  {
-    nextAvailable();
-    int i = super.read();
-    if (i>-1)
+    public COSFilterInputStream(byte[] in, int[] byteRange)
     {
-      ++position;
+        this(new ByteArrayInputStream(in), byteRange);
     }
-    return i;
-  }
-  
-  @Override
-  public int read(byte[] b) throws IOException
-  {
-    return read(b,0,b.length);
-  }
-  
-  @Override
-  public int read(byte[] b, int off, int len) throws IOException
-  {
-    if (len == 0)
+
+    @Override
+    public int read() throws IOException
     {
-        return 0;
-    }
-    
-    int c = read();
-    if (c == -1)
-    {
-        return -1;
-    }
-    b[off] = (byte)c;
-  
-    int i = 1;
-    try
-    {
-        for (; i < len; i++)
+        if (this.range == -1 || getRemaining() <= 0)
         {
-            c = read();
-            if (c == -1)
+            if (!nextRange())
             {
-                break;
+                return -1; // EOF
             }
-            b[off + i] = (byte)c;
+        }
+        int result = super.read();
+        this.position++;
+        return result;
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException
+    {
+        return read(b, 0, b.length);
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException
+    {
+        if (this.range == -1 || getRemaining() <= 0)
+        {
+            if (!nextRange())
+            {
+                return -1; // EOF
+            }
+        }
+        int bytesRead = super.read(b, off, (int) Math.min(len, getRemaining()));
+        this.position += bytesRead;
+        return bytesRead;
+    }
+
+    public byte[] toByteArray() throws IOException
+    {
+        return IOUtils.toByteArray(this);
+    }
+
+    private void calculateRanges(int[] byteRange)
+    {
+        this.ranges = new int[byteRange.length / 2][];
+        for (int i = 0; i < byteRange.length / 2; i++)
+        {
+            this.ranges[i] = new int[] { byteRange[i * 2], byteRange[i * 2] + byteRange[i * 2 + 1] };
+        }
+        this.range = -1;
+    }
+
+    private long getRemaining()
+    {
+        return this.ranges[this.range][1] - this.position;
+    }
+
+    private boolean nextRange() throws IOException
+    {
+        if (this.ranges.length > this.range + 1)
+        {
+            this.range++;
+            while (this.position < this.ranges[this.range][0])
+            {
+                long skipped = super.skip(this.ranges[this.range][0] - this.position);
+                this.position += skipped;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
-    catch (IOException ee) 
-    {
-    }
-    return i;
-  }
-
-  private boolean inRange()
-  {
-    long pos = position;
-    for (int i = 0; i<byteRange.length/2;++i)
-    {
-      if(byteRange[i*2] <= pos &&  byteRange[i*2]+byteRange[i*2+1]>pos)
-      {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private void nextAvailable() throws IOException
-  {
-    while (!inRange())
-    {
-      ++position;
-      if(super.read()<0)
-      {
-        break;
-      }
-    }
-  }
-  
-  public byte[] toByteArray() throws IOException 
-  {
-      return IOUtils.toByteArray(this);
-  }
 }
