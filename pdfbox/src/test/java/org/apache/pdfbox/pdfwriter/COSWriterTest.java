@@ -54,6 +54,7 @@ class COSWriterTest
      *
      * @throws IOException
      */
+    @Test
     void testPDFBox4147() throws IOException
     {
         try (PDDocument doc = new PDDocument())
