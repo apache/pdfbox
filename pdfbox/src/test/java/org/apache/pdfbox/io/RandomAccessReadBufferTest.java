@@ -23,6 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
 import org.junit.jupiter.api.Assertions;
 
 import org.junit.jupiter.api.Test;
@@ -191,6 +194,19 @@ class RandomAccessReadBufferTest
             assertEquals(4, view.read());
             assertEquals(5, view.read());
             assertEquals(3, view.getPosition());
+        }
+    }
+
+    @Test
+    void testPDFBOX5111() throws IOException
+    {
+        try (InputStream is = new URL(
+                "https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf")
+                        .openStream())
+        {
+            RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(is);
+            assertEquals(34060, randomAccessSource.length());
+            randomAccessSource.close();
         }
     }
 }
