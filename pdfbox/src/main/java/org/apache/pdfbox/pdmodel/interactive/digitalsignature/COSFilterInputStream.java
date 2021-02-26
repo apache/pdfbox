@@ -49,12 +49,9 @@ public class COSFilterInputStream extends FilterInputStream
     @Override
     public int read() throws IOException
     {
-        if (this.range == -1 || getRemaining() <= 0)
+        if ((this.range == -1 || getRemaining() <= 0) && !nextRange())
         {
-            if (!nextRange())
-            {
-                return -1; // EOF
-            }
+            return -1; // EOF
         }
         int result = super.read();
         this.position++;
@@ -70,12 +67,9 @@ public class COSFilterInputStream extends FilterInputStream
     @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
-        if (this.range == -1 || getRemaining() <= 0)
+        if ((this.range == -1 || getRemaining() <= 0) && !nextRange())
         {
-            if (!nextRange())
-            {
-                return -1; // EOF
-            }
+            return -1; // EOF
         }
         int bytesRead = super.read(b, off, (int) Math.min(len, getRemaining()));
         this.position += bytesRead;
@@ -104,7 +98,7 @@ public class COSFilterInputStream extends FilterInputStream
 
     private boolean nextRange() throws IOException
     {
-        if (this.ranges.length > this.range + 1)
+        if (this.range + 1 < this.ranges.length)
         {
             this.range++;
             while (this.position < this.ranges[this.range][0])
