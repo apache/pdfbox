@@ -71,7 +71,7 @@ class COSWriterTest
             String[] lines = pages.split("\r\n|\r|\n");
 
             String lastLine = lines[lines.length - 1];
-            if(lastLine != "%%EOF")
+            if(lastLine == "%%EOF")
             {
                 throw  new IOException("Last line contains only end-of-file marker");
             }
