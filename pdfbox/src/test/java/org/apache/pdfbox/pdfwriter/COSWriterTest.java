@@ -19,11 +19,17 @@ package org.apache.pdfbox.pdfwriter;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 
 class COSWriterTest
@@ -58,26 +64,25 @@ class COSWriterTest
      */
     @Test
     void testPDFBox4147() throws IOException
-    {
+    {   
+        byte[] eofBytes = "%%EOF".getBytes(StandardCharsets.US_ASCII);
+        ByteArrayOutputStream stream =  new ByteArrayOutputStream(1024);
         try (PDDocument doc = new PDDocument())
-        {
+        {   
 
             PDPage page = new PDPage();
             doc.addPage(page);
-
             PDFTextStripper pdfStripper = new PDFTextStripper();
             pdfStripper.setStartPage(0);
             pdfStripper.setEndPage(doc.getNumberOfPages());
+            doc.save(stream, CompressParameters.NO_COMPRESSION);
+            byte[] streamAsBytes = stream.toByteArray();
+            byte[] comparable = Arrays.copyOfRange(streamAsBytes, streamAsBytes.length - eofBytes.length,streamAsBytes.length);
+            assertArrayEquals(eofBytes, comparable);
 
-            String pages = pdfStripper.getText(doc);
-            String[] lines = pages.split("\r\n|\r|\n");
-
-            String lastLine = lines[lines.length - 1];
-            assertEquals(lastLine, "%%EOF");
-            if(lastLine == "%%EOF")
-            {
-                throw  new IOException("Last line contains only end-of-file marker");
-            }
+        } catch (Exception e) {
+            throw e;
+        } {
 
         }
     }
