@@ -73,7 +73,7 @@ class TestPDDocument
         byte[] pdf = baos.toByteArray();
         assertTrue(pdf.length > 200);
         assertEquals("%PDF-1.4", new String(Arrays.copyOfRange(pdf, 0, 8), StandardCharsets.UTF_8));
-        assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), StandardCharsets.UTF_8));
+        assertEquals("%%EOF", new String(Arrays.copyOfRange(pdf, pdf.length - 5, pdf.length), StandardCharsets.UTF_8));
 
         // reload
         try (PDDocument loadDoc = Loader.loadPDF(new ByteArrayInputStream(pdf)))
@@ -105,7 +105,7 @@ class TestPDDocument
 
         assertTrue(pdf.length > 200);
         assertEquals("%PDF-1.4", new String(Arrays.copyOfRange(pdf, 0, 8), StandardCharsets.UTF_8));
-        assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), StandardCharsets.UTF_8));
+        assertEquals("%%EOF", new String(Arrays.copyOfRange(pdf, pdf.length - 5, pdf.length), StandardCharsets.UTF_8));
 
         // reload
         try (PDDocument loadDoc = Loader.loadPDF(targetFile))
