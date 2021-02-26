@@ -23,6 +23,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
 
 class COSWriterTest
 {
@@ -71,6 +74,7 @@ class COSWriterTest
             String[] lines = pages.split("\r\n|\r|\n");
 
             String lastLine = lines[lines.length - 1];
+            assertEquals(lastLine, "%%EOF");
             if(lastLine == "%%EOF")
             {
                 throw  new IOException("Last line contains only end-of-file marker");
