@@ -38,7 +38,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -54,8 +54,8 @@ class TestFontEmbedding
 {
     private static final File OUT_DIR = new File("target/test-output");
 
-    @BeforeEach
-    protected void setUp()
+    @BeforeAll
+    static void setUp()
     {
         OUT_DIR.mkdirs();
     }
