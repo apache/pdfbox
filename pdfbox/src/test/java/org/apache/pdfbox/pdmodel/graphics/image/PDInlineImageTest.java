@@ -47,12 +47,12 @@ import org.junit.jupiter.api.Test;
  */
 class PDInlineImageTest
 {
-    private static final File testResultsDir = new File("target/test-output/graphics");
+    private static final File TESTRESULTSDIR = new File("target/test-output/graphics");
 
     @BeforeAll
     static void setUp()
     {
-        testResultsDir.mkdirs();
+        TESTRESULTSDIR.mkdirs();
     }
 
     /**
@@ -121,17 +121,17 @@ class PDInlineImageTest
 
         // write and read
         boolean writeOk = ImageIO.write(image1, "png",
-                new FileOutputStream(new File(testResultsDir + "/inline-grid1.png")));
+                new FileOutputStream(new File(TESTRESULTSDIR + "/inline-grid1.png")));
         assertTrue(writeOk);
-        BufferedImage bim1 = ImageIO.read(new File(testResultsDir + "/inline-grid1.png"));
+        BufferedImage bim1 = ImageIO.read(new File(TESTRESULTSDIR + "/inline-grid1.png"));
         assertNotNull(bim1);
         assertEquals(width, bim1.getWidth());
         assertEquals(height, bim1.getHeight());
         
         writeOk = ImageIO.write(image2, "png",
-                new FileOutputStream(new File(testResultsDir + "/inline-grid2.png")));
+                new FileOutputStream(new File(TESTRESULTSDIR + "/inline-grid2.png")));
         assertTrue(writeOk);
-        BufferedImage bim2 = ImageIO.read(new File(testResultsDir + "/inline-grid2.png"));
+        BufferedImage bim2 = ImageIO.read(new File(TESTRESULTSDIR + "/inline-grid2.png"));
         assertNotNull(bim2);
         assertEquals(width, bim2.getWidth());
         assertEquals(height, bim2.getHeight());
@@ -169,7 +169,7 @@ class PDInlineImageTest
             }
         }        
 
-        File pdfFile = new File(testResultsDir, "inline.pdf");
+        File pdfFile = new File(TESTRESULTSDIR, "inline.pdf");
 
         try (PDDocument document = new PDDocument())
         {
