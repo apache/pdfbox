@@ -46,12 +46,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Unit tests for JPEGFactory
  *
  * @author Tilman Hausherr
  */
+@Execution(ExecutionMode.CONCURRENT)
 class JPEGFactoryTest
 {
     private static final File TESTRESULTSDIR = new File("target/test-output/graphics");
