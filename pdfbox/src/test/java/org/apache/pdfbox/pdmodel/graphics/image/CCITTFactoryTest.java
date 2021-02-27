@@ -16,11 +16,14 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.image.BufferedImage;
+
 import java.io.File;
 import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -32,14 +35,15 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for CCITTFactory
@@ -48,12 +52,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class CCITTFactoryTest
 {
-    private final File testResultsDir = new File("target/test-output/graphics");
+    private static final File TESTRESULTSDIR = new File("target/test-output/graphics");
 
-    @BeforeEach
-    protected void setUp()
+    @BeforeAll
+    static void setUp()
     {
-        testResultsDir.mkdirs();
+        TESTRESULTSDIR.mkdirs();
     }
 
     /**
@@ -90,10 +94,10 @@ class CCITTFactoryTest
                 contentStream.drawImage(ximage4, 0, 0);
             }
             
-            document.save(testResultsDir + "/singletiff.pdf");
+            document.save(TESTRESULTSDIR + "/singletiff.pdf");
         }
         
-        try (PDDocument document = Loader.loadPDF(new File(testResultsDir, "singletiff.pdf")))
+        try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "singletiff.pdf")))
         {
             assertEquals(2, document.getNumberOfPages());
         }  
@@ -141,10 +145,10 @@ class CCITTFactoryTest
             
             assertEquals(countTiffImages, pdfPageNum);
             
-            document.save(testResultsDir + "/multitiff.pdf");
+            document.save(TESTRESULTSDIR + "/multitiff.pdf");
         }
         
-        try (PDDocument document = Loader.loadPDF(new File(testResultsDir, "multitiff.pdf"), (String) null))
+        try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "multitiff.pdf"), (String) null))
         {
             assertEquals(countTiffImages, document.getNumberOfPages());
         }  
@@ -170,10 +174,10 @@ class CCITTFactoryTest
                 contentStream.drawImage(ximage3, 0, 0, ximage3.getWidth(), ximage3.getHeight());
             }
 
-            document.save(testResultsDir + "/singletifffrombi.pdf");
+            document.save(TESTRESULTSDIR + "/singletifffrombi.pdf");
         }
 
-        try (PDDocument document = Loader.loadPDF(new File(testResultsDir, "singletifffrombi.pdf")))
+        try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "singletifffrombi.pdf")))
         {
             assertEquals(1, document.getNumberOfPages());
         }  
@@ -207,10 +211,10 @@ class CCITTFactoryTest
                 contentStream.drawImage(ximage3, 0, 0, ximage3.getWidth(), ximage3.getHeight());
             }
             
-            document.save(testResultsDir + "/singletifffromchessbi.pdf");
+            document.save(TESTRESULTSDIR + "/singletifffromchessbi.pdf");
         }
 
-        try (PDDocument document = Loader.loadPDF(new File(testResultsDir, "singletifffromchessbi.pdf")))
+        try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "singletifffromchessbi.pdf")))
         {
             assertEquals(1, document.getNumberOfPages());
         }
@@ -225,7 +229,7 @@ class CCITTFactoryTest
     {
         // copy the source file to a temp directory, as we will be deleting it
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
-        File copiedTiffFile = new File(testResultsDir, "ccittg3.tif");
+        File copiedTiffFile = new File(TESTRESULTSDIR, "ccittg3.tif");
         Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         PDDocument document = new PDDocument();
         CCITTFactory.createFromFile(document, copiedTiffFile);
@@ -241,7 +245,7 @@ class CCITTFactoryTest
     {
         // copy the source file to a temp directory, as we will be deleting it
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
-        File copiedTiffFile = new File(testResultsDir, "ccittg3n.tif");
+        File copiedTiffFile = new File(TESTRESULTSDIR, "ccittg3n.tif");
         Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         PDDocument document = new PDDocument();
         CCITTFactory.createFromFile(document, copiedTiffFile, 0);

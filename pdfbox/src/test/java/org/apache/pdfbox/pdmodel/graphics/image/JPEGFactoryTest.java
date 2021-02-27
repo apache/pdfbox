@@ -17,11 +17,14 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.Arrays;
+
 import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.Loader;
@@ -31,8 +34,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
@@ -43,6 +44,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /**
  * Unit tests for JPEGFactory
  *
@@ -50,12 +54,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class JPEGFactoryTest
 {
-    private final File testResultsDir = new File("target/test-output/graphics");
+    private static final File TESTRESULTSDIR = new File("target/test-output/graphics");
 
-    @BeforeEach
-    protected void setUp()
+    @BeforeAll
+    static void setUp()
     {
-        testResultsDir.mkdirs();
+        TESTRESULTSDIR.mkdirs();
     }
 
     /**
@@ -70,8 +74,8 @@ class JPEGFactoryTest
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
 
-        doWritePDF(document, ximage, testResultsDir, "jpegrgbstream.pdf");
-        checkJpegStream(testResultsDir, "jpegrgbstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpegrgbstream.pdf");
+        checkJpegStream(TESTRESULTSDIR, "jpegrgbstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
     }
 
     /*
@@ -86,8 +90,8 @@ class JPEGFactoryTest
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 343, 287, "jpg", PDDeviceCMYK.INSTANCE.getName());
 
-        doWritePDF(document, ximage, testResultsDir, "jpegcmykstream.pdf");
-        checkJpegStream(testResultsDir, "jpegcmykstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg"));
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpegcmykstream.pdf");
+        checkJpegStream(TESTRESULTSDIR, "jpegcmykstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg"));
     }
     
     /**
@@ -102,8 +106,8 @@ class JPEGFactoryTest
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
 
-        doWritePDF(document, ximage, testResultsDir, "jpeg256stream.pdf");
-        checkJpegStream(testResultsDir, "jpeg256stream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg256stream.pdf");
+        checkJpegStream(TESTRESULTSDIR, "jpeg256stream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
     }
 
     /**
@@ -119,7 +123,7 @@ class JPEGFactoryTest
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
 
-        doWritePDF(document, ximage, testResultsDir, "jpegrgb.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpegrgb.pdf");
     }
 
     /**
@@ -135,7 +139,7 @@ class JPEGFactoryTest
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
 
-        doWritePDF(document, ximage, testResultsDir, "jpeg256.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg256.pdf");
     }
 
     /**
@@ -180,7 +184,7 @@ class JPEGFactoryTest
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
-        doWritePDF(document, ximage, testResultsDir, "jpeg-intargb.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg-intargb.pdf");
     }
 
     /**
@@ -225,7 +229,7 @@ class JPEGFactoryTest
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
-        doWritePDF(document, ximage, testResultsDir, "jpeg-4bargb.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg-4bargb.pdf");
     }
 
     /**
@@ -269,7 +273,7 @@ class JPEGFactoryTest
         validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
         assertNull(ximage.getSoftMask());
 
-        doWritePDF(document, ximage, testResultsDir, "jpeg-ushort555rgb.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg-ushort555rgb.pdf");
     }
 
     // check whether it is possible to extract the jpeg stream exactly 
