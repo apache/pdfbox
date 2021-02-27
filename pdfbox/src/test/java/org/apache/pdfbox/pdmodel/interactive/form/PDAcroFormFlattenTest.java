@@ -34,7 +34,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -54,8 +54,8 @@ class PDAcroFormFlattenTest
     private static final File IN_DIR = new File("target/test-output/flatten/in");
     private static final File OUT_DIR = new File("target/test-output/flatten/out");
 
-    @BeforeEach
-    public void setUp()
+    @BeforeAll
+    static void setUp()
     {
         IN_DIR.mkdirs();
         OUT_DIR.mkdirs();
