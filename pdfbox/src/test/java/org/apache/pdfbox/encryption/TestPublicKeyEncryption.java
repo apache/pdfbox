@@ -24,7 +24,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -40,6 +42,7 @@ import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -53,7 +56,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 class TestPublicKeyEncryption
 {
-    private final File testResultsDir = new File("target/test-output/crypto");
+    private static final File TESTRESULTSDIR = new File("target/test-output/crypto");
 
     private AccessPermission permission1;
     private AccessPermission permission2;
@@ -87,19 +90,23 @@ class TestPublicKeyEncryption
         return Arrays.asList(40, 128, 256);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @BeforeEach
-    void setUp() throws Exception 
+    @BeforeAll
+    static void init() throws NoSuchAlgorithmException
     {
         if (Cipher.getMaxAllowedKeyLength("AES") != Integer.MAX_VALUE)
         {
             // we need strong encryption for these tests
             fail("JCE unlimited strength jurisdiction policy files are not installed");
         }
-        testResultsDir.mkdirs();
+        TESTRESULTSDIR.mkdirs();
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @BeforeEach
+    void setUp() throws IOException, CertificateException, URISyntaxException
+    {
         permission1 = new AccessPermission();
         permission1.setCanAssembleDocument(false);
         permission1.setCanExtractContent(false);
@@ -288,9 +295,11 @@ class TestPublicKeyEncryption
      * @param certificate X.509 certificate resource, relative to this class
      * @param permission access permissions
      * @return recipient specification
-     * @throws Exception if the certificate could not be read
+     * @throws CertificateException if the certificate could not be read
+     * @throws IOException
      */
-    private static PublicKeyRecipient getRecipient(String certificate, AccessPermission permission) throws Exception
+    private static PublicKeyRecipient getRecipient(String certificate, AccessPermission permission)
+            throws IOException, CertificateException
     {
         try (InputStream input = TestPublicKeyEncryption.class.getResourceAsStream(certificate))
         {
@@ -309,7 +318,7 @@ class TestPublicKeyEncryption
 
     private File save(String name) throws IOException
     {
-        File file = new File(testResultsDir, name + "-" + keyLength + "bit.pdf");
+        File file = new File(TESTRESULTSDIR, name + "-" + keyLength + "bit.pdf");
         document.save(file);
         return file;
     }

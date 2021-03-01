@@ -18,7 +18,6 @@ package org.apache.pdfbox.cos;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,6 +29,7 @@ import java.util.Arrays;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class TestCOSStream
@@ -164,25 +164,20 @@ class TestCOSStream
     @Test
     void testHasStreamData() throws IOException
     {
-        COSStream stream = new COSStream();
-        assertFalse(stream.hasData());
-
-        try
+        try (COSStream stream = new COSStream())
         {
-            stream.createInputStream();
-            fail("createInputStream should have thrown an IOException");
-        }
-        catch (IOException e)
-        {
-        }
+            assertFalse(stream.hasData());
+            Assertions.assertThrows(IOException.class, () -> stream.createInputStream(),
+                "createInputStream should have thrown an IOException");
 
-        byte[] testString = "This is a test string to be used as input for TestCOSStream"
-                .getBytes(StandardCharsets.US_ASCII);
-        OutputStream output = stream.createOutputStream();
-        output.write(testString);
-        output.close();
-        assertTrue(stream.hasData());
-        stream.close();
+            byte[] testString = "This is a test string to be used as input for TestCOSStream"
+                    .getBytes(StandardCharsets.US_ASCII);
+            try (OutputStream output = stream.createOutputStream())
+            {
+                output.write(testString);
+            }
+            assertTrue(stream.hasData());
+        }
     }
 
     private byte[] encodeData(byte[] original, COSName filter) throws IOException

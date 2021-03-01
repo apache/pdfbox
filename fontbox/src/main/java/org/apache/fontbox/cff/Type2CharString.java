@@ -353,8 +353,9 @@ public class Type2CharString extends Type1CharString
 
     private static <E> List<List<E>> split(List<E> list, int size)
     {
-        List<List<E>> result = new ArrayList<>(list.size() / size);
-        for (int i = 0; i < list.size() / size; i++)
+        int listSize = list.size() / size;
+        List<List<E>> result = new ArrayList<>(listSize);
+        for (int i = 0; i < listSize; i++)
         {
             result.add(list.subList(i * size, (i + 1) * size));
         }

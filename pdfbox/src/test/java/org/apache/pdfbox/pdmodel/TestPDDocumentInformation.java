@@ -58,10 +58,8 @@ class TestPDDocumentInformation
                                                              "SourceModified", "Title");
            assertEquals(expectedMetadataKeys.size(), info.getMetadataKeys().size(),
                    "Wrong metadata key count");
-           for (String key : expectedMetadataKeys)
-           {
-               assertTrue(info.getMetadataKeys().contains(key), "Missing metadata key:" + key);
-           }
+           expectedMetadataKeys.forEach(key ->
+                   assertTrue(info.getMetadataKeys().contains(key), "Missing metadata key:" + key));
            
            // Custom metadata fields.
            assertEquals("Basis Technology Corp.", info.getCustomMetadataValue("Company"),

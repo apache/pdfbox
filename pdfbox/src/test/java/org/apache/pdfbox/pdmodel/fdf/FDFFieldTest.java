@@ -46,7 +46,7 @@ class FDFFieldTest
         FDFField field = new FDFField();
         field.setValue(testCOSString);
         
-        assertEquals(testCOSString, (COSString) field.getCOSValue());
+        assertEquals(testCOSString, field.getCOSValue());
         assertEquals(testString, field.getValue());
     }
 
@@ -73,7 +73,7 @@ class FDFFieldTest
         FDFField field = new FDFField();
         field.setValue(testCOSSName);
         
-        assertEquals(testCOSSName, (COSName) field.getCOSValue());
+        assertEquals(testCOSSName, field.getCOSValue());
         assertEquals(testString, field.getValue());
     }
 
@@ -89,7 +89,7 @@ class FDFFieldTest
         FDFField field = new FDFField();
         field.setValue(testCOSArray);
         
-        assertEquals(testCOSArray, (COSArray) field.getCOSValue());
+        assertEquals(testCOSArray, field.getCOSValue());
         assertEquals(testList, field.getValue());
     }
     
@@ -97,9 +97,10 @@ class FDFFieldTest
     private COSStream createStream(byte[] testString, COSBase filters) throws IOException
     {
         COSStream stream = new COSStream();
-        OutputStream output = stream.createOutputStream(filters);
-        output.write(testString);
-        output.close();
+        try (OutputStream output = stream.createOutputStream(filters))
+        {
+            output.write(testString);
+        }
         return stream;
     }
 }

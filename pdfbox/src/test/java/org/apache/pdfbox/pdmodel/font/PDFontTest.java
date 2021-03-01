@@ -46,7 +46,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -61,8 +61,8 @@ class PDFontTest
 {
     private static final File OUT_DIR = new File("target/test-output");
 
-    @BeforeEach
-    public void setUp() throws Exception
+    @BeforeAll
+    static void setUp() throws Exception
     {
         OUT_DIR.mkdirs();
     }

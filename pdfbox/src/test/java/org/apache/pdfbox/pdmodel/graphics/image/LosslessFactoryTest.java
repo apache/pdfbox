@@ -57,20 +57,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Unit tests for LosslessFactory
  *
  * @author Tilman Hausherr
  */
+@Execution(ExecutionMode.CONCURRENT)
 class LosslessFactoryTest
 {
-    private static final File testResultsDir = new File("target/test-output/graphics");
+    private static final File TESTRESULTSDIR = new File("target/test-output/graphics");
 
     @BeforeAll
     static void setUp()
     {
-        testResultsDir.mkdirs();
+        TESTRESULTSDIR.mkdirs();
     }
 
     /**
@@ -122,7 +125,7 @@ class LosslessFactoryTest
         contentStream.drawImage(ximage3, 200, 600, ximage3.getWidth() / 2, ximage3.getHeight() / 2);
         contentStream.close();
         
-        File pdfFile = new File(testResultsDir, "misc.pdf");
+        File pdfFile = new File(TESTRESULTSDIR, "misc.pdf");
         document.save(pdfFile);
         document.close();
         
@@ -168,7 +171,7 @@ class LosslessFactoryTest
         validate(ximage.getSoftMask(), 8, argbImage.getWidth(), argbImage.getHeight(), "png", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
-        doWritePDF(document, ximage, testResultsDir, "intargb.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "intargb.pdf");
     }
 
     /**
@@ -242,7 +245,7 @@ class LosslessFactoryTest
         validate(ximage.getSoftMask(), 8, w, h, "png", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
-        doWritePDF(document, ximage, testResultsDir, "4babgr.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "4babgr.pdf");
     }
 
     /**
@@ -282,7 +285,7 @@ class LosslessFactoryTest
 
         assertNull(ximage.getSoftMask());
 
-        doWritePDF(document, ximage, testResultsDir, "ushort555rgb.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "ushort555rgb.pdf");
     }
 
     /**
@@ -311,7 +314,7 @@ class LosslessFactoryTest
         validate(ximage.getSoftMask(), 1, w, h, "png", PDDeviceGray.INSTANCE.getName());
         assertEquals(2, colorCount(ximage.getSoftMask().getImage()));
 
-        doWritePDF(document, ximage, testResultsDir, "gif.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "gif.pdf");
     }
 
     /**
@@ -342,7 +345,7 @@ class LosslessFactoryTest
         validate(ximage.getSoftMask(), 1, w, h, "png", PDDeviceGray.INSTANCE.getName());
         assertEquals(2, colorCount(ximage.getSoftMask().getImage()));
 
-        doWritePDF(document, ximage, testResultsDir, "gif-1bit-transparent.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "gif-1bit-transparent.pdf");
     }
 
     /**
@@ -359,7 +362,7 @@ class LosslessFactoryTest
         validate(ximage, 8, image.getWidth(), image.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(image, ximage.getImage());
 
-        doWritePDF(document, ximage, testResultsDir, "PDFBOX-4184-032163.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "PDFBOX-4184-032163.pdf");
     }
 
     /**
@@ -543,7 +546,7 @@ class LosslessFactoryTest
         contentStream.drawImage(ximage2, 150, 300, ximage2.getWidth(), ximage2.getHeight());
         contentStream.drawImage(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
         contentStream.close();
-        File pdfFile = new File(testResultsDir, pdfFilename);
+        File pdfFile = new File(TESTRESULTSDIR, pdfFilename);
         document.save(pdfFile);
         document.close();
         document = Loader.loadPDF(pdfFile, (String) null);
@@ -568,7 +571,7 @@ class LosslessFactoryTest
         PDImageXObject ximage = LosslessFactory.createFromImage(document, imageCMYK);
         validate(ximage, 8, imageCMYK.getWidth(), imageCMYK.getHeight(), "png", "ICCBased");
 
-        doWritePDF(document, ximage, testResultsDir, "cmyk.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "cmyk.pdf");
         
         // still slight difference of 1 color level
         //checkIdent(imageCMYK, ximage.getImage());
@@ -594,7 +597,7 @@ class LosslessFactoryTest
         PDImageXObject ximage = LosslessFactory.createFromImage(document, img16Bit);
         validate(ximage, 16, img16Bit.getWidth(), img16Bit.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(image, ximage.getImage());
-        doWritePDF(document, ximage, testResultsDir, "misc-16bit.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "misc-16bit.pdf");
     }
 
     @Test
@@ -666,6 +669,6 @@ class LosslessFactoryTest
         validate(ximage.getSoftMask(), 16, w, h, "png", PDDeviceGray.INSTANCE.getName());
         assertEquals(35, colorCount(ximage.getSoftMask().getImage()));
 
-        doWritePDF(document, ximage, testResultsDir, "png16bit.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "png16bit.pdf");
     }
 }

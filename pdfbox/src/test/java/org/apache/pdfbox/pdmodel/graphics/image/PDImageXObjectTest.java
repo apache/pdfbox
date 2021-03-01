@@ -28,6 +28,8 @@ import javax.imageio.ImageIO;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Test that the convenience methods are really doing what's expected, and having the same as
@@ -35,6 +37,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
+@Execution(ExecutionMode.CONCURRENT)
 class PDImageXObjectTest
 {
     

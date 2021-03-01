@@ -64,6 +64,9 @@ public class CMap
     private final Map<Integer, Map<Integer, Integer>> codeToCid = new HashMap<>();
     private final List<CIDRange> codeToCidRanges = new ArrayList<>();
 
+    // inverted map
+    Map <String, byte[]> unicodeToByteCodes = new HashMap<>();
+
     private static final String SPACE = " ";
     private int spaceMapping = -1;
 
@@ -120,6 +123,7 @@ public class CMap
      * Returns the sequence of Unicode characters for the given character code.
      *
      * @param code character code
+     * @param length code length
      * @return Unicode characters (may be more than one, e.g "fi" ligature)
      */
     public String toUnicode(int code, int length)
@@ -356,6 +360,7 @@ public class CMap
      */
     void addCharMapping(byte[] codes, String unicode)
     {
+        unicodeToByteCodes.put(unicode, codes.clone()); // clone needed, bytes is modified later
         int code = getCodeFromArray(codes, 0, codes.length);
         if (codes.length == 1)
         {
@@ -374,6 +379,17 @@ public class CMap
         {
             spaceMapping = code;
         }
+    }
+
+    /**
+     * Get the code bytes for an unicode string.
+     *
+     * @param unicode
+     * @return the code bytes or null if there is none.
+     */
+    public byte[] getCodesFromUnicode(String unicode)
+    {
+        return unicodeToByteCodes.get(unicode);
     }
 
     /**
@@ -446,6 +462,14 @@ public class CMap
         cmap.codespaceRanges.forEach(this::addCodespaceRange);
         charToUnicodeOneByte.putAll(cmap.charToUnicodeOneByte);
         charToUnicodeTwoBytes.putAll(cmap.charToUnicodeTwoBytes);
+        cmap.charToUnicodeOneByte.entrySet().forEach(entry ->
+            unicodeToByteCodes.put(entry.getValue(), new byte[] {(byte) (entry.getKey() % 0xFF)}));
+        cmap.charToUnicodeTwoBytes.entrySet().forEach(entry ->
+        {
+            Integer key = entry.getKey();
+            unicodeToByteCodes.put(entry.getValue(), 
+                    new byte[] {(byte) ((key >>> 8) & 0xFF), (byte) (key & 0xFF)});
+        });
         cmap.codeToCid.forEach((key, value) ->
         {
             if (codeToCid.containsKey(key))

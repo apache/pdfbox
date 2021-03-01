@@ -55,7 +55,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -69,18 +69,16 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 @Execution(ExecutionMode.CONCURRENT)
 class PDFMergerUtilityTest
 {
-    final String SRCDIR = "src/test/resources/input/merge/";
-    final String TARGETTESTDIR = "target/test-output/merge/";
+    private static final String SRCDIR = "src/test/resources/input/merge/";
+    private static final String TARGETTESTDIR = "target/test-output/merge/";
     private static final File TARGETPDFDIR = new File("target/pdfs");
-    final int DPI = 96;
+    private static final int DPI = 96;
 
-    @BeforeEach
-    protected void setUp()
+    @BeforeAll
+    static void setUp()
     {
         new File(TARGETTESTDIR).mkdirs();
     }
-    
-    
 
     /**
      * Tests whether the merge of two PDF files with identically named but
@@ -563,16 +561,16 @@ class PDFMergerUtilityTest
     void testMergeBogusStructParents1() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        PDDocument src = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
-        PDDocument dst = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
-        dst.getDocumentCatalog().setStructureTreeRoot(null);
-        dst.getPage(0).setStructParents(9999);
-        dst.getPage(0).getAnnotations().get(0).setStructParent(9998);
-        pdfMergerUtility.appendDocument(dst, src);
-        checkWithNumberTree(dst);
-        checkForPageOrphans(dst);
-        src.close();
-        dst.close();
+        try (PDDocument src = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
+             PDDocument dst = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf")))
+        {
+            dst.getDocumentCatalog().setStructureTreeRoot(null);
+            dst.getPage(0).setStructParents(9999);
+            dst.getPage(0).getAnnotations().get(0).setStructParent(9998);
+            pdfMergerUtility.appendDocument(dst, src);
+            checkWithNumberTree(dst);
+            checkForPageOrphans(dst);
+        }
     }
 
     /**
@@ -585,16 +583,16 @@ class PDFMergerUtilityTest
     void testMergeBogusStructParents2() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        PDDocument src = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
-        PDDocument dst = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
-        src.getDocumentCatalog().setStructureTreeRoot(null);
-        src.getPage(0).setStructParents(9999);
-        src.getPage(0).getAnnotations().get(0).setStructParent(9998);
-        pdfMergerUtility.appendDocument(dst, src);
-        checkWithNumberTree(dst);
-        checkForPageOrphans(dst);
-        src.close();
-        dst.close();
+        try (PDDocument src = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
+             PDDocument dst = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf")))
+        {
+            src.getDocumentCatalog().setStructureTreeRoot(null);
+            src.getPage(0).setStructParents(9999);
+            src.getPage(0).getAnnotations().get(0).setStructParent(9998);
+            pdfMergerUtility.appendDocument(dst, src);
+            checkWithNumberTree(dst);
+            checkForPageOrphans(dst);
+        }
     }
 
     /**
@@ -606,17 +604,18 @@ class PDFMergerUtilityTest
     @Test
     void testParentTree() throws IOException
     {
-        PDDocument doc = Loader
-                .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
-        PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-        PDNumberTreeNode parentTree = structureTreeRoot.getParentTree();
-        parentTree.getValue(0);
-        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
-        assertEquals(31, numberTreeAsMap.size());
-        assertEquals(31, Collections.max(numberTreeAsMap.keySet()) + 1);
-        assertEquals(0, (int) Collections.min(numberTreeAsMap.keySet()));
-        assertEquals(31, structureTreeRoot.getParentTreeNextKey());
-        doc.close();
+        try (PDDocument doc = Loader
+                .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf")))
+        {
+            PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
+            PDNumberTreeNode parentTree = structureTreeRoot.getParentTree();
+            parentTree.getValue(0);
+            Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+            assertEquals(31, numberTreeAsMap.size());
+            assertEquals(31, Collections.max(numberTreeAsMap.keySet()) + 1);
+            assertEquals(0, (int) Collections.min(numberTreeAsMap.keySet()));
+            assertEquals(31, structureTreeRoot.getParentTreeNextKey());
+        }
     }
 
     // PDFBOX-4417: check for multiple /StructTreeRoot entries that was due to

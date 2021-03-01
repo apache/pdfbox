@@ -328,8 +328,13 @@ public class COSStream extends COSDictionary implements Closeable
             COSArray filterArray = (COSArray)filters;
             for (int i = 0; i < filterArray.size(); i++)
             {
-                COSName filterName = (COSName)filterArray.get(i);
-                filterList.add(FilterFactory.INSTANCE.getFilter(filterName));
+                COSBase base = filterArray.get(i);
+                if (!(base instanceof COSName))
+                {
+                    throw new IOException("Forbidden type in filter array: " + 
+                            (base == null ? "null" : base.getClass().getName()));
+                }
+                filterList.add(FilterFactory.INSTANCE.getFilter((COSName) base));
             }
         }
         return filterList;

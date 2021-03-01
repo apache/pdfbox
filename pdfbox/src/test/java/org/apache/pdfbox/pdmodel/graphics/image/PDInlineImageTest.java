@@ -47,12 +47,12 @@ import org.junit.jupiter.api.Test;
  */
 class PDInlineImageTest
 {
-    private static final File testResultsDir = new File("target/test-output/graphics");
+    private static final File TESTRESULTSDIR = new File("target/test-output/graphics");
 
     @BeforeAll
     static void setUp()
     {
-        testResultsDir.mkdirs();
+        TESTRESULTSDIR.mkdirs();
     }
 
     /**
@@ -121,17 +121,17 @@ class PDInlineImageTest
 
         // write and read
         boolean writeOk = ImageIO.write(image1, "png",
-                new FileOutputStream(new File(testResultsDir + "/inline-grid1.png")));
+                new FileOutputStream(new File(TESTRESULTSDIR + "/inline-grid1.png")));
         assertTrue(writeOk);
-        BufferedImage bim1 = ImageIO.read(new File(testResultsDir + "/inline-grid1.png"));
+        BufferedImage bim1 = ImageIO.read(new File(TESTRESULTSDIR + "/inline-grid1.png"));
         assertNotNull(bim1);
         assertEquals(width, bim1.getWidth());
         assertEquals(height, bim1.getHeight());
         
         writeOk = ImageIO.write(image2, "png",
-                new FileOutputStream(new File(testResultsDir + "/inline-grid2.png")));
+                new FileOutputStream(new File(TESTRESULTSDIR + "/inline-grid2.png")));
         assertTrue(writeOk);
-        BufferedImage bim2 = ImageIO.read(new File(testResultsDir + "/inline-grid2.png"));
+        BufferedImage bim2 = ImageIO.read(new File(TESTRESULTSDIR + "/inline-grid2.png"));
         assertNotNull(bim2);
         assertEquals(width, bim2.getWidth());
         assertEquals(height, bim2.getHeight());
@@ -169,26 +169,28 @@ class PDInlineImageTest
             }
         }        
 
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
-        document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
-        contentStream.drawImage(inlineImage1, 150, 400);
-        contentStream.drawImage(inlineImage1, 150, 500, inlineImage1.getWidth() * 2, inlineImage1.getHeight() * 2);
-        contentStream.drawImage(inlineImage1, 150, 600, inlineImage1.getWidth() * 4, inlineImage1.getHeight() * 4);
-        contentStream.drawImage(inlineImage2, 350, 400);
-        contentStream.drawImage(inlineImage2, 350, 500, inlineImage2.getWidth() * 2, inlineImage2.getHeight() * 2);
-        contentStream.drawImage(inlineImage2, 350, 600, inlineImage2.getWidth() * 4, inlineImage2.getHeight() * 4);
-        contentStream.close();
+        File pdfFile = new File(TESTRESULTSDIR, "inline.pdf");
 
-        File pdfFile = new File(testResultsDir, "inline.pdf");
-        document.save(pdfFile);
-        document.close();
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            document.addPage(page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+            {
+                contentStream.drawImage(inlineImage1, 150, 400);
+                contentStream.drawImage(inlineImage1, 150, 500, inlineImage1.getWidth() * 2, inlineImage1.getHeight() * 2);
+                contentStream.drawImage(inlineImage1, 150, 600, inlineImage1.getWidth() * 4, inlineImage1.getHeight() * 4);
+                contentStream.drawImage(inlineImage2, 350, 400);
+                contentStream.drawImage(inlineImage2, 350, 500, inlineImage2.getWidth() * 2, inlineImage2.getHeight() * 2);
+                contentStream.drawImage(inlineImage2, 350, 600, inlineImage2.getWidth() * 4, inlineImage2.getHeight() * 4);
+            }
+            document.save(pdfFile);
+        }
 
-        document = Loader.loadPDF(pdfFile);
-        new PDFRenderer(document).renderImage(0);
-        document.close();
-
+        try (PDDocument document = Loader.loadPDF(pdfFile))
+        {
+            new PDFRenderer(document).renderImage(0);
+        }
     }
 }
 

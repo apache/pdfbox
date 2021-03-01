@@ -49,11 +49,9 @@ class TestPDDocumentCatalog
     @Test
     void retrievePageLabels() throws IOException
     {
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = Loader.loadPDF(
+                TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf")))
         {
-            doc = Loader
-                    .loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             String[] labels = cat.getPageLabels().getLabelsByPageIndices();
             assertEquals(12, labels.length);
@@ -70,13 +68,6 @@ class TestPDDocumentCatalog
             assertEquals("Appendix I", labels[10]);
             assertEquals("Appendix II", labels[11]);
         }
-        finally
-        {
-            if(doc != null)
-            {
-                doc.close();
-            }
-        }
     }
 
     /**
@@ -91,21 +82,12 @@ class TestPDDocumentCatalog
     @Test
     void retrievePageLabelsOnMalformedPdf() throws IOException
     {
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = Loader
+                .loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("badpagelabels.pdf")))
         {
-            doc = Loader
-                    .loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("badpagelabels.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             // getLabelsByPageIndices() should not throw an exception
             cat.getPageLabels().getLabelsByPageIndices();
-        }
-        finally
-        {
-            if(doc != null)
-            {
-                doc.close();
-            }
         }
     }
 
@@ -122,21 +104,12 @@ class TestPDDocumentCatalog
     @Test
     void retrieveNumberOfPages() throws IOException
     {
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = Loader.loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf")))
         {
-            doc = Loader.loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"));
             assertEquals(4, doc.getNumberOfPages());
         }
-        finally
-        {
-            if(doc != null)
-            {
-                doc.close();
-            }
-        }
     }
-    
+
     /**
      * Test OutputIntents functionality.
      * 
@@ -149,49 +122,31 @@ class TestPDDocumentCatalog
     @Test
     void handleOutputIntents() throws IOException
     {
-        PDDocument doc = null;
-        InputStream colorProfile = null;
-        try
+        try (InputStream colorProfile = TestPDDocumentCatalog.class.getResourceAsStream("sRGB.icc");
+             PDDocument doc = Loader.loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf")))
         {
-            
-            doc = Loader.loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"));
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
 
             // retrieve OutputIntents
             List<PDOutputIntent> outputIntents = catalog.getOutputIntents();
             assertTrue(outputIntents.isEmpty());
-            
-            // add an OutputIntent
-            colorProfile = TestPDDocumentCatalog.class.getResourceAsStream("sRGB.icc");
-            // create output intent
+
+            // create and add output intent
             PDOutputIntent oi = new PDOutputIntent(doc, colorProfile); 
             oi.setInfo("sRGB IEC61966-2.1"); 
             oi.setOutputCondition("sRGB IEC61966-2.1"); 
             oi.setOutputConditionIdentifier("sRGB IEC61966-2.1"); 
             oi.setRegistryName("http://www.color.org"); 
             doc.getDocumentCatalog().addOutputIntent(oi);
-            
+
             // retrieve OutputIntents
             outputIntents = catalog.getOutputIntents();
             assertEquals(1,outputIntents.size());
-            
+
             // set OutputIntents
             catalog.setOutputIntents(outputIntents);
             outputIntents = catalog.getOutputIntents();
-            assertEquals(1,outputIntents.size());            
-            
-        }
-        finally
-        {
-            if(doc != null)
-            {
-                doc.close();
-            }
-            
-            if (colorProfile != null)
-            {
-                colorProfile.close();
-            }
+            assertEquals(1,outputIntents.size());
         }
     }
 
@@ -199,9 +154,10 @@ class TestPDDocumentCatalog
     void handleBooleanInOpenAction() throws IOException
     {
         //PDFBOX-3772 -- allow for COSBoolean
-        PDDocument doc = new PDDocument();
-        doc.getDocumentCatalog().getCOSObject().setBoolean(COSName.OPEN_ACTION, false);
-        assertNull(doc.getDocumentCatalog().getOpenAction());
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            doc.getDocumentCatalog().getCOSObject().setBoolean(COSName.OPEN_ACTION, false);
+            assertNull(doc.getDocumentCatalog().getOpenAction());
+        }
     }
 }

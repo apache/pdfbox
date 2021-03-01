@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -47,6 +46,7 @@ import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Test for the PDButton class.
@@ -133,10 +133,9 @@ class PDAcroFormTest
         try (PDDocument testPdf = Loader.loadPDF(new File(IN_DIR, "AlignmentTests.pdf")))
         {
             PDAcroForm acroFormToTest = testPdf.getDocumentCatalog().getAcroForm();
-            for (PDField field : acroFormToTest.getFieldTree()) {
-                for (PDAnnotationWidget widget : field.getWidgets()) {
-                    widget.getCOSObject().removeItem(COSName.P);
-                }
+            for (PDField field : acroFormToTest.getFieldTree())
+            {
+                field.getWidgets().forEach(widget -> widget.getCOSObject().removeItem(COSName.P));
             }
             acroFormToTest.flatten();
 
@@ -286,16 +285,9 @@ class PDAcroFormTest
             widget.setPage(page);
 
             page.getAnnotations().add(widget);
-
-            try
-            {
-                textBox.setValue("huhu");
-            }
-            catch (IllegalArgumentException ex)
-            {
-                return;
-            }
-            fail("IllegalArgumentException should have been thrown");
+            
+            Assertions.assertThrows(IllegalArgumentException.class, () -> textBox.setValue("huhu"),
+                "IllegalArgumentException should have been thrown");
         }
     }
 

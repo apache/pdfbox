@@ -74,6 +74,11 @@ public final class CreateEmptySignatureForm
             PDRectangle rect = new PDRectangle(50, 650, 200, 50);
             widget.setRectangle(rect);
             widget.setPage(page);
+
+            // see thread from PDFBox users mailing list 17.2.2021 - 19.2.2021
+            // https://mail-archives.apache.org/mod_mbox/pdfbox-users/202102.mbox/thread
+            widget.setPrinted(true);
+
             page.getAnnotations().add(widget);
 
             acroForm.getFields().add(signatureField);

@@ -47,13 +47,13 @@ class OverlayTest
     public OverlayTest()
     {
     }
-    
+
     @BeforeEach
     public void setUp()
     {
         OUT_DIR.mkdirs();
     }
-    
+
     @Test
     void testRotatedOverlays() throws Exception
     {
@@ -66,28 +66,35 @@ class OverlayTest
     private void testRotatedOverlay(int rotation) throws IOException
     {
         // do the overlaying
-        PDDocument baseDocument = Loader.loadPDF(new File(IN_DIR, "OverlayTestBaseRot0.pdf"));
-        Overlay overlay = new Overlay();
-        overlay.setInputPDF(baseDocument);
-        PDDocument overlayDocument = Loader.loadPDF(new File(IN_DIR, "rot" + rotation + ".pdf"));
-        overlay.setDefaultOverlayPDF(overlayDocument);
-        PDDocument overlayedResultPDF = overlay.overlay(new HashMap<Integer, String>());
-        overlayedResultPDF.save(new File(OUT_DIR, "Overlayed-with-rot" + rotation + ".pdf"));
-        overlayedResultPDF.close();
-        baseDocument.close();
-        overlayDocument.close();
+        try (PDDocument baseDocument = Loader.loadPDF(new File(IN_DIR, "OverlayTestBaseRot0.pdf")))
+        {
+            Overlay overlay = new Overlay();
+            overlay.setInputPDF(baseDocument);
+            try (PDDocument overlayDocument = Loader.loadPDF(new File(IN_DIR, "rot" + rotation + ".pdf")))
+            {
+                overlay.setDefaultOverlayPDF(overlayDocument);
+                try (PDDocument overlayedResultPDF = overlay.overlay(new HashMap<>()))
+                {
+                    overlayedResultPDF.save(new File(OUT_DIR, "Overlayed-with-rot" + rotation + ".pdf"));
+                }
+            }
+        }
 
         // render model and result
         File modelFile = new File(IN_DIR, "Overlayed-with-rot" + rotation + ".pdf");
         File resultFile = new File(OUT_DIR, "Overlayed-with-rot" + rotation + ".pdf");
 
-        PDDocument modelDocument = Loader.loadPDF(modelFile);
-        BufferedImage modelImage = new PDFRenderer(modelDocument).renderImage(0);
-        modelDocument.close();
+        BufferedImage modelImage;
+        try (PDDocument modelDocument = Loader.loadPDF(modelFile))
+        {
+            modelImage = new PDFRenderer(modelDocument).renderImage(0);
+        }
 
-        PDDocument resultDocument = Loader.loadPDF(resultFile);
-        BufferedImage resultImage = new PDFRenderer(resultDocument).renderImage(0);
-        resultDocument.close();
+        BufferedImage resultImage;
+        try (PDDocument resultDocument = Loader.loadPDF(resultFile))
+        {
+            resultImage = new PDFRenderer(resultDocument).renderImage(0);
+        }
 
         // compare images
         assertEquals(modelImage.getWidth(), resultImage.getWidth());
@@ -103,27 +110,29 @@ class OverlayTest
     // code used to create the base file
     private void createBaseFile() throws IOException
     {
-        PDDocument doc = new PDDocument();
-        PDPage page = new PDPage();
-        PDPageContentStream cs = new PDPageContentStream(doc, page);
-        float fontHeight = 12;
-        float y = page.getMediaBox().getHeight() - fontHeight * 2;
-        PDFont font = PDType1Font.HELVETICA;
-        cs.setFont(font, fontHeight);
-        cs.beginText();
-        cs.setLeading(fontHeight * 2 + 1);
-        cs.newLineAtOffset(fontHeight * 2, y);
-        while (y > fontHeight * 2)
+        try (PDDocument doc = new PDDocument())
         {
-            cs.showText("A quick movement of the enemy will jeopardize six gunboats. " +
-                        "Heavy boxes perform quick waltzes and jigs.");
-            cs.newLine();
-            y -= fontHeight * 2;
+            PDPage page = new PDPage();
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            {
+                float fontHeight = 12;
+                float y = page.getMediaBox().getHeight() - fontHeight * 2;
+                PDFont font = PDType1Font.HELVETICA;
+                cs.setFont(font, fontHeight);
+                cs.beginText();
+                cs.setLeading(fontHeight * 2 + 1);
+                cs.newLineAtOffset(fontHeight * 2, y);
+                while (y > fontHeight * 2)
+                {
+                    cs.showText("A quick movement of the enemy will jeopardize six gunboats. " +
+                            "Heavy boxes perform quick waltzes and jigs.");
+                    cs.newLine();
+                    y -= fontHeight * 2;
+                }
+                cs.endText();
+            }
+            doc.addPage(page);
+            doc.save("OverlayTestBaseRot0.pdf");
         }
-        cs.endText();
-        cs.close();
-        doc.addPage(page);
-        doc.save("OverlayTestBaseRot0.pdf");
-        doc.close();
     }
 }

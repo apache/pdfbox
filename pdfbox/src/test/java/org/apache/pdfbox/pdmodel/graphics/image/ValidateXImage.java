@@ -218,7 +218,7 @@ public class ValidateXImage
                             colorModel.getMasks(), new Point(0, 0));
 
             BufferedImage image8Bit = new BufferedImage(colorModel, targetRaster, false,
-                    new Hashtable<String, Object>());
+                    new Hashtable<>());
 
             WritableRaster sourceRaster = image.getRaster();
 
@@ -262,7 +262,7 @@ public class ValidateXImage
 
     private static int convert16To8Bit(int v)
     {
-        float output = (float) v / (float) 0xFFFF;
+        float output = v / (float) 0xFFFF;
         return Math.round(output * 0xFF);
     }
 }

@@ -55,17 +55,8 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         {
             throw new IllegalArgumentException("List of COSObjectables cannot be null");
         }
-        for (COSObjectable cosObjectable : cosObjectables)
-        {
-            if (cosObjectable != null)
-            {
-                objects.add(cosObjectable.getCOSObject());
-            }
-            else
-            {
-                objects.add(null);
-            }
-        }
+        cosObjectables.forEach(cosObjectable ->
+            objects.add(cosObjectable != null ? cosObjectable.getCOSObject() : null));
     }
 
     /**

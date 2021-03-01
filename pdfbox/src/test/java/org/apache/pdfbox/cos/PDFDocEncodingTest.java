@@ -83,11 +83,11 @@ class PDFDocEncodingTest
     @Test
     void testDeviations()
     {
-        for (String deviation: deviations)
+        deviations.forEach(deviation ->
         {
             COSString cosString = new COSString(deviation);
             assertEquals(cosString.getString(), deviation);
-        }
+        });
     }
 
     /**

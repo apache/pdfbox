@@ -357,8 +357,12 @@ public class PDCIDFontType2 extends PDCIDFont
             // otherwise we require an explicit ToUnicode CMap
             if (cid == -1)
             {
-                //TODO: invert the ToUnicode CMap?
-                // see also PDFBOX-4233
+                CMap toUnicodeCMap = parent.getToUnicodeCMap();
+                byte[] codes = toUnicodeCMap.getCodesFromUnicode(Character.toString((char) unicode));
+                if (codes != null)
+                {
+                    return codes;
+                }
                 cid = 0;
             }
         }

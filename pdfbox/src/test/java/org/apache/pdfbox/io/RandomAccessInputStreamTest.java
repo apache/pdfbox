@@ -35,16 +35,15 @@ class RandomAccessInputStreamTest
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
-                new RandomAccessReadBuffer(bais));
-
-        assertEquals(11, randomAccessInputStream.available());
-        randomAccessInputStream.skip(5);
-        assertEquals(5, randomAccessInputStream.read());
-        assertEquals(5, randomAccessInputStream.available());
-        assertEquals(0, randomAccessInputStream.skip(-10));
-
-        randomAccessInputStream.close();
+        try (RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
+                new RandomAccessReadBuffer(bais)))
+        {
+            assertEquals(11, randomAccessInputStream.available());
+            randomAccessInputStream.skip(5);
+            assertEquals(5, randomAccessInputStream.read());
+            assertEquals(5, randomAccessInputStream.available());
+            assertEquals(0, randomAccessInputStream.skip(-10));
+        }
     }
 
     @Test
@@ -53,16 +52,15 @@ class RandomAccessInputStreamTest
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
-                new RandomAccessReadBuffer(bais));
-
-        assertEquals(11, randomAccessInputStream.available());
-        assertEquals(0, randomAccessInputStream.read());
-        assertEquals(1, randomAccessInputStream.read());
-        assertEquals(2, randomAccessInputStream.read());
-        assertEquals(8, randomAccessInputStream.available());
-
-        randomAccessInputStream.close();
+        try (RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
+                new RandomAccessReadBuffer(bais)))
+        {
+            assertEquals(11, randomAccessInputStream.available());
+            assertEquals(0, randomAccessInputStream.read());
+            assertEquals(1, randomAccessInputStream.read());
+            assertEquals(2, randomAccessInputStream.read());
+            assertEquals(8, randomAccessInputStream.available());
+        }
     }
 
     @Test
@@ -71,16 +69,15 @@ class RandomAccessInputStreamTest
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
-                new RandomAccessReadBuffer(bais));
-
-        assertEquals(12, randomAccessInputStream.skip(inputValues.length + 1));
-        
-        assertEquals(0, randomAccessInputStream.available());
-        assertEquals(-1, randomAccessInputStream.read());
-        assertEquals(-1, randomAccessInputStream.read(new byte[1], 0, 1));
-
-        randomAccessInputStream.close();
+        try (RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
+                new RandomAccessReadBuffer(bais)))
+        {
+            assertEquals(12, randomAccessInputStream.skip(inputValues.length + 1));
+            
+            assertEquals(0, randomAccessInputStream.available());
+            assertEquals(-1, randomAccessInputStream.read());
+            assertEquals(-1, randomAccessInputStream.read(new byte[1], 0, 1));
+        }
     }
 
     @Test
@@ -89,35 +86,34 @@ class RandomAccessInputStreamTest
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
-                new RandomAccessReadBuffer(bais));
-
-        assertEquals(11, randomAccessInputStream.available());
-        byte[] buffer = new byte[4];
-        randomAccessInputStream.read(buffer);
-        assertEquals(0, buffer[0]);
-        assertEquals(3, buffer[3]);
-        assertEquals(7, randomAccessInputStream.available());
-
-        randomAccessInputStream.read(buffer, 1, 2);
-        assertEquals(0, buffer[0]);
-        assertEquals(4, buffer[1]);
-        assertEquals(5, buffer[2]);
-        assertEquals(3, buffer[3]);
-        assertEquals(5, randomAccessInputStream.available());
-
-        randomAccessInputStream.close();
+        try (RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
+                new RandomAccessReadBuffer(bais)))
+        {
+            assertEquals(11, randomAccessInputStream.available());
+            byte[] buffer = new byte[4];
+            randomAccessInputStream.read(buffer);
+            assertEquals(0, buffer[0]);
+            assertEquals(3, buffer[3]);
+            assertEquals(7, randomAccessInputStream.available());
+            
+            randomAccessInputStream.read(buffer, 1, 2);
+            assertEquals(0, buffer[0]);
+            assertEquals(4, buffer[1]);
+            assertEquals(5, buffer[2]);
+            assertEquals(3, buffer[3]);
+            assertEquals(5, randomAccessInputStream.available());
+        }
     }
 
     @Test
     void testEmptyBuffer() throws IOException
     {
-        RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
-                new RandomAccessReadBuffer(new ByteArrayOutputStream().toByteArray()));
-
-        assertEquals(-1, randomAccessInputStream.read());
-        assertEquals(-1, randomAccessInputStream.read(new byte[6]));
-        assertEquals(0, randomAccessInputStream.available());
-        randomAccessInputStream.close();
+        try (RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
+                new RandomAccessReadBuffer(new ByteArrayOutputStream().toByteArray())))
+        {
+            assertEquals(-1, randomAccessInputStream.read());
+            assertEquals(-1, randomAccessInputStream.read(new byte[6]));
+            assertEquals(0, randomAccessInputStream.available());
+        }
     }
 }

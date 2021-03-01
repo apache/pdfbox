@@ -392,6 +392,10 @@ public class PDDocument implements Closeable
         // The /F key's Print flag bit shall be set to 1 and 
         // its Hidden, Invisible and NoView flag bits shall be set to 0
         signatureField.getWidgets().get(0).setPrinted(true);
+        // This may be troublesome if several form fields are signed,
+        // see thread from PDFBox users mailing list 17.2.2021 - 19.2.2021
+        // https://mail-archives.apache.org/mod_mbox/pdfbox-users/202102.mbox/thread
+        // better set the printed flag in advance
 
         // Set the AcroForm Fields
         List<PDField> acroFormFields = acroForm.getFields();
