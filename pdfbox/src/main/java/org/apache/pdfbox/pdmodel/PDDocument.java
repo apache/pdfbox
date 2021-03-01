@@ -473,6 +473,7 @@ public class PDDocument implements Closeable
                 if (signature != null && signature.getCOSObject().equals(sigObject.getCOSObject()))
                 {
                     signatureField = (PDSignatureField) pdField;
+                    break;
                 }
             }
         }
