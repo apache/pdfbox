@@ -622,7 +622,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public List<Float> toCOSNumberFloatList()
     {
-        List<Float> numbers = new ArrayList<>();
+        List<Float> numbers = new ArrayList<>(size());
         for (int i = 0; i < size(); i++)
         {
             COSBase num = getObject(i);
@@ -645,7 +645,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public List<Integer> toCOSNumberIntegerList()
     {
-        List<Integer> numbers = new ArrayList<>();
+        List<Integer> numbers = new ArrayList<>(size());
         for (int i = 0; i < size(); i++)
         {
             COSBase num = getObject(i);
