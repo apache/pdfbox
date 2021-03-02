@@ -317,15 +317,17 @@ public class COSStream extends COSDictionary implements Closeable
      */
     private List<Filter> getFilterList() throws IOException
     {
-        List<Filter> filterList = new ArrayList<>();
+        List<Filter> filterList;
         COSBase filters = getFilters();
         if (filters instanceof COSName)
         {
+            filterList = new ArrayList<>(1);
             filterList.add(FilterFactory.INSTANCE.getFilter((COSName)filters));
         }
         else if (filters instanceof COSArray)
         {
             COSArray filterArray = (COSArray)filters;
+            filterList = new ArrayList<>(filterArray.size());
             for (int i = 0; i < filterArray.size(); i++)
             {
                 COSBase base = filterArray.get(i);
@@ -336,6 +338,10 @@ public class COSStream extends COSDictionary implements Closeable
                 }
                 filterList.add(FilterFactory.INSTANCE.getFilter((COSName) base));
             }
+        }
+        else
+        {
+            filterList = new ArrayList<Filter>();
         }
         return filterList;
     }
