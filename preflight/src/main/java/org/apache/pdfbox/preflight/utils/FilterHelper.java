@@ -103,8 +103,8 @@ public final class FilterHelper
      * LZW filter is forbidden due to Copyright compatibility. Because of the PDF/A is based on the PDF1.4
      * specification, all filters that aren't declared in the PDF Reference Third Edition are rejected.
      * 
-     * @param context
-     * @param filter
+     * @param context the preflight context
+     * @param filter the filter to check
      */
     public static void isAuthorizedFilterInPDFA(PreflightContext context, String filter)
     {
