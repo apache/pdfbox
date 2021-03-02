@@ -473,7 +473,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public int indexOfObject(COSBase object)
     {
         int retval = -1;
-        for (int i = 0; retval < 0 && i < this.size(); i++)
+        for (int i = 0; i < this.size(); i++)
         {
             COSBase item = this.get(i);
             if (item.equals(object) ||
