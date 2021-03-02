@@ -23,10 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -300,15 +297,17 @@ public class COSStream extends COSDictionary implements Closeable
      */
     private List<Filter> getFilterList() throws IOException
     {
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList;
         COSBase filters = getFilters();
         if (filters instanceof COSName)
         {
+            filterList = new ArrayList<Filter>(1);
             filterList.add(FilterFactory.INSTANCE.getFilter((COSName)filters));
         }
         else if (filters instanceof COSArray)
         {
             COSArray filterArray = (COSArray)filters;
+            filterList = new ArrayList<Filter>(filterArray.size());
             for (int i = 0; i < filterArray.size(); i++)
             {
                 COSBase base = filterArray.get(i);
@@ -319,6 +318,10 @@ public class COSStream extends COSDictionary implements Closeable
                 }
                 filterList.add(FilterFactory.INSTANCE.getFilter((COSName) base));
             }
+        }
+        else
+        {
+            filterList = new ArrayList<Filter>();
         }
         return filterList;
     }
