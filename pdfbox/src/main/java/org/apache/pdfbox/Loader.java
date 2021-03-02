@@ -71,8 +71,11 @@ public class Loader
      */
     public static FDFDocument loadFDF(File file) throws IOException
     {
-        FDFParser parser = new FDFParser(new RandomAccessReadBufferedFile(file));
-        return parser.parse();
+        try (RandomAccessRead readBuffer = new RandomAccessReadBufferedFile(file))
+        {
+            FDFParser parser = new FDFParser(readBuffer);
+            return parser.parse();
+        }
     }
 
     /**
@@ -86,8 +89,11 @@ public class Loader
      */
     public static FDFDocument loadFDF(InputStream input) throws IOException
     {
-        FDFParser parser = new FDFParser(new RandomAccessReadBuffer(input));
-        return parser.parse();
+        try (RandomAccessRead readBuffer = new RandomAccessReadBuffer(input))
+        {
+            FDFParser parser = new FDFParser(readBuffer);
+            return parser.parse();
+        }
     }
 
     /**
