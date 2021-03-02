@@ -104,7 +104,9 @@ public final class FilterHelper
      * specification, all filters that aren't declared in the PDF Reference Third Edition are rejected.
      * 
      * @param context
+     *            the preflight context
      * @param filter
+     *            the filter to check
      */
     public static void isAuthorizedFilterInPDFA(PreflightContext context, String filter)
     {
