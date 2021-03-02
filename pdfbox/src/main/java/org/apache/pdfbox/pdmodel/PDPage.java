@@ -562,7 +562,7 @@ public class PDPage implements COSObjectable, PDContentStream
         {
             beads = new COSArray();
         }
-        List<PDThreadBead> pdObjects = new ArrayList<>();
+        List<PDThreadBead> pdObjects = new ArrayList<>(beads.size());
         for (int i = 0; i < beads.size(); i++)
         {
             COSBase base = beads.getObject(i);
