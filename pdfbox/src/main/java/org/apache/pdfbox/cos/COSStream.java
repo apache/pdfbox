@@ -341,7 +341,7 @@ public class COSStream extends COSDictionary implements Closeable
         }
         else
         {
-            filterList = new ArrayList<Filter>();
+            filterList = new ArrayList<>();
         }
         return filterList;
     }
