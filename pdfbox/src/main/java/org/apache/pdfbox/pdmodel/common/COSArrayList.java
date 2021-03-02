@@ -350,7 +350,7 @@ public class COSArrayList<E> implements List<E>
 
     private List<COSBase> toCOSObjectList( Collection<?> list )
     {
-        List<COSBase> cosObjects = new ArrayList<>();
+        List<COSBase> cosObjects = new ArrayList<>(list.size());
         list.forEach(next ->
         {
             if( next instanceof String )
