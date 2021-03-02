@@ -567,12 +567,12 @@ public class PDDocument implements Closeable
     {
         // Read and set the rectangle for visual signature
         COSArray rectArray = (COSArray) annotDict.getDictionaryObject(COSName.RECT);
-        PDRectangle rect = new PDRectangle(rectArray);
         PDRectangle existingRectangle = signatureField.getWidgets().get(0).getRectangle();
 
         //in case of an existing field keep the original rect
         if (existingRectangle == null || existingRectangle.getCOSArray().size() != 4)
         {
+            PDRectangle rect = new PDRectangle(rectArray);
             signatureField.getWidgets().get(0).setRectangle(rect);
         }
     }
