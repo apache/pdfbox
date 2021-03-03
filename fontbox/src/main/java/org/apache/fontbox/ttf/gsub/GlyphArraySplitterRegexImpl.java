@@ -45,7 +45,7 @@ public class GlyphArraySplitterRegexImpl implements GlyphArraySplitter
         String originalGlyphsAsText = convertGlyphIdsToString(glyphIds);
         List<String> tokens = compoundCharacterTokenizer.tokenize(originalGlyphsAsText);
 
-        List<List<Integer>> modifiedGlyphs = new ArrayList<>();
+        List<List<Integer>> modifiedGlyphs = new ArrayList<>(tokens.size());
         tokens.forEach(token -> modifiedGlyphs.add(convertGlyphIdsToList(token)));
         return modifiedGlyphs;
     }
