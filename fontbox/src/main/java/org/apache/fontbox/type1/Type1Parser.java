@@ -92,9 +92,9 @@ final class Type1Parser
             read(Token.LITERAL); // font name
             read(Token.NAME, "known");
             read(Token.START_PROC);
-            readProc();
+            readProcVoid();
             read(Token.START_PROC);
-            readProc();
+            readProcVoid();
             read(Token.NAME, "ifelse");
         }
 
@@ -426,10 +426,10 @@ final class Type1Parser
             read(Token.NAME, "known");
 
             read(Token.START_PROC);
-            readProc();
+            readProcVoid();
 
             read(Token.START_PROC);
-            readProc();
+            readProcVoid();
 
             read(Token.NAME, "ifelse");
 
@@ -478,6 +478,33 @@ final class Type1Parser
         }
 
         return value;
+    }
+
+    /**
+     * Reads a procedure.
+     */
+    private void readProcVoid() throws IOException
+    {
+        int openProc = 1;
+        while (true)
+        {
+            if (lexer.peekToken().getKind() == Token.START_PROC)
+            {
+                openProc++;
+            }
+
+            Token token = lexer.nextToken();
+
+            if (token.getKind() == Token.END_PROC)
+            {
+                openProc--;
+                if (openProc == 0)
+                {
+                    break;
+                }
+            }
+        }
+        readMaybe(Token.NAME, "executeonly");
     }
 
     /**
@@ -565,7 +592,7 @@ final class Type1Parser
                 case "RD":
                     // /RD {string currentfile exch readstring pop} bind executeonly def
                     read(Token.START_PROC);
-                    readProc();
+                    readProcVoid();
                     readMaybe(Token.NAME, "bind");
                     readMaybe(Token.NAME, "executeonly");
                     read(Token.NAME, "def");
