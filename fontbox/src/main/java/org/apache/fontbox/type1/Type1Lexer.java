@@ -261,7 +261,7 @@ class Type1Lexer
         {
             // PostScript radix number takes the form base#number
             radix = sb;
-            sb = new StringBuilder();
+            sb.setLength(0);
             c = getChar();
         }
         else if (sb.length() == 0 || !hasDigit)
@@ -366,12 +366,12 @@ class Type1Lexer
                 sb.append(c);
             }
         }
-        String regular = sb.toString();
-        if (regular.length() == 0)
+
+        if (sb.length() == 0)
         {
             return null;
         }
-        return regular;
+        return sb.toString();
     }
 
     /**
