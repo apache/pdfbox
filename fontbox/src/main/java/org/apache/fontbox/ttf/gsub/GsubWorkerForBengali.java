@@ -151,7 +151,7 @@ public class GsubWorkerForBengali implements GsubWorker
 
         List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
 
-        List<Integer> gsubProcessedGlyphs = new ArrayList<>();
+        List<Integer> gsubProcessedGlyphs = new ArrayList<>(tokens.size());
 
         for (List<Integer> chunk : tokens)
         {
@@ -175,7 +175,7 @@ public class GsubWorkerForBengali implements GsubWorker
 
     private List<Integer> getBeforeHalfGlyphIds()
     {
-        List<Integer> glyphIds = new ArrayList<>();
+        List<Integer> glyphIds = new ArrayList<>(BEFORE_HALF_CHARS.length);
 
         for (char character : BEFORE_HALF_CHARS)
         {
