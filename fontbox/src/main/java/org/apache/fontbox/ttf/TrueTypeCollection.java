@@ -96,24 +96,27 @@ public class TrueTypeCollection implements Closeable
      */
     public void processAllFonts(TrueTypeFontProcessor trueTypeFontProcessor) throws IOException
     {
+        OTFParser otfParser = new OTFParser(false, true);
+        TTFParser ttfParser = new TTFParser(false, true);
+
         for (int i = 0; i < numFonts; i++)
         {
-            TrueTypeFont font = getFontAtIndex(i);
+            TrueTypeFont font = getFontAtIndex(i, otfParser, ttfParser);
             trueTypeFontProcessor.process(font);
         }
     }
     
-    private TrueTypeFont getFontAtIndex(int idx) throws IOException
+    private TrueTypeFont getFontAtIndex(int idx, OTFParser otfParser, TTFParser ttfParser) throws IOException
     {
         stream.seek(fontOffsets[idx]);
         TTFParser parser;
         if (stream.readTag().equals("OTTO"))
         {
-            parser = new OTFParser(false, true);
+            parser = otfParser;
         }
         else
         {
-            parser = new TTFParser(false, true);
+            parser = ttfParser;
         }
         stream.seek(fontOffsets[idx]);
         return parser.parse(new TTCDataStream(stream));
@@ -128,9 +131,12 @@ public class TrueTypeCollection implements Closeable
      */
     public TrueTypeFont getFontByName(String name) throws IOException
     {
+        OTFParser otfParser = new OTFParser(false, true);
+        TTFParser ttfParser = new TTFParser(false, true);
+
         for (int i = 0; i < numFonts; i++)
         {
-            TrueTypeFont font = getFontAtIndex(i);
+            TrueTypeFont font = getFontAtIndex(i, otfParser, ttfParser);
             if (font.getName().equals(name))
             {
                 return font;
