@@ -444,11 +444,13 @@ public class CFFParser
         boolean isCIDFont = topDict.getEntry("ROS") != null;
         if (isCIDFont)
         {
-            font = new CFFCIDFont();
+            CFFCIDFont tmpFont = new CFFCIDFont();
             DictData.Entry rosEntry = topDict.getEntry("ROS");
-            ((CFFCIDFont) font).setRegistry(readString(rosEntry.getNumber(0).intValue()));
-            ((CFFCIDFont) font).setOrdering(readString(rosEntry.getNumber(1).intValue()));
-            ((CFFCIDFont) font).setSupplement(rosEntry.getNumber(2).intValue());
+            tmpFont.setRegistry(readString(rosEntry.getNumber(0).intValue()));
+            tmpFont.setOrdering(readString(rosEntry.getNumber(1).intValue()));
+            tmpFont.setSupplement(rosEntry.getNumber(2).intValue());
+
+            font = tmpFont;
         }
         else
         {
