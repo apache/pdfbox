@@ -481,7 +481,7 @@ final class Type1Parser
     }
 
     /**
-     * Reads a procedure.
+     * Reads a procedure but without returning anything.
      */
     private void readProcVoid() throws IOException
     {

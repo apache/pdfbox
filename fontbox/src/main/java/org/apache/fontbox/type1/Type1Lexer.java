@@ -366,7 +366,6 @@ class Type1Lexer
                 sb.append(c);
             }
         }
-
         if (sb.length() == 0)
         {
             return null;
