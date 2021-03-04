@@ -701,10 +701,11 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     @Override
     public BoundingBox getFontBBox() throws IOException
     {
-        short xMin = getHeader().getXMin();
-        short xMax = getHeader().getXMax();
-        short yMin = getHeader().getYMin();
-        short yMax = getHeader().getYMax();
+        HeaderTable headerTable = getHeader();
+        short xMin = headerTable.getXMin();
+        short xMax = headerTable.getXMax();
+        short yMin = headerTable.getYMin();
+        short yMax = headerTable.getYMax();
         float scale = 1000f / getUnitsPerEm();
         return new BoundingBox(xMin * scale, yMin * scale, xMax * scale, yMax * scale);
     }
