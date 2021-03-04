@@ -5,15 +5,16 @@
 ## Requirements
 
 -Req. 1.0 
-The Back Enhanced PDFBOX System (BEPS) shall provide a mechanism for users to annotate existing PDF documents with text.
+A tool shall provide a mechanism for users to annotate existing PDF documents with text.
 -Req 1.1
 In annotations composed of text, the user shall be able to specify the font of each glyph in the text from a set of at least two different fonts.
 -Req 1.1.1
-The BEPS shall include at least two different user selectable fonts.
+The font tool shall include at least two different user selectable fonts.
 -Req 2.0 
-The BEPS shall provide users with a mechanism to highlight existing text in PDF documents
+A tool shall be provided that allows users to highlight existing text in PDF documents
 -Req 3.0
-A GUI shall be implemented to allow users to draw lines on the document
-
+A tool shall be implemented to allow users to draw lines on the document
+-Req 4.0
+A tool shall be provided to allow users to annotate existing PDF documents with an image
 
 Note: 1.1 and 1.1.1 are basically duplicates
