@@ -19,7 +19,7 @@ public class TestAddImage extends TestCase {
 public void testLoadFileAndInitializeStream() throws IOException {
 
     AddImage add = new AddImage();
-    String expected = "C:/Users/Asher/Downloads/itext7start/itext7start/mavenproject2/results/chapter01/hello.pdf";
+    String expected = "../../../../../app/src/main/appended-resources/examplePDFWithText.pdf";
     PDDocument actual = add.loadFileandInitializeStream(expected);
     int actualPages = actual.getNumberOfPages();
     assertEquals(2, actualPages);
@@ -30,8 +30,8 @@ public void testCreateImage() throws IOException {
 
     int expected = 750;
     AddImage add = new AddImage();
-    add.loadFileandInitializeStream("C:/Users/Asher/Downloads/itext7start/itext7start/mavenproject2/results/chapter01/hello.pdf");
-    String imageString = "C:/Users/Asher/IdeaProjects/Group-6-PDFBox_project/app/src/main/appended-resources/pamcamke.jpg";
+    add.loadFileandInitializeStream("../../../../../app/src/main/appended-resources/examplePDFWithText.pdf");
+    String imageString = "../../../../../app/src/main/appended-resources/pamcamke.jpg";
     PDImageXObject actual = add.createImage(imageString);
     assertEquals(750, actual.getWidth());
 
