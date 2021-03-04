@@ -95,13 +95,17 @@ public class Type1CharString
      */
     public Rectangle2D getBounds()
     {
-        synchronized(LOG)
+        if (path == null)
         {
-            if (path == null)
+            synchronized(LOG)
             {
-                render();
+                if (path == null)
+                {
+                    render();
+                }
             }
         }
+
         return path.getBounds2D();
     }
 
@@ -111,13 +115,17 @@ public class Type1CharString
      */
     public int getWidth()
     {
-        synchronized(LOG)
+        if (path == null)
         {
-            if (path == null)
+            synchronized(LOG)
             {
-                render();
+                if (path == null)
+                {
+                    render();
+                }
             }
         }
+
         return width;
     }
 
@@ -127,13 +135,17 @@ public class Type1CharString
      */
     public GeneralPath getPath()
     {
-        synchronized(LOG)
+        if (path == null)
         {
-            if (path == null)
+            synchronized(LOG)
             {
-                render();
+                if (path == null)
+                {
+                    render();
+                }
             }
         }
+
         return path;
     }
 
