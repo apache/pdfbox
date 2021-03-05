@@ -92,7 +92,7 @@ public class DomXmpParser
         }
         catch (ParserConfigurationException e)
         {
-            throw new XmpParsingException(ErrorType.Configuration, "Failed to initilalize", e);
+            throw new XmpParsingException(ErrorType.Configuration, "Failed to initialize", e);
         }
     }
 
