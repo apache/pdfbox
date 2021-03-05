@@ -119,10 +119,7 @@ public class XMPSchemaFactory
         try
         {
             schema = schemaClass.getDeclaredConstructor(argsClass).newInstance(schemaArgs);
-            if (schema != null)
-            {
-                metadata.addSchema(schema);
-            }
+            metadata.addSchema(schema);
             return schema;
         }
         catch (Exception e)
