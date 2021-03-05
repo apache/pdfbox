@@ -142,7 +142,7 @@ public final class TypeMapping
         catch (InvocationTargetException | IllegalArgumentException | InstantiationException |
                IllegalAccessException | SecurityException | NoSuchMethodException e)
         {
-            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
+            throw new BadFieldValueException("Failed to instantiate structured type : " + type, e);
         }
     }
 
@@ -168,7 +168,7 @@ public final class TypeMapping
                IllegalAccessException | InvocationTargetException | SecurityException |
                NoSuchMethodException e)
         {
-            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
+            throw new IllegalArgumentException("Failed to instantiate " + clz.getSimpleName() + " property with value " + value, e);
         }
     }
 
