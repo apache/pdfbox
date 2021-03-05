@@ -150,7 +150,7 @@ abstract class TTFDataStream implements Closeable
         {
             throw new EOFException();
         }
-        return (byte1 << 24) + (byte2 << 16) + (byte3 << 8) + (byte4 << 0);
+        return (byte1 << 24) + (byte2 << 16) + (byte3 << 8) + byte4;
     }
 
     /**
