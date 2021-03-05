@@ -88,7 +88,10 @@ public class PfbParser
      */
     public PfbParser(final String filename) throws IOException 
     {
-        this( new BufferedInputStream(new FileInputStream(filename),BUFFER_SIZE) );
+        try(BufferedInputStream in = new BufferedInputStream(new FileInputStream(filename), BUFFER_SIZE)){
+            byte[] pfb = readPfbInput(in);
+            parsePfb(pfb);
+        }
     }
 
     /**
