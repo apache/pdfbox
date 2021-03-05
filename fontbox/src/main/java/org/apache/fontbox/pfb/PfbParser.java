@@ -16,13 +16,13 @@
  */
 package org.apache.fontbox.pfb;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 /**
@@ -34,7 +34,7 @@ import java.util.Arrays;
 public class PfbParser 
 {
     /**
-     * the pdf header length.
+     * the pfb header length.
      * (start-marker (1 byte), ascii-/binary-marker (1 byte), size (4 byte))
      * 3*6 == 18
      */
@@ -88,7 +88,7 @@ public class PfbParser
      */
     public PfbParser(final String filename) throws IOException 
     {
-        this( new BufferedInputStream(new FileInputStream(filename),BUFFER_SIZE) );
+        this(Files.readAllBytes(Paths.get(filename)));
     }
 
     /**
@@ -98,7 +98,7 @@ public class PfbParser
      */
     public PfbParser(final InputStream in) throws IOException 
     {
-        byte[] pfb = readPfbInput(in);
+        byte[] pfb = readFully(in);
         parsePfb(pfb);
     }
 
@@ -155,17 +155,17 @@ public class PfbParser
     }
 
     /**
-     * Read the pdf input.
+     * Read the pfb input.
      * @param in    The input.
-     * @return Returns the pdf-array.
+     * @return Returns the pfb-array.
      * @throws IOException if an IO-error occurs.
      */
-    private byte[] readPfbInput(final InputStream in) throws IOException 
+    private byte[] readFully(final InputStream in) throws IOException 
     {
         // copy into an array
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] tmpbuf = new byte[BUFFER_SIZE];
-        int amountRead = -1;
+        int amountRead;
         while ((amountRead = in.read(tmpbuf)) != -1) 
         {
             out.write(tmpbuf, 0, amountRead);
