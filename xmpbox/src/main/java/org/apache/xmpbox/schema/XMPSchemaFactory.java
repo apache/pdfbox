@@ -124,7 +124,7 @@ public class XMPSchemaFactory
         }
         catch (Exception e)
         {
-            throw new XmpSchemaException("Cannot instanciate specified object schema", e);
+            throw new XmpSchemaException("Cannot instantiate specified object schema", e);
         }
     }
 
