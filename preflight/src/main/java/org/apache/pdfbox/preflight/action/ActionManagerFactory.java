@@ -124,9 +124,9 @@ public class ActionManagerFactory
 
     /**
      * Call the create action to add the ActionManager to the result list. If the aDict parameter isn't an instance of
-     * COSDictionary, this method throws a ValdiationException. If the aDict parameter is a reference to a
-     * COSDicitonary, the action manager is create only if the linked COSObjectKey is missing from the "alreadyCreated"
-     * map, in this case the action is added to the map. If the aDict parameter is an instance of COSDIctionary, it is
+     * COSDictionary, this method throws a ValidationException. If the aDict parameter is a reference to a
+     * COSDictionary, the action manager is create only if the linked COSObjectKey is missing from the "alreadyCreated"
+     * map, in this case the action is added to the map. If the aDict parameter is an instance of COSDictionary, it is
      * impossible to check if the ActionManager already exists in the "alreadyCreated" map.
      * 
      * @param aDict

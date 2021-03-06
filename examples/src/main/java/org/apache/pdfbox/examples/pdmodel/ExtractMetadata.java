@@ -82,7 +82,7 @@ public final class ExtractMetadata
                     }
                     catch (XmpParsingException e)
                     {
-                        System.err.println("An error ouccred when parsing the meta data: "
+                        System.err.println("An error occurred when parsing the metadata: "
                                 + e.getMessage());
                     }
                 }

@@ -50,14 +50,14 @@ import picocli.CommandLine.Option;
     header = "Encrypts a PDF document",
     description = {
         "${COMMAND-NAME} will read an unencrypted document and encrypt it either using a password or a certificate.%n",
-        "While encypting the document permissions can be set which will allow/disallow certain functionality"
+        "While encrypting the document permissions can be set which will allow/disallow certain functionality"
     },
     versionProvider = Version.class,
     mixinStandardHelpOptions = true
 )
 public final class Encrypt implements Callable<Integer>
 {
-    // Expected for CLI app to write to System.out/Sytem.err
+    // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 

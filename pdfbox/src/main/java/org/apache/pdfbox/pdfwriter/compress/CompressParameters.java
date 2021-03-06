@@ -65,7 +65,7 @@ public class CompressParameters
     }
 
     /**
-     * Indicates wether the creation of compressed object streams is enabled or not.
+     * Indicates whether the creation of compressed object streams is enabled or not.
      * 
      * @return true if compression is enabled.
      */

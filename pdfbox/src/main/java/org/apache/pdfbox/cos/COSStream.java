@@ -433,7 +433,7 @@ public class COSStream extends COSDictionary implements Closeable
     }
 
     /**
-     * Indicates wether the stream contains any data or not.
+     * Indicates whether the stream contains any data or not.
      * 
      * @return true if the stream contains any data
      */
