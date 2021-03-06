@@ -112,8 +112,7 @@ public final class CertificateVerifier
                 throw new CertificateVerificationException("The certificate is self-signed.");
             }
 
-            Set<X509Certificate> certSet = new HashSet<>();
-            certSet.addAll(additionalCerts);
+            Set<X509Certificate> certSet = new HashSet<>(additionalCerts);
 
             // Download extra certificates. However, each downloaded certificate can lead to
             // more extra certificates, e.g. with the file from PDFBOX-4091, which has
