@@ -253,11 +253,11 @@ public class AFMParser
      */
     public static final String START_KERN_PAIRS1 = "StartKernPairs1";
     /**
-     * This is the start compisites data section.
+     * This is the start composites data section.
      */
     public static final String START_COMPOSITES = "StartComposites";
     /**
-     * This is the end compisites data section.
+     * This is the end composites data section.
      */
     public static final String END_COMPOSITES = "EndComposites";
     /**
