@@ -251,11 +251,11 @@ public class AFMParser
      */
     public static final String START_KERN_PAIRS1 = "StartKernPairs1";
     /**
-     * This is the start compisites data section.
+     * This is the start composites data section.
      */
     public static final String START_COMPOSITES = "StartComposites";
     /**
-     * This is the end compisites data section.
+     * This is the end composites data section.
      */
     public static final String END_COMPOSITES = "EndComposites";
     /**
@@ -894,7 +894,7 @@ public class AFMParser
      * Read the next string. Throw an exception if it differs from the expected command.
      * 
      * @param expectedCommand the expected command
-     * @throws IOException IF the read stgring differs from the expected command
+     * @throws IOException IF the read string differs from the expected command
      */
     private void readCommand(String expectedCommand) throws IOException
     {

@@ -92,7 +92,7 @@ public abstract class Encoding implements COSObjectable
     }
 
     /**
-     * This will add a character encoding. An already existing mapping is preseved when creating
+     * This will add a character encoding. An already existing mapping is preserved when creating
      * the reverse mapping. Should only be used during construction of the class.
      * 
      * @see #overwrite(int, String)

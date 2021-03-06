@@ -173,7 +173,7 @@ class AppearanceGeneratorHelper
         value = getFormattedValue(apValue);
 
         // Treat multiline field values in single lines as single lime values.
-        // This is in line with how Adobe Reader behaves when enetring text
+        // This is in line with how Adobe Reader behaves when entering text
         // interactively but NOT how it behaves when the field value has been
         // set programmatically and Reader is forced to generate the appearance
         // using PDAcroForm.setNeedAppearances
@@ -264,7 +264,7 @@ class AppearanceGeneratorHelper
             }
             else
             {
-                LOG.info("Field contains a formatting action but no SriptingHandler has been supplied - formatted value might be incorrect");
+                LOG.info("Field contains a formatting action but no ScriptingHandler has been supplied - formatted value might be incorrect");
                 return apValue;
             }
         }

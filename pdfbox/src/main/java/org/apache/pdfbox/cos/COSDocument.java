@@ -233,7 +233,7 @@ public class COSDocument extends COSBase implements Closeable
      * This will get all dictionaries objects by type.
      *
      * @param type1 The first possible type of the object, mandatory.
-     * @param type2 The second possible type of the object, usally an abreviation, optional.
+     * @param type2 The second possible type of the object, usually an abbreviation, optional.
      *
      * @return This will return all objects with the specified type(s).
      */

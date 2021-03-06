@@ -40,7 +40,7 @@ import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 @Command(name = "exportxfdf", header = "Exports AcroForm form data to XFDF", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ExportXFDF implements Callable<Integer>
 {
-    // Expected for CLI app to write to System.out/Sytem.err
+    // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 

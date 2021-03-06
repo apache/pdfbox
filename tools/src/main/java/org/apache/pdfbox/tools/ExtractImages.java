@@ -68,7 +68,7 @@ import picocli.CommandLine.Option;
 @Command(name = "extractimages", header = "Extracts the images from a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ExtractImages implements Callable<Integer>
 {
-    // Expected for CLI app to write to System.out/Sytem.err
+    // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSOUT = System.out;
     @SuppressWarnings("squid:S106")
