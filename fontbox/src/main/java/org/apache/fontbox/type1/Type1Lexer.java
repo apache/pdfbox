@@ -443,8 +443,8 @@ class Type1Lexer
                         String num = String.valueOf(new char[] { c1, getChar(), getChar() });
                         try
                         {
-                            Integer code = Integer.parseInt(num, 8);
-                            sb.append((char) (int) code);
+                            int code = Integer.parseInt(num, 8);
+                            sb.append((char)code);
                         }
                         catch (NumberFormatException ex)
                         {
