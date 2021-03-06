@@ -21,6 +21,7 @@ import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * Creates a simple document. The example is taken from the pdf file format specification.
@@ -59,6 +60,15 @@ public final class ShowColorBoxes
                 contents.setNonStrokingColor(Color.RED);
                 contents.addRect(10, 10, 100, 100);
                 contents.fill();
+                
+                // draw a blue box with rect x=200, y=500, w=200, h=100
+                // 105° rotation is around the bottom left corner
+                contents.saveGraphicsState();
+                contents.setNonStrokingColor(Color.BLUE);
+                contents.transform(Matrix.getRotateInstance(Math.toRadians(105), 200, 500));
+                contents.addRect(0, 0, 200, 100);
+                contents.fill();
+                contents.restoreGraphicsState();
             }
             doc.save(filename);
         }
