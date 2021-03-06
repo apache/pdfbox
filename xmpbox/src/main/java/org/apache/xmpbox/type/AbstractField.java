@@ -29,7 +29,7 @@ import java.util.Map;
 import org.apache.xmpbox.XMPMetadata;
 
 /**
- * Astract Object representation of a XMP 'field' (-&gt; Properties and specific Schemas)
+ * Abstract Object representation of a XMP 'field' (-&gt; Properties and specific Schemas)
  * 
  * @author a183132
  * 
