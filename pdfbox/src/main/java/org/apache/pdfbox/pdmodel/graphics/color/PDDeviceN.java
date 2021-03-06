@@ -282,6 +282,7 @@ public class PDDeviceN extends PDSpecialColorSpace
         // cache color mappings
         Map<String, int[]> map1 = new HashMap<>();
         String key;
+        StringBuilder keyBuilder = new StringBuilder();
 
         int width = raster.getWidth();
         int height = raster.getHeight();
@@ -293,17 +294,22 @@ public class PDDeviceN extends PDSpecialColorSpace
         int[] rgb = new int[3];
         int numSrcComponents = getColorantNames().size();
         float[] src = new float[numSrcComponents];
+
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 raster.getPixel(x, y, src);
                 // use a string representation as key
-                key = Float.toString(src[0]);
+                keyBuilder.append(src[0]);
                 for (int s = 1; s < numSrcComponents; s++)
                 {
-                    key += "#" + Float.toString(src[s]);
+                    keyBuilder.append('#').append(src[s]);
                 }
+
+                key = keyBuilder.toString();
+                keyBuilder.setLength(0);
+
                 int[] pxl = map1.get(key);
                 if (pxl != null)
                 {
@@ -322,11 +328,11 @@ public class PDDeviceN extends PDSpecialColorSpace
                 // convert from alternate color space to RGB
                 float[] rgbFloat = alternateColorSpace.toRGB(result);
                 
-                for (int s = 0; s < 3; s++)
-                {
-                    // scale to 0..255
-                    rgb[s] = (int) (rgbFloat[s] * 255f);
-                }                
+                // scale to 0..255
+                rgb[0] = (int) (rgbFloat[0] * 255f);
+                rgb[1] = (int) (rgbFloat[1] * 255f);
+                rgb[2] = (int) (rgbFloat[2] * 255f);
+
                 // must clone because rgb is reused
                 map1.put(key, rgb.clone());
 
