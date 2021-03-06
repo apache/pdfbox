@@ -383,4 +383,42 @@ class PDFontTest
 
         Files.delete(tempPdfFile.toPath());    
     }
+
+    /**
+     * PDFBOX-5115: U+00AD (soft hyphen) should work with WinAnsiEncoding. 
+     */
+    @Test
+    void testSoftHyphen() throws IOException
+    {
+        String text = "- \u00AD";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            PDFont font1 = PDType1Font.HELVETICA;
+            PDFont font2 = PDType0Font.load(doc, PDFontTest.class.getResourceAsStream(
+                    "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"));
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            {
+                cs.beginText();
+                cs.newLineAtOffset(100, 500);
+                cs.setFont(font1, 10);
+                cs.showText(text);
+                cs.newLineAtOffset(0, 100);
+                cs.setFont(font2, 10);
+                cs.showText(text);
+                cs.endText();
+            }
+            doc.save(baos);
+        }
+        
+        try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setLineSeparator("\n");
+            String extractedText = stripper.getText(doc);
+            assertEquals(text + "\n" + text, extractedText.trim());
+        }
+    }
 }

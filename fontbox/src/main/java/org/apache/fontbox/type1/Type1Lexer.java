@@ -444,7 +444,7 @@ class Type1Lexer
                         try
                         {
                             int code = Integer.parseInt(num, 8);
-                            sb.append((char)code);
+                            sb.append((char) code);
                         }
                         catch (NumberFormatException ex)
                         {

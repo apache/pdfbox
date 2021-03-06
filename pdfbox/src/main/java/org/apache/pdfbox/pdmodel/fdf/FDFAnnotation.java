@@ -58,7 +58,7 @@ public abstract class FDFAnnotation implements COSObjectable
     /**
      * An annotation flag.
      */
-    private static final int FLAG_INVISIBLE = 1 << 0;
+    private static final int FLAG_INVISIBLE = 1;
     /**
      * An annotation flag.
      */
@@ -325,7 +325,6 @@ public abstract class FDFAnnotation implements COSObjectable
         if (fdfDic != null)
         {
             String fdfDicName = fdfDic.getNameAsString(COSName.SUBTYPE);
-
             if (FDFAnnotationText.SUBTYPE.equals(fdfDicName))
             {
                 retval = new FDFAnnotationText(fdfDic);
@@ -338,8 +337,7 @@ public abstract class FDFAnnotation implements COSObjectable
             {
                 retval = new FDFAnnotationFreeText(fdfDic);
             }
-            else if (FDFAnnotationFileAttachment.SUBTYPE.equals(fdfDic
-                    .getNameAsString(COSName.SUBTYPE)))
+            else if (FDFAnnotationFileAttachment.SUBTYPE.equals(fdfDicName))
             {
                 retval = new FDFAnnotationFileAttachment(fdfDic);
             }
@@ -397,8 +395,7 @@ public abstract class FDFAnnotation implements COSObjectable
             }
             else
             {
-                LOG.warn("Unknown or unsupported annotation type '"
-                        + fdfDicName + "'");
+                LOG.warn("Unknown or unsupported annotation type '" + fdfDicName + "'");
             }
         }
         return retval;
@@ -978,7 +975,7 @@ public abstract class FDFAnnotation implements COSObjectable
 
     private String richContentsToString(Node node, boolean root)
     {
-        StringBuilder subString = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         NodeList nodelist = node.getChildNodes();
         for (int i = 0; i < nodelist.getLength(); i++)
@@ -986,11 +983,11 @@ public abstract class FDFAnnotation implements COSObjectable
             Node child = nodelist.item(i);
             if (child instanceof Element)
             {
-                subString.append(richContentsToString(child, false));
+                sb.append(richContentsToString(child, false));
             }
             else if (child instanceof CDATASection)
             {
-            	subString.append("<![CDATA[").append(((CDATASection) child).getData()).append("]]>");
+            	sb.append("<![CDATA[").append(((CDATASection) child).getData()).append("]]>");
             }
             else if (child instanceof Text)
             {
@@ -999,12 +996,12 @@ public abstract class FDFAnnotation implements COSObjectable
             	{
             		cdata = cdata.replace("&", "&amp;").replace("<", "&lt;");
             	}
-            	subString.append(cdata);
+            	sb.append(cdata);
             }
         }
         if (root)
         {
-            return subString.toString();
+            return sb.toString();
         }
 
         NamedNodeMap attributes = node.getAttributes();
@@ -1021,6 +1018,6 @@ public abstract class FDFAnnotation implements COSObjectable
                     attributeNodeValue));
         }
         return String.format("<%s%s>%s</%s>", node.getNodeName(), builder.toString(),
-                subString.toString(), node.getNodeName());
+                sb.toString(), node.getNodeName());
     }
 }
