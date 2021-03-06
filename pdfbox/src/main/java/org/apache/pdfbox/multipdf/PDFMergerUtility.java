@@ -434,7 +434,7 @@ public class PDFMergerUtility
             // - all FileInputStreams are closed
             // - there's a way to see which errors occurred
 
-            List<PDDocument> tobeclosed = new ArrayList<PDDocument>();
+            List<PDDocument> tobeclosed = new ArrayList<PDDocument>(sources.size());
 
             try
             {
