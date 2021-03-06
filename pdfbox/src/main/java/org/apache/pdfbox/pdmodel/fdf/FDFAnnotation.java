@@ -985,7 +985,7 @@ public abstract class FDFAnnotation implements COSObjectable
 
     private String richContentsToString(Node node, boolean root)
     {
-        String subString = "";
+        StringBuilder sb = new StringBuilder();
 
         NodeList nodelist = node.getChildNodes();
         for (int i = 0; i < nodelist.getLength(); i++)
@@ -993,11 +993,11 @@ public abstract class FDFAnnotation implements COSObjectable
             Node child = nodelist.item(i);
             if (child instanceof Element)
             {
-                subString += richContentsToString(child, false);
+                sb.append(richContentsToString(child, false));
             }
             else if (child instanceof CDATASection)
             {
-            	subString += "<![CDATA[" + ((CDATASection) child).getData() + "]]>";
+            	sb.append("<![CDATA[").append(((CDATASection) child).getData()).append("]]>");
             }
             else if (child instanceof Text)
             {
@@ -1006,12 +1006,12 @@ public abstract class FDFAnnotation implements COSObjectable
             	{
             		cdata = cdata.replace("&", "&amp;").replace("<", "&lt;");
             	}
-            	subString += cdata;
+            	sb.append(cdata);
             }
         }
         if (root)
         {
-            return subString;
+            return sb.toString();
         }
 
         NamedNodeMap attributes = node.getAttributes();
@@ -1028,6 +1028,6 @@ public abstract class FDFAnnotation implements COSObjectable
                     attributeNodeValue));
         }
         return String.format("<%s%s>%s</%s>", node.getNodeName(), builder.toString(),
-                subString, node.getNodeName());
+                sb.toString(), node.getNodeName());
     }
 }
