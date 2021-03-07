@@ -661,7 +661,7 @@ public class FDFField implements COSObjectable
         COSArray array = (COSArray) field.getDictionaryObject(COSName.OPT);
         if (array != null)
         {
-            List<Object> objects = new ArrayList<>();
+            List<Object> objects = new ArrayList<>(array.size());
             for (int i = 0; i < array.size(); i++)
             {
                 COSBase next = array.getObject(i);
