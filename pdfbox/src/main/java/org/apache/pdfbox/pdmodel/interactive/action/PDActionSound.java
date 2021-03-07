@@ -17,11 +17,8 @@
 
 package org.apache.pdfbox.pdmodel.interactive.action;
 
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 
 /**
@@ -73,12 +70,7 @@ public class PDActionSound extends PDAction
      */
     public COSStream getSound()
     {
-        COSBase base = action.getDictionaryObject(COSName.SOUND);
-        if (base instanceof COSStream)
-        {
-            return (COSStream) base;
-        }
-        return null;
+        return action.getCOSStream(COSName.SOUND);
     }
     
     /**
@@ -104,17 +96,8 @@ public class PDActionSound extends PDAction
      */
     public float getVolume()
     {
-        COSBase base = action.getDictionaryObject(COSName.VOLUME);
-        if (base instanceof COSNumber)
-        {
-            float volume = ((COSNumber) base).floatValue();
-            if (volume < -1 || volume > 1)
-            {
-                volume = 1;
-            }
-            return volume;
-        }
-        return 1;
+        float volume = action.getFloat(COSName.VOLUME, 1f);
+        return volume < -1 || volume > 1 ? 1 : volume;
     }
     
     /**
@@ -139,12 +122,7 @@ public class PDActionSound extends PDAction
      */
     public boolean getSynchronous()
     {
-        COSBase base = action.getDictionaryObject(COSName.SYNCHRONOUS);
-        if (base instanceof COSBoolean)
-        {
-            return ((COSBoolean) base).getValue();
-        }
-        return false;
+        return action.getBoolean(COSName.SYNCHRONOUS, false);
     }
     
     /**
@@ -164,12 +142,7 @@ public class PDActionSound extends PDAction
      */
     public boolean getRepeat()
     {
-        COSBase base = action.getDictionaryObject(COSName.REPEAT);
-        if (base instanceof COSBoolean)
-        {
-            return ((COSBoolean) base).getValue();
-        }
-        return false;
+        return action.getBoolean(COSName.REPEAT, false);
     }
 
     /**
@@ -194,11 +167,6 @@ public class PDActionSound extends PDAction
      */
     public boolean getMix()
     {
-        COSBase base = action.getDictionaryObject(COSName.MIX);
-        if (base instanceof COSBoolean)
-        {
-            return ((COSBoolean) base).getValue();
-        }
-        return false;
+        return action.getBoolean(COSName.MIX, false);
     }
 }

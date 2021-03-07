@@ -68,13 +68,8 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getE()
     {
-        COSDictionary e = (COSDictionary)actions.getDictionaryObject( "E" );
-        PDAction retval = null;
-        if( e != null )
-        {
-            retval = PDActionFactory.createAction( e );
-        }
-        return retval;
+        COSDictionary e = actions.getCOSDictionary(COSName.E);
+        return e != null ? PDActionFactory.createAction(e) : null;
     }
 
     /**
@@ -85,7 +80,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public void setE( PDAction e )
     {
-        actions.setItem( "E", e );
+        actions.setItem(COSName.E, e);
     }
 
     /**
@@ -96,13 +91,8 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getX()
     {
-        COSDictionary x = (COSDictionary)actions.getDictionaryObject( "X" );
-        PDAction retval = null;
-        if( x != null )
-        {
-            retval = PDActionFactory.createAction( x );
-        }
-        return retval;
+        COSDictionary x = actions.getCOSDictionary(COSName.X);
+        return x != null ? PDActionFactory.createAction(x) : null;
     }
 
     /**
@@ -113,7 +103,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public void setX( PDAction x )
     {
-        actions.setItem( "X", x );
+        actions.setItem(COSName.X, x);
     }
 
     /**
@@ -125,13 +115,8 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getD()
     {
-        COSDictionary d = (COSDictionary)actions.getDictionaryObject( COSName.D );
-        PDAction retval = null;
-        if( d != null )
-        {
-            retval = PDActionFactory.createAction( d );
-        }
-        return retval;
+        COSDictionary d = actions.getCOSDictionary(COSName.D);
+        return d != null ? PDActionFactory.createAction(d) : null;
     }
 
     /**
@@ -155,13 +140,8 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getU()
     {
-        COSDictionary u = (COSDictionary)actions.getDictionaryObject( "U" );
-        PDAction retval = null;
-        if( u != null )
-        {
-            retval = PDActionFactory.createAction( u );
-        }
-        return retval;
+        COSDictionary u = actions.getCOSDictionary(COSName.U);
+        return u != null ? PDActionFactory.createAction(u) : null;
     }
 
     /**
@@ -173,7 +153,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public void setU( PDAction u )
     {
-        actions.setItem( "U", u );
+        actions.setItem(COSName.U, u);
     }
 
     /**
@@ -184,13 +164,8 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getFo()
     {
-        COSDictionary fo = (COSDictionary)actions.getDictionaryObject( "Fo" );
-        PDAction retval = null;
-        if( fo != null )
-        {
-            retval = PDActionFactory.createAction( fo );
-        }
-        return retval;
+        COSDictionary fo = actions.getCOSDictionary(COSName.FO);
+        return fo != null ? PDActionFactory.createAction( fo ) : null;
     }
 
     /**
@@ -201,7 +176,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public void setFo( PDAction fo )
     {
-        actions.setItem( "Fo", fo );
+        actions.setItem(COSName.FO, fo);
     }
 
     /**
@@ -213,13 +188,8 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getBl()
     {
-        COSDictionary bl = (COSDictionary)actions.getDictionaryObject( "Bl" );
-        PDAction retval = null;
-        if( bl != null )
-        {
-            retval = PDActionFactory.createAction( bl );
-        }
-        return retval;
+        COSDictionary bl = actions.getCOSDictionary(COSName.BL);
+        return bl != null ? PDActionFactory.createAction(bl) : null;
     }
 
     /**
@@ -231,7 +201,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public void setBl( PDAction bl )
     {
-        actions.setItem( "Bl", bl );
+        actions.setItem(COSName.BL, bl);
     }
 
     /**
@@ -244,13 +214,8 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getPO()
     {
-        COSDictionary po = (COSDictionary)actions.getDictionaryObject( "PO" );
-        PDAction retval = null;
-        if( po != null )
-        {
-            retval = PDActionFactory.createAction( po );
-        }
-        return retval;
+        COSDictionary po = actions.getCOSDictionary(COSName.PO);
+        return po != null ? PDActionFactory.createAction(po) : null;
     }
 
     /**
@@ -263,7 +228,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public void setPO( PDAction po )
     {
-        actions.setItem( "PO", po );
+        actions.setItem(COSName.PO, po);
     }
 
     /**
@@ -275,13 +240,8 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getPC()
     {
-        COSDictionary pc = (COSDictionary)actions.getDictionaryObject( "PC" );
-        PDAction retval = null;
-        if( pc != null )
-        {
-            retval = PDActionFactory.createAction( pc );
-        }
-        return retval;
+        COSDictionary pc = actions.getCOSDictionary(COSName.PC);
+        return pc != null ? PDActionFactory.createAction(pc) : null;
     }
 
     /**
@@ -293,7 +253,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public void setPC( PDAction pc )
     {
-        actions.setItem( "PC", pc );
+        actions.setItem(COSName.PC, pc);
     }
 
     /**
@@ -304,13 +264,8 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getPV()
     {
-        COSDictionary pv = (COSDictionary)actions.getDictionaryObject( "PV" );
-        PDAction retval = null;
-        if( pv != null )
-        {
-            retval = PDActionFactory.createAction( pv );
-        }
-        return retval;
+        COSDictionary pv = actions.getCOSDictionary(COSName.PV);
+        return pv != null ? PDActionFactory.createAction(pv) : null;
     }
 
     /**
@@ -321,7 +276,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public void setPV( PDAction pv )
     {
-        actions.setItem( "PV", pv );
+        actions.setItem(COSName.PV, pv);
     }
 
     /**
@@ -332,13 +287,8 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getPI()
     {
-        COSDictionary pi = (COSDictionary)actions.getDictionaryObject( "PI" );
-        PDAction retval = null;
-        if( pi != null )
-        {
-            retval = PDActionFactory.createAction( pi );
-        }
-        return retval;
+        COSDictionary pi = actions.getCOSDictionary(COSName.PI);
+        return pi != null ? PDActionFactory.createAction(pi) : null;
     }
 
     /**
@@ -349,6 +299,6 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public void setPI( PDAction pi )
     {
-        actions.setItem( "PI", pi );
+        actions.setItem(COSName.PI, pi);
     }
 }

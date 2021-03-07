@@ -70,13 +70,8 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getK()
     {
-        COSDictionary k = (COSDictionary) actions.getDictionaryObject(COSName.K);
-        PDAction retval = null;
-        if( k != null )
-        {
-            retval = PDActionFactory.createAction( k );
-        }
-        return retval;
+        COSDictionary k = actions.getCOSDictionary(COSName.K);
+        return k != null ? PDActionFactory.createAction(k) : null;
     }
 
     /**
@@ -101,13 +96,8 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getF()
     {
-        COSDictionary f = (COSDictionary) actions.getDictionaryObject(COSName.F);
-        PDAction retval = null;
-        if( f != null )
-        {
-            retval = PDActionFactory.createAction( f );
-        }
-        return retval;
+        COSDictionary f = actions.getCOSDictionary(COSName.F);
+        return f != null ? PDActionFactory.createAction(f) : null;
     }
 
     /**
@@ -132,13 +122,8 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getV()
     {
-        COSDictionary v = (COSDictionary) actions.getDictionaryObject(COSName.V);
-        PDAction retval = null;
-        if( v != null )
-        {
-            retval = PDActionFactory.createAction( v );
-        }
-        return retval;
+        COSDictionary v = actions.getCOSDictionary(COSName.V);
+        return v != null ? PDActionFactory.createAction(v) : null;
     }
 
     /**
@@ -165,13 +150,8 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getC()
     {
-        COSDictionary c = (COSDictionary) actions.getDictionaryObject(COSName.C);
-        PDAction retval = null;
-        if( c != null )
-        {
-            retval = PDActionFactory.createAction( c );
-        }
-        return retval;
+        COSDictionary c = actions.getCOSDictionary(COSName.C);
+        return c != null ? PDActionFactory.createAction(c) : null;
     }
 
     /**

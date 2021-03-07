@@ -16,7 +16,6 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
@@ -92,12 +91,8 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
      */
     public float[] getRectDifferences()
     {
-        COSBase margin = getCOSObject().getItem(COSName.RD);
-        if (margin instanceof COSArray)
-        {
-            return ((COSArray) margin).toFloatArray();
-        }
-        return new float[]{};
+        COSArray margin = getCOSObject().getCOSArray(COSName.RD);
+        return margin != null ? margin.toFloatArray() : new float[] {};
     }
     
     /**

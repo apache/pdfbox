@@ -100,7 +100,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
      */
     public float[] getCoords()
     {
-        COSArray quadPoints = (COSArray) annot.getItem(COSName.QUADPOINTS);
+        COSArray quadPoints = annot.getCOSArray(COSName.QUADPOINTS);
         if (quadPoints != null)
         {
             return quadPoints.toFloatArray();

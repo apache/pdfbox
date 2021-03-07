@@ -171,12 +171,8 @@ public class PDActionEmbeddedGoTo extends PDAction
      */
     public PDTargetDirectory getTargetDirectory()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.T);
-        if (base instanceof COSDictionary)
-        {
-            return new PDTargetDirectory((COSDictionary) base);
-        }
-        return null;
+        COSDictionary targetDict = getCOSObject().getCOSDictionary(COSName.T);
+        return targetDict != null ? new PDTargetDirectory(targetDict) : null;
     }
 
     /**
