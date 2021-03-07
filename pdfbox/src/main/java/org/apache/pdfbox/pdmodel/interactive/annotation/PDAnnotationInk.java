@@ -87,10 +87,9 @@ public class PDAnnotationInk extends PDAnnotationMarkup
      */
     public float[][] getInkList()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.INKLIST);
-        if (base instanceof COSArray)
+        COSArray array = getCOSObject().getCOSArray(COSName.INKLIST);
+        if (array != null)
         {
-            COSArray array = (COSArray) base;
             float[][] inkList = new float[array.size()][];
             for (int i = 0; i < array.size(); ++i)
             {

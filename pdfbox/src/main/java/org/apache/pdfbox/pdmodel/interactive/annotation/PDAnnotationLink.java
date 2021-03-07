@@ -92,12 +92,8 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDAction getAction()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.A);
-        if (base instanceof COSDictionary)
-        {
-            return PDActionFactory.createAction((COSDictionary) base);
-        }
-        return null;
+        COSDictionary action = getCOSObject().getCOSDictionary(COSName.A);
+        return action != null ? PDActionFactory.createAction(action) : null;
     }
 
     /**
@@ -130,12 +126,8 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
-        if (bs instanceof COSDictionary)
-        {
-            return new PDBorderStyleDictionary((COSDictionary) bs);
-        }
-        return null;
+        COSDictionary bs = getCOSObject().getCOSDictionary(COSName.BS);
+        return bs != null ? new PDBorderStyleDictionary(bs) : null;
     }
 
     /**
@@ -148,8 +140,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDDestination getDestination() throws IOException
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.DEST);
-        return PDDestination.create(base);
+        return PDDestination.create(getCOSObject().getDictionaryObject(COSName.DEST));
     }
 
     /**
@@ -189,7 +180,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public void setPreviousURI(PDActionURI pa)
     {
-        getCOSObject().setItem("PA", pa);
+        getCOSObject().setItem(COSName.PA, pa);
     }
 
     /**
@@ -199,12 +190,8 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDActionURI getPreviousURI()
     {
-        COSBase base = getCOSObject().getDictionaryObject("PA");
-        if (base instanceof COSDictionary)
-        {
-            return new PDActionURI((COSDictionary) base);
-        }
-        return null;
+        COSDictionary previousURI = getCOSObject().getCOSDictionary(COSName.PA);
+        return previousURI != null ? new PDActionURI((COSDictionary) previousURI) : null;
     }
 
     /**
@@ -226,12 +213,8 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public float[] getQuadPoints()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.QUADPOINTS);
-        if (base instanceof COSArray)
-        {
-            return ((COSArray) base).toFloatArray();
-        }
-        return null; 
+        COSArray array = getCOSObject().getCOSArray(COSName.QUADPOINTS);
+        return array != null ? array.toFloatArray() : null;
     }
     
     /**

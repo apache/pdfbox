@@ -234,6 +234,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName END_OF_LINE = new COSName("EndOfLine");
     public static final COSName ENTRUST_PPKEF = new COSName("Entrust.PPKEF");
     public static final COSName EXCLUSION = new COSName("Exclusion");
+    public static final COSName EX_DATA = new COSName("ExData");
     public static final COSName EXT_G_STATE = new COSName("ExtGState");
     public static final COSName EXTEND = new COSName("Extend");
     public static final COSName EXTENDS = new COSName("Extends");
@@ -307,6 +308,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName INKLIST = new COSName("InkList");
     public static final COSName INTENT = new COSName("Intent");
     public static final COSName INTERPOLATE = new COSName("Interpolate");
+    public static final COSName IRT = new COSName("IRT");
     public static final COSName IT = new COSName("IT");
     public static final COSName ITALIC_ANGLE = new COSName("ItalicAngle");
     public static final COSName ISSUER = new COSName("Issuer");
@@ -428,6 +430,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName OVERLAY = new COSName("Overlay");
     // P
     public static final COSName P = new COSName("P");
+    public static final COSName PA = new COSName("PA");
     public static final COSName PAGE = new COSName("Page");
     public static final COSName PAGE_LABELS = new COSName("PageLabels");
     public static final COSName PAGE_LAYOUT = new COSName("PageLayout");
@@ -449,6 +452,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PG = new COSName("Pg");
     public static final COSName PI = new COSName("PI");
     public static final COSName PO = new COSName("PO");
+    public static final COSName POPUP = new COSName("Popup");
     public static final COSName PRE_RELEASE = new COSName("PreRelease");
     public static final COSName PREDICTOR = new COSName("Predictor");
     public static final COSName PREV = new COSName("Prev");
@@ -487,6 +491,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ROOT = new COSName("Root");
     public static final COSName ROTATE = new COSName("Rotate");
     public static final COSName ROWS = new COSName("Rows");
+    public static final COSName RT = new COSName("RT");
     public static final COSName RUN_LENGTH_DECODE = new COSName("RunLengthDecode");
     public static final COSName RUN_LENGTH_DECODE_ABBREVIATION = new COSName("RL");
     public static final COSName RV = new COSName("RV");

@@ -92,15 +92,8 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDAnnotationPopup getPopup()
     {
-        COSDictionary popup = (COSDictionary) getCOSObject().getDictionaryObject("Popup");
-        if (popup != null)
-        {
-            return new PDAnnotationPopup(popup);
-        }
-        else
-        {
-            return null;
-        }
+        COSDictionary popup = getCOSObject().getCOSDictionary(COSName.POPUP);
+        return popup != null ? new PDAnnotationPopup(popup) : null;
     }
 
     /**
@@ -110,7 +103,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public void setPopup(PDAnnotationPopup popup)
     {
-        getCOSObject().setItem("Popup", popup);
+        getCOSObject().setItem(COSName.POPUP, popup);
     }
 
     /**
@@ -194,12 +187,8 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDAnnotation getInReplyTo() throws IOException
     {
-        COSBase base = getCOSObject().getDictionaryObject("IRT");
-        if (base instanceof COSDictionary)
-        {
-            return PDAnnotation.createAnnotation(base);
-        }
-        return null;
+        COSDictionary base = getCOSObject().getCOSDictionary(COSName.IRT);
+        return base != null ? PDAnnotation.createAnnotation(base) : null;
     }
 
     /**
@@ -210,7 +199,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public void setInReplyTo(PDAnnotation irt)
     {
-        getCOSObject().setItem("IRT", irt);
+        getCOSObject().setItem(COSName.IRT, irt);
     }
 
     /**
@@ -241,7 +230,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public String getReplyType()
     {
-        return getCOSObject().getNameAsString("RT", RT_REPLY);
+        return getCOSObject().getNameAsString(COSName.RT, RT_REPLY);
     }
 
     /**
@@ -252,7 +241,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public void setReplyType(String rt)
     {
-        getCOSObject().setName("RT", rt);
+        getCOSObject().setName(COSName.RT, rt);
     }
 
     /**
@@ -284,12 +273,8 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDExternalDataDictionary getExternalData()
     {
-        COSBase exData = this.getCOSObject().getDictionaryObject("ExData");
-        if (exData instanceof COSDictionary)
-        {
-            return new PDExternalDataDictionary((COSDictionary) exData);
-        }
-        return null;
+        COSDictionary exData = getCOSObject().getCOSDictionary(COSName.EX_DATA);
+        return exData != null ? new PDExternalDataDictionary(exData) : null;
     }
 
     /**
@@ -299,7 +284,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public void setExternalData(PDExternalDataDictionary externalData)
     {
-        this.getCOSObject().setItem("ExData", externalData);
+        this.getCOSObject().setItem(COSName.EX_DATA, externalData);
     }
 
     /**
@@ -320,11 +305,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
-        if (bs instanceof COSDictionary)
-        {
-            return new PDBorderStyleDictionary((COSDictionary) bs);
-        }
-        return null;
+        COSDictionary bs = getCOSObject().getCOSDictionary(COSName.BS);
+        return bs != null ? new PDBorderStyleDictionary(bs) : null;
     }
 }
