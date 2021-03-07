@@ -163,7 +163,15 @@ public class PDType1CFont extends PDSimpleFont
         {
             return new GeneralPath();
         }
-        return "nbspace".equals(name) ? genericFont.getPath("space") : genericFont.getPath(name);
+        if ("sfthyphen".equals(name))
+        {
+            return genericFont.getPath("hyphen");
+        }
+        if ("nbspace".equals(name))
+        {
+            return genericFont.getPath("space");
+        }
+        return genericFont.getPath(name);
     }
 
     @Override

@@ -425,6 +425,9 @@ public class PDFontTest
         PDFont font2 = PDType0Font.load(doc, PDFontTest.class.getResourceAsStream(
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"));
 
+        Assert.assertEquals(font1.getStringWidth("-"), font1.getStringWidth("\u00AD"), 0);
+        Assert.assertEquals(font2.getStringWidth("-"), font2.getStringWidth("\u00AD"), 0);
+
         PDPageContentStream cs = new PDPageContentStream(doc, page);
         cs.beginText();
         cs.newLineAtOffset(100, 500);
