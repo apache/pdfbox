@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -212,6 +213,10 @@ public class PDFXrefStreamParser extends BaseParser
         @Override
         public Long next()
         {
+            if (currentNumber >= maxValue)
+            {
+                throw new NoSuchElementException();
+            }
             if (currentNumber < currentEnd)
             {
                 return currentNumber++;
