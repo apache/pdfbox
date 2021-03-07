@@ -153,7 +153,15 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         {
             return new GeneralPath();
         }
-        return "nbspace".equals(name) ? genericFont.getPath("space") : genericFont.getPath(name);
+        if ("sfthyphen".equals(name))
+        {
+            return genericFont.getPath("hyphen");
+        }
+        if ("nbspace".equals(name))
+        {
+            return genericFont.getPath("space");
+        }
+        return genericFont.getPath(name);
     }
 
     @Override
@@ -161,7 +169,15 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     {
         String name = getEncoding().getName(code);
         name = getNameInFont(name);
-        return "nbspace".equals(name) ? hasGlyph("space") : hasGlyph(name);
+        if ("sfthyphen".equals(name))
+        {
+            return hasGlyph("hyphen");
+        }
+        if ("nbspace".equals(name))
+        {
+            return hasGlyph("space");
+        }
+        return hasGlyph(name);
     }
 
     @Override
@@ -169,7 +185,15 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     {
         String name = getEncoding().getName(code);
         name = getNameInFont(name);
-        return "nbspace".equals(name) ? getPath("space") : getPath(name);
+        if ("sfthyphen".equals(name))
+        {
+            return getPath("hyphen");
+        }
+        if ("nbspace".equals(name))
+        {
+            return getPath("space");
+        }
+        return getPath(name);
     }
 
     @Override
@@ -180,6 +204,10 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         if ("nbspace".equals(name))
         {
             name = "space";
+        }
+        else if ("sfthyphen".equals(name))
+        {
+            name = "hyphen";
         }
         GeneralPath path = getPath(name);
         if (path == null)
