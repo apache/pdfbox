@@ -139,7 +139,7 @@ public final class FieldUtils
         
         if (items instanceof COSString)
         {
-            List<String> array = new ArrayList<>();
+            List<String> array = new ArrayList<>(1);
             array.add(((COSString) items).getString());
             return array;
         }
