@@ -98,15 +98,8 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSDictionary be = (COSDictionary) getCOSObject().getDictionaryObject(COSName.BE);
-        if (be != null)
-        {
-            return new PDBorderEffectDictionary(be);
-        }
-        else
-        {
-            return null;
-        }
+        COSDictionary be = getCOSObject().getCOSDictionary(COSName.BE);
+        return be != null ? new PDBorderEffectDictionary(be) : null;
     }
 
     /**
@@ -117,12 +110,8 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      */
     public float[] getVertices()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.VERTICES);
-        if (base instanceof COSArray)
-        {
-            return ((COSArray) base).toFloatArray();
-        }
-        return null;
+        COSArray array = getCOSObject().getCOSArray(COSName.VERTICES);
+        return array != null ? array.toFloatArray() : null;
     }
 
     /**
@@ -148,10 +137,9 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      */
     public float[][] getPath()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.PATH);
-        if (base instanceof COSArray)
+        COSArray array = getCOSObject().getCOSArray(COSName.PATH);
+        if (array != null)
         {
-            COSArray array = (COSArray) base;
             float[][] pathArray = new float[array.size()][];
             for (int i = 0; i < array.size(); ++i)
             {

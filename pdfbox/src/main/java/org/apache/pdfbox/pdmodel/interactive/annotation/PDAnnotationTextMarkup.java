@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 
 /**
@@ -71,12 +70,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
      */
     public float[] getQuadPoints()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.QUADPOINTS);
-        if (base instanceof COSArray)
-        {
-            return ((COSArray) base).toFloatArray();
-        }
-        // Should never happen as this is a required item
-        return null; 
+        COSArray array = getCOSObject().getCOSArray(COSName.QUADPOINTS);
+        return array != null ? array.toFloatArray() : null;
     }
 }
