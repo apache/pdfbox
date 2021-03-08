@@ -85,7 +85,7 @@ public final class FieldUtils
      */
     static List<KeyValue> toKeyValueList(List<String> key, List<String> value)
     {
-        List<KeyValue> list = new ArrayList<>();
+        List<KeyValue> list = new ArrayList<>(key.size());
         for(int i =0; i<key.size(); i++)
         {
             list.add(new FieldUtils.KeyValue(key.get(i),value.get(i)));

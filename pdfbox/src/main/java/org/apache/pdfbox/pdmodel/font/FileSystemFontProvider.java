@@ -305,9 +305,9 @@ final class FileSystemFontProvider extends FontProvider
             }
 
             // scan the local system for font files
-            List<File> files = new ArrayList<>();
             FontFileFinder fontFileFinder = new FontFileFinder();
             List<URI> fonts = fontFileFinder.find();
+            List<File> files = new ArrayList<>(fonts.size());
             for (URI font : fonts)
             {
                 files.add(new File(font));
@@ -468,7 +468,7 @@ final class FileSystemFontProvider extends FontProvider
      */
     private List<FSFontInfo> loadDiskCache(List<File> files)
     {
-        Set<String> pending = new HashSet<>();
+        Set<String> pending = new HashSet<>(files.size());
         for (File file : files)
         {
             pending.add(file.getAbsolutePath());
