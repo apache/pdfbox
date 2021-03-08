@@ -37,6 +37,7 @@ import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.ttf.NamingTable;
+import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
@@ -367,17 +368,16 @@ final class FileSystemFontProvider extends FontProvider
         {
             try
             {
-                if (file.getPath().toLowerCase().endsWith(".ttf") ||
-                        file.getPath().toLowerCase().endsWith(".otf"))
+                String filePath = file.getPath().toLowerCase();
+                if (filePath.endsWith(".ttf") || filePath.endsWith(".otf"))
                 {
                     addTrueTypeFont(file);
                 }
-                else if (file.getPath().toLowerCase().endsWith(".ttc") ||
-                        file.getPath().toLowerCase().endsWith(".otc"))
+                else if (filePath.endsWith(".ttc") || filePath.endsWith(".otc"))
                 {
                     addTrueTypeCollection(file);
                 }
-                else if (file.getPath().toLowerCase().endsWith(".pfb"))
+                else if (filePath.endsWith(".pfb"))
                 {
                     addType1Font(file);
                 }
@@ -665,14 +665,15 @@ final class FileSystemFontProvider extends FontProvider
                 int ulCodePageRange1 = 0;
                 int ulCodePageRange2 = 0;
                 byte[] panose = null;
+                OS2WindowsMetricsTable os2WindowsMetricsTable = ttf.getOS2Windows();
                 // Apple's AAT fonts don't have an OS/2 table
-                if (ttf.getOS2Windows() != null)
+                if (os2WindowsMetricsTable != null)
                 {
-                    sFamilyClass = ttf.getOS2Windows().getFamilyClass();
-                    usWeightClass = ttf.getOS2Windows().getWeightClass();
-                    ulCodePageRange1 = (int)ttf.getOS2Windows().getCodePageRange1();
-                    ulCodePageRange2 = (int)ttf.getOS2Windows().getCodePageRange2();
-                    panose = ttf.getOS2Windows().getPanose();
+                    sFamilyClass = os2WindowsMetricsTable.getFamilyClass();
+                    usWeightClass = os2WindowsMetricsTable.getWeightClass();
+                    ulCodePageRange1 = (int) os2WindowsMetricsTable.getCodePageRange1();
+                    ulCodePageRange2 = (int) os2WindowsMetricsTable.getCodePageRange2();
+                    panose = os2WindowsMetricsTable.getPanose();
                 }
 
                 String format;
