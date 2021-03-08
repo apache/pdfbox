@@ -282,6 +282,7 @@ public class PDDeviceN extends PDSpecialColorSpace
         // cache color mappings
         Map<String, int[]> map1 = new HashMap<>();
         String key;
+        StringBuilder keyBuilder = new StringBuilder();
 
         int width = raster.getWidth();
         int height = raster.getHeight();
@@ -299,11 +300,13 @@ public class PDDeviceN extends PDSpecialColorSpace
             {
                 raster.getPixel(x, y, src);
                 // use a string representation as key
-                key = Float.toString(src[0]);
+                keyBuilder.append(src[0]);
                 for (int s = 1; s < numSrcComponents; s++)
                 {
-                    key += "#" + Float.toString(src[s]);
+                    keyBuilder.append('#').append(src[s]);
                 }
+                key = keyBuilder.toString();
+                keyBuilder.setLength(0);
                 int[] pxl = map1.get(key);
                 if (pxl != null)
                 {
