@@ -36,12 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
-import org.apache.fontbox.ttf.NamingTable;
-import org.apache.fontbox.ttf.OTFParser;
-import org.apache.fontbox.ttf.OpenTypeFont;
-import org.apache.fontbox.ttf.TTFParser;
-import org.apache.fontbox.ttf.TrueTypeCollection;
-import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.ttf.*;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
 
@@ -305,9 +300,10 @@ final class FileSystemFontProvider extends FontProvider
             }
 
             // scan the local system for font files
-            List<File> files = new ArrayList<>();
             FontFileFinder fontFileFinder = new FontFileFinder();
             List<URI> fonts = fontFileFinder.find();
+            List<File> files = new ArrayList<>(fonts.size());
+
             for (URI font : fonts)
             {
                 files.add(new File(font));
@@ -343,22 +339,23 @@ final class FileSystemFontProvider extends FontProvider
     {
         // to force a specific font for debug, add code like this here:
         // files = Collections.singletonList(new File("font filename"))
+        String filePath;
 
         for (File file : files)
         {
             try
             {
-                if (file.getPath().toLowerCase().endsWith(".ttf") ||
-                        file.getPath().toLowerCase().endsWith(".otf"))
+                filePath = file.getPath().toLowerCase();
+
+                if (filePath.endsWith(".ttf") || filePath.endsWith(".otf"))
                 {
                     addTrueTypeFont(file);
                 }
-                else if (file.getPath().toLowerCase().endsWith(".ttc") ||
-                        file.getPath().toLowerCase().endsWith(".otc"))
+                else if (filePath.endsWith(".ttc") || filePath.endsWith(".otc"))
                 {
                     addTrueTypeCollection(file);
                 }
-                else if (file.getPath().toLowerCase().endsWith(".pfb"))
+                else if (filePath.endsWith(".pfb"))
                 {
                     addType1Font(file);
                 }
@@ -372,11 +369,12 @@ final class FileSystemFontProvider extends FontProvider
 
     private File getDiskCacheFile()
     {
+        File file;
         String path = System.getProperty("pdfbox.fontcache");
-        if (path == null || !new File(path).isDirectory() || !new File(path).canWrite())
+        if (path == null || !(file = new File(path)).isDirectory() || !file.canWrite())
         {
             path = System.getProperty("user.home");
-            if (path == null || !new File(path).isDirectory() || !new File(path).canWrite())
+            if (path == null || !(file = new File(path)).isDirectory() || !file.canWrite())
             {
                 path = System.getProperty("java.io.tmpdir");
             }
@@ -468,7 +466,7 @@ final class FileSystemFontProvider extends FontProvider
      */
     private List<FSFontInfo> loadDiskCache(List<File> files)
     {
-        Set<String> pending = new HashSet<>();
+        Set<String> pending = new HashSet<>(files.size());
         for (File file : files)
         {
             pending.add(file.getAbsolutePath());
@@ -646,14 +644,15 @@ final class FileSystemFontProvider extends FontProvider
                 int ulCodePageRange1 = 0;
                 int ulCodePageRange2 = 0;
                 byte[] panose = null;
+                OS2WindowsMetricsTable metricsTable = ttf.getOS2Windows();
                 // Apple's AAT fonts don't have an OS/2 table
-                if (ttf.getOS2Windows() != null)
+                if (metricsTable != null)
                 {
-                    sFamilyClass = ttf.getOS2Windows().getFamilyClass();
-                    usWeightClass = ttf.getOS2Windows().getWeightClass();
-                    ulCodePageRange1 = (int)ttf.getOS2Windows().getCodePageRange1();
-                    ulCodePageRange2 = (int)ttf.getOS2Windows().getCodePageRange2();
-                    panose = ttf.getOS2Windows().getPanose();
+                    sFamilyClass = metricsTable.getFamilyClass();
+                    usWeightClass = metricsTable.getWeightClass();
+                    ulCodePageRange1 = (int)metricsTable.getCodePageRange1();
+                    ulCodePageRange2 = (int)metricsTable.getCodePageRange2();
+                    panose = metricsTable.getPanose();
                 }
 
                 String format;
