@@ -324,12 +324,12 @@ public class PDDeviceN extends PDSpecialColorSpace
                 
                 // convert from alternate color space to RGB
                 float[] rgbFloat = alternateColorSpace.toRGB(result);
-                
-                for (int s = 0; s < 3; s++)
-                {
-                    // scale to 0..255
-                    rgb[s] = (int) (rgbFloat[s] * 255f);
-                }                
+
+                // scale to 0..255
+                rgb[0] = (int) (rgbFloat[0] * 255f);
+                rgb[1] = (int) (rgbFloat[1] * 255f);
+                rgb[2] = (int) (rgbFloat[2] * 255f);
+
                 // must clone because rgb is reused
                 map1.put(key, rgb.clone());
 
