@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -219,13 +218,9 @@ public class PDPropBuildDataDict implements COSObjectable
      */
     public String getOS()
     {
-        final COSBase cosBase = dictionary.getItem(COSName.OS);
-        if (cosBase instanceof COSArray)
-        {
-            return ((COSArray) cosBase).getName(0);
-        }
+        final COSArray osArray = dictionary.getCOSArray(COSName.OS);
         // PDF v1.5 style
-        return dictionary.getString(COSName.OS);
+        return osArray != null ? osArray.getName(0) : dictionary.getString(COSName.OS);
     }
 
     /**
@@ -243,14 +238,14 @@ public class PDPropBuildDataDict implements COSObjectable
         }
         else
         {
-            COSBase osArray = dictionary.getItem(COSName.OS);
-            if (!(osArray instanceof COSArray))
+            COSArray osArray = dictionary.getCOSArray(COSName.OS);
+            if (osArray == null)
             {
                 osArray = new COSArray();
                 osArray.setDirect(true);
                 dictionary.setItem(COSName.OS, osArray);
             }
-            ((COSArray) osArray).add(0, COSName.getPDFName(os));
+            osArray.add(0, COSName.getPDFName(os));
         }
     }
 

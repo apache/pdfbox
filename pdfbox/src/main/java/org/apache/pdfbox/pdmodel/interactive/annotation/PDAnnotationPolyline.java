@@ -16,7 +16,6 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -63,9 +62,8 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
     public void setStartPointEndingStyle(String style)
     {
         String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
-        COSArray array;
-        if (!(base instanceof COSArray) || ((COSArray) base).size() == 0)
+        COSArray array = getCOSObject().getCOSArray(COSName.LE);
+        if (array == null || array.size() == 0)
         {
             array = new COSArray();
             array.add(COSName.getPDFName(actualStyle));
@@ -74,7 +72,6 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
         }
         else
         {
-            array = (COSArray) base;
             array.setName(0, actualStyle);
         }
     }
@@ -86,10 +83,10 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      */
     public String getStartPointEndingStyle()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
-        if (base instanceof COSArray && ((COSArray) base).size() >= 2)
+        COSArray array = getCOSObject().getCOSArray(COSName.LE);
+        if (array != null && array.size() >= 2)
         {
-            return ((COSArray) base).getName(0, PDAnnotationLine.LE_NONE);
+            return array.getName(0, PDAnnotationLine.LE_NONE);
         }
         return PDAnnotationLine.LE_NONE;
     }
@@ -102,9 +99,8 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
     public void setEndPointEndingStyle(String style)
     {
         String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
-        COSArray array;
-        if (!(base instanceof COSArray) || ((COSArray) base).size() < 2)
+        COSArray array = getCOSObject().getCOSArray(COSName.LE);
+        if (array == null || array.size() < 2)
         {
             array = new COSArray();
             array.add(COSName.getPDFName(PDAnnotationLine.LE_NONE));
@@ -113,7 +109,6 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
         }
         else
         {
-            array = (COSArray) base;
             array.setName(1, actualStyle);
         }
     }
@@ -125,10 +120,10 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      */
     public String getEndPointEndingStyle()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
-        if (base instanceof COSArray && ((COSArray) base).size() >= 2)
+        COSArray array = getCOSObject().getCOSArray(COSName.LE);
+        if (array != null && array.size() >= 2)
         {
-            return ((COSArray) base).getName(1, PDAnnotationLine.LE_NONE);
+            return array.getName(1, PDAnnotationLine.LE_NONE);
         }
         return PDAnnotationLine.LE_NONE;
     }
@@ -161,12 +156,8 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      */
     public float[] getVertices()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.VERTICES);
-        if (base instanceof COSArray)
-        {
-            return ((COSArray) base).toFloatArray();
-        }
-        return null;
+        COSArray vertices = getCOSObject().getCOSArray(COSName.VERTICES);
+        return vertices != null ? vertices.toFloatArray() : null;
     }
 
     /**

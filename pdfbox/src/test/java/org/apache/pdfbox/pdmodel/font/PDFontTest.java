@@ -399,6 +399,10 @@ class PDFontTest
             PDFont font1 = PDType1Font.HELVETICA;
             PDFont font2 = PDType0Font.load(doc, PDFontTest.class.getResourceAsStream(
                     "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"));
+
+            assertEquals(font1.getStringWidth("-"), font1.getStringWidth("\u00AD"));
+            assertEquals(font2.getStringWidth("-"), font2.getStringWidth("\u00AD"));
+
             try (PDPageContentStream cs = new PDPageContentStream(doc, page))
             {
                 cs.beginText();

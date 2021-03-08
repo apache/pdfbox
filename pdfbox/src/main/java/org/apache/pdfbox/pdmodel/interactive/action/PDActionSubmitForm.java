@@ -18,7 +18,6 @@
 package org.apache.pdfbox.pdmodel.interactive.action;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
@@ -85,8 +84,7 @@ public class PDActionSubmitForm extends PDAction
      */
     public COSArray getFields()
     {
-        COSBase retval = this.action.getDictionaryObject(COSName.FIELDS);
-        return retval instanceof COSArray ? (COSArray) retval : null;
+        return action.getCOSArray(COSName.FIELDS);
     }
 
     /**

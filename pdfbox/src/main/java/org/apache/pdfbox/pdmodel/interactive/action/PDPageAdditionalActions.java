@@ -70,13 +70,8 @@ public class PDPageAdditionalActions implements COSObjectable
      */
     public PDAction getO()
     {
-        COSDictionary o = (COSDictionary) actions.getDictionaryObject(COSName.O);
-        PDAction retval = null;
-        if( o != null )
-        {
-            retval = PDActionFactory.createAction( o );
-        }
-        return retval;
+        COSDictionary o = actions.getCOSDictionary(COSName.O);
+        return o != null ? PDActionFactory.createAction(o) : null;
     }
 
     /**
@@ -101,13 +96,8 @@ public class PDPageAdditionalActions implements COSObjectable
      */
     public PDAction getC()
     {
-        COSDictionary c = (COSDictionary)actions.getDictionaryObject( "C" );
-        PDAction retval = null;
-        if( c != null )
-        {
-            retval = PDActionFactory.createAction( c );
-        }
-        return retval;
+        COSDictionary c = actions.getCOSDictionary(COSName.C);
+        return c != null ? PDActionFactory.createAction(c) : null;
     }
 
     /**
@@ -119,6 +109,6 @@ public class PDPageAdditionalActions implements COSObjectable
      */
     public void setC( PDAction c )
     {
-        actions.setItem( "C", c );
+        actions.setItem(COSName.C, c);
     }
 }

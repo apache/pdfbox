@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.interactive.action;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -74,12 +73,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public COSName getRelationship()
     {
-        COSBase base = dict.getItem(COSName.R);
-        if (base instanceof COSName)
-        {
-            return (COSName) base;
-        }
-        return null;
+        return dict.getCOSName(COSName.R);
     }
 
     /**
@@ -131,12 +125,8 @@ public class PDTargetDirectory implements COSObjectable
      */
     public PDTargetDirectory getTargetDirectory()
     {
-        COSBase base = dict.getDictionaryObject(COSName.T);
-        if (base instanceof COSDictionary)
-        {
-            return new PDTargetDirectory((COSDictionary) base);
-        }
-        return null;
+        COSDictionary targetDict = dict.getCOSDictionary(COSName.T);
+        return targetDict != null ? new PDTargetDirectory(targetDict) : null;
     }
 
     /**
@@ -158,12 +148,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public int getPageNumber()
     {
-        COSBase base = dict.getDictionaryObject(COSName.P);
-        if (base instanceof COSInteger)
-        {
-            return ((COSInteger) base).intValue();
-        }
-        return -1;
+        return dict.getInt(COSName.P, -1);
     }
 
     /**
@@ -226,12 +211,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public int getAnnotationIndex()
     {
-        COSBase base = dict.getDictionaryObject(COSName.A);
-        if (base instanceof COSInteger)
-        {
-            return ((COSInteger) base).intValue();
-        }
-        return -1;
+        return dict.getInt(COSName.A, -1);
     }
     
     /**
@@ -261,12 +241,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public String getAnnotationName()
     {
-        COSBase base = dict.getDictionaryObject(COSName.A);
-        if (base instanceof COSString)
-        {
-            return ((COSString) base).getString();
-        }
-        return null;
+        return dict.getString(COSName.A);
     }
 
     /**

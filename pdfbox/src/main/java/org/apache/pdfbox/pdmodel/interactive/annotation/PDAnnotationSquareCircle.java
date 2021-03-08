@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
@@ -96,12 +95,8 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.BE);
-        if (base instanceof COSDictionary)
-        {
-            return new PDBorderEffectDictionary((COSDictionary) base);
-        }
-        return null;
+        COSDictionary borderEffect = getCOSObject().getCOSDictionary(COSName.BE);
+        return borderEffect != null ? new PDBorderEffectDictionary(borderEffect) : null;
     }
 
     /**
@@ -126,12 +121,8 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDRectangle getRectDifference()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.RD);
-        if (base instanceof COSArray)
-        {
-            return new PDRectangle((COSArray) base);
-        }
-        return null;
+        COSArray difference = getCOSObject().getCOSArray(COSName.RD);
+        return difference != null ? new PDRectangle(difference) : null;
     }
 
     /**
@@ -176,12 +167,8 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public float[] getRectDifferences()
     {
-        COSBase margin = getCOSObject().getItem(COSName.RD);
-        if (margin instanceof COSArray)
-        {
-            return ((COSArray) margin).toFloatArray();
-        }
-        return new float[]{};
+        COSArray margin = getCOSObject().getCOSArray(COSName.RD);
+        return margin != null ? margin.toFloatArray() : new float[] {};
     }
 
 }

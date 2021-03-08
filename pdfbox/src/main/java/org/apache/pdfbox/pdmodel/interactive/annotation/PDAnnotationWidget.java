@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
@@ -77,7 +76,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public String getHighlightingMode()
     {
-        return this.getCOSObject().getNameAsString(COSName.H, "I");
+        return getCOSObject().getNameAsString(COSName.H, "I");
     }
 
     /**
@@ -120,12 +119,8 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAppearanceCharacteristicsDictionary getAppearanceCharacteristics()
     {
-        COSBase mk = this.getCOSObject().getDictionaryObject(COSName.MK);
-        if (mk instanceof COSDictionary)
-        {
-            return new PDAppearanceCharacteristicsDictionary((COSDictionary) mk);
-        }
-        return null;
+        COSDictionary mk = getCOSObject().getCOSDictionary(COSName.MK);
+        return mk != null ? new PDAppearanceCharacteristicsDictionary(mk) : null;
     }
 
     /**
@@ -136,7 +131,7 @@ public class PDAnnotationWidget extends PDAnnotation
     public void setAppearanceCharacteristics(
             PDAppearanceCharacteristicsDictionary appearanceCharacteristics)
     {
-        this.getCOSObject().setItem(COSName.MK, appearanceCharacteristics);
+        getCOSObject().setItem(COSName.MK, appearanceCharacteristics);
     }
 
     /**
@@ -146,12 +141,8 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAction getAction()
     {
-        COSBase base = this.getCOSObject().getDictionaryObject(COSName.A);
-        if (base instanceof COSDictionary)
-        {
-            return PDActionFactory.createAction((COSDictionary) base);
-        }
-        return null;
+        COSDictionary action = getCOSObject().getCOSDictionary(COSName.A);
+        return action != null ? PDActionFactory.createAction(action) : null;
     }
 
     /**
@@ -172,12 +163,8 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAnnotationAdditionalActions getActions()
     {
-        COSBase base = this.getCOSObject().getDictionaryObject(COSName.AA);
-        if (base instanceof COSDictionary)
-        {
-            return new PDAnnotationAdditionalActions((COSDictionary) base);
-        }
-        return null;
+        COSDictionary actions = getCOSObject().getCOSDictionary(COSName.AA);
+        return actions != null ? new PDAnnotationAdditionalActions(actions) : null;
     }
 
     /**
@@ -198,7 +185,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public void setBorderStyle(PDBorderStyleDictionary bs)
     {
-        this.getCOSObject().setItem(COSName.BS, bs);
+        getCOSObject().setItem(COSName.BS, bs);
     }
 
     /**
@@ -208,12 +195,8 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
-        if (bs instanceof COSDictionary)
-        {
-            return new PDBorderStyleDictionary((COSDictionary) bs);
-        }
-        return null;
+        COSDictionary bs = getCOSObject().getCOSDictionary(COSName.BS);
+        return bs != null ? new PDBorderStyleDictionary(bs) : null;
     }
 
     // TODO where to get acroForm from?
@@ -240,10 +223,10 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public void setParent(PDTerminalField field)
     {
-        if (this.getCOSObject().equals(field.getCOSObject()))
+        if (getCOSObject().equals(field.getCOSObject()))
         {
             throw new IllegalArgumentException("setParent() is not to be called for a field that shares a dictionary with its only widget");
         }
-        this.getCOSObject().setItem(COSName.PARENT, field);
+        getCOSObject().setItem(COSName.PARENT, field);
     }
 }

@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -186,12 +185,8 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public PDFormXObject getNormalIcon()
     {
-        COSBase i = this.getCOSObject().getDictionaryObject(COSName.I);
-        if (i instanceof COSStream)
-        {
-            return new PDFormXObject((COSStream)i);
-        }
-        return null;
+        COSStream stream = getCOSObject().getCOSStream(COSName.I);
+        return stream != null ? new PDFormXObject(stream) : null;
     }
 
     /**
@@ -201,12 +196,8 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public PDFormXObject getRolloverIcon()
     {
-        COSBase i = this.getCOSObject().getDictionaryObject(COSName.RI);
-        if (i instanceof COSStream)
-        {
-            return new PDFormXObject((COSStream)i);
-        }
-        return null;
+        COSStream stream = getCOSObject().getCOSStream(COSName.RI);
+        return stream != null ? new PDFormXObject(stream) : null;
     }
 
     /**
@@ -216,21 +207,17 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public PDFormXObject getAlternateIcon()
     {
-        COSBase i = this.getCOSObject().getDictionaryObject(COSName.IX);
-        if (i instanceof COSStream)
-        {
-            return new PDFormXObject((COSStream)i);
-        }
-        return null;
+        COSStream stream = getCOSObject().getCOSStream(COSName.IX);
+        return stream != null ? new PDFormXObject(stream) : null;
     }
 
     private PDColor getColor(COSName itemName)
     {
-        COSBase c = this.getCOSObject().getItem(itemName);
-        if (c instanceof COSArray)
+        COSArray cs = getCOSObject().getCOSArray(itemName);
+        if (cs != null)
         {
             PDColorSpace colorSpace;
-            switch (((COSArray) c).size())
+            switch (cs.size())
             {
             case 1:
                 colorSpace = PDDeviceGray.INSTANCE;
@@ -244,7 +231,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
             default:
                 return null;
             }
-            return new PDColor((COSArray) c, colorSpace);
+            return new PDColor(cs, colorSpace);
         }
         return null;
     }

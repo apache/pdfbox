@@ -205,7 +205,16 @@ final class FileSystemFontProvider extends FontProvider
                 // ttc not closed here because it is needed later when ttf is accessed,
                 // e.g. rendering PDF with non-embedded font which is in ttc file in our font directory
                 TrueTypeCollection ttc = new TrueTypeCollection(file);
-                TrueTypeFont ttf = ttc.getFontByName(postScriptName);
+                TrueTypeFont ttf = null;
+                try
+                {
+                    ttf = ttc.getFontByName(postScriptName);
+                }
+                catch (IOException ex)
+                {
+                    ttc.close();
+                    throw ex;
+                }
                 if (ttf == null)
                 {
                     ttc.close();
@@ -230,7 +239,17 @@ final class FileSystemFontProvider extends FontProvider
                     // ttc not closed here because it is needed later when ttf is accessed,
                     // e.g. rendering PDF with non-embedded font which is in ttc file in our font directory
                     TrueTypeCollection ttc = new TrueTypeCollection(file);
-                    TrueTypeFont ttf = ttc.getFontByName(postScriptName);
+                    TrueTypeFont ttf = null;
+                    try
+                    {
+                        ttf = ttc.getFontByName(postScriptName);
+                    }
+                    catch (IOException ex)
+                    {
+                        LOG.error(ex.getMessage(), ex);
+                        ttc.close();
+                        return null;
+                    }
                     if (ttf == null)
                     {
                         ttc.close();
@@ -303,7 +322,6 @@ final class FileSystemFontProvider extends FontProvider
             FontFileFinder fontFileFinder = new FontFileFinder();
             List<URI> fonts = fontFileFinder.find();
             List<File> files = new ArrayList<>(fonts.size());
-
             for (URI font : fonts)
             {
                 files.add(new File(font));

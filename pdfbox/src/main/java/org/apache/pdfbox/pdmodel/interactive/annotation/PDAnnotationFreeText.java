@@ -179,12 +179,8 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      */
     public float[] getRectDifferences()
     {
-        COSBase margin = getCOSObject().getItem(COSName.RD);
-        if (margin instanceof COSArray)
-        {
-            return ((COSArray) margin).toFloatArray();
-        }
-        return new float[]{};
+        COSArray margin = getCOSObject().getCOSArray(COSName.RD);
+        return margin != null ? margin.toFloatArray() : new float[] {};
     }
 
     /**
@@ -214,12 +210,8 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      */
     public float[] getCallout()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.CL);
-        if (base instanceof COSArray)
-        {
-            return ((COSArray) base).toFloatArray();
-        }
-        return null;
+        COSArray callout = getCOSObject().getCOSArray(COSName.CL);
+        return callout != null ? callout.toFloatArray() : null;
     }
 
     /**
@@ -263,12 +255,8 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.BE);
-        if (base instanceof COSDictionary)
-        {
-            return new PDBorderEffectDictionary((COSDictionary) base);
-        }
-        return null;
+        COSDictionary effectDict = getCOSObject().getCOSDictionary(COSName.BE);
+        return effectDict != null ? new PDBorderEffectDictionary(effectDict) : null;
     }
 
     /**
@@ -293,12 +281,8 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      */
     public PDRectangle getRectDifference()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.RD);
-        if (base instanceof COSArray)
-        {
-            return new PDRectangle((COSArray) base);
-        }
-        return null;
+        COSArray rectDifference = getCOSObject().getCOSArray(COSName.RD);
+        return rectDifference != null ? new PDRectangle(rectDifference) : null;
     }
 
     /**

@@ -281,7 +281,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDRectangle getRectangle()
     {
-        COSArray rectArray = (COSArray) dictionary.getDictionaryObject(COSName.RECT);
+        COSArray rectArray = dictionary.getCOSArray(COSName.RECT);
         PDRectangle rectangle = null;
         if (rectArray != null)
         {
@@ -367,12 +367,8 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDAppearanceDictionary getAppearance()
     {
-        COSBase base = dictionary.getDictionaryObject(COSName.AP);
-        if (base instanceof COSDictionary)
-        {
-            return new PDAppearanceDictionary((COSDictionary) base);
-        }
-        return null;
+        COSDictionary appearance = dictionary.getCOSDictionary(COSName.AP);
+        return appearance != null ? new PDAppearanceDictionary(appearance) : null;
     }
 
     /**
@@ -729,12 +725,8 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDPropertyList getOptionalContent()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.OC);
-        if (base instanceof COSDictionary)
-        {
-            return PDPropertyList.create((COSDictionary) base);
-        }
-        return null;
+        COSDictionary optionalContent = getCOSObject().getCOSDictionary(COSName.OC);
+        return optionalContent != null ? PDPropertyList.create(optionalContent) : null;
     }
 
     /**
@@ -758,11 +750,9 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public COSArray getBorder()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.BORDER);
-        COSArray border;
-        if (base instanceof COSArray)
+        COSArray border = getCOSObject().getCOSArray(COSName.BORDER);
+        if (border != null)
         {
-            border = (COSArray) base;
             if (border.size() < 3)
             {
                 // create a copy to avoid altering the PDF
@@ -828,11 +818,11 @@ public abstract class PDAnnotation implements COSObjectable
 
     protected PDColor getColor(COSName itemName)
     {
-        COSBase c = this.getCOSObject().getItem(itemName);
-        if (c instanceof COSArray)
+        COSArray cs = this.getCOSObject().getCOSArray(itemName);
+        if (cs != null)
         {
             PDColorSpace colorSpace = null;
-            switch (((COSArray) c).size())
+            switch (cs.size())
             {
             case 1:
                 colorSpace = PDDeviceGray.INSTANCE;
@@ -846,7 +836,7 @@ public abstract class PDAnnotation implements COSObjectable
             default:
                 break;
             }
-            return new PDColor((COSArray) c, colorSpace);
+            return new PDColor(cs, colorSpace);
         }
         return null;
     }
@@ -870,12 +860,8 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDPage getPage()
     {
-        COSBase base = this.getCOSObject().getDictionaryObject(COSName.P);
-        if (base instanceof COSDictionary)
-        {
-            return new PDPage((COSDictionary) base);
-        }
-        return null;
+        COSDictionary page = getCOSObject().getCOSDictionary(COSName.P);
+        return page != null ? new PDPage(page) : null;
     }
 
     /**
