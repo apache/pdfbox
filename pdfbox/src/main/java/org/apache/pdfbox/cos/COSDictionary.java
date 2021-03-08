@@ -1582,7 +1582,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         {
             StringBuilder sb = new StringBuilder();
             sb.append("COSArray{");
-            for (COSBase x : ((COSArray) base).toList())
+            for (COSBase x : ((COSArray) base))
             {
                 sb.append(getDictionaryString(x, objs));
                 sb.append(";");
