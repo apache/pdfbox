@@ -40,7 +40,7 @@ import picocli.CommandLine.Option;
 @Command(name = "importfdf", header = "Imports AcroForm form data from FDF", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public class ImportFDF implements Callable<Integer>
 {
-    // Expected for CLI app to write to System.out/Sytem.err
+    // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
     

@@ -41,7 +41,7 @@ import picocli.CommandLine.Option;
 @Command(name = "pdfsplit", header = "Splits a PDF document into number of new documents", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PDFSplit implements Callable<Integer>
 {
-    // Expected for CLI app to write to System.out/Sytem.err
+    // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 

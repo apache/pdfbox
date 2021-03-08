@@ -63,7 +63,7 @@ public class TextToPDF implements Callable<Integer>
     private PDRectangle mediaBox = PDRectangle.LETTER;
     private PDFont font = Standard14Fonts.HELVETICA.getFont();
 
-    // Expected for CLI app to write to System.out/Sytem.err
+    // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 

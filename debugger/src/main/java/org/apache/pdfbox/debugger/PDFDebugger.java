@@ -180,7 +180,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private JMenuItem findPreviousMenuItem;
 
     // cli options
-    // Expected for CLI app to write to System.out/Sytem.err
+    // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 

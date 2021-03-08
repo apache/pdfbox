@@ -44,7 +44,7 @@ import picocli.CommandLine.Option;
 @Command(name = "printpdf", header = "Prints a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PrintPDF implements Callable<Integer>
 {
-    // Expected for CLI app to write to System.out/Sytem.err
+    // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 
