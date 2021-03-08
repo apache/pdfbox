@@ -17,12 +17,7 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -175,7 +170,7 @@ public class GsubWorkerForBengali implements GsubWorker
 
     private List<Integer> getBeforeHalfGlyphIds()
     {
-        List<Integer> glyphIds = new ArrayList<>(BEFORE_HALF_CHARS.length);
+        ArrayList<Integer> glyphIds = new ArrayList<>(BEFORE_HALF_CHARS.length);
 
         for (char character : BEFORE_HALF_CHARS)
         {
@@ -185,7 +180,9 @@ public class GsubWorkerForBengali implements GsubWorker
         if (gsubData.isFeatureSupported(INIT_FEATURE))
         {
             ScriptFeature feature = gsubData.getFeature(INIT_FEATURE);
-            for (List<Integer> glyphCluster : feature.getAllGlyphIdsForSubstitution())
+            Set<List<Integer>> glyphIdsForSubstitution = feature.getAllGlyphIdsForSubstitution();
+            glyphIds.ensureCapacity(glyphIds.size() + glyphIdsForSubstitution.size());
+            for (List<Integer> glyphCluster : glyphIdsForSubstitution)
             {
                 glyphIds.add(feature.getReplacementForGlyphs(glyphCluster));
             }
