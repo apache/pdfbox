@@ -39,7 +39,7 @@ import picocli.CommandLine.Option;
 @Command(name = "DecompressObjectstreams", header = "Decompresses object streams in a PDF file.")
 public final class DecompressObjectstreams implements Callable<Integer>
 {
-    // Expected for CLI app to write to System.out/Sytem.err
+    // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 

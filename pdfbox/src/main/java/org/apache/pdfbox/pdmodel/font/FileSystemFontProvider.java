@@ -36,7 +36,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
-import org.apache.fontbox.ttf.*;
+import org.apache.fontbox.ttf.NamingTable;
+import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
+import org.apache.fontbox.ttf.OTFParser;
+import org.apache.fontbox.ttf.OpenTypeFont;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeCollection;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
 
@@ -357,14 +363,12 @@ final class FileSystemFontProvider extends FontProvider
     {
         // to force a specific font for debug, add code like this here:
         // files = Collections.singletonList(new File("font filename"))
-        String filePath;
 
         for (File file : files)
         {
             try
             {
-                filePath = file.getPath().toLowerCase();
-
+                String filePath = file.getPath().toLowerCase();
                 if (filePath.endsWith(".ttf") || filePath.endsWith(".otf"))
                 {
                     addTrueTypeFont(file);
@@ -387,12 +391,11 @@ final class FileSystemFontProvider extends FontProvider
 
     private File getDiskCacheFile()
     {
-        File file;
         String path = System.getProperty("pdfbox.fontcache");
-        if (path == null || !(file = new File(path)).isDirectory() || !file.canWrite())
+        if (path == null || !new File(path).isDirectory() || !new File(path).canWrite())
         {
             path = System.getProperty("user.home");
-            if (path == null || !(file = new File(path)).isDirectory() || !file.canWrite())
+            if (path == null || !new File(path).isDirectory() || !new File(path).canWrite())
             {
                 path = System.getProperty("java.io.tmpdir");
             }
@@ -662,15 +665,15 @@ final class FileSystemFontProvider extends FontProvider
                 int ulCodePageRange1 = 0;
                 int ulCodePageRange2 = 0;
                 byte[] panose = null;
-                OS2WindowsMetricsTable metricsTable = ttf.getOS2Windows();
+                OS2WindowsMetricsTable os2WindowsMetricsTable = ttf.getOS2Windows();
                 // Apple's AAT fonts don't have an OS/2 table
-                if (metricsTable != null)
+                if (os2WindowsMetricsTable != null)
                 {
-                    sFamilyClass = metricsTable.getFamilyClass();
-                    usWeightClass = metricsTable.getWeightClass();
-                    ulCodePageRange1 = (int)metricsTable.getCodePageRange1();
-                    ulCodePageRange2 = (int)metricsTable.getCodePageRange2();
-                    panose = metricsTable.getPanose();
+                    sFamilyClass = os2WindowsMetricsTable.getFamilyClass();
+                    usWeightClass = os2WindowsMetricsTable.getWeightClass();
+                    ulCodePageRange1 = (int) os2WindowsMetricsTable.getCodePageRange1();
+                    ulCodePageRange2 = (int) os2WindowsMetricsTable.getCodePageRange2();
+                    panose = os2WindowsMetricsTable.getPanose();
                 }
 
                 String format;
