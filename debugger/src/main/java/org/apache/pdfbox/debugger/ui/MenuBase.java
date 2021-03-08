@@ -57,7 +57,7 @@ abstract class MenuBase
     }
 
     /**
-     * Add the ActionListener for the menuitems.
+     * Add the ActionListener for the menu items.
      *
      * @param listener ActionListener.
      */

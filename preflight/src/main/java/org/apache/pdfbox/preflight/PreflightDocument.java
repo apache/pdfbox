@@ -142,7 +142,7 @@ public class PreflightDocument extends PDDocument
     }
 
     /**
-     * Returns the format which is used to valide the pdf document.
+     * Returns the format which is used to valid the pdf document.
      * 
      * @return the format used for validation
      */

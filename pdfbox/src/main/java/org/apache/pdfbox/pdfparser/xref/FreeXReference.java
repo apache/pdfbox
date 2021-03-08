@@ -36,7 +36,7 @@ public class FreeXReference extends AbstractXReference
      * Sets the given {@link COSObjectKey} as a free reference in a PDF's crossreference stream ({@link PDFXRefStream}).
      *
      * @param key The key, that shall be set as the free reference of the document.
-     * @param nextFreeObject The object number of the next freee object.
+     * @param nextFreeObject The object number of the next free object.
      */
     public FreeXReference(COSObjectKey key, long nextFreeObject)
     {

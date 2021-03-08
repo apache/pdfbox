@@ -99,7 +99,7 @@ public class PDPageXYZDestination extends PDPageDestination
     /**
      * Set the top y-coordinate, values 0 or -1 imply that the current y-coordinate
      * will be used.
-     * @param y The top ycoordinate.
+     * @param y The top y coordinate.
      */
     public void setTop( int y )
     {

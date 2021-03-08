@@ -31,7 +31,7 @@ import org.apache.pdfbox.preflight.PreflightContext;
 public class RubberStampAnnotationValidator extends AnnotationValidator
 {
     /**
-     * PDFBox class which wraps the annotaiton dictionary
+     * PDFBox class which wraps the annotation dictionary
      */
     protected PDAnnotationRubberStamp pdRStamp = null;
 

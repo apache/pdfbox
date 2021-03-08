@@ -78,7 +78,7 @@ public class PDSeedValueMDP
     {
         if (p < 0 || p > 3)
         {
-            throw new IllegalArgumentException("Only values between 0 and 3 nare allowed.");
+            throw new IllegalArgumentException("Only values between 0 and 3 are allowed.");
         }
         dictionary.setInt(COSName.P, p);
     }

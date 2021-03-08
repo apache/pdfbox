@@ -155,7 +155,7 @@ public class PDPageFitRectangleDestination extends PDPageDestination
     /**
      * Set the top y-coordinate, a value of -1 implies that the current y-coordinate
      * will be used.
-     * @param y The top ycoordinate.
+     * @param y The top y coordinate.
      */
     public void setTop( int y )
     {

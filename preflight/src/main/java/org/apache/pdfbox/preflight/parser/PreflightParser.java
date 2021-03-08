@@ -350,7 +350,7 @@ public class PreflightParser extends PDFParser
                     catch (NumberFormatException e)
                     {
                         addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_CROSS_REF,
-                                "offset or genid can't be read as number " + e.getMessage(), e));
+                                "offset or gen id can't be read as number " + e.getMessage(), e));
                     }
                 }
                 else if (!splitString[2].equals("f"))

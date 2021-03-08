@@ -73,7 +73,7 @@ public class ShadingPatternValidationProcess extends AbstractProcess
     }
 
     /**
-     * Checks if the ColorSapce entry is consistent which rules of the PDF Reference and the ISO 190005-1:2005
+     * Checks if the ColorSpace entry is consistent which rules of the PDF Reference and the ISO 190005-1:2005
      * Specification.
      * 
      * This method is called by the validate method.

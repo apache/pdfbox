@@ -41,7 +41,7 @@ class ShadedTriangle
      */
     private final int degree;
 
-    // describes a rasterized line when a triangle degerates to a line, otherwise null
+    // describes a rasterized line when a triangle degenerates to a line, otherwise null
     private final Line line;
 
     // corner's edge (the opposite edge of a corner) equation value

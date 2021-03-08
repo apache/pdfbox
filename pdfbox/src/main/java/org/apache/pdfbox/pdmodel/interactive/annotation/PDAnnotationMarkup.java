@@ -114,7 +114,7 @@ public class PDAnnotationMarkup extends PDAnnotation
     }
 
     /**
-     * This will retrieve the constant opacity value used when rendering the annotation (excluing any popup).
+     * This will retrieve the constant opacity value used when rendering the annotation (excluding any popup).
      *
      * @return the constant opacity value.
      */
@@ -124,7 +124,7 @@ public class PDAnnotationMarkup extends PDAnnotation
     }
 
     /**
-     * This will set the constant opacity value used when rendering the annotation (excluing any popup).
+     * This will set the constant opacity value used when rendering the annotation (excluding any popup).
      *
      * @param ca the constant opacity value.
      */

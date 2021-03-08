@@ -396,7 +396,7 @@ public class LucenePDFDocument
         }
         catch (InvalidPasswordException e)
         {
-            // they didn't suppply a password and the default of "" was wrong.
+            // they didn't supply a password and the default of "" was wrong.
             throw new IOException("Error: The document(" + documentLocation + ") is encrypted and will not be indexed.", e);
         }
     }

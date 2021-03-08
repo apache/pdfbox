@@ -39,7 +39,7 @@ public final class ImageToPDF implements Callable<Integer>
 {
     private PDRectangle mediaBox = PDRectangle.LETTER;
 
-    // Expected for CLI app to write to System.out/Sytem.err
+    // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
 
@@ -150,7 +150,7 @@ public final class ImageToPDF implements Callable<Integer>
         }
         else
         {
-            // return default if wron size was specified
+            // return default if wrong size was specified
             return PDRectangle.LETTER;
         }
     }

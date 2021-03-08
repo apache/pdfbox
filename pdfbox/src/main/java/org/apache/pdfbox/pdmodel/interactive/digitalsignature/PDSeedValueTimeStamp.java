@@ -89,7 +89,7 @@ public class PDSeedValueTimeStamp
     }
 
     /**
-     * Sets if a timestamp is reuqired or not.
+     * Sets if a timestamp is required or not.
      * 
      * @param flag true if a timestamp is required
      */
