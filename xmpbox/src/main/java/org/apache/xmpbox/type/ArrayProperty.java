@@ -72,14 +72,12 @@ public class ArrayProperty extends AbstractComplexProperty
 
     public List<String> getElementsAsString()
     {
-        List<String> retval;
-        retval = new ArrayList<>();
-        Iterator<AbstractField> it = getContainer().getAllProperties().iterator();
-        AbstractSimpleProperty tmp;
-        while (it.hasNext())
+        List<AbstractField> allProperties = getContainer().getAllProperties();
+        List<String> retval = new ArrayList<>(allProperties.size());
+
+        for (AbstractField tmp : allProperties)
         {
-            tmp = (AbstractSimpleProperty) it.next();
-            retval.add(tmp.getStringValue());
+            retval.add(((AbstractSimpleProperty)tmp).getStringValue());
         }
         retval = Collections.unmodifiableList(retval);
         return retval;
