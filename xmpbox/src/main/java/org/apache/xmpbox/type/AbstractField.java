@@ -81,11 +81,9 @@ public abstract class AbstractField
      */
     public final void setAttribute(Attribute value)
     {
-        if (attributes.containsKey(value.getName()))
-        {
-            // if same name in element, attribute will be replaced
-            attributes.remove(value.getName());
-        }
+        // if same name in element, attribute will be replaced
+        attributes.remove(value.getName());
+
         attributes.put(value.getName(), value);
     }
 
