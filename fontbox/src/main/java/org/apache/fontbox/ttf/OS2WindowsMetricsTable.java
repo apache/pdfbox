@@ -822,11 +822,20 @@ public class OS2WindowsMetricsTable extends TTFTable
         fsSelection = data.readUnsignedShort();
         firstCharIndex = data.readUnsignedShort();
         lastCharIndex = data.readUnsignedShort();
-        typoAscender = data.readSignedShort();
-        typoDescender = data.readSignedShort();
-        typoLineGap = data.readSignedShort();
-        winAscent = data.readUnsignedShort();
-        winDescent = data.readUnsignedShort();
+        try
+        {
+            typoAscender = data.readSignedShort();
+            typoDescender = data.readSignedShort();
+            typoLineGap = data.readSignedShort();
+            winAscent = data.readUnsignedShort();
+            winDescent = data.readUnsignedShort();
+        }
+        catch (EOFException ex)
+        {
+            LOG.debug("EOF, probably some legacy TrueType font");
+            initialized = true;
+            return;
+        }
         if (version >= 1)
         {
             try
