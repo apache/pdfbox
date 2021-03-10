@@ -174,7 +174,7 @@ public class PDBorderStyleDictionary implements COSObjectable
      */
     public PDLineDashPattern getDashStyle()
     {
-        COSArray d = (COSArray) getCOSObject().getDictionaryObject(COSName.D);
+        COSArray d = getCOSObject().getCOSArray(COSName.D);
         if (d == null)
         {
             d = new COSArray();
