@@ -336,6 +336,12 @@ public abstract class PDSimpleFont extends PDFont
                 nameInAFM = "hyphen";
             }
 
+            // the Adobe AFMs don't include .notdef, but Acrobat uses 250, test with PDFBOX-2334
+            if (".notdef".equals(nameInAFM))
+            {
+                return 250f;
+            }
+
             return getStandard14AFM().getCharacterWidth(nameInAFM);
         }
         throw new IllegalStateException("No AFM");
