@@ -40,20 +40,26 @@ public PDImageXObject createImage (String path) throws IOException {
 }
 
 
-public void writeImage() throws IOException {
+public void writeImage(String fileName) throws IOException {
 
     writingStream.drawImage(imageToWrite, 50, 170, 500, 500);
     writingStream.close();
-    documentToWrite.save("tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/examplePDFWithTextAndImage.pdf");
+    documentToWrite.save(fileName);
     documentToWrite.close();
 }
 
 
 public static void main(String[] args) throws IOException {
+    if(args[0]== null || args[1] == null || args.length < 1) {
+        System.out.println("Invalid usage: syntax is AddImage PDFpath imagePath");
+        System.exit(-1);
+    }
     AddImage add = new AddImage();
-    PDDocument doc = add.loadFileandInitializeStream("tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/examplePDFWithText.pdf");
-    add.createImage("tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/pamcamke.jpg");
-    add.writeImage();
+    String PDFUrl = args[0];
+    String imageUrl = args[1];
+    PDDocument doc = add.loadFileandInitializeStream(PDFUrl);
+    add.createImage(imageUrl);
+    add.writeImage(PDFUrl);
 }
 
 
