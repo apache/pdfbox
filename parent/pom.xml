@@ -65,7 +65,11 @@
           <dependency>
               <groupId>com.ibm.icu</groupId>
               <artifactId>icu4j</artifactId>
-              <version>4.8.2</version>
+              <version>62.1</version>
+              <!-- latest version that works with jdk 1.6
+              https://unicode-org.github.io/icu/userguide/icu4j-readme.html
+              "ICU4J since version 63 depend on J2SE 7 functionality"
+              -->
               <scope>provided</scope>
           </dependency>
           <dependency>
