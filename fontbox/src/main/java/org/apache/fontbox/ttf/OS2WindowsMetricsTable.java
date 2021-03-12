@@ -16,16 +16,25 @@
  */
 package org.apache.fontbox.ttf;
 
+import java.io.EOFException;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
- * A table in a true type font.
- * 
+ * The OS/2 and Windows Metrics Table in a TrueType font, see
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/os2">here</a>.
+ *
  * @author Ben Litchfield
- * 
+ *
  */
 public class OS2WindowsMetricsTable extends TTFTable
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(OS2WindowsMetricsTable.class);
 
     /**
      * Weight class constant.
@@ -812,23 +821,52 @@ public class OS2WindowsMetricsTable extends TTFTable
         fsSelection = data.readUnsignedShort();
         firstCharIndex = data.readUnsignedShort();
         lastCharIndex = data.readUnsignedShort();
-        typoAscender = data.readSignedShort();
-        typoDescender = data.readSignedShort();
-        typoLineGap = data.readSignedShort();
-        winAscent = data.readUnsignedShort();
-        winDescent = data.readUnsignedShort();
+        try
+        {
+            typoAscender = data.readSignedShort();
+            typoDescender = data.readSignedShort();
+            typoLineGap = data.readSignedShort();
+            winAscent = data.readUnsignedShort();
+            winDescent = data.readUnsignedShort();
+        }
+        catch (EOFException ex)
+        {
+            LOG.debug("EOF, probably some legacy TrueType font");
+            initialized = true;
+            return;
+        }
         if (version >= 1)
         {
-            codePageRange1 = data.readUnsignedInt();
-            codePageRange2 = data.readUnsignedInt();
+            try
+            {
+                codePageRange1 = data.readUnsignedInt();
+                codePageRange2 = data.readUnsignedInt();
+            }
+            catch (EOFException ex)
+            {
+                version = 0;
+                LOG.warn("Could not read all expected parts of version >= 1, setting version to 0", ex);
+                initialized = true;
+                return;
+            }
         }
-        if (version >= 1.2)
+        if (version >= 2)
         {
-            sxHeight = data.readSignedShort();
-            sCapHeight = data.readSignedShort();
-            usDefaultChar = data.readUnsignedShort();
-            usBreakChar = data.readUnsignedShort();
-            usMaxContext = data.readUnsignedShort();
+            try
+            {
+                sxHeight = data.readSignedShort();
+                sCapHeight = data.readSignedShort();
+                usDefaultChar = data.readUnsignedShort();
+                usBreakChar = data.readUnsignedShort();
+                usMaxContext = data.readUnsignedShort();
+            }
+            catch (EOFException ex)
+            {
+                version = 1;
+                LOG.warn("Could not read all expected parts of version >= 2, setting version to 1", ex);
+                initialized = true;
+                return;
+            }
         }
         initialized = true;
     }

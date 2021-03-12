@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -280,11 +279,7 @@ public class PDSeedValue implements COSObjectable
     public List<String> getSubFilter()
     {
         COSArray fields = dictionary.getCOSArray(COSName.SUB_FILTER);
-        if (fields != null)
-        {
-            return fields.toCOSNameStringList();
-        }
-        return Collections.emptyList();
+        return fields != null ? fields.toCOSNameStringList() : Collections.emptyList();
     }
 
     /**
@@ -310,11 +305,7 @@ public class PDSeedValue implements COSObjectable
     public List<String> getDigestMethod()
     {
         COSArray fields = dictionary.getCOSArray(COSName.DIGEST_METHOD);
-        if (fields != null)
-        {
-            return fields.toCOSNameStringList();
-        }
-        return Collections.emptyList();
+        return fields != null ? fields.toCOSNameStringList() : Collections.emptyList();
     }
 
     /**
@@ -386,11 +377,7 @@ public class PDSeedValue implements COSObjectable
     public List<String> getReasons()
     {
         COSArray fields = dictionary.getCOSArray(COSName.REASONS);
-        if (fields != null)
-        {
-            return fields.toCOSNameStringList();
-        }
-        return Collections.emptyList();
+        return fields != null ? fields.toCOSNameStringList() : Collections.emptyList();
     }
 
     /**
@@ -421,12 +408,7 @@ public class PDSeedValue implements COSObjectable
     public PDSeedValueMDP getMDP()
     {
         COSDictionary dict = dictionary.getCOSDictionary(COSName.MDP);
-        PDSeedValueMDP mdp = null;
-        if (dict != null)
-        {
-            mdp = new PDSeedValueMDP(dict);
-        }
-        return mdp;
+        return dict != null ? new PDSeedValueMDP(dict) : null;
     }
 
     /**
@@ -458,14 +440,8 @@ public class PDSeedValue implements COSObjectable
      */
     public PDSeedValueCertificate getSeedValueCertificate()
     {
-        COSBase base = dictionary.getDictionaryObject(COSName.CERT);
-        PDSeedValueCertificate certificate = null;
-        if (base instanceof COSDictionary)
-        {
-            COSDictionary dict = (COSDictionary) base;
-            certificate = new PDSeedValueCertificate(dict);
-        }
-        return certificate;
+        COSDictionary certificate = dictionary.getCOSDictionary(COSName.CERT);
+        return certificate != null ? new PDSeedValueCertificate(certificate) : null;
     }
 
     /**
@@ -489,12 +465,7 @@ public class PDSeedValue implements COSObjectable
     public PDSeedValueTimeStamp getTimeStamp()
     {
         COSDictionary dict = dictionary.getCOSDictionary(COSName.TIME_STAMP);
-        PDSeedValueTimeStamp timestamp = null;
-        if (dict != null)
-        {
-            timestamp = new PDSeedValueTimeStamp(dict);
-        }
-        return timestamp;
+        return dict != null ? new PDSeedValueTimeStamp(dict) : null;
     }
 
     /**
@@ -521,11 +492,7 @@ public class PDSeedValue implements COSObjectable
     public List<String> getLegalAttestation()
     {
         COSArray fields = dictionary.getCOSArray(COSName.LEGAL_ATTESTATION);
-        if (fields != null)
-        {
-            return fields.toCOSNameStringList();
-        }
-        return Collections.emptyList();
+        return fields != null ? fields.toCOSNameStringList() : Collections.emptyList();
     }
 
     /**

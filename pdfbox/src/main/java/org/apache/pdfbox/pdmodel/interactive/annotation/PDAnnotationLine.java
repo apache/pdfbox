@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
@@ -148,7 +147,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     public float[] getLine()
     {
         COSArray l = getCOSObject().getCOSArray(COSName.L);
-        return l.toFloatArray();
+        return l != null ? l.toFloatArray() : null;
     }
 
     /**
@@ -218,7 +217,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     public String getEndPointEndingStyle()
     {
         COSArray array = getCOSObject().getCOSArray(COSName.LE);
-        if (array.size() >= 2)
+        if (array != null && array.size() >= 2)
         {
             return array.getName(1, LE_NONE);
         }

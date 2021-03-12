@@ -1521,7 +1521,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         if (base instanceof COSArray)
         {
             StringBuilder sb = new StringBuilder("COSArray{");
-            for (COSBase x : ((COSArray) base).toList())
+            for (COSBase x : ((COSArray) base))
             {
                 sb.append(getDictionaryString(x, objs));
                 sb.append(";");
