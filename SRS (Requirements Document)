@@ -14,7 +14,11 @@ The font tool shall include at least two different user selectable fonts.
 A tool shall be provided that allows users to highlight existing text in PDF documents
 -Req 3.0
 A tool shall be implemented to allow users to draw lines on the document
+-Req 3.1
+The user shall be able to choose a page to place the Line on. More pages shall be created as needed.
 -Req 4.0
 A tool shall be provided to allow users to annotate existing PDF documents with an image
+-Req 4.1
+The user shall be able to choose a page to place the image on. More pages shall be created as needed.
 
 Note: 1.1 and 1.1.1 are basically duplicates
