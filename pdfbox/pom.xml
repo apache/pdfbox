@@ -65,7 +65,6 @@
         <dependency>
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>
-            <version>3.8</version>
             <optional>true</optional>
         </dependency>
         <dependency>

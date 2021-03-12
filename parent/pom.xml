@@ -63,6 +63,12 @@
               <version>${bouncycastle.version}</version>
           </dependency>
           <dependency>
+              <groupId>com.ibm.icu</groupId>
+              <artifactId>icu4j</artifactId>
+              <version>4.8.2</version>
+              <scope>provided</scope>
+          </dependency>
+          <dependency>
               <groupId>junit</groupId>
               <artifactId>junit</artifactId>
               <version>4.13.2</version>
