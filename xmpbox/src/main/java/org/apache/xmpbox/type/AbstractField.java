@@ -129,7 +129,11 @@ public abstract class AbstractField
      */
     public final void removeAttribute(String qualifiedName)
     {
-        attributes.remove(qualifiedName);
+        if (containsAttribute(qualifiedName))
+        {
+            attributes.remove(qualifiedName);
+        }
+
     }
 
     public final XMPMetadata getMetadata()
