@@ -280,7 +280,7 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     public PDAction getAction()
     {
-        return PDActionFactory.createAction((COSDictionary) getCOSObject().getDictionaryObject(COSName.A));
+        return PDActionFactory.createAction(getCOSObject().getCOSDictionary(COSName.A));
     }
 
     /**
@@ -300,13 +300,8 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     public PDStructureElement getStructureElement()
     {
-        PDStructureElement se = null;
-        COSDictionary dic = (COSDictionary) getCOSObject().getDictionaryObject(COSName.SE);
-        if( dic != null )
-        {
-            se = new PDStructureElement( dic );
-        }
-        return se;
+        COSDictionary dic = getCOSObject().getCOSDictionary(COSName.SE);
+        return dic != null ? new PDStructureElement(dic) : null;
     }
 
     /**
@@ -327,7 +322,7 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     public PDColor getTextColor()
     {
-        COSArray csValues = (COSArray) getCOSObject().getDictionaryObject(COSName.C);
+        COSArray csValues = getCOSObject().getCOSArray(COSName.C);
         if( csValues == null )
         {
             csValues = new COSArray();

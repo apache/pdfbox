@@ -23,7 +23,6 @@ package org.apache.xmpbox.type;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
@@ -74,13 +73,8 @@ public class ArrayProperty extends AbstractComplexProperty
     {
         List<AbstractField> allProperties = getContainer().getAllProperties();
         List<String> retval = new ArrayList<>(allProperties.size());
-
-        for (AbstractField tmp : allProperties)
-        {
-            retval.add(((AbstractSimpleProperty)tmp).getStringValue());
-        }
-        retval = Collections.unmodifiableList(retval);
-        return retval;
+        allProperties.forEach(tmp -> retval.add(((AbstractSimpleProperty) tmp).getStringValue()));
+        return Collections.unmodifiableList(retval);
     }
 
     /**

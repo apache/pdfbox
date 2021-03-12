@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -191,7 +190,7 @@ public class PDAnnotationLink extends PDAnnotation
     public PDActionURI getPreviousURI()
     {
         COSDictionary previousURI = getCOSObject().getCOSDictionary(COSName.PA);
-        return previousURI != null ? new PDActionURI((COSDictionary) previousURI) : null;
+        return previousURI != null ? new PDActionURI(previousURI) : null;
     }
 
     /**

@@ -296,7 +296,7 @@ public class PDSignature implements COSObjectable
      */
     public int[] getByteRange()
     {
-        COSArray byteRange = (COSArray)dictionary.getDictionaryObject(COSName.BYTERANGE);
+        COSArray byteRange = dictionary.getCOSArray(COSName.BYTERANGE);
         int[] ary = new int[byteRange.size()];
         for (int i = 0; i<ary.length;++i)
         {
