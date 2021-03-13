@@ -40,17 +40,17 @@ public class DateConverter
     //The Date format is supposed to be the PDF_DATE_FORMAT, but not all PDF documents
     //will use that date, so I have added a couple other potential formats
     //to try if the original one does not work.
-    private static final SimpleDateFormat[] POTENTIAL_FORMATS = new SimpleDateFormat[] { 
-        new SimpleDateFormat("EEEE, dd MMM yyyy hh:mm:ss a"),
-        new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a"),
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"), 
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz"),
-        new SimpleDateFormat("MM/dd/yyyy hh:mm:ss"),
-        new SimpleDateFormat("MM/dd/yyyy"),
-        new SimpleDateFormat("EEEE, MMM dd, yyyy"), // Acrobat Distiller 1.0.2 for Macintosh
-        new SimpleDateFormat("EEEE MMM dd, yyyy HH:mm:ss"), // ECMP5
-        new SimpleDateFormat("EEEE MMM dd HH:mm:ss z yyyy"), // GNU Ghostscript 7.0.7
-        new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' hh:mma") // Acrobat Net Distiller 1.0 for Windows
+    private static final String[] POTENTIAL_FORMATS = new String[] { 
+        "EEEE, dd MMM yyyy hh:mm:ss a",
+        "EEEE, MMM dd, yyyy hh:mm:ss a",
+        "yyyy-MM-dd'T'HH:mm:ss'Z'", 
+        "yyyy-MM-dd'T'HH:mm:ssz",
+        "MM/dd/yyyy hh:mm:ss",
+        "MM/dd/yyyy",
+        "EEEE, MMM dd, yyyy", // Acrobat Distiller 1.0.2 for Macintosh
+        "EEEE MMM dd, yyyy HH:mm:ss", // ECMP5
+        "EEEE MMM dd HH:mm:ss z yyyy", // GNU Ghostscript 7.0.7
+        "EEEE, MMM dd, yyyy 'at' hh:mma" // Acrobat Net Distiller 1.0 for Windows
     };
     
     private DateConverter()
@@ -168,6 +168,7 @@ public class DateConverter
             }
             catch( NumberFormatException e )
             {
+                System.out.println("NumberFormatException");
                 
                 // remove the arbitrary : in the timezone. SimpleDateFormat
                 // can't handle it           
@@ -183,7 +184,8 @@ public class DateConverter
                 {
                     try
                     {
-                        Date utilDate = POTENTIAL_FORMATS[i].parse( date ); 
+                        // PDFBOX-5127: create SimpleDateFormat object here because not thread-safe
+                        Date utilDate = new SimpleDateFormat(POTENTIAL_FORMATS[i]).parse(date); 
                         retval = new GregorianCalendar();
                         retval.setTime( utilDate );
                     }
