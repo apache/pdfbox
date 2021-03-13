@@ -294,31 +294,31 @@ public final class DateConverter
         StringBuilder retval = new StringBuilder();
 
         retval.append(cal.get(Calendar.YEAR));
-        retval.append("-");
+        retval.append('-');
         retval.append(String.format(Locale.US, "%02d", cal.get(Calendar.MONTH) + 1));
-        retval.append("-");
+        retval.append('-');
         retval.append(String.format(Locale.US, "%02d", cal.get(Calendar.DAY_OF_MONTH)));
-        retval.append("T");
+        retval.append('T');
         retval.append(String.format(Locale.US, "%02d", cal.get(Calendar.HOUR_OF_DAY)));
-        retval.append(":");
+        retval.append(':');
         retval.append(String.format(Locale.US, "%02d", cal.get(Calendar.MINUTE)));
-        retval.append(":");
+        retval.append(':');
         retval.append(String.format(Locale.US, "%02d", cal.get(Calendar.SECOND)));
         
         if (printMillis)
         {
-            retval.append(".");
+            retval.append('.');
             retval.append(String.format(Locale.US, "%03d", cal.get(Calendar.MILLISECOND)));
         }
 
         int timeZone = cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET);
         if (timeZone < 0)
         {
-            retval.append("-");
+            retval.append('-');
         }
         else
         {
-            retval.append("+");
+            retval.append('+');
         }
         timeZone = Math.abs(timeZone);
         // milliseconds/1000 = seconds; seconds / 60 = minutes; minutes/60 = hours
@@ -326,15 +326,15 @@ public final class DateConverter
         int minutes = (timeZone - (hours * 1000 * 60 * 60)) / 1000 / 60;
         if (hours < 10)
         {
-            retval.append("0");
+            retval.append('0');
         }
-        retval.append(Integer.toString(hours));
-        retval.append(":");
+        retval.append(hours);
+        retval.append(':');
         if (minutes < 10)
         {
-            retval.append("0");
+            retval.append('0');
         }
-        retval.append(Integer.toString(minutes));
+        retval.append(minutes);
         return retval.toString();
     }
     
