@@ -392,7 +392,6 @@ public class CFFParser
                     hasExponent = true;
                     break;
                 case 0xd:
-                    System.out.println("nothing to do");/////////////
                     break;
                 case 0xe:
                     sb.append("-");
