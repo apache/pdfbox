@@ -1416,15 +1416,15 @@ public class PDFMergerUtility
             page.setStructParents(page.getStructParents() + structParentOffset);
         }
         List<PDAnnotation> annots = page.getAnnotations();
-        List<PDAnnotation> newannots = new ArrayList<>();
-        for (PDAnnotation annot : annots)
+        List<PDAnnotation> newannots = new ArrayList<>(annots.size());
+        annots.forEach(annot ->
         {
             if (annot.getStructParent() >= 0)
             {
                 annot.setStructParent(annot.getStructParent() + structParentOffset);
             }
             newannots.add(annot);
-        }
+        });
         page.setAnnotations(newannots);
     }
     
