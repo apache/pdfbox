@@ -293,7 +293,7 @@ public class PDStream implements COSObjectable
         else if (dp instanceof COSArray)
         {
             COSArray array = (COSArray) dp;
-            List<Object> actuals = new ArrayList<>();
+            List<Object> actuals = new ArrayList<>(array.size());
             for (int i = 0; i < array.size(); i++)
             {
                 actuals.add(COSDictionaryMap
@@ -391,7 +391,7 @@ public class PDStream implements COSObjectable
         else if (dp instanceof COSArray)
         {
             COSArray array = (COSArray) dp;
-            List<Object> actuals = new ArrayList<>();
+            List<Object> actuals = new ArrayList<>(array.size());
             for (int i = 0; i < array.size(); i++)
             {
                 actuals.add(COSDictionaryMap
