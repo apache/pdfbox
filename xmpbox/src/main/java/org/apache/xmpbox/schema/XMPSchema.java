@@ -1105,9 +1105,10 @@ public class XMPSchema extends AbstractStructuredType
         {
             if (property instanceof ArrayProperty)
             {
-                List<String> retval = new ArrayList<>();
                 ArrayProperty arrayProp = (ArrayProperty) property;
-                for (AbstractField child : arrayProp.getContainer().getAllProperties())
+                List<AbstractField> allProperties = arrayProp.getContainer().getAllProperties();
+                List<String> retval = new ArrayList<>(allProperties.size());
+                for (AbstractField child : allProperties)
                 {
                     Attribute text = child.getAttribute(XmpConstants.LANG_NAME);
                     retval.add(text != null ? text.getValue() : XmpConstants.X_DEFAULT);
