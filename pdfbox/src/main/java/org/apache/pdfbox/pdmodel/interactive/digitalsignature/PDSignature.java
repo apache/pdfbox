@@ -299,11 +299,16 @@ public class PDSignature implements COSObjectable
   /**
    * Read out the byterange from the file.
    * 
-   * @return a integer array with the byterange
+   * @return an integer array with the byterange, or an empty array if there is none.
    */
   public int[] getByteRange()
   {
-    COSArray byteRange = (COSArray)dictionary.getDictionaryObject(COSName.BYTERANGE);
+    COSBase base = dictionary.getDictionaryObject(COSName.BYTERANGE);
+    if (!(base instanceof COSArray))
+    {
+        return new int[0];
+    }
+    COSArray byteRange = (COSArray) base;
     int[] ary = new int[byteRange.size()];
     for (int i = 0; i<ary.length;++i)
     {
