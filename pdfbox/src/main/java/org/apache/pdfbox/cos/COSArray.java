@@ -453,11 +453,12 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public int indexOf( COSBase object )
     {
         int retval = -1;
-        for( int i=0; retval < 0 && i<size(); i++ )
+        for (int i = 0; i < size(); i++)
         {
             if( get( i ).equals( object ) )
             {
                 retval = i;
+                break;
             }
         }
         return retval;
