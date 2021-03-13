@@ -30,7 +30,7 @@ public class DateConverterTest extends TestCase
 {
     public void testDateConverter() throws IOException
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss XXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss Z");
 
         TimeZone timezone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -40,10 +40,12 @@ public class DateConverterTest extends TestCase
                 sdf.format(DateConverter.toCalendar("12/23/2020").getTime()).substring(0, 10));
         
         Calendar cal = DateConverter.toCalendar("2012-10-30T12:24:59+01:00");
-        System.out.println("cal: " + cal);
+        System.out.println("cal1: " + cal);
+        System.out.println("cal2: " + cal.getTimeInMillis());
+        System.out.println("cal3: " + cal.getTime());
 
         // happy path
-        assertEquals("2012-10-30 12:24:59 +01:00",
+        assertEquals("2012-10-30 12:24:59 +0100",
                 sdf.format(DateConverter.toCalendar("2012-10-30T12:24:59+01:00").getTime()));
 
         TimeZone.setDefault(timezone);
