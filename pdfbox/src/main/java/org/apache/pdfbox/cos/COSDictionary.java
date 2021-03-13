@@ -1499,8 +1499,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         objs.add(base);
         if (base instanceof COSDictionary)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.append("COSDictionary{");
+            StringBuilder sb = new StringBuilder("COSDictionary{");
             for (Map.Entry<COSName, COSBase> x : ((COSDictionary) base).entrySet())
             {
                 sb.append(x.getKey());
@@ -1521,8 +1520,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         if (base instanceof COSArray)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.append("COSArray{");
+            StringBuilder sb = new StringBuilder("COSArray{");
             for (COSBase x : (COSArray) base)
             {
                 sb.append(getDictionaryString(x, objs));
