@@ -1417,14 +1417,14 @@ public class PDFMergerUtility
         }
         List<PDAnnotation> annots = page.getAnnotations();
         List<PDAnnotation> newannots = new ArrayList<>(annots.size());
-        for (PDAnnotation annot : annots)
+        annots.forEach(annot ->
         {
             if (annot.getStructParent() >= 0)
             {
                 annot.setStructParent(annot.getStructParent() + structParentOffset);
             }
             newannots.add(annot);
-        }
+        });
         page.setAnnotations(newannots);
     }
     

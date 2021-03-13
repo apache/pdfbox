@@ -178,7 +178,7 @@ public class ComplexPropertyContainer
      */
     public void removeProperty(AbstractField property)
     {
-       properties.remove(property);
+        properties.remove(property);
     }
 
     /**
