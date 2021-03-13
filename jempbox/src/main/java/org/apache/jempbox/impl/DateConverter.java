@@ -167,9 +167,7 @@ public class DateConverter
                 retval.set( year, month-1, day, hour, minute, second );
             }
             catch( NumberFormatException e )
-            {
-                System.out.println("NumberFormatException");
-                
+            {                
                 // remove the arbitrary : in the timezone. SimpleDateFormat
                 // can't handle it           
                 if (date.substring(date.length()-3,date.length()-2).equals(":") &&
