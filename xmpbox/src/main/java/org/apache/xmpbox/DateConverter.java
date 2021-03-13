@@ -328,13 +328,13 @@ public final class DateConverter
         {
             retval.append("0");
         }
-        retval.append(Integer.toString(hours));
+        retval.append(hours);
         retval.append(":");
         if (minutes < 10)
         {
             retval.append("0");
         }
-        retval.append(Integer.toString(minutes));
+        retval.append(minutes);
         return retval.toString();
     }
     
