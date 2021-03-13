@@ -17,9 +17,10 @@ package org.apache.jempbox.xmp;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.TimeZone;
+
 import junit.framework.TestCase;
+
 import org.apache.jempbox.impl.DateConverter;
 
 /**
@@ -38,12 +39,6 @@ public class DateConverterTest extends TestCase
         // this hits the NumberFormatException segment
         assertEquals("2020-12-23 12:00:00",
                 sdf.format(DateConverter.toCalendar("12/23/2020").getTime()));
-        
-        Calendar cal = DateConverter.toCalendar("2012-10-30T12:24:59+01:00");
-        System.out.println("cal1: " + cal);
-        System.out.println("cal2: " + cal.getTimeInMillis());
-        System.out.println("cal3: " + cal.getTime());
-        System.out.println("cal4: " + sdf.getTimeZone());
 
         // happy path
         assertEquals("2012-10-30 11:24:59",
