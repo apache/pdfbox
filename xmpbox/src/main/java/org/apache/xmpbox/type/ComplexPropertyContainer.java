@@ -79,10 +79,7 @@ public class ComplexPropertyContainer
      */
     public void addProperty(AbstractField obj)
     {
-        if (containsProperty(obj))
-        {
-            removeProperty(obj);
-        }
+        removeProperty(obj);
         properties.add(obj);
     }
 
@@ -189,10 +186,7 @@ public class ComplexPropertyContainer
      */
     public void removeProperty(AbstractField property)
     {
-        if (containsProperty(property))
-        {
-            properties.remove(property);
-        }
+        properties.remove(property);
     }
 
     /**
