@@ -17,6 +17,7 @@ package org.apache.jempbox.xmp;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 import junit.framework.TestCase;
 import org.apache.jempbox.impl.DateConverter;
 
@@ -30,11 +31,16 @@ public class DateConverterTest extends TestCase
     {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
+        TimeZone timezone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
         // this hits the NumberFormatException segment
-        assertEquals("2020-12-23 12:00:00",
+        assertEquals("2020-12-23 01:00:00",
                 sdf.format(DateConverter.toCalendar("12/23/2020").getTime()));
 
         assertEquals("2012-10-30 12:24:59",
                 sdf.format(DateConverter.toCalendar("2012-10-30T12:24:59+01:00").getTime()));
+
+        TimeZone.setDefault(timezone);
     }
 }
