@@ -127,11 +127,10 @@ public final class PDAcroForm implements COSObjectable
         {
             for (FDFField field : fields)
             {
-                FDFField fdfField = field;
-                PDField docField = getField(fdfField.getPartialFieldName());
+                PDField docField = getField(field.getPartialFieldName());
                 if (docField != null)
                 {
-                    docField.importFDF(fdfField);
+                    docField.importFDF(field);
                 }
             }
         }
