@@ -193,34 +193,30 @@ public class TrailerValidationProcess extends AbstractProcess
         // if both are present, otherwise everything is fine
         if (idFirst != null && idLast != null)
         {
-    
             // ---- cast two COSBase to COSArray.
             COSArray af = COSUtils.getAsArray(idFirst, cosDocument);
             COSArray al = COSUtils.getAsArray(idLast, cosDocument);
     
             // ---- if one COSArray is null, the PDF/A isn't valid
-            if ((af == null) || (al == null))
+            if (af == null || al == null)
             {
                 return false;
             }
     
             // ---- compare both arrays
             boolean isEqual = true;
-            for (Object of : af.toList())
+            for (Object of : af)
             {
                 boolean oneIsEquals = false;
-                for (Object ol : al.toList())
+                String ofString = ((COSString) of).getString();
+                for (Object ol : al)
                 {
-                    // ---- according to PDF Reference 1-4, ID is an array containing two
-                    // strings
-                    if (!oneIsEquals)
-                    {
-                        oneIsEquals = ((COSString) ol).getString().equals(((COSString) of).getString());
-                    }
-                    else
+                    // ---- according to PDF Reference 1-4, ID is an array containing two strings
+                    if (oneIsEquals)
                     {
                         break;
                     }
+                    oneIsEquals = ((COSString) ol).getString().equals(ofString);
                 }
                 isEqual = isEqual && oneIsEquals;
                 if (!isEqual)
