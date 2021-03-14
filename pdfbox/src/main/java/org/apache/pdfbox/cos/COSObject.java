@@ -141,7 +141,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     @Override
     public String toString()
     {
-        return "COSObject{" + Long.toString(objectNumber) + ", " + Integer.toString(generationNumber) + "}";
+        return "COSObject{" + objectNumber + ", " + generationNumber + "}";
     }
 
     /** 
