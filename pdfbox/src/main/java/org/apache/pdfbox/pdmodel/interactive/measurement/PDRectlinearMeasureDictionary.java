@@ -188,7 +188,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getAreas()
     {
-        COSArray a = (COSArray)this.getCOSObject().getDictionaryObject(COSName.A);
+        COSArray a = getCOSObject().getCOSArray(COSName.A);
         if (a != null)
         {
             PDNumberFormatDictionary[] retval =
@@ -322,7 +322,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public float getCYX()
     {
-        return this.getCOSObject().getFloat("CYX");
+        return this.getCOSObject().getFloat(COSName.CYX);
     }
 
     /**
@@ -332,7 +332,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public void setCYX(float cyx)
     {
-        this.getCOSObject().setFloat("CYX", cyx);
+        this.getCOSObject().setFloat(COSName.CYX, cyx);
     }
 
 }

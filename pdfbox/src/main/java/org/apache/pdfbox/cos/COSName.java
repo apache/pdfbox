@@ -164,6 +164,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CROP_BOX = new COSName("CropBox");
     public static final COSName CRYPT = new COSName("Crypt");
     public static final COSName CS = new COSName("CS");
+    public static final COSName CYX = new COSName("CYX");
     // D
     public static final COSName D = new COSName("D");
     public static final COSName DA = new COSName("DA");

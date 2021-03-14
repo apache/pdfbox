@@ -164,7 +164,7 @@ public abstract class PDTerminalField extends PDField
     public List<PDAnnotationWidget> getWidgets()
     {
         List<PDAnnotationWidget> widgets = new ArrayList<>();
-        COSArray kids = (COSArray)getCOSObject().getDictionaryObject(COSName.KIDS);
+        COSArray kids = getCOSObject().getCOSArray(COSName.KIDS);
         if (kids == null)
         {
             // the field itself is a widget

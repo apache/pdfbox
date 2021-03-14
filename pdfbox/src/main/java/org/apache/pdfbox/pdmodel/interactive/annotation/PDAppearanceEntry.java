@@ -102,15 +102,13 @@ public class PDAppearanceEntry implements COSObjectable
 
         for (COSName name : dict.keySet())
         {
-            COSBase value = dict.getDictionaryObject(name);
-
+            COSStream stream = dict.getCOSStream(name);
             // the file from PDFBOX-1599 contains /null as its entry, so we skip non-stream entries
-            if (value instanceof COSStream)
+            if (stream != null)
             {
-                map.put(name, new PDAppearanceStream((COSStream) value));
+                map.put(name, new PDAppearanceStream(stream));
             }
         }
-
         return new COSDictionaryMap<>(map, dict);
     }
 }

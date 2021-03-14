@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -65,12 +64,8 @@ public class PDAppearanceDictionary implements COSObjectable
      */
     public PDAppearanceEntry getNormalAppearance()
     {
-        COSBase entry = dictionary.getDictionaryObject(COSName.N);
-        if (entry instanceof COSDictionary)
-        {
-            return new PDAppearanceEntry((COSDictionary) entry);
-        }
-        return null;
+        COSDictionary entry = dictionary.getCOSDictionary(COSName.N);
+        return entry != null ? new PDAppearanceEntry(entry) : null;
     }
 
     /**
@@ -103,15 +98,8 @@ public class PDAppearanceDictionary implements COSObjectable
      */
     public PDAppearanceEntry getRolloverAppearance()
     {
-        COSBase entry = dictionary.getDictionaryObject(COSName.R);
-        if (entry instanceof COSDictionary)
-        {
-            return new PDAppearanceEntry((COSDictionary) entry);
-        }
-        else
-        {
-            return getNormalAppearance();
-        }
+        COSDictionary entry = dictionary.getCOSDictionary(COSName.R);
+        return entry != null ? new PDAppearanceEntry(entry) : getNormalAppearance();
     }
 
     /**
@@ -144,15 +132,8 @@ public class PDAppearanceDictionary implements COSObjectable
      */
     public PDAppearanceEntry getDownAppearance()
     {
-        COSBase entry = dictionary.getDictionaryObject(COSName.D);
-        if (entry instanceof COSDictionary)
-        {
-            return new PDAppearanceEntry((COSDictionary) entry);
-        }
-        else
-        {
-            return getNormalAppearance();
-        }
+        COSDictionary entry = dictionary.getCOSDictionary(COSName.D);
+        return entry != null ? new PDAppearanceEntry(entry) : getNormalAppearance();
     }
 
     /**

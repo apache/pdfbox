@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -69,14 +68,8 @@ public class PDNonTerminalField extends PDField
     @Override
     public int getFieldFlags()
     {
-        int retval = 0;
-        COSInteger ff = (COSInteger) getCOSObject().getDictionaryObject(COSName.FF);
-        if (ff != null)
-        {
-            retval = ff.intValue();
-        }
         // There is no need to look up the parent hierarchy within a non terminal field
-        return retval;
+        return getCOSObject().getInt(COSName.FF, 0);
     }
 
     @Override
