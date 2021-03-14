@@ -116,7 +116,7 @@ public class CFFParser
         stringIndex = readStringIndexData(input);
         byte[][] globalSubrIndex = readIndexData(input);
 
-        List<CFFFont> fonts = new ArrayList<CFFFont>();
+        List<CFFFont> fonts = new ArrayList<CFFFont>(nameIndex.length);
         for (int i = 0; i < nameIndex.length; i++)
         {
             CFFFont font = parseFont(input, nameIndex[i], topDictIndex[i]);
@@ -275,7 +275,7 @@ public class CFFParser
             }
             else if (b0 == 30)
             {
-                entry.operands.add(readRealNumber(input, b0));
+                entry.operands.add(readRealNumber(input));
             }
             else if (b0 >= 32 && b0 <= 254)
             {
@@ -335,19 +335,18 @@ public class CFFParser
         }
     }
 
-    /**
-     * @param b0  
-     */
-    private static Double readRealNumber(CFFDataInput input, int b0) throws IOException
+    private static Double readRealNumber(CFFDataInput input) throws IOException
     {
         StringBuilder sb = new StringBuilder();
         boolean done = false;
         boolean exponentMissing = false;
         boolean hasExponent = false;
+        int[] nibbles = new int[2];
         while (!done)
         {
             int b = input.readUnsignedByte();
-            int[] nibbles = { b / 16, b % 16 };
+            nibbles[0] = b / 16;
+            nibbles[1] = b % 16;
             for (int nibble : nibbles)
             {
                 switch (nibble)
