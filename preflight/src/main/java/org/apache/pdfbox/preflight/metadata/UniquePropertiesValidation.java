@@ -54,12 +54,13 @@ public class UniquePropertiesValidation
     public List<ValidationResult.ValidationError> validatePropertiesUniqueness(PDDocument document, XMPMetadata metadata)
             throws ValidationException
     {
-        List<ValidationResult.ValidationError> ve = new ArrayList<ValidationResult.ValidationError>();
-
         if (document == null)
         {
             throw new ValidationException("Document provided is null");
         }
+
+        List<ValidationResult.ValidationError> ve = new ArrayList<ValidationResult.ValidationError>();
+
         analyzePropertyUniqueness(metadata.getDublinCoreSchema(), DublinCoreSchema.CREATOR, ve);
         analyzePropertyUniqueness(metadata.getDublinCoreSchema(), DublinCoreSchema.TITLE, ve);
         analyzePropertyUniqueness(metadata.getDublinCoreSchema(), DublinCoreSchema.DESCRIPTION, ve);
