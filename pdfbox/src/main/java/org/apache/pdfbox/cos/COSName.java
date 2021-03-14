@@ -236,6 +236,8 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ENTRUST_PPKEF = new COSName("Entrust.PPKEF");
     public static final COSName EXCLUSION = new COSName("Exclusion");
     public static final COSName EX_DATA = new COSName("ExData");
+    public static final COSName EXPORT = new COSName("Export");
+    public static final COSName EXPORT_STATE = new COSName("ExportState");
     public static final COSName EXT_G_STATE = new COSName("ExtGState");
     public static final COSName EXTEND = new COSName("Extend");
     public static final COSName EXTENDS = new COSName("Extends");
@@ -458,9 +460,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PRE_RELEASE = new COSName("PreRelease");
     public static final COSName PREDICTOR = new COSName("Predictor");
     public static final COSName PREV = new COSName("Prev");
+    public static final COSName PRINT = new COSName("Print");
     public static final COSName PRINT_AREA = new COSName("PrintArea");
     public static final COSName PRINT_CLIP = new COSName("PrintClip");
     public static final COSName PRINT_SCALING = new COSName("PrintScaling");
+    public static final COSName PRINT_STATE = new COSName("PrintState");
     public static final COSName PROC_SET = new COSName("ProcSet");
     public static final COSName PROCESS = new COSName("Process");
     public static final COSName PRODUCER = new COSName("Producer");
@@ -584,6 +588,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName URI = new COSName("URI");
     public static final COSName URL = new COSName("URL");
     public static final COSName URL_TYPE = new COSName("URLType");
+    public static final COSName USAGE = new COSName("Usage");
     public static final COSName USE_CMAP = new COSName("UseCMap");
     public static final COSName USER_UNIT = new COSName("UserUnit");
     // V
@@ -596,6 +601,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName VIEW = new COSName("View");
     public static final COSName VIEW_AREA = new COSName("ViewArea");
     public static final COSName VIEW_CLIP = new COSName("ViewClip");
+    public static final COSName VIEW_STATE = new COSName("ViewState");
     public static final COSName VIEWER_PREFERENCES = new COSName("ViewerPreferences");
     public static final COSName VOLUME = new COSName("Volume");
     public static final COSName VP = new COSName("VP");

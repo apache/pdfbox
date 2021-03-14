@@ -80,7 +80,6 @@ public class PDOptionalContentGroup extends PDPropertyList
             {
                 return null;
             }
-
             return RenderState.valueOf(state.getName().toUpperCase());
         }
 
@@ -121,24 +120,24 @@ public class PDOptionalContentGroup extends PDPropertyList
     public RenderState getRenderState(RenderDestination destination)
     {
         COSName state = null;
-        COSDictionary usage = (COSDictionary) dict.getDictionaryObject("Usage");
+        COSDictionary usage = dict.getCOSDictionary(COSName.USAGE);
         if (usage != null)
         {
             if (RenderDestination.PRINT.equals(destination))
             {
-                COSDictionary print = (COSDictionary) usage.getDictionaryObject("Print");
-                state = print == null ? null : (COSName) print.getDictionaryObject("PrintState");
+                COSDictionary print = usage.getCOSDictionary(COSName.PRINT);
+                state = print == null ? null : print.getCOSName(COSName.PRINT_STATE);
             }
             else if (RenderDestination.VIEW.equals(destination))
             {
-                COSDictionary view = (COSDictionary) usage.getDictionaryObject("View");
-                state = view == null ? null : (COSName) view.getDictionaryObject("ViewState");
+                COSDictionary view = usage.getCOSDictionary(COSName.VIEW);
+                state = view == null ? null : view.getCOSName(COSName.VIEW_STATE);
             }
             // Fallback to export
             if (state == null)
             {
-                COSDictionary export = (COSDictionary) usage.getDictionaryObject("Export");
-                state = export == null ? null : (COSName) export.getDictionaryObject("ExportState");
+                COSDictionary export = usage.getCOSDictionary(COSName.EXPORT);
+                state = export == null ? null : export.getCOSName(COSName.EXPORT_STATE);
             }
         }
         return state == null ? null : RenderState.valueOf(state);

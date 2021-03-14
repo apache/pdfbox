@@ -337,7 +337,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void setEmbeddedDate(String embedded, COSName key, Calendar date)
     {
-        COSDictionary dic = (COSDictionary) getDictionaryObject(embedded);
+        COSDictionary dic = getCOSDictionary(COSName.getPDFName(embedded));
         if (dic == null && date != null)
         {
             dic = new COSDictionary();
@@ -401,7 +401,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void setEmbeddedString(String embedded, COSName key, String value)
     {
-        COSDictionary dic = (COSDictionary) getDictionaryObject(embedded);
+        COSDictionary dic = getCOSDictionary(COSName.getPDFName(embedded));
         if (dic == null && value != null)
         {
             dic = new COSDictionary();
@@ -479,7 +479,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void setEmbeddedInt(String embeddedDictionary, COSName key, int value)
     {
-        COSDictionary embedded = (COSDictionary) getDictionaryObject(embeddedDictionary);
+        COSDictionary embedded = getCOSDictionary(COSName.getPDFName(embeddedDictionary));
         if (embedded == null)
         {
             embedded = new COSDictionary();
@@ -830,13 +830,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public String getEmbeddedString(String embedded, COSName key, String defaultValue)
     {
-        String retval = defaultValue;
-        COSBase base = getDictionaryObject(embedded);
-        if (base instanceof COSDictionary)
-        {
-            retval = ((COSDictionary) base).getString(key, defaultValue);
-        }
-        return retval;
+        COSDictionary eDic = getCOSDictionary(COSName.getPDFName(embedded));
+        return eDic != null ? eDic.getString(key, defaultValue) : defaultValue;
     }
 
     /**
@@ -946,13 +941,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public Calendar getEmbeddedDate(String embedded, COSName key, Calendar defaultValue)
     {
-        Calendar retval = defaultValue;
-        COSDictionary eDic = (COSDictionary) getDictionaryObject(embedded);
-        if (eDic != null)
-        {
-            retval = eDic.getDate(key, defaultValue);
-        }
-        return retval;
+        COSDictionary eDic = getCOSDictionary(COSName.getPDFName(embedded));
+        return eDic != null ? eDic.getDate(key, defaultValue) : defaultValue;
     }
 
     /**
@@ -1055,13 +1045,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public int getEmbeddedInt(String embeddedDictionary, COSName key, int defaultValue)
     {
-        int retval = defaultValue;
-        COSDictionary embedded = (COSDictionary) getDictionaryObject(embeddedDictionary);
-        if (embedded != null)
-        {
-            retval = embedded.getInt(key, defaultValue);
-        }
-        return retval;
+        COSDictionary embedded = getCOSDictionary(COSName.getPDFName(embeddedDictionary));
+        return embedded != null ? embedded.getInt(key, defaultValue) : defaultValue;
     }
 
     /**
