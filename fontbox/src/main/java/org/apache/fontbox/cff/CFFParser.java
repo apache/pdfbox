@@ -340,7 +340,7 @@ public class CFFParser
 
     private static Double readRealNumber(CFFDataInput input) throws IOException
     {
-        StringBuilder sb = new StringBuilder(5);
+        StringBuilder sb = new StringBuilder();
         boolean done = false;
         boolean exponentMissing = false;
         boolean hasExponent = false;
@@ -350,7 +350,6 @@ public class CFFParser
             int b = input.readUnsignedByte();
             nibbles[0] = b / 16;
             nibbles[1] = b % 16;
-
             for (int nibble : nibbles)
             {
                 switch (nibble)
