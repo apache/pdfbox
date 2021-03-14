@@ -17,7 +17,7 @@
 package org.apache.pdfbox.pdmodel.interactive.pagenavigation;
 
 import org.apache.pdfbox.cos.COSDictionary;
-
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -49,7 +49,7 @@ public class PDThread implements COSObjectable
     public PDThread()
     {
         thread = new COSDictionary();
-        thread.setName( "Type", "Thread" );
+        thread.setItem(COSName.TYPE, COSName.THREAD);
     }
 
     /**
@@ -70,14 +70,8 @@ public class PDThread implements COSObjectable
      */
     public PDDocumentInformation getThreadInfo()
     {
-        PDDocumentInformation retval = null;
-        COSDictionary info = (COSDictionary)thread.getDictionaryObject( "I" );
-        if( info != null )
-        {
-            retval = new PDDocumentInformation( info );
-        }
-
-        return retval;
+        COSDictionary info = thread.getCOSDictionary(COSName.I);
+        return info != null ? new PDDocumentInformation(info) : null;
     }
 
     /**
@@ -87,7 +81,7 @@ public class PDThread implements COSObjectable
      */
     public void setThreadInfo( PDDocumentInformation info )
     {
-        thread.setItem( "I", info );
+        thread.setItem(COSName.I, info);
     }
 
     /**
@@ -98,14 +92,8 @@ public class PDThread implements COSObjectable
      */
     public PDThreadBead getFirstBead()
     {
-        PDThreadBead retval = null;
-        COSDictionary bead = (COSDictionary)thread.getDictionaryObject( "F" );
-        if( bead != null )
-        {
-            retval = new PDThreadBead( bead );
-        }
-
-        return retval;
+        COSDictionary bead = thread.getCOSDictionary(COSName.F);
+        return bead != null ? new PDThreadBead(bead) : null;
     }
 
     /**
@@ -120,7 +108,7 @@ public class PDThread implements COSObjectable
         {
             bead.setThread( this );
         }
-        thread.setItem( "F", bead );
+        thread.setItem(COSName.F, bead);
     }
 
 

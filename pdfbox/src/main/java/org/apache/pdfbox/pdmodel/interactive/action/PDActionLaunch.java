@@ -93,13 +93,8 @@ public class PDActionLaunch extends PDAction
      */
     public PDWindowsLaunchParams getWinLaunchParams()
     {
-        COSDictionary win = (COSDictionary)action.getDictionaryObject( "Win" );
-        PDWindowsLaunchParams retval = null;
-        if( win != null )
-        {
-            retval = new PDWindowsLaunchParams( win );
-        }
-        return retval;
+        COSDictionary win = action.getCOSDictionary(COSName.WIN);
+        return win != null ? new PDWindowsLaunchParams(win) : null;
     }
 
     /**
@@ -109,7 +104,7 @@ public class PDActionLaunch extends PDAction
      */
     public void setWinLaunchParams( PDWindowsLaunchParams win )
     {
-        action.setItem( "Win", win );
+        action.setItem(COSName.WIN, win);
     }
 
     /**

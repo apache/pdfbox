@@ -52,7 +52,7 @@ public class PDThreadBead implements COSObjectable
     public PDThreadBead()
     {
         bead = new COSDictionary();
-        bead.setName( "Type", "Bead" );
+        bead.setItem(COSName.TYPE, COSName.BEAD);
         setNextBead( this );
         setPreviousBead( this );
     }
@@ -76,13 +76,8 @@ public class PDThreadBead implements COSObjectable
      */
     public PDThread getThread()
     {
-        PDThread retval = null;
-        COSDictionary dic = (COSDictionary)bead.getDictionaryObject( "T" );
-        if( dic != null )
-        {
-            retval = new PDThread( dic );
-        }
-        return retval;
+        COSDictionary dic = bead.getCOSDictionary(COSName.T);
+        return dic != null ? new PDThread(dic) : null;
     }
 
     /**
@@ -93,7 +88,7 @@ public class PDThreadBead implements COSObjectable
      */
     public void setThread( PDThread thread )
     {
-        bead.setItem( "T", thread );
+        bead.setItem(COSName.T, thread);
     }
 
     /**
@@ -104,7 +99,7 @@ public class PDThreadBead implements COSObjectable
      */
     public PDThreadBead getNextBead()
     {
-        return new PDThreadBead( (COSDictionary) bead.getDictionaryObject( "N" ) );
+        return new PDThreadBead(bead.getCOSDictionary(COSName.N));
     }
 
     /**
@@ -114,7 +109,7 @@ public class PDThreadBead implements COSObjectable
      */
     protected final void setNextBead( PDThreadBead next )
     {
-        bead.setItem( "N", next );
+        bead.setItem(COSName.N, next);
     }
 
     /**
@@ -125,7 +120,7 @@ public class PDThreadBead implements COSObjectable
      */
     public PDThreadBead getPreviousBead()
     {
-        return new PDThreadBead( (COSDictionary) bead.getDictionaryObject( "V" ) );
+        return new PDThreadBead(bead.getCOSDictionary(COSName.V));
     }
 
     /**
@@ -135,7 +130,7 @@ public class PDThreadBead implements COSObjectable
      */
     protected final void setPreviousBead( PDThreadBead previous )
     {
-        bead.setItem( "V", previous );
+        bead.setItem(COSName.V, previous);
     }
 
     /**
@@ -160,13 +155,8 @@ public class PDThreadBead implements COSObjectable
      */
     public PDPage getPage()
     {
-        PDPage page = null;
-        COSDictionary dic = (COSDictionary)bead.getDictionaryObject( "P" );
-        if( dic != null )
-        {
-            page = new PDPage( dic );
-        }
-        return page;
+        COSDictionary dic = bead.getCOSDictionary(COSName.P);
+        return dic != null ? new PDPage(dic) : null;
     }
 
     /**
@@ -178,7 +168,7 @@ public class PDThreadBead implements COSObjectable
      */
     public void setPage( PDPage page )
     {
-        bead.setItem( "P", page );
+        bead.setItem(COSName.P, page);
     }
 
     /**
@@ -188,13 +178,8 @@ public class PDThreadBead implements COSObjectable
      */
     public PDRectangle getRectangle()
     {
-        PDRectangle rect = null;
-        COSArray array = (COSArray)bead.getDictionaryObject( COSName.R );
-        if( array != null )
-        {
-            rect = new PDRectangle( array );
-        }
-        return rect;
+        COSArray array = bead.getCOSArray(COSName.R);
+        return array != null ? new PDRectangle(array) : null;
     }
 
     /**

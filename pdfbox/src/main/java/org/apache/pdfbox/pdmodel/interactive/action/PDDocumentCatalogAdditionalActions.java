@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.interactive.action;
 
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
@@ -68,13 +69,8 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public PDAction getWC()
     {
-        COSDictionary wc = (COSDictionary)actions.getDictionaryObject( "WC" );
-        PDAction retval = null;
-        if( wc != null )
-        {
-            retval = PDActionFactory.createAction( wc );
-        }
-        return retval;
+        COSDictionary wc = actions.getCOSDictionary(COSName.WC);
+        return wc != null ? PDActionFactory.createAction(wc) : null;
     }
 
     /**
@@ -86,7 +82,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public void setWC( PDAction wc )
     {
-        actions.setItem( "WC", wc );
+        actions.setItem(COSName.WC, wc);
     }
 
     /**
@@ -98,13 +94,8 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public PDAction getWS()
     {
-        COSDictionary ws = (COSDictionary)actions.getDictionaryObject( "WS" );
-        PDAction retval = null;
-        if( ws != null )
-        {
-            retval = PDActionFactory.createAction( ws );
-        }
-        return retval;
+        COSDictionary ws = actions.getCOSDictionary(COSName.WS);
+        return ws != null ? PDActionFactory.createAction(ws) : null;
     }
 
     /**
@@ -116,7 +107,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public void setWS( PDAction ws )
     {
-        actions.setItem( "WS", ws );
+        actions.setItem(COSName.WS, ws);
     }
 
     /**
@@ -128,13 +119,8 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public PDAction getDS()
     {
-        COSDictionary ds = (COSDictionary)actions.getDictionaryObject( "DS" );
-        PDAction retval = null;
-        if( ds != null )
-        {
-            retval = PDActionFactory.createAction( ds );
-        }
-        return retval;
+        COSDictionary ds = actions.getCOSDictionary(COSName.DS);
+        return ds != null ? PDActionFactory.createAction(ds) : null;
     }
 
     /**
@@ -146,7 +132,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public void setDS( PDAction ds )
     {
-        actions.setItem( "DS", ds );
+        actions.setItem(COSName.DS, ds);
     }
 
     /**
@@ -158,13 +144,8 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public PDAction getWP()
     {
-        COSDictionary wp = (COSDictionary)actions.getDictionaryObject( "WP" );
-        PDAction retval = null;
-        if( wp != null )
-        {
-            retval = PDActionFactory.createAction( wp );
-        }
-        return retval;
+        COSDictionary wp = actions.getCOSDictionary(COSName.WP);
+        return wp != null ? PDActionFactory.createAction(wp) : null;
     }
 
     /**
@@ -176,7 +157,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public void setWP( PDAction wp )
     {
-        actions.setItem( "WP", wp );
+        actions.setItem(COSName.WP, wp);
     }
 
     /**
@@ -188,13 +169,8 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public PDAction getDP()
     {
-        COSDictionary dp = (COSDictionary)actions.getDictionaryObject( "DP" );
-        PDAction retval = null;
-        if( dp != null )
-        {
-            retval = PDActionFactory.createAction( dp );
-        }
-        return retval;
+        COSDictionary dp = actions.getCOSDictionary(COSName.DP);
+        return dp != null ? PDActionFactory.createAction(dp) : null;
     }
 
     /**
@@ -206,6 +182,6 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      */
     public void setDP( PDAction dp )
     {
-        actions.setItem( "DP", dp );
+        actions.setItem(COSName.DP, dp);
     }
 }

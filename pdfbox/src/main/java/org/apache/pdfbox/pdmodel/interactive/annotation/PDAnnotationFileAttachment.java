@@ -78,7 +78,7 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      */
     public PDFileSpecification getFile() throws IOException
     {
-        return PDFileSpecification.createFS(getCOSObject().getDictionaryObject("FS"));
+        return PDFileSpecification.createFS(getCOSObject().getDictionaryObject(COSName.FS));
     }
 
     /**
@@ -88,7 +88,7 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      */
     public void setFile(PDFileSpecification file)
     {
-        getCOSObject().setItem("FS", file);
+        getCOSObject().setItem(COSName.FS, file);
     }
 
     /**

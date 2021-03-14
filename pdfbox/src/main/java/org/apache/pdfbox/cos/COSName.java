@@ -91,6 +91,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName BBOX = new COSName("BBox");
     public static final COSName BC = new COSName("BC");
     public static final COSName BE = new COSName("BE");
+    public static final COSName BEAD = new COSName("BEAD");
     public static final COSName BEFORE = new COSName("Before");
     public static final COSName BG = new COSName("BG");
     public static final COSName BITS_PER_COMPONENT = new COSName("BitsPerComponent");
@@ -271,6 +272,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName FORM = new COSName("Form");
     public static final COSName FORMTYPE = new COSName("FormType");
     public static final COSName FRM = new COSName("FRM");
+    public static final COSName FS = new COSName("FS");
     public static final COSName FT = new COSName("FT");
     public static final COSName FUNCTION = new COSName("Function");
     public static final COSName FUNCTION_TYPE = new COSName("FunctionType");
@@ -547,6 +549,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName T = new COSName("T");
     public static final COSName TARGET = new COSName("Target");
     public static final COSName TEMPLATES = new COSName("Templates");
+    public static final COSName THREAD = new COSName("Thread");
     public static final COSName THREADS = new COSName("Threads");
     public static final COSName THUMB = new COSName("Thumb");
     public static final COSName TI = new COSName("TI");
@@ -599,12 +602,16 @@ public final class COSName extends COSBase implements Comparable<COSName>
     // W
     public static final COSName W = new COSName("W");
     public static final COSName W2 = new COSName("W2");
+    public static final COSName WC = new COSName("WC");
     public static final COSName WHITE_POINT = new COSName("WhitePoint");
     public static final COSName WIDGET = new COSName("Widget");
     public static final COSName WIDTH = new COSName("Width");
     public static final COSName WIDTHS = new COSName("Widths");
+    public static final COSName WIN = new COSName("Win");
     public static final COSName WIN_ANSI_ENCODING = new COSName("WinAnsiEncoding");
     public static final COSName WMODE = new COSName("WMode");
+    public static final COSName WP = new COSName("WP");
+    public static final COSName WS = new COSName("WS");
     // X
     public static final COSName X = new COSName("X");
     public static final COSName XFA = new COSName("XFA");
@@ -614,6 +621,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName XREF = new COSName("XRef");
     public static final COSName XREF_STM = new COSName("XRefStm");
     // Y
+    public static final COSName Y = new COSName("Y");
     public static final COSName Y_STEP = new COSName("YStep");
     public static final COSName YES = new COSName("Yes");
 
