@@ -194,7 +194,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
      */
     public PDRange getARange()
     {
-        COSArray rangeArray = (COSArray) dictionary.getDictionaryObject(COSName.RANGE);
+        COSArray rangeArray = dictionary.getCOSArray(COSName.RANGE);
         if (rangeArray == null)
         {
             rangeArray = getDefaultRangeArray();
@@ -209,7 +209,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
      */
     public PDRange getBRange()
     {
-        COSArray rangeArray = (COSArray) dictionary.getDictionaryObject(COSName.RANGE);
+        COSArray rangeArray = dictionary.getCOSArray(COSName.RANGE);
         if (rangeArray == null)
         {
             rangeArray = getDefaultRangeArray();
@@ -239,7 +239,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
 
     private void setComponentRangeArray(PDRange range, int index)
     {
-        COSArray rangeArray = (COSArray) dictionary.getDictionaryObject(COSName.RANGE);
+        COSArray rangeArray = dictionary.getCOSArray(COSName.RANGE);
         if (rangeArray == null)
         {
             rangeArray = getDefaultRangeArray();

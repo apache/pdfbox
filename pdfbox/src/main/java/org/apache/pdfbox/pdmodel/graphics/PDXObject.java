@@ -72,7 +72,7 @@ public class PDXObject implements COSObjectable
         else if (COSName.FORM.getName().equals(subtype))
         {
             ResourceCache cache = resources != null ? resources.getResourceCache() : null;
-            COSDictionary group = (COSDictionary)stream.getDictionaryObject(COSName.GROUP);
+            COSDictionary group = stream.getCOSDictionary(COSName.GROUP);
             if (group != null && COSName.TRANSPARENCY.equals(group.getCOSName(COSName.S)))
             {
                 return new PDTransparencyGroup(stream, cache);

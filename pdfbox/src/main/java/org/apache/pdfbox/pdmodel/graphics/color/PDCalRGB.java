@@ -120,7 +120,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
      */
     public final PDGamma getGamma()
     {
-        COSArray gammaArray = (COSArray) dictionary.getDictionaryObject(COSName.GAMMA);
+        COSArray gammaArray = dictionary.getCOSArray(COSName.GAMMA);
         if (gammaArray == null)
         {
             gammaArray = new COSArray();
@@ -139,7 +139,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
      */
     public final float[] getMatrix()
     {
-        COSArray matrix = (COSArray)dictionary.getDictionaryObject(COSName.MATRIX);
+        COSArray matrix = dictionary.getCOSArray(COSName.MATRIX);
         if (matrix == null)
         {
             return new float[] {  1, 0, 0, 0, 1, 0, 0, 0, 1 };

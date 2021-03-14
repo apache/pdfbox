@@ -113,13 +113,7 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
      */
     public float getGamma()
     {
-        float retval = 1.0f;
-        COSNumber gamma = (COSNumber) dictionary.getDictionaryObject(COSName.GAMMA);
-        if (gamma != null)
-        {
-            retval = gamma.floatValue();
-        }
-        return retval;
+        return dictionary.getFloat(COSName.GAMMA, 1.0f);
     }
 
     /**
