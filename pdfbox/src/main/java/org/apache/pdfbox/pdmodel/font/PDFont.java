@@ -146,7 +146,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 LOG.warn("Invalid ToUnicode CMap in font " + getName());
                 String cmapName = cmap.getName() != null ? cmap.getName() : "";
                 String ordering = cmap.getOrdering() != null ? cmap.getOrdering() : "";
-                COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
+                COSName encoding = dict.getCOSName(COSName.ENCODING);
                 if (cmapName.contains("Identity") //
                         || ordering.contains("Identity") //
                         || COSName.IDENTITY_H.equals(encoding) //
@@ -263,7 +263,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         // embedded", however PDFBOX-427 shows that it also applies to embedded fonts.
 
         // Type1, Type1C, Type3
-        if (dict.getDictionaryObject(COSName.WIDTHS) != null || dict.containsKey(COSName.MISSING_WIDTH))
+        if (dict.containsKey(COSName.WIDTHS) || dict.containsKey(COSName.MISSING_WIDTH))
         {
             int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
             int lastChar = dict.getInt(COSName.LAST_CHAR, -1);
@@ -452,8 +452,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         {
             if (toUnicodeCMap.getName() != null && 
                 toUnicodeCMap.getName().startsWith("Identity-") && 
-                    (dict.getDictionaryObject(COSName.TO_UNICODE) instanceof COSName ||
-                     !toUnicodeCMap.hasUnicodeMappings()))
+                    (dict.getCOSName(COSName.TO_UNICODE) != null
+                            || !toUnicodeCMap.hasUnicodeMappings()))
             {
                 // handle the undocumented case of using Identity-H/V as a ToUnicode CMap, this
                 // isn't actually valid as the Identity-x CMaps are code->CID maps, not
@@ -543,10 +543,9 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     {
         if (Float.compare(fontWidthOfSpace, -1f) == 0)
         {
-            COSBase toUnicode = dict.getDictionaryObject(COSName.TO_UNICODE);
             try
             {
-                if (toUnicode != null && toUnicodeCMap != null)
+                if (dict.containsKey(COSName.TO_UNICODE) && toUnicodeCMap != null)
                 {
                     int spaceMapping = toUnicodeCMap.getSpaceMapping();
                     if (spaceMapping > -1)

@@ -130,8 +130,7 @@ public class PDType3Font extends PDSimpleFont
     @Override
     public boolean hasGlyph(String name) throws IOException
     {
-        COSBase base = getCharProcs().getDictionaryObject(COSName.getPDFName(name));
-        return base instanceof COSStream;
+        return getCharProcs().getCOSStream(COSName.getPDFName(name)) != null;
     }
 
     @Override
@@ -247,10 +246,10 @@ public class PDType3Font extends PDSimpleFont
     {
         if (fontMatrix == null)
         {
-            COSBase base = dict.getDictionaryObject(COSName.FONT_MATRIX);
-            if (base instanceof COSArray)
+            COSArray matrix = dict.getCOSArray(COSName.FONT_MATRIX);
+            if (matrix != null)
             {
-                fontMatrix = new Matrix((COSArray) base);
+                fontMatrix = new Matrix(matrix);
             }
             else
             {
@@ -282,10 +281,10 @@ public class PDType3Font extends PDSimpleFont
     {
         if (resources == null)
         {
-            COSBase base = dict.getDictionaryObject(COSName.RESOURCES);
-            if (base instanceof COSDictionary)
+            COSDictionary resDict = dict.getCOSDictionary(COSName.RESOURCES);
+            if (resDict != null)
             {
-                this.resources = new PDResources((COSDictionary) base, resourceCache);
+                resources = new PDResources(resDict, resourceCache);
             }
         }
         return resources;
@@ -298,13 +297,8 @@ public class PDType3Font extends PDSimpleFont
      */
     public PDRectangle getFontBBox()
     {
-        COSBase base = dict.getDictionaryObject(COSName.FONT_BBOX);
-        PDRectangle retval = null;
-        if (base instanceof COSArray)
-        {
-            retval = new PDRectangle((COSArray) base);
-        }
-        return retval;
+        COSArray fontBBox = dict.getCOSArray(COSName.FONT_BBOX);
+        return fontBBox != null ? new PDRectangle(fontBBox) : null;
     }
 
     @Override
@@ -326,10 +320,10 @@ public class PDType3Font extends PDSimpleFont
             COSDictionary cp = getCharProcs();
             for (COSName name : cp.keySet())
             {
-                COSBase base = cp.getDictionaryObject(name);
-                if (base instanceof COSStream)
+                COSStream typ3CharProcStream = cp.getCOSStream(name);
+                if (typ3CharProcStream != null)
                 {
-                    PDType3CharProc charProc = new PDType3CharProc(this, (COSStream) base);
+                    PDType3CharProc charProc = new PDType3CharProc(this, typ3CharProcStream);
                     try
                     {
                         PDRectangle glyphBBox = charProc.getGlyphBBox();
