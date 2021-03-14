@@ -173,21 +173,18 @@ public class TrailerValidationProcess extends AbstractProcess
             }
             // ---- compare both arrays
             boolean isEqual = true;
-            for (COSBase of : ((COSArray) idFirst).toList())
+            for (COSBase of : (COSArray) idFirst)
             {
                 boolean oneIsEquals = false;
-                for (COSBase ol : ((COSArray) idLast).toList())
+                String ofString = ((COSString) of).getString();
+                for (COSBase ol : (COSArray) idLast)
                 {
-                    // ---- according to PDF Reference 1-4, ID is an array containing two
-                    // strings
-                    if (!oneIsEquals)
-                    {
-                        oneIsEquals = ((COSString) ol).getString().equals(((COSString) of).getString());
-                    }
-                    else
+                    // ---- according to PDF Reference 1-4, ID is an array containing two strings
+                    if (oneIsEquals)
                     {
                         break;
                     }
+                    oneIsEquals = ((COSString) ol).getString().equals(ofString);
                 }
                 isEqual &= oneIsEquals;
                 if (!isEqual)
