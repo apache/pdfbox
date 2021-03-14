@@ -16,7 +16,6 @@
 
 package org.apache.pdfbox.debugger.fontencodingpane;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -112,11 +111,9 @@ class Type0Font extends FontPane
     {
         Object[][] cid2gid = null;
         COSDictionary dict = font.getCOSObject();
-        COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
-        if (map instanceof COSStream)
+        COSStream stream = dict.getCOSStream(COSName.CID_TO_GID_MAP);
+        if (stream != null)
         {
-            COSStream stream = (COSStream) map;
-
             InputStream is = stream.createInputStream();
             byte[] mapAsBytes = IOUtils.toByteArray(is);
             IOUtils.closeQuietly(is);
