@@ -1962,7 +1962,7 @@ public class COSParser extends BaseParser implements ICOSParser
             List<? extends COSBase> kidsList = kidsArray.toList();
             for (COSBase kid : kidsList)
             {
-                if (!(kid instanceof COSObject) || set.contains((COSObject) kid))
+                if (!(kid instanceof COSObject) || set.contains(kid))
                 {
                     kidsArray.remove(kid);
                     continue;
