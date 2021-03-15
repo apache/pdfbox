@@ -181,7 +181,7 @@ public class CertInformationCollector
         Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
         @SuppressWarnings("unchecked")
         Collection<X509CertificateHolder> matches = certificatesStore
-                .getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
+                .getMatches(signerInformation.getSID());
 
         X509Certificate certificate = getCertFromHolder(matches.iterator().next());
         certificateSet.add(certificate);
