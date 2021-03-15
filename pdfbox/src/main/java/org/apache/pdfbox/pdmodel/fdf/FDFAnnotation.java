@@ -446,7 +446,7 @@ public abstract class FDFAnnotation implements COSObjectable
     public Color getColor()
     {
         Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.C);
+        COSArray array = annot.getCOSArray(COSName.C);
         if (array != null)
         {
             float[] rgb = array.toFloatArray();
@@ -732,13 +732,8 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public PDRectangle getRectangle()
     {
-        PDRectangle retval = null;
-        COSArray rectArray = (COSArray) annot.getDictionaryObject(COSName.RECT);
-        if (rectArray != null)
-        {
-            retval = new PDRectangle(rectArray);
-        }
-        return retval;
+        COSArray rectArray = (COSArray) annot.getCOSArray(COSName.RECT);
+        return rectArray != null ? new PDRectangle(rectArray) : null;
     }
 
     /**
@@ -903,15 +898,8 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSDictionary bs = (COSDictionary) annot.getDictionaryObject(COSName.BS);
-        if (bs != null)
-        {
-            return new PDBorderStyleDictionary(bs);
-        }
-        else
-        {
-            return null;
-        }
+        COSDictionary bs = annot.getCOSDictionary(COSName.BS);
+        return bs != null ? new PDBorderStyleDictionary(bs) : null;
     }
 
     /**
@@ -934,15 +922,8 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSDictionary be = (COSDictionary) annot.getDictionaryObject(COSName.BE);
-        if (be != null)
-        {
-            return new PDBorderEffectDictionary(be);
-        }
-        else
-        {
-            return null;
-        }
+        COSDictionary be = (COSDictionary) annot.getCOSDictionary(COSName.BE);
+        return be != null ? new PDBorderEffectDictionary(be) : null;
     }
 
     /**

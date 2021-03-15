@@ -173,15 +173,8 @@ public class FDFAnnotationLine extends FDFAnnotation
      */
     public float[] getLine()
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.L);
-        if (array != null)
-        {
-            return array.toFloatArray();
-        }
-        else
-        {
-            return null; // Should never happen as this is a required item
-        }
+        COSArray array = annot.getCOSArray(COSName.L);
+        return array != null ? array.toFloatArray() : null;
     }
 
     /**
@@ -192,7 +185,7 @@ public class FDFAnnotationLine extends FDFAnnotation
     public final void setStartPointEndingStyle(String style)
     {
         String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
+        COSArray array = annot.getCOSArray(COSName.LE);
         if (array == null)
         {
             array = new COSArray();
@@ -213,14 +206,8 @@ public class FDFAnnotationLine extends FDFAnnotation
      */
     public String getStartPointEndingStyle()
     {
-        String retval = PDAnnotationLine.LE_NONE;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
-        if (array != null)
-        {
-            retval = array.getName(0);
-        }
-
-        return retval;
+        COSArray array = annot.getCOSArray(COSName.LE);
+        return array != null ? array.getName(0) : PDAnnotationLine.LE_NONE;
     }
 
     /**
@@ -231,7 +218,7 @@ public class FDFAnnotationLine extends FDFAnnotation
     public final void setEndPointEndingStyle(String style)
     {
         String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
+        COSArray array = annot.getCOSArray(COSName.LE);
         if (array == null)
         {
             array = new COSArray();
@@ -252,14 +239,8 @@ public class FDFAnnotationLine extends FDFAnnotation
      */
     public String getEndPointEndingStyle()
     {
-        String retval = PDAnnotationLine.LE_NONE;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
-        if (array != null)
-        {
-            retval = array.getName(1);
-        }
-
-        return retval;
+        COSArray array = annot.getCOSArray(COSName.LE);
+        return array != null ? array.getName(1) : PDAnnotationLine.LE_NONE;
     }
 
     /**
@@ -287,7 +268,7 @@ public class FDFAnnotationLine extends FDFAnnotation
     public Color getInteriorColor()
     {
         Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
+        COSArray array = annot.getCOSArray(COSName.IC);
         if (array != null)
         {
             float[] rgb = array.toFloatArray();
@@ -406,7 +387,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      */
     public final void setCaptionHorizontalOffset(float offset)
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
+        COSArray array = annot.getCOSArray(COSName.CO);
         if (array == null)
         {
             array = new COSArray();
@@ -426,14 +407,8 @@ public class FDFAnnotationLine extends FDFAnnotation
      */
     public float getCaptionHorizontalOffset()
     {
-        float retval = 0.f;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
-        if (array != null)
-        {
-            retval = array.toFloatArray()[0];
-        }
-
-        return retval;
+        COSArray array = annot.getCOSArray(COSName.CO);
+        return array != null ? array.toFloatArray()[0] : 0.f;
     }
 
     /**
@@ -443,7 +418,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      */
     public final void setCaptionVerticalOffset(float offset)
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
+        COSArray array = annot.getCOSArray(COSName.CO);
         if (array == null)
         {
             array = new COSArray();
@@ -463,12 +438,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      */
     public float getCaptionVerticalOffset()
     {
-        float retval = 0.f;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
-        if (array != null)
-        {
-            retval = array.toFloatArray()[1];
-        }
-        return retval;
+        COSArray array = annot.getCOSArray(COSName.CO);
+        return array != null ? array.toFloatArray()[1] : 0.f;
     }
 }

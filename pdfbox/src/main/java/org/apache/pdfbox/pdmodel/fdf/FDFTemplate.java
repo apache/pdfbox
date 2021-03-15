@@ -70,13 +70,8 @@ public class FDFTemplate implements COSObjectable
      */
     public FDFNamedPageReference getTemplateReference()
     {
-        FDFNamedPageReference retval = null;
-        COSDictionary dict = (COSDictionary) template.getDictionaryObject(COSName.TREF);
-        if (dict != null)
-        {
-            retval = new FDFNamedPageReference(dict);
-        }
-        return retval;
+        COSDictionary dict = template.getCOSDictionary(COSName.TREF);
+        return dict != null ? new FDFNamedPageReference(dict) : null;
     }
 
     /**
@@ -96,8 +91,7 @@ public class FDFTemplate implements COSObjectable
      */
     public List<FDFField> getFields()
     {
-        List<FDFField> retval = null;
-        COSArray array = (COSArray) template.getDictionaryObject(COSName.FIELDS);
+        COSArray array = template.getCOSArray(COSName.FIELDS);
         if (array != null)
         {
             List<FDFField> fields = new ArrayList<>();
@@ -105,9 +99,9 @@ public class FDFTemplate implements COSObjectable
             {
                 fields.add(new FDFField((COSDictionary) array.getObject(i)));
             }
-            retval = new COSArrayList<>(fields, array);
+            return new COSArrayList<>(fields, array);
         }
-        return retval;
+        return null;
     }
 
     /**

@@ -167,8 +167,7 @@ public class FDFField implements COSObjectable
      */
     public List<FDFField> getKids()
     {
-        COSArray kids = (COSArray) field.getDictionaryObject(COSName.KIDS);
-        List<FDFField> retval = null;
+        COSArray kids = field.getCOSArray(COSName.KIDS);
         if (kids != null)
         {
             List<FDFField> actuals = new ArrayList<>();
@@ -176,9 +175,9 @@ public class FDFField implements COSObjectable
             {
                 actuals.add(new FDFField((COSDictionary) kids.getObject(i)));
             }
-            retval = new COSArrayList<>(actuals, kids);
+            return new COSArrayList<>(actuals, kids);
         }
-        return retval;
+        return null;
     }
 
     /**
@@ -260,27 +259,18 @@ public class FDFField implements COSObjectable
     public COSBase getCOSValue() throws IOException
     {
         COSBase value = field.getDictionaryObject(COSName.V);
-        
-        if (value instanceof COSName)
+        if (value instanceof COSName //
+                || value instanceof COSArray //
+                || value instanceof COSString //
+                || value instanceof COSStream)
         {
             return value;
         }
-        else if (value instanceof COSArray)
-        {
-            return value;
-        }
-        else if (value instanceof COSString || value instanceof COSStream)
-        {
-            return value;
-        }
-        else if (value != null)
+        if (value != null)
         {
             throw new IOException("Error:Unknown type for field import" + value);
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
     /**
@@ -578,13 +568,8 @@ public class FDFField implements COSObjectable
      */
     public PDAppearanceDictionary getAppearanceDictionary()
     {
-        PDAppearanceDictionary retval = null;
-        COSDictionary dict = (COSDictionary) field.getDictionaryObject(COSName.AP);
-        if (dict != null)
-        {
-            retval = new PDAppearanceDictionary(dict);
-        }
-        return retval;
+        COSDictionary dict = field.getCOSDictionary(COSName.AP);
+        return dict != null ? new PDAppearanceDictionary(dict) : null;
     }
 
     /**
@@ -604,13 +589,8 @@ public class FDFField implements COSObjectable
      */
     public FDFNamedPageReference getAppearanceStreamReference()
     {
-        FDFNamedPageReference retval = null;
-        COSDictionary ref = (COSDictionary) field.getDictionaryObject(COSName.AP_REF);
-        if (ref != null)
-        {
-            retval = new FDFNamedPageReference(ref);
-        }
-        return retval;
+        COSDictionary ref = field.getCOSDictionary(COSName.AP_REF);
+        return ref != null ? new FDFNamedPageReference(ref) : null;
     }
 
     /**
@@ -630,13 +610,8 @@ public class FDFField implements COSObjectable
      */
     public FDFIconFit getIconFit()
     {
-        FDFIconFit retval = null;
-        COSDictionary dic = (COSDictionary) field.getDictionaryObject(COSName.IF);
-        if (dic != null)
-        {
-            retval = new FDFIconFit(dic);
-        }
-        return retval;
+        COSDictionary dic = field.getCOSDictionary(COSName.IF);
+        return dic != null ? new FDFIconFit(dic) : null;
     }
 
     /**
@@ -657,8 +632,7 @@ public class FDFField implements COSObjectable
      */
     public List<Object> getOptions()
     {
-        List<Object> retval = null;
-        COSArray array = (COSArray) field.getDictionaryObject(COSName.OPT);
+        COSArray array = field.getCOSArray(COSName.OPT);
         if (array != null)
         {
             List<Object> objects = new ArrayList<>(array.size());
@@ -675,9 +649,9 @@ public class FDFField implements COSObjectable
                     objects.add(new FDFOptionElement(value));
                 }
             }
-            retval = new COSArrayList<>(objects, array);
+            return new COSArrayList<>(objects, array);
         }
-        return retval;
+        return null;
     }
 
     /**
@@ -699,7 +673,7 @@ public class FDFField implements COSObjectable
      */
     public PDAction getAction()
     {
-        return PDActionFactory.createAction((COSDictionary) field.getDictionaryObject(COSName.A));
+        return PDActionFactory.createAction(field.getCOSDictionary(COSName.A));
     }
 
     /**
@@ -719,14 +693,8 @@ public class FDFField implements COSObjectable
      */
     public PDAdditionalActions getAdditionalActions()
     {
-        PDAdditionalActions retval = null;
-        COSDictionary dict = (COSDictionary) field.getDictionaryObject(COSName.AA);
-        if (dict != null)
-        {
-            retval = new PDAdditionalActions(dict);
-        }
-
-        return retval;
+        COSDictionary dict = field.getCOSDictionary(COSName.AA);
+        return dict != null ? new PDAdditionalActions(dict) : null;
     }
 
     /**

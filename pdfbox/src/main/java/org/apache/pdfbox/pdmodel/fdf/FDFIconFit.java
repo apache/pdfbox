@@ -151,7 +151,7 @@ public class FDFIconFit implements COSObjectable
     public PDRange getFractionalSpaceToAllocate()
     {
         PDRange retval = null;
-        COSArray array = (COSArray) fit.getDictionaryObject(COSName.A);
+        COSArray array = fit.getCOSArray(COSName.A);
         if (array == null)
         {
             retval = new PDRange();
