@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.22
+Release Notes -- Apache PDFBox -- Version 2.0.23
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.21 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.23 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,84 +14,43 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-1532] - extra space added to rotated text
-[PDFBOX-1752] - Rendering PDF containing Jpeg2000 fails
-[PDFBOX-2633] - saveIncremental java.lang.NullPointerException
-[PDFBOX-3683] - Unexpected behavior when setting value for radio button with /Opts entry
-[PDFBOX-3891] - Missing data if document is merged with itself
-[PDFBOX-3953] - StackOverflowError in org.apache.pdfbox.pdmodel.PDPageTree.getKids
-[PDFBOX-4270] - Image in field disappears after flattening
-[PDFBOX-4421] - Add support for AES128 encryption for public key
-[PDFBOX-4430] - Missing transformation in flatterning when an XObject is used as appearance of a form field
-[PDFBOX-4617] - PDButton.setValue and PDButton.getOnValueForWidget cannot handle radios with duplicate names and choices
-[PDFBOX-4761] - Alignment Issue in textfield
-[PDFBOX-4934] - Could not find referenced cmap stream Adobe-Japan1-XXXX
-[PDFBOX-4941] - PDRadioButton.getSelectedExportValues() always returns the first entry
-[PDFBOX-4944] - Built-in fonts are reporting nbsp char as having zero width.
-[PDFBOX-4946] - ArrayIndexOutOfBoundsException while trying to get text from a page
-[PDFBOX-4947] - UnsupportedOperationException when using FontMapperImpl.addSubstitute()
-[PDFBOX-4949] - "W n" applied to non existent path produces empty clipping result
-[PDFBOX-4955] - Flattened form-fields are rendered at the bottom of the page
-[PDFBOX-4956] - COSName.hashCode initialized after put to cache, instead before
-[PDFBOX-4958] - AcroForm flatten - correct calculation of appearence position
-[PDFBOX-4959] - ClassCastException: org.apache.pdfbox.cos.COSStream cannot be cast to org.apache.pdfbox.cos.COSNumber
-[PDFBOX-4964] - PDFDebugger Text View for Streams hides errors
-[PDFBOX-4969] - java.lang.IndexOutOfBoundsException
-[PDFBOX-4980] - Java 6 compile error
-[PDFBOX-4984] - Widget Quadding ignored
-[PDFBOX-4988] - Space rendered as missing glyph (2)
-[PDFBOX-4997] - Incremental update adds certain objects not marked as needing update
-[PDFBOX-4999] - Dangerous COSDictionary.addAll(COSDictionary) method
-[PDFBOX-5002] - PDFTextStripper sometimes fuses two words on different lines
-[PDFBOX-5005] - Resource missing at https://ipafont.ipa.go.jp/
-[PDFBOX-5016] - PDButton set subtype methods don't reset toggled subtype
-[PDFBOX-5019] - IllegalArgumentException: miter limit < 1
-[PDFBOX-5028] - Partial field names must not contain period characters
-[PDFBOX-5033] - CFF FontParser exits with illegal offset in font
-[PDFBOX-5040] - Typo in NameRecord table LANGUGAE -> LANGUAGE
-[PDFBOX-5041] - NullPointerException in AppearanceGeneratorHelper.insertGeneratedAppearance
-[PDFBOX-5042] - IllegalArgumentException when generation of appearances fails
-[PDFBOX-5043] - StringIndexOutOfBoundsException in refreshAppearances()
-[PDFBOX-5044] - Stack overflow in PDFieldTree.enqueueKids()
-[PDFBOX-5046] - StringIndexOutOfBoundsException when doing DateConverter.parseDate()
-[PDFBOX-5048] - NullPointerException in PDType1CFont.getStringWidth() and PDType1CFont.getHeight()
-
-New Feature
-
-[PDFBOX-45] - Support incremental save
-[PDFBOX-2626] - Regenerate field appearances if NeedAppearances is set prior to rendering
-[PDFBOX-2857] - Saving XFA document caused prompt saying Extended features has been disabled
-[PDFBOX-2858] - Saving document caused prompt saying Extended features has been disabled
-[PDFBOX-4847] - [PATCH] Allow to access raw image data and fix ICC profile embedding in PNGConverter
+[PDFBOX-3000] - Transparency Group issues
+[PDFBOX-4398] - getLastSignatureDictionary modifies internal structure of PDDocument
+[PDFBOX-5050] - NullPointerexception in AcroFormOrphanWidgetsProcessor.resolveNonRootField()
+[PDFBOX-5060] - AcroForm PDTextField formatting lost when setting value
+[PDFBOX-5063] - testCreateCheckBox fails on travis / github
+[PDFBOX-5072] - java.lang.IndexOutOfBoundsException
+[PDFBOX-5078] - Failure to modify cropBox when splitting a PDF Page vertically into 2 pieces
+[PDFBOX-5080] - Type1Parser.parseASCII throws inconsistent exceptions
+[PDFBOX-5081] - CFFParser.ByteSource.readRealNumber can better throw IOException
+[PDFBOX-5090] - Missing text extraction under certain conditions starting with apache pdfbox 2.0.18
+[PDFBOX-5091] - Performance issue when converting PDF to image after upgrading from PDFBox 2.0.20 to 2.0.21
+[PDFBOX-5094] - Wrong glyph when rendering a symbolic TTF font with WinANSIEncoding
+[PDFBOX-5100] - Sometimes unneeded message "Removed /IDTree from /Names dictionary, doesn't belong there"
+[PDFBOX-5104] - ArrayIndexOutOfBoundsException in isOwnerPassword
+[PDFBOX-5105] - IllegalArgumentException in computeEncryptedKeyRev56
+[PDFBOX-5106] - IllegalArgumentException in PDFObjectStreamParser.privateReadObjectNumbers
+[PDFBOX-5107] - ClassCastException in COSStream.getFilterList
+[PDFBOX-5108] - ArrayIndexOutOfBoundsException in PDFXrefStreamParser.parseValue
+[PDFBOX-5115] - U+00AD ('sfthyphen') is not available in this font Times-Roman encoding: WinAnsiEncoding
+[PDFBOX-5123] - OS2WindowsMetricsTable "version" variable confused with OpenType specification version
+[PDFBOX-5124] - Improperly declared OS2WindowsMetricsTable version (v0 table declard as v3) in embedded font stops parsing with EOFException
 
 Improvement
 
-[PDFBOX-3393] - Javascript actions on form fields cause data to become hidden
-[PDFBOX-3667] - Handle Widget Annotations as Fields even if there is no AcroForm Fields entry
-[PDFBOX-4948] - Add substitute font "ZapfDingbatsITCbyBT-Regular" for ZapfDingbats
-[PDFBOX-4971] - Show "raw" pane for content streams in PDFDebugger
-[PDFBOX-4977] - Provide format action support capability for AcroForm field
-[PDFBOX-4985] - Render orphan annotation widgets
-[PDFBOX-4990] - say which resource not found when a font is missing
-[PDFBOX-4991] - say when GlyphList is not found what was sought for
-[PDFBOX-4993] - if infile is missing, say which one
-[PDFBOX-5000] - Allow PDFDebugger and PDF/A validation to skip AcroForm fix ups
-[PDFBOX-5004] - Repair AcroForm in PDFDebugger
-[PDFBOX-5027] - Protect/Encrypt PDF with multiple certificates on command line
-
-Wish
-
-[PDFBOX-4928] - Could the new rendering method of PageDrawer be optional?
+[PDFBOX-3017] - Improve document signing
+[PDFBOX-5055] - Minor improvement
+[PDFBOX-5103] - Allow reuse of subsetted fonts by inverting the ToUnicode CMap
+[PDFBOX-5110] - improve performance in signature validation
+[PDFBOX-5112] - Add more checks to PDFXrefStreamParser and reduce memory footprint
+[PDFBOX-5116] - Add rotated box to ShowColorBoxes.java example
+[PDFBOX-5121] - Use StringBuilder for key in PDDeviceN.toRGBWithTintTransform()
+[PDFBOX-5122] - Don't use RGB loop in PDDeviceN.toRGBWithTintTransform()
 
 Task
 
-[PDFBOX-4939] - Increase test coverage for AcroForm examples
-[PDFBOX-4940] - Increase code coverage for PDImageXObject tests
-[PDFBOX-5009] - Corrupt PDF can lead to a StackOverflow
-
-Sub-task
-
-[PDFBOX-2859] - Support Incremental Update for forms
+[PDFBOX-5045] - testFlattenOpenOfficeForm() has differences
+[PDFBOX-5057] - Review CCITTFaxDecoder updates
 
 Release Contents
 ----------------
