@@ -57,7 +57,7 @@ class PlainText
         }
         else
         {
-            List<String> parts = Arrays.asList(textValue.replaceAll("\t", " ").split("\\r\\n|\\n|\\r|\\u2028|\\u2029"));
+            String[] parts = textValue.replaceAll("\t", " ").split("\\r\\n|\\n|\\r|\\u2028|\\u2029");
             for (String part : parts)
             {
                 // Acrobat prints a space for an empty paragraph
@@ -80,7 +80,7 @@ class PlainText
      */
     PlainText(List<String> listValue)
     {
-        paragraphs = new ArrayList<>();
+        paragraphs = new ArrayList<>(listValue.size());
         for (String part : listValue)
         {
             paragraphs.add(new Paragraph(part));
