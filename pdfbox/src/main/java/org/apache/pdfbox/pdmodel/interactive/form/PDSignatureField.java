@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -139,7 +138,7 @@ public class PDSignatureField extends PDTerminalField
     public PDSignature getValue()
     {
         COSDictionary value = getCOSObject().getCOSDictionary(COSName.V);
-        return value != null ? new PDSignature((COSDictionary) value) : null;
+        return value != null ? new PDSignature(value) : null;
     }
 
     /**

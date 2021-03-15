@@ -297,8 +297,8 @@ public class PDType3Font extends PDSimpleFont
      */
     public PDRectangle getFontBBox()
     {
-        COSArray fontBBox = dict.getCOSArray(COSName.FONT_BBOX);
-        return fontBBox != null ? new PDRectangle(fontBBox) : null;
+        COSArray bBox = dict.getCOSArray(COSName.FONT_BBOX);
+        return bBox != null ? new PDRectangle(bBox) : null;
     }
 
     @Override

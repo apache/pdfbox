@@ -732,7 +732,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public PDRectangle getRectangle()
     {
-        COSArray rectArray = (COSArray) annot.getCOSArray(COSName.RECT);
+        COSArray rectArray = annot.getCOSArray(COSName.RECT);
         return rectArray != null ? new PDRectangle(rectArray) : null;
     }
 
@@ -922,7 +922,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSDictionary be = (COSDictionary) annot.getCOSDictionary(COSName.BE);
+        COSDictionary be = annot.getCOSDictionary(COSName.BE);
         return be != null ? new PDBorderEffectDictionary(be) : null;
     }
 
