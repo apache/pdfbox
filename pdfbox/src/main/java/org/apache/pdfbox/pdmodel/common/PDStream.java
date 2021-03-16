@@ -369,10 +369,10 @@ public class PDStream implements COSObjectable
     }
 
     /**
-     * This will set the list of decode parameterss.
+     * This will set the list of decode parameters.
      * 
      * @param decodeParams
-     *            The list of decode parameterss.
+     *            The list of decode parameters.
      */
     public void setDecodeParms(List<?> decodeParams)
     {
