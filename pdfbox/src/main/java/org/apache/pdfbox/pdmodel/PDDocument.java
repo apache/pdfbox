@@ -1685,7 +1685,7 @@ public class PDDocument implements Closeable
     /**
      * Provides the document ID.
      *
-     * @return the dcoument ID
+     * @return the document ID
      */
     public Long getDocumentId()
     {
