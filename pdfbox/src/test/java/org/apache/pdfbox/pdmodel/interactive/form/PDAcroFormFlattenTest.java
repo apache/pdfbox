@@ -75,7 +75,8 @@ class PDAcroFormFlattenTest
         "https://issues.apache.org/jira/secure/attachment/12682897/FormI-9-English.pdf,FormI-9-English.pdf",
         
         // PDFBOX-2469 Filled template.
-        "https://issues.apache.org/jira/secure/attachment/12678455/testPDF_acroForm.pdf,testPDF_acroForm.pdf",
+        // Disabled as there is a minimal difference which can not be seen visually, see PDFBOX-5133
+        // "https://issues.apache.org/jira/secure/attachment/12678455/testPDF_acroForm.pdf,testPDF_acroForm.pdf",
         
         //PDFBOX-2586 Empty template.
         "https://issues.apache.org/jira/secure/attachment/12689788/test.pdf,test-2586.pdf",
