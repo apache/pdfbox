@@ -12,8 +12,9 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.tools.AddImage;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class TestAddImage extends TestCase {
+public class TestAddImage{
 
 @Test
 public void testLoadFileAndInitializeStream() throws IOException {
@@ -49,9 +50,7 @@ public void testCreateImage() throws IOException {
     }
 
 
-    public static void main( String[] args )
-    {
-        String[] arg = {AddImage.class.getName() };
-        junit.textui.TestRunner.main( arg );
-    }
+
+
+
 }
