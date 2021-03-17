@@ -131,6 +131,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CH = new COSName("Ch");
     public static final COSName CHAR_PROCS = new COSName("CharProcs");
     public static final COSName CHAR_SET = new COSName("CharSet");
+    public static final COSName CHECK_SUM = new COSName("CheckSum");
     public static final COSName CICI_SIGNIT = new COSName("CICI.SignIt");
     public static final COSName CID_FONT_TYPE0 = new COSName("CIDFontType0");
     public static final COSName CID_FONT_TYPE2 = new COSName("CIDFontType2");
@@ -222,6 +223,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName EARLY_CHANGE = new COSName("EarlyChange");
     public static final COSName EF = new COSName("EF");
     public static final COSName EMBEDDED_FDFS = new COSName("EmbeddedFDFs");
+    public static final COSName EMBEDDED_FILE = new COSName("EmbeddedFile");
     public static final COSName EMBEDDED_FILES = new COSName("EmbeddedFiles");
     public static final COSName EMPTY = new COSName("");
     public static final COSName ENCODE = new COSName("Encode");
@@ -491,6 +493,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName REGISTRY = new COSName("Registry");
     public static final COSName REGISTRY_NAME = new COSName("RegistryName");
     public static final COSName RENAME = new COSName("Rename");
+    public static final COSName RES_FORK = new COSName("ResFork");
     public static final COSName RESOURCES = new COSName("Resources");
     public static final COSName RGB = new COSName("RGB");
     public static final COSName RI = new COSName("RI");

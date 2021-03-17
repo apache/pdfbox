@@ -210,7 +210,7 @@ class UnmodifiableCOSDictionaryTest
         Calendar calendar = Calendar.getInstance();
         try
         {
-            unmodifiableCOSDictionary.setEmbeddedDate("Embedded", COSName.A, calendar);
+            unmodifiableCOSDictionary.setEmbeddedDate(COSName.PARAMS, COSName.A, calendar);
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)
@@ -218,15 +218,6 @@ class UnmodifiableCOSDictionaryTest
             // nothing to do
         }
         
-        try
-        {
-            unmodifiableCOSDictionary.setEmbeddedDate("Embedded", "A", calendar);
-            fail("An UnsupportedOperationException should have been thrown");
-        }
-        catch (UnsupportedOperationException exception)
-        {
-            // nothing to do
-        }
     }
 
     @Test
@@ -260,17 +251,7 @@ class UnmodifiableCOSDictionaryTest
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
         {
-            unmodifiableCOSDictionary.setEmbeddedString("Embedded", COSName.A, "A");
-            fail("An UnsupportedOperationException should have been thrown");
-        }
-        catch (UnsupportedOperationException exception)
-        {
-            // nothing to do
-        }
-        
-        try
-        {
-            unmodifiableCOSDictionary.setEmbeddedString("Embedded", "A", "A");
+            unmodifiableCOSDictionary.setEmbeddedString(COSName.PARAMS, COSName.A, "A");
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)
@@ -310,17 +291,7 @@ class UnmodifiableCOSDictionaryTest
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
         {
-            unmodifiableCOSDictionary.setEmbeddedInt("Embedded", COSName.A, 0);
-            fail("An UnsupportedOperationException should have been thrown");
-        }
-        catch (UnsupportedOperationException exception)
-        {
-            // nothing to do
-        }
-        
-        try
-        {
-            unmodifiableCOSDictionary.setEmbeddedInt("Embedded", "A", 0);
+            unmodifiableCOSDictionary.setEmbeddedInt(COSName.PARAMS, COSName.A, 0);
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)

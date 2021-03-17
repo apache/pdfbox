@@ -56,7 +56,7 @@ public class PDFunctionType2 extends PDFunction
 
         if (getCOSObject().getDictionaryObject(COSName.C0) instanceof COSArray)
         {
-            c0 = (COSArray) getCOSObject().getDictionaryObject(COSName.C0);
+            c0 = (COSArray) getCOSObject().getCOSArray(COSName.C0);
         }
         else
         {

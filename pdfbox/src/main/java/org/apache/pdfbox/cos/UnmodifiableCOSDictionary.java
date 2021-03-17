@@ -139,16 +139,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setEmbeddedDate(String embedded, String key, Calendar date)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setEmbeddedDate(String embedded, COSName key, Calendar date)
+    public void setEmbeddedDate(COSName embedded, COSName key, Calendar date)
     {
         throw new UnsupportedOperationException();
     }
@@ -175,16 +166,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setEmbeddedString(String embedded, String key, String value)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setEmbeddedString(String embedded, COSName key, String value)
+    public void setEmbeddedString(COSName embedded, COSName key, String value)
     {
        throw new UnsupportedOperationException();
     }
@@ -229,16 +211,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void setEmbeddedInt(String embeddedDictionary, String key, int value)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setEmbeddedInt(String embeddedDictionary, COSName key, int value)
+    public void setEmbeddedInt(COSName embeddedDictionary, COSName key, int value)
     {
         throw new UnsupportedOperationException();
     }
