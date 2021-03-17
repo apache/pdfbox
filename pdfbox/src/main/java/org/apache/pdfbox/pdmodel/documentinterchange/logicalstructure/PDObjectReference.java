@@ -21,7 +21,6 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -91,23 +90,22 @@ public class PDObjectReference implements COSObjectable
      */
     public COSObjectable getReferencedObject()
     {
-        COSBase obj = this.getCOSObject().getDictionaryObject(COSName.OBJ);
-        if (!(obj instanceof COSDictionary))
+        COSDictionary objDictionary = getCOSObject().getCOSDictionary(COSName.OBJ);
+        if (objDictionary == null)
         {
             return null;
         }
         try
         {
-            if (obj instanceof COSStream)
+            if (objDictionary instanceof COSStream)
             {
-                PDXObject xobject = PDXObject.createXObject(obj, null); // <-- TODO: valid?
+                PDXObject xobject = PDXObject.createXObject(objDictionary, null); // <-- TODO: valid?
                 if (xobject != null)
                 {
                     return xobject;
                 }
             }
-            COSDictionary objDictionary  = (COSDictionary)obj;
-            PDAnnotation annotation = PDAnnotation.createAnnotation(obj);
+            PDAnnotation annotation = PDAnnotation.createAnnotation(objDictionary);
             /*
              * COSName.TYPE is optional, so if annotation is of type unknown and
              * COSName.TYPE is not COSName.ANNOT it still may be an annotation.

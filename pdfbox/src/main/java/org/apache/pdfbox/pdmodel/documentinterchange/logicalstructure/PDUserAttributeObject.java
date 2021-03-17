@@ -62,8 +62,7 @@ public class PDUserAttributeObject extends PDAttributeObject
      */
     public List<PDUserProperty> getOwnerUserProperties()
     {
-        COSArray p = (COSArray) this.getCOSObject()
-            .getDictionaryObject(COSName.P);
+        COSArray p = getCOSObject().getCOSArray(COSName.P);
         List<PDUserProperty> properties = new ArrayList<>(p.size());
         for (int i = 0; i < p.size(); i++)
         {
@@ -95,7 +94,7 @@ public class PDUserAttributeObject extends PDAttributeObject
      */
     public void addUserProperty(PDUserProperty userProperty)
     {
-        COSArray p = (COSArray) this.getCOSObject().getDictionaryObject(COSName.P);
+        COSArray p = getCOSObject().getCOSArray(COSName.P);
         p.add(userProperty);
         this.notifyChanged();
     }
@@ -111,7 +110,7 @@ public class PDUserAttributeObject extends PDAttributeObject
         {
             return;
         }
-        COSArray p = (COSArray) this.getCOSObject().getDictionaryObject(COSName.P);
+        COSArray p = getCOSObject().getCOSArray(COSName.P);
         p.remove(userProperty.getCOSObject());
         this.notifyChanged();
     }

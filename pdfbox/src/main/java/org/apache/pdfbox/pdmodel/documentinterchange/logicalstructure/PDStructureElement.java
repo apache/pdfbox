@@ -92,12 +92,8 @@ public class PDStructureElement extends PDStructureNode
      */
     public PDStructureNode getParent()
     {
-        COSBase base = this.getCOSObject().getDictionaryObject(COSName.P);
-        if (base instanceof COSDictionary)
-        {
-            return PDStructureNode.create((COSDictionary) base);
-        }
-        return null;
+        COSDictionary parent = getCOSObject().getCOSDictionary(COSName.P);
+        return parent != null ? PDStructureNode.create(parent) : null;
     }
 
     /**
@@ -139,12 +135,8 @@ public class PDStructureElement extends PDStructureNode
      */
     public PDPage getPage()
     {
-        COSBase base = this.getCOSObject().getDictionaryObject(COSName.PG);
-        if (base instanceof COSDictionary)
-        {
-            return new PDPage((COSDictionary) base);
-        }
-        return null;
+        COSDictionary page = getCOSObject().getCOSDictionary(COSName.PG);
+        return page != null ? new PDPage(page) : null;
     }
 
     /**
