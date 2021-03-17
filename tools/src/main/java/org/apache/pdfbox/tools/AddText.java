@@ -2,19 +2,29 @@ package org.apache.pdfbox.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationText;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 public class AddText
 {
     private PDDocument documentToWrite;
-    private PDPageContentStream writingStream;
+    private String path;
     
 
     public PDDocument loadFileandInitializeStream(String path) throws IOException {
@@ -22,27 +32,46 @@ public class AddText
         File file = new File(path);
         PDDocument doc = Loader.loadPDF(file);
         documentToWrite = doc;
-        PDPage lastPage = doc.getPage(doc.getNumberOfPages()-1);
-        writingStream = new PDPageContentStream(doc, lastPage, PDPageContentStream.AppendMode.APPEND, true, true);
+
+        this.path = path;
     
         return doc;
     }
 
     public String writeText(String annotation) throws IOException
     {
-        writingStream.beginText();
+        COSDocument doc = documentToWrite.getDocument();
 
-        PDPage page = documentToWrite.getPage(0);
+        String key = "";
 
-        PDAnnotation annot = new PDAnnotationText();
+        if (!doc.isEncrypted()) {
+            
+            PDFTextStripper stripper = new PDFTextStripper();
+            key = stripper.getText(documentToWrite);
 
-        annot.setContents(annotation);
+            key += annotation;
 
-        List<PDAnnotation> annotation_list = page.getAnnotations();
-        annotation_list.add(annot);
+            key = key.replace("\n", "").replace("\r", "");
 
-        page.setAnnotations(annotation_list);
+            PDPage page = documentToWrite.getPage(0);
 
-        return page.getAnnotations().get(page.getAnnotations().size()-1).getContents();
+            PDPageContentStream content_stream = new PDPageContentStream(documentToWrite, page, PDPageContentStream.AppendMode.OVERWRITE, true);
+            
+            content_stream.beginText();
+
+            content_stream.setFont(PDType1Font.HELVETICA, 12);
+
+            content_stream.newLineAtOffset( 100, 700 );
+
+            content_stream.showText(key);
+
+            content_stream.endText();
+
+            content_stream.close();
+        }
+
+        documentToWrite.save(this.path);
+
+        return key;
     }
 }

@@ -10,6 +10,7 @@ import junit.framework.TestSuite;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.tools.AddImage;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -35,18 +36,24 @@ public class TestAddText extends TestCase
     {
         AddText add = new AddText();
         
-        String expected = "../tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/examplePDFWithText.pdf";
-
+        String path = "../tools/src/main/java/org/apache/pdfbox/tools/AddTextResources/examplePDFWithText.pdf";
 
         try
         {
-            PDDocument actual = add.loadFileandInitializeStream(expected);
-            String str = add.writeText("annotation");
-            
-            actual.getPage(actual.getNumberOfPages()-1);
+            PDDocument actual = add.loadFileandInitializeStream(path);
 
+            PDFTextStripper stripper = new PDFTextStripper();
+            String key = stripper.getText(actual);
             
-            assertEquals(actual.getPage(0).getAnnotations().get(actual.getPage(0).getAnnotations().size()-1).getContents(), str);
+            String str = add.writeText("annotation");
+
+            key = key + "annotation";
+
+            key = key.replace("\n", "").replace("\r", "");
+
+            actual.close();
+
+            assertTrue(str.equals(key));
         }
         catch (IOException e)
         {
