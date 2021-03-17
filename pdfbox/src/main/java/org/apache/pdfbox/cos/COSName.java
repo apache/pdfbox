@@ -488,6 +488,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName REPEAT = new COSName("Repeat");
     public static final COSName RECIPIENTS = new COSName("Recipients");
     public static final COSName RECT = new COSName("Rect");
+    public static final COSName REFERENCE = new COSName("Reference");
     public static final COSName REGISTRY = new COSName("Registry");
     public static final COSName REGISTRY_NAME = new COSName("RegistryName");
     public static final COSName RENAME = new COSName("Rename");
@@ -568,6 +569,8 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName TR2 = new COSName("TR2");
     public static final COSName TRAPPED = new COSName("Trapped");
     public static final COSName TRANS = new COSName("Trans");
+    public static final COSName TRANSFORM_METHOD = new COSName("TransformMethod");
+    public static final COSName TRANSFORM_PARAMS = new COSName("TransformParams");
     public static final COSName TRANSPARENCY = new COSName("Transparency");
     public static final COSName TREF = new COSName("TRef");
     public static final COSName TRIM_BOX = new COSName("TrimBox");
