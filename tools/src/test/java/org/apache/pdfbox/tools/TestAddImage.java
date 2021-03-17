@@ -21,7 +21,7 @@ public void testLoadFileAndInitializeStream() throws IOException {
 
     AddImage add = new AddImage();
     String expected = "../tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/examplePDFWithText.pdf";
-    PDDocument actual = add.loadFileandInitializeStream(expected);
+    PDDocument actual = add.loadFileandInitializeStream(expected, 1);
     int actualPages = actual.getNumberOfPages();
     assertEquals(1, actualPages);
 }
@@ -31,7 +31,7 @@ public void testCreateImage() throws IOException {
 
     int expected = 750;
     AddImage add = new AddImage();
-    add.loadFileandInitializeStream("../tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/examplePDFWithText.pdf");
+    add.loadFileandInitializeStream("../tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/examplePDFWithText.pdf", 1);
     String imageString = "../tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/pamcamke.jpg";
     PDImageXObject actual = add.createImage(imageString);
     assertEquals(750, actual.getWidth());
@@ -41,7 +41,7 @@ public void testCreateImage() throws IOException {
     @Test
     public void testMain() throws IOException {
         AddImage add = new AddImage();
-        add.loadFileandInitializeStream("../tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/examplePDFWithText.pdf");
+        add.loadFileandInitializeStream("../tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/examplePDFWithText.pdf", 2);
         String imageString = "../tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/pamcamke.jpg";
         PDImageXObject actual = add.createImage(imageString);
         add.writeImage("../tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/examplePDFWithTextAndImage.pdf");
@@ -49,7 +49,13 @@ public void testCreateImage() throws IOException {
         assertTrue(madeFile.exists());
     }
 
-
+    @Test
+    public void testPageCheck() throws IOException {
+        AddImage add = new AddImage();
+        add.loadFileandInitializeStream("../tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/examplePDFWithText.pdf", 1);
+        add.pageCheck(add.getDocumentToWrite(), 2);
+        assertEquals(2, add.getDocumentToWrite().getNumberOfPages());
+    }
 
 
 
