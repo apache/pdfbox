@@ -10,6 +10,8 @@ A tool shall provide a mechanism for users to annotate existing PDF documents wi
 In annotations composed of text, the user shall be able to specify the font of each glyph in the text from a set of at least two different fonts.
 -Req 1.1.1
 The font tool shall include at least two different user selectable fonts.
+-Req 1.2
+The user shall be able to choose a page to place the text on. More pages shall be created as needed.
 -Req 2.0 
 A tool shall be provided that allows users to highlight existing text in PDF documents
 -Req 3.0
