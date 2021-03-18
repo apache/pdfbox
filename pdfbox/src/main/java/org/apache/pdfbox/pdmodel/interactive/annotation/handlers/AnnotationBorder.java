@@ -58,11 +58,12 @@ class AnnotationBorder
         else
         {
             ab.width = borderStyle.getWidth();
-            if (borderStyle.getStyle().equals(PDBorderStyleDictionary.STYLE_DASHED))
+            String borderStyleStr = borderStyle.getStyle();
+            if (borderStyleStr.equals(PDBorderStyleDictionary.STYLE_DASHED))
             {
                 ab.dashArray = borderStyle.getDashStyle().getDashArray();
             }
-            if (borderStyle.getStyle().equals(PDBorderStyleDictionary.STYLE_UNDERLINE))
+            if (borderStyleStr.equals(PDBorderStyleDictionary.STYLE_UNDERLINE))
             {
                 ab.underline = true;
             }
