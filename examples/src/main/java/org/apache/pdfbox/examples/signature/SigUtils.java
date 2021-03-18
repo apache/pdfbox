@@ -86,21 +86,19 @@ public class SigUtils
      */
     public static int getMDPPermission(PDDocument doc)
     {
-        COSBase base = doc.getDocumentCatalog().getCOSObject().getDictionaryObject(COSName.PERMS);
-        if (base instanceof COSDictionary)
+        COSDictionary permsDict = doc.getDocumentCatalog().getCOSObject()
+                .getCOSDictionary(COSName.PERMS);
+        if (permsDict != null)
         {
-            COSDictionary permsDict = (COSDictionary) base;
-            base = permsDict.getDictionaryObject(COSName.DOCMDP);
-            if (base instanceof COSDictionary)
+            COSDictionary signatureDict = permsDict.getCOSDictionary(COSName.DOCMDP);
+            if (signatureDict != null)
             {
-                COSDictionary signatureDict = (COSDictionary) base;
-                base = signatureDict.getDictionaryObject("Reference");
-                if (base instanceof COSArray)
+                COSArray refArray = signatureDict.getCOSArray(COSName.REFERENCE);
+                if (refArray instanceof COSArray)
                 {
-                    COSArray refArray = (COSArray) base;
                     for (int i = 0; i < refArray.size(); ++i)
                     {
-                        base = refArray.getObject(i);
+                        COSBase base = refArray.getObject(i);
                         if (base instanceof COSDictionary)
                         {
                             COSDictionary sigRefDict = (COSDictionary) base;
