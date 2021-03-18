@@ -86,7 +86,11 @@ public class PDNonTerminalField extends PDField
         
         List<FDFField> fdfKids = fdfField.getKids();
         List<PDField> children = getChildren();
-        for (int i = 0; fdfKids != null && i < fdfKids.size(); i++)
+
+        if (fdfKids == null)
+            return;
+
+        for (int i = 0; i < fdfKids.size(); i++)
         {
             for (PDField pdChild : children)
             {
@@ -108,7 +112,7 @@ public class PDNonTerminalField extends PDField
         fdfField.setValue(getValue());
 
         List<PDField> children = getChildren();
-        List<FDFField> fdfChildren = new ArrayList<>();
+        List<FDFField> fdfChildren = new ArrayList<>(children.size());
         for (PDField child : children)
         {
             fdfChildren.add(child.exportFDF());
@@ -259,7 +263,6 @@ public class PDNonTerminalField extends PDField
     @Override
     public List<PDAnnotationWidget> getWidgets()
     {
-        List<PDAnnotationWidget> emptyList = Collections.emptyList();
-        return Collections.unmodifiableList(emptyList);
+        return Collections.emptyList();
     }
 }
