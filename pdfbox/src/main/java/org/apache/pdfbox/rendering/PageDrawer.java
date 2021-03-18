@@ -24,6 +24,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.Image;
 import java.awt.Paint;
+import java.awt.PaintContext;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -1345,14 +1346,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else if (shading instanceof PDTriangleBasedShadingType)
         {
-            TriangleBasedShadingContext context = (TriangleBasedShadingContext) paint.createContext(
+            PaintContext context = paint.createContext(
                     graphics.getDeviceConfiguration().getColorModel(),
                     graphics.getDeviceConfiguration().getBounds(), graphics.getClipBounds(),
                     new AffineTransform(), graphics.getRenderingHints());
-            Rectangle2D bounds = context.getBounds();
+            Rectangle2D bounds = null;
+            if (context instanceof TriangleBasedShadingContext)
+            {
+                bounds = ((TriangleBasedShadingContext) context).getBounds();
+            }
             if (bounds != null)
             {
-                area = new Area(context.getBounds());
+                area = new Area(bounds);
                 area.intersect(getGraphicsState().getCurrentClippingPath());
             }
             else
