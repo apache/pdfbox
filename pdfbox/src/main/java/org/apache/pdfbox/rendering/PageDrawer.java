@@ -88,7 +88,9 @@ import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentMembe
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
+import org.apache.pdfbox.pdmodel.graphics.shading.GouraudShadingContext;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDTriangleBasedShadingType;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
@@ -1340,7 +1342,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             area = new Area(bbox.transform(ctm));
             area.intersect(getGraphicsState().getCurrentClippingPath());
-        }
+		} else if (shading instanceof PDTriangleBasedShadingType) {
+			GouraudShadingContext context = (GouraudShadingContext) paint.createContext(
+					graphics.getDeviceConfiguration().getColorModel(), graphics.getDeviceConfiguration().getBounds(),
+					graphics.getClipBounds(), new AffineTransform(), graphics.getRenderingHints());
+			area = new Area(context.getBounds());
+			area.intersect(getGraphicsState().getCurrentClippingPath());
+		}
         else
         {
             area = getGraphicsState().getCurrentClippingPath();

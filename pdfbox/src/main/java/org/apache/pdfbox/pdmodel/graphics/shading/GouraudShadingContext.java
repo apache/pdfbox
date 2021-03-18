@@ -20,6 +20,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import org.apache.pdfbox.util.Matrix;
  * @author Tilman Hausherr
  * @author Shaola Ren
  */
-abstract class GouraudShadingContext extends TriangleBasedShadingContext
+public abstract class GouraudShadingContext extends TriangleBasedShadingContext
 {
     private static final Log LOG = LogFactory.getLog(GouraudShadingContext.class);
 
@@ -112,6 +113,19 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     final void setTriangleList(List<ShadedTriangle> triangleList)
     {
         this.triangleList = triangleList;
+    }
+    
+    public Rectangle2D getBounds() {
+        Rectangle2D bounds = null;
+        for (ShadedTriangle shadedTriangle : triangleList) {
+        	if(bounds == null) {
+				bounds = new Rectangle2D.Double(shadedTriangle.corner[0].getX(), shadedTriangle.corner[0].getY(), 0, 0);
+			}
+			bounds.add(shadedTriangle.corner[0]);
+			bounds.add(shadedTriangle.corner[1]);
+			bounds.add(shadedTriangle.corner[2]);
+		}
+        return bounds;
     }
 
     @Override

@@ -23,7 +23,7 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
 /**
  * Common resources for shading types 4,5,6 and 7
  */
-abstract class PDTriangleBasedShadingType extends PDShading
+public abstract class PDTriangleBasedShadingType extends PDShading
 {
     // an array of 2^n numbers specifying the linear mapping of sample values
     // into the range appropriate for the function's output values. Default
