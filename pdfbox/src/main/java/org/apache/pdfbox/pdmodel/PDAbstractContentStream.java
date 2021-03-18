@@ -1674,4 +1674,40 @@ abstract class PDAbstractContentStream implements Closeable
         return glyphIdsAfterGsub;
 
     }
+
+    /**
+     * Set the text rise value, i.e. move the baseline up or down. This is useful for drawing
+     * superscripts or subscripts.
+     *
+     * @param items
+     * @param unit_type
+     * @throws IllegalArgumentException
+     */
+    public List<Float> convertUnit(List<Float> items, String unit_type)
+    {
+        float multiplier = 1;
+        if (unit_type == "mm")
+        {
+            multiplier = 1 / (10 * 2.54f) * 72;
+        }
+        else if (unit_type == "inch")
+        {
+            multiplier = 72;
+        }
+        else
+        {
+            throw new IllegalArgumentException(
+                    "could not find the unit type: " + unit_type);
+        }
+        List<Float> items_new = new ArrayList();
+        Iterator<Float> it = items.iterator();
+        while(it.hasNext())
+        {
+            Float item = it.next();
+            item *= multiplier;
+            items_new.add(item);
+        }
+
+        return items_new;
+    }
 }
