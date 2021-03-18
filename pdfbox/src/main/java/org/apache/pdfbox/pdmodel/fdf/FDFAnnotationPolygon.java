@@ -127,15 +127,8 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      */
     public float[] getVertices()
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.VERTICES);
-        if (array != null)
-        {
-            return array.toFloatArray();
-        }
-        else
-        {
-            return null; // Should never happen as this is a required item
-        }
+        COSArray array = annot.getCOSArray(COSName.VERTICES);
+        return array != null ? array.toFloatArray() : null;
     }
 
     /**
@@ -163,7 +156,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
     public Color getInteriorColor()
     {
         Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
+        COSArray array = annot.getCOSArray(COSName.IC);
         if (array != null)
         {
             float[] rgb = array.toFloatArray();

@@ -40,7 +40,7 @@ public class PDEmbeddedFile extends PDStream
     public PDEmbeddedFile( PDDocument document )
     {
         super( document );
-        getCOSObject().setName(COSName.TYPE, "EmbeddedFile" );
+        getCOSObject().setItem(COSName.TYPE, COSName.EMBEDDED_FILE);
     }
 
     /**
@@ -57,7 +57,7 @@ public class PDEmbeddedFile extends PDStream
     public PDEmbeddedFile( PDDocument doc, InputStream str  ) throws IOException
     {
         super(doc, str);
-        getCOSObject().setName(COSName.TYPE, "EmbeddedFile");
+        getCOSObject().setItem(COSName.TYPE, COSName.EMBEDDED_FILE);
     }
 
     /**
@@ -69,7 +69,7 @@ public class PDEmbeddedFile extends PDStream
     public PDEmbeddedFile(PDDocument doc, InputStream input, COSName filter) throws IOException
     {
         super(doc, input, filter);
-        getCOSObject().setName(COSName.TYPE, "EmbeddedFile");
+        getCOSObject().setItem(COSName.TYPE, COSName.EMBEDDED_FILE);
     }
 
     /**
@@ -99,7 +99,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public int getSize()
     {
-        return getCOSObject().getEmbeddedInt( "Params", "Size" );
+        return getCOSObject().getEmbeddedInt(COSName.PARAMS, COSName.SIZE);
     }
 
     /**
@@ -109,7 +109,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public void setSize( int size )
     {
-        getCOSObject().setEmbeddedInt( "Params", "Size", size );
+        getCOSObject().setEmbeddedInt(COSName.PARAMS, COSName.SIZE, size);
     }
 
     /**
@@ -120,7 +120,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public Calendar getCreationDate() throws IOException
     {
-        return getCOSObject().getEmbeddedDate( "Params", "CreationDate" );
+        return getCOSObject().getEmbeddedDate(COSName.PARAMS, COSName.CREATION_DATE);
     }
 
     /**
@@ -130,7 +130,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public void setCreationDate( Calendar creation )
     {
-        getCOSObject().setEmbeddedDate( "Params", "CreationDate", creation );
+        getCOSObject().setEmbeddedDate(COSName.PARAMS, COSName.CREATION_DATE, creation);
     }
 
     /**
@@ -141,7 +141,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public Calendar getModDate() throws IOException
     {
-        return getCOSObject().getEmbeddedDate( "Params", "ModDate" );
+        return getCOSObject().getEmbeddedDate(COSName.PARAMS, COSName.MOD_DATE);
     }
 
     /**
@@ -151,7 +151,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public void setModDate( Calendar mod )
     {
-        getCOSObject().setEmbeddedDate( "Params", "ModDate", mod );
+        getCOSObject().setEmbeddedDate(COSName.PARAMS, COSName.MOD_DATE, mod);
     }
 
     /**
@@ -161,7 +161,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public String getCheckSum()
     {
-        return getCOSObject().getEmbeddedString( "Params", "CheckSum" );
+        return getCOSObject().getEmbeddedString(COSName.PARAMS, COSName.CHECK_SUM);
     }
 
     /**
@@ -171,7 +171,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public void setCheckSum( String checksum )
     {
-        getCOSObject().setEmbeddedString( "Params", "CheckSum", checksum );
+        getCOSObject().setEmbeddedString(COSName.PARAMS, COSName.CHECK_SUM, checksum);
     }
 
     /**
@@ -181,13 +181,8 @@ public class PDEmbeddedFile extends PDStream
      */
     public String getMacSubtype()
     {
-        String retval = null;
-        COSDictionary params = (COSDictionary)getCOSObject().getDictionaryObject( COSName.PARAMS );
-        if( params != null )
-        {
-            retval = params.getEmbeddedString( "Mac", "Subtype" );
-        }
-        return retval;
+        COSDictionary params = getCOSObject().getCOSDictionary(COSName.PARAMS);
+        return params != null ? params.getEmbeddedString(COSName.MAC, COSName.SUBTYPE) : null;
     }
 
     /**
@@ -197,7 +192,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public void setMacSubtype( String macSubtype )
     {
-        COSDictionary params = (COSDictionary)getCOSObject().getDictionaryObject( COSName.PARAMS );
+        COSDictionary params = getCOSObject().getCOSDictionary(COSName.PARAMS);
         if( params == null && macSubtype != null )
         {
             params = new COSDictionary();
@@ -205,7 +200,7 @@ public class PDEmbeddedFile extends PDStream
         }
         if( params != null )
         {
-            params.setEmbeddedString( "Mac", "Subtype", macSubtype );
+            params.setEmbeddedString(COSName.MAC, COSName.SUBTYPE, macSubtype);
         }
     }
 
@@ -216,13 +211,8 @@ public class PDEmbeddedFile extends PDStream
      */
     public String getMacCreator()
     {
-        String retval = null;
-        COSDictionary params = (COSDictionary)getCOSObject().getDictionaryObject( COSName.PARAMS );
-        if( params != null )
-        {
-            retval = params.getEmbeddedString( "Mac", "Creator" );
-        }
-        return retval;
+        COSDictionary params = getCOSObject().getCOSDictionary(COSName.PARAMS);
+        return params != null ? params.getEmbeddedString(COSName.MAC, COSName.CREATOR) : null;
     }
 
     /**
@@ -232,7 +222,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public void setMacCreator( String macCreator )
     {
-        COSDictionary params = (COSDictionary)getCOSObject().getDictionaryObject( COSName.PARAMS );
+        COSDictionary params = getCOSObject().getCOSDictionary(COSName.PARAMS);
         if( params == null && macCreator != null )
         {
             params = new COSDictionary();
@@ -240,7 +230,7 @@ public class PDEmbeddedFile extends PDStream
         }
         if( params != null )
         {
-            params.setEmbeddedString( "Mac", "Creator", macCreator );
+            params.setEmbeddedString(COSName.MAC, COSName.CREATOR, macCreator);
         }
     }
 
@@ -251,13 +241,8 @@ public class PDEmbeddedFile extends PDStream
      */
     public String getMacResFork()
     {
-        String retval = null;
-        COSDictionary params = (COSDictionary)getCOSObject().getDictionaryObject( COSName.PARAMS );
-        if( params != null )
-        {
-            retval = params.getEmbeddedString( "Mac", "ResFork" );
-        }
-        return retval;
+        COSDictionary params = getCOSObject().getCOSDictionary(COSName.PARAMS);
+        return params != null ? params.getEmbeddedString(COSName.MAC, COSName.RES_FORK) : null;
     }
 
     /**
@@ -267,7 +252,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public void setMacResFork( String macResFork )
     {
-        COSDictionary params = (COSDictionary)getCOSObject().getDictionaryObject( COSName.PARAMS );
+        COSDictionary params = getCOSObject().getCOSDictionary(COSName.PARAMS);
         if( params == null && macResFork != null )
         {
             params = new COSDictionary();
@@ -275,7 +260,7 @@ public class PDEmbeddedFile extends PDStream
         }
         if( params != null )
         {
-            params.setEmbeddedString( "Mac", "ResFork", macResFork);
+            params.setEmbeddedString(COSName.MAC, COSName.RES_FORK, macResFork);
         }
     }
 

@@ -104,7 +104,7 @@ public class PDCryptFilterDictionary implements COSObjectable
      */
     public COSName getCryptFilterMethod()
     {
-        return (COSName)cryptFilterDictionary.getDictionaryObject( COSName.CFM );
+        return cryptFilterDictionary.getCOSName(COSName.CFM);
     }
 
 }

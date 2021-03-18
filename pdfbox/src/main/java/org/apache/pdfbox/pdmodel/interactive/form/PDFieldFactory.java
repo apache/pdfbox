@@ -55,7 +55,7 @@ public final class PDFieldFactory
         // a field name (other than annotations)
         if (field.containsKey(COSName.KIDS))
         {
-            COSArray kids = (COSArray) field.getDictionaryObject(COSName.KIDS);
+            COSArray kids = field.getCOSArray(COSName.KIDS);
             if (kids != null && kids.size() > 0)
             {
                 for (int i = 0; i < kids.size(); i++)
@@ -132,11 +132,8 @@ public final class PDFieldFactory
         String retval = dic.getNameAsString(COSName.FT);
         if (retval == null)
         {
-            COSBase base = dic.getDictionaryObject(COSName.PARENT, COSName.P);
-            if (base instanceof COSDictionary)
-            {
-                retval = findFieldType((COSDictionary) base);
-            }
+            COSDictionary base = dic.getCOSDictionary(COSName.PARENT, COSName.P);
+            return base != null ?  findFieldType(base):null;
         }
         return retval;
     }

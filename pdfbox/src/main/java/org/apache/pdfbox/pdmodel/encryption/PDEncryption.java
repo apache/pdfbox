@@ -20,8 +20,6 @@ package org.apache.pdfbox.pdmodel.encryption;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
@@ -399,16 +397,7 @@ public class PDEncryption implements COSObjectable
     public boolean isEncryptMetaData()
     {
         // default is true (see 7.6.3.2 Standard Encryption Dictionary PDF 32000-1:2008)
-        boolean encryptMetaData = true;
-        
-        COSBase value = dictionary.getDictionaryObject(COSName.ENCRYPT_META_DATA);
-        
-        if (value instanceof COSBoolean)
-        {
-            encryptMetaData = ((COSBoolean)value).getValue();
-        }
-        
-        return encryptMetaData;
+        return dictionary.getBoolean(COSName.ENCRYPT_META_DATA, true);
     }
     
     /**
@@ -483,13 +472,13 @@ public class PDEncryption implements COSObjectable
     public PDCryptFilterDictionary getCryptFilterDictionary(COSName cryptFilterName)
     {
         // See CF in "Table 20 – Entries common to all encryption dictionaries"
-        COSBase base = dictionary.getDictionaryObject(COSName.CF);
-        if (base instanceof COSDictionary)
+        COSDictionary cfDict = dictionary.getCOSDictionary(COSName.CF);
+        if (cfDict != null)
         {
-            COSBase base2 = ((COSDictionary) base).getDictionaryObject(cryptFilterName);
-            if (base2 instanceof COSDictionary)
+            COSDictionary cryptDict = cfDict.getCOSDictionary(cryptFilterName);
+            if (cryptDict != null)
             {
-                return new PDCryptFilterDictionary((COSDictionary) base2);
+                return new PDCryptFilterDictionary(cryptDict);
             }
         }
         return null;
@@ -543,12 +532,8 @@ public class PDEncryption implements COSObjectable
      */
     public COSName getStreamFilterName() 
     {
-        COSName stmF = (COSName) dictionary.getDictionaryObject( COSName.STM_F );
-        if (stmF == null)
-        {
-            stmF = COSName.IDENTITY;
-        }
-        return stmF;
+        COSName stmF = dictionary.getCOSName(COSName.STM_F);
+        return stmF == null ? COSName.IDENTITY : stmF;
     }
 
     /**
@@ -569,12 +554,8 @@ public class PDEncryption implements COSObjectable
      */
     public COSName getStringFilterName() 
     {
-        COSName strF = (COSName) dictionary.getDictionaryObject( COSName.STR_F );
-        if (strF == null)
-        {
-            strF = COSName.IDENTITY;
-        }
-        return strF;
+        COSName strF = dictionary.getCOSName(COSName.STR_F);
+        return strF == null ? COSName.IDENTITY : strF;
     }
 
     /**

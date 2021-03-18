@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -138,12 +137,8 @@ public class PDSignatureField extends PDTerminalField
      */
     public PDSignature getValue()
     {
-        COSBase value = getCOSObject().getDictionaryObject(COSName.V);
-        if (value instanceof COSDictionary)
-        {
-            return new PDSignature((COSDictionary)value);
-        }
-        return null;
+        COSDictionary value = getCOSObject().getCOSDictionary(COSName.V);
+        return value != null ? new PDSignature(value) : null;
     }
 
     /**
@@ -153,12 +148,8 @@ public class PDSignatureField extends PDTerminalField
      */
     public PDSignature getDefaultValue()
     {
-        COSBase value = getCOSObject().getDictionaryObject(COSName.DV);
-        if (value == null)
-        {
-            return null;
-        }
-        return new PDSignature((COSDictionary)value);
+        COSDictionary value = getCOSObject().getCOSDictionary(COSName.DV);
+        return value != null ? new PDSignature(value) : null;
     }
     
     @Override
@@ -177,13 +168,8 @@ public class PDSignatureField extends PDTerminalField
      */
     public PDSeedValue getSeedValue()
     {
-        COSDictionary dict = (COSDictionary) getCOSObject().getDictionaryObject(COSName.SV);
-        PDSeedValue sv = null;
-        if (dict != null)
-        {
-            sv = new PDSeedValue(dict);
-        }
-        return sv;
+        COSDictionary dict = getCOSObject().getCOSDictionary(COSName.SV);
+        return dict != null ? new PDSeedValue(dict) : null;
     }
 
     /**

@@ -287,11 +287,11 @@ public class PDExtendedGraphicsState implements COSObjectable
     public PDLineDashPattern getLineDashPattern()
     {
         PDLineDashPattern retval = null;
-        COSBase dp = dict.getDictionaryObject( COSName.D );
-        if( dp instanceof COSArray  && ((COSArray)dp).size() == 2)
+        COSArray dp = dict.getCOSArray(COSName.D);
+        if (dp != null && dp.size() == 2)
         {
-            COSBase dashArray = ((COSArray)dp).getObject(0);
-            COSBase phase = ((COSArray)dp).getObject(1);
+            COSBase dashArray = dp.getObject(0);
+            COSBase phase = dp.getObject(1);
             if (dashArray instanceof COSArray && phase instanceof COSNumber)
             {
                 retval = new PDLineDashPattern((COSArray) dashArray, ((COSNumber) phase).intValue());
@@ -406,14 +406,8 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public PDFontSetting getFontSetting()
     {
-        PDFontSetting setting = null;
-        COSBase base = dict.getDictionaryObject(COSName.FONT);
-        if (base instanceof COSArray)
-        {
-            COSArray font = (COSArray) base;
-            setting = new PDFontSetting(font);
-        }
-        return setting;
+        COSArray font = dict.getCOSArray(COSName.FONT);
+        return font != null ? new PDFontSetting(font) : null;
     }
 
     /**

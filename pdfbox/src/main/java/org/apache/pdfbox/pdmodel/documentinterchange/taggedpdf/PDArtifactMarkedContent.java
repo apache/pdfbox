@@ -54,14 +54,8 @@ public class PDArtifactMarkedContent extends PDMarkedContent
      */
     public PDRectangle getBBox()
     {
-        PDRectangle retval = null;
-        COSArray a = (COSArray) this.getProperties().getDictionaryObject(
-            COSName.BBOX);
-        if (a != null)
-        {
-            retval = new PDRectangle(a);
-        }
-        return retval;
+        COSArray a = getProperties().getCOSArray(COSName.BBOX);
+        return a != null ? new PDRectangle(a) : null;
     }
 
     /**
@@ -128,8 +122,7 @@ public class PDArtifactMarkedContent extends PDMarkedContent
      */
     private boolean isAttached(String edge)
     {
-        COSArray a = (COSArray) this.getProperties().getDictionaryObject(
-            COSName.ATTACHED);
+        COSArray a = getProperties().getCOSArray(COSName.ATTACHED);
         if (a != null)
         {
             for (int i = 0; i < a.size(); i++)

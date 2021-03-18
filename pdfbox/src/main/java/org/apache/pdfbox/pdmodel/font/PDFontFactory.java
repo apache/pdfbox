@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.commons.logging.Log;
@@ -68,8 +67,8 @@ public final class PDFontFactory
         COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
         if (COSName.TYPE1.equals(subType))
         {
-            COSBase fd = dictionary.getDictionaryObject(COSName.FONT_DESC);
-            if (fd instanceof COSDictionary && ((COSDictionary) fd).containsKey(COSName.FONT_FILE3))
+            COSDictionary fd = dictionary.getCOSDictionary(COSName.FONT_DESC);
+            if (fd != null && fd.containsKey(COSName.FONT_FILE3))
             {
                 return new PDType1CFont(dictionary);
             }
@@ -77,8 +76,8 @@ public final class PDFontFactory
         }
         else if (COSName.MM_TYPE1.equals(subType))
         {
-            COSBase fd = dictionary.getDictionaryObject(COSName.FONT_DESC);
-            if (fd instanceof COSDictionary && ((COSDictionary) fd).containsKey(COSName.FONT_FILE3))
+            COSDictionary fd = dictionary.getCOSDictionary(COSName.FONT_DESC);
+            if (fd != null && fd.containsKey(COSName.FONT_FILE3))
             {
                 return new PDType1CFont(dictionary);
             }

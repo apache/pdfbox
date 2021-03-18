@@ -81,7 +81,7 @@ public class PDBoxStyle implements COSObjectable
      */
     public PDColor getGuidelineColor()
     {
-        COSArray colorValues = (COSArray) dictionary.getDictionaryObject(COSName.C);
+        COSArray colorValues = dictionary.getCOSArray(COSName.C);
         if( colorValues == null )
         {
             colorValues = new COSArray();
@@ -162,8 +162,7 @@ public class PDBoxStyle implements COSObjectable
      */
     public PDLineDashPattern getLineDashPattern()
     {
-        PDLineDashPattern pattern;
-        COSArray d = (COSArray) dictionary.getDictionaryObject(COSName.D);
+        COSArray d = dictionary.getCOSArray(COSName.D);
         if( d == null )
         {
             d = new COSArray();
@@ -173,8 +172,7 @@ public class PDBoxStyle implements COSObjectable
         COSArray lineArray = new COSArray();
         lineArray.add( d );
         //dash phase is not specified and assumed to be zero.
-        pattern = new PDLineDashPattern( lineArray, 0 );
-        return pattern;
+        return new PDLineDashPattern(lineArray, 0);
     }
 
     /**

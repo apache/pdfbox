@@ -144,15 +144,8 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      */
     public float[] getVertices()
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.VERTICES);
-        if (array != null)
-        {
-            return array.toFloatArray();
-        }
-        else
-        {
-            return null; // Should never happen as this is a required item
-        }
+        COSArray array = annot.getCOSArray(COSName.VERTICES);
+        return array != null ? array.toFloatArray() : null;
     }
 
     /**
@@ -163,7 +156,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
     public void setStartPointEndingStyle(String style)
     {
         String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
+        COSArray array = annot.getCOSArray(COSName.LE);
         if (array == null)
         {
             array = new COSArray();
@@ -184,14 +177,8 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      */
     public String getStartPointEndingStyle()
     {
-        String retval = PDAnnotationLine.LE_NONE;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
-        if (array != null)
-        {
-            retval = array.getName(0);
-        }
-
-        return retval;
+        COSArray array = annot.getCOSArray(COSName.LE);
+        return array != null ? array.getName(0) : PDAnnotationLine.LE_NONE;
     }
 
     /**
@@ -202,7 +189,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
     public void setEndPointEndingStyle(String style)
     {
         String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
+        COSArray array = annot.getCOSArray(COSName.LE);
         if (array == null)
         {
             array = new COSArray();
@@ -223,14 +210,8 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      */
     public String getEndPointEndingStyle()
     {
-        String retval = PDAnnotationLine.LE_NONE;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
-        if (array != null)
-        {
-            retval = array.getName(1);
-        }
-
-        return retval;
+        COSArray array = annot.getCOSArray(COSName.LE);
+        return array != null ? array.getName(1) : PDAnnotationLine.LE_NONE;
     }
 
     /**
@@ -258,7 +239,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
     public Color getInteriorColor()
     {
         Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
+        COSArray array = annot.getCOSArray(COSName.IC);
         if (array != null)
         {
             float[] rgb = array.toFloatArray();

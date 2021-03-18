@@ -134,7 +134,7 @@ public class PDFunctionType3 extends PDFunction
     {
         if (functions == null)
         {
-            functions = (COSArray)(getCOSObject().getDictionaryObject( COSName.FUNCTIONS ));
+            functions = getCOSObject().getCOSArray(COSName.FUNCTIONS);
         }
         return functions;
     }
@@ -148,7 +148,7 @@ public class PDFunctionType3 extends PDFunction
     {
         if (bounds == null) 
         {
-            bounds = (COSArray)(getCOSObject().getDictionaryObject( COSName.BOUNDS ));
+            bounds = getCOSObject().getCOSArray(COSName.BOUNDS);
         }
         return bounds;
     }
@@ -162,7 +162,7 @@ public class PDFunctionType3 extends PDFunction
     {
         if (encode == null)
         {
-            encode = (COSArray)(getCOSObject().getDictionaryObject( COSName.ENCODE ));
+            encode = getCOSObject().getCOSArray(COSName.ENCODE);
         }
         return encode;
     }

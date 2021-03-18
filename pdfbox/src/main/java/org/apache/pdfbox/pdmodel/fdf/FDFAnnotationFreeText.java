@@ -158,15 +158,8 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      */
     public float[] getCallout()
     {
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.CL);
-        if (array != null)
-        {
-            return array.toFloatArray();
-        }
-        else
-        {
-            return null;
-        }
+        COSArray array = annot.getCOSArray(COSName.CL);
+        return array != null ? array.toFloatArray() : null;
     }
 
     /**
@@ -279,15 +272,8 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      */
     public PDRectangle getFringe()
     {
-        COSArray rd = (COSArray) annot.getDictionaryObject(COSName.RD);
-        if (rd != null)
-        {
-            return new PDRectangle(rd);
-        }
-        else
-        {
-            return null;
-        }
+        COSArray rd = annot.getCOSArray(COSName.RD);
+        return rd != null ? new PDRectangle(rd) : null;
     }
 
     /**

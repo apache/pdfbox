@@ -67,12 +67,8 @@ public class PDMarkedContentReference implements COSObjectable
      */
     public PDPage getPage()
     {
-        COSDictionary pg = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.PG);
-        if (pg != null)
-        {
-            return new PDPage(pg);
-        }
-        return null;
+        COSDictionary pg = getCOSObject().getCOSDictionary(COSName.PG);
+        return pg != null ? new PDPage(pg) : null;
     }
 
     /**

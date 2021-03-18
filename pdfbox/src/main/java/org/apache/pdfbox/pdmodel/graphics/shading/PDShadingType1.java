@@ -84,7 +84,7 @@ public class PDShadingType1 extends PDShading
     {
         if (domain == null)
         {
-            domain = (COSArray) getCOSObject().getDictionaryObject(COSName.DOMAIN);
+            domain = getCOSObject().getCOSArray(COSName.DOMAIN);
         }
         return domain;
     }

@@ -125,20 +125,15 @@ public class PDOptionalContentProperties implements COSObjectable
 
     private COSDictionary getD()
     {
-        COSBase base = this.dict.getDictionaryObject(COSName.D);
-        if (base instanceof COSDictionary)
+        COSDictionary d = dict.getCOSDictionary(COSName.D);
+        if (d == null)
         {
-            return (COSDictionary) base;
+            d = new COSDictionary();
+            // Name optional but required for PDF/A-3
+            d.setString(COSName.NAME, "Top");
+            // D is required
+            dict.setItem(COSName.D, d);
         }
-
-        COSDictionary d = new COSDictionary();
-
-        // Name optional but required for PDF/A-3
-        d.setString(COSName.NAME, "Top");
-
-        // D is required
-        this.dict.setItem(COSName.D, d);        
-
         return d;
     }
 
@@ -173,7 +168,7 @@ public class PDOptionalContentProperties implements COSObjectable
         ocgs.add(ocg.getCOSObject());
 
         //By default, add new group to the "Order" entry so it appears in the user interface
-        COSArray order = (COSArray)getD().getDictionaryObject(COSName.ORDER);
+        COSArray order = getD().getCOSArray(COSName.ORDER);
         if (order == null)
         {
             order = new COSArray();
@@ -302,10 +297,10 @@ public class PDOptionalContentProperties implements COSObjectable
         }
 
         COSDictionary d = getD();
-        COSBase base = d.getDictionaryObject(COSName.ON);
-        if (base instanceof COSArray)
+        COSArray on = d.getCOSArray(COSName.ON);
+        if (on != null)
         {
-            for (COSBase o : (COSArray) base)
+            for (COSBase o : on)
             {
                 COSDictionary dictionary = toDictionary(o);
                 if (dictionary == group.getCOSObject())
@@ -315,10 +310,10 @@ public class PDOptionalContentProperties implements COSObjectable
             }
         }
 
-        base = d.getDictionaryObject(COSName.OFF);
-        if (base instanceof COSArray)
+        COSArray off = d.getCOSArray(COSName.OFF);
+        if (off != null)
         {
-            for (COSBase o : (COSArray) base)
+            for (COSBase o : off)
             {
                 COSDictionary dictionary = toDictionary(o);
                 if (dictionary == group.getCOSObject())
@@ -375,29 +370,19 @@ public class PDOptionalContentProperties implements COSObjectable
      */
     public boolean setGroupEnabled(PDOptionalContentGroup group, boolean enable)
     {
-        COSArray on;
-        COSArray off;
-
         COSDictionary d = getD();
-        COSBase base = d.getDictionaryObject(COSName.ON);
-        if (!(base instanceof COSArray))
+        COSArray on = d.getCOSArray(COSName.ON);
+        if (on == null)
         {
             on = new COSArray();
             d.setItem(COSName.ON, on);
         }
-        else
-        {
-            on = (COSArray) base;
-        }
-        base = d.getDictionaryObject(COSName.OFF);
-        if (!(base instanceof COSArray))
+
+        COSArray off = d.getCOSArray(COSName.OFF);
+        if (off == null)
         {
             off = new COSArray();
             d.setItem(COSName.OFF, off);
-        }
-        else
-        {
-            off = (COSArray) base;
         }
 
         boolean found = false;

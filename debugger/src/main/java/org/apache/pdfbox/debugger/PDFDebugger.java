@@ -965,14 +965,14 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         {
             Object pageObj = path.getParentPath().getLastPathComponent();
             COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
-            resourcesDic = (COSDictionary) page.getDictionaryObject(COSName.RESOURCES);
+            resourcesDic = page.getCOSDictionary(COSName.RESOURCES);
             isContentStream = true;
         }
         else if (COSName.CONTENTS.equals(parentKey) || COSName.CHAR_PROCS.equals(parentKey))
         {
             Object pageObj = path.getParentPath().getParentPath().getLastPathComponent();
             COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
-            resourcesDic = (COSDictionary) page.getDictionaryObject(COSName.RESOURCES);
+            resourcesDic = page.getCOSDictionary(COSName.RESOURCES);
             isContentStream = true;
         }
         else if (COSName.FORM.equals(stream.getCOSName(COSName.SUBTYPE)) ||
@@ -981,7 +981,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         {
             if (stream.containsKey(COSName.RESOURCES))
             {
-                resourcesDic = (COSDictionary) stream.getDictionaryObject(COSName.RESOURCES);
+                resourcesDic = stream.getCOSDictionary(COSName.RESOURCES);
             }
             isContentStream = true;
         }

@@ -297,7 +297,7 @@ public class FDFDictionary implements COSObjectable
      */
     public COSArray getID()
     {
-        return (COSArray) fdf.getDictionaryObject(COSName.ID);
+        return fdf.getCOSArray(COSName.ID);
     }
 
     /**
@@ -318,7 +318,7 @@ public class FDFDictionary implements COSObjectable
     public List<FDFField> getFields()
     {
         List<FDFField> retval = null;
-        COSArray fieldArray = (COSArray) fdf.getDictionaryObject(COSName.FIELDS);
+        COSArray fieldArray = fdf.getCOSArray(COSName.FIELDS);
         if (fieldArray != null)
         {
             List<FDFField> fields = new ArrayList<>();
@@ -369,7 +369,7 @@ public class FDFDictionary implements COSObjectable
     public List<FDFPage> getPages()
     {
         List<FDFPage> retval = null;
-        COSArray pageArray = (COSArray) fdf.getDictionaryObject(COSName.PAGES);
+        COSArray pageArray = fdf.getCOSArray(COSName.PAGES);
         if (pageArray != null)
         {
             List<FDFPage> pages = new ArrayList<>();
@@ -430,7 +430,7 @@ public class FDFDictionary implements COSObjectable
     public List<FDFAnnotation> getAnnotations() throws IOException
     {
         List<FDFAnnotation> retval = null;
-        COSArray annotArray = (COSArray) fdf.getDictionaryObject(COSName.ANNOTS);
+        COSArray annotArray = fdf.getCOSArray(COSName.ANNOTS);
         if (annotArray != null)
         {
             List<FDFAnnotation> annots = new ArrayList<>();
@@ -461,7 +461,7 @@ public class FDFDictionary implements COSObjectable
      */
     public COSStream getDifferences()
     {
-        return (COSStream) fdf.getDictionaryObject(COSName.DIFFERENCES);
+        return fdf.getCOSStream(COSName.DIFFERENCES);
     }
 
     /**
@@ -505,7 +505,7 @@ public class FDFDictionary implements COSObjectable
     public List<PDFileSpecification> getEmbeddedFDFs() throws IOException
     {
         List<PDFileSpecification> retval = null;
-        COSArray embeddedArray = (COSArray) fdf.getDictionaryObject(COSName.EMBEDDED_FDFS);
+        COSArray embeddedArray = fdf.getCOSArray(COSName.EMBEDDED_FDFS);
         if (embeddedArray != null)
         {
             List<PDFileSpecification> embedded = new ArrayList<>();
@@ -536,13 +536,8 @@ public class FDFDictionary implements COSObjectable
      */
     public FDFJavaScript getJavaScript()
     {
-        FDFJavaScript fs = null;
-        COSDictionary dic = (COSDictionary) fdf.getDictionaryObject(COSName.JAVA_SCRIPT);
-        if (dic != null)
-        {
-            fs = new FDFJavaScript(dic);
-        }
-        return fs;
+        COSDictionary dic = fdf.getCOSDictionary(COSName.JAVA_SCRIPT);
+        return dic != null ? new FDFJavaScript(dic) : null;
     }
 
     /**

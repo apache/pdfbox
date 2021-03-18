@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.interactive.measurement;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -84,12 +83,8 @@ public class PDViewportDictionary implements COSObjectable
      */
     public PDRectangle getBBox()
     {
-        COSBase bbox = this.getCOSObject().getDictionaryObject(COSName.BBOX);
-        if (bbox instanceof COSArray)
-        {
-            return new PDRectangle((COSArray) bbox);
-        }
-        return null;
+        COSArray bbox = getCOSObject().getCOSArray(COSName.BBOX);
+        return bbox != null ? new PDRectangle(bbox) : null;
     }
 
     /**
@@ -129,12 +124,8 @@ public class PDViewportDictionary implements COSObjectable
      */
     public PDMeasureDictionary getMeasure()
     {
-        COSBase base = this.getCOSObject().getDictionaryObject(COSName.MEASURE);
-        if (base instanceof COSDictionary)
-        {
-            return new PDMeasureDictionary((COSDictionary) base);
-        }
-        return null;
+        COSDictionary base = getCOSObject().getCOSDictionary(COSName.MEASURE);
+        return base != null ? new PDMeasureDictionary(base) : null;
     }
 
     /**

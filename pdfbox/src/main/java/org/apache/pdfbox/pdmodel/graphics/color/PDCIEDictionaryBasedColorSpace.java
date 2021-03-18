@@ -115,7 +115,7 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
      */
     public final PDTristimulus getWhitepoint()
     {
-        COSArray wp = (COSArray) dictionary.getDictionaryObject(COSName.WHITE_POINT);
+        COSArray wp = dictionary.getCOSArray(COSName.WHITE_POINT);
         if (wp == null)
         {
             wp = new COSArray();
@@ -135,7 +135,7 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
      */
     public final PDTristimulus getBlackPoint()
     {
-        COSArray bp = (COSArray) dictionary.getDictionaryObject(COSName.BLACK_POINT);
+        COSArray bp = dictionary.getCOSArray(COSName.BLACK_POINT);
         if (bp == null)
         {
             bp = new COSArray();

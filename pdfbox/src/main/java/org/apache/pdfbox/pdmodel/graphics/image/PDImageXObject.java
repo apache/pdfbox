@@ -634,8 +634,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public PDImageXObject getMask() throws IOException
     {
-        COSBase mask = getCOSObject().getDictionaryObject(COSName.MASK);
-        if (mask instanceof COSArray)
+        COSArray mask = getCOSObject().getCOSArray(COSName.MASK);
+        if (mask != null)
         {
             // color key mask, no explicit mask to return
             return null;
@@ -658,12 +658,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public COSArray getColorKeyMask()
     {
-        COSBase mask = getCOSObject().getDictionaryObject(COSName.MASK);
-        if (mask instanceof COSArray)
-        {
-            return (COSArray)mask;
-        }
-        return null;
+        return getCOSObject().getCOSArray(COSName.MASK);
     }
 
     /**
@@ -819,12 +814,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     @Override
     public COSArray getDecode()
     {
-        COSBase decode = getCOSObject().getDictionaryObject(COSName.DECODE);
-        if (decode instanceof COSArray)
-        {
-            return (COSArray) decode;
-        }
-        return null;
+        return getCOSObject().getCOSArray(COSName.DECODE);
     }
 
     @Override
@@ -889,12 +879,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public PDPropertyList getOptionalContent()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.OC);
-        if (base instanceof COSDictionary)
-        {
-            return PDPropertyList.create((COSDictionary) base);
-        }
-        return null;
+        COSDictionary optionalContent = getCOSObject().getCOSDictionary(COSName.OC);
+        return optionalContent != null ? PDPropertyList.create(optionalContent) : null;
     }
 
     /**

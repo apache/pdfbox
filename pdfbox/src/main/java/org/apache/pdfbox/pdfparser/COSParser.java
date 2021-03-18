@@ -1939,13 +1939,13 @@ public class COSParser extends BaseParser implements ICOSParser
         if (trailerWasRebuild)
         {
             // check if all page objects are dereferenced
-            COSBase pages = root.getDictionaryObject(COSName.PAGES);
-            if (pages instanceof COSDictionary)
+            COSDictionary pages = root.getCOSDictionary(COSName.PAGES);
+            if (pages != null)
             {
-                checkPagesDictionary((COSDictionary) pages, new HashSet<>());
+                checkPagesDictionary(pages, new HashSet<>());
             }
         }
-        if (!(root.getDictionaryObject(COSName.PAGES) instanceof COSDictionary))
+        if (root.getCOSDictionary(COSName.PAGES) == null)
         {
             throw new IOException("Page tree root must be a dictionary");
         }
@@ -1954,11 +1954,10 @@ public class COSParser extends BaseParser implements ICOSParser
     private int checkPagesDictionary(COSDictionary pagesDict, Set<COSObject> set)
     {
         // check for kids
-        COSBase kids = pagesDict.getDictionaryObject(COSName.KIDS);
+        COSArray kidsArray = pagesDict.getCOSArray(COSName.KIDS);
         int numberOfPages = 0;
-        if (kids instanceof COSArray)
+        if (kidsArray != null)
         {
-            COSArray kidsArray = (COSArray) kids;
             List<? extends COSBase> kidsList = kidsArray.toList();
             for (COSBase kid : kidsList)
             {

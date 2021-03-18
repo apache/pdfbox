@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -102,15 +101,13 @@ public class PDAppearanceEntry implements COSObjectable
 
         for (COSName name : dict.keySet())
         {
-            COSBase value = dict.getDictionaryObject(name);
-
+            COSStream stream = dict.getCOSStream(name);
             // the file from PDFBOX-1599 contains /null as its entry, so we skip non-stream entries
-            if (value instanceof COSStream)
+            if (stream != null)
             {
-                map.put(name, new PDAppearanceStream((COSStream) value));
+                map.put(name, new PDAppearanceStream(stream));
             }
         }
-
         return new COSDictionaryMap<>(map, dict);
     }
 }

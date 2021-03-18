@@ -77,7 +77,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getChangeXs()
     {
-        COSArray x = (COSArray)this.getCOSObject().getDictionaryObject("X");
+        COSArray x = getCOSObject().getCOSArray(COSName.X);
         if (x != null)
         {
             PDNumberFormatDictionary[] retval =
@@ -104,7 +104,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
         {
             array.add(changeX);
         }
-        this.getCOSObject().setItem("X", array);
+        this.getCOSObject().setItem(COSName.X, array);
     }
 
     /**
@@ -114,7 +114,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getChangeYs()
     {
-        COSArray y = (COSArray)this.getCOSObject().getDictionaryObject("Y");
+        COSArray y = getCOSObject().getCOSArray(COSName.Y);
         if (y != null)
         {
             PDNumberFormatDictionary[] retval =
@@ -141,7 +141,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
         {
             array.add(changeY);
         }
-        this.getCOSObject().setItem("Y", array);
+        this.getCOSObject().setItem(COSName.Y, array);
     }
 
     /**
@@ -151,7 +151,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getDistances()
     {
-        COSArray d = (COSArray)this.getCOSObject().getDictionaryObject("D");
+        COSArray d = getCOSObject().getCOSArray(COSName.D);
         if (d != null)
         {
             PDNumberFormatDictionary[] retval =
@@ -178,7 +178,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
         {
             array.add(distance);
         }
-        this.getCOSObject().setItem("D", array);
+        this.getCOSObject().setItem(COSName.D, array);
     }
 
     /**
@@ -188,7 +188,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getAreas()
     {
-        COSArray a = (COSArray)this.getCOSObject().getDictionaryObject(COSName.A);
+        COSArray a = getCOSObject().getCOSArray(COSName.A);
         if (a != null)
         {
             PDNumberFormatDictionary[] retval =
@@ -225,7 +225,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getAngles()
     {
-        COSArray t = (COSArray)this.getCOSObject().getDictionaryObject("T");
+        COSArray t = getCOSObject().getCOSArray(COSName.T);
         if (t != null)
         {
             PDNumberFormatDictionary[] retval =
@@ -252,7 +252,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
         {
             array.add(angle);
         }
-        this.getCOSObject().setItem("T", array);
+        this.getCOSObject().setItem(COSName.T, array);
     }
 
     /**
@@ -262,7 +262,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public PDNumberFormatDictionary[] getLineSloaps()
     {
-        COSArray s = (COSArray)this.getCOSObject().getDictionaryObject("S");
+        COSArray s = getCOSObject().getCOSArray(COSName.S);
         if (s != null)
         {
             PDNumberFormatDictionary[] retval =
@@ -289,7 +289,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
         {
             array.add(lineSloap);
         }
-        this.getCOSObject().setItem("S", array);
+        this.getCOSObject().setItem(COSName.S, array);
     }
 
     /**
@@ -299,12 +299,8 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public float[] getCoordSystemOrigin()
     {
-        COSArray o = (COSArray)this.getCOSObject().getDictionaryObject("O");
-        if (o != null)
-        {
-            return o.toFloatArray();
-        }
-        return null;
+        COSArray o = getCOSObject().getCOSArray(COSName.O);
+        return o != null ? o.toFloatArray() : null;
     }
 
     /**
@@ -316,7 +312,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
     {
         COSArray array = new COSArray();
         array.setFloatArray(coordSystemOrigin);
-        this.getCOSObject().setItem("O", array);
+        this.getCOSObject().setItem(COSName.O, array);
     }
 
     /**
@@ -326,7 +322,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public float getCYX()
     {
-        return this.getCOSObject().getFloat("CYX");
+        return this.getCOSObject().getFloat(COSName.CYX);
     }
 
     /**
@@ -336,7 +332,7 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
      */
     public void setCYX(float cyx)
     {
-        this.getCOSObject().setFloat("CYX", cyx);
+        this.getCOSObject().setFloat(COSName.CYX, cyx);
     }
 
 }

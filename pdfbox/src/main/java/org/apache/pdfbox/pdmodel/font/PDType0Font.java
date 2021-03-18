@@ -71,12 +71,11 @@ public class PDType0Font extends PDFont implements PDVectorFont
         gsubData = GsubData.NO_DATA_FOUND;
         cmapLookup = null;
 
-        COSBase base = dict.getDictionaryObject(COSName.DESCENDANT_FONTS);
-        if (!(base instanceof COSArray))
+        COSArray descendantFonts = dict.getCOSArray(COSName.DESCENDANT_FONTS);
+        if (descendantFonts == null)
         {
             throw new IOException("Missing descendant font array");
         }
-        COSArray descendantFonts = (COSArray) base;
         if (descendantFonts.size() == 0)
         {
             throw new IOException("Descendant font array is empty");

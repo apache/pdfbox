@@ -123,7 +123,7 @@ public class FDFAnnotationSquare extends FDFAnnotation
     public Color getInteriorColor()
     {
         Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
+        COSArray array = annot.getCOSArray(COSName.IC);
         if (array != null)
         {
             float[] rgb = array.toFloatArray();
@@ -154,14 +154,7 @@ public class FDFAnnotationSquare extends FDFAnnotation
      */
     public PDRectangle getFringe()
     {
-        COSArray rd = (COSArray) annot.getDictionaryObject(COSName.RD);
-        if (rd != null)
-        {
-            return new PDRectangle(rd);
-        }
-        else
-        {
-            return null;
-        }
+        COSArray rd = annot.getCOSArray(COSName.RD);
+        return rd != null ? new PDRectangle(rd) : null;
     }
 }

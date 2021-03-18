@@ -93,12 +93,8 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public PDNameTreeNode<PDStructureElement> getIDTree()
     {
-        COSBase base = this.getCOSObject().getDictionaryObject(COSName.ID_TREE);
-        if (base instanceof COSDictionary)
-        {
-            return new PDStructureElementNameTreeNode((COSDictionary) base);
-        }
-        return null;
+        COSDictionary idTree = getCOSObject().getCOSDictionary(COSName.ID_TREE);
+        return idTree != null ? new PDStructureElementNameTreeNode(idTree) : null;
     }
 
     /**
@@ -118,12 +114,8 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public PDNumberTreeNode getParentTree()
     {
-        COSBase base = getCOSObject().getDictionaryObject(COSName.PARENT_TREE);
-        if (base instanceof COSDictionary)
-        {
-            return new PDNumberTreeNode((COSDictionary) base, PDParentTreeValue.class);
-        }
-        return null;
+        COSDictionary parentTree = getCOSObject().getCOSDictionary(COSName.PARENT_TREE);
+        return parentTree != null ? new PDNumberTreeNode(parentTree, PDParentTreeValue.class) : null;
     }
 
     /**
@@ -163,12 +155,12 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public Map<String, Object> getRoleMap()
     {
-        COSBase rm = this.getCOSObject().getDictionaryObject(COSName.ROLE_MAP);
-        if (rm instanceof COSDictionary)
+        COSDictionary rm = getCOSObject().getCOSDictionary(COSName.ROLE_MAP);
+        if (rm != null)
         {
             try
             {
-                return COSDictionaryMap.convertBasicTypesToMap((COSDictionary) rm);
+                return COSDictionaryMap.convertBasicTypesToMap(rm);
             }
             catch (IOException e)
             {
