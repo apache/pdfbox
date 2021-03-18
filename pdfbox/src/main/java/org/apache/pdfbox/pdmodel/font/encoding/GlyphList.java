@@ -118,50 +118,59 @@ public final class GlyphList
     {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(input, StandardCharsets.ISO_8859_1)))
         {
-            while (in.ready())
+            while (true)
             {
                 String line = in.readLine();
-                if (line != null && !line.startsWith("#"))
+
+                if (line == null)
                 {
-                    String[] parts = line.split(";");
-                    if (parts.length < 2)
-                    {
-                        throw new IOException("Invalid glyph list entry: " + line);
-                    }
+                    break;
+                }
 
-                    String name = parts[0];
-                    String[] unicodeList = parts[1].split(" ");
+                if (line.startsWith("#"))
+                {
+                    continue;
+                }
 
-                    if (nameToUnicode.containsKey(name))
-                    {
-                        LOG.warn("duplicate value for " + name + " -> " + parts[1] + " " +
-                                 nameToUnicode.get(name));
-                    }
+                String[] parts = line.split(";");
+                if (parts.length != 2)
+                {
+                    throw new IOException("Invalid glyph list entry: " + line);
+                }
 
-                    int[] codePoints = new int[unicodeList.length];
-                    int index = 0;
-                    for (String hex : unicodeList)
-                    {
-                        codePoints[index++] = Integer.parseInt(hex, 16);
-                    }
-                    String string = new String(codePoints, 0 , codePoints.length);
+                String name = parts[0];
+                String[] unicodeList = parts[1].split(" ");
 
-                    // forward mapping
-                    nameToUnicode.put(name, string);
+                if (nameToUnicode.containsKey(name))
+                {
+                    LOG.warn("duplicate value for " + name + " -> " + parts[1] + " " +
+                             nameToUnicode.get(name));
+                }
 
-                    // reverse mapping
-                    // PDFBOX-3884: take the various standard encodings as canonical, 
-                    // e.g. tilde over ilde
-                    final boolean forceOverride =
-                          WinAnsiEncoding.INSTANCE.contains(name) ||
-                          MacRomanEncoding.INSTANCE.contains(name) || 
-                          MacExpertEncoding.INSTANCE.contains(name) ||
-                          SymbolEncoding.INSTANCE.contains(name) ||
-                          ZapfDingbatsEncoding.INSTANCE.contains(name);
-                    if (!unicodeToName.containsKey(string) || forceOverride)
-                    {
-                        unicodeToName.put(string, name);
-                    }
+                int[] codePoints = new int[unicodeList.length];
+                String hex;
+                for (int i = 0; i < unicodeList.length; ++i)
+                {
+                    hex = unicodeList[i];
+                    codePoints[i++] = Integer.parseInt(hex, 16);
+                }
+                String string = new String(codePoints, 0 , codePoints.length);
+
+                // forward mapping
+                nameToUnicode.put(name, string);
+
+                // reverse mapping
+                // PDFBOX-3884: take the various standard encodings as canonical,
+                // e.g. tilde over ilde
+                final boolean forceOverride =
+                      WinAnsiEncoding.INSTANCE.contains(name) ||
+                      MacRomanEncoding.INSTANCE.contains(name) ||
+                      MacExpertEncoding.INSTANCE.contains(name) ||
+                      SymbolEncoding.INSTANCE.contains(name) ||
+                      ZapfDingbatsEncoding.INSTANCE.contains(name);
+                if (!unicodeToName.containsKey(string) || forceOverride)
+                {
+                    unicodeToName.put(string, name);
                 }
             }
         }
