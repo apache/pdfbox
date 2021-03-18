@@ -57,7 +57,7 @@ public class PDXObject implements COSObjectable
             return null;
         }
 
-        return getPdxObject(resources, stream);
+        return getPdxObject(stream, resources);
     }
 
     /**
@@ -81,10 +81,10 @@ public class PDXObject implements COSObjectable
             throw new IOException("Unexpected object type: " + base.getClass().getName());
         }
 
-        return getPdxObject(resources, (COSStream)base);
+        return getPdxObject((COSStream)base, resources);
     }
 
-    private static PDXObject getPdxObject(PDResources resources, COSStream stream) throws IOException
+    private static PDXObject getPdxObject(COSStream stream, PDResources resources) throws IOException
     {
         String subtype = stream.getNameAsString(COSName.SUBTYPE);
 
