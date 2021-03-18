@@ -486,15 +486,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName RD = new COSName("RD");
     public static final COSName REASON = new COSName("Reason");
     public static final COSName REASONS = new COSName("Reasons");
-    public static final COSName REFERENCE = new COSName("Reference");
-    public static final COSName RELATIVE_COLORIMETRIC = new COSName("RelativeColorimetric");
-    public static final COSName REPEAT = new COSName("Repeat");
     public static final COSName RECIPIENTS = new COSName("Recipients");
     public static final COSName RECT = new COSName("Rect");
     public static final COSName REFERENCE = new COSName("Reference");
     public static final COSName REGISTRY = new COSName("Registry");
     public static final COSName REGISTRY_NAME = new COSName("RegistryName");
+    public static final COSName RELATIVE_COLORIMETRIC = new COSName("RelativeColorimetric");
     public static final COSName RENAME = new COSName("Rename");
+    public static final COSName REPEAT = new COSName("Repeat");
     public static final COSName RES_FORK = new COSName("ResFork");
     public static final COSName RESOURCES = new COSName("Resources");
     public static final COSName RGB = new COSName("RGB");
