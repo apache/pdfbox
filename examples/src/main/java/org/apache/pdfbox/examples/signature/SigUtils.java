@@ -161,7 +161,7 @@ public class SigUtils
         COSDictionary referenceDict = new COSDictionary();
         referenceDict.setItem(COSName.TYPE, COSName.SIG_REF);
         referenceDict.setItem(COSName.TRANSFORM_METHOD, COSName.DOCMDP);
-        referenceDict.setItem(DIGEST_METHOD, COSName.getPDFName("SHA1"));
+        referenceDict.setItem(COSName.DIGEST_METHOD, COSName.getPDFName("SHA1"));
         referenceDict.setItem(COSName.TRANSFORM_PARAMS, transformParameters);
         referenceDict.setNeedToBeUpdated(true);
 
