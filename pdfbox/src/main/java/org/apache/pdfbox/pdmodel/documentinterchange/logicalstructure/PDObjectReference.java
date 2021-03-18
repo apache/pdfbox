@@ -100,11 +100,8 @@ public class PDObjectReference implements COSObjectable
         {
             if (obj instanceof COSStream)
             {
-                PDXObject xobject = PDXObject.createXObject(obj, null); // <-- TODO: valid?
-                if (xobject != null)
-                {
-                    return xobject;
-                }
+                PDXObject xobject = PDXObject.createXObject((COSStream)obj, null); // <-- TODO: valid?
+                return xobject;
             }
             COSDictionary objDictionary  = (COSDictionary)obj;
             PDAnnotation annotation = PDAnnotation.createAnnotation(obj);
