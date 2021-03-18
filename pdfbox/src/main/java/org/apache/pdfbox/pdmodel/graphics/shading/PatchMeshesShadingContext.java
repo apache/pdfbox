@@ -19,6 +19,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.EOFException;
 import java.io.IOException;
@@ -69,6 +70,26 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         super(shading, colorModel, xform, matrix);
         patchList = collectPatches(shading, xform, matrix, controlPoints);
         createPixelTable(deviceBounds);
+    }
+
+    public Rectangle2D getBounds()
+    {
+        Rectangle2D bounds = null;
+        for (Patch patch : patchList)
+        {
+            for (ShadedTriangle shadedTriangle : patch.listOfTriangles)
+            {
+                if (bounds == null)
+                {
+                    bounds = new Rectangle2D.Double(shadedTriangle.corner[0].getX(),
+                            shadedTriangle.corner[0].getY(), 0, 0);
+                }
+                bounds.add(shadedTriangle.corner[0]);
+                bounds.add(shadedTriangle.corner[1]);
+                bounds.add(shadedTriangle.corner[2]);
+            }
+        }
+        return bounds;
     }
 
     /**

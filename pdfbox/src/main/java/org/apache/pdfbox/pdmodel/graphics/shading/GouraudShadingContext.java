@@ -39,7 +39,7 @@ import org.apache.pdfbox.util.Matrix;
  * @author Tilman Hausherr
  * @author Shaola Ren
  */
-public abstract class GouraudShadingContext extends TriangleBasedShadingContext
+abstract class GouraudShadingContext extends TriangleBasedShadingContext
 {
     private static final Log LOG = LogFactory.getLog(GouraudShadingContext.class);
 
@@ -114,17 +114,21 @@ public abstract class GouraudShadingContext extends TriangleBasedShadingContext
     {
         this.triangleList = triangleList;
     }
-    
-    public Rectangle2D getBounds() {
+
+    public Rectangle2D getBounds()
+    {
         Rectangle2D bounds = null;
-        for (ShadedTriangle shadedTriangle : triangleList) {
-        	if(bounds == null) {
-				bounds = new Rectangle2D.Double(shadedTriangle.corner[0].getX(), shadedTriangle.corner[0].getY(), 0, 0);
-			}
-			bounds.add(shadedTriangle.corner[0]);
-			bounds.add(shadedTriangle.corner[1]);
-			bounds.add(shadedTriangle.corner[2]);
-		}
+        for (ShadedTriangle shadedTriangle : triangleList)
+        {
+            if (bounds == null)
+            {
+                bounds = new Rectangle2D.Double(shadedTriangle.corner[0].getX(),
+                        shadedTriangle.corner[0].getY(), 0, 0);
+            }
+            bounds.add(shadedTriangle.corner[0]);
+            bounds.add(shadedTriangle.corner[1]);
+            bounds.add(shadedTriangle.corner[2]);
+        }
         return bounds;
     }
 
