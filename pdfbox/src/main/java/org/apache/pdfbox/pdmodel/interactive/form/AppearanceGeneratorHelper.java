@@ -140,23 +140,33 @@ class AppearanceGeneratorHelper
         
         for (PDAnnotationWidget widget : field.getWidgets())
         {
-            if (widget.getNormalAppearanceStream() != null && widget.getNormalAppearanceStream().getResources() != null)
+            PDAppearanceStream stream = widget.getNormalAppearanceStream();
+
+            if (stream == null)
             {
-                PDResources widgetResources = widget.getNormalAppearanceStream().getResources();
-                for (COSName fontResourceName : widgetResources.getFontNames())
+                continue;
+            }
+
+            PDResources widgetResources = stream.getResources();
+
+            if (widgetResources == null)
+            {
+                continue;
+            }
+
+            for (COSName fontResourceName : widgetResources.getFontNames())
+            {
+                try
                 {
-                    try
+                    if (acroFormResources.getFont(fontResourceName) == null)
                     {
-                        if (acroFormResources.getFont(fontResourceName) == null)
-                        {
-                            LOG.debug("Adding font resource " + fontResourceName + " from widget to AcroForm");
-                            acroFormResources.put(fontResourceName, widgetResources.getFont(fontResourceName));
-                        }
+                        LOG.debug("Adding font resource " + fontResourceName + " from widget to AcroForm");
+                        acroFormResources.put(fontResourceName, widgetResources.getFont(fontResourceName));
                     }
-                    catch (IOException e)
-                    {
-                        LOG.warn("Unable to match field level font with AcroForm font", e);
-                    }
+                }
+                catch (IOException e)
+                {
+                    LOG.warn("Unable to match field level font with AcroForm font", e);
                 }
             }
         }
