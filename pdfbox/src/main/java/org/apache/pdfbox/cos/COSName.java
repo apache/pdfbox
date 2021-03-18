@@ -491,6 +491,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName REPEAT = new COSName("Repeat");
     public static final COSName RECIPIENTS = new COSName("Recipients");
     public static final COSName RECT = new COSName("Rect");
+    public static final COSName REFERENCE = new COSName("Reference");
     public static final COSName REGISTRY = new COSName("Registry");
     public static final COSName REGISTRY_NAME = new COSName("RegistryName");
     public static final COSName RENAME = new COSName("Rename");
@@ -520,6 +521,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName SHADING_TYPE = new COSName("ShadingType");
     public static final COSName SIG = new COSName("Sig");
     public static final COSName SIG_FLAGS = new COSName("SigFlags");
+    public static final COSName SIG_REF = new COSName("SigRef");
     public static final COSName SIZE = new COSName("Size");
     public static final COSName SM = new COSName("SM");
     public static final COSName SMASK = new COSName("SMask");
@@ -572,6 +574,8 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName TR2 = new COSName("TR2");
     public static final COSName TRAPPED = new COSName("Trapped");
     public static final COSName TRANS = new COSName("Trans");
+    public static final COSName TRANSFORM_METHOD = new COSName("TransformMethod");
+    public static final COSName TRANSFORM_PARAMS = new COSName("TransformParams");
     public static final COSName TRANSPARENCY = new COSName("Transparency");
     public static final COSName TREF = new COSName("TRef");
     public static final COSName TRIM_BOX = new COSName("TrimBox");

@@ -102,9 +102,9 @@ public class SigUtils
                         if (base instanceof COSDictionary)
                         {
                             COSDictionary sigRefDict = (COSDictionary) base;
-                            if (COSName.DOCMDP.equals(sigRefDict.getDictionaryObject("TransformMethod")))
+                            if (COSName.DOCMDP.equals(sigRefDict.getDictionaryObject(COSName.TRANSFORM_METHOD)))
                             {
-                                base = sigRefDict.getDictionaryObject("TransformParams");
+                                base = sigRefDict.getDictionaryObject(COSName.TRANSFORM_PARAMS);
                                 if (base instanceof COSDictionary)
                                 {
                                     COSDictionary transformDict = (COSDictionary) base;
@@ -156,21 +156,21 @@ public class SigUtils
 
         // DocMDP specific stuff
         COSDictionary transformParameters = new COSDictionary();
-        transformParameters.setItem(COSName.TYPE, COSName.getPDFName("TransformParams"));
+        transformParameters.setItem(COSName.TYPE, COSName.TRANSFORM_PARAMS);
         transformParameters.setInt(COSName.P, accessPermissions);
         transformParameters.setName(COSName.V, "1.2");
         transformParameters.setNeedToBeUpdated(true);
 
         COSDictionary referenceDict = new COSDictionary();
-        referenceDict.setItem(COSName.TYPE, COSName.getPDFName("SigRef"));
-        referenceDict.setItem("TransformMethod", COSName.DOCMDP);
-        referenceDict.setItem("DigestMethod", COSName.getPDFName("SHA1"));
-        referenceDict.setItem("TransformParams", transformParameters);
+        referenceDict.setItem(COSName.TYPE, COSName.SIG_REF);
+        referenceDict.setItem(COSName.TRANSFORM_METHOD, COSName.DOCMDP);
+        referenceDict.setItem(COSName.DIGEST_METHOD, COSName.getPDFName("SHA1"));
+        referenceDict.setItem(COSName.TRANSFORM_PARAMS, transformParameters);
         referenceDict.setNeedToBeUpdated(true);
 
         COSArray referenceArray = new COSArray();
         referenceArray.add(referenceDict);
-        sigDict.setItem("Reference", referenceArray);
+        sigDict.setItem(COSName.REFERENCE, referenceArray);
         referenceArray.setNeedToBeUpdated(true);
 
         // Catalog
