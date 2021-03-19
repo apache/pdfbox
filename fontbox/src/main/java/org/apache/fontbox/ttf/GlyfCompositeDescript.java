@@ -59,7 +59,7 @@ public class GlyfCompositeDescript extends GlyfDescript
      */
     GlyfCompositeDescript(TTFDataStream bais, GlyphTable glyphTable) throws IOException
     {
-        super((short) -1, bais);
+        super((short) -1);
 
         this.glyphTable = glyphTable;
 

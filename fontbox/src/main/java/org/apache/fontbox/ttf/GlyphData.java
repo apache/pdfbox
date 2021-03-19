@@ -68,10 +68,8 @@ public class GlyphData
 
     /**
      * Initialize an empty glyph record.
-     * 
-     * @throws IOException
      */
-    void initEmptyData() throws IOException
+    void initEmptyData()
     {
         glyphDescription = new GlyfSimpleDescript();
         boundingBox = new BoundingBox();

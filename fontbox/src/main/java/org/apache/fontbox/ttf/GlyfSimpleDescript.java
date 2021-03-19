@@ -45,9 +45,9 @@ public class GlyfSimpleDescript extends GlyfDescript
      * 
      * @throws IOException is thrown if something went wrong
      */
-    GlyfSimpleDescript() throws IOException
+    GlyfSimpleDescript()
     {
-        super((short) 0, null);
+        super((short) 0);
         pointCount = 0;
     }
 
@@ -61,7 +61,7 @@ public class GlyfSimpleDescript extends GlyfDescript
      */
     GlyfSimpleDescript(short numberOfContours, TTFDataStream bais, short x0) throws IOException
     {
-        super(numberOfContours, bais);
+        super(numberOfContours);
 
         /*
          * https://developer.apple.com/fonts/TTRefMan/RM06/Chap6glyf.html

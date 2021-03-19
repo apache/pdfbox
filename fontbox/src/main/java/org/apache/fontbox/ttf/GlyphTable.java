@@ -79,66 +79,6 @@ public class GlyphTable extends TTFTable
     }
 
     /**
-     * Returns all glyphs. This method can be very slow.
-     *
-     * @throws IOException If there is an error reading the data.
-     * @deprecated use {@link #getGlyph(int)} instead. This will be removed in 3.0. If you need this
-     * method, please create an issue in JIRA.
-     */
-    @Deprecated
-    public GlyphData[] getGlyphs() throws IOException
-    {
-        // PDFBOX-4219: synchronize on data because it is accessed by several threads
-        // when PDFBox is accessing a standard 14 font for the first time
-        synchronized (data)
-        {
-            // the glyph offsets
-            long[] offsets = loca.getOffsets();
-
-            // the end of the glyph table
-            // should not be 0, but sometimes is, see PDFBOX-2044
-            // structure of this table: see
-            // https://developer.apple.com/fonts/TTRefMan/RM06/Chap6loca.html
-            long endOfGlyphs = offsets[numGlyphs];
-            long offset = getOffset();
-            if (glyphs == null)
-            {
-                glyphs = new GlyphData[numGlyphs];
-            }
-         
-            for (int gid = 0; gid < numGlyphs; gid++)
-            {
-                // end of glyphs reached?
-                if (endOfGlyphs != 0 && endOfGlyphs == offsets[gid])
-                {
-                    break;
-                }
-                // the current glyph isn't defined
-                // if the next offset is equal or smaller to the current offset
-                if (offsets[gid + 1] <= offsets[gid])
-                {
-                    continue;
-                }
-                if (glyphs[gid] != null)
-                {
-                    // already cached
-                    continue;
-                }
-
-                data.seek(offset + offsets[gid]);
-
-                if (glyphs[gid] == null)
-                {
-                    ++cached;
-                }
-                glyphs[gid] = getGlyphData(gid);
-            }
-            initialized = true;
-            return glyphs;
-        }
-    }
-
-    /**
      * @param glyphsValue The glyphs to set.
      */
     public void setGlyphs(GlyphData[] glyphsValue)
