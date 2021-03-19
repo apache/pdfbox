@@ -41,6 +41,17 @@ public class GlyfSimpleDescript extends GlyfDescript
     private final int pointCount;
 
     /**
+     * Constructor for an empty description.
+     * 
+     * @throws IOException is thrown if something went wrong
+     */
+    GlyfSimpleDescript() throws IOException
+    {
+        super((short) 0, null);
+        pointCount = 0;
+    }
+
+    /**
      * Constructor.
      * 
      * @param numberOfContours number of contours
