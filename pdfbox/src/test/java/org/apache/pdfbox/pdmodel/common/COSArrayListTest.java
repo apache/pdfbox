@@ -340,7 +340,7 @@ public class COSArrayListTest {
         pdf = PDDocument.load(new File(OUT_DIR + "/removeSingleDirectObjectTest.pdf"));
         page = pdf.getPage(0);
         
-        COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+        COSArrayList<PDAnnotation> annotations = (COSArrayList<PDAnnotation>) page.getAnnotations();
 
         assertEquals("There shall be 4 annotations retrieved", 4, annotations.size());
         assertEquals("The size of the internal COSArray shall be 4", 4, annotations.getCOSArray().size());
@@ -380,7 +380,7 @@ public class COSArrayListTest {
         pdf = PDDocument.load(new File(OUT_DIR + "/removeSingleIndirectObjectTest.pdf"));
         page = pdf.getPage(0);
         
-        COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+        COSArrayList<PDAnnotation> annotations = (COSArrayList<PDAnnotation>) page.getAnnotations();
 
         assertEquals("There shall be 4 annotations retrieved", 4, annotations.size());
         assertEquals("The size of the internal COSArray shall be 4", 4, annotations.getCOSArray().size());
@@ -429,7 +429,7 @@ public class COSArrayListTest {
         pdf = PDDocument.load(new File(OUT_DIR + "/removeDirectObjectTest.pdf"));
         page = pdf.getPage(0);
         
-        COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+        COSArrayList<PDAnnotation> annotations = (COSArrayList<PDAnnotation>) page.getAnnotations();
 
         assertEquals("There shall be 4 annotations retrieved", 4, annotations.size());
         assertEquals("The size of the internal COSArray shall be 4", 4, annotations.getCOSArray().size());
@@ -471,7 +471,7 @@ public class COSArrayListTest {
         pdf = PDDocument.load(new File(OUT_DIR + "/removeIndirectObjectTest.pdf"));
         page = pdf.getPage(0);
         
-        COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+        COSArrayList<PDAnnotation> annotations = (COSArrayList<PDAnnotation>) page.getAnnotations();
 
         assertEquals("There shall be 4 annotations retrieved", 4, annotations.size());
         assertEquals("The size of the internal COSArray shall be 4", 4, annotations.getCOSArray().size());
@@ -521,7 +521,7 @@ public class COSArrayListTest {
         pdf = PDDocument.load(new File(OUT_DIR + "/retainDirectObjectTest.pdf"));
         page = pdf.getPage(0);
         
-        COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+        COSArrayList<PDAnnotation> annotations = (COSArrayList<PDAnnotation>) page.getAnnotations();
 
         assertEquals("There shall be 4 annotations retrieved", 4, annotations.size());
         assertEquals("The size of the internal COSArray shall be 4", 4, annotations.getCOSArray().size());
@@ -571,7 +571,7 @@ public class COSArrayListTest {
         pdf = PDDocument.load(new File(OUT_DIR + "/retainIndirectObjectTest.pdf"));
         page = pdf.getPage(0);
         
-        COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+        COSArrayList<PDAnnotation> annotations = (COSArrayList<PDAnnotation>) page.getAnnotations();
 
         assertEquals("There shall be 4 annotations retrieved", 4, annotations.size());
         assertEquals("The size of the internal COSArray shall be 4", 4, annotations.getCOSArray().size());
