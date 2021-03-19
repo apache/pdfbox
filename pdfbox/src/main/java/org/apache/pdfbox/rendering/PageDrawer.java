@@ -90,16 +90,15 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDTriangleBasedShadingType;
-import org.apache.pdfbox.pdmodel.graphics.shading.TriangleBasedShadingContext;
+import org.apache.pdfbox.pdmodel.graphics.shading.ShadingContext;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnknown;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
@@ -1344,16 +1343,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             area = new Area(bbox.transform(ctm));
             area.intersect(getGraphicsState().getCurrentClippingPath());
         }
-        else if (shading instanceof PDTriangleBasedShadingType)
+        else
         {
             PaintContext context = paint.createContext(
                     graphics.getDeviceConfiguration().getColorModel(),
                     graphics.getDeviceConfiguration().getBounds(), graphics.getClipBounds(),
                     new AffineTransform(), graphics.getRenderingHints());
             Rectangle2D bounds = null;
-            if (context instanceof TriangleBasedShadingContext)
+            if (context instanceof ShadingContext)
             {
-                bounds = ((TriangleBasedShadingContext) context).getBounds();
+                bounds = ((ShadingContext) context).getBounds();
             }
             if (bounds != null)
             {
@@ -1364,10 +1363,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 area = getGraphicsState().getCurrentClippingPath();
             }
-        }
-        else
-        {
-            area = getGraphicsState().getCurrentClippingPath();
         }
         if (isContentRendered())
         {

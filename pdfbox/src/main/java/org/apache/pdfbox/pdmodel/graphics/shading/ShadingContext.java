@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
@@ -113,6 +114,16 @@ public abstract class ShadingContext
     ColorModel getColorModel()
     {
         return outputColorModel;
+    }
+
+    /**
+     * Calculate a bounding rectangle around the areas of this shading context.
+     * 
+     * @return Bounding rectangle or null, if not supported by this shading type.
+     */
+    public Rectangle2D getBounds()
+    {
+        return null;
     }
 
     void dispose()

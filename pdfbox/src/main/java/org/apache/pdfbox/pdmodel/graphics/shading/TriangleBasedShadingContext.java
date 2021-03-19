@@ -19,7 +19,6 @@ import java.awt.PaintContext;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -37,7 +36,7 @@ import org.apache.pdfbox.util.Matrix;
  * @author Shaola Ren
  * @author Tilman Hausherr
  */
-public abstract class TriangleBasedShadingContext extends ShadingContext implements PaintContext
+abstract class TriangleBasedShadingContext extends ShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(TriangleBasedShadingContext.class);
 
@@ -87,13 +86,6 @@ public abstract class TriangleBasedShadingContext extends ShadingContext impleme
      * @return a Hash table which contains all the points' positions and colors of one image
      */
     abstract Map<Point, Integer> calcPixelTable(Rectangle deviceBounds) throws IOException;
-
-    /**
-     * Calculate bounding rectangle around the areas of this shading context.
-     * 
-     * @return Bounding rectangle
-     */
-    abstract public Rectangle2D getBounds();
 
     /**
      * Get the points from the triangles, calculate their color and add point-color mappings.
