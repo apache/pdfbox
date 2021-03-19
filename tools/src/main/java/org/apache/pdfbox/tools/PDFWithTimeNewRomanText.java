@@ -6,12 +6,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import java.util.Scanner;
 
 public class PDFWithTimeNewRomanText {
     //using the folder to store the PDF file in for now.
     public static final String CREATED_PDF = "tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/TimesNewRoman.pdf";
     public static void main(String[] args) {
         try {
+            Scanner myObj = new Scanner(System.in);
             PDDocument pdfDoc = new PDDocument();
             PDPage firstPage = new PDPage();
             // add page to the PDF document
@@ -20,6 +22,7 @@ public class PDFWithTimeNewRomanText {
             try(PDPageContentStream cs = new PDPageContentStream(pdfDoc, firstPage)){
                 cs.beginText();
                 // setting font family and font size
+                System.out.println("Enter the type of Font");
                 cs.setFont(PDType1Font.TIMES_ROMAN, 15);
                 // color for the text
                 cs.setNonStrokingColor(Color.BLACK);
