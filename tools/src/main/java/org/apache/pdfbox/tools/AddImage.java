@@ -68,16 +68,13 @@ public class AddImage {
         return documentToWrite;
     }
 
-    protected int pageCheck(PDDocument doc, int page){
+    protected void pageCheck(PDDocument doc, int page){
         int pageDifference = documentToWrite.getNumberOfPages()-page;
-        int i = 0;
         if(pageDifference<0){
-            for(i = 0; i<(pageDifference*-1); i++) {
+            for(int i = 0; i<(pageDifference*-1); i++) {
                 addPage();
             }
-            return i;
         }
-        return i;
     }
 
     protected void addPage() {
