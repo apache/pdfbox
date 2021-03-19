@@ -82,7 +82,10 @@ public class GlyphTable extends TTFTable
      * Returns all glyphs. This method can be very slow.
      *
      * @throws IOException If there is an error reading the data.
+     * @deprecated use {@link #getGlyph(int)} instead. This will be removed in 3.0. If you need this
+     * method, please create an issue in JIRA.
      */
+    @Deprecated
     public GlyphData[] getGlyphs() throws IOException
     {
         // PDFBOX-4219: synchronize on data because it is accessed by several threads
@@ -161,6 +164,8 @@ public class GlyphTable extends TTFTable
             return glyphs[gid];
         }
 
+        GlyphData glyph;
+
         // PDFBOX-4219: synchronize on data because it is accessed by several threads
         // when PDFBox is accessing a standard 14 font for the first time
         synchronized (data)
@@ -171,18 +176,23 @@ public class GlyphTable extends TTFTable
             if (offsets[gid] == offsets[gid + 1])
             {
                 // no outline
-                return null;
+                // PDFBOX-5135: can't return null, must return an empty glyph because
+                // sometimes this is used in a composite glyph.
+                glyph = new GlyphData();
+                glyph.initEmptyData();
             }
-            
-            // save
-            long currentPosition = data.getCurrentPosition();
+            else
+            {
+                // save
+                long currentPosition = data.getCurrentPosition();
 
-            data.seek(getOffset() + offsets[gid]);
+                data.seek(getOffset() + offsets[gid]);
 
-            GlyphData glyph = getGlyphData(gid);
+                glyph = getGlyphData(gid);
 
-            // restore
-            data.seek(currentPosition);
+                // restore
+                data.seek(currentPosition);
+            }
 
             if (glyphs != null && glyphs[gid] == null && cached < MAX_CACHED_GLYPHS)
             {
