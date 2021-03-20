@@ -30,7 +30,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -83,10 +82,10 @@ final class JBIG2Filter extends Filter
         InputStream source = encoded;
         if (params != null)
         {
-            COSBase globals = params.getDictionaryObject(COSName.JBIG2_GLOBALS);
-            if (globals instanceof COSStream)
+            COSStream globals = params.getCOSStream(COSName.JBIG2_GLOBALS);
+            if (globals != null)
             {
-                source = new SequenceInputStream(((COSStream) globals).createInputStream(), encoded);
+                source = new SequenceInputStream(globals.createInputStream(), encoded);
             }
         }
 

@@ -34,6 +34,7 @@ import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -432,7 +433,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             // PDFBOX-4150: this is much faster than using textClippingArea.add(new Area(glyph))
             // https://stackoverflow.com/questions/21519007/fast-union-of-shapes-in-java
-            GeneralPath path = new GeneralPath(1, textClippings.size());
+            GeneralPath path = new GeneralPath(Path2D.WIND_NON_ZERO, textClippings.size());
             for (Shape shape : textClippings)
             {
                 path.append(shape, false);
@@ -1360,7 +1361,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (graphicsConfiguration != null)
         {
             GraphicsDevice graphicsDevice = graphicsConfiguration.getDevice();
-
             if (graphicsDevice != null)
             {
                 deviceType = graphicsDevice.getType();

@@ -572,7 +572,7 @@ public class PDFMergerUtility
 
         mergeAcroForm(cloner, destCatalog, srcCatalog);
 
-        COSArray destThreads = (COSArray) destCatalog.getCOSObject().getDictionaryObject(COSName.THREADS);
+        COSArray destThreads = destCatalog.getCOSObject().getCOSArray(COSName.THREADS);
         COSArray srcThreads = (COSArray) cloner.cloneForNewDocument(destCatalog.getCOSObject().getDictionaryObject(
                 COSName.THREADS));
         if (destThreads == null)
@@ -1321,10 +1321,9 @@ public class PDFMergerUtility
         {
             parentTreeEntry.setItem(COSName.PG, objMapping.get(pageDict));
         }
-        COSBase obj = parentTreeEntry.getDictionaryObject(COSName.OBJ);
-        if (obj instanceof COSDictionary)
+        COSDictionary objDict = parentTreeEntry.getCOSDictionary(COSName.OBJ);
+        if (objDict != null)
         {
-            COSDictionary objDict = (COSDictionary) obj;
             if (objMapping.containsKey(objDict))
             {
                 parentTreeEntry.setItem(COSName.OBJ, objMapping.get(objDict));
@@ -1349,7 +1348,7 @@ public class PDFMergerUtility
                             ", Subtype: " + objDict.getNameAsString(COSName.SUBTYPE) +
                             ", T: " + objDict.getNameAsString(COSName.T));
                 }
-                parentTreeEntry.setItem(COSName.OBJ, cloner.cloneForNewDocument(obj));
+                parentTreeEntry.setItem(COSName.OBJ, cloner.cloneForNewDocument(objDict));
             }
         }
         COSBase kSubEntry = parentTreeEntry.getDictionaryObject(COSName.K);

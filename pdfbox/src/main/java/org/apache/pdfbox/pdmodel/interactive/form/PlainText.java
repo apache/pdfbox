@@ -21,7 +21,6 @@ import java.text.AttributedString;
 import java.text.BreakIterator;
 import java.text.AttributedCharacterIterator.Attribute;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -51,13 +50,15 @@ class PlainText
      */
     PlainText(String textValue)
     {
-        paragraphs = new ArrayList<>();
-        if (textValue.isEmpty()) {
+        if (textValue.isEmpty())
+        {
+            paragraphs = new ArrayList<>(1);
             paragraphs.add(new Paragraph(""));
         }
         else
         {
             String[] parts = textValue.replaceAll("\t", " ").split("\\r\\n|\\n|\\r|\\u2028|\\u2029");
+            paragraphs = new ArrayList<>(parts.length);
             for (String part : parts)
             {
                 // Acrobat prints a space for an empty paragraph
@@ -81,10 +82,7 @@ class PlainText
     PlainText(List<String> listValue)
     {
         paragraphs = new ArrayList<>(listValue.size());
-        for (String part : listValue)
-        {
-            paragraphs.add(new Paragraph(part));
-        }
+        listValue.forEach(part -> paragraphs.add(new Paragraph(part)));
     }
     
     /**

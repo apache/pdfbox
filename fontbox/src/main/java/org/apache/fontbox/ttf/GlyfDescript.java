@@ -72,10 +72,8 @@ public abstract class GlyfDescript implements GlyphDescription
      * Constructor.
      * 
      * @param numberOfContours the number of contours
-     * @param bais the stream to be read
-     * @throws IOException is thrown if something went wrong
      */
-    GlyfDescript(short numberOfContours, TTFDataStream bais) throws IOException 
+    GlyfDescript(short numberOfContours) 
     {
         contourCount = numberOfContours;
     }

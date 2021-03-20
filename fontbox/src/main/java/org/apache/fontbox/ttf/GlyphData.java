@@ -65,7 +65,16 @@ public class GlyphData
             glyphDescription = new GlyfCompositeDescript(data, glyphTable);
         }
     }
-    
+
+    /**
+     * Initialize an empty glyph record.
+     */
+    void initEmptyData()
+    {
+        glyphDescription = new GlyfSimpleDescript();
+        boundingBox = new BoundingBox();
+    }
+
     /**
      * @return Returns the boundingBox.
      */

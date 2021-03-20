@@ -99,8 +99,11 @@ public class PDObjectReference implements COSObjectable
         {
             if (objDictionary instanceof COSStream)
             {
-                PDXObject xobject = PDXObject.createXObject((COSStream)obj, null); // <-- TODO: valid?
-                return xobject;
+                PDXObject xobject = PDXObject.createXObject(objDictionary, null); // <-- TODO: valid?
+                if (xobject != null)
+                {
+                    return xobject;
+                }
             }
             PDAnnotation annotation = PDAnnotation.createAnnotation(objDictionary);
             /*
@@ -110,7 +113,7 @@ public class PDObjectReference implements COSObjectable
              * what else can be the target of the object reference?
              */
             if (!(annotation instanceof PDAnnotationUnknown) 
-                    || COSName.ANNOT.equals(objDictionary.getDictionaryObject(COSName.TYPE))) 
+                    || COSName.ANNOT.equals(objDictionary.getCOSName(COSName.TYPE)))
             {
                 return annotation;
             }

@@ -41,6 +41,17 @@ public class GlyfSimpleDescript extends GlyfDescript
     private final int pointCount;
 
     /**
+     * Constructor for an empty description.
+     * 
+     * @throws IOException is thrown if something went wrong
+     */
+    GlyfSimpleDescript()
+    {
+        super((short) 0);
+        pointCount = 0;
+    }
+
+    /**
      * Constructor.
      * 
      * @param numberOfContours number of contours
@@ -50,7 +61,7 @@ public class GlyfSimpleDescript extends GlyfDescript
      */
     GlyfSimpleDescript(short numberOfContours, TTFDataStream bais, short x0) throws IOException
     {
-        super(numberOfContours, bais);
+        super(numberOfContours);
 
         /*
          * https://developer.apple.com/fonts/TTRefMan/RM06/Chap6glyf.html

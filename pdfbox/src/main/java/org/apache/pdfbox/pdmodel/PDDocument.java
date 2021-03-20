@@ -566,7 +566,7 @@ public class PDDocument implements Closeable
     private void assignSignatureRectangle(PDSignatureField signatureField, COSDictionary annotDict)
     {
         // Read and set the rectangle for visual signature
-        COSArray rectArray = (COSArray) annotDict.getDictionaryObject(COSName.RECT);
+        COSArray rectArray = annotDict.getCOSArray(COSName.RECT);
         PDRectangle existingRectangle = signatureField.getWidgets().get(0).getRectangle();
 
         //in case of an existing field keep the original rect
@@ -588,10 +588,9 @@ public class PDDocument implements Closeable
     private void assignAcroFormDefaultResource(PDAcroForm acroForm, COSDictionary newDict)
     {
         // read and set/update AcroForm default resource dictionary /DR if available
-        COSBase newBase = newDict.getDictionaryObject(COSName.DR);
-        if (newBase instanceof COSDictionary)
+        COSDictionary newDR = newDict.getCOSDictionary(COSName.DR);
+        if (newDR != null)
         {
-            COSDictionary newDR = (COSDictionary) newBase;
             PDResources defaultResources = acroForm.getDefaultResources();
             if (defaultResources == null)
             {
@@ -602,12 +601,11 @@ public class PDDocument implements Closeable
             else
             {
                 COSDictionary oldDR = defaultResources.getCOSObject();
-                COSBase newXObjectBase = newDR.getItem(COSName.XOBJECT);
-                COSBase oldXObjectBase = oldDR.getItem(COSName.XOBJECT);
-                if (newXObjectBase instanceof COSDictionary &&
-                    oldXObjectBase instanceof COSDictionary)
+                COSDictionary newXObject = newDR.getCOSDictionary(COSName.XOBJECT);
+                COSDictionary oldXObject = oldDR.getCOSDictionary(COSName.XOBJECT);
+                if (newXObject != null && oldXObject != null)
                 {
-                    ((COSDictionary) oldXObjectBase).addAll((COSDictionary) newXObjectBase);
+                    oldXObject.addAll(newXObject);
                     oldDR.setNeedToBeUpdated(true);
                 }
             }
@@ -752,10 +750,10 @@ public class PDDocument implements Closeable
         if (documentCatalog == null)
         {
             COSDictionary trailer = document.getTrailer();
-            COSBase dictionary = trailer.getDictionaryObject(COSName.ROOT);
-            if (dictionary instanceof COSDictionary)
+            COSDictionary dictionary = trailer.getCOSDictionary(COSName.ROOT);
+            if (dictionary != null)
             {
-                documentCatalog = new PDDocumentCatalog(this, (COSDictionary) dictionary);
+                documentCatalog = new PDDocumentCatalog(this, dictionary);
             }
             else
             {
@@ -851,10 +849,10 @@ public class PDDocument implements Closeable
         List<PDSignature> signatures = new ArrayList<>();
         for (PDSignatureField field : getSignatureFields())
         {
-            COSBase value = field.getCOSObject().getDictionaryObject(COSName.V);
-            if (value instanceof COSDictionary)
+            COSDictionary value = field.getCOSObject().getCOSDictionary(COSName.V);
+            if (value != null)
             {
-                signatures.add(new PDSignature((COSDictionary)value));
+                signatures.add(new PDSignature(value));
             }
         }
         return signatures;

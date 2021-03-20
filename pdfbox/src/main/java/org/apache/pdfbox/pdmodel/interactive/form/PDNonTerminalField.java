@@ -79,10 +79,10 @@ public class PDNonTerminalField extends PDField
         
         List<FDFField> fdfKids = fdfField.getKids();
         List<PDField> children = getChildren();
-
         if (fdfKids == null)
+        {
             return;
-
+        }
         for (int i = 0; i < fdfKids.size(); i++)
         {
             for (PDField pdChild : children)

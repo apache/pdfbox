@@ -333,7 +333,7 @@ class COSArrayListTest
         try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeSingleDirectObjectTest.pdf"))) {
             PDPage page = pdf.getPage(0);
         
-            COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+            COSArrayList<PDAnnotation> annotations = (COSArrayList<PDAnnotation>) page.getAnnotations();
 
             assertEquals(4, annotations.size(), "There shall be 4 annotations retrieved");
             assertEquals(4, annotations.toList().size(),
@@ -375,7 +375,7 @@ class COSArrayListTest
         try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeSingleIndirectObjectTest.pdf"))) {
             PDPage page = pdf.getPage(0);
         
-            COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+            COSArrayList<PDAnnotation> annotations = (COSArrayList<PDAnnotation>) page.getAnnotations();
 
             assertEquals(4, annotations.size(), "There shall be 4 annotations retrieved");
             assertEquals(4, annotations.toList().size(),
@@ -418,7 +418,7 @@ class COSArrayListTest
         try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeIndirectObjectTest.pdf"))) {
             PDPage page = pdf.getPage(0);
         
-            COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+            COSArrayList<PDAnnotation> annotations = (COSArrayList<PDAnnotation>) page.getAnnotations();
 
             assertEquals(4, annotations.size(), "There shall be 4 annotations retrieved");
             assertEquals(4, annotations.toList().size(),

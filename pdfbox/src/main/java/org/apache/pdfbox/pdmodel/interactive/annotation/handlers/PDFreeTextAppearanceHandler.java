@@ -94,7 +94,6 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
         {
             pathsArray = new float[0];
         }
-
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
 
         try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream(true))

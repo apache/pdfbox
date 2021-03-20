@@ -79,63 +79,6 @@ public class GlyphTable extends TTFTable
     }
 
     /**
-     * Returns all glyphs. This method can be very slow.
-     *
-     * @throws IOException If there is an error reading the data.
-     */
-    public GlyphData[] getGlyphs() throws IOException
-    {
-        // PDFBOX-4219: synchronize on data because it is accessed by several threads
-        // when PDFBox is accessing a standard 14 font for the first time
-        synchronized (data)
-        {
-            // the glyph offsets
-            long[] offsets = loca.getOffsets();
-
-            // the end of the glyph table
-            // should not be 0, but sometimes is, see PDFBOX-2044
-            // structure of this table: see
-            // https://developer.apple.com/fonts/TTRefMan/RM06/Chap6loca.html
-            long endOfGlyphs = offsets[numGlyphs];
-            long offset = getOffset();
-            if (glyphs == null)
-            {
-                glyphs = new GlyphData[numGlyphs];
-            }
-         
-            for (int gid = 0; gid < numGlyphs; gid++)
-            {
-                // end of glyphs reached?
-                if (endOfGlyphs != 0 && endOfGlyphs == offsets[gid])
-                {
-                    break;
-                }
-                // the current glyph isn't defined
-                // if the next offset is equal or smaller to the current offset
-                if (offsets[gid + 1] <= offsets[gid])
-                {
-                    continue;
-                }
-                if (glyphs[gid] != null)
-                {
-                    // already cached
-                    continue;
-                }
-
-                data.seek(offset + offsets[gid]);
-
-                if (glyphs[gid] == null)
-                {
-                    ++cached;
-                }
-                glyphs[gid] = getGlyphData(gid);
-            }
-            initialized = true;
-            return glyphs;
-        }
-    }
-
-    /**
      * @param glyphsValue The glyphs to set.
      */
     public void setGlyphs(GlyphData[] glyphsValue)
@@ -161,6 +104,8 @@ public class GlyphTable extends TTFTable
             return glyphs[gid];
         }
 
+        GlyphData glyph;
+
         // PDFBOX-4219: synchronize on data because it is accessed by several threads
         // when PDFBox is accessing a standard 14 font for the first time
         synchronized (data)
@@ -171,18 +116,23 @@ public class GlyphTable extends TTFTable
             if (offsets[gid] == offsets[gid + 1])
             {
                 // no outline
-                return null;
+                // PDFBOX-5135: can't return null, must return an empty glyph because
+                // sometimes this is used in a composite glyph.
+                glyph = new GlyphData();
+                glyph.initEmptyData();
             }
-            
-            // save
-            long currentPosition = data.getCurrentPosition();
+            else
+            {
+                // save
+                long currentPosition = data.getCurrentPosition();
 
-            data.seek(getOffset() + offsets[gid]);
+                data.seek(getOffset() + offsets[gid]);
 
-            GlyphData glyph = getGlyphData(gid);
+                glyph = getGlyphData(gid);
 
-            // restore
-            data.seek(currentPosition);
+                // restore
+                data.seek(currentPosition);
+            }
 
             if (glyphs != null && glyphs[gid] == null && cached < MAX_CACHED_GLYPHS)
             {
