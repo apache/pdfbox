@@ -81,7 +81,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationFreeText annotation = (PDAnnotationFreeText) getAnnotation();
-        float[] pathsArray = new float[0];
+        float[] pathsArray;
         if (PDAnnotationFreeText.IT_FREE_TEXT_CALLOUT.equals(annotation.getIntent()))
         {
             pathsArray = annotation.getCallout();
@@ -89,6 +89,10 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             {
                 pathsArray = new float[0];
             }
+        }
+        else
+        {
+            pathsArray = new float[0];
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
 
