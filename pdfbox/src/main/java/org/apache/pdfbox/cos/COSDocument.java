@@ -72,8 +72,6 @@ public class COSDocument extends COSBase implements Closeable
      */
     private COSDictionary trailer;
     
-    private boolean warnMissingClose = true;
-    
     /** 
      * Signal that document is already decrypted. 
      */
@@ -465,37 +463,6 @@ public class COSDocument extends COSBase implements Closeable
     public boolean isClosed()
     {
         return closed;
-    }
-
-    /**
-     * Warn the user in the finalizer if he didn't close the PDF document. The method also
-     * closes the document just in case, to avoid abandoned temporary files. It's still a good
-     * idea for the user to close the PDF document at the earliest possible to conserve resources.
-     * @throws IOException if an error occurs while closing the temporary files
-     */
-    @Override
-    protected void finalize() throws IOException
-    {
-        if (!closed) 
-        {
-            if (warnMissingClose) 
-            {
-                LOG.warn( "Warning: You did not close a PDF Document" );
-            }
-            close();
-        }
-    }
-
-    /**
-     * Controls whether this instance shall issue a warning if the PDF document wasn't closed
-     * properly through a call to the {@link #close()} method. If the PDF document is held in
-     * a cache governed by soft references it is impossible to reliably close the document
-     * before the warning is raised. By default, the warning is enabled.
-     * @param warn true enables the warning, false disables it.
-     */
-    public void setWarnMissingClose(boolean warn)
-    {
-        this.warnMissingClose = warn;
     }
 
     /**
