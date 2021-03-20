@@ -272,7 +272,6 @@ class PlainText
                     float whitespaceWidth = font.getStringWidth(text.substring(text.length()-1)) * scale;
                     calculatedWidth = calculatedWidth - whitespaceWidth;
                 }
-
                 ++indexOfWord;
             }
             return calculatedWidth;
