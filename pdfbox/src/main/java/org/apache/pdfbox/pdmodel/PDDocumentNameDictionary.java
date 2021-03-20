@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -38,16 +37,13 @@ public class PDDocumentNameDictionary implements COSObjectable
      */
     public PDDocumentNameDictionary( PDDocumentCatalog cat )
     {
-        COSBase names = cat.getCOSObject().getDictionaryObject(COSName.NAMES);
-        if (names != null)
+        COSDictionary names = cat.getCOSObject().getCOSDictionary(COSName.NAMES);
+        if (names == null)
         {
-            nameDictionary = (COSDictionary)names;
+            names = new COSDictionary();
+            cat.getCOSObject().setItem(COSName.NAMES, names);
         }
-        else
-        {
-            nameDictionary = new COSDictionary();
-            cat.getCOSObject().setItem(COSName.NAMES, nameDictionary);
-        }
+        nameDictionary = names;
         catalog = cat;
     }
 
@@ -82,23 +78,14 @@ public class PDDocumentNameDictionary implements COSObjectable
      */
     public PDDestinationNameTreeNode getDests()
     {
-        PDDestinationNameTreeNode dests = null;
-
-        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( COSName.DESTS );
-
+        COSDictionary dic = nameDictionary.getCOSDictionary(COSName.DESTS);
         //The document catalog also contains the Dests entry sometimes
         //so check there as well.
         if( dic == null )
         {
-            dic = (COSDictionary)catalog.getCOSObject().getDictionaryObject( COSName.DESTS );
+            dic = catalog.getCOSObject().getCOSDictionary(COSName.DESTS);
         }
-
-        if( dic != null )
-        {
-            dests = new PDDestinationNameTreeNode( dic );
-        }
-
-        return dests;
+        return dic != null ? new PDDestinationNameTreeNode(dic) : null;
     }
 
     /**
@@ -125,16 +112,8 @@ public class PDDocumentNameDictionary implements COSObjectable
      */
     public PDEmbeddedFilesNameTreeNode getEmbeddedFiles()
     {
-        PDEmbeddedFilesNameTreeNode retval = null;
-
-        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( COSName.EMBEDDED_FILES );
-
-        if( dic != null )
-        {
-            retval = new PDEmbeddedFilesNameTreeNode( dic );
-        }
-
-        return retval;
+        COSDictionary dic = nameDictionary.getCOSDictionary(COSName.EMBEDDED_FILES);
+        return dic != null ? new PDEmbeddedFilesNameTreeNode(dic) : null;
     }
 
     /**
@@ -156,16 +135,8 @@ public class PDDocumentNameDictionary implements COSObjectable
      */
     public PDJavascriptNameTreeNode getJavaScript()
     {
-        PDJavascriptNameTreeNode retval = null;
-
-        COSDictionary dic = (COSDictionary) nameDictionary.getDictionaryObject(COSName.JAVA_SCRIPT);
-
-        if( dic != null )
-        {
-            retval = new PDJavascriptNameTreeNode( dic );
-        }
-
-        return retval;
+        COSDictionary dic = nameDictionary.getCOSDictionary(COSName.JAVA_SCRIPT);
+        return dic != null ? new PDJavascriptNameTreeNode(dic) : null;
     }
 
     /**

@@ -379,15 +379,8 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDRectangle getBleedBox()
     {
-        COSBase base = page.getDictionaryObject(COSName.BLEED_BOX);
-        if (base instanceof COSArray)
-        {
-            return clipToMediaBox(new PDRectangle((COSArray) base));
-        }
-        else
-        {
-            return getCropBox();
-        }
+        COSArray bleedBox = page.getCOSArray(COSName.BLEED_BOX);
+        return bleedBox != null ? clipToMediaBox(new PDRectangle(bleedBox)) : getCropBox();
     }
 
     /**
@@ -415,15 +408,8 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDRectangle getTrimBox()
     {
-        COSBase base = page.getDictionaryObject(COSName.TRIM_BOX);
-        if (base instanceof COSArray)
-        {
-            return clipToMediaBox(new PDRectangle((COSArray) base));
-        }
-        else
-        {
-            return getCropBox();
-        }
+        COSArray trimBox = page.getCOSArray(COSName.TRIM_BOX);
+        return trimBox != null ? clipToMediaBox(new PDRectangle(trimBox)) : null;
     }
 
     /**
@@ -452,15 +438,8 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDRectangle getArtBox()
     {
-        COSBase base = page.getDictionaryObject(COSName.ART_BOX);
-        if (base instanceof COSArray)
-        {
-            return clipToMediaBox(new PDRectangle((COSArray) base));
-        }
-        else
-        {
-            return getCropBox();
-        }
+        COSArray artBox = page.getCOSArray(COSName.ART_BOX);
+        return artBox != null ? clipToMediaBox(new PDRectangle(artBox)) : getCropBox();
     }
 
     /**
@@ -557,7 +536,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public List<PDThreadBead> getThreadBeads()
     {
-        COSArray beads = (COSArray) page.getDictionaryObject(COSName.B);
+        COSArray beads = page.getCOSArray(COSName.B);
         if (beads == null)
         {
             beads = new COSArray();
@@ -595,13 +574,8 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDMetadata getMetadata()
     {
-        PDMetadata retval = null;
-        COSBase base = page.getDictionaryObject(COSName.METADATA);
-        if (base instanceof COSStream)
-        {
-            retval = new PDMetadata((COSStream) base);
-        }
-        return retval;
+        COSStream metadata = page.getCOSStream(COSName.METADATA);
+        return metadata != null ? new PDMetadata(metadata) : null;
     }
 
     /**
@@ -621,13 +595,8 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDPageAdditionalActions getActions()
     {
-        COSDictionary addAct;
-        COSBase base = page.getDictionaryObject(COSName.AA);
-        if (base instanceof COSDictionary)
-        {
-            addAct = (COSDictionary) base;
-        }
-        else
+        COSDictionary addAct = page.getCOSDictionary(COSName.AA);
+        if (addAct == null)
         {
             addAct = new COSDictionary();
             page.setItem(COSName.AA, addAct);
@@ -650,8 +619,8 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDTransition getTransition()
     {
-        COSBase base = page.getDictionaryObject(COSName.TRANS);
-        return base instanceof COSDictionary ? new PDTransition((COSDictionary) base) : null;
+        COSDictionary transition = page.getCOSDictionary(COSName.TRANS);
+        return transition != null ? new PDTransition(transition) : null;
     }
 
     /**
@@ -699,10 +668,9 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public List<PDAnnotation> getAnnotations(AnnotationFilter annotationFilter) throws IOException
     {
-        COSBase base = page.getDictionaryObject(COSName.ANNOTS);
-        if (base instanceof COSArray)
+        COSArray annots = page.getCOSArray(COSName.ANNOTS);
+        if (annots != null)
         {
-            COSArray annots = (COSArray) base;
             List<PDAnnotation> actuals = new ArrayList<>();
             for (int i = 0; i < annots.size(); i++)
             {
@@ -759,12 +727,11 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public List<PDViewportDictionary> getViewports()
     {
-        COSBase base = page.getDictionaryObject(COSName.VP);
-        if (!(base instanceof COSArray))
+        COSArray array = page.getCOSArray(COSName.VP);
+        if (array == null)
         {
             return null;
         }
-        COSArray array = (COSArray) base;
         List<PDViewportDictionary> viewports = new ArrayList<>();
         for (int i = 0; i < array.size(); ++i)
         {

@@ -113,7 +113,7 @@ public class PDObjectReference implements COSObjectable
              * what else can be the target of the object reference?
              */
             if (!(annotation instanceof PDAnnotationUnknown) 
-                    || COSName.ANNOT.equals(objDictionary.getDictionaryObject(COSName.TYPE))) 
+                    || COSName.ANNOT.equals(objDictionary.getCOSName(COSName.TYPE)))
             {
                 return annotation;
             }

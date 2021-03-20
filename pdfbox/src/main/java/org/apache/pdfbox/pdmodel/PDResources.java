@@ -419,11 +419,10 @@ public final class PDResources implements COSObjectable
     {
         if (xobject instanceof PDImageXObject)
         {
-            COSBase colorSpace = xobject.getCOSObject().getDictionaryObject(COSName.COLORSPACE);
-            if (colorSpace instanceof COSName)
+            COSName colorSpaceName = xobject.getCOSObject().getCOSName(COSName.COLORSPACE);
+            if (colorSpaceName != null)
             {
                 // don't cache if it might use page resources, see PDFBOX-2370 and PDFBOX-3484
-                COSName colorSpaceName = (COSName) colorSpace;
                 if (colorSpaceName.equals(COSName.DEVICECMYK) && hasColorSpace(COSName.DEFAULT_CMYK))
                 {
                     return false;
@@ -450,7 +449,7 @@ public final class PDResources implements COSObjectable
      */
     private COSObject getIndirect(COSName kind, COSName name)
     {
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
+        COSDictionary dict = resources.getCOSDictionary(kind);
         if (dict == null)
         {
             return null;
@@ -469,12 +468,8 @@ public final class PDResources implements COSObjectable
      */
     private COSBase get(COSName kind, COSName name)
     {
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
-        if (dict == null)
-        {
-            return null;
-        }
-        return dict.getDictionaryObject(name);
+        COSDictionary dict = resources.getCOSDictionary(kind);
+        return dict != null ? dict.getDictionaryObject(name) : null;
     }
 
     /**
@@ -538,12 +533,8 @@ public final class PDResources implements COSObjectable
      */
     private Iterable<COSName> getNames(COSName kind)
     {
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
-        if (dict == null)
-        {
-            return Collections.emptySet();
-        }
-        return dict.keySet();
+        COSDictionary dict = resources.getCOSDictionary(kind);
+        return dict != null ? dict.keySet() : Collections.emptySet();
     }
 
     /**
@@ -668,7 +659,7 @@ public final class PDResources implements COSObjectable
     private COSName add(COSName kind, String prefix, COSObjectable object)
     {
         // return the existing key if the item exists already
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
+        COSDictionary dict = resources.getCOSDictionary(kind);
         if (dict != null && dict.containsValue(object.getCOSObject()))
         {
             return dict.getKeyForValue(object.getCOSObject());
@@ -699,7 +690,7 @@ public final class PDResources implements COSObjectable
      */
     private COSName createKey(COSName kind, String prefix)
     {
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
+        COSDictionary dict = resources.getCOSDictionary(kind);
         if (dict == null)
         {
             return COSName.getPDFName(prefix + 1);
@@ -722,7 +713,7 @@ public final class PDResources implements COSObjectable
      */
     private void put(COSName kind, COSName name, COSObjectable object)
     {
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
+        COSDictionary dict = resources.getCOSDictionary(kind);
         if (dict == null)
         {
             dict = new COSDictionary();
