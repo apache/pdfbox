@@ -135,7 +135,7 @@ public abstract class PDAction implements PDDestinationOrAction
         else if( next instanceof COSArray )
         {
             COSArray array = (COSArray)next;
-            List<PDAction> actions = new ArrayList<PDAction>();
+            List<PDAction> actions = new ArrayList<PDAction>(array.size());
             for( int i=0; i<array.size(); i++ )
             {
                 actions.add( PDActionFactory.createAction( (COSDictionary) array.getObject( i )));
