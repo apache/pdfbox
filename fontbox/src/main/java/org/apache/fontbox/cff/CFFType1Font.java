@@ -205,12 +205,7 @@ public class CFFType1Font extends CFFFont implements EncodedFont
         {
             return topDictValue;
         }
-        Object privateDictValue = privateDict.get(name);
-        if (privateDictValue != null)
-        {
-            return privateDictValue;
-        }
-        return null;
+        return privateDict.get(name);
     }
 
     private int getDefaultWidthX()
