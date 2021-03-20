@@ -363,21 +363,21 @@ class TestTextStripper
                 {
                     if (delta instanceof ChangeDelta)
                     {
-                        ChangeDelta cdelta = (ChangeDelta) delta;
+                        ChangeDelta<String> cdelta = (ChangeDelta<String>) delta;
                         diffPS.println("Org: " + cdelta.getOriginal());
                         diffPS.println("New: " + cdelta.getRevised());
                         diffPS.println();
                     }
                     else if (delta instanceof DeleteDelta)
                     {
-                        DeleteDelta ddelta = (DeleteDelta) delta;
+                        DeleteDelta<String> ddelta = (DeleteDelta<String>) delta;
                         diffPS.println("Org: " + ddelta.getOriginal());
                         diffPS.println("New: " + ddelta.getRevised());
                         diffPS.println();
                     }
                     else if (delta instanceof InsertDelta)
                     {
-                        InsertDelta idelta = (InsertDelta) delta;
+                        InsertDelta<String> idelta = (InsertDelta<String>) delta;
                         diffPS.println("Org: " + idelta.getOriginal());
                         diffPS.println("New: " + idelta.getRevised());
                         diffPS.println();
