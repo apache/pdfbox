@@ -159,12 +159,7 @@ public class PDBorderStyleDictionary implements COSObjectable
      */
     public void setDashStyle(COSArray dashArray)
     {
-        COSArray array = null;
-        if (dashArray != null)
-        {
-            array = dashArray;
-        }
-        getCOSObject().setItem(COSName.D, array);
+        getCOSObject().setItem(COSName.D, dashArray);
     }
 
     /**
