@@ -222,16 +222,18 @@ public class PlainText
         {
             final float scale = fontSize/FONTSCALE;
             float calculatedWidth = 0f;
+            int indexOfWord = 0;
             for (Word word : words)
             {
                 calculatedWidth = calculatedWidth + 
                         (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
                 String text = word.getText();
-                if (words.indexOf(word) == words.size() -1 && Character.isWhitespace(text.charAt(text.length()-1)))
+                if (indexOfWord == words.size() -1 && Character.isWhitespace(text.charAt(text.length()-1)))
                 {
                     float whitespaceWidth = font.getStringWidth(text.substring(text.length()-1)) * scale;
                     calculatedWidth = calculatedWidth - whitespaceWidth;
                 }
+                ++indexOfWord;
             }
             return calculatedWidth;
         }
