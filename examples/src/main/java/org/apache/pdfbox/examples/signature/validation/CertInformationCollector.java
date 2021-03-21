@@ -405,7 +405,7 @@ public class CertInformationCollector
     /**
      * Data class to hold Signature, Certificate (and its chain(s)) and revocation Information
      */
-    public class CertSignatureInformation
+    public static class CertSignatureInformation
     {
         private X509Certificate certificate;
         private String signatureHash;
