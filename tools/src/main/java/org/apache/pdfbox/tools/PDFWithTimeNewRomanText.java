@@ -21,9 +21,14 @@ public class PDFWithTimeNewRomanText {
             // For writing to a page content stream
             try(PDPageContentStream cs = new PDPageContentStream(pdfDoc, firstPage)){
                 cs.beginText();
-                // setting font family and font size
-                System.out.println("Enter the type of Font");
-                cs.setFont(PDType1Font.TIMES_ROMAN, 15);
+                // setting font family and font size base on use input.
+                System.out.println("Enter 1 for New Times Roman or 2 for Courier ");
+                int input=myObj.nextInt();
+                if (input==1){
+                    cs.setFont(PDType1Font.TIMES_ROMAN, 15);
+                }
+                else
+                cs.setFont(PDType1Font.COURIER, 15);
                 // color for the text
                 cs.setNonStrokingColor(Color.BLACK);
                 // starting position
