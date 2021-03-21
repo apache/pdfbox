@@ -17,6 +17,10 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Paint;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.util.Matrix;
@@ -24,14 +28,15 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * Resources for a shading type 6 (Coons Patch Mesh).
  */
-public class PDShadingType6 extends PDShadingType4
+public class PDShadingType6 extends PDMeshBasedShadingType
 {
     /**
      * Constructor using the given shading dictionary.
      *
      * @param shadingDictionary the dictionary for this shading
+     * @throws IOException 
      */
-    public PDShadingType6(COSDictionary shadingDictionary)
+    public PDShadingType6(COSDictionary shadingDictionary) throws IOException
     {
         super(shadingDictionary);
     }
@@ -47,4 +52,15 @@ public class PDShadingType6 extends PDShadingType4
     {
         return new Type6ShadingPaint(this, matrix);
     }
+    
+    @Override
+    protected Patch generatePatch(Point2D[] points, float[][] color)
+    {
+        return new CoonsPatch(points, color);
+    }
+
+	@Override
+	public Rectangle2D getBounds(AffineTransform xform, Matrix matrix) throws IOException {
+		return getBounds(xform, matrix, 12);
+	}
 }

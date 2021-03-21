@@ -24,7 +24,6 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.Image;
 import java.awt.Paint;
-import java.awt.PaintContext;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -90,7 +89,6 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
-import org.apache.pdfbox.pdmodel.graphics.shading.ShadingContext;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
@@ -1345,17 +1343,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            PaintContext context = paint.createContext(
-                    graphics.getDeviceConfiguration().getColorModel(),
-                    graphics.getDeviceConfiguration().getBounds(), graphics.getClipBounds(),
-                    new AffineTransform(), graphics.getRenderingHints());
-            Rectangle2D bounds = null;
-            if (context instanceof ShadingContext)
-            {
-                bounds = ((ShadingContext) context).getBounds();
-            }
+            Rectangle2D bounds = shading.getBounds(new AffineTransform(), ctm);
             if (bounds != null)
             {
+                bounds.add(new Point2D.Double(Math.floor(bounds.getMinX() - 1),
+                        Math.floor(bounds.getMinY() - 1)));
+                bounds.add(new Point2D.Double(Math.ceil(bounds.getMaxX() + 1),
+                        Math.ceil(bounds.getMaxY() + 1)));
                 area = new Area(bounds);
                 area.intersect(getGraphicsState().getCurrentClippingPath());
             }

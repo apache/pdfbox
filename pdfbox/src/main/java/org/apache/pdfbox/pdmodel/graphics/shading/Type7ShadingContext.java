@@ -17,7 +17,6 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import org.apache.pdfbox.util.Matrix;
@@ -44,11 +43,5 @@ class Type7ShadingContext extends PatchMeshesShadingContext
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
         super(shading, colorModel, xform, matrix, deviceBounds, 16);
-    }
-
-    @Override
-    protected Patch generatePatch(Point2D[] points, float[][] color)
-    {
-        return new TensorPatch(points, color);
     }
 }
