@@ -49,7 +49,7 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
      * @param shadingDictionary the dictionary for this shading
      * @throws IOException 
      */
-    public PDShadingType4(COSDictionary shadingDictionary) throws IOException
+    public PDShadingType4(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -104,14 +104,14 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
         {
             return Collections.emptyList();
         }
-        PDRange[] colRange = new PDRange[numberOfColorComponents];
-        for (int i = 0; i < numberOfColorComponents; ++i)
+        PDRange[] colRange = new PDRange[getNumberOfColorComponents()];
+        for (int i = 0; i < getNumberOfColorComponents(); ++i)
         {
             colRange[i] = getDecodeForParameter(2 + i);
         }
         List<ShadedTriangle> list = new ArrayList<>();
-        long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
-        long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
+        long maxSrcCoord = (long) Math.pow(2, getBitsPerCoordinate()) - 1;
+        long maxSrcColor = (long) Math.pow(2, getBitsPerComponent()) - 1;
         COSStream stream = (COSStream) dict;
 
         try (ImageInputStream mciis = new MemoryCacheImageInputStream(stream.createInputStream()))

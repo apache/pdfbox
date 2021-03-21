@@ -36,7 +36,7 @@ public class PDShadingType6 extends PDMeshBasedShadingType
      * @param shadingDictionary the dictionary for this shading
      * @throws IOException 
      */
-    public PDShadingType6(COSDictionary shadingDictionary) throws IOException
+    public PDShadingType6(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }

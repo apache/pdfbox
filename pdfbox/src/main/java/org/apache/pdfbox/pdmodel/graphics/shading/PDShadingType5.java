@@ -45,7 +45,7 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
      * @param shadingDictionary the dictionary for this shading
      * @throws IOException 
      */
-    public PDShadingType5(COSDictionary shadingDictionary) throws IOException
+    public PDShadingType5(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -99,14 +99,14 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
             return Collections.emptyList();
         }
         int numPerRow = getVerticesPerRow();
-        PDRange[] colRange = new PDRange[numberOfColorComponents];
-        for (int i = 0; i < numberOfColorComponents; ++i)
+        PDRange[] colRange = new PDRange[getNumberOfColorComponents()];
+        for (int i = 0; i < getNumberOfColorComponents(); ++i)
         {
             colRange[i] = getDecodeForParameter(2 + i);
         }
         List<Vertex> vlist = new ArrayList<>();
-        long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
-        long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
+        long maxSrcCoord = (long) Math.pow(2, getBitsPerCoordinate()) - 1;
+        long maxSrcColor = (long) Math.pow(2, getBitsPerComponent()) - 1;
         COSStream cosStream = (COSStream) dict;
 
         try (ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream()))

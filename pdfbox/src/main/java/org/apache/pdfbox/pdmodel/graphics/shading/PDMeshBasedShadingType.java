@@ -43,7 +43,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
 
     private static final Log LOG = LogFactory.getLog(PDMeshBasedShadingType.class);
 
-    PDMeshBasedShadingType(COSDictionary shadingDictionary) throws IOException
+    PDMeshBasedShadingType(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -75,8 +75,8 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
             return Collections.emptyList();
         }
         int bitsPerFlag = getBitsPerFlag();
-        PDRange[] colRange = new PDRange[numberOfColorComponents];
-        for (int i = 0; i < numberOfColorComponents; ++i)
+        PDRange[] colRange = new PDRange[getNumberOfColorComponents()];
+        for (int i = 0; i < getNumberOfColorComponents(); ++i)
         {
             colRange[i] = getDecodeForParameter(2 + i);
             if (colRange[i] == null)
@@ -85,15 +85,15 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
             }
         }
         List<Patch> list = new ArrayList<>();
-        long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
-        long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
+        long maxSrcCoord = (long) Math.pow(2, getBitsPerCoordinate()) - 1;
+        long maxSrcColor = (long) Math.pow(2, getBitsPerComponent()) - 1;
         COSStream cosStream = (COSStream) dict;
 
         try (ImageInputStream mciis = new MemoryCacheImageInputStream(
                 cosStream.createInputStream()))
         {
             Point2D[] implicitEdge = new Point2D[4];
-            float[][] implicitCornerColor = new float[2][numberOfColorComponents];
+            float[][] implicitCornerColor = new float[2][getNumberOfColorComponents()];
             byte flag = 0;
 
             try
@@ -173,7 +173,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
             PDRange rangeY, PDRange[] colRange, Matrix matrix, AffineTransform xform,
             int controlPoints) throws IOException
     {
-        float[][] color = new float[4][numberOfColorComponents];
+        float[][] color = new float[4][getNumberOfColorComponents()];
         Point2D[] points = new Point2D[controlPoints];
         int pStart = 4, cStart = 2;
         if (isFree)
@@ -188,7 +188,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
             points[2] = implicitEdge[2];
             points[3] = implicitEdge[3];
 
-            for (int i = 0; i < numberOfColorComponents; i++)
+            for (int i = 0; i < getNumberOfColorComponents(); i++)
             {
                 color[0][i] = implicitCornerColor[0][i];
                 color[1][i] = implicitCornerColor[1][i];
@@ -199,8 +199,8 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
         {
             for (int i = pStart; i < controlPoints; i++)
             {
-                long x = input.readBits(bitsPerCoordinate);
-                long y = input.readBits(bitsPerCoordinate);
+                long x = input.readBits(getBitsPerCoordinate());
+                long y = input.readBits(getBitsPerCoordinate());
                 float px = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
                 float py = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
                 Point2D p = matrix.transformPoint(px, py);
@@ -209,9 +209,9 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
             }
             for (int i = cStart; i < 4; i++)
             {
-                for (int j = 0; j < numberOfColorComponents; j++)
+                for (int j = 0; j < getNumberOfColorComponents(); j++)
                 {
-                    long c = input.readBits(bitsPerColorComponent);
+                    long c = input.readBits(getBitsPerComponent());
                     color[i][j] = interpolate(c, maxSrcColor, colRange[j].getMin(),
                             colRange[j].getMax());
                 }

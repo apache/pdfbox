@@ -43,34 +43,28 @@ abstract class PDTriangleBasedShadingType extends PDShading
 
     private static final Log LOG = LogFactory.getLog(TriangleBasedShadingContext.class);
 
-    protected int bitsPerCoordinate;
-    protected int bitsPerColorComponent;
-    protected int numberOfColorComponents;
-    
-    private final boolean hasFunction;
-    
-    PDTriangleBasedShadingType(COSDictionary shadingDictionary) throws IOException
+    private int bitsPerCoordinate = -1;
+    private int bitsPerColorComponent = -1;
+    private int numberOfColorComponents = -1;
+
+    PDTriangleBasedShadingType(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
-        
-        hasFunction = getFunction() != null;
-        bitsPerCoordinate = getBitsPerCoordinate();
-        LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
-        bitsPerColorComponent = getBitsPerComponent();
-        LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
-		numberOfColorComponents = hasFunction ? 1 : getColorSpace().getNumberOfComponents();
-		LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
     }
 
     /**
-     * The bits per component of this shading. This will return -1 if one has
-     * not been set.
+     * The bits per component of this shading. This will return -1 if one has not been set.
      *
      * @return the number of bits per component
      */
     public int getBitsPerComponent()
     {
-        return getCOSObject().getInt(COSName.BITS_PER_COMPONENT, -1);
+        if (bitsPerColorComponent == -1)
+        {
+            bitsPerColorComponent = getCOSObject().getInt(COSName.BITS_PER_COMPONENT, -1);
+            LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
+        }
+        return bitsPerColorComponent;
     }
 
     /**
@@ -81,6 +75,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
     public void setBitsPerComponent(int bitsPerComponent)
     {
         getCOSObject().setInt(COSName.BITS_PER_COMPONENT, bitsPerComponent);
+        bitsPerColorComponent = bitsPerComponent;
     }
 
     /**
@@ -91,17 +86,39 @@ abstract class PDTriangleBasedShadingType extends PDShading
      */
     public int getBitsPerCoordinate()
     {
-        return getCOSObject().getInt(COSName.BITS_PER_COORDINATE, -1);
+        if (bitsPerCoordinate == -1)
+        {
+            bitsPerCoordinate = getCOSObject().getInt(COSName.BITS_PER_COORDINATE, -1);
+            LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
+        }
+        return bitsPerCoordinate;
     }
 
     /**
      * Set the number of bits per coordinate.
      *
-     * @param bitsPerComponent the number of bits per coordinate
+     * @param bitsPerCoordinate the number of bits per coordinate
      */
-    public void setBitsPerCoordinate(int bitsPerComponent)
+    public void setBitsPerCoordinate(int bitsPerCoordinate)
     {
-        getCOSObject().setInt(COSName.BITS_PER_COORDINATE, bitsPerComponent);
+        getCOSObject().setInt(COSName.BITS_PER_COORDINATE, bitsPerCoordinate);
+        this.bitsPerCoordinate = bitsPerCoordinate;
+    }
+    
+    /**
+     * The number of color components of this shading.
+     *
+     * @return number of color components of this shading
+     */
+    public int getNumberOfColorComponents() throws IOException
+    {
+        if (numberOfColorComponents == -1)
+        {
+            numberOfColorComponents = getFunction() != null ? 1
+                    : getColorSpace().getNumberOfComponents();
+            LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
+        }
+        return numberOfColorComponents;
     }
 
     /**
