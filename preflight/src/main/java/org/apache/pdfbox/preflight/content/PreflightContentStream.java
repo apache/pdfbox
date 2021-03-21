@@ -257,13 +257,13 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @param arguments
      * @throws IOException
      */
-    private void validateStringArray(Operator operator, List<?> arguments) throws IOException
+    private void validateStringArray(Operator operator, Iterable<?> arguments) throws IOException
     {
         for (Object object : arguments)
         {
             if (object instanceof COSArray)
             {
-                validateStringArray(operator, ((COSArray) object).toList());
+                validateStringArray(operator, (COSArray) object);
             }
             else if (object instanceof COSString)
             {
