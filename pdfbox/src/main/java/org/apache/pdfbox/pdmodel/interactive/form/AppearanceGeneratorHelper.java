@@ -132,19 +132,31 @@ class AppearanceGeneratorHelper {
 
         PDResources acroFormResources = field.getAcroForm().getDefaultResources();
 
-        for (PDAnnotationWidget widget : field.getWidgets()) {
-            if (widget.getNormalAppearanceStream() != null
-                    && widget.getNormalAppearanceStream().getResources() != null) {
-                PDResources widgetResources = widget.getNormalAppearanceStream().getResources();
-                for (COSName fontResourceName : widgetResources.getFontNames()) {
-                    try {
-                        if (acroFormResources.getFont(fontResourceName) == null) {
-                            LOG.debug("Adding font resource " + fontResourceName + " from widget to AcroForm");
-                            acroFormResources.put(fontResourceName, widgetResources.getFont(fontResourceName));
-                        }
-                    } catch (IOException e) {
-                        LOG.warn("Unable to match field level font with AcroForm font");
+        for (PDAnnotationWidget widget : field.getWidgets())
+        {
+            PDAppearanceStream stream = widget.getNormalAppearanceStream();
+            if (stream == null)
+            {
+                continue;
+            }
+            PDResources widgetResources = stream.getResources();
+            if (widgetResources == null)
+            {
+                continue;
+            }
+            for (COSName fontResourceName : widgetResources.getFontNames())
+            {
+                try
+                {
+                    if (acroFormResources.getFont(fontResourceName) == null)
+                    {
+                        LOG.debug("Adding font resource " + fontResourceName + " from widget to AcroForm");
+                        acroFormResources.put(fontResourceName, widgetResources.getFont(fontResourceName));
                     }
+                }
+                catch (IOException e)
+                {
+                    LOG.warn("Unable to match field level font with AcroForm font");
                 }
             }
         }
