@@ -348,6 +348,8 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 {
                     if (numberOfArticleSections < originalSize)
                     {
+                        //TODO Looks like decrement (--i) needed because next value will be ignored.
+                        // This segment is never reached in tests?!
                         charactersByArticle.remove(i);
                     }
                     else
