@@ -1001,7 +1001,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         COSBase bool = getDictionaryObject(firstKey, secondKey);
         if (bool instanceof COSBoolean)
         {
-            retval = ((COSBoolean) bool).getValue();
+            retval = bool == COSBoolean.TRUE;
         }
         return retval;
     }
