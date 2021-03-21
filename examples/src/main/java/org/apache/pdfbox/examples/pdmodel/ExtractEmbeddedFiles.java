@@ -111,6 +111,10 @@ public final class ExtractEmbeddedFiles
         else
         {
             List<PDNameTreeNode<PDComplexFileSpecification>> kids = efTree.getKids();
+            if (kids == null)
+            {
+                return;
+            }
             for (PDNameTreeNode<PDComplexFileSpecification> node : kids)
             {
                 names = node.getNames();
