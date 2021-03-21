@@ -112,13 +112,11 @@ public class PDFTextStripperByArea extends PDFTextStripper
      */
     public void extractRegions( PDPage page ) throws IOException
     {
-        for (String region : regions)
+        for (String regionName : regions)
         {
             setStartPage(getCurrentPageNo());
             setEndPage(getCurrentPageNo());
-            //reset the stored text for the region so this class
-            //can be reused.
-            String regionName = region;
+            // reset the stored text for the region so this class can be reused.
             ArrayList<List<TextPosition>> regionCharactersByArticle = new ArrayList<>();
             regionCharactersByArticle.add(new ArrayList<>());
             regionCharacterList.put( regionName, regionCharactersByArticle );
