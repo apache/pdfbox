@@ -141,19 +141,15 @@ class AppearanceGeneratorHelper
         for (PDAnnotationWidget widget : field.getWidgets())
         {
             PDAppearanceStream stream = widget.getNormalAppearanceStream();
-
             if (stream == null)
             {
                 continue;
             }
-
             PDResources widgetResources = stream.getResources();
-
             if (widgetResources == null)
             {
                 continue;
             }
-
             for (COSName fontResourceName : widgetResources.getFontNames())
             {
                 try
