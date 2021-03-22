@@ -218,12 +218,12 @@ public final class JPEGFactory
         try
         {
             XPath xpath = XPathFactory.newInstance().newXPath();
-            String numScanComponents = xpath.evaluate("markerSequence/sos/@numScanComponents", root);
-            if (numScanComponents.isEmpty())
+            String numFrameComponents = xpath.evaluate("markerSequence/sof/@numFrameComponents", root);
+            if (numFrameComponents.isEmpty())
             {
                 return 0;
             }
-            return Integer.parseInt(numScanComponents);
+            return Integer.parseInt(numFrameComponents);
         }
         catch (NumberFormatException | XPathExpressionException ex)
         {
