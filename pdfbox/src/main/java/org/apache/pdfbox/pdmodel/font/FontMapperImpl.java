@@ -96,7 +96,7 @@ final class FontMapperImpl implements FontMapper
                         "TimesNewRoman-BoldItalic", "LiberationSerif-BoldItalic",
                         "NimbusRomNo9L-MediItal")));
         substitutes.put("Symbol", new ArrayList<>(Arrays.asList("Symbol", "SymbolMT", "StandardSymL")));
-        substitutes.put("ZapfDingbats", new ArrayList<>(Arrays.asList("ZapfDingbatsITCbyBT-Regular", 
+        substitutes.put("ZapfDingbats", new ArrayList<>(Arrays.asList("ZapfDingbatsITCbyBT-Regular",
                         "ZapfDingbatsITC", "Dingbats", "MS-Gothic")));
 
         // Acrobat also uses alternative names for Standard 14 fonts, which we map to those above
@@ -116,10 +116,6 @@ final class FontMapperImpl implements FontMapper
         try (InputStream resourceAsStream = FontMapper.class.getResourceAsStream(ttfName);
              InputStream ttfStream = new BufferedInputStream(resourceAsStream))
         {
-            if (resourceAsStream == null)
-            {
-                throw new IOException("resource '" + ttfName + "' not found");
-            }
             TTFParser ttfParser = new TTFParser();
             lastResortFont = ttfParser.parse(ttfStream);
         }
@@ -552,7 +548,8 @@ final class FontMapperImpl implements FontMapper
                                                            PDCIDSystemInfo cidSystemInfo)
     {
         PriorityQueue<FontMatch> queue = new PriorityQueue<>(20);
-        
+        PDPanose fdPanose = fontDescriptor.getPanose();
+        PDPanoseClassification fdPanoseClassif = fdPanose != null ? fdPanose.getPanose() : null;
         for (FontInfo info : fontInfoByName.values())
         {
             // filter by CIDSystemInfo, if given
@@ -562,14 +559,14 @@ final class FontMapperImpl implements FontMapper
             }
 
             FontMatch match = new FontMatch(info);
+            PDPanoseClassification infoPanose = info.getPanose();
 
             // Panose is the most reliable
-            if (fontDescriptor.getPanose() != null && info.getPanose() != null)
+            if (fdPanose != null && infoPanose != null)
             {
-                PDPanoseClassification panose = fontDescriptor.getPanose().getPanose();
-                if (panose.getFamilyKind() == info.getPanose().getFamilyKind())
+                if (fdPanoseClassif.getFamilyKind() == infoPanose.getFamilyKind())
                 {
-                    if (panose.getFamilyKind() == 0 && 
+                    if (fdPanoseClassif.getFamilyKind() == 0 &&
                         (info.getPostScriptName().toLowerCase().contains("barcode") ||
                          info.getPostScriptName().startsWith("Code")) && 
                         !probablyBarcodeFont(fontDescriptor))
@@ -578,33 +575,33 @@ final class FontMapperImpl implements FontMapper
                         continue;
                     }
                     // serifs
-                    if (panose.getSerifStyle() == info.getPanose().getSerifStyle())
+                    if (fdPanoseClassif.getSerifStyle() == infoPanose.getSerifStyle())
                     {
                         // exact match
                         match.score += 2;
                     }
-                    else if (panose.getSerifStyle() >= 2 && panose.getSerifStyle() <= 5 &&
-                             info.getPanose().getSerifStyle() >= 2 &&
-                             info.getPanose().getSerifStyle() <= 5)
+                    else if (fdPanoseClassif.getSerifStyle() >= 2 && fdPanoseClassif.getSerifStyle() <= 5 &&
+                             infoPanose.getSerifStyle() >= 2 &&
+                             infoPanose.getSerifStyle() <= 5)
                     {
                         // cove (serif)
                         match.score += 1;
                     }
-                    else if (panose.getSerifStyle() >= 11 && panose.getSerifStyle() <= 13 &&
-                             info.getPanose().getSerifStyle() >= 11 &&
-                             info.getPanose().getSerifStyle() <= 13)
+                    else if (fdPanoseClassif.getSerifStyle() >= 11 && fdPanoseClassif.getSerifStyle() <= 13 &&
+                             infoPanose.getSerifStyle() >= 11 &&
+                             infoPanose.getSerifStyle() <= 13)
                     {
                         // sans-serif
                         match.score += 1;
                     }
-                    else if (panose.getSerifStyle() != 0 && info.getPanose().getSerifStyle() != 0)
+                    else if (fdPanoseClassif.getSerifStyle() != 0 && infoPanose.getSerifStyle() != 0)
                     {
                         // mismatch
                         match.score -= 1;
                     }
                     
                     // weight
-                    int weight = info.getPanose().getWeight();
+                    int weight = infoPanose.getWeight();
                     int weightClass = info.getWeightClassAsPanose();
                     if (Math.abs(weight - weightClass) > 2)
                     {
@@ -612,14 +609,14 @@ final class FontMapperImpl implements FontMapper
                         weight = weightClass;
                     }
                     
-                    if (panose.getWeight() == weight)
+                    if (fdPanoseClassif.getWeight() == weight)
                     {
                         // exact match
                         match.score += 2;
                     }
-                    else if (panose.getWeight() > 1 && weight > 1)
+                    else if (fdPanoseClassif.getWeight() > 1 && weight > 1)
                     {
-                        float dist = Math.abs(panose.getWeight() - weight);
+                        float dist = Math.abs(fdPanoseClassif.getWeight() - weight);
                         match.score += 1 - dist * 0.5;
                     }
                     
