@@ -216,11 +216,7 @@ public class DomXmpParser
             for (int i = 0; i < nnm.getLength(); i++)
             {
                 Attr attr = (Attr) nnm.item(i);
-                if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
-                {
-                    // do nothing
-                }
-                else if (XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix())
+                if (XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix())
                         && XmpConstants.ABOUT_NAME.equals(attr.getLocalName()))
                 {
                     // do nothing
@@ -228,6 +224,21 @@ public class DomXmpParser
                 else if (attr.getPrefix() == null && XmpConstants.ABOUT_NAME.equals(attr.getLocalName()))
                 {
                     // do nothing
+                }
+                else if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
+                {
+                    if (!strictParsing)
+                    {
+                        // Add the schema on the fly if it can't be found
+                        String prefix = attr.getLocalName();
+                        String namespace = attr.getValue();
+                        
+                        XMPSchema schema = xmp.getSchema(namespace);
+                        if (schema == null && tm.getSchemaFactory(namespace) == null)
+                        {
+                            tm.addNewNameSpace(namespace, prefix);
+                        }
+                    }
                 }
                 else
                 {

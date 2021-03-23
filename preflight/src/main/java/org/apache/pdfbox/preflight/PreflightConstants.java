@@ -198,7 +198,7 @@ public class PreflightConstants
      */
     public static final String ERROR_SYNTAX_STREAM_LENGTH_INVALID = "1.2.5";
     /**
-     * F or/and FFilter or/and FDecodeParams are present in a stream dictionary
+     * F or/and FFilter or/and FDecodeParms are present in a stream dictionary
      */
     public static final String ERROR_SYNTAX_STREAM_FX_KEYS = "1.2.6";
     /**
