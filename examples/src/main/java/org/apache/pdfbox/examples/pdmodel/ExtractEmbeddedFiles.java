@@ -101,7 +101,7 @@ public final class ExtractEmbeddedFiles
         }
     }
 
-    private static void extractFilesFromEFTree(PDEmbeddedFilesNameTreeNode efTree, String filePath) throws IOException
+    private static void extractFilesFromEFTree(PDNameTreeNode<PDComplexFileSpecification> efTree, String filePath) throws IOException
     {
         Map<String, PDComplexFileSpecification> names = efTree.getNames();
         if (names != null)
@@ -111,10 +111,13 @@ public final class ExtractEmbeddedFiles
         else
         {
             List<PDNameTreeNode<PDComplexFileSpecification>> kids = efTree.getKids();
+            if (kids == null)
+            {
+                return;
+            }
             for (PDNameTreeNode<PDComplexFileSpecification> node : kids)
             {
-                names = node.getNames();
-                extractFiles(names, filePath);
+                extractFilesFromEFTree(node, filePath);
             }
         }
     }
@@ -137,7 +140,14 @@ public final class ExtractEmbeddedFiles
             throws IOException
     {
         String embeddedFilename = filePath + filename;
-        File file = new File(filePath + filename);
+        File file = new File(embeddedFilename);
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists())
+        {
+            // sometimes paths contain a directory
+            System.out.println("Creating " + parentDir);
+            parentDir.mkdirs();
+        }
         System.out.println("Writing " + embeddedFilename);
         try (FileOutputStream fos = new FileOutputStream(file))
         {

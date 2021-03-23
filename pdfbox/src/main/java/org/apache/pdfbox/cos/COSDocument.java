@@ -299,7 +299,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public boolean isEncrypted()
     {
-        return trailer != null ? trailer.getCOSDictionary(COSName.ENCRYPT) != null : false;
+        return trailer != null && trailer.getCOSDictionary(COSName.ENCRYPT) != null;
     }
 
     /**

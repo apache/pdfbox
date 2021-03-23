@@ -18,9 +18,6 @@ package org.apache.fontbox.cff;
 
 import org.apache.fontbox.encoding.Encoding;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * A CFF Type 1-equivalent Encoding. An encoding is an array of codes associated with some or all
  * glyphs in a font
@@ -29,30 +26,11 @@ import java.util.Map;
  */
 public abstract class CFFEncoding extends Encoding
 {
-    private final Map<Integer, String> codeToName = new HashMap<>(250);
-
     /**
      * Package-private constructor for subclasses.
      */
     CFFEncoding()
     {
-    }
-
-    /**
-     * Returns the name of the glyph for the given character code.
-     *
-     * @param code character code
-     * @return PostScript glyph name
-     */
-    @Override
-    public String getName(int code)
-    {
-        String name = codeToName.get(code);
-        if (name == null)
-        {
-            return ".notdef";
-        }
-        return name;
     }
 
     /**
@@ -62,7 +40,6 @@ public abstract class CFFEncoding extends Encoding
      */
     public void add(int code, int sid, String name)
     {
-        codeToName.put(code, name);
         addCharacterEncoding(code, name);
     }
 
@@ -71,8 +48,6 @@ public abstract class CFFEncoding extends Encoding
      */
     protected void add(int code, int sid)
     {
-        String name = CFFStandardString.getName(sid);
-        codeToName.put(code, name);
-        addCharacterEncoding(code, name);
+        addCharacterEncoding(code, CFFStandardString.getName(sid));
     }
 }
