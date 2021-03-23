@@ -172,7 +172,8 @@ public class COSObject extends COSBase implements COSUpdateInfo
     @Override
     public Object accept( ICOSVisitor visitor ) throws IOException
     {
-        return getObject() != null ? getObject().accept( visitor ) : COSNull.NULL.accept( visitor );
+        COSBase object = getObject();
+        return object != null ? object.accept( visitor ) : COSNull.NULL.accept( visitor );
     }
     
     /**
