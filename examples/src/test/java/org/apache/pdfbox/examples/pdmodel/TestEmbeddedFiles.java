@@ -39,7 +39,7 @@ public class TestEmbeddedFiles
      * @throws IOException 
      */
     @Test
-    public void TestEmbeddedFiles() throws IOException
+    public void testEmbeddedFiles() throws IOException
     {
         String outputFile = "target/test-output/EmbeddedFile.pdf";
         String embeddedFile = "target/test-output/test.txt";
