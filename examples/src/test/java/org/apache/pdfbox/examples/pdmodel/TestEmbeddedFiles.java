@@ -41,6 +41,7 @@ public class TestEmbeddedFiles
         String outputFile = "target/test-output/EmbeddedFile.pdf";
         String embeddedFile = "target/test-output/Test.txt";
 
+        new File("target/test-output").mkdirs();
         new File(outputFile).delete();
         new File(embeddedFile).delete();
         String[] args = new String[] { outputFile };
