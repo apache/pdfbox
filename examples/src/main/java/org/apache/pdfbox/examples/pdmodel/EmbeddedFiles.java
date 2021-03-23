@@ -17,6 +17,7 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -111,7 +112,9 @@ public class EmbeddedFiles
 
             // show attachments panel in some viewers 
             doc.getDocumentCatalog().setPageMode(PageMode.USE_ATTACHMENTS);
-
+System.out.println("file: '" + file + "'");
+System.out.println("Abs path: " + new File(file).getAbsolutePath());
+System.out.println("parent exists? " + new File(file).getParentFile().exists());
             doc.save( file );
         }
         finally
