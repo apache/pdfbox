@@ -885,7 +885,7 @@ public class CFFParser
             case 0:
                 return readFormat0FDSelect(dataInput, nGlyphs, ros);
             case 3:
-                return readFormat3FDSelect(dataInput, nGlyphs, ros);
+                return readFormat3FDSelect(dataInput, ros);
             default:
                 throw new IllegalArgumentException();
         }
@@ -915,13 +915,11 @@ public class CFFParser
      * Read the Format 3 of the FDSelect data structure.
      * 
      * @param dataInput
-     * @param nGlyphs
      * @param ros
      * @return the Format 3 of the FDSelect data
      * @throws IOException
      */
-    private static Format3FDSelect readFormat3FDSelect(CFFDataInput dataInput, int nGlyphs,
-            CFFCIDFont ros)
+    private static Format3FDSelect readFormat3FDSelect(CFFDataInput dataInput, CFFCIDFont ros)
             throws IOException
     {
         int nbRanges = dataInput.readCard16();
@@ -1086,18 +1084,20 @@ public class CFFParser
         {
             charset.addCID(0, 0);
             charset.rangesCID2GID = new ArrayList<>();
-            for (int gid = 1; gid < nGlyphs; gid++)
+            int gid = 1;
+            while (gid < nGlyphs)
             {
                 int rangeFirst = dataInput.readSID();
                 int rangeLeft = dataInput.readCard8();
                 charset.rangesCID2GID.add(new RangeMapping(gid, rangeFirst, rangeLeft));
-                gid += rangeLeft;
+                gid += rangeLeft + 1;
             }
         }
         else
         {
             charset.addSID(0, 0, ".notdef");
-            for (int gid = 1; gid < nGlyphs; gid++)
+            int gid = 1;
+            while (gid < nGlyphs)
             {
                 int rangeFirst = dataInput.readSID();
                 int rangeLeft = dataInput.readCard8();
@@ -1106,7 +1106,7 @@ public class CFFParser
                     int sid = rangeFirst + j;
                     charset.addSID(gid + j, sid, readString(sid));
                 }
-                gid += rangeLeft;
+                gid += rangeLeft + 1;
             }
         }
         return charset;
@@ -1120,18 +1120,20 @@ public class CFFParser
         {
             charset.addCID(0, 0);
             charset.rangesCID2GID = new ArrayList<>();
-            for (int gid = 1; gid < nGlyphs; gid++)
+            int gid = 1;
+            while (gid < nGlyphs)
             {
                 int first = dataInput.readSID();
                 int nLeft = dataInput.readCard16();
                 charset.rangesCID2GID.add(new RangeMapping(gid, first, nLeft));
-                gid += nLeft;
+                gid += nLeft + 1;
             }
         }
         else
         {
             charset.addSID(0, 0, ".notdef");
-            for (int gid = 1; gid < nGlyphs; gid++)
+            int gid = 1;
+            while (gid < nGlyphs)
             {
                 int first = dataInput.readSID();
                 int nLeft = dataInput.readCard16();
@@ -1140,7 +1142,7 @@ public class CFFParser
                     int sid = first + j;
                     charset.addSID(gid + j, sid, readString(sid));
                 }
-                gid += nLeft;
+                gid += nLeft + 1;
             }
         }
         return charset;
