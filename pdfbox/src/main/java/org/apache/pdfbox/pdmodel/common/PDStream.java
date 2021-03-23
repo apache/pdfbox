@@ -423,7 +423,7 @@ public class PDStream implements COSObjectable
      */
     public void setFileDecodeParams(List<?> decodeParams)
     {
-        stream.setItem("FDecodeParams", COSArrayList.converterToCOSArray(decodeParams));
+        stream.setItem(COSName.F_DECODE_PARMS, COSArrayList.converterToCOSArray(decodeParams));
     }
 
     /**
