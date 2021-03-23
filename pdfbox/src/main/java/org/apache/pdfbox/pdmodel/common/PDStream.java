@@ -281,13 +281,30 @@ public class PDStream implements COSObjectable
      */
     public List<Object> getDecodeParms() throws IOException
     {
-        // See PDF Ref 1.5 implementation note 7, the DP is sometimes used instead.
-        COSBase dp = stream.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
+        // See PDF Ref 1.5 implementation note 7, /DP is sometimes used instead.
+        return internalGetDecodeParams(COSName.DECODE_PARMS, COSName.DP);
+    }
+
+    /**
+     * Get the list of decode parameters. Each entry in the list will refer to
+     * an entry in the filters list.
+     * 
+     * @return The list of decode parameters.
+     * @throws IOException if there is an error retrieving the parameters.
+     */
+    public List<Object> getFileDecodeParams() throws IOException
+    {
+        return internalGetDecodeParams(COSName.F_DECODE_PARMS, null);
+    }
+
+    private List<Object> internalGetDecodeParams(COSName name1, COSName name2) throws IOException
+    {
+        COSBase dp = stream.getDictionaryObject(name1, name2);
 
         if (dp instanceof COSDictionary)
         {
             Map<?, ?> map = COSDictionaryMap.convertBasicTypesToMap((COSDictionary) dp);
-            return new COSArrayList<>(map, dp, stream, COSName.DECODE_PARMS);
+            return new COSArrayList<>(map, dp, stream, name1);
         }
 
         if (dp instanceof COSArray)
@@ -375,45 +392,6 @@ public class PDStream implements COSObjectable
     {
         COSBase obj = COSArray.ofCOSNames(filters);
         stream.setItem(COSName.F_FILTER, obj);
-    }
-
-    /**
-     * Get the list of decode parameters. Each entry in the list will refer to
-     * an entry in the filters list.
-     * 
-     * @return The list of decode parameters.
-     * @throws IOException if there is an error retrieving the parameters.
-     */
-    public List<Object> getFileDecodeParams() throws IOException
-    {
-        COSBase dp = stream.getDictionaryObject(COSName.F_DECODE_PARMS);
-
-        if (dp instanceof COSDictionary)
-        {
-            Map<?, ?> map = COSDictionaryMap.convertBasicTypesToMap((COSDictionary) dp);
-            return new COSArrayList<>(map, dp, stream, COSName.F_DECODE_PARMS);
-        }
-
-        if (dp instanceof COSArray)
-        {
-            COSArray array = (COSArray) dp;
-            List<Object> actuals = new ArrayList<>(array.size());
-            for (int i = 0; i < array.size(); i++)
-            {
-                COSBase base = array.getObject(i);
-                if (base instanceof COSDictionary)
-                {
-                    actuals.add(COSDictionaryMap.convertBasicTypesToMap((COSDictionary) base));
-                }
-                else
-                {
-                    LOG.warn("Expected COSDictionary, got " + base + ", ignored");
-                }
-            }
-            return new COSArrayList<>(actuals, array);
-        }
-
-        return null;
     }
 
     /**
