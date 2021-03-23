@@ -576,7 +576,7 @@ public final class TTFSubsetter
         {
             long isResult = is.skip(g.getOffset());
 
-            if (Long.compare(isResult, g.getOffset()) != 0)
+            if (isResult != g.getOffset())
             {
                 LOG.debug("Tried skipping " + g.getOffset() + " bytes but skipped only " + isResult + " bytes");
             }
@@ -594,7 +594,7 @@ public final class TTFSubsetter
                 newOffsets[newGid++] = newOffset;
                 isResult = is.skip(offset - prevEnd);
 
-                if (Long.compare(isResult, offset - prevEnd) != 0)
+                if (isResult != offset - prevEnd)
                 {
                     LOG.debug("Tried skipping " + (offset - prevEnd) + " bytes but skipped only " + isResult + " bytes");
                 }
@@ -602,7 +602,7 @@ public final class TTFSubsetter
                 byte[] buf = new byte[(int)length];
                 isResult = is.read(buf);
 
-                if (Long.compare(isResult, length) != 0)
+                if (isResult != length)
                 {
                     LOG.debug("Tried reading " + length + " bytes but only " + isResult + " bytes read");
                 }
@@ -732,8 +732,8 @@ public final class TTFSubsetter
 
         // +1 because .notdef is missing in uniToGID
         int[] startCode = new int[uniToGID.size()+1];
-        int[] endCode = new int[uniToGID.size()+1];
-        int[] idDelta = new int[uniToGID.size()+1];
+        int[] endCode = new int[startCode.length];
+        int[] idDelta = new int[startCode.length];
         int segCount = 0;
         while(it.hasNext())
         {
@@ -901,7 +901,7 @@ public final class TTFSubsetter
         {
             long isResult = is.skip(hm.getOffset());
 
-            if (Long.compare(isResult, hm.getOffset()) != 0)
+            if (isResult != hm.getOffset())
             {
                 LOG.debug("Tried skipping " + hm.getOffset() + " bytes but only " + isResult + " bytes skipped");
             }
