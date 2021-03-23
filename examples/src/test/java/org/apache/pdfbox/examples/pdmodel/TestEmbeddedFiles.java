@@ -36,7 +36,7 @@ public class TestEmbeddedFiles
      * @throws IOException 
      */
     @Test
-    void TestEmbeddedFiles() throws IOException
+    void testEmbeddedFiles() throws IOException
     {
         String outputFile = "target/test-output/EmbeddedFile.pdf";
         String embeddedFile = "target/test-output/test.txt";
