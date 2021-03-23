@@ -39,7 +39,7 @@ public class TestEmbeddedFiles
     void testEmbeddedFiles() throws IOException
     {
         String outputFile = "target/test-output/EmbeddedFile.pdf";
-        String embeddedFile = "target/test-output/test.txt";
+        String embeddedFile = "target/test-output/Test.txt";
 
         new File(outputFile).delete();
         new File(embeddedFile).delete();
