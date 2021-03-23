@@ -101,7 +101,7 @@ public final class ExtractEmbeddedFiles
         }
     }
 
-    private static void extractFilesFromEFTree(PDNameTreeNode efTree, String filePath) throws IOException
+    private static void extractFilesFromEFTree(PDNameTreeNode<PDComplexFileSpecification> efTree, String filePath) throws IOException
     {
         Map<String, PDComplexFileSpecification> names = efTree.getNames();
         if (names != null)
