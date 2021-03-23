@@ -387,7 +387,7 @@ public interface PreflightConstants
      */
     String ERROR_SYNTAX_STREAM_LENGTH_INVALID = "1.2.5";
     /**
-     * F or/and FFilter or/and FDecodeParams are present in a stream dictionary
+     * F or/and FFilter or/and FDecodeParms are present in a stream dictionary
      */
     String ERROR_SYNTAX_STREAM_FX_KEYS = "1.2.6";
     /**
@@ -872,7 +872,7 @@ public interface PreflightConstants
      */
     String ERROR_METADATA_FORMAT_XPACKET = "7.1.5";
     /**
-     * Metadata mismatch between PDF Dictionnary and xmp
+     * Metadata mismatch between PDF Dictionary and xmp
      */
     String ERROR_METADATA_MISMATCH = "7.2";
 
