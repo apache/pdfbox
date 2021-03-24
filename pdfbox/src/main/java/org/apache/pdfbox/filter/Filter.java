@@ -149,20 +149,16 @@ public abstract class Filter
     protected static ImageReader findImageReader(String formatName, String errorCause) throws MissingImageReaderException
     {
         Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(formatName);
-        ImageReader reader = null;
+        ImageReader reader;
         while (readers.hasNext())
         {
             reader = readers.next();
             if (reader != null && reader.canReadRaster())
             {
-                break;
+                return reader;
             }
         }
-        if (reader == null)
-        {
-            throw new MissingImageReaderException("Cannot read " + formatName + " image: " + errorCause);
-        }
-        return reader;
+        throw new MissingImageReaderException("Cannot read " + formatName + " image: " + errorCause);
     }
 
     /**
