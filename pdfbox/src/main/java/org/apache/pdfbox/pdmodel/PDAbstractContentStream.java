@@ -1687,18 +1687,16 @@ abstract class PDAbstractContentStream implements Closeable
     public List<Float> convertUnit(List<Float> items, String unit_type)
     {
         float multiplier = 1;
-        if (unit_type == "mm")
-        {
-            multiplier = 1 / (10 * 2.54f) * 72;
-        }
-        else if (unit_type == "inch")
-        {
-            multiplier = 72;
-        }
-        else
-        {
-            throw new IllegalArgumentException(
-                    "could not find the unit type: " + unit_type);
+        switch (unit_type) {
+            case "mm":
+                multiplier = 1 / (10 * 2.54f) * 72;
+                break;
+            case "inch":
+                multiplier = 72;
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "could not find the unit type: " + unit_type);
         }
         List<Float> items_new = new ArrayList();
         Iterator<Float> it = items.iterator();
