@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class TestEmbeddedFiles
+class TestEmbeddedFiles
 {
     /**
      * Very basic test of embedding and extracting an attachment.
