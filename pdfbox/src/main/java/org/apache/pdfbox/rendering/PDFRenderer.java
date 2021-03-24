@@ -51,11 +51,14 @@ public class PDFRenderer
 
     protected final PDDocument document;
     // TODO keep rendering state such as caches here
-    
     /**
-    * Default annotations filter, returns all annotations
+     * Default annotations filter, returns all annotations
+     */
+    private static final AnnotationFilter defaultAnnotationFilter = annotation -> true;
+    /**
+    * Current annotations filter
     */
-    private AnnotationFilter annotationFilter = annotation -> true;
+    private AnnotationFilter annotationFilter = defaultAnnotationFilter;
 
     private boolean subsamplingAllowed = false;
 
@@ -467,10 +470,10 @@ public class PDFRenderer
 
         // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
         int rotationAngle = page.getRotation();
-        PDRectangle cropBox = page.getCropBox();
 
         if (rotationAngle != 0)
         {
+            PDRectangle cropBox = page.getCropBox();
             float translateX = 0;
             float translateY = 0;
             switch (rotationAngle)
