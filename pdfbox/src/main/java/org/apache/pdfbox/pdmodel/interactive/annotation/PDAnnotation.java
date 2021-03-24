@@ -54,7 +54,7 @@ public abstract class PDAnnotation implements COSObjectable
     /**
      * An annotation flag.
      */
-    private static final int FLAG_INVISIBLE = 1 << 0;
+    private static final int FLAG_INVISIBLE = 1;
     /**
      * An annotation flag.
      */
