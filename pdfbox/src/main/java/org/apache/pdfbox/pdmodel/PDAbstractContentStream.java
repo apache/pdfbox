@@ -1702,7 +1702,7 @@ abstract class PDAbstractContentStream implements Closeable
         }
         List<Float> items_new = new ArrayList();
         Iterator<Float> it = items.iterator();
-        while(it.hasNext())
+        while (it.hasNext())
         {
             Float item = it.next();
             item *= multiplier;
