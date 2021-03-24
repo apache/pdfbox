@@ -105,100 +105,122 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public static PDAnnotation createAnnotation(COSBase base) throws IOException
     {
-        PDAnnotation annot = null;
         if (base instanceof COSDictionary)
         {
-            COSDictionary annotDic = (COSDictionary) base;
-            String subtype = annotDic.getNameAsString(COSName.SUBTYPE);
-            if (PDAnnotationFileAttachment.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationFileAttachment(annotDic);
-            }
-            else if (PDAnnotationLine.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationLine(annotDic);
-            }
-            else if (PDAnnotationLink.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationLink(annotDic);
-            }
-            else if (PDAnnotationPopup.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationPopup(annotDic);
-            }
-            else if (PDAnnotationRubberStamp.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationRubberStamp(annotDic);
-            }
-            else if (PDAnnotationSquare.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationSquare(annotDic);
-            }
-            else if (PDAnnotationCircle.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationCircle(annotDic);
-            }
-            else if (PDAnnotationPolygon.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationPolygon(annotDic);
-            }
-            else if (PDAnnotationPolyline.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationPolyline(annotDic);
-            }
-            else if (PDAnnotationInk.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationInk(annotDic);
-            }
-            else if (PDAnnotationText.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationText(annotDic);
-            }
-            else if (PDAnnotationHighlight.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationHighlight(annotDic);
-            }
-            else if (PDAnnotationUnderline.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationUnderline(annotDic);
-            }
-            else if (PDAnnotationStrikeout.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationStrikeout(annotDic);
-            }
-            else if (PDAnnotationSquiggly.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationSquiggly(annotDic);
-            }
-            else if (PDAnnotationWidget.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationWidget(annotDic);
-            }
-            else if (PDAnnotationFreeText.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationFreeText(annotDic);
-            }
-            else if (PDAnnotationCaret.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationCaret(annotDic);
-            }
-            else if (PDAnnotationSound.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationSound(annotDic);
-            }
-            else
-            {
-                // TODO not yet implemented:
-                // Movie, Screen, PrinterMark, TrapNet, Watermark, 3D, Redact
-                annot = new PDAnnotationUnknown(annotDic);
-                LOG.debug("Unknown or unsupported annotation subtype " + subtype);
-            }
+            return getPdAnnotation((COSDictionary) base);
         }
         else
         {
             throw new IOException("Error: Unknown annotation type " + base);
         }
+    }
 
+    /**
+     * Create the correct annotation from the dictionary COS object.
+     *
+     * @param annotDic The COSDictionary object that is the annotation.
+     * @return The correctly typed annotation object.
+     *
+     * @throws IOException If the annotation type is null.
+     */
+    public static PDAnnotation createAnnotation(COSDictionary annotDic) throws IOException
+    {
+        if (annotDic != null)
+        {
+            return getPdAnnotation(annotDic);
+        }
+        else
+        {
+            throw new IOException("Error: Annotation type is null");
+        }
+    }
+
+    private static PDAnnotation getPdAnnotation(COSDictionary annotDic)
+    {
+        PDAnnotation annot;
+        String subtype = annotDic.getNameAsString(COSName.SUBTYPE);
+        if (PDAnnotationFileAttachment.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationFileAttachment(annotDic);
+        }
+        else if (PDAnnotationLine.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationLine(annotDic);
+        }
+        else if (PDAnnotationLink.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationLink(annotDic);
+        }
+        else if (PDAnnotationPopup.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationPopup(annotDic);
+        }
+        else if (PDAnnotationRubberStamp.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationRubberStamp(annotDic);
+        }
+        else if (PDAnnotationSquare.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationSquare(annotDic);
+        }
+        else if (PDAnnotationCircle.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationCircle(annotDic);
+        }
+        else if (PDAnnotationPolygon.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationPolygon(annotDic);
+        }
+        else if (PDAnnotationPolyline.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationPolyline(annotDic);
+        }
+        else if (PDAnnotationInk.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationInk(annotDic);
+        }
+        else if (PDAnnotationText.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationText(annotDic);
+        }
+        else if (PDAnnotationHighlight.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationHighlight(annotDic);
+        }
+        else if (PDAnnotationUnderline.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationUnderline(annotDic);
+        }
+        else if (PDAnnotationStrikeout.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationStrikeout(annotDic);
+        }
+        else if (PDAnnotationSquiggly.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationSquiggly(annotDic);
+        }
+        else if (PDAnnotationWidget.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationWidget(annotDic);
+        }
+        else if (PDAnnotationFreeText.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationFreeText(annotDic);
+        }
+        else if (PDAnnotationCaret.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationCaret(annotDic);
+        }
+        else if (PDAnnotationSound.SUB_TYPE.equals(subtype))
+        {
+            annot = new PDAnnotationSound(annotDic);
+        }
+        else {
+            // TODO not yet implemented:
+            // Movie, Screen, PrinterMark, TrapNet, Watermark, 3D, Redact
+            annot = new PDAnnotationUnknown(annotDic);
+            LOG.debug("Unknown or unsupported annotation subtype " + subtype);
+        }
         return annot;
     }
 
