@@ -522,9 +522,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public void setContents(List<PDStream> contents)
     {
-        COSArray array = new COSArray();
-        contents.forEach(array::add);
-        page.setItem(COSName.CONTENTS, array);
+        page.setItem(COSName.CONTENTS, new COSArray(contents));
     }
 
     /**
