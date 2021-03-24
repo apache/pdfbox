@@ -383,24 +383,17 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public String toTextString()
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        InputStream input = null;
-        try
+        try (InputStream input = createInputStream())
         {
-            input = createInputStream();
-            IOUtils.copy(input, out);
+            byte[] array = IOUtils.toByteArray(input);
+            COSString string = new COSString(array);
+            return string.getString();
         }
         catch (IOException e)
         {
             LOG.debug("An exception occurred trying to get the content - returning empty string instead", e);
             return "";
         }
-        finally
-        {
-            IOUtils.closeQuietly(input);
-        }
-        COSString string = new COSString(out.toByteArray());
-        return string.getString();
     }
     
     @Override
