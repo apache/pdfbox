@@ -162,11 +162,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private final float imageDownscalingOptimizationThreshold;
 
     static final int JAVA_VERSION = PageDrawer.getJavaVersion();
-
     /**
-    * Default annotations filter, returns all annotations
-    */
-    private AnnotationFilter annotationFilter = annotation -> true;
+     * Default annotations filter, returns all annotations
+     */
+    private static final AnnotationFilter defaultAnnotationFilter = annotation -> true;
+    /**
+     * Current annotations filter
+     */
+    private AnnotationFilter annotationFilter = defaultAnnotationFilter;
 
     /**
      * Constructor.
