@@ -8,9 +8,9 @@ import org.apache.pdfbox.util.Matrix;
 
 import java.io.File;
 import java.io.IOException;
-
+//This class shall annotate a pdf with an image, fulfilling req 4.0
 public class AddImage {
-    //syntax: AddImage PDF_URL Image_URL
+
     private PDDocument documentToWrite;
     private PDPageContentStream writingStream;
     private PDImageXObject imageToWrite;
@@ -18,7 +18,7 @@ public class AddImage {
     public AddImage() {
 
     }
-
+    //loading the document and initializing the content stream is done in this method to make testing easier and avoiding a single, dense method
     public PDDocument loadFileandInitializeStream(String path, int page) throws IOException {
 
         File file = new File(path);
@@ -40,7 +40,7 @@ public class AddImage {
 
     }
 
-
+//draws the image onto the PDF
     public void writeImage(String fileName) throws IOException {
         writingStream.drawImage(imageToWrite, 50, 170, 500, 500);
         writingStream.close();
@@ -68,6 +68,9 @@ public class AddImage {
         return documentToWrite;
     }
 
+    //this method along with addPage() check to see if the requested page is out of bounds for the document
+    //and adds pages as needed.
+    //This fulfills requirement 4.1
     protected void pageCheck(PDDocument doc, int page){
         int pageDifference = documentToWrite.getNumberOfPages()-page;
         if(pageDifference<0){
