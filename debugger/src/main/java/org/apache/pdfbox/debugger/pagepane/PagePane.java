@@ -16,7 +16,8 @@
 
 package org.apache.pdfbox.debugger.pagepane;
 
-import java.awt.Graphics2D;
+import java.awt.*;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.debugger.PDFDebugger;
 import org.apache.pdfbox.debugger.ui.ImageUtil;
@@ -36,12 +37,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Desktop;
-import java.awt.Font;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -276,16 +271,18 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private void startExtracting()
     {
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        int screenWidth = gd.getDisplayMode().getWidth();
-        int screenHeight = gd.getDisplayMode().getHeight();
+        DisplayMode dm = gd.getDisplayMode();
+        int screenWidth = dm.getWidth();
+        int screenHeight = dm.getHeight();
 
         TextDialog textDialog = TextDialog.instance();
         textDialog.setSize(screenWidth / 3, screenHeight / 3);
         textDialog.setVisible(true);
 
+        Point locationOnScreen = getPanel().getLocationOnScreen();
         // avoid that the text extraction window gets outside of the screen
-        int x = Math.min(getPanel().getLocationOnScreen().x + getPanel().getWidth() / 2, screenWidth * 3 / 4);
-        int y = Math.min(getPanel().getLocationOnScreen().y + getPanel().getHeight() / 2, screenHeight * 3 / 4);
+        int x = Math.min(locationOnScreen.x + getPanel().getWidth() / 2, screenWidth * 3 / 4);
+        int y = Math.min(locationOnScreen.y + getPanel().getHeight() / 2, screenHeight * 3 / 4);
         textDialog.setLocation(x, y);
 
         try
@@ -394,10 +391,11 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        float height = page.getCropBox().getHeight();
-        float width  = page.getCropBox().getWidth();
-        float offsetX = page.getCropBox().getLowerLeftX();
-        float offsetY = page.getCropBox().getLowerLeftY();
+        PDRectangle cropBoxRect = page.getCropBox();
+        float height = cropBoxRect.getHeight();
+        float width  = cropBoxRect.getWidth();
+        float offsetX = cropBoxRect.getLowerLeftX();
+        float offsetY = cropBoxRect.getLowerLeftY();
         float zoomScale = zoomMenu.getPageZoomScale();
         float x = e.getX() / zoomScale * (float) defaultTransform.getScaleX();
         float y = e.getY() / zoomScale * (float) defaultTransform.getScaleY();

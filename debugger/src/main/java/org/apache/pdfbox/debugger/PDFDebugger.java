@@ -480,7 +480,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             }
             try
             {
-                readPDFurl(urlString, "");
+                readPDFUrl(urlString, "");
             }
             catch (IOException e)
             {
@@ -497,7 +497,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             {
                 if (currentFilePath.startsWith("http"))
                 {
-                    readPDFurl(currentFilePath, "");
+                    readPDFUrl(currentFilePath, "");
                 }
                 else
                 {
@@ -534,12 +534,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
 
-        JMenuItem exitMenuItem = new JMenuItem("Exit");
-        exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
-        exitMenuItem.addActionListener(this::exitMenuItemActionPerformed);
-
         if (!IS_MAC_OS)
         {
+            JMenuItem exitMenuItem = new JMenuItem("Exit");
+            exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
+            exitMenuItem.addActionListener(this::exitMenuItemActionPerformed);
+
             fileMenu.addSeparator();
             fileMenu.add(exitMenuItem);
         }
@@ -1258,7 +1258,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         addRecentFileItems();
     }
     
-    private void readPDFurl(final String urlString, String password) throws IOException
+    private void readPDFUrl(final String urlString, String password) throws IOException
     {
         if (document != null)
         {
@@ -1322,7 +1322,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     /**
      * Internal class to avoid double code in password entry loop.
      */
-    abstract class DocumentOpener
+    static abstract class DocumentOpener
     {
         String password;
 
@@ -1334,16 +1334,16 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         /**
          * Override to load the actual input type (File, URL, stream), don't call it directly!
          * 
-         * @return
-         * @throws IOException 
+         * @return the PDDocument instance
+         * @throws IOException Cannot read document
          */
         abstract PDDocument open() throws IOException;
 
         /**
          * Call this!
          * 
-         * @return
-         * @throws IOException 
+         * @return the PDDocument instance
+         * @throws IOException Cannot read document
          */
         final PDDocument parse() throws IOException 
         {
@@ -1435,7 +1435,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         if (pageLabels != null)
         {
             String[] labels = pageLabels.getLabelsByPageIndices();
-            if (labels[pageIndex] != null)
+            if (labels.length > 0 && labels[pageIndex] != null)
             {
                 return labels[pageIndex];
             }
