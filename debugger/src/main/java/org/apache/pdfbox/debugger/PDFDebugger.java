@@ -1322,7 +1322,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     /**
      * Internal class to avoid double code in password entry loop.
      */
-    static abstract class DocumentOpener
+    abstract static class DocumentOpener
     {
         String password;
 
