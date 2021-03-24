@@ -437,19 +437,19 @@ public class PDFDebugger extends JFrame
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
 
-        JMenuItem exitMenuItem = new JMenuItem("Exit");
-        exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
-        exitMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent evt)
-            {
-                exitMenuItemActionPerformed(evt);
-            }
-        });
-
         if (!IS_MAC_OS)
         {
+            JMenuItem exitMenuItem = new JMenuItem("Exit");
+            exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
+            exitMenuItem.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent evt)
+                {
+                    exitMenuItemActionPerformed(evt);
+                }
+            });
+
             fileMenu.addSeparator();
             fileMenu.add(exitMenuItem);
         }
