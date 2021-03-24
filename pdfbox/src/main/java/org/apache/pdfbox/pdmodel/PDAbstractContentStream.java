@@ -1684,7 +1684,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @throws IllegalArgumentException If desired length unit is not supported.
      * @return Items converted to desired unit.
      */
-    public List<Float> convertUnit(List<Float> items, String unit_type)
+    public static final void convertUnit(List<Float> items, String unit_type)
     {
         float multiplier = 1;
         switch (unit_type) {
@@ -1698,15 +1698,9 @@ abstract class PDAbstractContentStream implements Closeable
                 throw new IllegalArgumentException(
                         "could not find the unit type: " + unit_type);
         }
-        List<Float> items_new = new ArrayList();
-        Iterator<Float> it = items.iterator();
-        while (it.hasNext())
-        {
-            Float item = it.next();
-            item *= multiplier;
-            items_new.add(item);
-        }
 
-        return items_new;
+        for (int i=0; i < items.size(); i++) {
+            items.set(i, items.get(i) * multiplier);
+        }
     }
 }
