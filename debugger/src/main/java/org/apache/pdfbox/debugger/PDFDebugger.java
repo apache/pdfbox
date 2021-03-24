@@ -1388,7 +1388,7 @@ public class PDFDebugger extends JFrame
     /**
      * Internal class to avoid double code in password entry loop.
      */
-    abstract class DocumentOpener
+    abstract static class DocumentOpener
     {
         String password;
 
@@ -1400,16 +1400,16 @@ public class PDFDebugger extends JFrame
         /**
          * Override to load the actual input type (File, URL, stream), don't call it directly!
          * 
-         * @return
-         * @throws IOException 
+         * @return the PDDocument instance
+         * @throws IOException Cannot read document
          */
         abstract PDDocument open() throws IOException;
 
         /**
          * Call this!
          * 
-         * @return
-         * @throws IOException 
+         * @return the PDDocument instance
+         * @throws IOException Cannot read document
          */
         final PDDocument parse() throws IOException 
         {
