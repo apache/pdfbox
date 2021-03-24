@@ -732,8 +732,8 @@ public final class TTFSubsetter
 
         // +1 because .notdef is missing in uniToGID
         int[] startCode = new int[uniToGID.size()+1];
-        int[] endCode = new int[uniToGID.size()+1];
-        int[] idDelta = new int[uniToGID.size()+1];
+        int[] endCode = new int[startCode.length];
+        int[] idDelta = new int[startCode.length];
         int segCount = 0;
         while(it.hasNext())
         {
