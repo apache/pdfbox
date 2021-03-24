@@ -534,12 +534,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
 
-        JMenuItem exitMenuItem = new JMenuItem("Exit");
-        exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
-        exitMenuItem.addActionListener(this::exitMenuItemActionPerformed);
-
         if (!IS_MAC_OS)
         {
+            JMenuItem exitMenuItem = new JMenuItem("Exit");
+            exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
+            exitMenuItem.addActionListener(this::exitMenuItemActionPerformed);
+
             fileMenu.addSeparator();
             fileMenu.add(exitMenuItem);
         }
