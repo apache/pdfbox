@@ -27,8 +27,13 @@ public class PDFWithTimeNewRomanText {
                 if (input==1){
                     cs.setFont(PDType1Font.TIMES_ROMAN, 15);
                 }
+                else if(input==2){
+                    cs.setFont(PDType1Font.COURIER, 15);
+                }
                 else
-                cs.setFont(PDType1Font.COURIER, 15);
+                    System.out.println("You entered invalid selection ");
+
+
                 // color for the text
                 cs.setNonStrokingColor(Color.BLACK);
                 // starting position
