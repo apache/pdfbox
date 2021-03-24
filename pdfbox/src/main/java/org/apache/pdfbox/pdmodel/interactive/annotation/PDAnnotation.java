@@ -121,7 +121,7 @@ public abstract class PDAnnotation implements COSObjectable
      * @param annotDic The COSDictionary object that is the annotation.
      * @return The correctly typed annotation object.
      *
-     * @throws IOException If the annotation type is null.
+     * @throws IOException If the annotation is null.
      */
     public static PDAnnotation createAnnotation(COSDictionary annotDic) throws IOException
     {
