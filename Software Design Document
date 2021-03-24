@@ -1,5 +1,5 @@
 Software Design Document.
-PDFBox know issues and fixes.
+PDFBox known issues and fixes.
 
 Written By: Wright State University CEG-4110-01 Group 6. Assigned to Ahmed Alsaedi as Task.
 
@@ -26,30 +26,27 @@ The team will be using IntelliJ and Eclipse, cloning the original project for th
 
 Architectural Strategies:
 The Project requirements are as followed.
--Req. 1.0
-The Back Enhanced PDFBOX System (BEPS) shall provide a mechanism for users to annotate existing PDF documents with text.
+-Req. 1.0 
+A tool shall provide a mechanism for users to annotate existing PDF documents with text.
 -Req 1.1
 In annotations composed of text, the user shall be able to specify the font of each glyph in the text from a set of at least two different fonts.
 -Req 1.1.1
-The BEPS shall include at least two different user selectable fonts.
--Req 2.0
-The BEPS shall provide users with a mechanism to highlight existing text in PDF documents
+The font tool shall include at least two different user selectable fonts.
+-Req 1.2
+The user shall be able to choose a page to place the text on. More pages shall be created as needed.
+-Req 2.0 
+A tool shall be provided that allows users to highlight existing text in PDF documents
 -Req 3.0
-A GUI shall be implemented to allow users to draw lines on the document
-Based on the requirements, weakly tasks were created and assigned to team members to complete.
-Action 1- create group GitHub account and assigne all team members as contributors. – Completed
-Action  2- Produce code to generate a PDF with Times New Roman – Completed.
-Action 3- Annotate a PDF with a pre-defined string Action – Pending.
-Action 4 - Produce code to generate the "Hello World" PDF, but have it also contained an image- Completed.
-Action 5 - finishing up image annotation- Pending
+A tool shall be implemented to allow users to draw lines on the document
+-Req 3.1
+The user shall be able to choose a page to place the Line on. More pages shall be created as needed.
+-Req 4.0
+A tool shall be provided to allow users to annotate existing PDF documents with an image
+-Req 4.1
+The user shall be able to choose a page to place the image on. More pages shall be created as needed.
 
-Action 6 - Create Design Document- Pending
-
-Action 7- Modify Add Image to take in a page number to add the image to. If the document is shorter than the input number, more pages shall be added to accommodate.- Pending
-
-Action 8: Create AddLine class that takes in two coordinates and a page number as an input-Pending.
-
-Action 9- Create UI for Font selection while creating a PDF document.
+To achieve these requirements, the team will create "tool" classes with accompanying tests. Each tool will provide utility that serves to fulfill one or more of these requirements. 
+Each tool class will have accompanying test classes in the tests folder. 
 
 
 
