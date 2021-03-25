@@ -1682,7 +1682,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param unit_type Specifies desired length unit (mm or inch).
      * @throws IllegalArgumentException If desired length unit is not supported.
      */
-    public static final void convertUnit(List<Float> items, String unit_type)
+    public static final void convertUnit(List<Float> items, String unitType)
     {
         float multiplier = 1;
         switch (unit_type) {
