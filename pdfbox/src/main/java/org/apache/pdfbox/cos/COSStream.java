@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.cos;
 
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.FilterOutputStream;
 import java.io.IOException;
