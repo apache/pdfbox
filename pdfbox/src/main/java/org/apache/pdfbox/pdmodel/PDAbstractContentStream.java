@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1682,7 +1681,6 @@ abstract class PDAbstractContentStream implements Closeable
      * @param items Items that needs to be converted.
      * @param unit_type Specifies desired length unit (mm or inch).
      * @throws IllegalArgumentException If desired length unit is not supported.
-     * @return Items converted to desired unit.
      */
     public static final void convertUnit(List<Float> items, String unit_type)
     {
