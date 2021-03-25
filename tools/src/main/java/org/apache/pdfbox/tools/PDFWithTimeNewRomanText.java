@@ -22,6 +22,8 @@ public class PDFWithTimeNewRomanText {
             try(PDPageContentStream cs = new PDPageContentStream(pdfDoc, firstPage)){
                 cs.beginText();
                 // setting font family and font size base on use input.
+                //This fulfill requirement 1.1.1,
+                // mechanism for font changing that we will integrate to the text annotation
                 System.out.println("Enter 1 for New Times Roman or 2 for Courier ");
                 int input=myObj.nextInt();
                 if (input==1){
