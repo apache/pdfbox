@@ -124,13 +124,16 @@ public final class PDFToImage implements Callable<Integer>
             quality = "png".equals(imageFormat) ? 0f : 1f;
         }
 
-        try
+        if (dpi == 0)
         {
-            dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-        }
-        catch( HeadlessException e )
-        {
-            dpi = 96;
+            try
+            {
+                dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+            }
+            catch (HeadlessException e)
+            {
+                dpi = 96;
+            }
         }
 
         try (PDDocument document = Loader.loadPDF(infile, password))
