@@ -470,7 +470,6 @@ public class PDFRenderer
 
         // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
         int rotationAngle = page.getRotation();
-
         if (rotationAngle != 0)
         {
             PDRectangle cropBox = page.getCropBox();
