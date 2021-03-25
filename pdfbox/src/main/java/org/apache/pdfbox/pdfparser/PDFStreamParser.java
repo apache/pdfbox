@@ -287,8 +287,8 @@ public class PDFStreamParser extends BaseParser
                 return COSNull.NULL;
             default:
                 // we must be an operator
-                String operator = readOperator();
-                if (operator.trim().length() > 0)
+                String operator = readOperator().trim();
+                if (operator.length() > 0)
                 {
                     return Operator.getOperator(operator);
                 }
