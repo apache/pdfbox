@@ -27,13 +27,13 @@ import java.util.Map;
 public final class CFFOperator
 {
 
-    private Key operatorKey = null;
-    private String operatorName = null;
+    private final Key operatorKey;
+    private final String operatorName;
 
     private CFFOperator(Key key, String name)
     {
-        setKey(key);
-        setName(name);
+        operatorKey = key;
+        operatorName = name;
     }
 
     /**
@@ -45,11 +45,6 @@ public final class CFFOperator
         return operatorKey;
     }
 
-    private void setKey(Key key)
-    {
-        operatorKey = key;
-    }
-
     /**
      * The name of the operator.
      * @return the name
@@ -57,11 +52,6 @@ public final class CFFOperator
     public String getName()
     {
         return operatorName;
-    }
-
-    private void setName(String name)
-    {
-        operatorName = name;
     }
 
     /**
@@ -115,6 +105,7 @@ public final class CFFOperator
 
     /**
      * Returns the operator corresponding to the given name.
+     * 
      * @param name the given name
      * @return the corresponding operator
      */
@@ -129,7 +120,7 @@ public final class CFFOperator
      */
     public static class Key
     {
-        private int[] value = null;
+        private final int[] value;
 
         /**
          * Constructor.
@@ -152,7 +143,7 @@ public final class CFFOperator
 
         private Key(int[] value)
         {
-            setValue(value);
+            this.value = value;
         }
 
         /**
@@ -162,11 +153,6 @@ public final class CFFOperator
         public int[] getValue()
         {
             return value;
-        }
-
-        private void setValue(int[] value)
-        {
-            this.value = value;
         }
 
         /**
