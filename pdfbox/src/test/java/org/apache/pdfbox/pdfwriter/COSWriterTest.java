@@ -22,6 +22,9 @@ import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
 
 class COSWriterTest
 {
