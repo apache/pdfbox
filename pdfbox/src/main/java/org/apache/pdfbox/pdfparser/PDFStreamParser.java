@@ -222,6 +222,12 @@ public class PDFStreamParser extends BaseParser
                     while( (nextToken = parseNextToken()) instanceof COSName )
                     {
                         Object value = parseNextToken();
+                        if (!(value instanceof COSBase))
+                        {
+                            LOG.warn("Unexpected token in inline image dictionary at offset " +
+                                    source.getPosition());
+                            break;
+                        }
                         imageParams.setItem( (COSName)nextToken, (COSBase)value );
                     }
                     //final token will be the image data, maybe??
