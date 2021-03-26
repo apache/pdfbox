@@ -522,9 +522,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public void setContents(List<PDStream> contents)
     {
-        COSArray array = new COSArray();
-        contents.forEach(array::add);
-        page.setItem(COSName.CONTENTS, array);
+        page.setItem(COSName.CONTENTS, new COSArray(contents));
     }
 
     /**
@@ -760,9 +758,7 @@ public class PDPage implements COSObjectable, PDContentStream
             page.removeItem(COSName.VP);
             return;
         }
-        COSArray array = new COSArray();
-        viewports.forEach(array::add);
-        page.setItem(COSName.VP, array);
+        page.setItem(COSName.VP, new COSArray(viewports));
     }
 
     /**
