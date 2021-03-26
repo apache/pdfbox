@@ -782,7 +782,7 @@ public class AFMParser
      */
     private boolean readBoolean() throws IOException
     {
-        return Boolean.valueOf(readString());
+        return Boolean.parseBoolean(readString());
     }
 
     /**
