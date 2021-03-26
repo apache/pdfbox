@@ -533,8 +533,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     // explicit mask: RGB + Binary -> ARGB
     // soft mask: RGB + Gray -> ARGB
-    private BufferedImage applyMask(BufferedImage image, BufferedImage mask,
-                                    boolean isSoft, float[] matte)
+    private BufferedImage applyMask(BufferedImage image, BufferedImage mask, boolean isSoft,
+            float[] matte)
     {
         if (mask == null)
         {
@@ -555,7 +555,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             height = mask.getHeight();
             image = scaleImage(image, width, height);
         }
-        else if (image.getRaster().getPixel(0, 0, (int[]) null).length < 3)
+        else if (image.getType() != BufferedImage.TYPE_INT_ARGB)
         {
             // PDFBOX-4470 bitonal image has only one element => copy into RGB
             image = scaleImage(image, width, height);
@@ -567,45 +567,42 @@ public final class PDImageXObject extends PDXObject implements PDImage
         WritableRaster dest = masked.getRaster();
         WritableRaster alpha = mask.getRaster();
 
-        float[] rgb = new float[4];
-        float[] rgba = new float[4];
-        float[] alphaPixel = null;
+
+        int[] alphaRow = new int[width];
+        int[] rgbaRow = new int[4 * width];
         for (int y = 0; y < height; y++)
         {
+            src.getPixels(0, y, width, 1, rgbaRow);
+            alpha.getSamples(0, y, width, 1, 0, alphaRow);
             for (int x = 0; x < width; x++)
             {
-                src.getPixel(x, y, rgb);
-
-                rgba[0] = rgb[0];
-                rgba[1] = rgb[1];
-                rgba[2] = rgb[2];
-
-                alphaPixel = alpha.getPixel(x, y, alphaPixel);
+                int offset = x * 4;
                 if (isSoft)
                 {
-                    rgba[3] = alphaPixel[0];
-                    if (matte != null && Float.compare(alphaPixel[0], 0) != 0)
+                    rgbaRow[offset + 3] = alphaRow[x];
+                    if (matte != null && Integer.compare(alphaRow[x], 0) != 0)
                     {
-                        rgba[0] = clampColor(((rgba[0] / 255 - matte[0]) / (alphaPixel[0] / 255) + matte[0]) * 255);
-                        rgba[1] = clampColor(((rgba[1] / 255 - matte[1]) / (alphaPixel[0] / 255) + matte[1]) * 255);
-                        rgba[2] = clampColor(((rgba[2] / 255 - matte[2]) / (alphaPixel[0] / 255) + matte[2]) * 255);
+                        // Formula from PDF.js
+                        // https://github.com/mozilla/pdf.js/blob/2823beba6991f0cf26380291c7c54b522c0242f4/src/core/image.js#L585
+                        float k = 255f / alphaRow[x];
+                        rgbaRow[offset + 0] = clampColor((rgbaRow[offset + 0] - matte[0]) * k + matte[0]);
+                        rgbaRow[offset + 1] = clampColor((rgbaRow[offset + 1] - matte[1]) * k + matte[1]);
+                        rgbaRow[offset + 2] = clampColor((rgbaRow[offset + 2] - matte[2]) * k + matte[2]);
                     }
                 }
                 else
                 {
-                    rgba[3] = 255 - alphaPixel[0];
+                    rgbaRow[offset + 3] = 255 - alphaRow[x];
                 }
-
-                dest.setPixel(x, y, rgba);
             }
+            dest.setPixels(0, y, width, 1, rgbaRow);
         }
-
         return masked;
     }
 
-    private float clampColor(float color)
+    private int clampColor(float color)
     {
-        return color < 0 ? 0 : (color > 255 ? 255 : color);        
+        return color < 0 ? 0 : (color > 255 ? 255 : Math.round(color));
     }
 
     /**
@@ -613,7 +610,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     private BufferedImage scaleImage(BufferedImage image, int width, int height)
     {
-        BufferedImage image2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image2.createGraphics();
         if (getInterpolate())
         {
@@ -654,6 +651,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     /**
      * Returns the color key mask array associated with this image, or null if there is none.
+     * 
      * @return Mask Image XObject
      */
     public COSArray getColorKeyMask()
