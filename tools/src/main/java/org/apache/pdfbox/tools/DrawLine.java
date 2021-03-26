@@ -15,7 +15,7 @@ public class DrawLine {
     private PDPageContentStream writingStream;
 
 
-
+//loading the document and initializing the content stream is done in this method to make testing easier and avoiding a single, dense method
     public PDDocument loadDocument(String imagePath, int page) throws IOException {
         File file = new File(imagePath);
         PDDocument doc = Loader.loadPDF(file);
@@ -26,7 +26,7 @@ public class DrawLine {
 
         return doc;
     }
-
+//draws the line on the previous loaded document using the previously created content stream
     public void draw(float x1, float y1, float x2, float y2, String outputName) throws IOException {
         writingStream.moveTo(x1, y1);
         writingStream.lineTo(x2, y2);
