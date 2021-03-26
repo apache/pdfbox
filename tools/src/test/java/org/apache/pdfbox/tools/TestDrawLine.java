@@ -9,7 +9,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
+//Test class for the DrawLine class
 public class TestDrawLine {
 @Test
     public void testLoadDocumentAndPageCheck() throws IOException {

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TestAddImage{
-
+//test class for AddImage
 @Test
 public void testLoadFileAndInitializeStream() throws IOException {
 
