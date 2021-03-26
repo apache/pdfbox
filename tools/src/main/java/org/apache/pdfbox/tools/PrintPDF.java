@@ -169,12 +169,13 @@ public final class PrintPDF
             {
                 PrintService[] printServices = PrinterJob.lookupPrintServices();
                 boolean printerFound = false;
-                for (int i = 0; !printerFound && i < printServices.length; i++)
+                for (int i = 0; i < printServices.length; i++)
                 {
                     if (printServices[i].getName().equals(printerName))
                     {
                         printJob.setPrintService(printServices[i]);
                         printerFound = true;
+                        break;
                     }
                 }
                 if (!printerFound)
