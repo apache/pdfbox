@@ -862,7 +862,7 @@ public class CFFParser
         encoding.supplement = new CFFBuiltInEncoding.Supplement[nSups];
         for (int i = 0; i < nSups; i++)
         {
-            int code = dataInput.readCard16();
+            int code = dataInput.readCard8();
             int sid = dataInput.readSID();
             encoding.supplement[i] = new CFFBuiltInEncoding.Supplement(code, sid, readString(sid));
             encoding.add(encoding.supplement[i]);
