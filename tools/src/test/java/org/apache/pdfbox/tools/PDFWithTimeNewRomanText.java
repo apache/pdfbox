@@ -9,7 +9,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import java.util.Scanner;
 
 public class PDFWithTimeNewRomanText {
-    //using the folder to store the PDF file in for now.
+    //using the folder to store the PDF file in for now. Changed the location of the file
     public static final String CREATED_PDF = "tools/src/main/java/org/apache/pdfbox/tools/FontResources/TimesNewRoman.pdf";
     public static void main(String[] args) {
         try {
