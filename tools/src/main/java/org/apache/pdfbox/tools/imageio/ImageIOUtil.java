@@ -241,11 +241,13 @@ public final class ImageIOUtil
                 return false;
             }
 
+            boolean isTifFormat = formatName.toLowerCase().startsWith("tif");
+
             // compression
             if (param != null && param.canWriteCompressed())
             {
                 param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                if (formatName.toLowerCase().startsWith("tif"))
+                if (isTifFormat)
                 {
                     if ("".equals(compressionType))
                     {
@@ -268,9 +270,10 @@ public final class ImageIOUtil
                 }
             }
 
-            if (formatName.toLowerCase().startsWith("tif"))
+            if (isTifFormat)
             {
                 // TIFF metadata
+                //todo can metadata be null here?
                 TIFFUtil.updateMetadata(metadata, image, dpi);
             }
             else if ("jpeg".equalsIgnoreCase(formatName)
