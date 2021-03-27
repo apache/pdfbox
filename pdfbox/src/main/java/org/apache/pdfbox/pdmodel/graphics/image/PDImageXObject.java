@@ -549,7 +549,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
         {
             mask = scaleImage(mask, width, height);
         }
-        else if (mask.getWidth() > width || mask.getHeight() > height)
+
+        if (mask.getWidth() > width || mask.getHeight() > height)
         {
             width = mask.getWidth();
             height = mask.getHeight();
@@ -557,6 +558,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         else if (image.getType() != BufferedImage.TYPE_INT_ARGB)
         {
+            // always convert to ARGB to allow bulk read / write
             // PDFBOX-4470 bitonal image has only one element => copy into RGB
             image = scaleImage(image, width, height);
         }
