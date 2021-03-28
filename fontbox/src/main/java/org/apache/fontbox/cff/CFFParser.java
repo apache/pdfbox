@@ -294,18 +294,13 @@ public class CFFParser
 
     private static String readOperator(CFFDataInput input, int b0) throws IOException
     {
-        CFFOperator.Key key = readOperatorKey(input, b0);
-        return CFFOperator.getOperator(key).getName();
-    }
-
-    private static CFFOperator.Key readOperatorKey(CFFDataInput input, int b0) throws IOException
-    {
         if (b0 == 12)
         {
             int b1 = input.readUnsignedByte();
-            return new CFFOperator.Key(b0, b1);
+            return CFFOperator.getOperator(b0, b1);
         }
-        return new CFFOperator.Key(b0);
+        return CFFOperator.getOperator(b0);
+
     }
 
     private static Integer readIntegerNumber(CFFDataInput input, int b0) throws IOException
