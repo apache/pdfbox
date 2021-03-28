@@ -943,7 +943,6 @@ public class CFFParser
 
         private Format3FDSelect(CFFCIDFont owner, Range3[] range3, int sentinel)
         {
-            super(owner);
             this.range3 = range3;
             this.sentinel = sentinel;
         }
@@ -1015,7 +1014,6 @@ public class CFFParser
 
         private Format0FDSelect(CFFCIDFont owner, int[] fds)
         {
-            super(owner);
             this.fds = fds;
         }
 
