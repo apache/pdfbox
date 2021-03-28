@@ -16,7 +16,6 @@
  */
 package org.apache.fontbox.cff;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -120,7 +119,8 @@ public final class CFFOperator
      */
     public static class Key
     {
-        private final int[] value;
+        private final int b0;
+        private final int b1;
 
         /**
          * Constructor.
@@ -128,7 +128,7 @@ public final class CFFOperator
          */
         public Key(int b0)
         {
-            this(new int[] { b0 });
+            this(b0, 0);
         }
 
         /**
@@ -138,21 +138,8 @@ public final class CFFOperator
          */
         public Key(int b0, int b1)
         {
-            this(new int[] { b0, b1 });
-        }
-
-        private Key(int[] value)
-        {
-            this.value = value;
-        }
-
-        /**
-         * Returns the value of the key.
-         * @return the value
-         */
-        public int[] getValue()
-        {
-            return value;
+            this.b0 = b0;
+            this.b1 = b1;
         }
 
         /**
@@ -161,7 +148,7 @@ public final class CFFOperator
         @Override
         public String toString()
         {
-            return Arrays.toString(getValue());
+            return b1 + " " + b0;
         }
 
         /**
@@ -170,7 +157,7 @@ public final class CFFOperator
         @Override
         public int hashCode()
         {
-            return Arrays.hashCode(getValue());
+            return b1 << 8 + b0;
         }
 
         /**
@@ -182,7 +169,7 @@ public final class CFFOperator
             if (object instanceof Key)
             {
                 Key that = (Key) object;
-                return Arrays.equals(getValue(), that.getValue());
+                return b0 == that.b0 && b1 == that.b1;
             }
             return false;
         }
