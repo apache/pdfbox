@@ -758,9 +758,7 @@ public class PDPage implements COSObjectable, PDContentStream
             page.removeItem(COSName.VP);
             return;
         }
-        COSArray array = new COSArray();
-        viewports.forEach(array::add);
-        page.setItem(COSName.VP, array);
+        page.setItem(COSName.VP, new COSArray(viewports));
     }
 
     /**

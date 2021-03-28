@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -268,20 +269,20 @@ public class CFFParser
 
             if (b0 >= 0 && b0 <= 21)
             {
-                entry.operator = readOperator(input, b0);
+                entry.operatorName = readOperator(input, b0);
                 break;
             }
             else if (b0 == 28 || b0 == 29)
             {
-                entry.operands.add(readIntegerNumber(input, b0));
+                entry.addOperand(readIntegerNumber(input, b0));
             }
             else if (b0 == 30)
             {
-                entry.operands.add(readRealNumber(input));
+                entry.addOperand(readRealNumber(input));
             }
             else if (b0 >= 32 && b0 <= 254)
             {
-                entry.operands.add(readIntegerNumber(input, b0));
+                entry.addOperand(readIntegerNumber(input, b0));
             }
             else
             {
@@ -291,20 +292,15 @@ public class CFFParser
         return entry;
     }
 
-    private static CFFOperator readOperator(CFFDataInput input, int b0) throws IOException
-    {
-        CFFOperator.Key key = readOperatorKey(input, b0);
-        return CFFOperator.getOperator(key);
-    }
-
-    private static CFFOperator.Key readOperatorKey(CFFDataInput input, int b0) throws IOException
+    private static String readOperator(CFFDataInput input, int b0) throws IOException
     {
         if (b0 == 12)
         {
             int b1 = input.readUnsignedByte();
-            return new CFFOperator.Key(b0, b1);
+            return CFFOperator.getOperator(b0, b1);
         }
-        return new CFFOperator.Key(b0);
+        return CFFOperator.getOperator(b0);
+
     }
 
     private static Integer readIntegerNumber(CFFDataInput input, int b0) throws IOException
@@ -942,7 +938,6 @@ public class CFFParser
 
         private Format3FDSelect(CFFCIDFont owner, Range3[] range3, int sentinel)
         {
-            super(owner);
             this.range3 = range3;
             this.sentinel = sentinel;
         }
@@ -1014,7 +1009,6 @@ public class CFFParser
 
         private Format0FDSelect(CFFCIDFont owner, int[] fds)
         {
-            super(owner);
             this.fds = fds;
         }
 
@@ -1183,9 +1177,9 @@ public class CFFParser
 
         public void add(Entry entry)
         {
-            if (entry.operator != null)
+            if (entry.operatorName != null)
             {
-                entries.put(entry.operator.getName(), entry);
+                entries.put(entry.operatorName, entry);
             }
         }
         
@@ -1197,25 +1191,25 @@ public class CFFParser
         public Boolean getBoolean(String name, boolean defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null && !entry.getArray().isEmpty() ? entry.getBoolean(0) : defaultValue;
+            return entry != null && entry.hasOperands() ? entry.getBoolean(0) : defaultValue;
         }
 
         public List<Number> getArray(String name, List<Number> defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null && !entry.getArray().isEmpty() ? entry.getArray() : defaultValue;
+            return entry != null && entry.hasOperands() ? entry.getOperands() : defaultValue;
         }
 
         public Number getNumber(String name, Number defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null && !entry.getArray().isEmpty() ? entry.getNumber(0) : defaultValue;
+            return entry != null && entry.hasOperands() ? entry.getNumber(0) : defaultValue;
         }
 
         public List<Number> getDelta(String name, List<Number> defaultValue) 
         {
             Entry entry = getEntry(name);
-            return entry != null && !entry.getArray().isEmpty() ? entry.getDelta() : defaultValue;
+            return entry != null && entry.hasOperands() ? entry.getDelta() : defaultValue;
         }
         
         /**
@@ -1233,7 +1227,7 @@ public class CFFParser
         private static class Entry
         {
             private final List<Number> operands = new ArrayList<>();
-            private CFFOperator operator = null;
+            private String operatorName = null;
 
             public Number getNumber(int index)
             {
@@ -1258,9 +1252,19 @@ public class CFFParser
                 throw new IllegalArgumentException();
             }
 
-            public List<Number> getArray()
+            public void addOperand(Number operand)
             {
-                return operands;
+                operands.add(operand);
+            }
+
+            public boolean hasOperands()
+            {
+                return !operands.isEmpty();
+            }
+
+            public List<Number> getOperands()
+            {
+                return Collections.unmodifiableList(operands);
             }
 
             public List<Number> getDelta()
@@ -1279,7 +1283,8 @@ public class CFFParser
             @Override
             public String toString()
             {
-                return getClass().getName() + "[operands=" + operands + ", operator=" + operator + "]";
+                return getClass().getName() + "[operands=" + operands + ", operator=" + operatorName
+                        + "]";
             }
         }
     }
