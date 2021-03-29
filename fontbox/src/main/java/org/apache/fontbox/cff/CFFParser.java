@@ -1077,13 +1077,12 @@ public class CFFParser
         if (isCIDFont)
         {
             charset.addCID(0, 0);
-            charset.rangesCID2GID = new ArrayList<>();
             int gid = 1;
             while (gid < nGlyphs)
             {
                 int rangeFirst = dataInput.readSID();
                 int rangeLeft = dataInput.readCard8();
-                charset.rangesCID2GID.add(new RangeMapping(gid, rangeFirst, rangeLeft));
+                charset.addRangeMapping(new RangeMapping(gid, rangeFirst, rangeLeft));
                 gid += rangeLeft + 1;
             }
         }
@@ -1113,13 +1112,12 @@ public class CFFParser
         if (isCIDFont)
         {
             charset.addCID(0, 0);
-            charset.rangesCID2GID = new ArrayList<>();
             int gid = 1;
             while (gid < nGlyphs)
             {
                 int first = dataInput.readSID();
                 int nLeft = dataInput.readCard16();
-                charset.rangesCID2GID.add(new RangeMapping(gid, first, nLeft));
+                charset.addRangeMapping(new RangeMapping(gid, first, nLeft));
                 gid += nLeft + 1;
             }
         }
@@ -1416,11 +1414,22 @@ public class CFFParser
      */
     private static class Format1Charset extends EmbeddedCharset
     {
-        private List<RangeMapping> rangesCID2GID;
+        private final List<RangeMapping> rangesCID2GID;
 
         private Format1Charset(boolean isCIDFont)
         {
             super(isCIDFont);
+            rangesCID2GID = new ArrayList<>();
+        }
+
+        /**
+         * Add the given range mapping.
+         * 
+         * @param rangeMapping the range mapping to be added.
+         */
+        public void addRangeMapping(RangeMapping rangeMapping)
+        {
+            rangesCID2GID.add(rangeMapping);
         }
 
         @Override
@@ -1461,11 +1470,22 @@ public class CFFParser
      */
     private static class Format2Charset extends EmbeddedCharset
     {
-        private List<RangeMapping> rangesCID2GID;
+        private final List<RangeMapping> rangesCID2GID;
         
         private Format2Charset(boolean isCIDFont)
         {
             super(isCIDFont);
+            rangesCID2GID = new ArrayList<>();
+        }
+
+        /**
+         * Add the given range mapping.
+         * 
+         * @param rangeMapping the range mapping to be added.
+         */
+        public void addRangeMapping(RangeMapping rangeMapping)
+        {
+            rangesCID2GID.add(rangeMapping);
         }
 
         @Override
