@@ -25,6 +25,12 @@ import java.util.Map;
  */
 public final class CFFOperator
 {
+
+    private CFFOperator()
+    {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static void register(int key, String name)
     {
         keyMap.put(key, name);
