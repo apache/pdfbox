@@ -240,12 +240,14 @@ public final class ImageIOUtil
                 LOG.error("Supported formats: " + Arrays.toString(ImageIO.getWriterFormatNames()));
                 return false;
             }
+            
+            boolean isTifFormat = formatName.toLowerCase().startsWith("tif");
 
             // compression
             if (param != null && param.canWriteCompressed())
             {
                 param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                if (formatName.toLowerCase().startsWith("tif"))
+                if (isTifFormat)
                 {
                     if ("".equals(compressionType))
                     {
@@ -268,28 +270,28 @@ public final class ImageIOUtil
                 }
             }
 
-            if (formatName.toLowerCase().startsWith("tif"))
+            if (metadata != null)
             {
-                // TIFF metadata
-                TIFFUtil.updateMetadata(metadata, image, dpi);
-            }
-            else if ("jpeg".equalsIgnoreCase(formatName)
-                    || "jpg".equalsIgnoreCase(formatName))
-            {
-                // This segment must be run before other meta operations,
-                // or else "IIOInvalidTreeException: Invalid node: app0JFIF"
-                // The other (general) "meta" methods may not be used, because
-                // this will break the reading of the meta data in tests
-                JPEGUtil.updateMetadata(metadata, dpi);
-            }
-            else
-            {
-                // write metadata is possible
-                if (metadata != null
-                        && !metadata.isReadOnly()
-                        && metadata.isStandardMetadataFormatSupported())
+                if (isTifFormat)
                 {
-                    setDPI(metadata, dpi, formatName);
+                    // TIFF metadata
+                    TIFFUtil.updateMetadata(metadata, image, dpi);
+                }
+                else if ("jpeg".equalsIgnoreCase(formatName) || "jpg".equalsIgnoreCase(formatName))
+                {
+                    // This segment must be run before other meta operations,
+                    // or else "IIOInvalidTreeException: Invalid node: app0JFIF"
+                    // The other (general) "meta" methods may not be used, because
+                    // this will break the reading of the meta data in tests
+                    JPEGUtil.updateMetadata(metadata, dpi);
+                }
+                else
+                {
+                    // write metadata is possible
+                    if (!metadata.isReadOnly() && metadata.isStandardMetadataFormatSupported())
+                    {
+                        setDPI(metadata, dpi, formatName);
+                    }
                 }
             }
 
