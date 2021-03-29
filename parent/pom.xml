@@ -29,7 +29,7 @@
 
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0-RC1</version>
     <packaging>pom</packaging>
 
     <name>PDFBox parent</name>
@@ -55,7 +55,7 @@
              see also https://stackoverflow.com/a/28695766/535646 
              https://maven.apache.org/surefire/maven-surefire-plugin/faq.html#late-property-evaluation
         -->
-        <surefireArgLine></surefireArgLine>
+        <surefireArgLine />
       </properties>
 
     <dependencyManagement>
@@ -131,7 +131,7 @@
             </activation>
             <properties>
                 <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod></addmod>
+                <addmod />
             </properties>
         </profile>
         <!-- call mvn with -Pjdk9 or call with -Daddmod="...." -->
@@ -147,7 +147,7 @@
             </activation>
             <properties>
                 <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod></addmod>
+                <addmod />
             </properties>
         </profile>
         <!-- need to specify release version so that if PDFBox is built with
@@ -175,14 +175,14 @@
             </activation>
             <properties>
                 <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod></addmod>
+                <addmod />
             </properties>
         </profile>
         <profile>
             <id>pedantic</id>
             <properties>
                 <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod></addmod>
+                <addmod />
             </properties>
             <build>
                 <plugins>
@@ -549,4 +549,10 @@
             </roles>
         </developer>
     </developers>
+
+  <scm>
+    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-apache-parent.git/pdfbox-parent/tags/3.0.0-RC1/pdfbox-parent</connection>
+    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-apache-parent.git/pdfbox-parent/tags/3.0.0-RC1/pdfbox-parent</developerConnection>
+    <url>https://github.com/apache/maven-apache-parent/tree/apache-23/pdfbox-parent/tags/3.0.0-RC1/pdfbox-parent</url>
+  </scm>
 </project>
