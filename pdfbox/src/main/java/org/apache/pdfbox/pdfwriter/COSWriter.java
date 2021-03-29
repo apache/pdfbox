@@ -650,11 +650,11 @@ public class COSWriter implements ICOSVisitor
         String headerString;
         if (fdfDocument != null)
         {
-            headerString = "%FDF-"+ Float.toString(doc.getVersion());
+            headerString = "%FDF-" + doc.getVersion();
         }
         else
         {
-            headerString = "%PDF-"+ Float.toString(doc.getVersion());
+            headerString = "%PDF-" + doc.getVersion();
         }
         getStandardOutput().write( headerString.getBytes(StandardCharsets.ISO_8859_1) );
         
@@ -785,15 +785,18 @@ public class COSWriter implements ICOSVisitor
         int xRefLength = xRefRanges.length;
         int x = 0;
         int j = 0;
-        while (x < xRefLength && (xRefLength % 2) == 0)
+        if ((xRefLength % 2) == 0)
         {
-            writeXrefRange(xRefRanges[x], xRefRanges[x + 1]);
-
-            for (int i = 0; i < xRefRanges[x + 1]; ++i)
+            while (x < xRefLength)
             {
-                writeXrefEntry(tmpXRefEntries.get(j++));
+                writeXrefRange(xRefRanges[x], xRefRanges[x + 1]);
+
+                for (int i = 0; i < xRefRanges[x + 1]; ++i)
+                {
+                    writeXrefEntry(tmpXRefEntries.get(j++));
+                }
+                x += 2;
             }
-            x += 2;
         }
     }
 
@@ -1047,7 +1050,7 @@ public class COSWriter implements ICOSVisitor
             list.add(last - count + 1);
             list.add(count);
         }
-        return list.toArray(new Long[0]);
+        return list.toArray(new Long[list.size()]);
     }
     
     /**
