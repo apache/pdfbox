@@ -1262,7 +1262,7 @@ public class CFFParser
 
             public List<Number> getOperands()
             {
-                return Collections.unmodifiableList(operands);
+                return operands;
             }
 
             public List<Number> getDelta()
