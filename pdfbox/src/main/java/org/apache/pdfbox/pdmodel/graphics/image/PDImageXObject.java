@@ -31,7 +31,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.SoftReference;
 import java.util.List;
+
 import javax.imageio.ImageIO;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -584,12 +586,10 @@ public final class PDImageXObject extends PDXObject implements PDImage
                     rgbaRow[offset + 3] = alphaRow[x];
                     if (matte != null && Integer.compare(alphaRow[x], 0) != 0)
                     {
-                        // Formula from PDF.js
-                        // https://github.com/mozilla/pdf.js/blob/2823beba6991f0cf26380291c7c54b522c0242f4/src/core/image.js#L585
-                        float k = 255f / alphaRow[x];
-                        rgbaRow[offset + 0] = clampColor((rgbaRow[offset + 0] - matte[0]) * k + matte[0]);
-                        rgbaRow[offset + 1] = clampColor((rgbaRow[offset + 1] - matte[1]) * k + matte[1]);
-                        rgbaRow[offset + 2] = clampColor((rgbaRow[offset + 2] - matte[2]) * k + matte[2]);
+                        float k = alphaRow[x] / 255f;
+                        rgbaRow[offset + 0] = clampColor(((rgbaRow[offset + 0] / 255f - matte[0]) / (k) + matte[0]) * 255f);
+                        rgbaRow[offset + 1] = clampColor(((rgbaRow[offset + 1] / 255f - matte[1]) / (k) + matte[1]) * 255f);
+                        rgbaRow[offset + 2] = clampColor(((rgbaRow[offset + 2] / 255f - matte[2]) / (k) + matte[2]) * 255f);
                     }
                 }
                 else
@@ -598,6 +598,17 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 }
             }
             dest.setPixels(0, y, width, 1, rgbaRow);
+        }
+        try
+        {
+            ImageIO.write(image, "PNG", new File("C://temp/pdfbox/image.png"));
+            ImageIO.write(mask, "PNG", new File("C://temp/pdfbox/mask.png"));
+            ImageIO.write(masked, "PNG", new File("C://temp/pdfbox/result.png"));
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return masked;
     }
@@ -612,6 +623,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     private BufferedImage scaleImage(BufferedImage image, int width, int height, int type)
     {
+        
         BufferedImage image2 = new BufferedImage(width, height, type);
         Graphics2D g = image2.createGraphics();
         if (getInterpolate())
