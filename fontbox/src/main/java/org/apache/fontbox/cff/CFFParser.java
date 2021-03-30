@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -686,7 +685,7 @@ public class CFFParser
         DictData.Entry fdSelectEntry = topDict.getEntry("FDSelect");
         int fdSelectPos = fdSelectEntry.getNumber(0).intValue();
         input.setPosition(fdSelectPos);
-        FDSelect fdSelect = readFDSelect(input, nrOfcharStrings, font);
+        FDSelect fdSelect = readFDSelect(input, nrOfcharStrings);
 
         // TODO almost certainly erroneous - CIDFonts do not have a top-level private dict
         // font.addValueToPrivateDict("defaultWidthX", 1000);
@@ -869,19 +868,18 @@ public class CFFParser
      * Read the FDSelect Data according to the format.
      * @param dataInput
      * @param nGlyphs
-     * @param ros
      * @return the FDSelect data
      * @throws IOException
      */
-    private static FDSelect readFDSelect(CFFDataInput dataInput, int nGlyphs, CFFCIDFont ros) throws IOException
+    private static FDSelect readFDSelect(CFFDataInput dataInput, int nGlyphs) throws IOException
     {
         int format = dataInput.readCard8();
         switch (format)
         {
             case 0:
-                return readFormat0FDSelect(dataInput, nGlyphs, ros);
+                return readFormat0FDSelect(dataInput, nGlyphs);
             case 3:
-                return readFormat3FDSelect(dataInput, ros);
+                return readFormat3FDSelect(dataInput);
             default:
                 throw new IllegalArgumentException();
         }
@@ -891,12 +889,10 @@ public class CFFParser
      * Read the Format 0 of the FDSelect data structure.
      * @param dataInput
      * @param nGlyphs
-     * @param ros
      * @return the Format 0 of the FDSelect data
      * @throws IOException
      */
-    private static Format0FDSelect readFormat0FDSelect(CFFDataInput dataInput, int nGlyphs,
-            CFFCIDFont ros)
+    private static Format0FDSelect readFormat0FDSelect(CFFDataInput dataInput, int nGlyphs)
             throws IOException
     {
         int[] fds = new int[nGlyphs];
@@ -904,18 +900,17 @@ public class CFFParser
         {
             fds[i] = dataInput.readCard8();
         }
-        return new Format0FDSelect(ros, fds);
+        return new Format0FDSelect(fds);
     }
 
     /**
      * Read the Format 3 of the FDSelect data structure.
      * 
      * @param dataInput
-     * @param ros
      * @return the Format 3 of the FDSelect data
      * @throws IOException
      */
-    private static Format3FDSelect readFormat3FDSelect(CFFDataInput dataInput, CFFCIDFont ros)
+    private static Format3FDSelect readFormat3FDSelect(CFFDataInput dataInput)
             throws IOException
     {
         int nbRanges = dataInput.readCard16();
@@ -925,7 +920,7 @@ public class CFFParser
         {
             range3[i] = new Range3(dataInput.readCard16(), dataInput.readCard8());
         }
-        return new Format3FDSelect(ros, range3, dataInput.readCard16());
+        return new Format3FDSelect(range3, dataInput.readCard16());
     }
 
     /**
@@ -936,7 +931,7 @@ public class CFFParser
         private final Range3[] range3;
         private final int sentinel;
 
-        private Format3FDSelect(CFFCIDFont owner, Range3[] range3, int sentinel)
+        private Format3FDSelect(Range3[] range3, int sentinel)
         {
             this.range3 = range3;
             this.sentinel = sentinel;
@@ -1007,7 +1002,7 @@ public class CFFParser
     {
         private final int[] fds;
 
-        private Format0FDSelect(CFFCIDFont owner, int[] fds)
+        private Format0FDSelect(int[] fds)
         {
             this.fds = fds;
         }
