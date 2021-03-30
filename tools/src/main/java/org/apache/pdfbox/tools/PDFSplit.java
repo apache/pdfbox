@@ -140,11 +140,7 @@ public final class PDFSplit implements Callable<Integer>
         {
             if (documents != null)
             {
-                for( int i=0; i<documents.size(); i++ )
-                {
-                    PDDocument doc = documents.get(i);
-                    IOUtils.closeQuietly(doc);
-                }
+                documents.forEach(IOUtils::closeQuietly);
             }
         }
         return 0;

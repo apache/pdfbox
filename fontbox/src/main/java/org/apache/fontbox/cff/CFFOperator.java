@@ -25,9 +25,20 @@ import java.util.Map;
  */
 public final class CFFOperator
 {
-    private static void register(int key, String name)
+
+    private CFFOperator()
     {
-        keyMap.put(key, name);
+        throw new IllegalStateException("Utility class");
+    }
+
+    private static void register(int b0, String name)
+    {
+        register(b0, 0, name);
+    }
+
+    private static void register(int b0, int b1, String name)
+    {
+        keyMap.put(calculateKey(b0, b1), name);
     }
 
     /**
@@ -38,7 +49,7 @@ public final class CFFOperator
      */
     public static String getOperator(int b0)
     {
-        return keyMap.get(calculateKey(b0));
+        return getOperator(b0, 0);
     }
 
     /**
@@ -52,11 +63,6 @@ public final class CFFOperator
         return keyMap.get(calculateKey(b0, b1));
     }
 
-    private static int calculateKey(int b0)
-    {
-        return calculateKey(b0, 0);
-    }
-
     private static int calculateKey(int b0, int b1)
     {
         return (b1 << 8) + b0;
@@ -67,59 +73,59 @@ public final class CFFOperator
     static
     {
         // Top DICT
-        register(calculateKey(0), "version");
-        register(calculateKey(1), "Notice");
-        register(calculateKey(12, 0), "Copyright");
-        register(calculateKey(2), "FullName");
-        register(calculateKey(3), "FamilyName");
-        register(calculateKey(4), "Weight");
-        register(calculateKey(12, 1), "isFixedPitch");
-        register(calculateKey(12, 2), "ItalicAngle");
-        register(calculateKey(12, 3), "UnderlinePosition");
-        register(calculateKey(12, 4), "UnderlineThickness");
-        register(calculateKey(12, 5), "PaintType");
-        register(calculateKey(12, 6), "CharstringType");
-        register(calculateKey(12, 7), "FontMatrix");
-        register(calculateKey(13), "UniqueID");
-        register(calculateKey(5), "FontBBox");
-        register(calculateKey(12, 8), "StrokeWidth");
-        register(calculateKey(14), "XUID");
-        register(calculateKey(15), "charset");
-        register(calculateKey(16), "Encoding");
-        register(calculateKey(17), "CharStrings");
-        register(calculateKey(18), "Private");
-        register(calculateKey(12, 20), "SyntheticBase");
-        register(calculateKey(12, 21), "PostScript");
-        register(calculateKey(12, 22), "BaseFontName");
-        register(calculateKey(12, 23), "BaseFontBlend");
-        register(calculateKey(12, 30), "ROS");
-        register(calculateKey(12, 31), "CIDFontVersion");
-        register(calculateKey(12, 32), "CIDFontRevision");
-        register(calculateKey(12, 33), "CIDFontType");
-        register(calculateKey(12, 34), "CIDCount");
-        register(calculateKey(12, 35), "UIDBase");
-        register(calculateKey(12, 36), "FDArray");
-        register(calculateKey(12, 37), "FDSelect");
-        register(calculateKey(12, 38), "FontName");
+        register(0, "version");
+        register(1, "Notice");
+        register(12, 0, "Copyright");
+        register(2, "FullName");
+        register(3, "FamilyName");
+        register(4, "Weight");
+        register(12, 1, "isFixedPitch");
+        register(12, 2, "ItalicAngle");
+        register(12, 3, "UnderlinePosition");
+        register(12, 4, "UnderlineThickness");
+        register(12, 5, "PaintType");
+        register(12, 6, "CharstringType");
+        register(12, 7, "FontMatrix");
+        register(13, "UniqueID");
+        register(5, "FontBBox");
+        register(12, 8, "StrokeWidth");
+        register(14, "XUID");
+        register(15, "charset");
+        register(16, "Encoding");
+        register(17, "CharStrings");
+        register(18, "Private");
+        register(12, 20, "SyntheticBase");
+        register(12, 21, "PostScript");
+        register(12, 22, "BaseFontName");
+        register(12, 23, "BaseFontBlend");
+        register(12, 30, "ROS");
+        register(12, 31, "CIDFontVersion");
+        register(12, 32, "CIDFontRevision");
+        register(12, 33, "CIDFontType");
+        register(12, 34, "CIDCount");
+        register(12, 35, "UIDBase");
+        register(12, 36, "FDArray");
+        register(12, 37, "FDSelect");
+        register(12, 38, "FontName");
 
         // Private DICT
-        register(calculateKey(6), "BlueValues");
-        register(calculateKey(7), "OtherBlues");
-        register(calculateKey(8), "FamilyBlues");
-        register(calculateKey(9), "FamilyOtherBlues");
-        register(calculateKey(12, 9), "BlueScale");
-        register(calculateKey(12, 10), "BlueShift");
-        register(calculateKey(12, 11), "BlueFuzz");
-        register(calculateKey(10), "StdHW");
-        register(calculateKey(11), "StdVW");
-        register(calculateKey(12, 12), "StemSnapH");
-        register(calculateKey(12, 13), "StemSnapV");
-        register(calculateKey(12, 14), "ForceBold");
-        register(calculateKey(12, 15), "LanguageGroup");
-        register(calculateKey(12, 16), "ExpansionFactor");
-        register(calculateKey(12, 17), "initialRandomSeed");
-        register(calculateKey(19), "Subrs");
-        register(calculateKey(20), "defaultWidthX");
-        register(calculateKey(21), "nominalWidthX");
+        register(6, "BlueValues");
+        register(7, "OtherBlues");
+        register(8, "FamilyBlues");
+        register(9, "FamilyOtherBlues");
+        register(12, 9, "BlueScale");
+        register(12, 10, "BlueShift");
+        register(12, 11, "BlueFuzz");
+        register(10, "StdHW");
+        register(11, "StdVW");
+        register(12, 12, "StemSnapH");
+        register(12, 13, "StemSnapV");
+        register(12, 14, "ForceBold");
+        register(12, 15, "LanguageGroup");
+        register(12, 16, "ExpansionFactor");
+        register(12, 17, "initialRandomSeed");
+        register(19, "Subrs");
+        register(20, "defaultWidthX");
+        register(21, "nominalWidthX");
     }
 }

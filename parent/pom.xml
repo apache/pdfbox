@@ -55,7 +55,7 @@
              see also https://stackoverflow.com/a/28695766/535646 
              https://maven.apache.org/surefire/maven-surefire-plugin/faq.html#late-property-evaluation
         -->
-        <surefireArgLine></surefireArgLine>
+        <surefireArgLine />
       </properties>
 
     <dependencyManagement>
@@ -131,7 +131,7 @@
             </activation>
             <properties>
                 <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod></addmod>
+                <addmod />
             </properties>
         </profile>
         <!-- call mvn with -Pjdk9 or call with -Daddmod="...." -->
@@ -147,7 +147,7 @@
             </activation>
             <properties>
                 <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod></addmod>
+                <addmod />
             </properties>
         </profile>
         <!-- need to specify release version so that if PDFBox is built with
@@ -175,14 +175,14 @@
             </activation>
             <properties>
                 <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod></addmod>
+                <addmod />
             </properties>
         </profile>
         <profile>
             <id>pedantic</id>
             <properties>
                 <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod></addmod>
+                <addmod />
             </properties>
             <build>
                 <plugins>
@@ -549,4 +549,10 @@
             </roles>
         </developer>
     </developers>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/pdfbox/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk</developerConnection>
+    <url>http://svn.apache.org/viewvc/pdfbox/trunk</url>
+  </scm>
 </project>
