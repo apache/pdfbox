@@ -599,17 +599,6 @@ public final class PDImageXObject extends PDXObject implements PDImage
             }
             dest.setPixels(0, y, width, 1, rgbaRow);
         }
-        try
-        {
-            ImageIO.write(image, "PNG", new File("C://temp/pdfbox/image.png"));
-            ImageIO.write(mask, "PNG", new File("C://temp/pdfbox/mask.png"));
-            ImageIO.write(masked, "PNG", new File("C://temp/pdfbox/result.png"));
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         return masked;
     }
 
