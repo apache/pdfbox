@@ -160,17 +160,23 @@ public final class GlyphList
                 nameToUnicode.put(name, string);
 
                 // reverse mapping
-                // PDFBOX-3884: take the various standard encodings as canonical,
-                // e.g. tilde over ilde
-                final boolean forceOverride =
-                      WinAnsiEncoding.INSTANCE.contains(name) ||
-                      MacRomanEncoding.INSTANCE.contains(name) ||
-                      MacExpertEncoding.INSTANCE.contains(name) ||
-                      SymbolEncoding.INSTANCE.contains(name) ||
-                      ZapfDingbatsEncoding.INSTANCE.contains(name);
-                if (!unicodeToName.containsKey(string) || forceOverride)
+                if (!unicodeToName.containsKey(string))
                 {
                     unicodeToName.put(string, name);
+                }
+                else
+                {
+                    // PDFBOX-3884: take the various standard encodings as canonical,
+                    // e.g. tilde over tilde
+                    final boolean forceOverride =
+                         WinAnsiEncoding.INSTANCE.contains(name) ||
+                         MacRomanEncoding.INSTANCE.contains(name) ||
+                         MacExpertEncoding.INSTANCE.contains(name) ||
+                         SymbolEncoding.INSTANCE.contains(name) ||
+                         ZapfDingbatsEncoding.INSTANCE.contains(name);
+
+                    if (forceOverride)
+                        unicodeToName.put(string, name);
                 }
             }
         }
