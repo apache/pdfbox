@@ -41,6 +41,10 @@ public class CFFType1Font extends CFFFont implements EncodedFont
 
     private final PrivateType1CharStringReader reader = new PrivateType1CharStringReader();
 
+    private int defaultWidthX = Integer.MIN_VALUE;
+    private int nominalWidthX = Integer.MIN_VALUE;
+    private byte[][] localSubrIndex;
+
     /**
      * Private implementation of Type1CharStringReader, because only CFFType1Font can
      * expose this publicly, as CIDFonts only support this for legacy 'seac' commands.
@@ -162,7 +166,6 @@ public class CFFType1Font extends CFFFont implements EncodedFont
      * @param name the given key
      * @param value the given value
      */
-    // todo: can't we just accept a Map?
     void addToPrivateDict(String name, Object value)
     {
         if (value != null)
@@ -194,7 +197,11 @@ public class CFFType1Font extends CFFFont implements EncodedFont
 
     private byte[][] getLocalSubrIndex()
     {
-        return (byte[][])privateDict.get("Subrs");
+        if (localSubrIndex == null)
+        {
+            localSubrIndex = (byte[][]) privateDict.get("Subrs");
+        }
+        return localSubrIndex;
     }
 
     // helper for looking up keys/values
@@ -210,21 +217,21 @@ public class CFFType1Font extends CFFFont implements EncodedFont
 
     private int getDefaultWidthX()
     {
-        Number num = (Number)getProperty("defaultWidthX");
-        if (num == null)
+        if (defaultWidthX == Integer.MIN_VALUE)
         {
-            return 1000;
+            Number num = (Number) getProperty("defaultWidthX");
+            defaultWidthX = num != null ? num.intValue() : 1000;
         }
-        return num.intValue();
+        return defaultWidthX;
     }
 
     private int getNominalWidthX()
     {
-        Number num = (Number)getProperty("nominalWidthX");
-        if (num == null)
+        if (nominalWidthX == Integer.MIN_VALUE)
         {
-            return 0;
+            Number num = (Number) getProperty("nominalWidthX");
+            nominalWidthX = num != null ? num.intValue() : 0;
         }
-        return num.intValue();
+        return nominalWidthX;
     }
 }
