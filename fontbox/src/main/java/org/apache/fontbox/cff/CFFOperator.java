@@ -44,7 +44,7 @@ public final class CFFOperator
     /**
      * Returns the operator name corresponding to the given one byte representation.
      * 
-     * @param name the first byte of the operator
+     * @param b0 the first byte of the operator
      * @return the corresponding operator name
      */
     public static String getOperator(int b0)
@@ -55,7 +55,8 @@ public final class CFFOperator
     /**
      * Returns the operator name corresponding to the given two byte representation.
      * 
-     * @param name both bytes of the operator
+     * @param b0 the first byte of the operator
+     * @param b1 the second byte of the operator
      * @return the corresponding operator name
      */
     public static String getOperator(int b0, int b1)

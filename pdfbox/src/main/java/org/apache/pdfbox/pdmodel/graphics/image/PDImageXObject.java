@@ -31,7 +31,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.SoftReference;
 import java.util.List;
+
 import javax.imageio.ImageIO;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -547,18 +549,20 @@ public final class PDImageXObject extends PDXObject implements PDImage
         // scale mask to fit image, or image to fit mask, whichever is larger
         if (mask.getWidth() < width || mask.getHeight() < height)
         {
-            mask = scaleImage(mask, width, height);
+            mask = scaleImage(mask, width, height, BufferedImage.TYPE_BYTE_GRAY);
         }
-        else if (mask.getWidth() > width || mask.getHeight() > height)
+
+        if (mask.getWidth() > width || mask.getHeight() > height)
         {
             width = mask.getWidth();
             height = mask.getHeight();
-            image = scaleImage(image, width, height);
+            image = scaleImage(image, width, height, BufferedImage.TYPE_INT_ARGB);
         }
-        else if (image.getRaster().getPixel(0, 0, (int[]) null).length < 3)
+        else if (image.getType() != BufferedImage.TYPE_INT_ARGB)
         {
+            // always convert to ARGB to allow bulk read / write
             // PDFBOX-4470 bitonal image has only one element => copy into RGB
-            image = scaleImage(image, width, height);
+            image = scaleImage(image, width, height, BufferedImage.TYPE_INT_ARGB);
         }
 
         // compose to ARGB
@@ -567,53 +571,47 @@ public final class PDImageXObject extends PDXObject implements PDImage
         WritableRaster dest = masked.getRaster();
         WritableRaster alpha = mask.getRaster();
 
-        float[] rgb = new float[4];
-        float[] rgba = new float[4];
-        float[] alphaPixel = null;
+        int[] alphaRow = new int[width];
+        int[] rgbaRow = new int[4 * width];
         for (int y = 0; y < height; y++)
         {
+            src.getPixels(0, y, width, 1, rgbaRow);
+            alpha.getSamples(0, y, width, 1, 0, alphaRow);
             for (int x = 0; x < width; x++)
             {
-                src.getPixel(x, y, rgb);
-
-                rgba[0] = rgb[0];
-                rgba[1] = rgb[1];
-                rgba[2] = rgb[2];
-
-                alphaPixel = alpha.getPixel(x, y, alphaPixel);
+                int offset = x * 4;
                 if (isSoft)
                 {
-                    rgba[3] = alphaPixel[0];
-                    if (matte != null && Float.compare(alphaPixel[0], 0) != 0)
+                    rgbaRow[offset + 3] = alphaRow[x];
+                    if (matte != null && Integer.compare(alphaRow[x], 0) != 0)
                     {
-                        rgba[0] = clampColor(((rgba[0] / 255 - matte[0]) / (alphaPixel[0] / 255) + matte[0]) * 255);
-                        rgba[1] = clampColor(((rgba[1] / 255 - matte[1]) / (alphaPixel[0] / 255) + matte[1]) * 255);
-                        rgba[2] = clampColor(((rgba[2] / 255 - matte[2]) / (alphaPixel[0] / 255) + matte[2]) * 255);
+                        float k = alphaRow[x] / 255f;
+                        rgbaRow[offset + 0] = clampColor(((rgbaRow[offset + 0] / 255f - matte[0]) / k + matte[0]) * 255f);
+                        rgbaRow[offset + 1] = clampColor(((rgbaRow[offset + 1] / 255f - matte[1]) / k + matte[1]) * 255f);
+                        rgbaRow[offset + 2] = clampColor(((rgbaRow[offset + 2] / 255f - matte[2]) / k + matte[2]) * 255f);
                     }
                 }
                 else
                 {
-                    rgba[3] = 255 - alphaPixel[0];
+                    rgbaRow[offset + 3] = 255 - alphaRow[x];
                 }
-
-                dest.setPixel(x, y, rgba);
             }
+            dest.setPixels(0, y, width, 1, rgbaRow);
         }
-
         return masked;
     }
 
-    private float clampColor(float color)
+    private int clampColor(float color)
     {
-        return color < 0 ? 0 : (color > 255 ? 255 : color);        
+        return color < 0 ? 0 : (color > 255 ? 255 : Math.round(color));
     }
 
     /**
      * High-quality image scaling.
      */
-    private BufferedImage scaleImage(BufferedImage image, int width, int height)
+    private BufferedImage scaleImage(BufferedImage image, int width, int height, int type)
     {
-        BufferedImage image2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image2 = new BufferedImage(width, height, type);
         Graphics2D g = image2.createGraphics();
         if (getInterpolate())
         {

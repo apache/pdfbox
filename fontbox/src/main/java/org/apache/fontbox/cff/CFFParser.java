@@ -926,7 +926,7 @@ public class CFFParser
     /**
      *  Format 3 FDSelect data.
      */
-    private static final class Format3FDSelect extends FDSelect
+    private static final class Format3FDSelect implements FDSelect
     {
         private final Range3[] range3;
         private final int sentinel;
@@ -998,7 +998,7 @@ public class CFFParser
     /**
      *  Format 0 FDSelect.
      */
-    private static class Format0FDSelect extends FDSelect
+    private static class Format0FDSelect implements FDSelect
     {
         private final int[] fds;
 
