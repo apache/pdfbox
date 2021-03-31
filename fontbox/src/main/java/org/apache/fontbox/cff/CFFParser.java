@@ -280,7 +280,7 @@ public class CFFParser
                 entry.addOperand(readRealNumber(input));
             }
             else if (b0 >= 32 && b0 <= 254)
-            {CFFParser z;z.re
+            {
                 entry.addOperand(readIntegerNumber(input, b0));
             }
             else
