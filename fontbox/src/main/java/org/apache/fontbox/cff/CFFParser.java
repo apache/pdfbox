@@ -280,7 +280,7 @@ public class CFFParser
                 entry.addOperand(readRealNumber(input));
             }
             else if (b0 >= 32 && b0 <= 254)
-            {
+            {CFFParser z;z.re
                 entry.addOperand(readIntegerNumber(input, b0));
             }
             else
@@ -567,8 +567,8 @@ public class CFFParser
                 {
                     // default
                     font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix",
-                            Arrays.<Number>asList(0.001, (double) 0, (double) 0, 0.001,
-                                    (double) 0, (double) 0)));
+                            Arrays.<Number>asList(0.001, 0.0, 0.0, 0.001,
+                                    0.0, 0.0)));
                 }
             }
             else if (privMatrix != null)
@@ -1088,13 +1088,13 @@ public class CFFParser
             while (gid < nGlyphs)
             {
                 int rangeFirst = dataInput.readSID();
-                int rangeLeft = dataInput.readCard8();
-                for (int j = 0; j < 1 + rangeLeft; j++)
+                int rangeLeft = 1 + dataInput.readCard8();
+                for (int j = 0; j < rangeLeft; j++)
                 {
                     int sid = rangeFirst + j;
                     charset.addSID(gid + j, sid, readString(sid));
                 }
-                gid += rangeLeft + 1;
+                gid += rangeLeft;
             }
         }
         return charset;
@@ -1123,13 +1123,13 @@ public class CFFParser
             while (gid < nGlyphs)
             {
                 int first = dataInput.readSID();
-                int nLeft = dataInput.readCard16();
-                for (int j = 0; j < 1 + nLeft; j++)
+                int nLeft = 1 + dataInput.readCard16();
+                for (int j = 0; j < nLeft; j++)
                 {
                     int sid = first + j;
                     charset.addSID(gid + j, sid, readString(sid));
                 }
-                gid += nLeft + 1;
+                gid += nLeft;
             }
         }
         return charset;
