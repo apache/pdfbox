@@ -177,11 +177,15 @@ class TestPDPageContentStream
             PDPage page = new PDPage();
             doc.addPage(page);
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true);
-            List<Float> items = Arrays.asList(1.0f, 2.4f);
-            List<Float> compareItems = Arrays.asList(1.0f /(10 * 2.54f) * 72, 2.4f /(10 * 2.54f) * 72);
-            
-            contentStream.convertUnit(items, "mm");
-            assertEquals(compareItems, items);
+            List<Float> itemsMm = Arrays.asList(1.0f, 2.4f);
+            List<Float> itemsInch = Arrays.asList(1.0f, 2.4f);
+            List<Float> itemsInMm = Arrays.asList(1.0f /(10 * 2.54f) * 72, 2.4f /(10 * 2.54f) * 72);
+            List<Float> itemsInInch = Arrays.asList(1.0f * 72, 2.4f * 72);
+
+            contentStream.convertUnit(itemsMm, "mm");
+            contentStream.convertUnit(itemsInch, "inc");
+            assertEquals(itemsInMm, itemsMm);
+            assertEquals(itemsInInch, itemsInch);
             
         }
     }
