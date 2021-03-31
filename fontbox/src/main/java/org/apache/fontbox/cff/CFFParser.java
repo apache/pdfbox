@@ -1359,17 +1359,6 @@ public class CFFParser
     }
 
     /**
-     * Inner class representing an embedded CFF charset.
-     */
-    abstract static class EmbeddedCharset extends CFFCharset
-    {
-        protected EmbeddedCharset(boolean isCIDFont)
-        {
-            super(isCIDFont);
-        }
-    }
-
-    /**
      * An empty charset in a malformed CID font.
      */
     private static class EmptyCharset extends EmbeddedCharset
@@ -1394,7 +1383,7 @@ public class CFFParser
     }
 
     /**
-     * Inner class representing a Format0 charset. 
+     * Inner class representing a Format0 charset.
      */
     private static class Format0Charset extends EmbeddedCharset
     {
@@ -1461,21 +1450,20 @@ public class CFFParser
     }
 
     /**
-     * Inner class representing a Format2 charset. 
+     * Inner class representing a Format2 charset for CID.
      */
     private static class Format2Charset extends EmbeddedCharset
     {
-        private final List<RangeMapping> rangesCID2GID;
-        
+        private final List<RangeMapping> rangesCID2GID = new ArrayList<>();
+
         private Format2Charset(boolean isCIDFont)
         {
             super(isCIDFont);
-            rangesCID2GID = new ArrayList<>();
         }
 
         /**
          * Add the given range mapping.
-         * 
+         *
          * @param rangeMapping the range mapping to be added.
          */
         public void addRangeMapping(RangeMapping rangeMapping)
@@ -1495,7 +1483,7 @@ public class CFFParser
             }
             return super.getCIDForGID(gid);
         }
-        
+
         @Override
         public int getGIDForCID(int cid)
         {
@@ -1511,7 +1499,7 @@ public class CFFParser
     }
 
     /**
-     * Inner class representing a rang mapping for a CID charset. 
+     * Inner class representing a rang mapping for a CID charset.
      */
     private static final class RangeMapping
     {
@@ -1527,12 +1515,12 @@ public class CFFParser
             this.startMappedValue = first;
             endMappedValue = startMappedValue + nLeft;
         }
-        
+
         boolean isInRange(int value)
         {
             return value >= startValue && value <= endValue;
         }
-        
+
         boolean isInReverseRange(int value)
         {
             return value >= startMappedValue && value <= endMappedValue;

@@ -21,7 +21,7 @@ package org.apache.fontbox.cff;
  * 
  * @author Villu Ruusmann
  */
-public final class CFFExpertCharset extends CFFCharset
+public final class CFFExpertCharset extends CFFCharsetType1
 {
     private static final int CHAR_CODE = 0;
     private static final int CHAR_NAME = 1;
@@ -200,7 +200,7 @@ public final class CFFExpertCharset extends CFFCharset
 
     private CFFExpertCharset()
     {
-        super(false);
+        //empty
     }
 
     /**

@@ -22,7 +22,7 @@ package org.apache.fontbox.cff;
  * 
  * @author Villu Ruusmann
  */
-public final class CFFISOAdobeCharset extends CFFCharset
+public final class CFFISOAdobeCharset extends CFFCharsetType1
 {
     private static final int CHAR_CODE = 0;
     private static final int CHAR_NAME = 1;
@@ -264,7 +264,7 @@ public final class CFFISOAdobeCharset extends CFFCharset
     
     private CFFISOAdobeCharset()
     {
-        super(false);
+        //empty
     }
 
     /**
