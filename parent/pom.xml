@@ -184,7 +184,7 @@
                         <configuration>
                             <systemPropertyVariables>
                                 <!-- we don't want to DoS the TSA server, thus we test this only in pedantic mode -->
-                                <org.apache.pdfbox.examples.pdmodel.tsa>https://freetsa.org/tsr</org.apache.pdfbox.examples.pdmodel.tsa>
+                                <org.apache.pdfbox.examples.pdmodel.tsa>http://time.certum.pl</org.apache.pdfbox.examples.pdmodel.tsa>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
