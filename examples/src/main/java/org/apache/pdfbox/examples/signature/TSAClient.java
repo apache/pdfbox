@@ -150,6 +150,11 @@ public class TSAClient
         {
             output.write(request);
         }
+        catch (IOException ex)
+        {
+            LOG.error("Exception when writing to " + this.url, ex);
+            throw ex;
+        }
 
         LOG.debug("Waiting for response from TSA server");
 
@@ -157,6 +162,11 @@ public class TSAClient
         try (InputStream input = connection.getInputStream())
         {
             response = IOUtils.toByteArray(input);
+        }
+        catch (IOException ex)
+        {
+            LOG.error("Exception when reading from " + this.url, ex);
+            throw ex;
         }
 
         LOG.debug("Received response from TSA server");
