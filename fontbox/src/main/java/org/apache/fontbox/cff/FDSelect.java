@@ -17,7 +17,7 @@
 
 package org.apache.fontbox.cff;
 
-public abstract class FDSelect
+public interface FDSelect
 {
     /**
      * Returns the Font DICT index for the given GID.
