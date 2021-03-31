@@ -144,6 +144,11 @@ public class TSAClient
             output = connection.getOutputStream();
             output.write(request);
         }
+        catch (IOException ex)
+        {
+            LOG.error("Exception when writing to " + this.url, ex);
+            throw ex;
+        }
         finally
         {
             IOUtils.closeQuietly(output);
@@ -157,6 +162,11 @@ public class TSAClient
         {
             input = connection.getInputStream();
             response = IOUtils.toByteArray(input);
+        }
+        catch (IOException ex)
+        {
+            LOG.error("Exception when reading from " + this.url, ex);
+            throw ex;
         }
         finally
         {
