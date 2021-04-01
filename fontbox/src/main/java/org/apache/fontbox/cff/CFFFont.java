@@ -33,12 +33,12 @@ import org.apache.fontbox.util.BoundingBox;
  */
 public abstract class CFFFont implements FontBoxFont
 {
-    protected String fontName;
+    private String fontName;
+    private CFFCharset charset;
+    private CFFParser.ByteSource source;
     protected final Map<String, Object> topDict = new LinkedHashMap<>();
-    protected CFFCharset charset;
     protected byte[][] charStrings;
     protected byte[][] globalSubrIndex;
-    private CFFParser.ByteSource source;
 
     /**
      * The name of the font.
@@ -89,7 +89,10 @@ public abstract class CFFFont implements FontBoxFont
      * Returns the FontMatrix.
      */
     @Override
-    public abstract List<Number> getFontMatrix();
+    public List<Number> getFontMatrix()
+    {
+        return (List<Number>) topDict.get("FontMatrix");
+    }
 
     /**
      * Returns the FontBBox.

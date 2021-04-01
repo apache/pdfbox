@@ -225,27 +225,20 @@ public class CFFCIDFont extends CFFFont
         CIDKeyedType2CharString type2 = charStringCache.get(cid);
         if (type2 == null)
         {
-            int gid = charset.getGIDForCID(cid);
+            int gid = getCharset().getGIDForCID(cid);
 
             byte[] bytes = charStrings[gid];
             if (bytes == null)
             {
                 bytes = charStrings[0]; // .notdef
             }
-            Type2CharStringParser parser = new Type2CharStringParser(fontName, cid);
+            Type2CharStringParser parser = new Type2CharStringParser(getName(), cid);
             List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex(gid));
-            type2 = new CIDKeyedType2CharString(reader, fontName, cid, gid, type2seq,
+            type2 = new CIDKeyedType2CharString(reader, getName(), cid, gid, type2seq,
                                                 getDefaultWidthX(gid), getNominalWidthX(gid));
             charStringCache.put(cid, type2);
         }
         return type2;
-    }
-
-    @Override
-    public List<Number> getFontMatrix()
-    {
-        // our parser guarantees that FontMatrix will be present and correct in the Top DICT
-        return (List<Number>)topDict.get("FontMatrix");
     }
 
     @Override

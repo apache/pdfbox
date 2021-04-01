@@ -567,8 +567,8 @@ public class CFFParser
                 {
                     // default
                     font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix",
-                            Arrays.<Number>asList(0.001, 0.0, 0.0, 0.001,
-                                    0.0, 0.0)));
+                            Arrays.<Number>asList(0.001, (double) 0, (double) 0, 0.001,
+                                    (double) 0, (double) 0)));
                 }
             }
             else if (privMatrix != null)
@@ -748,7 +748,7 @@ public class CFFParser
         DictData.Entry privateEntry = topDict.getEntry("Private");
         if (privateEntry == null)
         {
-            throw new IOException("Private dictionary entry missing for font " + font.fontName);
+            throw new IOException("Private dictionary entry missing for font " + font.getName());
         }
         int privateOffset = privateEntry.getNumber(1).intValue();
         input.setPosition(privateOffset);
@@ -1088,13 +1088,13 @@ public class CFFParser
             while (gid < nGlyphs)
             {
                 int rangeFirst = dataInput.readSID();
-                int rangeLeft = 1 + dataInput.readCard8();
-                for (int j = 0; j < rangeLeft; j++)
+                int rangeLeft = dataInput.readCard8();
+                for (int j = 0; j < 1 + rangeLeft; j++)
                 {
                     int sid = rangeFirst + j;
                     charset.addSID(gid + j, sid, readString(sid));
                 }
-                gid += rangeLeft;
+                gid += rangeLeft + 1;
             }
         }
         return charset;
@@ -1123,13 +1123,13 @@ public class CFFParser
             while (gid < nGlyphs)
             {
                 int first = dataInput.readSID();
-                int nLeft = 1 + dataInput.readCard16();
-                for (int j = 0; j < nLeft; j++)
+                int nLeft = dataInput.readCard16();
+                for (int j = 0; j < 1 + nLeft; j++)
                 {
                     int sid = first + j;
                     charset.addSID(gid + j, sid, readString(sid));
                 }
-                gid += nLeft;
+                gid += nLeft + 1;
             }
         }
         return charset;
