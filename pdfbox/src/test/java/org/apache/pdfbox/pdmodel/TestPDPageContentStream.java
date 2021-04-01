@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -165,6 +166,27 @@ class TestPDPageContentStream
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true);
             contentStream.close();
             contentStream.close();
+        }
+    }
+    
+    @Test 
+     void testUnitConversion() throws IOException
+     {
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true);
+            List<Float> itemsMm = Arrays.asList(1.0f, 2.4f);
+            List<Float> itemsInch = Arrays.asList(1.0f, 2.4f);
+            List<Float> itemsInMm = Arrays.asList(1.0f /(10 * 2.54f) * 72, 2.4f /(10 * 2.54f) * 72);
+            List<Float> itemsInInch = Arrays.asList(1.0f * 72, 2.4f * 72);
+
+            contentStream.convertUnit(itemsMm, "mm");
+            contentStream.convertUnit(itemsInch, "inc");
+            assertEquals(itemsInMm, itemsMm);
+            assertEquals(itemsInInch, itemsInch);
+            
         }
     }
 }

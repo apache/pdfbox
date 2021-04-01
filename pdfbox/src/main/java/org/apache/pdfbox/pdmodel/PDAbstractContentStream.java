@@ -1685,7 +1685,7 @@ abstract class PDAbstractContentStream implements Closeable
     public static final void convertUnit(List<Float> items, String unitType)
     {
         float multiplier = 1;
-        switch (unit_type) {
+        switch (unitType) {
             case "mm":
                 multiplier = 1 / (10 * 2.54f) * 72;
                 break;
@@ -1694,7 +1694,7 @@ abstract class PDAbstractContentStream implements Closeable
                 break;
             default:
                 throw new IllegalArgumentException(
-                        "could not find the unit type: " + unit_type);
+                        "could not find the unit type: " + unitType);
         }
 
         for (int i=0; i < items.size(); i++) {
