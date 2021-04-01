@@ -73,15 +73,9 @@ public class CFFType1Font extends CFFFont implements EncodedFont
     @Override
     public boolean hasGlyph(String name)
     {
-        int sid = charset.getSID(name);
-        int gid = charset.getGIDForSID(sid);
+        int sid = getCharset().getSID(name);
+        int gid = getCharset().getGIDForSID(sid);
         return gid != 0;
-    }
-
-    @Override
-    public List<Number> getFontMatrix()
-    {
-        return (List<Number>)topDict.get("FontMatrix");
     }
 
     /**
@@ -108,8 +102,8 @@ public class CFFType1Font extends CFFFont implements EncodedFont
     public int nameToGID(String name)
     {
         // some fonts have glyphs beyond their encoding, so we look up by charset SID
-        int sid = charset.getSID(name);
-        return charset.getGIDForSID(sid);
+        int sid = getCharset().getSID(name);
+        return getCharset().getGIDForSID(sid);
     }
 
     /**
@@ -141,9 +135,9 @@ public class CFFType1Font extends CFFFont implements EncodedFont
                 // .notdef
                 bytes = charStrings[0];
             }
-            Type2CharStringParser parser = new Type2CharStringParser(fontName, name);
+            Type2CharStringParser parser = new Type2CharStringParser(getName(), name);
             List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex());
-            type2 = new Type2CharString(reader, fontName, name, gid, type2seq, getDefaultWidthX(),
+            type2 = new Type2CharString(reader, getName(), name, gid, type2seq, getDefaultWidthX(),
                     getNominalWidthX());
             charStringCache.put(gid, type2);
         }

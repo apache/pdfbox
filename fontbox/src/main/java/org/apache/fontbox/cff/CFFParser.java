@@ -748,7 +748,7 @@ public class CFFParser
         DictData.Entry privateEntry = topDict.getEntry("Private");
         if (privateEntry == null)
         {
-            throw new IOException("Private dictionary entry missing for font " + font.fontName);
+            throw new IOException("Private dictionary entry missing for font " + font.getName());
         }
         int privateOffset = privateEntry.getNumber(1).intValue();
         input.setPosition(privateOffset);
