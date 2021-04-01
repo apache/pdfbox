@@ -1676,7 +1676,7 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
-     * Does a length unit conversion from points to millimeters or inches depending on user choice.
+     * Does a length unit conversion from millimeters or inches (depending on user choice) to points.
      *
      * @param items Items that needs to be converted.
      * @param unit_type Specifies desired length unit (mm or inch).
