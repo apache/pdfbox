@@ -112,14 +112,15 @@ final class FontMapperImpl implements FontMapper
         
         // -------------------------
 
-        String ttfName = "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
-        try (InputStream resourceAsStream = FontMapper.class.getResourceAsStream(ttfName);
-             InputStream ttfStream = new BufferedInputStream(resourceAsStream))
+        try
         {
+            String resourceName = "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
+            InputStream resourceAsStream = FontMapper.class.getResourceAsStream(resourceName);
             if (resourceAsStream == null)
             {
-                throw new IOException("resource '" + ttfName + "' not found");
+                throw new IOException("resource '" + resourceName + "' not found");
             }
+            InputStream ttfStream = new BufferedInputStream(resourceAsStream);
             TTFParser ttfParser = new TTFParser();
             lastResortFont = ttfParser.parse(ttfStream);
         }
