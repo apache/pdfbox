@@ -901,7 +901,7 @@ public class AFMParser
     private boolean readBoolean() throws IOException
     {
         String theBoolean = readString();
-        return Boolean.valueOf( theBoolean );
+        return Boolean.parseBoolean(theBoolean );
     }
 
     /**
