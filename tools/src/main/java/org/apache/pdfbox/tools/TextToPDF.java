@@ -133,6 +133,8 @@ public class TextToPDF
             // There is a special case of creating a PDF document from an empty string.
             boolean textIsEmpty = true;
 
+            StringBuilder nextLineToDraw = new StringBuilder();
+
             while( (nextLine = data.readLine()) != null )
             {
 
@@ -145,24 +147,25 @@ public class TextToPDF
                 int lineIndex = 0;
                 while( lineIndex < lineWords.length )
                 {
-                    StringBuilder nextLineToDraw = new StringBuilder();
+                    nextLineToDraw.setLength(0);
                     float lengthIfUsingNextWord = 0;
                     boolean ff = false;
                     do
                     {
                         String word1, word2 = "";
-                        int indexFF = lineWords[lineIndex].indexOf('\f');
+                        String word = lineWords[lineIndex];
+                        int indexFF = word.indexOf('\f');
                         if (indexFF == -1)
                         {
-                            word1 = lineWords[lineIndex];
+                            word1 = word;
                         }
                         else
                         {
                             ff = true;
-                            word1 = lineWords[lineIndex].substring(0, indexFF);
-                            if (indexFF < lineWords[lineIndex].length())
+                            word1 = word.substring(0, indexFF);
+                            if (indexFF < word.length())
                             {
-                                word2 = lineWords[lineIndex].substring(indexFF + 1);
+                                word2 = word.substring(indexFF + 1);
                             }
                         }
                         // word1 is the part before ff, word2 after
@@ -504,7 +507,7 @@ public class TextToPDF
     /**
      * Sets paper orientation.
      *
-     * @param landscape
+     * @param landscape true for landscape orientation
      */
     public void setLandscape(boolean landscape)
     {
