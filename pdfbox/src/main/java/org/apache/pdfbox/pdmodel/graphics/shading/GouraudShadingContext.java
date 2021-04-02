@@ -19,17 +19,13 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.imageio.stream.ImageInputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.pdmodel.common.PDRange;
+
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -40,8 +36,6 @@ import org.apache.pdfbox.util.Matrix;
  */
 abstract class GouraudShadingContext extends TriangleBasedShadingContext
 {
-    private static final Log LOG = LogFactory.getLog(GouraudShadingContext.class);
-
     /**
      * triangle list.
      */
@@ -62,53 +56,6 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
         super(shading, colorModel, xform, matrix);
     }
 
-    /**
-     * Read a vertex from the bit input stream performs interpolations.
-     *
-     * @param input bit input stream
-     * @param maxSrcCoord max value for source coordinate (2^bits-1)
-     * @param maxSrcColor max value for source color (2^bits-1)
-     * @param rangeX dest range for X
-     * @param rangeY dest range for Y
-     * @param colRangeTab dest range array for colors
-     * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @return a new vertex with the flag and the interpolated values
-     * @throws IOException if something went wrong
-     */
-    protected Vertex readVertex(ImageInputStream input, long maxSrcCoord, long maxSrcColor,
-                                PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab,
-                                Matrix matrix, AffineTransform xform) throws IOException
-    {
-        float[] colorComponentTab = new float[numberOfColorComponents];
-        long x = input.readBits(bitsPerCoordinate);
-        long y = input.readBits(bitsPerCoordinate);
-        float dstX = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
-        float dstY = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
-        LOG.debug("coord: " + String.format("[%06X,%06X] -> [%f,%f]", x, y, dstX, dstY));
-        Point2D p = matrix.transformPoint(dstX, dstY);
-        xform.transform(p, p);
-
-        for (int n = 0; n < numberOfColorComponents; ++n)
-        {
-            int color = (int) input.readBits(bitsPerColorComponent);
-            colorComponentTab[n] = interpolate(color, maxSrcColor, colRangeTab[n].getMin(),
-                    colRangeTab[n].getMax());
-            LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color)
-                    + "-> color[" + n + "]: " + colorComponentTab[n]);
-        }
-
-        // "Each set of vertex data shall occupy a whole number of bytes.
-        // If the total number of bits required is not divisible by 8, the last data byte
-        // for each vertex is padded at the end with extra bits, which shall be ignored."
-        int bitOffset = input.getBitOffset();
-        if (bitOffset != 0)
-        {
-            input.readBits(8 - bitOffset);
-        }
-
-        return new Vertex(p, colorComponentTab);
-    }
-
     final void setTriangleList(List<ShadedTriangle> triangleList)
     {
         this.triangleList = triangleList;
@@ -127,20 +74,6 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     {
         triangleList = null;
         super.dispose();
-    }
-
-    /**
-     * Calculate the interpolation, see p.345 pdf spec 1.7.
-     *
-     * @param src src value
-     * @param srcMax max src value (2^bits-1)
-     * @param dstMin min dst value
-     * @param dstMax max dst value
-     * @return interpolated value
-     */
-    private float interpolate(float src, long srcMax, float dstMin, float dstMax)
-    {
-        return dstMin + (src * (dstMax - dstMin) / srcMax);
     }
 
     @Override
