@@ -9,8 +9,8 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import java.util.Scanner;
 
 public class PDFWithTimeNewRomanText {
-    //using the folder to store the PDF file in for now.
-    public static final String CREATED_PDF = "tools/src/main/java/org/apache/pdfbox/tools/AddImageResources/TimesNewRoman.pdf";
+
+    public static final String CREATED_PDF = "tools/src/main/java/org/apache/pdfbox/tools/FontResources/TimesNewRomanOrCourier.pdf";
     public static void main(String[] args) {
         try {
             Scanner myObj = new Scanner(System.in);
@@ -28,22 +28,29 @@ public class PDFWithTimeNewRomanText {
                 int input=myObj.nextInt();
                 if (input==1){
                     cs.setFont(PDType1Font.TIMES_ROMAN, 15);
+                    cs.setNonStrokingColor(Color.BLACK);
+                    // starting position
+                    cs.newLineAtOffset(20, 750);
+                    cs.showText("This text is in Times New Roman");
+                    // go to next line
+                    cs.newLine();
+                    cs.endText();
                 }
                 else if(input==2){
                     cs.setFont(PDType1Font.COURIER, 15);
+                    cs.setNonStrokingColor(Color.BLACK);
+                    // starting position
+                    cs.newLineAtOffset(20, 750);
+                    cs.showText("This text is in Courier");
+                    // go to next line
+                    cs.newLine();
+                    cs.endText();
                 }
                 else {
                     System.out.println("You entered invalid selection ");
                 }
 
-                // color for the text
-                cs.setNonStrokingColor(Color.BLACK);
-                // starting position
-                cs.newLineAtOffset(20, 750);
-                cs.showText("This text is in Times New Roman");
-                // go to next line
-                cs.newLine();
-                cs.endText();
+
             }
             // save PDF document
             pdfDoc.save(CREATED_PDF);
