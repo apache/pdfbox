@@ -130,7 +130,9 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
             boolean eof = false;
             while (!eof)
             {
-                Vertex p0, p1, p2;
+                Vertex p0;
+                Vertex p1;
+                Vertex p2;
                 Point2D[] ps;
                 float[][] cs;
                 int lastIndex;

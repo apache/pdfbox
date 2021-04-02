@@ -25,8 +25,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.util.Matrix;
 
 /**
