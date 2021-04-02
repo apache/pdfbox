@@ -41,7 +41,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
     // value: same as the value of Range
     private COSArray decode = null;
 
-    private static final Log LOG = LogFactory.getLog(TriangleBasedShadingContext.class);
+    private static final Log LOG = LogFactory.getLog(PDTriangleBasedShadingType.class);
 
     private int bitsPerCoordinate = -1;
     private int bitsPerColorComponent = -1;

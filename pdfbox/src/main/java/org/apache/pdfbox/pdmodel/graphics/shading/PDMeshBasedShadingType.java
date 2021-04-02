@@ -175,7 +175,8 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
     {
         float[][] color = new float[4][getNumberOfColorComponents()];
         Point2D[] points = new Point2D[controlPoints];
-        int pStart = 4, cStart = 2;
+        int pStart = 4;
+        int cStart = 2;
         if (isFree)
         {
             pStart = 0;
@@ -236,7 +237,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
     abstract Patch generatePatch(Point2D[] points, float[][] color);
 
     @Override
-    abstract public Rectangle2D getBounds(AffineTransform xform, Matrix matrix) throws IOException;
+    public abstract Rectangle2D getBounds(AffineTransform xform, Matrix matrix) throws IOException;
 
     Rectangle2D getBounds(AffineTransform xform, Matrix matrix, int controlPoints)
             throws IOException
