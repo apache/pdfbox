@@ -241,6 +241,11 @@ abstract class PDTriangleBasedShadingType extends PDShading
             bounds.add(shadedTriangle.corner[1]);
             bounds.add(shadedTriangle.corner[2]);
         }
+        if (bounds == null)
+        {
+            // Speeds up files where triangles are empty, e.g. ghostscript file 690425
+            return new Rectangle2D.Float();
+        }
         return bounds;
     }
 }
