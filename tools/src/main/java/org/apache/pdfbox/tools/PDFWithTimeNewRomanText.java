@@ -32,9 +32,9 @@ public class PDFWithTimeNewRomanText {
                 else if(input==2){
                     cs.setFont(PDType1Font.COURIER, 15);
                 }
-                else
+                else {
                     System.out.println("You entered invalid selection ");
-
+                }
 
                 // color for the text
                 cs.setNonStrokingColor(Color.BLACK);
