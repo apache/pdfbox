@@ -38,14 +38,6 @@ import org.apache.pdfbox.util.Matrix;
  */
 abstract class TriangleBasedShadingContext extends ShadingContext implements PaintContext
 {
-    private static final Log LOG = LogFactory.getLog(TriangleBasedShadingContext.class);
-
-    protected int bitsPerCoordinate;
-    protected int bitsPerColorComponent;
-    protected int numberOfColorComponents;
-    
-    private final boolean hasFunction;
-
     // map of pixels within triangles to their RGB color
     private Map<Point, Integer> pixelTable;
 
@@ -62,14 +54,6 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                                        Matrix matrix) throws IOException
     {
         super(shading, cm, xform, matrix);
-        PDTriangleBasedShadingType triangleBasedShadingType = (PDTriangleBasedShadingType) shading;
-        hasFunction = shading.getFunction() != null;
-        bitsPerCoordinate = triangleBasedShadingType.getBitsPerCoordinate();
-        LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
-        bitsPerColorComponent = triangleBasedShadingType.getBitsPerComponent();
-        LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
-        numberOfColorComponents = hasFunction ? 1 : getShadingColorSpace().getNumberOfComponents();
-        LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
     }
 
     /**
@@ -156,7 +140,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
      */
     private int evalFunctionAndConvertToRGB(float[] values) throws IOException
     {
-        if (hasFunction)
+        if (getShading().getFunction() != null)
         {
             values = getShading().evalFunction(values);
         }

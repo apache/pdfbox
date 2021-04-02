@@ -15,10 +15,21 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.List;
+
+import javax.imageio.stream.ImageInputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRange;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * Common resources for shading types 4,5,6 and 7
@@ -30,20 +41,30 @@ abstract class PDTriangleBasedShadingType extends PDShading
     // value: same as the value of Range
     private COSArray decode = null;
 
+    private static final Log LOG = LogFactory.getLog(TriangleBasedShadingContext.class);
+
+    private int bitsPerCoordinate = -1;
+    private int bitsPerColorComponent = -1;
+    private int numberOfColorComponents = -1;
+
     PDTriangleBasedShadingType(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
 
     /**
-     * The bits per component of this shading. This will return -1 if one has
-     * not been set.
+     * The bits per component of this shading. This will return -1 if one has not been set.
      *
      * @return the number of bits per component
      */
     public int getBitsPerComponent()
     {
-        return getCOSObject().getInt(COSName.BITS_PER_COMPONENT, -1);
+        if (bitsPerColorComponent == -1)
+        {
+            bitsPerColorComponent = getCOSObject().getInt(COSName.BITS_PER_COMPONENT, -1);
+            LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
+        }
+        return bitsPerColorComponent;
     }
 
     /**
@@ -54,6 +75,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
     public void setBitsPerComponent(int bitsPerComponent)
     {
         getCOSObject().setInt(COSName.BITS_PER_COMPONENT, bitsPerComponent);
+        bitsPerColorComponent = bitsPerComponent;
     }
 
     /**
@@ -64,17 +86,39 @@ abstract class PDTriangleBasedShadingType extends PDShading
      */
     public int getBitsPerCoordinate()
     {
-        return getCOSObject().getInt(COSName.BITS_PER_COORDINATE, -1);
+        if (bitsPerCoordinate == -1)
+        {
+            bitsPerCoordinate = getCOSObject().getInt(COSName.BITS_PER_COORDINATE, -1);
+            LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
+        }
+        return bitsPerCoordinate;
     }
 
     /**
      * Set the number of bits per coordinate.
      *
-     * @param bitsPerComponent the number of bits per coordinate
+     * @param bitsPerCoordinate the number of bits per coordinate
      */
-    public void setBitsPerCoordinate(int bitsPerComponent)
+    public void setBitsPerCoordinate(int bitsPerCoordinate)
     {
-        getCOSObject().setInt(COSName.BITS_PER_COORDINATE, bitsPerComponent);
+        getCOSObject().setInt(COSName.BITS_PER_COORDINATE, bitsPerCoordinate);
+        this.bitsPerCoordinate = bitsPerCoordinate;
+    }
+    
+    /**
+     * The number of color components of this shading.
+     *
+     * @return number of color components of this shading
+     */
+    public int getNumberOfColorComponents() throws IOException
+    {
+        if (numberOfColorComponents == -1)
+        {
+            numberOfColorComponents = getFunction() != null ? 1
+                    : getColorSpace().getNumberOfComponents();
+            LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
+        }
+        return numberOfColorComponents;
     }
 
     /**
@@ -118,5 +162,85 @@ abstract class PDTriangleBasedShadingType extends PDShading
         }
         return retval;
     }
+    
+    /**
+     * Calculate the interpolation, see p.345 pdf spec 1.7.
+     *
+     * @param src src value
+     * @param srcMax max src value (2^bits-1)
+     * @param dstMin min dst value
+     * @param dstMax max dst value
+     * @return interpolated value
+     */
+    protected float interpolate(float src, long srcMax, float dstMin, float dstMax)
+    {
+        return dstMin + (src * (dstMax - dstMin) / srcMax);
+    }
+    
+    /**
+     * Read a vertex from the bit input stream performs interpolations.
+     *
+     * @param input bit input stream
+     * @param maxSrcCoord max value for source coordinate (2^bits-1)
+     * @param maxSrcColor max value for source color (2^bits-1)
+     * @param rangeX dest range for X
+     * @param rangeY dest range for Y
+     * @param colRangeTab dest range array for colors
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @return a new vertex with the flag and the interpolated values
+     * @throws IOException if something went wrong
+     */
+    protected Vertex readVertex(ImageInputStream input, long maxSrcCoord, long maxSrcColor,
+                                PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab,
+                                Matrix matrix, AffineTransform xform) throws IOException
+    {
+        float[] colorComponentTab = new float[numberOfColorComponents];
+        long x = input.readBits(bitsPerCoordinate);
+        long y = input.readBits(bitsPerCoordinate);
+        float dstX = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
+        float dstY = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
+        LOG.debug("coord: " + String.format("[%06X,%06X] -> [%f,%f]", x, y, dstX, dstY));
+        Point2D p = matrix.transformPoint(dstX, dstY);
+        xform.transform(p, p);
 
+        for (int n = 0; n < numberOfColorComponents; ++n)
+        {
+            int color = (int) input.readBits(bitsPerColorComponent);
+            colorComponentTab[n] = interpolate(color, maxSrcColor, colRangeTab[n].getMin(),
+                    colRangeTab[n].getMax());
+            LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color)
+                    + "-> color[" + n + "]: " + colorComponentTab[n]);
+        }
+
+        // "Each set of vertex data shall occupy a whole number of bytes.
+        // If the total number of bits required is not divisible by 8, the last data byte
+        // for each vertex is padded at the end with extra bits, which shall be ignored."
+        int bitOffset = input.getBitOffset();
+        if (bitOffset != 0)
+        {
+            input.readBits(8 - bitOffset);
+        }
+
+        return new Vertex(p, colorComponentTab);
+    }
+
+    abstract List<ShadedTriangle> collectTriangles(AffineTransform xform, Matrix matrix) throws IOException;
+    
+    @Override
+    public Rectangle2D getBounds(AffineTransform xform, Matrix matrix) throws IOException
+    {
+        Rectangle2D bounds = null;
+        for (ShadedTriangle shadedTriangle : collectTriangles(xform, matrix))
+        {
+            if (bounds == null)
+            {
+                bounds = new Rectangle2D.Double(shadedTriangle.corner[0].getX(),
+                        shadedTriangle.corner[0].getY(), 0, 0);
+            }
+            bounds.add(shadedTriangle.corner[0]);
+            bounds.add(shadedTriangle.corner[1]);
+            bounds.add(shadedTriangle.corner[2]);
+        }
+        return bounds;
+    }
 }
