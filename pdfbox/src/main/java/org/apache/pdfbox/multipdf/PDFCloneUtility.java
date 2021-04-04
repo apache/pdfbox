@@ -138,11 +138,12 @@ class PDFCloneUtility
           else if( base instanceof COSDictionary )
           {
               COSDictionary dic = (COSDictionary)base;
-              retval = new COSDictionary();
+              COSDictionary retvalDic = new COSDictionary();
+              retval = retvalDic;
               clonedVersion.put( base, retval );
               for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
               {
-                  ((COSDictionary)retval).setItem(
+                  retvalDic.setItem(
                           entry.getKey(),
                           cloneForNewDocument(entry.getValue()));
               }
@@ -201,9 +202,10 @@ class PDFCloneUtility
               else
               {
                   COSArray array = (COSArray) base;
+                  COSArray targetArr = (COSArray) target;
                   for (int i = 0; i < array.size(); i++)
                   {
-                      ((COSArray) target).add(cloneForNewDocument(array.get(i)));
+                      targetArr.add(cloneForNewDocument(array.get(i)));
                   }
               }
           }
@@ -231,19 +233,20 @@ class PDFCloneUtility
               }
               else
               {
+                  COSDictionary targetDic = (COSDictionary) target;
                   COSDictionary dic = (COSDictionary) base;
                   clonedVersion.put(base, retval);
                   for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
                   {
                       COSName key = entry.getKey();
                       COSBase value = entry.getValue();
-                      if (((COSDictionary) target).getItem(key) != null)
+                      if (targetDic.getItem(key) != null)
                       {
-                          cloneMerge(value, ((COSDictionary) target).getItem(key));
+                          cloneMerge(value, targetDic.getItem(key));
                       }
                       else
                       {
-                          ((COSDictionary) target).setItem(key, cloneForNewDocument(value));
+                          targetDic.setItem(key, cloneForNewDocument(value));
                       }
                   }
               }
