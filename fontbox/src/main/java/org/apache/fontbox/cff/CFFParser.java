@@ -1358,17 +1358,6 @@ public class CFFParser
     }
 
     /**
-     * Inner class representing an embedded CFF charset.
-     */
-    abstract static class EmbeddedCharset extends CFFCharset
-    {
-        protected EmbeddedCharset(boolean isCIDFont)
-        {
-            super(isCIDFont);
-        }
-    }
-
-    /**
      * An empty charset in a malformed CID font.
      */
     private static class EmptyCharset extends EmbeddedCharset
