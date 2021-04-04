@@ -53,7 +53,7 @@ public class CMap
     private final Map<Integer,String> charToUnicode = new HashMap<Integer,String>();
 
     // inverted map
-    Map <String, byte[]> unicodeToByteCodes = new HashMap<String, byte[]>();
+    private final Map <String, byte[]> unicodeToByteCodes = new HashMap<String, byte[]>();
 
     // CID mappings
     private final Map<Integer,Integer> codeToCid = new HashMap<Integer,Integer>();
