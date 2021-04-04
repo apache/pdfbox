@@ -65,7 +65,7 @@ public class CMap
     private final List<CIDRange> codeToCidRanges = new ArrayList<>();
 
     // inverted map
-    Map <String, byte[]> unicodeToByteCodes = new HashMap<>();
+    private final Map <String, byte[]> unicodeToByteCodes = new HashMap<>();
 
     private static final String SPACE = " ";
     private int spaceMapping = -1;
@@ -263,7 +263,7 @@ public class CMap
         {
             return 0;
         }
-        Integer cid = 0;
+        int cid = 0;
         int length = minCidLength;
         while (cid == 0 && (length <= maxCidLength))
         {
