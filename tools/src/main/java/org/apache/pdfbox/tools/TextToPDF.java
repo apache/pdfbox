@@ -250,6 +250,8 @@ public class TextToPDF implements Callable<Integer>
             boolean textIsEmpty = true;
             StringBuilder nextLineToDraw = new StringBuilder();
 
+            StringBuilder nextLineToDraw = new StringBuilder();
+
             while( (nextLine = data.readLine()) != null )
             {
                 // The input text is nonEmpty. New pages will be created and added

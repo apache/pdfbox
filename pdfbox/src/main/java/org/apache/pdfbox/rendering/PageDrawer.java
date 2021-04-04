@@ -96,8 +96,8 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnknown;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
@@ -162,14 +162,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private final float imageDownscalingOptimizationThreshold;
 
     static final int JAVA_VERSION = PageDrawer.getJavaVersion();
+
     /**
-     * Default annotations filter, returns all annotations
-     */
-    private static final AnnotationFilter defaultAnnotationFilter = annotation -> true;
-    /**
-     * Current annotations filter
-     */
-    private AnnotationFilter annotationFilter = defaultAnnotationFilter;
+    * Default annotations filter, returns all annotations
+    */
+    private AnnotationFilter annotationFilter = annotation -> true;
 
     /**
      * Constructor.
@@ -1347,7 +1344,20 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            area = getGraphicsState().getCurrentClippingPath();
+            Rectangle2D bounds = shading.getBounds(new AffineTransform(), ctm);
+            if (bounds != null)
+            {
+                bounds.add(new Point2D.Double(Math.floor(bounds.getMinX() - 1),
+                        Math.floor(bounds.getMinY() - 1)));
+                bounds.add(new Point2D.Double(Math.ceil(bounds.getMaxX() + 1),
+                        Math.ceil(bounds.getMaxY() + 1)));
+                area = new Area(bounds);
+                area.intersect(getGraphicsState().getCurrentClippingPath());
+            }
+            else
+            {
+                area = getGraphicsState().getCurrentClippingPath();
+            }
         }
         if (isContentRendered())
         {

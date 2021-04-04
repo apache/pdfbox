@@ -99,10 +99,13 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
         // Instead, the "ISO Coated v2 300% (basICColor)" is used, which
         // is an open alternative to the "ISO Coated v2 300% (ECI)" profile.
 
-        String name = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
-
-        try (InputStream resourceAsStream = PDDeviceCMYK.class.getResourceAsStream(name);
-             InputStream is = new BufferedInputStream(resourceAsStream))
+        String resourceName = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
+        InputStream resourceAsStream = PDDeviceCMYK.class.getResourceAsStream(resourceName);
+        if (resourceAsStream == null)
+        {
+            throw new IOException("resource '" + resourceName + "' not found");
+        }    
+        try (InputStream is = new BufferedInputStream(resourceAsStream))
         {
             return ICC_Profile.getInstance(is);
         }

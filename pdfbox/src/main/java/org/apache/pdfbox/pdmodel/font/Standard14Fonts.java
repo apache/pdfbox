@@ -114,8 +114,12 @@ final class Standard14Fonts
     private static void loadMetrics(String fontName) throws IOException
     {
         String resourceName = "/org/apache/pdfbox/resources/afm/" + fontName + ".afm";
-        try (InputStream resourceAsStream = PDType1Font.class.getResourceAsStream(resourceName);
-             InputStream afmStream = new BufferedInputStream(resourceAsStream))
+        InputStream resourceAsStream = PDType1Font.class.getResourceAsStream(resourceName);
+        if (resourceAsStream == null)
+        {
+            throw new IOException("resource '" + resourceName + "' not found");
+        }
+        try (InputStream afmStream = new BufferedInputStream(resourceAsStream))
         {
             AFMParser parser = new AFMParser(afmStream);
             FontMetrics metric = parser.parse(true);
