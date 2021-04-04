@@ -167,7 +167,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     private final class PageIterator implements Iterator<PDPage>
     {
         private final Queue<COSDictionary> queue = new ArrayDeque<>();
-        private Set<COSDictionary> set = new HashSet<>();
+        private Set<COSDictionary> set;
 
         private PageIterator(COSDictionary node)
         {
@@ -215,7 +215,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                 throw new NoSuchElementException();
             }
             COSDictionary next = queue.poll();
-            
+            //todo can a 'next' be null here?
             sanitizeType(next);
 
             ResourceCache resourceCache = document != null ? document.getResourceCache() : null;
@@ -354,48 +354,42 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     public int indexOf(PDPage page)
     {
         SearchContext context = new SearchContext(page);
-        if (findPage(context, root))
-        {
-            return context.index;
-        }
-        return -1;
+        return findPage(context, root) ? context.index : -1;
     }
 
     private boolean findPage(SearchContext context, COSDictionary node)
     {
         for (COSDictionary kid : getKids(node))
         {
-            if (context.found)
-            {
-                break;
-            }
             if (isPageTreeNode(kid))
             {
-                findPage(context, kid);
+                if (findPage(context, kid))
+                    return true;
             }
             else
             {
-                context.visitPage(kid);
+                if (context.isMatch(kid))
+                    return true;
             }
         }
-        return context.found;
+
+        return false;
     }
 
     private static final class SearchContext
     {
         private final COSDictionary searched;
         private int index = -1;
-        private boolean found;
 
         private SearchContext(PDPage page)
         {
             searched = page.getCOSObject();
         }
 
-        private void visitPage(COSDictionary current)
+        private boolean isMatch(COSDictionary current)
         {
             index++;
-            found = searched == current;
+            return searched == current;
         }
     }
 
