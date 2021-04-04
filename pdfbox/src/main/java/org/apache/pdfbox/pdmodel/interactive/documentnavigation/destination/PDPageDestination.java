@@ -138,9 +138,14 @@ public abstract class PDPageDestination extends PDDestination
     private int indexOfPageTree(COSDictionary pageDict)
     {
         COSDictionary parent = pageDict;
-        while (parent.getCOSDictionary(COSName.PARENT, COSName.P) != null)
+        while (true)
         {
-            parent = parent.getCOSDictionary(COSName.PARENT, COSName.P);
+            COSDictionary prevParent = parent.getCOSDictionary(COSName.PARENT, COSName.P);
+            if (prevParent == null)
+            {
+                break;
+            }
+            parent = prevParent;
         }
         if (parent.containsKey(COSName.KIDS)
                 && COSName.PAGES.equals(parent.getCOSName(COSName.TYPE)))
