@@ -46,7 +46,7 @@ public class Splitter
     private int endPage = Integer.MAX_VALUE;
     private List<PDDocument> destinationDocuments;
 
-    private int currentPageNumber = 0;
+    private int currentPageNumber;
 
     private MemoryUsageSetting memoryUsageSetting = null;
 
@@ -61,7 +61,7 @@ public class Splitter
     /**
      * Set the memory setting.
      * 
-     * @param memoryUsageSetting 
+     * @param memoryUsageSetting The memory setting.
      */
     public void setMemoryUsageSetting(MemoryUsageSetting memoryUsageSetting)
     {
@@ -79,6 +79,8 @@ public class Splitter
      */
     public List<PDDocument> split(PDDocument document) throws IOException
     {
+        // reset the currentPageNumber for a case if the split method will be used several times
+        currentPageNumber = 0;
         destinationDocuments = new ArrayList<>();
         sourceDocument = document;
         processPages();
@@ -239,13 +241,10 @@ public class Splitter
             {
                 PDAnnotationLink link = (PDAnnotationLink)annotation;   
                 PDDestination destination = link.getDestination();
-                if (destination == null && link.getAction() != null)
+                PDAction action = link.getAction();
+                if (destination == null && action instanceof PDActionGoTo)
                 {
-                    PDAction action = link.getAction();
-                    if (action instanceof PDActionGoTo)
-                    {
-                        destination = ((PDActionGoTo)action).getDestination();
-                    }
+                    destination = ((PDActionGoTo) action).getDestination();
                 }
                 if (destination instanceof PDPageDestination)
                 {
