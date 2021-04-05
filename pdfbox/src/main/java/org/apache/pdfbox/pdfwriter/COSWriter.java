@@ -234,6 +234,7 @@ public class COSWriter implements ICOSVisitor
      *
      * @param outputStream The output stream to write the PDF. It will be closed when this object is
      * closed.
+     * @throws NullPointerException The outputStream parameter is null.
      */
     public COSWriter(OutputStream outputStream)
     {
@@ -245,6 +246,7 @@ public class COSWriter implements ICOSVisitor
      *
      * @param outputStream The output stream to write the PDF. It will be closed when this object is closed.
      * @param compressParameters The configuration for the document's compression.
+     * @throws NullPointerException The outputStream parameter is null.
      */
     public COSWriter(OutputStream outputStream, CompressParameters compressParameters)
     {
@@ -263,6 +265,7 @@ public class COSWriter implements ICOSVisitor
      * @param inputData random access read containing source PDF data
      *
      * @throws IOException if something went wrong
+     * @throws NullPointerException The outputStream parameter is null.
      */
     public COSWriter(OutputStream outputStream, RandomAccessRead inputData) throws IOException
     {
@@ -287,6 +290,7 @@ public class COSWriter implements ICOSVisitor
      * @param inputData random access read containing source PDF data.
      * @param objectsToWrite objects that <b>must</b> be part of the incremental saving.
      * @throws IOException if something went wrong
+     * @throws NullPointerException The outputStream parameter is null.
      */
     public COSWriter(OutputStream outputStream, RandomAccessRead inputData,
             Set<COSDictionary> objectsToWrite) throws IOException
@@ -340,9 +344,13 @@ public class COSWriter implements ICOSVisitor
      * add an entry in the x ref table for later dump.
      *
      * @param entry The new entry to add.
+     * @throws NullPointerException The entry parameter is null.
      */
     protected void addXRefEntry(XReferenceEntry entry)
     {
+        if (entry == null)
+            throw new NullPointerException("The entry parameter is null");
+
         getXRefEntries().add(entry);
     }
 
@@ -389,9 +397,13 @@ public class COSWriter implements ICOSVisitor
      * This will set the output stream.
      *
      * @param newOutput The new output stream.
+     * @exception NullPointerException The newOutput parameter is null.
      */
     private void setOutput( OutputStream newOutput )
     {
+        if (newOutput == null)
+            throw new NullPointerException("The newOutput parameter is null");
+
         output = newOutput;
     }
 
@@ -577,9 +589,13 @@ public class COSWriter implements ICOSVisitor
      * @param obj The object to write.
      *
      * @throws IOException if the output cannot be written
+     * @throws NullPointerException The key parameter is null.
      */
     public void doWriteObject(COSObjectKey key, COSBase obj) throws IOException
     {
+        if (key == null)
+            throw new NullPointerException("The key parameter is null");
+
         // add a x ref entry
         addXRefEntry(new NormalXReference(getStandardOutput().getPos(), key, obj));
         // write the object
@@ -606,8 +622,8 @@ public class COSWriter implements ICOSVisitor
     /**
      * Convenience method, so that we get false for types that can't be updated.
      * 
-     * @param base
-     * @return
+     * @param base The COSBase instance or null.
+     * @return True if need to be updated otherwise false
      */
     private boolean isNeedToBeUpdated(COSBase base)
     {
@@ -624,13 +640,17 @@ public class COSWriter implements ICOSVisitor
      * @param obj The object to write.
      *
      * @throws IOException if the output cannot be written
+     * @throws NullPointerException The obj parameter is null.
      */
     public void doWriteObject( COSBase obj ) throws IOException
     {
-            writtenObjects.add( obj );
-            // find the physical reference
-            currentObjectKey = getObjectKey( obj );
-            doWriteObject(currentObjectKey, obj);
+        if (obj == null)
+            throw new NullPointerException("The obj parameter is null.");
+
+        writtenObjects.add( obj );
+        // find the physical reference
+        currentObjectKey = getObjectKey( obj );
+        doWriteObject(currentObjectKey, obj);
     }
 
     /**
@@ -849,7 +869,7 @@ public class COSWriter implements ICOSVisitor
      * Write an incremental update for a non signature case. This can be used for e.g. augmenting
      * signatures.
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private void doWriteIncrement() throws IOException
     {
@@ -952,10 +972,10 @@ public class COSWriter implements ICOSVisitor
      * @param cmsSignature CMS signature byte array
      * @throws IllegalStateException if PDF is not prepared for external signing
      * @throws IOException if source data stream is closed
+     * @throws NullPointerException if cmsSignature is null.
      */
     public void writeExternalSignature(byte[] cmsSignature) throws IOException
     {
-
         if (incrementPart == null || incrementalInput == null)
         {
             throw new IllegalStateException("PDF not prepared for setting signature");
@@ -1089,6 +1109,9 @@ public class COSWriter implements ICOSVisitor
     @Override
     public Object visitFromArray( COSArray obj ) throws IOException
     {
+        if (obj == null)
+            throw new NullPointerException("The obj parameter is null");
+
         int count = 0;
         getStandardOutput().write(ARRAY_OPEN);
         for (Iterator<COSBase> i = obj.iterator(); i.hasNext();)
@@ -1162,6 +1185,9 @@ public class COSWriter implements ICOSVisitor
     @Override
     public Object visitFromDictionary(COSDictionary obj) throws IOException
     {
+        if (obj == null)
+            throw new NullPointerException("The obj parameter is null");
+
         if (!reachedSignature)
         {
             COSBase itemType = obj.getItem(COSName.TYPE);
@@ -1273,6 +1299,9 @@ public class COSWriter implements ICOSVisitor
     @Override
     public Object visitFromDocument(COSDocument doc) throws IOException
     {
+        if (doc == null)
+            throw new NullPointerException("The doc parameter is null.");
+
         if(!incrementalUpdate)
         {
             doWriteHeader(doc);
@@ -1371,15 +1400,16 @@ public class COSWriter implements ICOSVisitor
      * @param obj The object that is being visited.
      *
      * @throws IOException If there is an exception while visiting this object.
+     * @throws NullPointerException The obj parameter is null.
      */
     public void writeReference(COSBase obj) throws IOException
     {
-            COSObjectKey key = getObjectKey(obj);
-            getStandardOutput().write(String.valueOf(key.getNumber()).getBytes(StandardCharsets.ISO_8859_1));
-            getStandardOutput().write(SPACE);
-            getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes(StandardCharsets.ISO_8859_1));
-            getStandardOutput().write(SPACE);
-            getStandardOutput().write(REFERENCE);
+        COSObjectKey key = getObjectKey(obj);
+        getStandardOutput().write(String.valueOf(key.getNumber()).getBytes(StandardCharsets.ISO_8859_1));
+        getStandardOutput().write(SPACE);
+        getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes(StandardCharsets.ISO_8859_1));
+        getStandardOutput().write(SPACE);
+        getStandardOutput().write(REFERENCE);
     }
 
     @Override
@@ -1434,11 +1464,15 @@ public class COSWriter implements ICOSVisitor
     /**
      * This will write the pdf document.
      *
-     * @throws IOException If an error occurs while generating the data.
      * @param doc The document to write.
+     * @throws IOException If an error occurs while generating the data.
+     * @throws NullPointerException The doc parameter is null.
      */
     public void write(COSDocument doc) throws IOException
     {
+        if (doc == null)
+            throw new NullPointerException("The doc parameter is null.");
+
         PDDocument pdDoc = new PDDocument( doc );
         write( pdDoc );
     }
@@ -1450,6 +1484,7 @@ public class COSWriter implements ICOSVisitor
      * @param doc The document to write.
      *
      * @throws IOException If an error occurs while generating the data.
+     * @throws NullPointerException The doc parameter is null.
      */
     public void write(PDDocument doc) throws IOException
     {
@@ -1467,6 +1502,7 @@ public class COSWriter implements ICOSVisitor
      * @throws IOException If an error occurs while generating the data.
      * @throws IllegalStateException If the document has an encryption dictionary but no protection
      * policy.
+     * @throws NullPointerException The doc parameter is null.
      */
     public void write(PDDocument doc, SignatureInterface signInterface) throws IOException
     {
@@ -1575,9 +1611,13 @@ public class COSWriter implements ICOSVisitor
      * @param doc The document to write.
      *
      * @throws IOException If an error occurs while generating the data.
+     * @throws NullPointerException The doc parameter is null.
      */
     public void write(FDFDocument doc) throws IOException
     {
+        if (doc == null)
+            throw new NullPointerException("The doc parameter is null.");
+
         fdfDocument = doc;
         willEncrypt = false;
         COSDocument cosDoc = fdfDocument.getDocument();
@@ -1589,9 +1629,13 @@ public class COSWriter implements ICOSVisitor
      * @param string COSString to be written
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
+     * @throws NullPointerException The string parameter is null or output parameter is null.
      */
     public static void writeString(COSString string, OutputStream output) throws IOException
     {
+        if (output == null)
+            throw new NullPointerException("The output parameter is null.");
+
         writeString(string.getBytes(), string.getForceHexForm(), output);
     }
 
@@ -1601,9 +1645,13 @@ public class COSWriter implements ICOSVisitor
      * @param bytes byte array representation of a string to be written
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
+     * @throws NullPointerException The bytes parameter is null or output parameter is null.
      */
     public static void writeString(byte[] bytes, OutputStream output) throws IOException
     {
+        if (output == null)
+            throw new NullPointerException("The output parameter is null.");
+
         writeString(bytes, false, output);
     }
 
