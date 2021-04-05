@@ -896,7 +896,7 @@ public class COSParser extends BaseParser implements ICOSParser
             // avoid follow-up warning about missing endobj
             source.rewind(ENDOBJ.length);
         }
-        else if (endStream.length() > 9 && isLenient && endStream.substring(0,9).equals(ENDSTREAM_STRING))
+        else if (endStream.length() > 9 && isLenient && endStream.startsWith(ENDSTREAM_STRING))
         {
             LOG.warn("stream ends with '" + endStream + "' instead of 'endstream' at offset "
                     + source.getPosition());
