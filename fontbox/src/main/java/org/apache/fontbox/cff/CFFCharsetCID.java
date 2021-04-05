@@ -26,6 +26,9 @@ import java.util.Map;
  */
 class CFFCharsetCID implements CFFCharset
 {
+
+    private final static String EXCEPTION_MESSAGE = "Not a Type 1-equivalent font";
+
     private final Map<Integer, Integer> sidOrCidToGid = new HashMap<>(250);
 
     // inverse
@@ -40,7 +43,7 @@ class CFFCharsetCID implements CFFCharset
     @Override
     public void addSID(int gid, int sid, String name)
     {
-        throw new IllegalStateException("Not a Type 1-equivalent font");
+        throw new IllegalStateException(EXCEPTION_MESSAGE);
     }
 
     @Override
@@ -53,13 +56,13 @@ class CFFCharsetCID implements CFFCharset
     @Override
     public int getSIDForGID(int sid)
     {
-        throw new IllegalStateException("Not a Type 1-equivalent font");
+        throw new IllegalStateException(EXCEPTION_MESSAGE);
     }
 
     @Override
     public int getGIDForSID(int sid)
     {
-        throw new IllegalStateException("Not a Type 1-equivalent font");
+        throw new IllegalStateException(EXCEPTION_MESSAGE);
     }
 
     @Override
@@ -76,13 +79,13 @@ class CFFCharsetCID implements CFFCharset
     @Override
     public int getSID(String name)
     {
-        throw new IllegalStateException("Not a Type 1-equivalent font");
+        throw new IllegalStateException(EXCEPTION_MESSAGE);
     }
 
     @Override
     public String getNameForGID(int gid)
     {
-        throw new IllegalStateException("Not a Type 1-equivalent font");
+        throw new IllegalStateException(EXCEPTION_MESSAGE);
     }
 
     @Override
