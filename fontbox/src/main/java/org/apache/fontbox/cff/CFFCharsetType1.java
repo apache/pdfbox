@@ -24,7 +24,7 @@ import java.util.Map;
  *
  * @author Valery Bokov
  */
-class CFFCharsetType1 extends CFFCharset
+class CFFCharsetType1 implements CFFCharset
 {
     private final Map<Integer, Integer> sidOrCidToGid = new HashMap<>(250);
     private final Map<Integer, Integer> gidToSid = new HashMap<>(250);
@@ -55,7 +55,7 @@ class CFFCharsetType1 extends CFFCharset
     }
 
     @Override
-    int getSIDForGID(int sid)
+    public int getSIDForGID(int sid)
     {
         Integer gid = gidToSid.get(sid);
         if (gid == null)
@@ -66,7 +66,7 @@ class CFFCharsetType1 extends CFFCharset
     }
 
     @Override
-    int getGIDForSID(int sid)
+    public int getGIDForSID(int sid)
     {
         Integer gid = sidOrCidToGid.get(sid);
         if (gid == null)
@@ -83,7 +83,7 @@ class CFFCharsetType1 extends CFFCharset
     }
 
     @Override
-    int getSID(String name)
+    public int getSID(String name)
     {
         Integer sid = nameToSid.get(name);
         if (sid == null)

@@ -20,7 +20,7 @@ package org.apache.fontbox.cff;
  * Class representing an embedded CFF charset.
  *
  */
-class EmbeddedCharset extends CFFCharset
+class EmbeddedCharset implements CFFCharset
 {
     private final CFFCharset charset;
 
@@ -54,13 +54,13 @@ class EmbeddedCharset extends CFFCharset
     }
 
     @Override
-    int getSIDForGID(int sid)
+    public int getSIDForGID(int sid)
     {
         return charset.getSIDForGID(sid);
     }
 
     @Override
-    int getGIDForSID(int sid)
+    public int getGIDForSID(int sid)
     {
         return charset.getGIDForSID(sid);
     }
@@ -72,7 +72,7 @@ class EmbeddedCharset extends CFFCharset
     }
 
     @Override
-    int getSID(String name)
+    public int getSID(String name)
     {
         return charset.getSID(name);
     }

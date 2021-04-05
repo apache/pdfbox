@@ -19,11 +19,9 @@ package org.apache.fontbox.cff;
 /**
  * A CFF charset. A charset is an array of SIDs/CIDs for all glyphs in the font.
  *
- * todo: split this into two? CFFCharsetType1 and CFFCharsetCID ?
- *
  * @author John Hewson
  */
-public abstract class CFFCharset
+public interface CFFCharset
 {
     /**
      * Indicates if the charset belongs to a CID font.
@@ -54,7 +52,7 @@ public abstract class CFFCharset
      * @param sid SID
      * @return GID
      */
-    abstract int getSIDForGID(int sid);
+    public abstract int getSIDForGID(int sid);
 
     /**
      * Returns the GID for the given SID. SIDs are internal to the font and are not public.
@@ -62,7 +60,7 @@ public abstract class CFFCharset
      * @param sid SID
      * @return GID
      */
-    abstract int getGIDForSID(int sid);
+    public abstract int getGIDForSID(int sid);
 
     /**
      * Returns the GID for a given CID. Returns 0 if the CID is missing.
@@ -79,7 +77,7 @@ public abstract class CFFCharset
      * @param name PostScript glyph name
      * @return SID
      */
-    abstract int getSID(String name);
+    public abstract int getSID(String name);
 
     /**
      * Returns the PostScript glyph name for the given GID.
