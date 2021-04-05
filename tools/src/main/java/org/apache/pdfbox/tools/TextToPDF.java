@@ -248,7 +248,6 @@ public class TextToPDF implements Callable<Integer>
 
             // There is a special case of creating a PDF document from an empty string.
             boolean textIsEmpty = true;
-            StringBuilder nextLineToDraw = new StringBuilder();
 
             StringBuilder nextLineToDraw = new StringBuilder();
 
