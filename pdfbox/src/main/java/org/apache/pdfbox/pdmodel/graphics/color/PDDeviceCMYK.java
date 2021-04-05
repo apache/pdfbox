@@ -171,11 +171,11 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
             float[] destValues = new float[3];
             int startX = raster.getMinX();
             int startY = raster.getMinY();
-            int width = raster.getWidth() + startX;
-            int height = raster.getHeight() + startY;
-            for (int x = startX; x < width; x++)
+            int endX = raster.getWidth() + startX;
+            int endY = raster.getHeight() + startY;
+            for (int x = startX; x < endX; x++)
             {
-                for (int y = startY; y < height; y++)
+                for (int y = startY; y < endY; y++)
                 {
                     raster.getPixel(x, y, srcValues);
                     // check if the last value can be reused
