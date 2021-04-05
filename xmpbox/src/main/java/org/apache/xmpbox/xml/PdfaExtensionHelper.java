@@ -82,11 +82,15 @@ public final class PdfaExtensionHelper
         // check extension
         if (cprefix.equals(prefix) && !cnamespace.equals(namespace))
         {
-            throw new XmpParsingException(ErrorType.InvalidPdfaSchema, "Invalid PDF/A namespace definition");
+            throw new XmpParsingException(ErrorType.InvalidPdfaSchema,
+                    "Invalid PDF/A namespace definition, "
+                            + "prefix: " + prefix + ", namespace: " + namespace);
         } 
         if (cnamespace.equals(namespace) && !cprefix.equals(prefix))
         {
-            throw new XmpParsingException(ErrorType.InvalidPdfaSchema, "Invalid PDF/A namespace definition");
+            throw new XmpParsingException(ErrorType.InvalidPdfaSchema,
+                    "Invalid PDF/A namespace definition, "
+                            + "prefix: " + prefix + ", namespace: " + namespace);
         }
     }
 

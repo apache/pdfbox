@@ -16,9 +16,6 @@
  */
 package org.apache.fontbox.cff;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * A CFF charset. A charset is an array of SIDs/CIDs for all glyphs in the font.
  *

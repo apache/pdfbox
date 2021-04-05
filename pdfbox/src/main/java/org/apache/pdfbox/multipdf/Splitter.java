@@ -61,7 +61,7 @@ public class Splitter
     /**
      * Set the memory setting.
      * 
-     * @param memoryUsageSetting The memory setting
+     * @param memoryUsageSetting The memory setting.
      */
     public void setMemoryUsageSetting(MemoryUsageSetting memoryUsageSetting)
     {
@@ -79,7 +79,7 @@ public class Splitter
      */
     public List<PDDocument> split(PDDocument document) throws IOException
     {
-        //reset the currentPageNumber for a case if the split method will be used several times
+        // reset the currentPageNumber for a case if the split method will be used several times
         currentPageNumber = 0;
         destinationDocuments = new ArrayList<>();
         sourceDocument = document;
@@ -244,7 +244,7 @@ public class Splitter
                 PDAction action = link.getAction();
                 if (destination == null && action instanceof PDActionGoTo)
                 {
-                    destination = ((PDActionGoTo)action).getDestination();
+                    destination = ((PDActionGoTo) action).getDestination();
                 }
                 if (destination instanceof PDPageDestination)
                 {
