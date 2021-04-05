@@ -169,23 +169,30 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
             float[] srcValues = new float[4];
             float[] lastValues = new float[] { -1.0f, -1.0f, -1.0f, -1.0f };
             float[] destValues = new float[3];
-            int width = raster.getWidth();
             int startX = raster.getMinX();
-            int height = raster.getHeight();
             int startY = raster.getMinY();
-            for (int x = startX; x < width + startX; x++)
+            int width = raster.getWidth() + startX;
+            int height = raster.getHeight() + startY;
+            for (int x = startX; x < width; x++)
             {
-                for (int y = startY; y < height + startY; y++)
+                for (int y = startY; y < height; y++)
                 {
                     raster.getPixel(x, y, srcValues);
                     // check if the last value can be reused
                     if (!Arrays.equals(lastValues, srcValues))
                     {
-                        for (int k = 0; k < 4; k++)
-                        {
-                            lastValues[k] = srcValues[k];
-                            srcValues[k] = srcValues[k] / 255f;
-                        }
+                        lastValues[0] = srcValues[0];
+                        srcValues[0] = srcValues[0] / 255f;
+
+                        lastValues[1] = srcValues[1];
+                        srcValues[1] = srcValues[1] / 255f;
+
+                        lastValues[2] = srcValues[2];
+                        srcValues[2] = srcValues[2] / 255f;
+
+                        lastValues[3] = srcValues[3];
+                        srcValues[3] = srcValues[3] / 255f;
+
                         // use CIEXYZ as intermediate format to optimize the color conversion
                         destValues = destCS.fromCIEXYZ(colorSpace.toCIEXYZ(srcValues));
                         for (int k = 0; k < destValues.length; k++)
