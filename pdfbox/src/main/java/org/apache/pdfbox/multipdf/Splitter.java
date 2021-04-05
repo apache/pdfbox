@@ -19,6 +19,7 @@ package org.apache.pdfbox.multipdf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.ObjIntConsumer;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -38,6 +39,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
  */
 public class Splitter
 {
+    private static final ObjIntConsumer<PDDocument> defaultDocConsumer = (doc, pageNumber) -> {/*empty*/};
     private PDDocument sourceDocument;
     private PDDocument currentDestinationDocument;
 
@@ -45,9 +47,7 @@ public class Splitter
     private int startPage = Integer.MIN_VALUE;
     private int endPage = Integer.MAX_VALUE;
     private List<PDDocument> destinationDocuments;
-
     private int currentPageNumber;
-
     private MemoryUsageSetting memoryUsageSetting;
 
     /**
@@ -83,8 +83,30 @@ public class Splitter
         currentPageNumber = 0;
         destinationDocuments = new ArrayList<>();
         sourceDocument = document;
-        processPages();
+        processPages(defaultDocConsumer);
         return destinationDocuments;
+    }
+
+    /**
+     * This will take a document and split into several other documents.
+     *
+     * @param document The document to split.
+     * @param documentConsumer The consumer of current split document
+     *                         The first parameter is the new document instance.
+     *                         The second parameter is the page number depending on parent document.
+     * @throws IOException If there is an IOError
+     * @throws NullPointerException The documentConsumer parameter is null or document is null.
+     */
+    public void split(PDDocument document, ObjIntConsumer<PDDocument> documentConsumer) throws IOException
+    {
+        if (documentConsumer == null)
+            throw new NullPointerException("The documentConsumer parameter is null.");
+
+        // reset the currentPageNumber for a case if the split method will be used several times
+        currentPageNumber = 0;
+        destinationDocuments = new ArrayList<>();
+        sourceDocument = document;
+        processPages(documentConsumer);
     }
 
     /**
@@ -138,16 +160,18 @@ public class Splitter
 
     /**
      * Interface method to handle the start of the page processing.
-     *
+     * @param documentConsumer The consumer of current split document.
+     *                         The first parameter is the new document instance.
+     *                         The second parameter is the page number depending on parent document.
      * @throws IOException If an IO error occurs.
      */
-    private void processPages() throws IOException
+    private void processPages(ObjIntConsumer<PDDocument> documentConsumer) throws IOException
     {
         for (PDPage page : sourceDocument.getPages())
         {
             if (currentPageNumber + 1 >= startPage && currentPageNumber + 1 <= endPage)
             {
-                processPage(page);
+                processPage(page, documentConsumer);
                 currentPageNumber++;
             }
             else
@@ -166,10 +190,8 @@ public class Splitter
 
     /**
      * Helper method for creating new documents at the appropriate pages.
-     *
-     * @throws IOException If there is an error creating the new document.
      */
-    private void createNewDocumentIfNecessary() throws IOException
+    private void createNewDocumentIfNecessary()
     {
         if (splitAtPage(currentPageNumber) || currentDestinationDocument == null)
         {
@@ -201,10 +223,9 @@ public class Splitter
     /**
      * Create a new document to write the split contents to.
      *
-     * @return the newly created PDDocument. 
-     * @throws IOException If there is an problem creating the new document.
+     * @return the newly created PDDocument.
      */
-    protected PDDocument createNewDocument() throws IOException
+    protected PDDocument createNewDocument()
     {
         PDDocument document = memoryUsageSetting == null ?
                                 new PDDocument() : new PDDocument(memoryUsageSetting);
@@ -219,10 +240,12 @@ public class Splitter
      * Interface to start processing a new page.
      *
      * @param page The page that is about to get processed.
-     *
+     * @param documentConsumer The consumer of current split document.
+     *                         The first parameter is the new document instance.
+     *                         The second parameter is the page number depending on parent document.
      * @throws IOException If there is an error creating the new document.
      */
-    protected void processPage(PDPage page) throws IOException
+    protected void processPage(PDPage page, ObjIntConsumer<PDDocument> documentConsumer) throws IOException
     {
         createNewDocumentIfNecessary();
         
@@ -230,6 +253,7 @@ public class Splitter
         imported.setResources(page.getResources());
         // remove page links to avoid copying not needed resources 
         processAnnotations(imported);
+        documentConsumer.accept(currentDestinationDocument, currentPageNumber + 1);
     }
 
     private void processAnnotations(PDPage imported) throws IOException
