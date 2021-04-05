@@ -167,15 +167,13 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     private final class PageIterator implements Iterator<PDPage>
     {
         private final Queue<COSDictionary> queue = new ArrayDeque<>();
-        private Set<COSDictionary> set;
 
         private PageIterator(COSDictionary node)
         {
-            enqueueKids(node);
-            set = null; // release memory, we don't use this anymore
+            enqueueKids(node, new HashSet<>());
         }
 
-        private void enqueueKids(COSDictionary node)
+        private void enqueueKids(COSDictionary node, Set<COSDictionary> set)
         {
             if (isPageTreeNode(node))
             {
@@ -192,7 +190,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                     {
                         set.add(kid);
                     }
-                    enqueueKids(kid);
+                    enqueueKids(kid, set);
                 }
             }
             else
