@@ -27,7 +27,7 @@ import java.util.Map;
 class CFFCharsetCID implements CFFCharset
 {
 
-    private final static String EXCEPTION_MESSAGE = "Not a Type 1-equivalent font";
+    private static final String EXCEPTION_MESSAGE = "Not a Type 1-equivalent font";
 
     private final Map<Integer, Integer> sidOrCidToGid = new HashMap<>(250);
 

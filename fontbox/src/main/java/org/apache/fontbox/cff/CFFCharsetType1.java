@@ -26,7 +26,7 @@ import java.util.Map;
  */
 class CFFCharsetType1 implements CFFCharset
 {
-    private final static String EXCEPTION_MESSAGE = "Not a CIDFont";
+    private static final String EXCEPTION_MESSAGE = "Not a CIDFont";
 
     private final Map<Integer, Integer> sidOrCidToGid = new HashMap<>(250);
     private final Map<Integer, Integer> gidToSid = new HashMap<>(250);
