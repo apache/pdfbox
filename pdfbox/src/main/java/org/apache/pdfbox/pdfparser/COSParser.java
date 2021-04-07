@@ -2120,7 +2120,7 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 if (counter == 0)
                 {
-                    position = source.getPosition();
+                    position = source.getPosition() - 1;
                 }
                 counter++;
                 if (counter == stringLength)
@@ -2138,6 +2138,7 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         return position;
     }
+
     /**
      * This will parse the trailer from the stream and add it to the state.
      *
