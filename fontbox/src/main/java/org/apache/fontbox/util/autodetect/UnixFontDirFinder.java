@@ -36,7 +36,8 @@ public class UnixFontDirFinder extends NativeFontDirFinder
                 "/usr/local/fonts", // local
                 "/usr/local/share/fonts", // local shared
                 "/usr/share/fonts", // system
-                "/usr/X11R6/lib/X11/fonts" // X
+                "/usr/X11R6/lib/X11/fonts", // X
+                "/usr/share/X11/fonts" // CentOS
         };
     }
 }
