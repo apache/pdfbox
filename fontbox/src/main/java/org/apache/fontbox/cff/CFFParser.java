@@ -1360,11 +1360,10 @@ public class CFFParser
     /**
      * An empty charset in a malformed CID font.
      */
-    private static class EmptyCharset extends EmbeddedCharset
+    private static class EmptyCharset extends CFFCharsetCID
     {
         private EmptyCharset(int numCharStrings)
         {
-            super(true);
             addCID(0, 0); // .notdef
             
             // Adobe Reader treats CID as GID, PDFBOX-2571 p11.
