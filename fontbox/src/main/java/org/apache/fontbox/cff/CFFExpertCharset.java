@@ -200,7 +200,11 @@ public final class CFFExpertCharset extends CFFCharsetType1
 
     private CFFExpertCharset()
     {
-        // empty
+        int gid = 0;
+        for (Object[] charsetEntry : CFF_EXPERT_CHARSET_TABLE)
+        {
+            addSID(gid++, (Integer) charsetEntry[CHAR_CODE], charsetEntry[CHAR_NAME].toString());
+        }
     }
 
     /**
@@ -214,12 +218,4 @@ public final class CFFExpertCharset extends CFFCharsetType1
 
     private static final CFFExpertCharset INSTANCE = new CFFExpertCharset();
 
-    static
-    {
-        int gid = 0;
-        for (Object[] charsetEntry : CFF_EXPERT_CHARSET_TABLE)
-        {
-            INSTANCE.addSID(gid++, (Integer) charsetEntry[CHAR_CODE], charsetEntry[CHAR_NAME].toString());
-        }
-    }
 }
