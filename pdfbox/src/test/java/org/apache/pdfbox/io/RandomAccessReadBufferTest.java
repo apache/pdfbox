@@ -24,7 +24,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Assertions;
 
@@ -208,5 +211,28 @@ class RandomAccessReadBufferTest
             assertEquals(34060, randomAccessSource.length());
             randomAccessSource.close();
         }
+    }
+
+    /**
+     * PDFBOX-5158: endless loop reading a stream of a multiple of 4096 bytes from a
+     * FileInputStream. Test does not fail with a ByteArrayInputStream, so we need to create a temp
+     * file.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBOX5158() throws IOException
+    {
+        Path path = Files.createTempFile("len4096", ".pdf");
+        try (OutputStream os = Files.newOutputStream(path))
+        {
+            os.write(new byte[4096]);
+        }
+        assertEquals(4096, path.toFile().length());
+        try (RandomAccessRead rar = new RandomAccessReadBuffer(Files.newInputStream(path)))
+        {
+            assertEquals(0, rar.read());
+        }
+        Files.delete(path);
     }
 }
