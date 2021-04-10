@@ -184,7 +184,7 @@ class TestPDPageContentStream
         List<Float> itemsInInch = Arrays.asList(1.0f * 72, 2.4f * 72);
 
         PDAbstractContentStream.convertUnit(itemsMm, "mm");
-        PDAbstractContentStream.convertUnit(itemsInch, "inc");
+        PDAbstractContentStream.convertUnit(itemsInch, "inch");
         // Should be converted to millimeters
         assertEquals(itemsInMm, itemsMm);
         // Should be converted to inches
