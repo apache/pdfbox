@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -171,27 +172,26 @@ class TestPDPageContentStream
     
      /**
      * PDFBOX-4073: test implemented choosable coordinate-unitsystem
-     *
-     * @throws IOException
+     * Checks that unitconversion is done right. 
+     * Arguably the test could be also in some other file
      */
     @Test 
-     void testUnitConversion() throws IOException
+     void testUnitConversion() 
      {
-        try (PDDocument doc = new PDDocument())
-        {
-            PDPage page = new PDPage();
-            doc.addPage(page);
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true);
-            List<Float> itemsMm = Arrays.asList(1.0f, 2.4f);
-            List<Float> itemsInch = Arrays.asList(1.0f, 2.4f);
-            List<Float> items_in_Mm = Arrays.asList(1.0f /(10 * 2.54f) * 72, 2.4f /(10 * 2.54f) * 72);
-            List<Float> itemsInInch = Arrays.asList(1.0f * 72, 2.4f * 72);
+        List<Float> itemsMm = Arrays.asList(1.0f, 2.4f);
+        List<Float> itemsInch = Arrays.asList(1.0f, 2.4f);
+        List<Float> itemsInMm = Arrays.asList(1.0f /(10 * 2.54f) * 72, 2.4f /(10 * 2.54f) * 72);
+        List<Float> itemsInInch = Arrays.asList(1.0f * 72, 2.4f * 72);
 
-            contentStream.convertUnit(itemsMm, "mm");
-            contentStream.convertUnit(itemsInch, "inc");
-            // assertEquals(itemsInMm, itemsMm);
-            // assertEquals(itemsInInch, itemsInch);
-            
-        }
+        PDAbstractContentStream.convertUnit(itemsMm, "mm");
+        PDAbstractContentStream.convertUnit(itemsInch, "inc");
+        // Should be converted to millimeters
+        assertEquals(itemsInMm, itemsMm);
+        // Should be converted to inches
+        assertEquals(itemsInInch, itemsInch);
+        // Should throw IllegalArgumentException if the unit is not valid
+        assertThrows(IllegalArgumentException.class, () -> {
+            PDAbstractContentStream.convertUnit(itemsMm, "invalid_unit");
+        });   
     }
 }

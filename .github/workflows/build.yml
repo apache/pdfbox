@@ -13,4 +13,4 @@ jobs:
         with:
           java-version: 1.8
       - name: Build and test with Maven
-        run: mvn clean install
+        run: mvn clean install -DfailIfNoTests=false
