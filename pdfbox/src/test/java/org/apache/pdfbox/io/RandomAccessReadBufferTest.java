@@ -235,4 +235,24 @@ class RandomAccessReadBufferTest
         }
         Files.delete(path);
     }
+    
+    /**
+     * PDFBOX-5161: failure to read bytes after reading a multiple of 4096. Construction source
+     * must be an InputStream.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBOX5161() throws IOException
+    {
+        try (RandomAccessRead rar = new RandomAccessReadBuffer(new ByteArrayInputStream(new byte[4099])))
+        {
+            byte[] buf = new byte[4096];
+            int bytesRead = rar.read(buf);
+            assertEquals(4096, bytesRead);
+            bytesRead = rar.read(buf, 0, 3);
+            assertEquals(3, bytesRead);
+        }
+    }
+
 }

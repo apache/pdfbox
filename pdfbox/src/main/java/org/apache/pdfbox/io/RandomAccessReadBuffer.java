@@ -227,7 +227,14 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         int bytesRead = readRemainingBytes(b, offset, length);
         if (bytesRead == -1)
         {
-            return -1;
+            if (available() > 0)
+            {
+                bytesRead = 0;
+            }
+            else
+            {
+                return -1;
+            }
         }
         while (bytesRead < length && available() > 0)
         {
