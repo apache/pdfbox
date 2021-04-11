@@ -131,6 +131,7 @@
                             META-INF=target/maven-shared-archive-resources/META-INF,
                             org/apache/pdfbox/resources=target/classes/org/apache/pdfbox/resources
                         </Include-Resource>
+                        <Automatic-Module-Name>org.apache.pdfbox</Automatic-Module-Name>
                     </instructions>
                 </configuration>
             </plugin>
@@ -179,18 +180,6 @@
                     <serverId>pdfbox-site</serverId>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Automatic-Module-Name>org.apache.pdfbox</Automatic-Module-Name>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-
             <!-- PDFBOX-3974: download test files from JIRA and keep them in repository cache -->
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
