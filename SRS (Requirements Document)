@@ -2,25 +2,29 @@
 
 *Project Description
 
+This project will use PDFBox and meet the following requirements. Within this document, the word, "tool", refers to a user interface or script interface that is integrated with PDFBox.
+
 ## Requirements
 
--Req. 1.0 
+- Req. 1.0 
 A tool shall provide a mechanism for users to annotate existing PDF documents with text.
--Req 1.1
-In annotations composed of text, the user shall be able to specify the font of each glyph in the text from a set of at least two different fonts.
--Req 1.1.1
+- Req 1.1
+In annotations composed of text, a font tool shall enable a user to specify the font of each glyph in the text from a set of at least two different fonts.
+- Req 1.1.1
 The font tool shall include at least two different user selectable fonts.
--Req 1.2
-The user shall be able to choose a page to place the text on. More pages shall be created as needed.
--Req 2.0 
-A tool shall be provided that allows users to highlight existing text in PDF documents
--Req 3.0
-A tool shall be implemented to allow users to draw lines on the document
--Req 3.1
-The user shall be able to choose a page to place the Line on. More pages shall be created as needed.
--Req 4.0
-A tool shall be provided to allow users to annotate existing PDF documents with an image
--Req 4.1
-The user shall be able to choose a page to place the image on. More pages shall be created as needed.
+- Req 1.2 
+A tool shall enable a user to choose a page to place an annotation on. 
+- Req 1.2.1 
+If a user chooses an nonexistent page to annotate, more pages shall be created as needed.
+- Req 2.0 
+A tool shall enable a user to highlight existing text in PDF documents
+- Req 3.0
+A tool shall enable a user to draw lines on the document
+- Req 3.1
+A tool shall enable a user to choose a page to place the Line on.
+- Req 4.0
+A tool shall enable a user to annotate existing PDF documents with an image
+- Req 4.1
+A tool shall enable a user to choose a page to place the image on. More pages shall be created as needed.
 
 Note: 1.1 and 1.1.1 are basically duplicates
