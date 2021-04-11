@@ -75,7 +75,8 @@ class PDDefaultAppearanceString
     {
         if (defaultAppearance == null)
         {
-            throw new IllegalArgumentException("/DA is a required entry");
+            throw new IllegalArgumentException("/DA is a required entry. "
+                    + "Please set a default appearance first.");
         }
         
         if (defaultResources == null)
