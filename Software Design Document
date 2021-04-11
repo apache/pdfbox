@@ -4,49 +4,30 @@ PDFBox known issues and fixes.
 Written By: Wright State University CEG-4110-01 Group 6. Assigned to Ahmed Alsaedi as Task.
 
 1 Introduction
-This document will provide details about the design of PDFBox know issues and fixes project, will provide a documented changes and new class creation.
+This document describes the design of "PDFBox know issues and fixes" project and includes new class creation as well as class documentation and tests.
 
 System Overview
-PDFBox is PDF document creation Java tool by Apache, it is an open source project and very popular with over 580 forks in GitHub, the project comes with various of know issues and improvement opportunities.
+PDFBox is PDF document creation Java tool by Apache. PDFBox is an open source project with over 580 forks in GitHub. The project comes with various known issues and improvement opportunities.
 
-Design Considerations
-The issues that are being addressed in this design are know project issues centered around text format, fonts, image import and export..etc.
-Assumption and Dependencies:
-This project will depend on the existing library and will create new classes to fillful the requirement.
+2. Design Considerations
+The issues that are being addressed in this design are know project issues centered around text format, fonts, image import and export etc.
 
+3. Assumption and Dependencies:
+This project depends on the existing PDFBox library and creates new classes to fillful the requirements stated within The Software Requirements Specification document in teh same GiHub repository as this document.
 
-General Constraints:
-The original project is very broad and with many know issues, creating new classes that will work with existing library can be challenging.
-Goals and Guidelines:
-Fulfill the project requirements, maintain the original project integrity, keep up the new customer requirements without creating any new problems.
-Development Methods:
-The team will be using IntelliJ and Eclipse, cloning the original project for the GitHub Repository, build the project and add the classes based on the requirements, once a requirement is fulfilled, the version of the project is pushed and pull request is created and assigned for a Team member to review and approve ( Team member cannot approve their own pull requests)
+4. General Constraints:
+The original PDFBox project is broad and has many know issues. Creating new classes that will work with existing library can be challenging.
 
+5. Goals and Guidelines:
+- Fulfill the project requirements
+- maintain the original project integrity
+- keep up the new customer requirements without creating any new problems.
 
+6. Development Methods:
+The team uses IntelliJ and Eclipse. The PDFBox project is forked from the Apache project in GitHub Repository, and each team member clones the forked repository. Each team member builds the cloned project and adds classes based on the requirements. Once a requirement is fulfilled, the version of the project is pushed to GitHub, and a pull request is created and assigned for a Team member to review and approve. Team members cannot approve their own pull requests.
 
-Architectural Strategies:
-The Project requirements are as followed.
--Req. 1.0 
-A tool shall provide a mechanism for users to annotate existing PDF documents with text.
--Req 1.1
-In annotations composed of text, the user shall be able to specify the font of each glyph in the text from a set of at least two different fonts.
--Req 1.1.1
-The font tool shall include at least two different user selectable fonts.
--Req 1.2
-The user shall be able to choose a page to place the text on. More pages shall be created as needed.
--Req 2.0 
-A tool shall be provided that allows users to highlight existing text in PDF documents
--Req 3.0
-A tool shall be implemented to allow users to draw lines on the document
--Req 3.1
-The user shall be able to choose a page to place the Line on. More pages shall be created as needed.
--Req 4.0
-A tool shall be provided to allow users to annotate existing PDF documents with an image
--Req 4.1
-The user shall be able to choose a page to place the image on. More pages shall be created as needed.
-
-To achieve these requirements, the team will create "tool" classes with accompanying tests. Each tool will provide utility that serves to fulfill one or more of these requirements. 
-Each tool class will have accompanying test classes in the tests folder. 
+To achieve these requirements, the team creates "tool" classes with accompanying tests. Each tool provides utility that serves to fulfill one or more of the requirements. 
+Each tool class has accompanying test classes in the tests folder. 
 
 
 
