@@ -205,20 +205,21 @@ public abstract class PDFStreamEngine
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
         
         Matrix parentMatrix = initialMatrix;
+        PDGraphicsState graphicsState = getGraphicsState();
 
         // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
-        initialMatrix = getGraphicsState().getCurrentTransformationMatrix().clone();
+        initialMatrix = graphicsState.getCurrentTransformationMatrix().clone();
 
         // transform the CTM using the stream's matrix
-        getGraphicsState().getCurrentTransformationMatrix().concatenate(group.getMatrix());
+        graphicsState.getCurrentTransformationMatrix().concatenate(group.getMatrix());
 
         // Before execution of the transparency group XObject’s content stream, 
         // the current blend mode in the graphics state shall be initialized to Normal, 
         // the current stroking and nonstroking alpha constants to 1.0, and the current soft mask to None.
-        getGraphicsState().setBlendMode(BlendMode.NORMAL);
-        getGraphicsState().setAlphaConstant(1);
-        getGraphicsState().setNonStrokeAlphaConstant(1);
-        getGraphicsState().setSoftMask(null);
+        graphicsState.setBlendMode(BlendMode.NORMAL);
+        graphicsState.setAlphaConstant(1);
+        graphicsState.setNonStrokeAlphaConstant(1);
+        graphicsState.setSoftMask(null);
 
         // clip to bounding box
         clipToRect(group.getBBox());
@@ -289,12 +290,13 @@ public abstract class PDFStreamEngine
 
         PDRectangle bbox = appearance.getBBox();
         PDRectangle rect = annotation.getRectangle();
-        Matrix matrix = appearance.getMatrix();
 
         // zero-sized rectangles are not valid
         if (rect != null && rect.getWidth() > 0 && rect.getHeight() > 0 &&
             bbox != null && bbox.getWidth() > 0 && bbox.getHeight() > 0)
         {
+            Matrix matrix = appearance.getMatrix();
+
             // transformed appearance box  fixme: may be an arbitrary shape
             Rectangle2D transformedBox = bbox.transform(matrix).getBounds2D();
 
@@ -369,19 +371,20 @@ public abstract class PDFStreamEngine
         PDRectangle rect = new PDRectangle((float)bbox.getX(), (float)bbox.getY(),
                 (float)bbox.getWidth(), (float)bbox.getHeight());
         graphicsStack.push(new PDGraphicsState(rect));
+        PDGraphicsState graphicsState = getGraphicsState();
 
         // non-colored patterns have to be given a color
         if (colorSpace != null)
         {
             color = new PDColor(color.getComponents(), colorSpace);
-            getGraphicsState().setNonStrokingColorSpace(colorSpace);
-            getGraphicsState().setNonStrokingColor(color);
-            getGraphicsState().setStrokingColorSpace(colorSpace);
-            getGraphicsState().setStrokingColor(color);
+            graphicsState.setNonStrokingColorSpace(colorSpace);
+            graphicsState.setNonStrokingColor(color);
+            graphicsState.setStrokingColorSpace(colorSpace);
+            graphicsState.setStrokingColor(color);
         }
 
         // transform the CTM using the stream's matrix
-        getGraphicsState().getCurrentTransformationMatrix().concatenate(patternMatrix);
+        graphicsState.getCurrentTransformationMatrix().concatenate(patternMatrix);
 
         // clip to bounding box
         clipToRect(tilingPattern.getBBox());
@@ -455,12 +458,13 @@ public abstract class PDFStreamEngine
         PDResources parent = pushResources(contentStream);
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
         Matrix parentMatrix = initialMatrix;
+        PDGraphicsState graphicsState = getGraphicsState();
 
         // transform the CTM using the stream's matrix
-        getGraphicsState().getCurrentTransformationMatrix().concatenate(contentStream.getMatrix());
+        graphicsState.getCurrentTransformationMatrix().concatenate(contentStream.getMatrix());
 
         // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
-        initialMatrix = getGraphicsState().getCurrentTransformationMatrix().clone();
+        initialMatrix = graphicsState.getCurrentTransformationMatrix().clone();
 
         // clip to bounding box
         PDRectangle bbox = contentStream.getBBox();
