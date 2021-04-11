@@ -88,17 +88,17 @@ public final class ZoomMenu extends MenuBase
      */
     public void changeZoomSelection(float zoomValue)
     {
-        String selection = (int)(zoomValue*100) +"%";
+        int selection = (int) (zoomValue * 100);
         for (Component comp : menu.getMenuComponents())
         {
-            JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) comp;
-            if (menuItem.getText().equals(selection))
+            ZoomMenuItem menuItem = (ZoomMenuItem) comp;
+            if (menuItem.zoom == selection)
             {
                 menuItem.setSelected(true);
                 return;
             }
         }
-        throw new IllegalArgumentException("no zoom menu item found for: " + selection);
+        throw new IllegalArgumentException("no zoom menu item found for: " + selection + "%");
     }
 
     /**
