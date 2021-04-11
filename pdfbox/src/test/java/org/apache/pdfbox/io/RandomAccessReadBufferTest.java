@@ -30,7 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Assertions;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -205,11 +204,10 @@ class RandomAccessReadBufferTest
     {
         try (InputStream is = new URL(
                 "https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf")
-                        .openStream())
+                        .openStream();
+             RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(is))
         {
-            RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(is);
             assertEquals(34060, randomAccessSource.length());
-            randomAccessSource.close();
         }
     }
 
