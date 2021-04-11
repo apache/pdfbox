@@ -326,10 +326,11 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        float height = page.getCropBox().getHeight();
-        float width  = page.getCropBox().getWidth();
-        float offsetX = page.getCropBox().getLowerLeftX();
-        float offsetY = page.getCropBox().getLowerLeftY();
+        PDRectangle cropBox = page.getCropBox();
+        float height = cropBox.getHeight();
+        float width = cropBox.getWidth();
+        float offsetX = cropBox.getLowerLeftX();
+        float offsetY = cropBox.getLowerLeftY();
         float zoomScale = zoomMenu.getPageZoomScale();
         float x = e.getX() / zoomScale * (float) defaultTransform.getScaleX();
         float y = e.getY() / zoomScale * (float) defaultTransform.getScaleY();
