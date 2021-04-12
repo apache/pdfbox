@@ -57,6 +57,11 @@ import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
 import org.bouncycastle.cert.ocsp.OCSPResp;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.tsp.TSPException;
+import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.tsp.TimeStampTokenInfo;
 
 /**
  * An example for adding Validation Information to a signed PDF, inspired by ETSI TS 102 778-4
@@ -144,9 +149,17 @@ public class AddValidationInformation
             {
                 certInfo = certInformationHelper.getLastCertInfo(signature, filename);
                 signDate = signature.getSignDate();
+                if ("ETSI.RFC3161".equals(signature.getSubFilter()))
+                {
+                    byte[] contents = signature.getContents();
+                    TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents));
+                    TimeStampTokenInfo timeStampInfo = timeStampToken.getTimeStampInfo();
+                    signDate = Calendar.getInstance();
+                    signDate.setTime(timeStampInfo.getGenTime());
+                }
             }
         }
-        catch (CertificateProccessingException e)
+        catch (TSPException | CMSException | CertificateProccessingException e)
         {
             throw new IOException("An Error occurred processing the Signature", e);
         }
