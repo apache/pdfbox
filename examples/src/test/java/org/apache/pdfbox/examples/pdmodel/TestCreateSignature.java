@@ -282,7 +282,7 @@ public class TestCreateSignature
             System.err.println("No TSA URL defined, test skipped");
             return;
         }
-        final String fileName = getOutputFileName("timestamped{0}.pdf");
+        final String fileName = "timestamped.pdf";
         CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsa);
         signing.signDetached(new File(inDir + "sign_me.pdf"), new File(outDir + fileName));
 
