@@ -290,7 +290,7 @@ class TestCreateSignature
             System.err.println("No TSA URL defined, test skipped");
             return;
         }
-        final String fileName = getOutputFileName("timestamped{0}.pdf", false);
+        final String fileName = "timestamped.pdf";
         CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsa);
         signing.signDetached(new File(IN_DIR + "sign_me.pdf"), new File(OUT_DIR + fileName));
 
@@ -847,7 +847,7 @@ class TestCreateSignature
                 {
                     X509Certificate cert = (X509Certificate) certificateFactory.generateCertificate(is);
                     certSet.add(cert);
-                }                
+                }
             }
             for (X509Certificate cert : certSet)
             {
@@ -877,7 +877,7 @@ class TestCreateSignature
                 {
                     X509CRL cert = (X509CRL) certificateFactory.generateCRL(is);
                     crlSet.add(cert);
-                }                
+                }
             }
             for (X509CRL crl : crlSet)
             {
@@ -914,7 +914,8 @@ class TestCreateSignature
                 
                 assertEquals(certHolder2, new X509CertificateHolder(crlIssuerCert.getEncoded()),
                         "CRL issuer certificate missing in VRI " + hexCrlSignatureHash);
-            }   Set<OCSPResp> oscpSet = new HashSet<>();
+            }
+            Set<OCSPResp> oscpSet = new HashSet<>();
             COSArray ocspArray = dssDict.getCOSArray(COSName.getPDFName("OCSPs"));
             for (int i = 0; i < ocspArray.size(); ++i)
             {
