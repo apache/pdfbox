@@ -820,8 +820,15 @@ public class TestCreateSignature
         AddValidationInformation addValidationInformation = new AddValidationInformation();
         addValidationInformation.validateSignature(inFile, outFile);
 
-        PDDocument doc = PDDocument.load(outFile);
+        checkLTV(outFile);
+    }
 
+    private void checkLTV(File outFile)
+            throws IOException, GeneralSecurityException, OCSPException, OperatorCreationException,
+            CMSException
+    {
+        PDDocument doc = PDDocument.load(outFile);
+        
         PDSignature signature = doc.getLastSignatureDictionary();
         byte[] contents = signature.getContents();
 
