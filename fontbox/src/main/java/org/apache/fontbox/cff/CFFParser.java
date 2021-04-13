@@ -834,8 +834,8 @@ public class CFFParser
         for (int i = 0; i < encoding.nRanges; i++)
         {
             int rangeFirst = dataInput.readCard8();
-            int rangeLeft = dataInput.readCard8();
-            for (int j = 0; j < 1 + rangeLeft; j++)
+            int rangeLeft = dataInput.readCard8() + 1;
+            for (int j = 0; j < rangeLeft; j++)
             {
                 int sid = charset.getSIDForGID(gid);
                 encoding.add(rangeFirst + j, sid, readString(sid));
