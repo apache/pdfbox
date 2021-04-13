@@ -207,7 +207,6 @@ public abstract class PDFStreamEngine
         Matrix parentMatrix = initialMatrix;
         PDGraphicsState graphicsState = getGraphicsState();
 
-        PDGraphicsState graphicsState = getGraphicsState();
         // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
         initialMatrix = graphicsState.getCurrentTransformationMatrix().clone();
 
