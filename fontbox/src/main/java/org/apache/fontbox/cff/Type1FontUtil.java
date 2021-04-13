@@ -94,11 +94,6 @@ public final class Type1FontUtil
     {
         byte[] buffer = new byte[plaintextBytes.length + n];
 
-        for (int i = 0; i < n; i++)
-        {
-            buffer[i] = 0;
-        }
-
         System.arraycopy(plaintextBytes, 0, buffer, n, buffer.length - n);
 
         int c1 = 52845;
