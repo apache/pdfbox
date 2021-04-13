@@ -309,11 +309,11 @@ public class TestCreateSignature
 
         doc.close();
 
-        File inFile = new File(OUT_DIR, fileName);
+        File inFile = new File(outDir, fileName);
         String name = inFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
 
-        File outFile = new File(OUT_DIR, substring + "_LTV.pdf");
+        File outFile = new File(outDir, substring + "_LTV.pdf");
         AddValidationInformation addValidationInformation = new AddValidationInformation();
         addValidationInformation.validateSignature(inFile, outFile);
     }
