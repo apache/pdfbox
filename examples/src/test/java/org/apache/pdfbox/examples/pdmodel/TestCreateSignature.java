@@ -281,7 +281,7 @@ class TestCreateSignature
     @Test
     void testCreateSignedTimeStamp()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
-                   TSPException, CertificateVerificationException
+                   TSPException, CertificateVerificationException, OCSPException
     {
         if (tsa == null || tsa.isEmpty())
         {
@@ -322,6 +322,8 @@ class TestCreateSignature
         File outFile = new File(OUT_DIR, substring + "_LTV.pdf");
         AddValidationInformation addValidationInformation = new AddValidationInformation();
         addValidationInformation.validateSignature(inFile, outFile);
+
+        checkLTV(outFile);
     }
 
     /**
