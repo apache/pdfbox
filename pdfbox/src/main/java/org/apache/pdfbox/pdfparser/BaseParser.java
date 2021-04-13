@@ -289,21 +289,6 @@ public abstract class BaseParser
         COSName key = parseCOSName();
         COSBase value = parseCOSDictionaryValue();
         skipSpaces();
-        if (((char) source.peek()) == 'd')
-        {
-            // if the next string is 'def' then we are parsing a cmap stream
-            // and want to ignore it, otherwise throw an exception.
-            String potentialDEF = readString();
-            if (!potentialDEF.equals(DEF))
-            {
-                source.rewind(potentialDEF.getBytes(StandardCharsets.ISO_8859_1).length);
-            }
-            else
-            {
-                skipSpaces();
-            }
-        }
-
         if (value == null)
         {
             LOG.warn("Bad dictionary declaration at offset " + source.getPosition());
