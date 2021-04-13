@@ -154,7 +154,7 @@ public abstract class BaseParser
         COSBase value = parseDirObject();
         skipSpaces();
         // proceed if the given object is a number and the following is a number as well
-        if (!(value instanceof COSNumber) || !isDigit())
+        if ((!(value instanceof COSNumber) || !isDigit()))
         {
             return value;
         }
@@ -213,7 +213,12 @@ public abstract class BaseParser
             }
             else if (c == '/')
             {
-                parseCOSDictionaryNameValuePair(obj);
+                // something went wrong, most likely the dictionary is corrupted
+                // stop immediately and return everything read so far
+                if (!parseCOSDictionaryNameValuePair(obj))
+                {
+                    return obj;
+                }
             }
             else
             {
@@ -277,7 +282,7 @@ public abstract class BaseParser
         return false;
     }
 
-    private void parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException
+    private boolean parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException
     {
         COSName key = parseCOSName();
         COSBase value = parseCOSDictionaryValue();
@@ -300,6 +305,7 @@ public abstract class BaseParser
         if (value == null)
         {
             LOG.warn("Bad dictionary declaration at offset " + seqSource.getPosition());
+            return false;
         }
         else
         {
@@ -307,6 +313,7 @@ public abstract class BaseParser
             value.setDirect(true);
             obj.setItem(key, value);
         }
+        return true;
     }
 
     protected void skipWhiteSpaces() throws IOException
