@@ -291,6 +291,10 @@ public final class CFFExpertEncoding extends CFFEncoding
 
     private CFFExpertEncoding()
     {
+        for (int[] encodingEntry : CFF_EXPERT_ENCODING_TABLE)
+        {
+            add(encodingEntry[CHAR_CODE], encodingEntry[CHAR_SID]);
+        }
     }
 
     /**
@@ -304,11 +308,4 @@ public final class CFFExpertEncoding extends CFFEncoding
 
     private static final CFFExpertEncoding INSTANCE = new CFFExpertEncoding();
 
-    static
-    {
-        for (int[] encodingEntry : CFF_EXPERT_ENCODING_TABLE)
-        {
-            INSTANCE.add(encodingEntry[CHAR_CODE], encodingEntry[CHAR_SID]);
-        }
-    }
 }

@@ -37,6 +37,14 @@ import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Desktop;
+import java.awt.DisplayMode;
+import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -279,8 +287,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         textDialog.setSize(screenWidth / 3, screenHeight / 3);
         textDialog.setVisible(true);
 
-        Point locationOnScreen = getPanel().getLocationOnScreen();
         // avoid that the text extraction window gets outside of the screen
+        Point locationOnScreen = getPanel().getLocationOnScreen();
         int x = Math.min(locationOnScreen.x + getPanel().getWidth() / 2, screenWidth * 3 / 4);
         int y = Math.min(locationOnScreen.y + getPanel().getHeight() / 2, screenHeight * 3 / 4);
         textDialog.setLocation(x, y);
@@ -391,11 +399,11 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        PDRectangle cropBoxRect = page.getCropBox();
-        float height = cropBoxRect.getHeight();
-        float width  = cropBoxRect.getWidth();
-        float offsetX = cropBoxRect.getLowerLeftX();
-        float offsetY = cropBoxRect.getLowerLeftY();
+        PDRectangle cropBox = page.getCropBox();
+        float height = cropBox.getHeight();
+        float width = cropBox.getWidth();
+        float offsetX = cropBox.getLowerLeftX();
+        float offsetY = cropBox.getLowerLeftY();
         float zoomScale = zoomMenu.getPageZoomScale();
         float x = e.getX() / zoomScale * (float) defaultTransform.getScaleX();
         float y = e.getY() / zoomScale * (float) defaultTransform.getScaleY();

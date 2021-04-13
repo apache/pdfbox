@@ -112,8 +112,6 @@ import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -283,14 +281,14 @@ class TestCreateSignature
     @Test
     void testCreateSignedTimeStamp()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
-                   TSPException, CertificateVerificationException
+                   TSPException, CertificateVerificationException, OCSPException
     {
         if (tsa == null || tsa.isEmpty())
         {
             System.err.println("No TSA URL defined, test skipped");
             return;
         }
-        final String fileName = getOutputFileName("timestamped{0}.pdf", false);
+        final String fileName = "timestamped.pdf";
         CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsa);
         signing.signDetached(new File(IN_DIR + "sign_me.pdf"), new File(OUT_DIR + fileName));
 
@@ -316,6 +314,16 @@ class TestCreateSignature
                     certFromTimeStamp,
                     timeStampToken.getTimeStampInfo().getGenTime());
         }
+
+        File inFile = new File(OUT_DIR, fileName);
+        String name = inFile.getName();
+        String substring = name.substring(0, name.lastIndexOf('.'));
+
+        File outFile = new File(OUT_DIR, substring + "_LTV.pdf");
+        AddValidationInformation addValidationInformation = new AddValidationInformation();
+        addValidationInformation.validateSignature(inFile, outFile);
+
+        checkLTV(outFile);
     }
 
     /**
@@ -802,6 +810,13 @@ class TestCreateSignature
         AddValidationInformation addValidationInformation = new AddValidationInformation();
         addValidationInformation.validateSignature(inFile, outFile);
 
+        checkLTV(outFile);
+    }
+
+    private void checkLTV(File outFile)
+            throws IOException, GeneralSecurityException, OCSPException, OperatorCreationException,
+            CMSException
+    {
         try (PDDocument doc = Loader.loadPDF(outFile))
         {
             PDSignature signature = doc.getLastSignatureDictionary();
@@ -847,7 +862,7 @@ class TestCreateSignature
                 {
                     X509Certificate cert = (X509Certificate) certificateFactory.generateCertificate(is);
                     certSet.add(cert);
-                }                
+                }
             }
             for (X509Certificate cert : certSet)
             {
@@ -877,7 +892,7 @@ class TestCreateSignature
                 {
                     X509CRL cert = (X509CRL) certificateFactory.generateCRL(is);
                     crlSet.add(cert);
-                }                
+                }
             }
             for (X509CRL crl : crlSet)
             {
@@ -914,7 +929,8 @@ class TestCreateSignature
                 
                 assertEquals(certHolder2, new X509CertificateHolder(crlIssuerCert.getEncoded()),
                         "CRL issuer certificate missing in VRI " + hexCrlSignatureHash);
-            }   Set<OCSPResp> oscpSet = new HashSet<>();
+            }
+            Set<OCSPResp> oscpSet = new HashSet<>();
             COSArray ocspArray = dssDict.getCOSArray(COSName.getPDFName("OCSPs"));
             for (int i = 0; i < ocspArray.size(); ++i)
             {

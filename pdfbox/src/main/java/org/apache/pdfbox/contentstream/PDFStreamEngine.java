@@ -205,6 +205,7 @@ public abstract class PDFStreamEngine
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
         
         Matrix parentMatrix = initialMatrix;
+        PDGraphicsState graphicsState = getGraphicsState();
 
         PDGraphicsState graphicsState = getGraphicsState();
         // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
@@ -296,6 +297,7 @@ public abstract class PDFStreamEngine
             bbox != null && bbox.getWidth() > 0 && bbox.getHeight() > 0)
         {
             Matrix matrix = appearance.getMatrix();
+
             // transformed appearance box  fixme: may be an arbitrary shape
             Rectangle2D transformedBox = bbox.transform(matrix).getBounds2D();
 
@@ -457,12 +459,13 @@ public abstract class PDFStreamEngine
         PDResources parent = pushResources(contentStream);
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
         Matrix parentMatrix = initialMatrix;
+        PDGraphicsState graphicsState = getGraphicsState();
 
         // transform the CTM using the stream's matrix
-        getGraphicsState().getCurrentTransformationMatrix().concatenate(contentStream.getMatrix());
+        graphicsState.getCurrentTransformationMatrix().concatenate(contentStream.getMatrix());
 
         // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
-        initialMatrix = getGraphicsState().getCurrentTransformationMatrix().clone();
+        initialMatrix = graphicsState.getCurrentTransformationMatrix().clone();
 
         // clip to bounding box
         PDRectangle bbox = contentStream.getBBox();

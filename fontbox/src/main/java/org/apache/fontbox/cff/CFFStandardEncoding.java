@@ -290,6 +290,10 @@ public final class CFFStandardEncoding extends CFFEncoding
     
     private CFFStandardEncoding()
     {
+        for (int[] encodingEntry : CFF_STANDARD_ENCODING_TABLE)
+        {
+            add(encodingEntry[CHAR_CODE], encodingEntry[CHAR_SID]);
+        }
     }
 
     /**
@@ -303,11 +307,4 @@ public final class CFFStandardEncoding extends CFFEncoding
 
     private static final CFFStandardEncoding INSTANCE = new CFFStandardEncoding();
 
-    static
-    {
-        for (int[] encodingEntry : CFF_STANDARD_ENCODING_TABLE)
-        {
-            INSTANCE.add(encodingEntry[CHAR_CODE], encodingEntry[CHAR_SID]);
-        }
-    }
 }

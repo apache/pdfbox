@@ -213,7 +213,12 @@ public abstract class BaseParser
             }
             else if (c == '/')
             {
-                parseCOSDictionaryNameValuePair(obj);
+                // something went wrong, most likely the dictionary is corrupted
+                // stop immediately and return everything read so far
+                if (!parseCOSDictionaryNameValuePair(obj))
+                {
+                    return obj;
+                }
             }
             else
             {
@@ -279,29 +284,15 @@ public abstract class BaseParser
         return false;
     }
 
-    private void parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException
+    private boolean parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException
     {
         COSName key = parseCOSName();
         COSBase value = parseCOSDictionaryValue();
         skipSpaces();
-        if (((char) source.peek()) == 'd')
-        {
-            // if the next string is 'def' then we are parsing a cmap stream
-            // and want to ignore it, otherwise throw an exception.
-            String potentialDEF = readString();
-            if (!potentialDEF.equals(DEF))
-            {
-                source.rewind(potentialDEF.getBytes(StandardCharsets.ISO_8859_1).length);
-            }
-            else
-            {
-                skipSpaces();
-            }
-        }
-
         if (value == null)
         {
             LOG.warn("Bad dictionary declaration at offset " + source.getPosition());
+            return false;
         }
         else
         {
@@ -309,6 +300,7 @@ public abstract class BaseParser
             value.setDirect(true);
             obj.setItem(key, value);
         }
+        return true;
     }
 
     protected void skipWhiteSpaces() throws IOException
@@ -692,7 +684,7 @@ public abstract class BaseParser
     {
         return ch == ASCII_SPACE || ch == ASCII_CR || ch == ASCII_LF || ch == 9 || ch == '>' ||
                ch == '<' || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(' || 
-               ch == 0 || ch == '\f';
+               ch == 0 || ch == '\f' || ch == '%';
     }
 
     /**

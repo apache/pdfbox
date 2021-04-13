@@ -113,7 +113,8 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
     List<Number> familyBlues = new ArrayList<>();
     List<Number> familyOtherBlues = new ArrayList<>();
     float blueScale;
-    int blueShift, blueFuzz;
+    int blueShift;
+    int blueFuzz;
     List<Number> stdHW = new ArrayList<>();
     List<Number> stdVW = new ArrayList<>();
     List<Number> stemSnapH = new ArrayList<>();
@@ -126,11 +127,11 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
     final Map<String, byte[]> charstrings = new LinkedHashMap<>();
 
     // private caches
-    private final Map<String, Type1CharString> charStringCache =
-            new ConcurrentHashMap<>();
-    
+    private final Map<String, Type1CharString> charStringCache = new ConcurrentHashMap<>();
+
     // raw data
-    private final byte[] segment1, segment2;
+    private final byte[] segment1;
+    private final byte[] segment2;
 
     /**
      * Constructs a new Type1Font, called by Type1Parser.
@@ -218,6 +219,7 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
 
     /**
      * Returns the Encoding, if present.
+     * 
      * @return the encoding or null
      */
     @Override
@@ -548,7 +550,6 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
     public String toString()
     {
         return getClass().getName() + "[fontName=" + fontName + ", fullName=" + fullName
-                + ", encoding=" + encoding + ", charStringsDict=" + charstrings
-                + "]";
+                + ", encoding=" + encoding + ", charStringsDict=" + charstrings + "]";
     }
 }

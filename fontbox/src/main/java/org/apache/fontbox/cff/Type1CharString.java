@@ -51,7 +51,7 @@ public class Type1CharString
     private boolean isFlex = false;
     private final List<Point2D.Float> flexPoints = new ArrayList<>();
     protected List<Object> type1Sequence;
-    protected int commandCount;
+    protected int commandCount = 0;
 
     /**
      * Constructs a new Type1CharString object.
@@ -166,11 +166,11 @@ public class Type1CharString
         path = new GeneralPath();
         leftSideBearing = new Point2D.Float(0, 0);
         width = 0;
-        CharStringHandler handler = Type1CharString.this::handleCommand;
+        CharStringHandler handler = Type1CharString.this::handleType1Command;
         handler.handleSequence(type1Sequence);
     }
 
-    private List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
+    private List<Number> handleType1Command(List<Number> numbers, CharStringCommand command)
     {
         commandCount++;
         Type1KeyWord type1KeyWord = command.getType1KeyWord();

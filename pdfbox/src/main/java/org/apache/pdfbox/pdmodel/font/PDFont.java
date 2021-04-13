@@ -467,15 +467,13 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             {
                 if (code < 256 && !(this instanceof PDType0Font))
                 {
-                    COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
-                    boolean isIdentity = encoding instanceof COSName
-                            && ((COSName) encoding).getName().startsWith("Identity");
-                    if (encoding != null && !isIdentity)
+                    COSName encoding = dict.getCOSName(COSName.ENCODING);
+                    if (encoding != null && !encoding.getName().startsWith("Identity"))
                     {
                         // due to the conversion to an int it is no longer possible to determine
                         // if the code is based on a one or two byte value. We should consider to
                         // refactor that part of the code.
-                        // However simple fonts with an encoding are using one byte codes so that
+                        // However, simple fonts with a predefined encoding are using one byte codes so that
                         // we can limit the CMap mappings to one byte codes by passing the origin length
                         return toUnicodeCMap.toUnicode(code, 1);
                     }

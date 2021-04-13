@@ -24,8 +24,10 @@ import java.util.Map;
  *
  * @author Valery Bokov
  */
-class CFFCharsetType1 extends CFFCharset
+class CFFCharsetType1 implements CFFCharset
 {
+    private static final String EXCEPTION_MESSAGE = "Not a CIDFont";
+
     private final Map<Integer, Integer> sidOrCidToGid = new HashMap<>(250);
     private final Map<Integer, Integer> gidToSid = new HashMap<>(250);
     private final Map<String, Integer> nameToSid = new HashMap<>(250);
@@ -51,11 +53,11 @@ class CFFCharsetType1 extends CFFCharset
     @Override
     public void addCID(int gid, int cid)
     {
-        throw new IllegalStateException("Not a CIDFont");
+        throw new IllegalStateException(EXCEPTION_MESSAGE);
     }
 
     @Override
-    int getSIDForGID(int sid)
+    public int getSIDForGID(int sid)
     {
         Integer gid = gidToSid.get(sid);
         if (gid == null)
@@ -66,7 +68,7 @@ class CFFCharsetType1 extends CFFCharset
     }
 
     @Override
-    int getGIDForSID(int sid)
+    public int getGIDForSID(int sid)
     {
         Integer gid = sidOrCidToGid.get(sid);
         if (gid == null)
@@ -79,11 +81,11 @@ class CFFCharsetType1 extends CFFCharset
     @Override
     public int getGIDForCID(int cid)
     {
-        throw new IllegalStateException("Not a CIDFont");
+        throw new IllegalStateException(EXCEPTION_MESSAGE);
     }
 
     @Override
-    int getSID(String name)
+    public int getSID(String name)
     {
         Integer sid = nameToSid.get(name);
         if (sid == null)
@@ -102,6 +104,6 @@ class CFFCharsetType1 extends CFFCharset
     @Override
     public int getCIDForGID(int gid)
     {
-        throw new IllegalStateException("Not a CIDFont");
+        throw new IllegalStateException(EXCEPTION_MESSAGE);
     }
 }

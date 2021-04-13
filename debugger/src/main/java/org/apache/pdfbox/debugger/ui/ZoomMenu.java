@@ -88,8 +88,7 @@ public final class ZoomMenu extends MenuBase
      */
     public void changeZoomSelection(float zoomValue)
     {
-        int selection = (int)(zoomValue * 100);
-
+        int selection = (int) (zoomValue * 100);
         for (Component comp : menu.getMenuComponents())
         {
             ZoomMenuItem menuItem = (ZoomMenuItem) comp;
@@ -99,7 +98,6 @@ public final class ZoomMenu extends MenuBase
                 return;
             }
         }
-
         throw new IllegalArgumentException("no zoom menu item found for: " + selection + "%");
     }
 

@@ -105,7 +105,8 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         int remainingBytes = chunkSize;
         int offset = 0;
         byte[] eofCheck = new byte[1];
-        while ((bytesRead = input.read(currentBuffer.array(), offset, remainingBytes)) > -1)
+        while (remainingBytes > 0 &&
+                (bytesRead = input.read(currentBuffer.array(), offset, remainingBytes)) > -1)
         {
             remainingBytes -= bytesRead;
             offset += bytesRead;
@@ -226,7 +227,14 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         int bytesRead = readRemainingBytes(b, offset, length);
         if (bytesRead == -1)
         {
-            return -1;
+            if (available() > 0)
+            {
+                bytesRead = 0;
+            }
+            else
+            {
+                return -1;
+            }
         }
         while (bytesRead < length && available() > 0)
         {

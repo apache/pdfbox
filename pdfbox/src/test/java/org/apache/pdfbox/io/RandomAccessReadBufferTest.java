@@ -24,10 +24,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Assertions;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -202,11 +204,53 @@ class RandomAccessReadBufferTest
     {
         try (InputStream is = new URL(
                 "https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf")
-                        .openStream())
+                        .openStream();
+             RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(is))
         {
-            RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(is);
             assertEquals(34060, randomAccessSource.length());
-            randomAccessSource.close();
         }
     }
+
+    /**
+     * PDFBOX-5158: endless loop reading a stream of a multiple of 4096 bytes from a
+     * FileInputStream. Test does not fail with a ByteArrayInputStream, so we need to create a temp
+     * file.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBOX5158() throws IOException
+    {
+        Path path = Files.createTempFile("len4096", ".pdf");
+        try (OutputStream os = Files.newOutputStream(path))
+        {
+            os.write(new byte[4096]);
+        }
+        assertEquals(4096, path.toFile().length());
+        try (RandomAccessRead rar = new RandomAccessReadBuffer(Files.newInputStream(path)))
+        {
+            assertEquals(0, rar.read());
+        }
+        Files.delete(path);
+    }
+    
+    /**
+     * PDFBOX-5161: failure to read bytes after reading a multiple of 4096. Construction source
+     * must be an InputStream.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBOX5161() throws IOException
+    {
+        try (RandomAccessRead rar = new RandomAccessReadBuffer(new ByteArrayInputStream(new byte[4099])))
+        {
+            byte[] buf = new byte[4096];
+            int bytesRead = rar.read(buf);
+            assertEquals(4096, bytesRead);
+            bytesRead = rar.read(buf, 0, 3);
+            assertEquals(3, bytesRead);
+        }
+    }
+
 }

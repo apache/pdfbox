@@ -202,7 +202,10 @@ public class PDPage implements COSObjectable, PDContentStream
                     inputStreams.add(new RandomAccessReadBuffer(delimiter));
                 }
             }
-            return new SequenceRandomAccessRead(inputStreams);
+            if (!inputStreams.isEmpty())
+            {
+                return new SequenceRandomAccessRead(inputStreams);
+            }
         }
         return new RandomAccessReadBuffer(new byte[0]);
     }

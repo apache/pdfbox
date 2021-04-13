@@ -264,7 +264,11 @@ public final class CFFISOAdobeCharset extends CFFCharsetType1
     
     private CFFISOAdobeCharset()
     {
-        // empty
+        int gid = 0;
+        for (Object[] charsetEntry : CFF_ISO_ADOBE_CHARSET_TABLE)
+        {
+            addSID(gid++, (Integer) charsetEntry[CHAR_CODE], charsetEntry[CHAR_NAME].toString());
+        }
     }
 
     /**
@@ -278,12 +282,4 @@ public final class CFFISOAdobeCharset extends CFFCharsetType1
 
     private static final CFFISOAdobeCharset INSTANCE = new CFFISOAdobeCharset();
 
-    static
-    {
-        int gid = 0;
-        for (Object[] charsetEntry : CFF_ISO_ADOBE_CHARSET_TABLE)
-        {
-            INSTANCE.addSID(gid++, (Integer) charsetEntry[CHAR_CODE], charsetEntry[CHAR_NAME].toString());
-        }
-    }
 }
