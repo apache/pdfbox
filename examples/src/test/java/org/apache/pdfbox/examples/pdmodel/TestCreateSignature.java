@@ -112,8 +112,6 @@ import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -810,6 +808,13 @@ class TestCreateSignature
         AddValidationInformation addValidationInformation = new AddValidationInformation();
         addValidationInformation.validateSignature(inFile, outFile);
 
+        checkLTV(outFile);
+    }
+
+    private void checkLTV(File outFile)
+            throws IOException, GeneralSecurityException, OCSPException, OperatorCreationException,
+            CMSException
+    {
         try (PDDocument doc = Loader.loadPDF(outFile))
         {
             PDSignature signature = doc.getLastSignatureDictionary();
