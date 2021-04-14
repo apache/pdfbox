@@ -140,25 +140,28 @@ public class CMapParser
                     {
                         parseUsecmap((LiteralName) previousToken, result);
                     }
-                    else if (op.op.equals("begincodespacerange") && previousToken instanceof Number)
+                    else if (previousToken instanceof Number)
                     {
-                        parseBegincodespacerange((Number) previousToken, cmapStream, result);
-                    }
-                    else if (op.op.equals("beginbfchar") && previousToken instanceof Number)
-                    {
-                        parseBeginbfchar((Number) previousToken, cmapStream, result);
-                    }
-                    else if (op.op.equals("beginbfrange") && previousToken instanceof Number)
-                    {
-                        parseBeginbfrange((Number) previousToken, cmapStream, result);
-                    }
-                    else if (op.op.equals("begincidchar") && previousToken instanceof Number)
-                    {
-                        parseBegincidchar((Number) previousToken, cmapStream, result);
-                    }
-                    else if (op.op.equals("begincidrange") && previousToken instanceof Integer)
-                    {
-                        parseBegincidrange((Integer) previousToken, cmapStream, result);
+                        if (op.op.equals("begincodespacerange"))
+                        {
+                            parseBegincodespacerange((Number) previousToken, cmapStream, result);
+                        }
+                        else if (op.op.equals("beginbfchar"))
+                        {
+                            parseBeginbfchar((Number) previousToken, cmapStream, result);
+                        }
+                        else if (op.op.equals("beginbfrange"))
+                        {
+                            parseBeginbfrange((Number) previousToken, cmapStream, result);
+                        }
+                        else if (op.op.equals("begincidchar"))
+                        {
+                            parseBegincidchar((Number) previousToken, cmapStream, result);
+                        }
+                        else if (op.op.equals("begincidrange") && previousToken instanceof Integer)
+                        {
+                            parseBegincidrange((Integer) previousToken, cmapStream, result);
+                        }
                     }
                 }
             }
