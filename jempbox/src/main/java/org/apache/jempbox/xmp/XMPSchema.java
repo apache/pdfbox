@@ -426,7 +426,8 @@ public class XMPSchema
                 Element bag = (Element) bagList.item(0);
                 retval = new ArrayList<String>();
                 NodeList items = bag.getElementsByTagName("rdf:li");
-                for (int i = 0; i < items.getLength(); i++)
+                int len = items.getLength(); // slow
+                for (int i = 0; i < len; i++)
                 {
                     Element li = (Element) items.item(i);
                     retval.add(XMLUtil.getStringValue(li));
@@ -606,7 +607,8 @@ public class XMPSchema
                 Element bag = (Element) bagList.item(0);
                 retval = new ArrayList<String>();
                 NodeList items = bag.getElementsByTagName("rdf:li");
-                for (int i = 0; i < items.getLength(); i++)
+                int len = items.getLength(); // slow
+                for (int i = 0; i < len; i++)
                 {
                     Element li = (Element) items.item(i);
                     retval.add(XMLUtil.getStringValue(li));
@@ -638,7 +640,8 @@ public class XMPSchema
                 Element bag = (Element) bagList.item(0);
                 retval = new ArrayList<ResourceEvent>();
                 NodeList items = bag.getElementsByTagName("rdf:li");
-                for (int i = 0; i < items.getLength(); i++)
+                int len = items.getLength(); // slow
+                for (int i = 0; i < len; i++)
                 {
                     Element li = (Element) items.item(i);
                     retval.add(new ResourceEvent(li));
