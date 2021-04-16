@@ -130,6 +130,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CH = new COSName("Ch");
     public static final COSName CHAR_PROCS = new COSName("CharProcs");
     public static final COSName CHAR_SET = new COSName("CharSet");
+    public static final COSName CI = new COSName("CI");
     public static final COSName CICI_SIGNIT = new COSName("CICI.SignIt");
     public static final COSName CID_FONT_TYPE0 = new COSName("CIDFontType0");
     public static final COSName CID_FONT_TYPE2 = new COSName("CIDFontType2");
@@ -145,6 +146,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CO = new COSName("CO");
     public static final COSName COLOR = new COSName("Color");
     public static final COSName COLLECTION = new COSName("Collection");
+    public static final COSName COLLECTION_ITEM = new COSName("CollectionItem");
+    public static final COSName COLLECTION_FIELD = new COSName("CollectionField");
+    public static final COSName COLLECTION_SCHEMA = new COSName("CollectionSchema");
+    public static final COSName COLLECTION_SORT = new COSName("CollectionSort");
+    public static final COSName COLLECTION_SUBITEM = new COSName("CollectionSubitem");
     public static final COSName COLOR_BURN = new COSName("ColorBurn");
     public static final COSName COLOR_DODGE = new COSName("ColorDodge");
     public static final COSName COLORANTS = new COSName("Colorants");
