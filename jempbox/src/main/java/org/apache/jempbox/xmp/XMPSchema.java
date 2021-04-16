@@ -424,13 +424,20 @@ public class XMPSchema
             if (bagList.getLength() > 0)
             {
                 Element bag = (Element) bagList.item(0);
+                // PDFBOX-5165: using item(i) is too slow
+                Node child = bag.getFirstChild();
                 retval = new ArrayList<String>();
-                NodeList items = bag.getElementsByTagName("rdf:li");
-                int len = items.getLength(); // slow
-                for (int i = 0; i < len; i++)
+                while (child != null)
                 {
-                    Element li = (Element) items.item(i);
-                    retval.add(XMLUtil.getStringValue(li));
+                    if (child.getNodeType() == Node.ELEMENT_NODE)
+                    {
+                        Element el = (Element) child;
+                        if (el.getTagName().equals("rdf:li"))
+                        {
+                            retval.add(XMLUtil.getStringValue(el));
+                        }
+                    }
+                    child = child.getNextSibling();
                 }
                 retval = Collections.unmodifiableList(retval);
             }
@@ -605,13 +612,20 @@ public class XMPSchema
             if (bagList.getLength() > 0)
             {
                 Element bag = (Element) bagList.item(0);
+                // PDFBOX-5165: using item(i) is too slow
+                Node child = bag.getFirstChild();
                 retval = new ArrayList<String>();
-                NodeList items = bag.getElementsByTagName("rdf:li");
-                int len = items.getLength(); // slow
-                for (int i = 0; i < len; i++)
+                while (child != null)
                 {
-                    Element li = (Element) items.item(i);
-                    retval.add(XMLUtil.getStringValue(li));
+                    if (child.getNodeType() == Node.ELEMENT_NODE)
+                    {
+                        Element el = (Element) child;
+                        if (el.getTagName().equals("rdf:li"))
+                        {
+                            retval.add(XMLUtil.getStringValue(el));
+                        }
+                    }
+                    child = child.getNextSibling();
                 }
                 retval = Collections.unmodifiableList(retval);
             }
@@ -638,13 +652,20 @@ public class XMPSchema
             if (bagList.getLength() > 0)
             {
                 Element bag = (Element) bagList.item(0);
+                // PDFBOX-5165: using item(i) is too slow
+                Node child = bag.getFirstChild();
                 retval = new ArrayList<ResourceEvent>();
-                NodeList items = bag.getElementsByTagName("rdf:li");
-                int len = items.getLength(); // slow
-                for (int i = 0; i < len; i++)
+                while (child != null)
                 {
-                    Element li = (Element) items.item(i);
-                    retval.add(new ResourceEvent(li));
+                    if (child.getNodeType() == Node.ELEMENT_NODE)
+                    {
+                        Element el = (Element) child;
+                        if (el.getTagName().equals("rdf:li"))
+                        {
+                            retval.add(new ResourceEvent(el));
+                        }
+                    }
+                    child = child.getNextSibling();
                 }
                 retval = Collections.unmodifiableList(retval);
             }
