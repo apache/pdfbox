@@ -58,7 +58,6 @@ public class SetLineDashPattern extends OperatorProcessor
         COSArray dashArray = (COSArray) base0;
         int dashPhase = ((COSNumber) base1).intValue();
         
-        boolean allZero = true;
         for (COSBase base : dashArray)
         {
             if (base instanceof COSNumber)
@@ -66,7 +65,6 @@ public class SetLineDashPattern extends OperatorProcessor
                 COSNumber num = (COSNumber) base;
                 if (Float.compare(num.floatValue(), 0) != 0)
                 {
-                    allZero = false;
                     break;
                 }
             }
@@ -76,11 +74,6 @@ public class SetLineDashPattern extends OperatorProcessor
                 dashArray = new COSArray();
                 break;
             }
-        }
-        if (dashArray.size() > 0 && allZero)
-        {
-            LOG.warn("dash lengths all zero, ignored");
-            dashArray = new COSArray();
         }
         context.setLineDashPattern(dashArray, dashPhase);
     }
