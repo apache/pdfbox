@@ -750,6 +750,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         float phaseStart = dashPattern.getPhase();
         float[] dashArray = getDashArray(dashPattern);
         phaseStart = transformWidth(phaseStart);
+        boolean allZero = true;
 
         // empty dash array is illegal
         // avoid also infinite and NaN values (PDFBOX-3360)
@@ -761,11 +762,29 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             for (int i = 0; i < dashArray.length; ++i)
             {
-                if (Float.isInfinite(dashArray[i]) || Float.isNaN(dashArray[i]))
+                float dash = dashArray[i];
+                if (Float.isInfinite(dash) || Float.isNaN(dash))
                 {
                     dashArray = null;
+                    allZero = false;
                     break;
                 }
+                if (dash != 0)
+                {
+                    allZero = false;
+                }
+            }
+            if (allZero)
+            {
+                // PDFBOX-5168: make it invisible like Adobe
+                return new Stroke()
+                {
+                    @Override
+                    public Shape createStrokedShape(Shape p)
+                    {
+                        return new Area();
+                    }
+                };
             }
         }
         int lineCap = Math.min(2, Math.max(0, state.getLineCap()));
