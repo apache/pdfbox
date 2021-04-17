@@ -770,7 +770,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     {
                         return new Area();
                     }
-                }
+                };
             }
         }
         float phaseStart = dashPattern.getPhase();
