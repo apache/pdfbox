@@ -28,6 +28,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -663,7 +664,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     // create a new stroke based on the current CTM and the current stroke
-    private BasicStroke getStroke()
+    private Stroke getStroke()
     {
         PDGraphicsState state = getGraphicsState();
 
