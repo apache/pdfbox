@@ -763,7 +763,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
             if (allZero)
             {
-                return (Shape p) -> new Area();
+                return new Stroke()
+                {
+                    @Override
+                    public Shape createStrokedShape(Shape p)
+                    {
+                        return new Area();
+                    }
+                }
             }
         }
         float phaseStart = dashPattern.getPhase();
