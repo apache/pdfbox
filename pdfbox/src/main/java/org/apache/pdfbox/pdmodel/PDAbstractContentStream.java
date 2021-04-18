@@ -168,7 +168,8 @@ abstract class PDAbstractContentStream implements Closeable
             }
             else
             {
-                LOG.warn("attempting to use subset font " + font.getName() + " without proper context");
+                LOG.warn("Using the subsetted font '" + font.getName() +
+                        "' without a PDDocument context; call subset() before saving");
             }
         }
 
