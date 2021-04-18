@@ -765,22 +765,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         dashArray = getDashArray(dashPattern);
         phaseStart = transformWidth(phaseStart);
 
-        // avoid also infinite and NaN values (PDFBOX-3360)
-        if (dashArray.length == 0 || Float.isInfinite(phaseStart) || Float.isNaN(phaseStart))
-        {
-            dashArray = null;
-        }
-        else
-        {
-            for (int i = 0; i < dashArray.length; ++i)
-            {
-                if (Float.isInfinite(dashArray[i]) || Float.isNaN(dashArray[i]))
-                {
-                    dashArray = null;
-                    break;
-                }
-            }
-        }
         int lineCap = Math.min(2, Math.max(0, state.getLineCap()));
         int lineJoin = Math.min(2, Math.max(0, state.getLineJoin()));
         float miterLimit = state.getMiterLimit();
@@ -817,6 +801,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private float[] getDashArray(PDLineDashPattern dashPattern)
     {
         float[] dashArray = dashPattern.getDashArray();
+        int phase = dashPattern.getPhase();
+        // avoid empty, infinite and NaN values (PDFBOX-3360)
+        if (dashArray.length == 0 || Float.isInfinite(phase) || Float.isNaN(phase))
+        {
+            return null;
+        }
+        for (int i = 0; i < dashArray.length; ++i)
+        {
+            if (Float.isInfinite(dashArray[i]) || Float.isNaN(dashArray[i]))
+            {
+                return null;
+            }
+        }
         if (JAVA_VERSION < 10)
         {
             float scalingFactorX = new Matrix(xform).getScalingFactorX();
