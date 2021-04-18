@@ -750,28 +750,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // PDFBOX-5168: show an all-zero dash array line invisible like Adobe does
         // must do it here because getDashArray() sets minimum width because of JVM bugs
         float[] dashArray = dashPattern.getDashArray();
-        if (dashArray.length > 0)
+        if (isAllZeroDash(dashArray))
         {
-            boolean allZero = true;
-            for (int i = 0; i < dashArray.length; ++i)
+            return new Stroke()
             {
-                if (dashArray[i] != 0)
+                @Override
+                public Shape createStrokedShape(Shape p)
                 {
-                    allZero = false;
-                    break;
+                    return new Area();
                 }
-            }
-            if (allZero)
-            {
-                return new Stroke()
-                {
-                    @Override
-                    public Shape createStrokedShape(Shape p)
-                    {
-                        return new Area();
-                    }
-                };
-            }
+            };
         }
         float phaseStart = dashPattern.getPhase();
         dashArray = getDashArray(dashPattern);
@@ -803,6 +791,27 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         return new BasicStroke(lineWidth, lineCap, lineJoin,
                                miterLimit, dashArray, phaseStart);
+    }
+
+    private boolean isAllZeroDash(float[] dashArray)
+    {
+        if (dashArray.length > 0)
+        {
+            boolean allZero = true;
+            for (int i = 0; i < dashArray.length; ++i)
+            {
+                if (dashArray[i] != 0)
+                {
+                    allZero = false;
+                    break;
+                }
+            }
+            if (allZero)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private float[] getDashArray(PDLineDashPattern dashPattern)
