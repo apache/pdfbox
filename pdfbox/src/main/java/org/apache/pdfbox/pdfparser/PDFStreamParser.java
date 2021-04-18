@@ -31,7 +31,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
@@ -158,16 +157,6 @@ public class PDFStreamParser extends BaseParser
                 else
                 {
                     return Operator.getOperator(next);
-                }
-            case 'R':
-                String line = readString();
-                if( line.equals( "R" ) )
-                {
-                    return new COSObject(null);
-                }
-                else
-                {
-                    return Operator.getOperator(line);
                 }
             case '0':
             case '1':
