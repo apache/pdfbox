@@ -248,13 +248,18 @@ public class CFFParser
         return dict;
     }
 
-    private static DictData readDictData(CFFDataInput input, int dictSize) throws IOException
+    private static DictData readDictData(CFFDataInput input, int offset, int dictSize)
+            throws IOException
     {
         DictData dict = new DictData();
-        int endPosition = input.getPosition() + dictSize;
-        while (input.getPosition() < endPosition)
+        if (dictSize > 0)
         {
-            dict.add(readEntry(input));
+            input.setPosition(offset);
+            int endPosition = offset + dictSize;
+            while (input.getPosition() < endPosition)
+            {
+                dict.add(readEntry(input));
+            }
         }
         return dict;
     }
@@ -663,9 +668,8 @@ public class CFFParser
             fontDictionaries.add(fontDictMap);
 
             int privateOffset = privateEntry.getNumber(1).intValue();
-            input.setPosition(privateOffset);
             int privateSize = privateEntry.getNumber(0).intValue();
-            DictData privateDict = readDictData(input, privateSize);
+            DictData privateDict = readDictData(input, privateOffset, privateSize);
 
             // populate private dict
             Map<String, Object> privDict = readPrivateDict(privateDict);
@@ -750,9 +754,8 @@ public class CFFParser
             throw new IOException("Private dictionary entry missing for font " + font.getName());
         }
         int privateOffset = privateEntry.getNumber(1).intValue();
-        input.setPosition(privateOffset);
         int privateSize = privateEntry.getNumber(0).intValue();
-        DictData privateDict = readDictData(input, privateSize);
+        DictData privateDict = readDictData(input, privateOffset, privateSize);
 
         // populate private dict
         Map<String, Object> privDict = readPrivateDict(privateDict);
