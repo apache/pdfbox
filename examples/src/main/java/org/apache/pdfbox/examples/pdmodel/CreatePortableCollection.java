@@ -18,7 +18,6 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -36,6 +35,7 @@ import org.apache.pdfbox.pdmodel.PageMode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.util.Charsets;
 
 /**
  * This is an example on how to create a portable collection PDF, as described in the PDF 1.7
@@ -87,7 +87,7 @@ public class CreatePortableCollection
         fs1.setFileUnicode("Test1.txt");
 
         //create a dummy file stream, this would probably normally be a FileInputStream
-        byte[] data1 = "This is the contents of the first embedded file".getBytes(StandardCharsets.ISO_8859_1);
+        byte[] data1 = "This is the contents of the first embedded file".getBytes(Charsets.ISO_8859_1);
         PDEmbeddedFile ef1 = new PDEmbeddedFile(doc, new ByteArrayInputStream(data1), COSName.FLATE_DECODE);
         //now lets some of the optional parameters
         ef1.setSubtype("text/plain");
@@ -107,7 +107,7 @@ public class CreatePortableCollection
         fs2.setFileUnicode("Test2.txt");
 
         //create a dummy file stream, this would probably normally be a FileInputStream
-        byte[] data2 = "This is the contents of the second embedded file".getBytes(StandardCharsets.ISO_8859_1);
+        byte[] data2 = "This is the contents of the second embedded file".getBytes(Charsets.ISO_8859_1);
         PDEmbeddedFile ef2 = new PDEmbeddedFile(doc, new ByteArrayInputStream(data2), COSName.FLATE_DECODE);
         //now lets some of the optional parameters
         ef2.setSubtype("text/plain");
