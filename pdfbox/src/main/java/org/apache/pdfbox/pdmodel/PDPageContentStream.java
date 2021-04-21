@@ -174,7 +174,7 @@ public final class PDPageContentStream implements Closeable
      * @param appendContent Indicates whether content will be overwritten. If false all previous
      *                      content is deleted.
      * @param compress Tell if the content stream should compress the page contents.
-     * @param resetContext Tell if the graphic context should be reseted. You should use this when
+     * @param resetContext Tell if the graphic context should be reset. You should use this when
      * appending to an existing stream, because the existing stream may have changed graphic
      * properties (e.g. scaling, rotation).
      * @throws IOException If there is an error writing to the page contents.
