@@ -73,7 +73,9 @@ public class Splitter
      *
      * @param document The document to split.
      *
-     * @return A list of all the split documents.
+     * @return A list of all the split documents. These should all be saved before closing any
+     * documents, including the source document. Any further operations should be made after
+     * reloading them, to avoid problems due to resource sharing.
      *
      * @throws IOException If there is an IOError
      */

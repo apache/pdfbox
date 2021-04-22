@@ -123,8 +123,7 @@ public class CMapParser
                     {
                         parseUsecmap((LiteralName) previousToken, result);
                     }
-                    else
-                    if (previousToken instanceof Number)
+                    else if (previousToken instanceof Number)
                     {
                         if (op.op.equals("begincodespacerange"))
                         {

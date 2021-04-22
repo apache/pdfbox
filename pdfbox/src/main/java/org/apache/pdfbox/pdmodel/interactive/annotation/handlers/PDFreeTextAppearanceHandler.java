@@ -27,7 +27,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -386,11 +385,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             Operator graphicOp = null;
             for (Object token = parser.parseNextToken(); token != null; token = parser.parseNextToken())
             {
-                if (token instanceof COSObject)
-                {
-                    arguments.add(((COSObject) token).getObject());
-                }
-                else if (token instanceof Operator)
+                if (token instanceof Operator)
                 {
                     Operator op = (Operator) token;
                     String name = op.getName();
@@ -456,11 +451,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             COSArray fontArguments = new COSArray();
             for (Object token = parser.parseNextToken(); token != null; token = parser.parseNextToken())
             {
-                if (token instanceof COSObject)
-                {
-                    arguments.add(((COSObject) token).getObject());
-                }
-                else if (token instanceof Operator)
+                if (token instanceof Operator)
                 {
                     Operator op = (Operator) token;
                     String name = op.getName();

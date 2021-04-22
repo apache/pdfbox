@@ -16,12 +16,7 @@
  */
 package org.apache.fontbox.cff;
 
-import java.io.EOFException;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * This class contains some functionality to read a byte buffer.
@@ -33,8 +28,6 @@ public class DataInput
 
     private byte[] inputBuffer = null;
     private int bufferPosition = 0;
-
-    private static final Log LOG = LogFactory.getLog(DataInput.class);
 
     /**
      * Constructor.
@@ -65,21 +58,22 @@ public class DataInput
 
     /**
      * Sets the current position to the given value.
+     * 
      * @param position the given position
+     * @throws IOException if the new position ist out of range
      */
-    public void setPosition(int position)
+    public void setPosition(int position) throws IOException
     {
+        if (position < 0)
+        {
+            throw new IOException("position is negative");
+        }
+        if (position >= inputBuffer.length)
+        {
+            throw new IOException(
+                    "New position is out of range " + position + " >= " + inputBuffer.length);
+        }
         bufferPosition = position;
-    }
-
-    /** 
-     * Returns the buffer as an ISO-8859-1 string.
-     * @return the buffer as string
-     * @throws IOException if an error occurs during reading
-     */
-    public String getString() throws IOException
-    {
-        return new String(inputBuffer, StandardCharsets.ISO_8859_1);
     }
 
     /**
@@ -89,17 +83,11 @@ public class DataInput
      */
     public byte readByte() throws IOException
     {
-        try
+        if (!hasRemaining())
         {
-            byte value = inputBuffer[bufferPosition];
-            bufferPosition++;
-            return value;
-        } 
-        catch (RuntimeException re)
-        {
-            LOG.debug("An error occurred reading a byte - returning -1", re);
-            return -1;
+            throw new IOException("End off buffer reached");
         }
+        return inputBuffer[bufferPosition++];
     }
 
     /**
@@ -109,27 +97,32 @@ public class DataInput
      */
     public int readUnsignedByte() throws IOException
     {
-        int b = read();
-        if (b < 0)
+        if (!hasRemaining())
         {
-            throw new EOFException();
+            throw new IOException("End off buffer reached");
         }
-        return b;
+        return inputBuffer[bufferPosition++] & 0xff;
     }
 
     /**
      * Peeks one single unsigned byte from the buffer.
+     * 
+     * @param offset offset to the byte to be peeked
      * @return the unsigned byte as int
      * @throws IOException if an error occurs during reading
      */
     public int peekUnsignedByte(int offset) throws IOException
     {
-        int b = peek(offset);
-        if (b < 0)
+        if (offset < 0)
         {
-            throw new EOFException();
+            throw new IOException("offset is negative");
         }
-        return b;
+        if (bufferPosition + offset >= inputBuffer.length)
+        {
+            throw new IOException("Offset position is out of range " + (bufferPosition + offset)
+                    + " >= " + inputBuffer.length);
+        }
+        return inputBuffer[bufferPosition + offset] & 0xff;
     }
 
     /**
@@ -149,12 +142,8 @@ public class DataInput
      */
     public int readUnsignedShort() throws IOException
     {
-        int b1 = read();
-        int b2 = read();
-        if ((b1 | b2) < 0)
-        {
-            throw new EOFException();
-        }
+        int b1 = readUnsignedByte();
+        int b2 = readUnsignedByte();
         return b1 << 8 | b2;
     }
 
@@ -165,14 +154,10 @@ public class DataInput
      */
     public int readInt() throws IOException
     {
-        int b1 = read();
-        int b2 = read();
-        int b3 = read();
-        int b4 = read();
-        if ((b1 | b2 | b3 | b4) < 0)
-        {
-            throw new EOFException();
-        }
+        int b1 = readUnsignedByte();
+        int b2 = readUnsignedByte();
+        int b3 = readUnsignedByte();
+        int b4 = readUnsignedByte();
         return b1 << 24 | b2 << 16 | b3 << 8 | b4;
     }
 
@@ -190,7 +175,7 @@ public class DataInput
         }
         if (inputBuffer.length - bufferPosition < length)
         {
-            throw new EOFException(); 
+            throw new IOException("Premature end of buffer reached");
         }
         byte[] bytes = new byte[length];
         System.arraycopy(inputBuffer, bufferPosition, bytes, 0, length);
@@ -198,34 +183,6 @@ public class DataInput
         return bytes;
     }
 
-    private int read()
-    {
-        try
-        {
-            int value = inputBuffer[bufferPosition] & 0xff;
-            bufferPosition++;
-            return value;
-        } 
-        catch (RuntimeException re)
-        {
-            LOG.debug("An error occurred reading an int - returning -1", re);
-            return -1;
-        }
-    }
-
-    private int peek(int offset)
-    {
-        try
-        {
-            return inputBuffer[bufferPosition + offset] & 0xff;
-        }
-        catch (RuntimeException re)
-        {
-            LOG.debug("An error occurred peeking at offset " + offset + " - returning -1", re);
-            return -1;
-        }
-    }
-    
     public int length()
     {
         return inputBuffer.length;

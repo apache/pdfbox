@@ -28,6 +28,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -663,7 +664,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     // create a new stroke based on the current CTM and the current stroke
-    private BasicStroke getStroke()
+    private Stroke getStroke()
     {
         PDGraphicsState state = getGraphicsState();
 
@@ -677,27 +678,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
 
         PDLineDashPattern dashPattern = state.getLineDashPattern();
+        // PDFBOX-5168: show an all-zero dash array line invisible like Adobe does
+        // must do it here because getDashArray() sets minimum width because of JVM bugs
+        float[] dashArray = dashPattern.getDashArray();
+        if (isAllZeroDash(dashArray))
+        {
+            return (Shape p) -> new Area();
+        }
         float phaseStart = dashPattern.getPhase();
-        float[] dashArray = getDashArray(dashPattern);
+        dashArray = getDashArray(dashPattern);
         phaseStart = transformWidth(phaseStart);
 
-        // empty dash array is illegal
-        // avoid also infinite and NaN values (PDFBOX-3360)
-        if (dashArray.length == 0 || Float.isInfinite(phaseStart) || Float.isNaN(phaseStart))
-        {
-            dashArray = null;
-        }
-        else
-        {
-            for (int i = 0; i < dashArray.length; ++i)
-            {
-                if (Float.isInfinite(dashArray[i]) || Float.isNaN(dashArray[i]))
-                {
-                    dashArray = null;
-                    break;
-                }
-            }
-        }
         int lineCap = Math.min(2, Math.max(0, state.getLineCap())); // legal values 0..2
         int lineJoin = Math.min(2, Math.max(0, state.getLineJoin()));
         float miterLimit = state.getMiterLimit();
@@ -710,9 +701,43 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                miterLimit, dashArray, phaseStart);
     }
 
+    private boolean isAllZeroDash(float[] dashArray)
+    {
+        if (dashArray.length > 0)
+        {
+            boolean allZero = true;
+            for (int i = 0; i < dashArray.length; ++i)
+            {
+                if (dashArray[i] != 0)
+                {
+                    allZero = false;
+                    break;
+                }
+            }
+            if (allZero)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private float[] getDashArray(PDLineDashPattern dashPattern)
     {
         float[] dashArray = dashPattern.getDashArray();
+        int phase = dashPattern.getPhase();
+        // avoid empty, infinite and NaN values (PDFBOX-3360)
+        if (dashArray.length == 0 || Float.isInfinite(phase) || Float.isNaN(phase))
+        {
+            return null;
+        }
+        for (int i = 0; i < dashArray.length; ++i)
+        {
+            if (Float.isInfinite(dashArray[i]) || Float.isNaN(dashArray[i]))
+            {
+                return null;
+            }
+        }
         if (JAVA_VERSION < 10)
         {
             float scalingFactorX = new Matrix(xform).getScalingFactorX();
