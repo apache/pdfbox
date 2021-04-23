@@ -311,6 +311,7 @@ public class COSParser extends BaseParser implements ICOSParser
         long prev = startXrefOffset;
         // ---- parse whole chain of xref tables/object streams using PREV reference
         Set<Long> prevSet = new HashSet<>();
+        COSDictionary trailer = null;
         while (prev > 0)
         {
             // seek to xref table
@@ -328,7 +329,7 @@ public class COSParser extends BaseParser implements ICOSParser
                     throw new IOException("Expected trailer object at offset "
                             + source.getPosition());
                 }
-                COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
+                trailer = xrefTrailerResolver.getCurrentTrailer();
                 // check for a XRef stream, it may contain some object ids of compressed objects 
                 if(trailer.containsKey(COSName.XREF_STM))
                 {
@@ -374,31 +375,21 @@ public class COSParser extends BaseParser implements ICOSParser
                     }
                 }
                 prev = trailer.getLong(COSName.PREV);
-                if (prev > 0)
-                {
-                    // check the xref table reference
-                    fixedOffset = checkXRefOffset(prev);
-                    if (fixedOffset > -1 && fixedOffset != prev)
-                    {
-                        prev = fixedOffset;
-                        trailer.setLong(COSName.PREV, prev);
-                    }
-                }
             }
             else
             {
                 // parse xref stream
                 prev = parseXrefObjStream(prev, true);
-                if (prev > 0)
+                trailer = xrefTrailerResolver.getCurrentTrailer();
+            }
+            if (prev > 0)
+            {
+                // check the xref table reference
+                fixedOffset = checkXRefOffset(prev);
+                if (fixedOffset > -1 && fixedOffset != prev)
                 {
-                    // check the xref table reference
-                    fixedOffset = checkXRefOffset(prev);
-                    if (fixedOffset > -1 && fixedOffset != prev)
-                    {
-                        prev = fixedOffset;
-                        COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
-                        trailer.setLong(COSName.PREV, prev);
-                    }
+                    prev = fixedOffset;
+                    trailer.setLong(COSName.PREV, prev);
                 }
             }
             if (prevSet.contains(prev))
@@ -409,7 +400,7 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         // ---- build valid xrefs out of the xref chain
         xrefTrailerResolver.setStartxref(startXrefOffset);
-        COSDictionary trailer = xrefTrailerResolver.getTrailer();
+        trailer = xrefTrailerResolver.getTrailer();
         document.setTrailer(trailer);
         document.setIsXRefStream(XRefType.STREAM == xrefTrailerResolver.getXrefType());
         // check the offsets of all referenced objects
