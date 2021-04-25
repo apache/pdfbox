@@ -251,7 +251,9 @@ public class TestFontEmbedding extends TestCase
     {
         PDDocument document = PDDocument.load(file);
         PDFTextStripper stripper = new PDFTextStripper();
-        return stripper.getText(document);
+        String text = stripper.getText(document);
+        document.close();
+        return text;
     }
 
     /**
