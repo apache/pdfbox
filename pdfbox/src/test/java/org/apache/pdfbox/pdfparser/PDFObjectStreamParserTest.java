@@ -18,9 +18,12 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
+
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,13 +37,16 @@ public class PDFObjectStreamParserTest
     public void testOffsetParsing() throws IOException
     {
         COSStream stream = new COSStream();
-        stream.setItem(COSName.N, COSInteger.ONE);
-        stream.setItem(COSName.FIRST, COSInteger.ZERO);
+        stream.setItem(COSName.N, COSInteger.TWO);
+        stream.setItem(COSName.FIRST, COSInteger.get(8));
         OutputStream outputStream = stream.createOutputStream();
-        outputStream.write("0 7 -1 true".getBytes());
+        outputStream.write("1 0 2 5 true false".getBytes());
         outputStream.close();
         PDFObjectStreamParser objectStreamParser = new PDFObjectStreamParser(stream, null);
         objectStreamParser.parse();
-        Assert.assertEquals(COSBoolean.TRUE, objectStreamParser.getObjects().get(0).getObject());
+        List<COSObject> objects = objectStreamParser.getObjects();
+        Assert.assertEquals(2, objects.size());
+        Assert.assertEquals(COSBoolean.TRUE, objects.get(0).getObject());
+        Assert.assertEquals(COSBoolean.FALSE, objects.get(1).getObject());
     }
 }
