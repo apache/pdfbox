@@ -312,9 +312,11 @@ class TestFontEmbedding
 
     private String getUnicodeText(File file) throws IOException
     {
-        PDDocument document = Loader.loadPDF(file);
-        PDFTextStripper stripper = new PDFTextStripper();
-        return stripper.getText(document);
+        try (PDDocument document = Loader.loadPDF(file))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            return stripper.getText(document);
+        }
     }
 
     /**
