@@ -92,7 +92,7 @@ public class PDFObjectStreamParser extends BaseParser
         try
         {
             Map<Integer, Long> offsets = readOffsets();
-            streamObjects = new ArrayList<COSObject>( numberOfObjects );
+            streamObjects = new ArrayList<COSObject>(offsets.size());
             for (Entry<Integer, Long> offset : offsets.entrySet())
             {
                 COSBase cosObject = parseObject(offset.getKey());
@@ -128,8 +128,14 @@ public class PDFObjectStreamParser extends BaseParser
         // but we can't rely on that, so that we have to sort the offsets
         // as the sequential parsers relies on it, see PDFBOX-4927
         Map<Integer, Long> objectNumbers = new TreeMap<Integer, Long>();
+        long firstObjectPosition = seqSource.getPosition() + firstObject - 1;
         for (int i = 0; i < numberOfObjects; i++)
         {
+            // don't read beyond the part of the stream reserved for the object numbers
+            if (seqSource.getPosition() >= firstObjectPosition)
+            {
+                break;
+            }
             long objectNumber = readObjectNumber();
             int offset = (int) readLong();
             objectNumbers.put(offset, objectNumber);
