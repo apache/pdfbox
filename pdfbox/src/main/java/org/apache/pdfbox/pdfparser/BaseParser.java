@@ -960,6 +960,12 @@ public abstract class BaseParser
         {
             seqSource.unread(ic);
         }
+        char lastc = buf.charAt(buf.length() - 1);
+        if (lastc == 'e' || lastc == 'E')
+        {
+            buf.deleteCharAt(buf.length() - 1);
+            seqSource.unread(lastc);
+        }
         return COSNumber.get(buf.toString());
     }
 
