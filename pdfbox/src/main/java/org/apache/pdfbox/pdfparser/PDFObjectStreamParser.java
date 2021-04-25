@@ -106,9 +106,16 @@ public class PDFObjectStreamParser extends BaseParser
 
     private Map<Long, Integer> privateReadObjectNumbers() throws IOException
     {
-        Map<Long, Integer> objectNumbers = new HashMap<>(numberOfObjects);
+        // don't initialize map using numberOfObjects as there might by less object numbers than expected
+        Map<Long, Integer> objectNumbers = new HashMap<>();
+        long firstObjectPosition = source.getPosition() + firstObject - 1;
         for (int i = 0; i < numberOfObjects; i++)
         {
+            // don't read beyond the part of the stream reserved for the object numbers
+            if (source.getPosition() >= firstObjectPosition)
+            {
+                break;
+            }
             long objectNumber = readObjectNumber();
             int offset = (int) readLong();
             objectNumbers.put(objectNumber, offset);
