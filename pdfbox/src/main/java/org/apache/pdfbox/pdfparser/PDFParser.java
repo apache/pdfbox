@@ -25,7 +25,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
@@ -164,14 +163,14 @@ public class PDFParser extends COSParser
      * The initial parse will first parse only the trailer, the xrefstart and all xref tables to have a pointer (offset)
      * to all the pdf's objects. It can handle linearized pdfs, which will have an xref at the end pointing to an xref
      * at the beginning of the file. Last the root object is parsed.
-     * 
+     *
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException If something went wrong.
      */
     protected void initialParse() throws IOException
     {
         COSDictionary trailer = retrieveTrailer();
-    
+
         COSBase base = parseTrailerValuesDynamically(trailer);
         if (!(base instanceof COSDictionary))
         {
