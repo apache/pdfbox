@@ -31,10 +31,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Test for PDFObjectStreamParser.
  */
-public class PDFObjectStreamParserTest
+class PDFObjectStreamParserTest
 {
     @Test
-    public void testOffsetParsing() throws IOException
+    void testOffsetParsing() throws IOException
     {
         COSStream stream = new COSStream();
         stream.setItem(COSName.N, COSInteger.TWO);
