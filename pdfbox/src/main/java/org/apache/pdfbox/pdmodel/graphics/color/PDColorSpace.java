@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import java.awt.Graphics;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
@@ -345,6 +346,21 @@ public abstract class PDColorSpace implements COSObjectable
         BufferedImage src = new BufferedImage(colorModel, raster, false, null);
         BufferedImage dest = new BufferedImage(raster.getWidth(), raster.getHeight(),
                                                BufferedImage.TYPE_INT_RGB);
+        if (src.getWidth() == 1 || src.getHeight() == 1)
+        {
+            // PDFBOX-5051: ColorConvertOp is too slow for tiny images. But we can't use drawImage()
+            // for all images because it is slower when used for all images.
+            // Re quality & speed: the quality gold standard is setRGB(getRGB()) but this is also 
+            // the slowest. drawImage() is identical in quality (but faster) except for ICC based
+            // images with 1 component. ColorConvertOp is fastest except for small images, there's
+            // somehow a slowness "price" paid per call and the quality is slightly flawed sometimes,
+            // and rendering hints are ignored.
+            // All the above tested with jdk8 and LCMS.
+            Graphics g2d = dest.getGraphics();
+            g2d.drawImage(src, 0, 0, null);
+            g2d.dispose();
+            return dest;
+        }
         ColorConvertOp op = new ColorConvertOp(null);
         op.filter(src, dest);
         return dest;
