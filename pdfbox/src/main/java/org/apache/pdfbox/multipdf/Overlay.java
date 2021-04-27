@@ -302,11 +302,10 @@ public class Overlay implements Closeable
     
     private Map<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
     {
-        int numberOfPages = doc.getNumberOfPages();
-        Map<Integer,LayoutPage> layoutPages = new HashMap<>(numberOfPages);
-        for (int i=0;i<numberOfPages;i++)
+        int i = 0;
+        Map<Integer,LayoutPage> layoutPages = new HashMap<>();
+        for (PDPage page : doc.getPages())
         {
-            PDPage page = doc.getPage(i);
             COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
             PDResources resources = page.getResources();
             if (resources == null)
@@ -315,6 +314,7 @@ public class Overlay implements Closeable
             }
             layoutPages.put(i, new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents), 
                     resources.getCOSObject(), page.getRotation()));
+            i++;
         }
         return layoutPages;
     }

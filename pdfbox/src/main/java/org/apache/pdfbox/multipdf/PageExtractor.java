@@ -19,7 +19,9 @@ package org.apache.pdfbox.multipdf;
 
 import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 
 /**
  * This class will extract one or more sequential pages and create a new document.
@@ -75,10 +77,10 @@ public class PageExtractor
         extractedDocument.setDocumentInformation(sourceDocument.getDocumentInformation());
         extractedDocument.getDocumentCatalog().setViewerPreferences(
                 sourceDocument.getDocumentCatalog().getViewerPreferences());
-        
+        PDPageTree pages = sourceDocument.getPages();
         for (int i = startPage; i <= endPage; i++)
         {
-            PDPage page = sourceDocument.getPage(i - 1);
+            PDPage page = pages.get(i - 1);
             PDPage imported = extractedDocument.importPage(page);
             imported.setCropBox(page.getCropBox());
             imported.setMediaBox(page.getMediaBox());
