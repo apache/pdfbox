@@ -167,12 +167,14 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     private final class PageIterator implements Iterator<PDPage>
     {
         private final Queue<COSDictionary> queue = new ArrayDeque<>();
+        private final ResourceCache resourceCache;
         private Set<COSDictionary> set = new HashSet<>();
 
         private PageIterator(COSDictionary node)
         {
             enqueueKids(node);
             set = null;
+            resourceCache = document != null ? document.getResourceCache() : null;
         }
 
         private void enqueueKids(COSDictionary node)
@@ -218,7 +220,6 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
             //todo can a 'next' be null here?
             sanitizeType(next);
 
-            ResourceCache resourceCache = document != null ? document.getResourceCache() : null;
             return new PDPage(next, resourceCache);
         }
 
