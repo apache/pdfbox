@@ -36,31 +36,34 @@ public final class ImageUtil
      * @param image The image to rotate.
      * @param rotation The rotation in degrees.
      * @return The rotated image.
+     * @throws IllegalArgumentException if the angle isn't a multiple of 90°.
      */
     public static BufferedImage getRotatedImage(BufferedImage image, int rotation)
     {
         int width = image.getWidth();
         int height = image.getHeight();
-        double x = 0;
-        double y = 0;
+        int x = 0;
+        int y = 0;
         BufferedImage rotatedImage;
-        switch (rotation % 360)
+        switch ((rotation + 360) % 360)
         {
+            case 0:
+                return image;
             case 90:
                 x = height;
-                rotatedImage = new BufferedImage(height, width, BufferedImage.TYPE_INT_RGB);
+                rotatedImage = new BufferedImage(height, width, image.getType());
                 break;
             case 270:
                 y = width;
-                rotatedImage = new BufferedImage(height, width, BufferedImage.TYPE_INT_RGB);
+                rotatedImage = new BufferedImage(height, width, image.getType());
                 break;
             case 180:
                 x = width;
                 y = height;
-                rotatedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                rotatedImage = new BufferedImage(width, height, image.getType());
                 break;
             default:
-                return image;
+                throw new IllegalArgumentException("Only multiple of 90° are supported");
         }
         Graphics2D g = (Graphics2D) rotatedImage.getGraphics();
         g.translate(x, y);
