@@ -16,13 +16,16 @@
 
 package org.apache.pdfbox.debugger.fontencodingpane;
 
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
-import org.apache.pdfbox.pdmodel.font.PDVectorFont;
-
-import javax.swing.JPanel;
+import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.swing.JPanel;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 
 /**
  * @author Khyrul Bashar
@@ -30,13 +33,15 @@ import java.util.Map;
  */
 class SimpleFont extends FontPane
 {
+    private static final Log LOG = LogFactory.getLog(SimpleFont.class);
+
     public static final String NO_GLYPH = "None";
     private final FontEncodingView view;
     private int totalAvailableGlyph = 0;
 
     /**
      * Constructor.
-     * @param font PDSimpleFont instance.
+     * @param font PDSimpleFont instance, but not a type 3 font (must also be a PDVectorFont).
      * @throws IOException If fails to parse unicode characters.
      */
     SimpleFont(PDSimpleFont font) throws IOException
@@ -67,14 +72,16 @@ class SimpleFont extends FontPane
                 String glyphName = font.getEncoding().getName(index);
                 glyphs[index][1] = glyphName;
                 glyphs[index][2] = font.toUnicode(index);
-                if (font instanceof PDVectorFont)
+                try
                 {
                     // using names didn't work with the file from PDFBOX-3445
                     glyphs[index][3] = ((PDVectorFont) font).getPath(index);
                 }
-                else
+                catch (IOException ex)
                 {
-                    glyphs[index][3] = font.getPath(glyphName);
+                    LOG.error("Couldn't render code " + index + " ('" + glyphName + "') of font " +
+                            font.getName(), ex);
+                    glyphs[index][3] = new GeneralPath();
                 }
                 totalAvailableGlyph++;
             }
