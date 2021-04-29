@@ -357,8 +357,8 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <!-- don't upgrade to 3.0.x as long as we have to ensure jdk6 compatibility -->
-                    <version>2.5.4</version>
+                    <!-- don't upgrade to 4.0.x as long as we have to ensure jdk7 compatibility -->
+                    <version>3.5.1</version>
                 </plugin>
                 <plugin>
                     <!-- default version 2.20.1 doesn't work with jdk11 -->
