@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.awt.GraphicsEnvironment;
+
 import org.apache.pdfbox.debugger.PDFDebugger;
 
 import picocli.CommandLine;
@@ -48,7 +50,10 @@ public final class PDFBox implements Runnable
         System.setProperty("apple.awt.UIElement", "true");
 
         CommandLine commandLine = new CommandLine(new PDFBox()).setSubcommandsCaseInsensitive(true);
-        commandLine.addSubcommand("debug", PDFDebugger.class);
+        if (!GraphicsEnvironment.isHeadless())
+        {
+            commandLine.addSubcommand("debug", PDFDebugger.class);
+        }
         commandLine.addSubcommand("decrypt", Decrypt.class);
         commandLine.addSubcommand("encrypt", Encrypt.class);
         commandLine.addSubcommand("decode", WriteDecodedDoc.class);
