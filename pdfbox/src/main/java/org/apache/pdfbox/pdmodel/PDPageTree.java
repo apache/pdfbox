@@ -19,6 +19,13 @@ package org.apache.pdfbox.pdmodel;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Stack;
+import java.util.NoSuchElementException;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -27,11 +34,6 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -168,12 +170,10 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     {
         private final Queue<COSDictionary> queue = new ArrayDeque<>();
         private final ResourceCache resourceCache;
-        private Set<COSDictionary> set = new HashSet<>();
 
         private PageIterator(COSDictionary node)
         {
             enqueueKids(node);
-            set = null;
             resourceCache = document != null ? document.getResourceCache() : null;
         }
 
@@ -181,21 +181,48 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             if (isPageTreeNode(node))
             {
+                Set<COSDictionary> set = new HashSet<>();
+                Stack<Iterator<COSDictionary>> stack = new Stack<>();
                 List<COSDictionary> kids = getKids(node);
-                for (COSDictionary kid : kids)
-                {
-                    if (set.contains(kid))
+                Iterator<COSDictionary> iterator = kids.iterator();
+
+                do{
+                    while (iterator.hasNext())
                     {
-                        // PDFBOX-5009, PDFBOX-3953: prevent stack overflow with malformed PDFs
-                        LOG.error("This page tree node has already been visited");
-                        continue;
+                        COSDictionary kid = iterator.next();
+                        if (set.contains(kid))
+                        {
+                            // PDFBOX-5009, PDFBOX-3953: prevent stack overflow with malformed PDFs
+                            LOG.error("This page tree node has already been visited");
+                            continue;
+                        }
+                        else if (kid.containsKey(COSName.KIDS))
+                        {
+                            set.add(kid);
+                        }
+
+                        if (isPageTreeNode(kid))
+                        {
+                            kids = getKids(kid);
+                            //save previous iterator
+                            stack.push(iterator);
+                            iterator = kids.iterator();
+                        }
+                        else
+                        {
+                            queue.add(kid);
+                        }
                     }
-                    else if (kid.containsKey(COSName.KIDS))
+
+                    if (!stack.isEmpty())
                     {
-                        set.add(kid);
+                        //use previous iterator
+                        iterator = stack.pop();
+                    }else
+                    {
+                        break;
                     }
-                    enqueueKids(kid);
-                }
+                }while(true);
             }
             else
             {
