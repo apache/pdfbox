@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -165,97 +167,119 @@ class PDFCloneUtility
        * @param target the merge target
        * @throws IOException if an I/O error occurs
        */
-      void cloneMerge( final COSObjectable base, COSObjectable target) throws IOException
+      void cloneMerge(COSObjectable base, COSObjectable target) throws IOException
       {
-          if( base == null )
-          {
-              return;
-          }
-          COSBase retval = clonedVersion.get( base );
-          if( retval != null )
-          {
-              return;
-              //we are done, it has already been converted. // ### Is that correct for cloneMerge???
-          }
-          //TODO what when clone-merging a clone? Does it ever happen?
-          if (!(base instanceof COSBase))
-          {
-              cloneMerge(base.getCOSObject(), target.getCOSObject());
-          }
-          else if( base instanceof COSObject )
-          {
-              if(target instanceof COSObject)
+          final Stack<COSObjectable> stack = new Stack<>();
+
+          do{
+              if( base != null )
               {
-                  cloneMerge(((COSObject) base).getObject(),((COSObject) target).getObject() );
-              }
-              else if (target instanceof COSDictionary || target instanceof COSArray)
-              {
-                  cloneMerge(((COSObject) base).getObject(), target);
-              }
-          }
-          else if( base instanceof COSArray )
-          {
-              if (target instanceof COSObject)
-              {
-                  cloneMerge(base, ((COSObject) target).getObject());
-              }
-              else
-              {
-                  COSArray array = (COSArray) base;
-                  COSArray targetArr = (COSArray) target;
-                  for (int i = 0; i < array.size(); i++)
+                  COSBase retval = clonedVersion.get( base );
+                  if( retval != null )
                   {
-                      targetArr.add(cloneForNewDocument(array.get(i)));
+                      //do nothing.
+                      //we are done, it has already been converted. // ### Is that correct for cloneMerge???
                   }
-              }
-          }
-          else if( base instanceof COSStream )
-          {
-            // does that make sense???
-              COSStream originalStream = (COSStream)base;
-              COSStream stream = destination.getDocument().createCOSStream();
-              try (OutputStream output = stream.createOutputStream(originalStream.getFilters()))
-              {
-                  IOUtils.copy(originalStream.createInputStream(), output);
-              }
-              clonedVersion.put( base, stream );
-              for( Map.Entry<COSName, COSBase> entry : originalStream.entrySet() )
-              {
-                  stream.setItem(entry.getKey(), cloneForNewDocument(entry.getValue()));
-              }
-              retval = stream;
-          }
-          else if( base instanceof COSDictionary )
-          {
-              if (target instanceof COSObject)
-              {
-                  cloneMerge(base, ((COSObject) target).getObject());
-              }
-              else
-              {
-                  COSDictionary targetDic = (COSDictionary) target;
-                  COSDictionary dic = (COSDictionary) base;
-                  clonedVersion.put(base, retval);
-                  for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
+                  else
                   {
-                      COSName key = entry.getKey();
-                      COSBase value = entry.getValue();
-                      if (targetDic.getItem(key) != null)
+                      //TODO what when clone-merging a clone? Does it ever happen?
+                      if (!(base instanceof COSBase))
                       {
-                          cloneMerge(value, targetDic.getItem(key));
+                          stack.push(base.getCOSObject());
+                          stack.push(target.getCOSObject());
+                      }
+                      else if( base instanceof COSObject )
+                      {
+                          if(target instanceof COSObject)
+                          {
+                              stack.push(((COSObject) base).getObject());
+                              stack.push(((COSObject) target).getObject());
+                          }
+                          else if (target instanceof COSDictionary || target instanceof COSArray)
+                          {
+                              stack.push(((COSObject) base).getObject());
+                              stack.push(target);
+                          }
+                      }
+                      else if( base instanceof COSArray )
+                      {
+                          if (target instanceof COSObject)
+                          {
+                              stack.push(base);
+                              stack.push(((COSObject) target).getObject());
+                          }
+                          else
+                          {
+                              COSArray array = (COSArray) base;
+                              COSArray targetArr = (COSArray) target;
+                              for (int i = 0; i < array.size(); i++)
+                              {
+                                  targetArr.add(cloneForNewDocument(array.get(i)));
+                              }
+                          }
+                      }
+                      else if( base instanceof COSStream )
+                      {
+                          // does that make sense???
+                          COSStream originalStream = (COSStream)base;
+                          COSStream stream = destination.getDocument().createCOSStream();
+                          try (OutputStream output = stream.createOutputStream(originalStream.getFilters()))
+                          {
+                              IOUtils.copy(originalStream.createInputStream(), output);
+                          }
+                          clonedVersion.put( base, stream );
+                          for( Map.Entry<COSName, COSBase> entry : originalStream.entrySet() )
+                          {
+                              stream.setItem(entry.getKey(), cloneForNewDocument(entry.getValue()));
+                          }
+                          retval = stream;
+                      }
+                      else if( base instanceof COSDictionary )
+                      {
+                          if (target instanceof COSObject)
+                          {
+                              stack.push(base);
+                              stack.push(((COSObject) target).getObject());
+                          }
+                          else
+                          {
+                              COSDictionary targetDic = (COSDictionary) target;
+                              COSDictionary dic = (COSDictionary) base;
+                              clonedVersion.put(base, retval);
+                              for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
+                              {
+                                  COSName key = entry.getKey();
+                                  COSBase value = entry.getValue();
+                                  COSBase targetDicItem = targetDic.getItem(key);
+                                  if (targetDicItem != null)
+                                  {
+                                      cloneMerge(value, targetDicItem);
+                                  }
+                                  else
+                                  {
+                                      targetDic.setItem(key, cloneForNewDocument(value));
+                                  }
+                              }
+                          }
                       }
                       else
                       {
-                          targetDic.setItem(key, cloneForNewDocument(value));
+                          retval = (COSBase)base;
                       }
+                      clonedVersion.put( base, retval );
+                      clonedValues.add(retval);
                   }
               }
-          }
-          else
-          {
-              retval = (COSBase)base;
-          }
-          clonedVersion.put( base, retval );
-          clonedValues.add(retval);
+
+              if (stack.isEmpty())
+              {
+                  break;
+              }
+              else
+              {
+                  target = stack.pop();
+                  base = stack.pop();
+              }
+          }while(true);
       }
 }
