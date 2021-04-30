@@ -56,7 +56,6 @@ public class Type1LexerTest
             }
         }
         while (nextToken != null);
-        System.out.println(tokens);
         Assertions.assertEquals(Token.LITERAL, tokens.get(0).getKind());
         Assertions.assertEquals("FontMatrix", tokens.get(0).getText());
         Assertions.assertEquals(Token.START_ARRAY, tokens.get(1).getKind());
