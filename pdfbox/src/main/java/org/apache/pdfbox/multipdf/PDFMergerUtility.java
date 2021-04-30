@@ -431,62 +431,61 @@ public class PDFMergerUtility
     private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting,
             CompressParameters compressParameters) throws IOException
     {
-        if (!sources.isEmpty())
-        {
-            // Make sure that:
-            // - first Exception is kept
-            // - all PDDocuments are closed
-            // - all FileInputStreams are closed
-            // - there's a way to see which errors occurred
+        if (sources.isEmpty())
+            return;
 
-            List<PDDocument> tobeclosed = new ArrayList<>(sources.size());
-            MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
+        // Make sure that:
+        // - first Exception is kept
+        // - all PDDocuments are closed
+        // - all FileInputStreams are closed
+        // - there's a way to see which errors occurred
+
+        MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ?
                     memUsageSetting.getPartitionedCopy(sources.size()+1) :
                     MemoryUsageSetting.setupMainMemoryOnly();
-            try (PDDocument destination = new PDDocument(partitionedMemSetting))
+
+        PDDocument sourceDoc = null;
+        try (PDDocument destination = new PDDocument(partitionedMemSetting))
+        {
+            for (Object sourceObject : sources)
             {
-                for (Object sourceObject : sources)
+                if (sourceObject instanceof File)
                 {
-                    PDDocument sourceDoc = null;
-                    if (sourceObject instanceof File)
-                    {
-                        sourceDoc = Loader.loadPDF((File) sourceObject, partitionedMemSetting);
-                    }
-                    else
-                    {
-                        sourceDoc = Loader.loadPDF((InputStream) sourceObject,
-                                partitionedMemSetting);
-                    }
-                    tobeclosed.add(sourceDoc);
-                    appendDocument(destination, sourceDoc);
-                }
-                
-                // optionally set meta data
-                if (destinationDocumentInformation != null)
-                {
-                    destination.setDocumentInformation(destinationDocumentInformation);
-                }
-                if (destinationMetadata != null)
-                {
-                    destination.getDocumentCatalog().setMetadata(destinationMetadata);
-                }
-                
-                if (destinationStream == null)
-                {
-                    destination.save(destinationFileName, compressParameters);
+                    sourceDoc = Loader.loadPDF((File) sourceObject, partitionedMemSetting);
                 }
                 else
                 {
-                    destination.save(destinationStream, compressParameters);
+                    sourceDoc = Loader.loadPDF((InputStream) sourceObject,
+                            partitionedMemSetting);
                 }
+                appendDocument(destination, sourceDoc);
+                IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
+                sourceDoc = null;
             }
-            finally
+                
+            // optionally set meta data
+            if (destinationDocumentInformation != null)
             {
-                for (PDDocument doc : tobeclosed)
-                {
-                    IOUtils.closeAndLogException(doc, LOG, "PDDocument", null);
-                }
+                destination.setDocumentInformation(destinationDocumentInformation);
             }
+            if (destinationMetadata != null)
+            {
+                destination.getDocumentCatalog().setMetadata(destinationMetadata);
+            }
+                
+            if (destinationStream == null)
+            {
+                destination.save(destinationFileName, compressParameters);
+            }
+            else
+            {
+                destination.save(destinationStream, compressParameters);
+            }
+        }
+        finally
+        {
+            if (sourceDoc != null)
+               IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
         }
     }
 
