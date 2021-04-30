@@ -316,9 +316,10 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             // seek to xref table
             source.seek(prev);
-
             // skip white spaces
             skipSpaces();
+            // save current position instead of prev due to skipped spaces
+            prevSet.add(source.getPosition());
             // -- parse xref
             if (source.peek() == X)
             {
@@ -396,7 +397,6 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 throw new IOException("/Prev loop at offset " + prev);
             }
-            prevSet.add(prev);
         }
         // ---- build valid xrefs out of the xref chain
         xrefTrailerResolver.setStartxref(startXrefOffset);
