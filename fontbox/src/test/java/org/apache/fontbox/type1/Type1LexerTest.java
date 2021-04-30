@@ -30,10 +30,10 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class Type1LexerTest
+class Type1LexerTest
 {
 
-    public Type1LexerTest()
+    Type1LexerTest()
     {
     }
 
@@ -41,7 +41,7 @@ public class Type1LexerTest
      * PDFBOX-5155: test real numbers.
      */
     @Test
-    public void testRealNumbers() throws IOException
+    void testRealNumbers() throws IOException
     {
         String s = "/FontMatrix [1e-3 0e-3 0e-3 1E-3 0 0] readonly def";
         Type1Lexer t1l = new Type1Lexer(s.getBytes(StandardCharsets.US_ASCII));
