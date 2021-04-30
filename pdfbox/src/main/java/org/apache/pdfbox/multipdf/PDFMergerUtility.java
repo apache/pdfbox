@@ -509,14 +509,14 @@ public class PDFMergerUtility
             throw new IOException("Error: destination PDF is closed.");
         }
 
-        PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
         PDDocumentCatalog srcCatalog = source.getDocumentCatalog();
         
         if (isDynamicXfa(srcCatalog.getAcroForm()))
         {
             throw new IOException("Error: can't merge source document containing dynamic XFA form content.");
-        }   
-        
+        }
+
+        PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
         PDDocumentInformation destInfo = destination.getDocumentInformation();
         PDDocumentInformation srcInfo = source.getDocumentInformation();
         mergeInto(srcInfo.getCOSObject(), destInfo.getCOSObject(), Collections.<COSName>emptySet());
@@ -604,10 +604,11 @@ public class PDFMergerUtility
             LOG.warn("Removed /IDTree from /Names dictionary, doesn't belong there");
         }
 
-        PDDocumentNameDestinationDictionary destDests = destCatalog.getDests();
         PDDocumentNameDestinationDictionary srcDests = srcCatalog.getDests();
         if (srcDests != null)
         {
+            PDDocumentNameDestinationDictionary destDests = destCatalog.getDests();
+
             if (destDests == null)
             {
                 destCatalog.getCOSObject().setItem(COSName.DESTS, cloner.cloneForNewDocument(srcDests));
@@ -618,10 +619,11 @@ public class PDFMergerUtility
             }
         }
 
-        PDDocumentOutline destOutline = destCatalog.getDocumentOutline();
         PDDocumentOutline srcOutline = srcCatalog.getDocumentOutline();
         if (srcOutline != null)
         {
+            PDDocumentOutline destOutline = destCatalog.getDocumentOutline();
+
             if (destOutline == null || destOutline.getFirstChild() == null)
             {
                 PDDocumentOutline cloned = new PDDocumentOutline((COSDictionary) cloner.cloneForNewDocument(srcOutline));
@@ -650,16 +652,16 @@ public class PDFMergerUtility
         }
 
         PageMode destPageMode = destCatalog.getPageMode();
-        PageMode srcPageMode = srcCatalog.getPageMode();
         if (destPageMode == null)
         {
+            PageMode srcPageMode = srcCatalog.getPageMode();
             destCatalog.setPageMode(srcPageMode);
         }
 
-        COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
         COSDictionary srcLabels = srcCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
         if (srcLabels != null)
         {
+            COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
             int destPageCount = destination.getNumberOfPages();
             COSArray destNums;
             if (destLabels == null)
