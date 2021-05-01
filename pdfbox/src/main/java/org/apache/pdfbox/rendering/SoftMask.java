@@ -205,6 +205,7 @@ class SoftMask implements Paint
         @Override
         public void dispose()
         {
+            context.dispose();
         }
     }
 }
