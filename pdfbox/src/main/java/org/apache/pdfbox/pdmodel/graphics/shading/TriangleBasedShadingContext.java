@@ -76,6 +76,13 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     protected void calcPixelTable(List<ShadedTriangle> triangleList, Map<Point, Integer> map,
             Rectangle deviceBounds) throws IOException
     {
+        PDShading tmpShading = getShading();
+        if (tmpShading.getFunction() == null)
+        {
+            //cannot use shading if shading function is null
+            tmpShading = null;
+        }
+
         for (ShadedTriangle tri : triangleList)
         {
             int degree = tri.getDeg();
@@ -84,7 +91,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                 Line line = tri.getLine();
                 for (Point p : line.linePoints)
                 {
-                    map.put(p, evalFunctionAndConvertToRGB(line.calcColor(p)));
+                    map.put(p, evalFunctionAndConvertToRGB(tmpShading, line.calcColor(p)));
                 }
             }
             else
@@ -102,7 +109,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                         Point p = new IntPoint(x, y);
                         if (tri.contains(p))
                         {
-                            map.put(p, evalFunctionAndConvertToRGB(tri.calcColor(p)));
+                            map.put(p, evalFunctionAndConvertToRGB(tmpShading, tri.calcColor(p)));
                         }
                     }
                 }
@@ -120,15 +127,15 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                 Line l3 = new Line(p2, p0, tri.color[2], tri.color[0]);
                 for (Point p : l1.linePoints)
                 {
-                    map.put(p, evalFunctionAndConvertToRGB(l1.calcColor(p)));
+                    map.put(p, evalFunctionAndConvertToRGB(tmpShading, l1.calcColor(p)));
                 }
                 for (Point p : l2.linePoints)
                 {
-                    map.put(p, evalFunctionAndConvertToRGB(l2.calcColor(p)));
+                    map.put(p, evalFunctionAndConvertToRGB(tmpShading, l2.calcColor(p)));
                 }
                 for (Point p : l3.linePoints)
                 {
-                    map.put(p, evalFunctionAndConvertToRGB(l3.calcColor(p)));
+                    map.put(p, evalFunctionAndConvertToRGB(tmpShading, l3.calcColor(p)));
                 }
             }
         }
@@ -138,11 +145,11 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
      * Convert color to RGB color value, using function if required, then convert from the shading
      * color space to an RGB value, which is encoded into an integer.
      */
-    private int evalFunctionAndConvertToRGB(float[] values) throws IOException
+    private int evalFunctionAndConvertToRGB(PDShading shading, float[] values) throws IOException
     {
-        if (getShading().getFunction() != null)
+        if (shading != null)
         {
-            values = getShading().evalFunction(values);
+            values = shading.evalFunction(values);
         }
         return convertToRGB(values);
     }
