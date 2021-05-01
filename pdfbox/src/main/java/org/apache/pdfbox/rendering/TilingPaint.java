@@ -201,16 +201,17 @@ class TilingPaint implements Paint
      */
     private Rectangle2D getAnchorRect(PDTilingPattern pattern)
     {
+        PDRectangle anchor = pattern.getBBox();
         float xStep = pattern.getXStep();
         if (Float.compare(xStep, 0) == 0)
         {
-            xStep = pattern.getBBox().getWidth();
+            xStep = anchor.getWidth();
         }
 
         float yStep = pattern.getYStep();
         if (Float.compare(yStep, 0) == 0)
         {
-            yStep = pattern.getBBox().getHeight();
+            yStep = anchor.getHeight();
         }
 
         float xScale = patternMatrix.getScalingFactorX();
@@ -224,7 +225,7 @@ class TilingPaint implements Paint
             LOG.info("Pattern surface is too large, will be clipped");
             LOG.info("width: " + width + ", height: " + height);
             LOG.info("XStep: " + xStep + ", YStep: " + yStep);
-            LOG.info("bbox: " + pattern.getBBox());
+            LOG.info("bbox: " + anchor);
             LOG.info("pattern matrix: " + pattern.getMatrix());
             LOG.info("concatenated matrix: " + patternMatrix);
             width = Math.min(MAXEDGE, Math.abs(width)) * Math.signum(width);
@@ -233,7 +234,6 @@ class TilingPaint implements Paint
         }
 
         // returns the anchor rect with scaling applied
-        PDRectangle anchor = pattern.getBBox();
         return new Rectangle2D.Float(anchor.getLowerLeftX() * xScale,
                                      anchor.getLowerLeftY() * yScale,
                                      width, height);
