@@ -167,6 +167,11 @@ public class PreflightDocument extends PDDocument
         }
     }
 
+    /**
+     * Returns the format which is used to validate the pdf document.
+     * 
+     * @return the format used for validation
+     */
     public Format getSpecification()
     {
         return specification;
