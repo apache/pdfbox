@@ -392,15 +392,16 @@ public class PDDocument implements Closeable
         }
 
         PDSignatureField signatureField = null;
-        if (!(acroForm.getCOSObject().getDictionaryObject(COSName.FIELDS) instanceof COSArray))
+        COSBase cosFieldBase = acroForm.getCOSObject().getDictionaryObject(COSName.FIELDS);
+        if (cosFieldBase instanceof COSArray)
         {
-            acroForm.getCOSObject().setItem(COSName.FIELDS, new COSArray());
+            COSArray fieldArray = (COSArray) cosFieldBase;
+            fieldArray.setNeedToBeUpdated(true);
+            signatureField = findSignatureField(acroForm.getFieldIterator(), sigObject);
         }
         else
         {
-            COSArray fieldArray = (COSArray) acroForm.getCOSObject().getDictionaryObject(COSName.FIELDS);
-            fieldArray.setNeedToBeUpdated(true);
-            signatureField = findSignatureField(acroForm.getFieldIterator(), sigObject);
+            acroForm.getCOSObject().setItem(COSName.FIELDS, new COSArray());
         }
         if (signatureField == null)
         {
