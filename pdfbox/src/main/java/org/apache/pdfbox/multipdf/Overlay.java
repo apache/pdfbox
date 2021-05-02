@@ -374,14 +374,15 @@ public class Overlay implements Closeable
         for (PDPage page : document.getPages())
         {
             pageCounter++;
-            COSDictionary pageDictionary = page.getCOSObject();
-            COSBase originalContent = pageDictionary.getDictionaryObject(COSName.CONTENTS);
-            COSArray newContentArray = new COSArray();
             LayoutPage layoutPage = getLayoutPage(pageCounter, document.getNumberOfPages());
             if (layoutPage == null)
             {
                 continue;
             }
+
+            COSDictionary pageDictionary = page.getCOSObject();
+            COSBase originalContent = pageDictionary.getDictionaryObject(COSName.CONTENTS);
+            COSArray newContentArray = new COSArray();
             switch (position)
             {
                 case FOREGROUND:
