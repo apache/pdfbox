@@ -640,11 +640,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (COSName.LUMINOSITY.equals(softMask.getSubType()))
         {
             COSArray backdropColorArray = softMask.getBackdropColor();
-            PDTransparencyGroup form = softMask.getGroup();
-            PDColorSpace colorSpace = form.getGroup().getColorSpace(form.getResources());
-            if (colorSpace != null && backdropColorArray != null)
+            if (backdropColorArray != null)
             {
-                backdropColor = new PDColor(backdropColorArray, colorSpace);
+                PDTransparencyGroup form = softMask.getGroup();
+                PDColorSpace colorSpace = form.getGroup().getColorSpace(form.getResources());
+                if (colorSpace != null)
+                {
+                    backdropColor = new PDColor(backdropColorArray, colorSpace);
+                }
             }
         }
         TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true, 
@@ -781,19 +784,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         if (dashArray.length > 0)
         {
-            boolean allZero = true;
             for (int i = 0; i < dashArray.length; ++i)
             {
                 if (dashArray[i] != 0)
                 {
-                    allZero = false;
-                    break;
+                    return false;
                 }
             }
-            if (allZero)
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }
