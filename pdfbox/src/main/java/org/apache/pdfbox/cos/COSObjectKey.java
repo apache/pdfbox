@@ -75,6 +75,8 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      * This will set the generation number. It is intended for fixes only.
      * 
      * @param genNumber the new generation number.
+     * 
+     * @deprecated will be removed in the next major release
      */
     public void fixGeneration(int genNumber)
     {

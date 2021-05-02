@@ -1447,19 +1447,33 @@ public class COSParser extends BaseParser
         {
             return true;
         }
+        Map<COSObjectKey, COSObjectKey> correctedKeys = new HashMap<COSObjectKey, COSObjectKey>();
         for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
         {
             COSObjectKey objectKey = objectEntry.getKey();
             Long objectOffset = objectEntry.getValue();
             // a negative offset number represents an object number itself
             // see type 2 entry in xref stream
-            if (objectOffset != null && objectOffset >= 0
-                    && !checkObjectKey(objectKey, objectOffset))
+            if (objectOffset != null && objectOffset >= 0)
             {
-                LOG.debug("Stop checking xref offsets as at least one (" + objectKey
-                        + ") couldn't be dereferenced");
-                return false;
+                COSObjectKey foundObjectKey = findObjectKey(objectKey, objectOffset);
+                if (foundObjectKey == null)
+                {
+                    LOG.debug("Stop checking xref offsets as at least one (" + objectKey
+                            + ") couldn't be dereferenced");
+                    return false;
+                }
+                else if (foundObjectKey != objectKey)
+                {
+                    // Generation was fixed - need to update map later, after iteration
+                    correctedKeys.put(objectKey, foundObjectKey);
+                }
             }
+        }
+        for (Entry<COSObjectKey, COSObjectKey> correctedKeyEntry : correctedKeys.entrySet())
+        {
+            xrefOffset.put(correctedKeyEntry.getValue(),
+                    xrefOffset.remove(correctedKeyEntry.getKey()));
         }
         return true;
     }
@@ -1490,21 +1504,22 @@ public class COSParser extends BaseParser
     }
 
     /**
-     * Check if the given object can be found at the given offset.
+     * Check if the given object can be found at the given offset. Returns the provided object key if everything is ok.
+     * If the generation number differs it will be fixed and a new object key is returned.
      * 
-     * @param objectKey the object we are looking for
+     * @param objectKey the key of object we are looking for
      * @param offset the offset where to look
-     * @return returns true if the given object can be dereferenced at the given offset
+     * @return returns the found/fixed object key
+     * 
      * @throws IOException if something went wrong
      */
-    private boolean checkObjectKey(COSObjectKey objectKey, long offset) throws IOException
+    private COSObjectKey findObjectKey(COSObjectKey objectKey, long offset) throws IOException
     {
         // there can't be any object at the very beginning of a pdf
         if (offset < MINIMUM_SEARCH_OFFSET)
         {
-            return false;
+            return null;
         }
-        boolean objectKeyFound = false;
         try 
         {
             source.seek(offset);
@@ -1512,27 +1527,24 @@ public class COSParser extends BaseParser
             if (objectKey.getNumber() == readObjectNumber())
             {
                 int genNumber = readGenerationNumber();
+                // finally try to read the object marker
+                readExpectedString(OBJ_MARKER, true);
                 if (genNumber == objectKey.getGeneration())
                 {
-                    // finally try to read the object marker
-                    readExpectedString(OBJ_MARKER, true);
-                    objectKeyFound = true;
+                    return objectKey;
                 }
                 else if (isLenient && genNumber > objectKey.getGeneration())
                 {
-                    // finally try to read the object marker
-                    readExpectedString(OBJ_MARKER, true);
-                    objectKeyFound = true;
-                    objectKey.fixGeneration(genNumber);
+                    return new COSObjectKey(objectKey.getNumber(), genNumber);
                 }
             }
         }
         catch (IOException exception)
         {
             // Swallow the exception, obviously there isn't any valid object number
+            LOG.debug("No valid object at given location " + offset + " - ignoring", exception);
         }
-        // return resulting value
-        return objectKeyFound;
+        return null;
     }
 
     /**
