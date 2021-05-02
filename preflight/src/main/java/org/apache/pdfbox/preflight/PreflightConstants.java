@@ -321,7 +321,7 @@ public interface PreflightConstants
      */
     String ERROR_SYNTAX_HEXA_STRING_TOO_LONG = "1.0.5";
     /**
-     * The number is out of Range ( ex : greatter than 2^31-1)
+     * The number is out of Range ( ex : greater than 2^31-1)
      */
     String ERROR_SYNTAX_NUMERIC_RANGE = "1.0.6";
     /**
