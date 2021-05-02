@@ -127,7 +127,7 @@ public abstract class CFFFont implements FontBoxFont
     /**
      * Returns the character strings dictionary. For expert users only.
      *
-     * @return the dictionary
+     * @return the list
      */
     public final List<byte[]> getCharStringBytes()
     {
@@ -169,9 +169,9 @@ public abstract class CFFFont implements FontBoxFont
     }
 
     /**
-     * Returns the list containing the global subroutine .
+     * Returns the list containing the global subroutine.
      * 
-     * @return the dictionary
+     * @return the list with global subroutine.
      */
     public List<byte[]> getGlobalSubrIndex()
     {
