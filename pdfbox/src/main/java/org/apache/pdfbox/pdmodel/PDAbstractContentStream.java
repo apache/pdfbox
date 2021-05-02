@@ -189,6 +189,10 @@ abstract class PDAbstractContentStream implements Closeable
                         "' without a PDDocument context; call subset() before saving");
             }
         }
+        else if (!font.isEmbedded() && !font.isStandard14())
+        {
+            LOG.warn("attempting to use font '" + font.getName() + "' that isn't embedded");
+        }
 
         // complex text layout
         if (font instanceof PDType0Font)
