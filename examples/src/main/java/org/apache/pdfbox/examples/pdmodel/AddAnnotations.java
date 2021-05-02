@@ -306,9 +306,11 @@ public final class AddAnnotations
             // Create the appearance streams.
             // Adobe Reader will always display annotations without appearance streams nicely,
             // but other applications may not.
+            // Pass the PDDocument so that the appearance handler can look into the default resources
+            // for non-standard fonts.
             for (PDAnnotation ann : annotations)
             {
-                ann.constructAppearances();
+                ann.constructAppearances(document);
             }
 
             showPageNo(document, page1, "Page 1");
