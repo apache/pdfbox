@@ -1154,19 +1154,33 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             return true;
         }
+        Map<COSObjectKey, COSObjectKey> correctedKeys = new HashMap<>();
         for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
         {
             COSObjectKey objectKey = objectEntry.getKey();
             Long objectOffset = objectEntry.getValue();
             // a negative offset number represents an object number itself
             // see type 2 entry in xref stream
-            if (objectOffset != null && objectOffset >= 0
-                    && !checkObjectKey(objectKey, objectOffset))
+            if (objectOffset != null && objectOffset >= 0)
             {
-                LOG.debug("Stop checking xref offsets as at least one (" + objectKey
-                        + ") couldn't be dereferenced");
-                return false;
+                COSObjectKey foundObjectKey = findObjectKey(objectKey, objectOffset);
+                if (foundObjectKey == null)
+                {
+                    LOG.debug("Stop checking xref offsets as at least one (" + objectKey
+                            + ") couldn't be dereferenced");
+                    return false;
+                }
+                else if (foundObjectKey != objectKey)
+                {
+                    // Generation was fixed - need to update map later, after iteration
+                    correctedKeys.put(objectKey, foundObjectKey);
+                }
             }
+        }
+        for (Entry<COSObjectKey, COSObjectKey> correctedKeyEntry : correctedKeys.entrySet())
+        {
+            xrefOffset.put(correctedKeyEntry.getValue(),
+                    xrefOffset.remove(correctedKeyEntry.getKey()));
         }
         return true;
     }
@@ -1204,14 +1218,13 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return returns true if the given object can be dereferenced at the given offset
      * @throws IOException if something went wrong
      */
-    private boolean checkObjectKey(COSObjectKey objectKey, long offset) throws IOException
+    private COSObjectKey findObjectKey(COSObjectKey objectKey, long offset) throws IOException
     {
         // there can't be any object at the very beginning of a pdf
         if (offset < MINIMUM_SEARCH_OFFSET)
         {
-            return false;
+            return null;
         }
-        boolean objectKeyFound = false;
         try 
         {
             source.seek(offset);
@@ -1219,18 +1232,15 @@ public class COSParser extends BaseParser implements ICOSParser
             if (objectKey.getNumber() == readObjectNumber())
             {
                 int genNumber = readGenerationNumber();
+                // finally try to read the object marker
+                readExpectedString(OBJ_MARKER, true);
                 if (genNumber == objectKey.getGeneration())
                 {
-                    // finally try to read the object marker
-                    readExpectedString(OBJ_MARKER, true);
-                    objectKeyFound = true;
+                    return objectKey;
                 }
                 else if (isLenient && genNumber > objectKey.getGeneration())
                 {
-                    // finally try to read the object marker
-                    readExpectedString(OBJ_MARKER, true);
-                    objectKeyFound = true;
-                    objectKey.fixGeneration(genNumber);
+                    return new COSObjectKey(objectKey.getNumber(), genNumber);
                 }
             }
         }
@@ -1239,8 +1249,7 @@ public class COSParser extends BaseParser implements ICOSParser
             // Swallow the exception, obviously there isn't any valid object number
             LOG.debug("No valid object at given location " + offset + " - ignoring", exception);
         }
-        // return resulting value
-        return objectKeyFound;
+        return null;
     }
 
     private Map<COSObjectKey, Long> getBFCOSObjectOffsets() throws IOException
