@@ -1518,7 +1518,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             }
             else
             {
-                sb.append(String.valueOf(borderThickness));
+                sb.append(borderThickness);
             }
         }
         if (this.isSpecified(PADDING))
@@ -1531,7 +1531,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             }
             else
             {
-                sb.append(String.valueOf(padding));
+                sb.append(padding);
             }
         }
         if (this.isSpecified(COLOR))
@@ -1541,27 +1541,27 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         if (this.isSpecified(SPACE_BEFORE))
         {
             sb.append(", SpaceBefore=")
-                .append(String.valueOf(this.getSpaceBefore()));
+                .append(this.getSpaceBefore());
         }
         if (this.isSpecified(SPACE_AFTER))
         {
             sb.append(", SpaceAfter=")
-                .append(String.valueOf(this.getSpaceAfter()));
+                .append(this.getSpaceAfter());
         }
         if (this.isSpecified(START_INDENT))
         {
             sb.append(", StartIndent=")
-                .append(String.valueOf(this.getStartIndent()));
+                .append(this.getStartIndent());
         }
         if (this.isSpecified(END_INDENT))
         {
             sb.append(", EndIndent=")
-                .append(String.valueOf(this.getEndIndent()));
+                .append(this.getEndIndent());
         }
         if (this.isSpecified(TEXT_INDENT))
         {
             sb.append(", TextIndent=")
-                .append(String.valueOf(this.getTextIndent()));
+                .append(this.getTextIndent());
         }
         if (this.isSpecified(TEXT_ALIGN))
         {
@@ -1573,29 +1573,11 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(WIDTH))
         {
-            Object width = this.getWidth();
-            sb.append(", Width=");
-            if (width instanceof Float)
-            {
-                sb.append(String.valueOf(width));
-            }
-            else
-            {
-                sb.append(width);
-            }
+            sb.append(", Width=").append(this.getWidth());
         }
         if (this.isSpecified(HEIGHT))
         {
-            Object height = this.getHeight();
-            sb.append(", Height=");
-            if (height instanceof Float)
-            {
-                sb.append(String.valueOf(height));
-            }
-            else
-            {
-                sb.append(height);
-            }
+            sb.append(", Height=").append(this.getHeight());
         }
         if (this.isSpecified(BLOCK_ALIGN))
         {
@@ -1628,26 +1610,16 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             }
             else
             {
-                sb.append(String.valueOf(tPadding));
+                sb.append(tPadding);
             }
         }
         if (this.isSpecified(BASELINE_SHIFT))
         {
-            sb.append(", BaselineShift=")
-                .append(String.valueOf(this.getBaselineShift()));
+            sb.append(", BaselineShift=").append(this.getBaselineShift());
         }
         if (this.isSpecified(LINE_HEIGHT))
         {
-            Object lineHeight = this.getLineHeight();
-            sb.append(", LineHeight=");
-            if (lineHeight instanceof Float)
-            {
-                sb.append(String.valueOf(lineHeight));
-            }
-            else
-            {
-                sb.append(lineHeight);
-            }
+            sb.append(", LineHeight=").append(this.getLineHeight());
         }
         if (this.isSpecified(TEXT_DECORATION_COLOR))
         {
@@ -1657,7 +1629,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         if (this.isSpecified(TEXT_DECORATION_THICKNESS))
         {
             sb.append(", TextDecorationThickness=")
-                .append(String.valueOf(this.getTextDecorationThickness()));
+                .append(this.getTextDecorationThickness());
         }
         if (this.isSpecified(TEXT_DECORATION_TYPE))
         {
@@ -1680,7 +1652,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         if (this.isSpecified(COLUMN_COUNT))
         {
             sb.append(", ColumnCount=")
-                .append(String.valueOf(this.getColumnCount()));
+                .append(this.getColumnCount());
         }
         if (this.isSpecified(COLUMN_GAP))
         {
@@ -1692,7 +1664,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             }
             else
             {
-                sb.append(String.valueOf(columnGap));
+                sb.append(columnGap);
             }
         }
         if (this.isSpecified(COLUMN_WIDTHS))
@@ -1705,7 +1677,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             }
             else
             {
-                sb.append(String.valueOf(columnWidth));
+                sb.append(columnWidth);
             }
         }
         return sb.toString();

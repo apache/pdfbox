@@ -242,11 +242,11 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
         }
         if (this.isSpecified(PDTableAttributeObject.ROW_SPAN))
         {
-            sb.append(", RowSpan=").append(String.valueOf(this.getRowSpan()));
+            sb.append(", RowSpan=").append(this.getRowSpan());
         }
         if (this.isSpecified(PDTableAttributeObject.COL_SPAN))
         {
-            sb.append(", ColSpan=").append(String.valueOf(this.getColSpan()));
+            sb.append(", ColSpan=").append(this.getColSpan());
         }
         if (this.isSpecified(PDTableAttributeObject.HEADERS))
         {

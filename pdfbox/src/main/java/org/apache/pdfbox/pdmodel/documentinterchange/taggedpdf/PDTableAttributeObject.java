@@ -196,11 +196,11 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
         StringBuilder sb = new StringBuilder().append(super.toString());
         if (this.isSpecified(ROW_SPAN))
         {
-            sb.append(", RowSpan=").append(String.valueOf(this.getRowSpan()));
+            sb.append(", RowSpan=").append(this.getRowSpan());
         }
         if (this.isSpecified(COL_SPAN))
         {
-            sb.append(", ColSpan=").append(String.valueOf(this.getColSpan()));
+            sb.append(", ColSpan=").append(this.getColSpan());
         }
         if (this.isSpecified(HEADERS))
         {
