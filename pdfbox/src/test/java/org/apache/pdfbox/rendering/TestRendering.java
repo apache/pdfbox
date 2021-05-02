@@ -64,20 +64,21 @@ class TestRendering
     }
 
     @ParameterizedTest(name = "{index} render running for {0}")
-	@MethodSource("dataSubset")
+    @MethodSource("dataSubset")
     void render(String fileName) throws IOException
     {
         File file = new File(INPUT_DIR, fileName);
-        PDDocument document = Loader.loadPDF(file);
-        PDFRenderer renderer = new PDFRenderer(document);
-        
-        // We don't actually do anything with the image for the same reason that
-        // TestPDFToImage is disabled - different JVMs produce different results
-        // but at least we can make sure that PDFBox did not throw any exceptions
-        // during the rendering process.
-
-        assertDoesNotThrow(() -> renderer.renderImage(0));
-        document.close();
+        try (PDDocument document = Loader.loadPDF(file))
+        {
+            PDFRenderer renderer = new PDFRenderer(document);
+            
+            // We don't actually do anything with the image for the same reason that
+            // TestPDFToImage is disabled - different JVMs produce different results
+            // but at least we can make sure that PDFBox did not throw any exceptions
+            // during the rendering process.
+            
+            assertDoesNotThrow(() -> renderer.renderImage(0));
+        }
     }
 
     /*
@@ -85,7 +86,7 @@ class TestRendering
      * Enable and visually inspect failing tests files.
      */
     // @ParameterizedTest(name = "{index} render and compare running for {0}")
-	@MethodSource("data")
+    @MethodSource("data")
     void renderAndCompare(String fileName) throws IOException
     {
 

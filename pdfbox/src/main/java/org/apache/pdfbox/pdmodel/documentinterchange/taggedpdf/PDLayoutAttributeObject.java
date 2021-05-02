@@ -1573,29 +1573,11 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(WIDTH))
         {
-            Object width = this.getWidth();
-            sb.append(", Width=");
-            if (width instanceof Float)
-            {
-                sb.append(width);
-            }
-            else
-            {
-                sb.append(width);
-            }
+            sb.append(", Width=").append(this.getWidth());
         }
         if (this.isSpecified(HEIGHT))
         {
-            Object height = this.getHeight();
-            sb.append(", Height=");
-            if (height instanceof Float)
-            {
-                sb.append(height);
-            }
-            else
-            {
-                sb.append(height);
-            }
+            sb.append(", Height=").append(this.getHeight());
         }
         if (this.isSpecified(BLOCK_ALIGN))
         {
@@ -1638,16 +1620,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
         }
         if (this.isSpecified(LINE_HEIGHT))
         {
-            Object lineHeight = this.getLineHeight();
-            sb.append(", LineHeight=");
-            if (lineHeight instanceof Float)
-            {
-                sb.append(lineHeight);
-            }
-            else
-            {
-                sb.append(lineHeight);
-            }
+            sb.append(", LineHeight=").append(this.getLineHeight());
         }
         if (this.isSpecified(TEXT_DECORATION_COLOR))
         {

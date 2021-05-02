@@ -250,7 +250,8 @@ final class Type1Parser
             }
             else
             {
-               throw new IOException("Expected INTEGER or REAL but got " + token.getKind());
+                throw new IOException("Expected INTEGER or REAL but got " + token +
+                        " at array position " + i);
             }
         }
         return numbers;

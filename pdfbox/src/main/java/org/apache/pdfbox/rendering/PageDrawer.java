@@ -653,19 +653,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // returns the stroking AWT Paint
     private Paint getStrokingPaint() throws IOException
     {
-        PDGraphicsState state = getGraphicsState();
+        PDGraphicsState graphicsState = getGraphicsState();
         return applySoftMaskToPaint(
-                getPaint(state.getStrokingColor()),
-                state.getSoftMask());
+                getPaint(graphicsState.getStrokingColor()), graphicsState.getSoftMask());
     }
 
     // returns the non-stroking AWT Paint
     private Paint getNonStrokingPaint() throws IOException
     {
-        PDGraphicsState state = getGraphicsState();
+        PDGraphicsState graphicsState = getGraphicsState();
         return applySoftMaskToPaint(
-                getPaint(state.getNonStrokingColor()),
-                state.getSoftMask());
+                getPaint(graphicsState.getNonStrokingColor()), graphicsState.getSoftMask());
     }
 
     // create a new stroke based on the current CTM and the current stroke

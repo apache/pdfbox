@@ -396,7 +396,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         {
             // read IV from stream
             int ivSize = (int) IOUtils.populateBuffer(data, iv);
-            if (ivSize == -1)
+            if (ivSize == 0)
             {
                 return false;
             }

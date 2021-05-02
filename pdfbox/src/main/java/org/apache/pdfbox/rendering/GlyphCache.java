@@ -90,7 +90,8 @@ final class GlyphCache
         catch (IOException e)
         {
             // todo: escalate this error?
-            LOG.error("Glyph rendering failed", e);
+            String fontName = ((PDFontLike) font).getName();
+            LOG.error("Glyph rendering failed for code " + code + " in font " + fontName, e);
             return new GeneralPath();
         }
     }

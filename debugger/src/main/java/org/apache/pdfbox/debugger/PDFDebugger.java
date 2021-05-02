@@ -151,7 +151,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private static final Set<COSName> OTHERCOLORSPACES = new HashSet<>(
             Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY, COSName.CALRGB, COSName.LAB));
 
-    private static final int SHORCUT_KEY_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    private int shortcutKeyMask;
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     private static final boolean IS_MAC_OS = OS_NAME.startsWith("mac os x");
 
@@ -238,6 +238,10 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     {
         try
         {
+            // can't be initialized earlier because it's an awt call which would fail when
+            // PDFBox.main runs on a headless system
+            shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             if (System.getProperty("apple.laf.useScreenMenuBar") == null)
             {
@@ -462,7 +466,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private JMenu createFileMenu()
     {
         JMenuItem openMenuItem = new JMenuItem("Open...");
-        openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, SHORCUT_KEY_MASK));
+        openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, shortcutKeyMask));
         openMenuItem.addActionListener(this::openMenuItemActionPerformed);
 
         JMenu fileMenu = new JMenu("File");
@@ -470,7 +474,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         fileMenu.setMnemonic('F');
 
         JMenuItem openUrlMenuItem = new JMenuItem("Open URL...");
-        openUrlMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, SHORCUT_KEY_MASK));
+        openUrlMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, shortcutKeyMask));
         openUrlMenuItem.addActionListener(evt ->
         {
             String urlString = JOptionPane.showInputDialog("Enter an URL");
@@ -490,7 +494,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         fileMenu.add(openUrlMenuItem);
         
         reopenMenuItem = new JMenuItem("Reopen");
-        reopenMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, SHORCUT_KEY_MASK));
+        reopenMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutKeyMask));
         reopenMenuItem.addActionListener(evt ->
         {
             try
@@ -527,7 +531,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         fileMenu.add(recentFilesMenu);
 
         printMenuItem = new JMenuItem("Print");
-        printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, SHORCUT_KEY_MASK));
+        printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutKeyMask));
         printMenuItem.setEnabled(false);
         printMenuItem.addActionListener(this::printMenuItemActionPerformed);
 
@@ -580,12 +584,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         
         findMenuItem = new JMenuItem("Find...");
         findMenuItem.setActionCommand("find");
-        findMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, SHORCUT_KEY_MASK));
+        findMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, shortcutKeyMask));
         
         findNextMenuItem = new JMenuItem("Find Next");
         if (IS_MAC_OS)
         {
-            findNextMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, SHORCUT_KEY_MASK));
+            findNextMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, shortcutKeyMask));
         }
         else
         {
@@ -596,7 +600,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         if (IS_MAC_OS)
         {
             findPreviousMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-                    KeyEvent.VK_G, SHORCUT_KEY_MASK | InputEvent.SHIFT_DOWN_MASK));
+                    KeyEvent.VK_G, shortcutKeyMask | InputEvent.SHIFT_DOWN_MASK));
         }
         else
         {
