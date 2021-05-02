@@ -1211,11 +1211,13 @@ public class COSParser extends BaseParser implements ICOSParser
     }
 
     /**
-     * Check if the given object can be found at the given offset.
+     * Check if the given object can be found at the given offset. Returns the provided object key if everything is ok.
+     * If the generation number differs it will be fixed and a new object key is returned.
      * 
-     * @param objectKey the object we are looking for
+     * @param objectKey the key of object we are looking for
      * @param offset the offset where to look
-     * @return returns true if the given object can be dereferenced at the given offset
+     * @return returns the found/fixed object key
+     * 
      * @throws IOException if something went wrong
      */
     private COSObjectKey findObjectKey(COSObjectKey objectKey, long offset) throws IOException
