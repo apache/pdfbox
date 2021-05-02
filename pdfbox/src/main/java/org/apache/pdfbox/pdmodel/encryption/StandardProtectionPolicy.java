@@ -45,8 +45,8 @@ public final class StandardProtectionPolicy extends ProtectionPolicy
      * Creates an new instance of the standard protection policy
      * in order to protect a PDF document with passwords.
      *
-     * @param ownerPassword The owner's password.
-     * @param userPassword The users's password.
+     * @param ownerPassword The owner password.
+     * @param userPassword The user password.
      * @param permissions The access permissions given to the user.
      */
     public StandardProtectionPolicy(String ownerPassword, String userPassword,
