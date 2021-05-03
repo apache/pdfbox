@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
@@ -45,10 +46,13 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.PageMode;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties.BaseState;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.text.PDFMarkedContentExtractor;
+import org.apache.pdfbox.text.TextPosition;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -206,7 +210,38 @@ class TestOptionalContentGroups
             assertTrue(nameSet.contains("background"));
             assertTrue(nameSet.contains("enabled"));
             assertTrue(nameSet.contains("disabled"));
+
+            PDFMarkedContentExtractor extractor = new PDFMarkedContentExtractor();
+            extractor.processPage(page);
+            List<PDMarkedContent> markedContents = extractor.getMarkedContents();
+            assertEquals("oc1", markedContents.get(0).getTag());
+            assertEquals("PDF 1.5: Optional Content Groups"
+                    + "You should see a green textline, but no red text line.",
+                    textPositionListToString(markedContents.get(0).getContents()));
+            assertEquals("oc2", markedContents.get(1).getTag());
+            assertEquals("This is from an enabled layer. If you see this, that's good.",
+                    textPositionListToString(markedContents.get(1).getContents()));
+            assertEquals("oc3", markedContents.get(2).getTag());
+            assertEquals("This is from a disabled layer. If you see this, that's NOT good!",
+                    textPositionListToString(markedContents.get(2).getContents()));
         }
+    }
+
+    /**
+     * Convert a list of TextPosition objects to a string.
+     * 
+     * @param contents list of TextPosition objects.
+     * @return 
+     */
+    private String textPositionListToString(List<Object> contents)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (Object o : contents)
+        {
+            TextPosition tp = (TextPosition) o;
+            sb.append(tp.getUnicode());
+        }
+        return sb.toString();
     }
 
     @Test
