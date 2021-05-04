@@ -47,7 +47,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 final class SampledImageReader
 {
     private static final Log LOG = LogFactory.getLog(SampledImageReader.class);
-    
+
     private SampledImageReader()
     {
     }
@@ -125,7 +125,7 @@ final class SampledImageReader
                     LOG.warn("premature EOF, image will be incomplete");
                     break;
                 }
-            }            
+            }
         }
 
         return masked;
@@ -280,11 +280,10 @@ final class SampledImageReader
         try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options)))
         {
             final int inputWidth = pdImage.getWidth();
-            final int scanWidth = pdImage.getWidth();
+            final int scanWidth = inputWidth;
             final int scanHeight = pdImage.getHeight();
 
             // create stream
-            final float sampleMax = (float) Math.pow(2, bitsPerComponent) - 1f;
             final boolean isIndexed = colorSpace instanceof PDIndexed;
 
             // calculate row padding
@@ -297,16 +296,90 @@ final class SampledImageReader
             // read stream
             final boolean isShort = raster.getDataBuffer().getDataType() == DataBuffer.TYPE_USHORT;
             assert !isIndexed || !isShort;
-            final byte[] srcColorValuesBytes = isShort ? null : new byte[numComponents];
-            final short[] srcColorValuesShort = isShort ? new short[numComponents] : null;
-            for (int y = 0; y < scanHeight; y++)
-            {
-                for (int x = 0; x < scanWidth; x++)
-                {
-                    for (int c = 0; c < numComponents; c++)
-                    {
-                        int value = (int) iis.readBits(bitsPerComponent);
 
+            if (isShort)
+                readRasterShorts(
+                        raster, numComponents, bitsPerComponent, decode,
+                        iis, scanWidth, scanHeight, isIndexed, padding);
+            else
+                readRasterBytes(
+                        raster, numComponents, bitsPerComponent, decode,
+                        iis, scanWidth, scanHeight, isIndexed, padding);
+        }
+    }
+
+    private static void readRasterBytes(
+            WritableRaster raster, int numComponents, int bitsPerComponent,
+            float[] decode, ImageInputStream iis, int scanWidth, int scanHeight,
+            boolean isIndexed, int padding)
+            throws IOException
+    {
+        final byte[] srcColorValuesBytes = new byte[numComponents];
+        final float sampleMax = (float) Math.pow(2, bitsPerComponent) - 1f;
+
+        for (int y = 0; y < scanHeight; y++)
+        {
+            for (int x = 0; x < scanWidth; x++)
+            {
+                for (int c = 0; c < numComponents; c++)
+                {
+                    int value = (int) iis.readBits(bitsPerComponent);
+
+                    // decode array
+                    final float dMin = decode[c * 2];
+                    final float dMax = decode[(c * 2) + 1];
+
+                    // interpolate to domain
+                    float output = dMin + (value * ((dMax - dMin) / sampleMax));
+
+                    if (isIndexed)
+                    {
+                        // indexed color spaces get the raw value, because the TYPE_BYTE
+                        // below cannot be reversed by the color space without it having
+                        // knowledge of the number of bits per component
+                        srcColorValuesBytes[c] = (byte) Math.round(output);
+                    }
+                    else
+                    {
+                        // interpolate to TYPE_BYTE
+                        int outputByte = Math
+                                .round(((output - Math.min(dMin, dMax)) / Math.abs(dMax - dMin)) * 255f);
+
+                        srcColorValuesBytes[c] = (byte) outputByte;
+                    }
+                }
+
+                raster.setDataElements(x, y, srcColorValuesBytes);
+            }
+
+            // rows are padded to the nearest byte
+            iis.readBits(padding);
+        }
+    }
+
+    private static void readRasterShorts(
+            WritableRaster raster, int numComponents, int bitsPerComponent,
+            float[] decode, ImageInputStream iis, int scanWidth, int scanHeight,
+            boolean isIndexed, int padding)
+            throws IOException
+    {
+        final short[] srcColorValuesShort = new short[numComponents];
+        final float sampleMax = (float) Math.pow(2, bitsPerComponent) - 1f;
+
+        for (int y = 0; y < scanHeight; y++)
+        {
+            for (int x = 0; x < scanWidth; x++)
+            {
+                for (int c = 0; c < numComponents; c++)
+                {
+                    int value = (int) iis.readBits(bitsPerComponent);
+
+                    if (isIndexed)
+                    {
+                        // do nothing
+                    }
+                    else
+                    {
                         // decode array
                         final float dMin = decode[c * 2];
                         final float dMax = decode[(c * 2) + 1];
@@ -314,47 +387,19 @@ final class SampledImageReader
                         // interpolate to domain
                         float output = dMin + (value * ((dMax - dMin) / sampleMax));
 
-                        if (isIndexed)
-                        {
-                            // indexed color spaces get the raw value, because the TYPE_BYTE
-                            // below cannot be reversed by the color space without it having
-                            // knowledge of the number of bits per component
-                            srcColorValuesBytes[c] = (byte) Math.round(output);
-                        }
-                        else
-                        {
-                            if (isShort)
-                            {
-                                // interpolate to TYPE_SHORT
-                                int outputShort = Math
-                                        .round(((output - Math.min(dMin, dMax)) / Math.abs(dMax - dMin)) * 65535f);
+                        // interpolate to TYPE_SHORT
+                        int outputShort = Math
+                                .round(((output - Math.min(dMin, dMax)) / Math.abs(dMax - dMin)) * 65535f);
 
-                                srcColorValuesShort[c] = (short) outputShort;
-                            }
-                            else
-                            {
-                                // interpolate to TYPE_BYTE
-                                int outputByte = Math
-                                        .round(((output - Math.min(dMin, dMax)) / Math.abs(dMax - dMin)) * 255f);
-
-                                srcColorValuesBytes[c] = (byte) outputByte;
-                            }
-                        }
-                    }
-
-                    if (isShort)
-                    {
-                        raster.setDataElements(x, y, srcColorValuesShort);
-                    }
-                    else
-                    {
-                        raster.setDataElements(x, y, srcColorValuesBytes);
+                        srcColorValuesShort[c] = (short) outputShort;
                     }
                 }
 
-                // rows are padded to the nearest byte
-                iis.readBits(padding);
+                raster.setDataElements(x, y, srcColorValuesShort);
             }
+
+            // rows are padded to the nearest byte
+            iis.readBits(padding);
         }
     }
 
@@ -643,7 +688,7 @@ final class SampledImageReader
                         if (colorKeyRanges != null)
                         {
                             isMasked &= value >= colorKeyRanges[c * 2] &&
-                                        value <= colorKeyRanges[c * 2 + 1];
+                                    value <= colorKeyRanges[c * 2 + 1];
                         }
 
                         // decode array
