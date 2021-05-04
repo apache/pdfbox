@@ -131,7 +131,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 {
                     try
                     {
-                        tmpValues = type1ShadingType.evalFunction(tmpValues);
+                        tmpValues = type1ShadingType.evalFunction(values);
                     }
                     catch (IOException e)
                     {
