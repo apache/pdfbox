@@ -158,6 +158,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 {
                     // assume that if encoding is identity, then the reverse is also true
                     cmap = CMapManager.getPredefinedCMap(COSName.IDENTITY_H.getName());
+                    LOG.warn("Using predefined identity CMap instead");
                 }
             }
         }
