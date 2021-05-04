@@ -81,81 +81,119 @@ class PDFCloneUtility
           {
               return null;
           }
-          COSBase retval = clonedVersion.get(base);
-          if( retval != null )
+
+          COSBase retval;
+          Stack<Object> stack = new Stack<>();
+          boolean saveClonned;
+
+          do
           {
-              //we are done, it has already been converted.
-              return retval;
-          }
-          if (base instanceof COSBase && clonedValues.contains(base))
-          {
-              // Don't clone a clone
-              return (COSBase) base;
-          }
-          if (base instanceof List)
-          {
-              COSArray array = new COSArray();
-              List<?> list = (List<?>) base;
-              for (Object obj : list)
+              if (base != null)
               {
-                  array.add(cloneForNewDocument(obj));
+                  retval = clonedVersion.get(base);
+                  if (retval != null)
+                  {
+                      //we are done, it has already been converted.
+                  }
+                  else
+                  {
+                      saveClonned = true;
+
+                      if (base instanceof COSBase && clonedValues.contains(base))
+                      {
+                          // Don't clone a clone
+                          retval = (COSBase) base;
+                          saveClonned = false;
+                      }
+                      else
+                      if (base instanceof List)
+                      {
+                          COSArray array = new COSArray();
+                          List<?> list = (List<?>) base;
+                          for (Object obj : list)
+                          {
+                              array.add(cloneForNewDocument(obj));
+                          }
+                          retval = array;
+                      }
+                      else if (base instanceof COSObjectable && !(base instanceof COSBase))
+                      {
+                          stack.push(((COSObjectable) base).getCOSObject());
+                          saveClonned = false;
+                      }
+                      else if (base instanceof COSObject)
+                      {
+                          COSObject object = (COSObject) base;
+                          stack.push(object.getObject());
+                          saveClonned = false;
+                      }
+                      else if (base instanceof COSArray)
+                      {
+                          COSArray newArray = new COSArray();
+                          COSArray array = (COSArray) base;
+                          for (int i = 0; i < array.size(); i++)
+                          {
+                              newArray.add(cloneForNewDocument(array.get(i)));
+                          }
+                          retval = newArray;
+                      }
+                      else if (base instanceof COSStream)
+                      {
+                          COSStream originalStream = (COSStream) base;
+                          COSStream stream = destination.getDocument().createCOSStream();
+                          try (OutputStream output = stream.createRawOutputStream();
+                               InputStream input = originalStream.createRawInputStream())
+                          {
+                              IOUtils.copy(input, output);
+                          }
+                          clonedVersion.put(base, stream);
+                          for (Map.Entry<COSName, COSBase> entry : originalStream.entrySet())
+                          {
+                              stream.setItem(entry.getKey(), cloneForNewDocument(entry.getValue()));
+                          }
+                          retval = stream;
+                      }
+                      else if (base instanceof COSDictionary)
+                      {
+                          COSDictionary dic = (COSDictionary) base;
+                          COSDictionary retvalDic = new COSDictionary();
+                          retval = retvalDic;
+                          clonedVersion.put(base, retval);
+                          for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
+                          {
+                              retvalDic.setItem(
+                                      entry.getKey(),
+                                      cloneForNewDocument(entry.getValue()));
+                          }
+                      }
+                      else
+                      {
+                          retval = (COSBase) base;
+                      }
+
+                      if (saveClonned)
+                      {
+                          clonedVersion.put(base, retval);
+                          clonedValues.add(retval);
+                      }
+                  }
               }
-              retval = array;
-          }
-          else if( base instanceof COSObjectable && !(base instanceof COSBase) )
-          {
-              retval = cloneForNewDocument( ((COSObjectable)base).getCOSObject() );
-          }
-          else if( base instanceof COSObject )
-          {
-              COSObject object = (COSObject)base;
-              retval = cloneForNewDocument( object.getObject() );
-          }
-          else if( base instanceof COSArray )
-          {
-              COSArray newArray = new COSArray();
-              COSArray array = (COSArray)base;
-              for( int i=0; i<array.size(); i++ )
+              else
               {
-                  newArray.add( cloneForNewDocument( array.get( i ) ) );
+                  retval = null;
               }
-              retval = newArray;
-          }
-          else if( base instanceof COSStream )
-          {
-              COSStream originalStream = (COSStream)base;
-              COSStream stream = destination.getDocument().createCOSStream();
-              try (OutputStream output = stream.createRawOutputStream();
-                   InputStream input = originalStream.createRawInputStream())
+
+              if (stack.isEmpty())
               {
-                  IOUtils.copy(input, output);
+                  break;
               }
-              clonedVersion.put( base, stream );
-              for( Map.Entry<COSName, COSBase> entry :  originalStream.entrySet() )
+              else
               {
-                  stream.setItem(entry.getKey(), cloneForNewDocument(entry.getValue()));
-              }
-              retval = stream;
-          }
-          else if( base instanceof COSDictionary )
-          {
-              COSDictionary dic = (COSDictionary)base;
-              COSDictionary retvalDic = new COSDictionary();
-              retval = retvalDic;
-              clonedVersion.put( base, retval );
-              for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
-              {
-                  retvalDic.setItem(
-                          entry.getKey(),
-                          cloneForNewDocument(entry.getValue()));
+                  base = stack.pop();
               }
           }
-          else
-          {
-              retval = (COSBase)base;
-          }
-          clonedVersion.put( base, retval );
-          clonedValues.add(retval);
+          while(true);
+
           return retval;
       }
 
