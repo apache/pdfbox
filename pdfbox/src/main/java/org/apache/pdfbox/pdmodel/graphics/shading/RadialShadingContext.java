@@ -182,13 +182,11 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         float inputValue = -1;
         boolean useBackground;
         int[] data = new int[w * h * 4];
-        float[] values = new float[2];
         for (int j = 0; j < h; j++)
         {
             for (int i = 0; i < w; i++)
             {
-                values[0] = x + i;
-                values[1] = y + j;
+                float[] values = new float[] { x + i, y + j };
                 rat.transform(values, 0, values, 0, 1);
                 useBackground = false;
                 float[] inputValues = calculateInputValues(values[0], values[1]);
