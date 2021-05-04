@@ -101,13 +101,15 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
     {
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         int[] data = new int[w * h * 4];
+        float[] values = new float[2];
         for (int j = 0; j < h; j++)
         {
             for (int i = 0; i < w; i++)
             {
                 int index = (j * w + i) * 4;
                 boolean useBackground = false;
-                float[] values = new float[] { x + i, y + j };
+                values[0] = x + i;
+                values[1] = y + j;
                 rat.transform(values, 0, values, 0, 1);
                 if (values[0] < domain[0] || values[0] > domain[1] ||
                     values[1] < domain[2] || values[1] > domain[3])
@@ -120,19 +122,21 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 }
 
                 // evaluate function
+                float[] tmpValues; // "values" can't be reused due to different length
                 if (useBackground)
                 {
-                    values = getBackground();
+                    tmpValues = getBackground();
                 }
                 else
                 {
                     try
                     {
-                        values = type1ShadingType.evalFunction(values);
+                        tmpValues = type1ShadingType.evalFunction(tmpValues);
                     }
                     catch (IOException e)
                     {
                         LOG.error("error while processing a function", e);
+                        continue;
                     }
                 }
 
@@ -142,16 +146,17 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 {
                     try
                     {
-                        values = shadingColorSpace.toRGB(values);
+                        tmpValues = shadingColorSpace.toRGB(tmpValues);
                     }
                     catch (IOException e)
                     {
                         LOG.error("error processing color space", e);
+                        continue;
                     }
                 }
-                data[index] = (int) (values[0] * 255);
-                data[index + 1] = (int) (values[1] * 255);
-                data[index + 2] = (int) (values[2] * 255);
+                data[index] = (int) (tmpValues[0] * 255);
+                data[index + 1] = (int) (tmpValues[1] * 255);
+                data[index + 2] = (int) (tmpValues[2] * 255);
                 data[index + 3] = 255;
             }
         }
