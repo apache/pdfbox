@@ -1445,6 +1445,7 @@ public class COSParser extends BaseParser implements ICOSParser
         source.seek(MINIMUM_SEARCH_OFFSET);
         // search for trailer marker
         long trailerOffset = findString(TRAILER_MARKER);
+        StringBuilder trailerKeys = new StringBuilder();
         while (trailerOffset != -1)
         {
             try
@@ -1453,7 +1454,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 boolean infoFound = false;
                 skipSpaces();
                 COSDictionary trailerDict = parseCOSDictionary();
-                StringBuilder trailerKeys = new StringBuilder();
+                trailerKeys.setLength(0);
                 COSObject rootObj = trailerDict.getCOSObject(COSName.ROOT);
                 if (rootObj != null)
                 {
@@ -1475,6 +1476,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 if (rootFound && infoFound)
                 {
                     trailerDicts.put(trailerKeys.toString(), trailerDict);
+                    trailerKeys.setLength(0);
                 }
             }
             catch (IOException exception)
