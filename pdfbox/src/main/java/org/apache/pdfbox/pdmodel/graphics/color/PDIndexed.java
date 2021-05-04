@@ -139,7 +139,7 @@ public final class PDIndexed extends PDSpecialColorSpace
         }
 
         int[] base = new int[numBaseComponents];
-        for (int i = 0, n = actualMaxIndex; i <= n; i++)
+        for (int i = 0, n = actualMaxIndex + 1; i < n; i++)
         {
             for (int c = 0; c < numBaseComponents; c++)
             {
@@ -156,7 +156,7 @@ public final class PDIndexed extends PDSpecialColorSpace
         rgbColorTable = new int[actualMaxIndex + 1][3];
         int[] nil = null;
 
-        for (int i = 0, n = actualMaxIndex; i <= n; i++)
+        for (int i = 0, n = actualMaxIndex + 1; i < n; i++)
         {
             rgbColorTable[i] = rgbRaster.getPixel(i, 0, nil);
         }
