@@ -800,7 +800,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * Not usually needed except if resources need to be reclaimed in a long running process.
      */
-    public static synchronized void clearResources()
+    public static void clearResources()
     {
         // Clear them all
         nameMap.clear();

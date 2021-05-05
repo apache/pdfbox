@@ -40,7 +40,7 @@ import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSe
  */
 public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
 {
-    private final boolean suppressDuplicateOverlappingText = true;
+    private boolean suppressDuplicateOverlappingText = true;
     private final List<PDMarkedContent> markedContents = new ArrayList<>();
     private final Deque<PDMarkedContent> currentMarkedContents = new ArrayDeque<>();
     private final Map<String, List<TextPosition>> characterListMapping = new HashMap<>();
@@ -66,6 +66,27 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
         addOperator(new DrawObject());
         // todo: DP - Marked Content Point
         // todo: MP - Marked Content Point with Properties
+    }
+
+    /**
+     * @return the suppressDuplicateOverlappingText setting.
+     */
+    public boolean isSuppressDuplicateOverlappingText()
+    {
+        return suppressDuplicateOverlappingText;
+    }
+
+    /**
+     * By default the class will attempt to remove text that overlaps each other. Word paints the
+     * same character several times in order to make it look bold. By setting this to false all text
+     * will be extracted, which means that certain sections will be duplicated, but better
+     * performance will be noticed.
+     *
+     * @param suppressDuplicateOverlappingText The suppressDuplicateOverlappingText setting to set.
+     */
+    public void setSuppressDuplicateOverlappingText(boolean suppressDuplicateOverlappingText)
+    {
+        this.suppressDuplicateOverlappingText = suppressDuplicateOverlappingText;
     }
 
     /**
