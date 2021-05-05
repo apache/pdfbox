@@ -70,10 +70,12 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
         BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         WritableRaster rgbRaster = rgbImage.getRaster();
 
-        float minA = getARange().getMin();
-        float maxA = getARange().getMax();
-        float minB = getBRange().getMin();
-        float maxB = getBRange().getMax();
+        PDRange aRange = getARange();
+        PDRange bRange = getBRange();
+        float minA = aRange.getMin();
+        float maxA = aRange.getMax();
+        float minB = bRange.getMin();
+        float maxB = bRange.getMax();
 
         // always three components: ABC
         float[] abc = new float[3];
