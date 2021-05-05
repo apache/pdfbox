@@ -117,15 +117,8 @@ public class DateConverter
                 int timeZonePos = 12;
                 if (date.length() - 12 > 5 || (date.length() - 12 == 3 && date.endsWith("Z")))
                 {
-                    if (date.length() >= 14)
-                    {
-                        second = Integer.parseInt(date.substring(12, 14));
-                    }
+                    second = Integer.parseInt(date.substring(12, 14));
                     timeZonePos = 14;
-                }
-                else
-                {
-                    second = 0;
                 }
 
                 if (date.length() >= (timeZonePos + 1))
