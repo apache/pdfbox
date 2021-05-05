@@ -41,7 +41,7 @@ class SimpleFont extends FontPane
 
     /**
      * Constructor.
-     * @param font PDSimpleFont instance, but not a type 3 font (must also be a PDVectorFont).
+     * @param font PDSimpleFont instance, but not a type 3 font.
      * @throws IOException If fails to parse unicode characters.
      */
     SimpleFont(PDSimpleFont font) throws IOException
@@ -74,8 +74,16 @@ class SimpleFont extends FontPane
                 glyphs[index][2] = font.toUnicode(index);
                 try
                 {
-                    // using names didn't work with the file from PDFBOX-3445
-                    glyphs[index][3] = ((PDVectorFont) font).getPath(index);
+                    if (font instanceof PDVectorFont)
+                    {
+                        // using names didn't work with the file from PDFBOX-3445
+                        glyphs[index][3] = ((PDVectorFont) font).getPath(index);
+                    }
+                    else
+                    {
+                        // type 1 font isn't a vector font in 2.0
+                        glyphs[index][3] = font.getPath(glyphName);
+                    }
                 }
                 catch (IOException ex)
                 {
