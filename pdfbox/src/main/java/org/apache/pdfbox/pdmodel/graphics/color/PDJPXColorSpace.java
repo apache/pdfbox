@@ -59,8 +59,7 @@ public final class PDJPXColorSpace extends PDColorSpace
     {
         int n = getNumberOfComponents();
         float[] decode = new float[n * 2];
-        int j = 0;
-        for (int i = 0; i < n; i += 2, ++j)
+        for (int i = 0, j = 0; i < decode.length; i += 2, ++j)
         {
             decode[i] = awtColorSpace.getMinValue(j);
             decode[i + 1] = awtColorSpace.getMaxValue(j);
