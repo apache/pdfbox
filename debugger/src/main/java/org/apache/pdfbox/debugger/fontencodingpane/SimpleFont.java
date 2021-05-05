@@ -97,7 +97,7 @@ class SimpleFont extends FontPane
 
     private String getEncodingName(PDSimpleFont font)
     {
-        return font.getEncoding().getClass().getSimpleName();
+        return font.getEncoding().getClass().getSimpleName() + " / " +  font.getEncoding().getEncodingName();
     }
 
     @Override

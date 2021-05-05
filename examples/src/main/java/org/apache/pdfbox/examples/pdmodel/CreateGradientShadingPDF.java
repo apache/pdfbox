@@ -15,14 +15,11 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.imageio.ImageIO;
+
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
@@ -39,7 +36,6 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType4;
-import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
  * This example creates a PDF with type 2 (axial) and type 3 (radial) shadings with a type 2
@@ -191,12 +187,6 @@ public class CreateGradientShadingPDF
             }
             
             document.save(file);
-        }
-        try (PDDocument document = Loader.loadPDF(new File(file)))
-        {
-            // render the PDF and save it into a PNG file
-            BufferedImage bim = new PDFRenderer(document).renderImageWithDPI(0, 100);
-            ImageIO.write(bim, "png", new File(file + ".png"));
         }
     }
 

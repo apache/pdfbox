@@ -122,19 +122,21 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 }
 
                 // evaluate function
+                float[] tmpValues; // "values" can't be reused due to different length
                 if (useBackground)
                 {
-                    values = getBackground();
+                    tmpValues = getBackground();
                 }
                 else
                 {
                     try
                     {
-                        values = type1ShadingType.evalFunction(values);
+                        tmpValues = type1ShadingType.evalFunction(values);
                     }
                     catch (IOException e)
                     {
                         LOG.error("error while processing a function", e);
+                        continue;
                     }
                 }
 
@@ -144,16 +146,17 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 {
                     try
                     {
-                        values = shadingColorSpace.toRGB(values);
+                        tmpValues = shadingColorSpace.toRGB(tmpValues);
                     }
                     catch (IOException e)
                     {
                         LOG.error("error processing color space", e);
+                        continue;
                     }
                 }
-                data[index] = (int) (values[0] * 255);
-                data[index + 1] = (int) (values[1] * 255);
-                data[index + 2] = (int) (values[2] * 255);
+                data[index] = (int) (tmpValues[0] * 255);
+                data[index + 1] = (int) (tmpValues[1] * 255);
+                data[index + 2] = (int) (tmpValues[2] * 255);
                 data[index + 3] = 255;
             }
         }
