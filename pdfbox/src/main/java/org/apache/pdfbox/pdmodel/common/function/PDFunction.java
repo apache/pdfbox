@@ -102,12 +102,13 @@ public abstract class PDFunction implements COSObjectable
     {
         return functionStream;
     }
+
     /**
      * Create the correct PD Model function based on the COS base function.
      *
      * @param function The COS function dictionary.
      *
-     * @return The PDModel Function object.
+     * @return The PDModel Function object, never null.
      *
      * @throws IOException If we are unable to create the PDFunction object.
      */
