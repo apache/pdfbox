@@ -349,11 +349,10 @@ public final class JPEGFactory
 
     private static ImageWriter getJPEGImageWriter() throws IOException
     {
-        ImageWriter writer;
         Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("jpeg");
         while (writers.hasNext())
         {
-            writer = writers.next();
+            ImageWriter writer = writers.next();
             if (writer == null)
             {
                 continue;
@@ -363,10 +362,7 @@ public final class JPEGFactory
             {
                 return writer;
             }
-            else
-            {
-                writer.dispose();
-            }
+            writer.dispose()
         }
 
         throw new IOException("No ImageWriter found for JPEG format");
