@@ -198,7 +198,6 @@ final class SampledImageReader
         final int width = (int) Math.ceil(clipped.getWidth() / subsampling);
         final int height = (int) Math.ceil(clipped.getHeight() / subsampling);
         final int bitsPerComponent = pdImage.getBitsPerComponent();
-        final float[] decode = getDecodeArray(pdImage);
 
         if (width <= 0 || height <= 0 || pdImage.getWidth() <= 0 || pdImage.getHeight() <= 0)
         {
@@ -220,7 +219,8 @@ final class SampledImageReader
             WritableRaster raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, width, height,
                     numComponents, new Point(0, 0));
             final float[] defaultDecode = pdImage.getColorSpace().getDefaultDecode(8);
-            if (bitsPerComponent == 8 && Arrays.equals(decode, defaultDecode) && colorKey == null)
+            final float[] decode = getDecodeArray(pdImage);
+            if (bitsPerComponent == 8 && colorKey == null && Arrays.equals(decode, defaultDecode))
             {
                 // convert image, faster path for non-decoded, non-colormasked 8-bit images
                 return from8bit(pdImage, raster, clipped, subsampling, width, height);
