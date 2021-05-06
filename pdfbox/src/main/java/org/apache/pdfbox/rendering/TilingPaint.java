@@ -205,12 +205,14 @@ class TilingPaint implements Paint
         float xStep = pattern.getXStep();
         if (xStep == 0)
         {
+            LOG.warn("/XStep is 0, using pattern /BBox width");
             xStep = pattern.getBBox().getWidth();
         }
 
         float yStep = pattern.getYStep();
         if (yStep == 0)
         {
+            LOG.warn("/YStep is 0, using pattern /BBox height");
             yStep = pattern.getBBox().getHeight();
         }
 
