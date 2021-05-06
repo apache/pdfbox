@@ -157,7 +157,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     public float[] getDefaultDecode(int bitsPerComponent)
     {
         PDRange a = getARange();
-        PDRange b = getARange();
+        PDRange b = getBRange();
         return new float[] { 0, 100, a.getMin(), a.getMax(), b.getMin(), b.getMax() };
     }
 
