@@ -18,8 +18,10 @@ package org.apache.pdfbox.util;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
