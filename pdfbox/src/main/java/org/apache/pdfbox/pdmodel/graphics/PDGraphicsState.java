@@ -16,8 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.graphics;
 
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Composite;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.GeneralPath;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
