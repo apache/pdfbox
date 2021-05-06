@@ -326,11 +326,6 @@ public class CatalogValidationProcess extends AbstractProcess
             {
         try
         {
-            if (destOutputProfile == null)
-            {
-                return;
-            }
-
             // destOutputProfile should be an instance of COSObject because of this is a object reference
             if (destOutputProfile instanceof COSObject)
             {
@@ -347,6 +342,12 @@ public class CatalogValidationProcess extends AbstractProcess
                     return;
                 }
                 // else the profile will be kept in the tmpDestOutputProfile if it is valid
+            }
+            else
+            {
+                addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+                        "OutputIntent object should be a reference: " + destOutputProfile));
+                return;
             }
 
             // keep reference to avoid multiple profile definition
