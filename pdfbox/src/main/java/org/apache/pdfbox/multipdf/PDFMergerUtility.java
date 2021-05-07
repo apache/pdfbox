@@ -425,7 +425,7 @@ public class PDFMergerUtility
     private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
         PDDocument destination = null;
-        if (sources != null && sources.size() > 0)
+        if (sources.size() > 0)
         {
             // Make sure that:
             // - first Exception is kept
@@ -926,9 +926,13 @@ public class PDFMergerUtility
 
     private void mergeLanguage(PDDocumentCatalog destCatalog, PDDocumentCatalog srcCatalog)
     {
-        if (destCatalog.getLanguage() == null && srcCatalog.getLanguage() != null)
+        if (destCatalog.getLanguage() == null)
         {
-            destCatalog.setLanguage(srcCatalog.getLanguage());
+            String srcLanguage = srcCatalog.getLanguage();
+            if (srcLanguage != null)
+            {
+                destCatalog.setLanguage(srcLanguage);
+            }
         }
     }
 
@@ -996,11 +1000,11 @@ public class PDFMergerUtility
             PDStructureTreeRoot destStructTree) throws IOException
     {
         PDNameTreeNode<PDStructureElement> srcIDTree = srcStructTree.getIDTree();
-        PDNameTreeNode<PDStructureElement> destIDTree = destStructTree.getIDTree();
         if (srcIDTree == null)
         {
             return;
         }
+        PDNameTreeNode<PDStructureElement> destIDTree = destStructTree.getIDTree();
         if (destIDTree == null)
         {
             destIDTree = new PDStructureElementNameTreeNode();
