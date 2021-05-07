@@ -192,7 +192,11 @@ public class CatalogValidationProcess extends AbstractProcess
     {
         COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
         Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<>();
-        for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i)
+        if (outputIntents == null)
+        {
+            return;
+        }
+        for (int i = 0; i < outputIntents.size(); ++i)
         {
             COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
 

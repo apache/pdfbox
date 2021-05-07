@@ -123,7 +123,11 @@ public class ICCProfileWrapper
         PDDocumentCatalog catalog = document.getDocumentCatalog();
         COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
 
-        for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i)
+        if (outputIntents == null)
+        {
+            return null;
+        }
+        for (int i = 0; i < outputIntents.size(); ++i)
         {
             COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
             COSBase destOutputProfile = outputIntentDict
