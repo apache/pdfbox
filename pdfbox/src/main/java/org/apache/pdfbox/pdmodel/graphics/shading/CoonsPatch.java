@@ -34,7 +34,7 @@ class CoonsPatch extends Patch
      */
     protected CoonsPatch(Point2D[] points, float[][] color)
     {
-        super(points, color);
+        super(color);
         controlPoints = reshapeControlPoints(points);
         level = calcLevel();
         listOfTriangles = getTriangles();
