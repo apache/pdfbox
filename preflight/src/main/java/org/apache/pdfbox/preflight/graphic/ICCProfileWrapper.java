@@ -127,7 +127,11 @@ public class ICCProfileWrapper
         COSBase cBase = catalog.getCOSObject().getItem(COSName.getPDFName(DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS));
         COSArray outputIntents = COSUtils.getAsArray(cBase, document.getDocument());
 
-        for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i)
+        if (outputIntents == null)
+        {
+            return null;
+        }
+        for (int i = 0; i < outputIntents.size(); ++i)
         {
             COSDictionary outputIntentDict = COSUtils.getAsDictionary(outputIntents.get(i), document.getDocument());
             COSBase destOutputProfile = outputIntentDict.getItem(OUTPUT_INTENT_DICTIONARY_KEY_DEST_OUTPUT_PROFILE);
