@@ -51,7 +51,6 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
     /**
      * Create a patch list from a data stream, the returned list contains all the patches contained in the data stream.
      *
-     * @param shadingType the shading type
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param controlPoints number of control points, 12 for type 6 shading and 16 for type 7 shading
@@ -76,7 +75,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
         }
         int bitsPerFlag = getBitsPerFlag();
         PDRange[] colRange = new PDRange[getNumberOfColorComponents()];
-        for (int i = 0; i < getNumberOfColorComponents(); ++i)
+        for (int i = 0; i < colRange.length; ++i)
         {
             colRange[i] = getDecodeForParameter(2 + i);
             if (colRange[i] == null)
@@ -93,7 +92,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
                 cosStream.createInputStream()))
         {
             Point2D[] implicitEdge = new Point2D[4];
-            float[][] implicitCornerColor = new float[2][getNumberOfColorComponents()];
+            float[][] implicitCornerColor = new float[2][colRange.length];
             byte flag = 0;
 
             try
@@ -173,7 +172,8 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
             PDRange rangeY, PDRange[] colRange, Matrix matrix, AffineTransform xform,
             int controlPoints) throws IOException
     {
-        float[][] color = new float[4][getNumberOfColorComponents()];
+        int numberOfColorComponents = getNumberOfColorComponents();
+        float[][] color = new float[4][numberOfColorComponents];
         Point2D[] points = new Point2D[controlPoints];
         int pStart = 4;
         int cStart = 2;
@@ -189,7 +189,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
             points[2] = implicitEdge[2];
             points[3] = implicitEdge[3];
 
-            for (int i = 0; i < getNumberOfColorComponents(); i++)
+            for (int i = 0; i < numberOfColorComponents; i++)
             {
                 color[0][i] = implicitCornerColor[0][i];
                 color[1][i] = implicitCornerColor[1][i];
@@ -210,7 +210,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
             }
             for (int i = cStart; i < 4; i++)
             {
-                for (int j = 0; j < getNumberOfColorComponents(); j++)
+                for (int j = 0; j < numberOfColorComponents; j++)
                 {
                     long c = input.readBits(getBitsPerComponent());
                     color[i][j] = interpolate(c, maxSrcColor, colRange[j].getMin(),
