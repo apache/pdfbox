@@ -336,15 +336,16 @@ public class PDDocument implements Closeable
 
         // Create SignatureForm for signature and append it to the document
 
+        PDPageTree pages = getPages();
         // Get the first valid page
-        int pageCount = getNumberOfPages();
+        int pageCount = pages.getCount();
         if (pageCount == 0)
         {
             throw new IllegalStateException("Cannot sign an empty document");
         }
 
         int startIndex = Math.min(Math.max(options.getPage(), 0), pageCount - 1);
-        PDPage page = getPage(startIndex);
+        PDPage page = pages.get(startIndex);
 
         // Get the AcroForm from the Root-Dictionary and append the annotation
         PDDocumentCatalog catalog = getDocumentCatalog();
