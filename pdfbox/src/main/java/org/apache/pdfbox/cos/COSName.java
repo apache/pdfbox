@@ -662,7 +662,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static COSName getPDFName(String aName)
     {
         COSName name = null;
-        if (aName != null)
+        if (aName != null && !aName.isEmpty())
         {
             // Is it a common COSName ??
             name = commonNameMap.get(aName);
