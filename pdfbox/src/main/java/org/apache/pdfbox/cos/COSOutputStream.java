@@ -110,7 +110,7 @@ public final class COSOutputStream extends FilterOutputStream
     @Override
     public void flush() throws IOException
     {
-        if (buffer != null)
+        if (buffer == null)
         {
             super.flush();
         }
