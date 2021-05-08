@@ -99,22 +99,25 @@ public class PDPageLabels implements COSObjectable
     
     private void findLabels(PDNumberTreeNode node) throws IOException 
     {
+        List<PDNumberTreeNode> kids = node.getKids();
         if (node.getKids() != null) 
         {
-            List<PDNumberTreeNode> kids = node.getKids();
             for (PDNumberTreeNode kid : kids) 
             {
                 findLabels(kid);
             }
         }
-        else if (node.getNumbers() != null) 
+        else
         {
-            Map<Integer, COSObjectable> numbers = node.getNumbers();
-            for (Entry<Integer, COSObjectable> i : numbers.entrySet())
+            Map<Integer,COSObjectable> numbers = node.getNumbers();
+            if (numbers != null)
             {
-                if(i.getKey() >= 0)
+                for (Entry<Integer, COSObjectable> i : numbers.entrySet())
                 {
-                    labels.put(i.getKey(), (PDPageLabelRange) i.getValue());
+                    if (i.getKey() >= 0)
+                    {
+                        labels.put(i.getKey(), (PDPageLabelRange) i.getValue());
+                    }
                 }
             }
         }
