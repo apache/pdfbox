@@ -134,7 +134,9 @@ public class TSAClient
 
         if (username != null && password != null && !username.isEmpty() && !password.isEmpty())
         {
-            connection.setRequestProperty(username, password);
+            // See https://stackoverflow.com/questions/12732422/ (needs jdk8)
+            // or see implementation in 3.0
+            throw new UnsupportedOperationException("authentication not implemented yet");
         }
 
         // read response
