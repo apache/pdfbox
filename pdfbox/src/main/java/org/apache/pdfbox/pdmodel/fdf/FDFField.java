@@ -126,9 +126,12 @@ public class FDFField implements COSObjectable
         else if (value instanceof List)
         {
             List<String> items = (List<String>) value;
+            StringBuilder sb = new StringBuilder();
             for (String item : items)
             {
-                output.write("<value>" + escapeXML(item) + "</value>\n");
+                sb.append("<value>").append(escapeXML(item)).append("</value>\n");
+                output.write(sb.toString());
+                sb.setLength(0);
             }
         }
 
