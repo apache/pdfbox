@@ -105,7 +105,7 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
             return Collections.emptyList();
         }
         PDRange[] colRange = new PDRange[getNumberOfColorComponents()];
-        for (int i = 0; i < getNumberOfColorComponents(); ++i)
+        for (int i = 0; i < colRange.length; ++i)
         {
             colRange[i] = getDecodeForParameter(2 + i);
         }
