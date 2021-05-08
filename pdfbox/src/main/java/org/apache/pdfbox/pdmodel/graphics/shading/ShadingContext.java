@@ -15,6 +15,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import java.awt.PaintContext;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
@@ -32,7 +33,7 @@ import org.apache.pdfbox.util.Matrix;
  * @author Shaola Ren
  * @author Tilman Hausherr
  */
-public abstract class ShadingContext
+public abstract class ShadingContext implements PaintContext
 {
     private float[] background;
     private int rgbBackground;
@@ -110,15 +111,16 @@ public abstract class ShadingContext
         return normRGBValues;
     }
     
-    ColorModel getColorModel()
+    @Override
+    public ColorModel getColorModel()
     {
         return outputColorModel;
     }
 
-    void dispose()
+    @Override
+    public void dispose()
     {
         outputColorModel = null;
         shadingColorSpace = null;
     }
-
 }
