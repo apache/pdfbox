@@ -169,9 +169,9 @@ class TilingPaint implements Paint
                 Math.abs(patternMatrix.getScalingFactorY()));
 
         // move origin to (0,0)
+        PDRectangle bbox = pattern.getBBox();
         newPatternMatrix.concatenate(
-                Matrix.getTranslateInstance(-pattern.getBBox().getLowerLeftX(),
-                        -pattern.getBBox().getLowerLeftY()));
+                Matrix.getTranslateInstance(-bbox.getLowerLeftX(), -bbox.getLowerLeftY()));
 
         // render using PageDrawer
         drawer.drawTilingPattern(graphics, pattern, colorSpace, color, newPatternMatrix);
@@ -200,20 +200,25 @@ class TilingPaint implements Paint
     /**
      * Returns the anchor rectangle, which includes the XStep/YStep and scaling.
      */
-    private Rectangle2D getAnchorRect(PDTilingPattern pattern)
+    private Rectangle2D getAnchorRect(PDTilingPattern pattern) throws IOException
     {
+        PDRectangle bbox = pattern.getBBox();
+        if (bbox == null)
+        {
+            throw new IOException("Pattern /BBox is missing");
+        }
         float xStep = pattern.getXStep();
         if (xStep == 0)
         {
             LOG.warn("/XStep is 0, using pattern /BBox width");
-            xStep = pattern.getBBox().getWidth();
+            xStep = bbox.getWidth();
         }
 
         float yStep = pattern.getYStep();
         if (yStep == 0)
         {
             LOG.warn("/YStep is 0, using pattern /BBox height");
-            yStep = pattern.getBBox().getHeight();
+            yStep = bbox.getHeight();
         }
 
         float xScale = patternMatrix.getScalingFactorX();
@@ -227,7 +232,7 @@ class TilingPaint implements Paint
             LOG.info("Pattern surface is too large, will be clipped");
             LOG.info("width: " + width + ", height: " + height);
             LOG.info("XStep: " + xStep + ", YStep: " + yStep);
-            LOG.info("bbox: " + pattern.getBBox());
+            LOG.info("bbox: " + bbox);
             LOG.info("pattern matrix: " + pattern.getMatrix());
             LOG.info("concatenated matrix: " + patternMatrix);
             width = Math.min(MAXEDGE, Math.abs(width)) * Math.signum(width);
@@ -236,9 +241,8 @@ class TilingPaint implements Paint
         }
 
         // returns the anchor rect with scaling applied
-        PDRectangle anchor = pattern.getBBox();
-        return new Rectangle2D.Float(anchor.getLowerLeftX() * xScale,
-                                     anchor.getLowerLeftY() * yScale,
+        return new Rectangle2D.Float(bbox.getLowerLeftX() * xScale,
+                                     bbox.getLowerLeftY() * yScale,
                                      width, height);
     }
 }
