@@ -847,31 +847,27 @@ public abstract class BaseParser
             {
                 return parseCOSNumber();
             }
+            // This is not suppose to happen, but we will allow for it
+            // so we are more compatible with POS writers that don't
+            // follow the spec
+            String badString = readString();
+            if (badString.isEmpty())
+            {
+                int peek = source.peek();
+                // we can end up in an infinite loop otherwise
+                throw new IOException("Unknown dir object c='" + c + "' cInt=" + (int) c + " peek='"
+                        + (char) peek + "' peekInt=" + peek + " at offset " + source.getPosition());
+            }
+
+            // if it's an endstream/endobj, we want to put it back so the caller will see it
+            if (ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
+            {
+                source.rewind(badString.getBytes(StandardCharsets.ISO_8859_1).length);
+            }
             else
             {
-                //This is not suppose to happen, but we will allow for it
-                //so we are more compatible with POS writers that don't
-                //follow the spec
-                String badString = readString();
-                if (badString.isEmpty())
-                {
-                    int peek = source.peek();
-                    // we can end up in an infinite loop otherwise
-                    throw new IOException( "Unknown dir object c='" + c +
-                            "' cInt=" + (int)c + " peek='" + (char)peek 
-                            + "' peekInt=" + peek + " at offset " + source.getPosition());
-                }
-
-                // if it's an endstream/endobj, we want to put it back so the caller will see it
-                if(ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
-                {
-                    source.rewind(badString.getBytes(StandardCharsets.ISO_8859_1).length);
-                }
-                else
-                {
-                    LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
-                            + source.getPosition());
-                }
+                LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
+                        + source.getPosition());
             }
         }
         return null;
