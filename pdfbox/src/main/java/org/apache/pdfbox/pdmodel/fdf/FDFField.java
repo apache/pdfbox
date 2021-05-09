@@ -116,17 +116,23 @@ public class FDFField implements COSObjectable
      */
     public void writeXML(Writer output) throws IOException
     {
-        output.write("<field name=\"" + getPartialFieldName() + "\">\n");
+        StringBuilder sb = new StringBuilder();
+        String temp = sb.append("<field name=\"").append(getPartialFieldName()).append("\">\n").toString();
+        sb.setLength(0);
+
+        output.write(temp);
         Object value = getValue();
 
         if (value instanceof String)
         {
-            output.write("<value>" + escapeXML((String) value) + "</value>\n");
+            temp = sb.append("<value>").append(escapeXML((String) value)).append("</value>\n").toString();
+            sb.setLength(0);
+
+            output.write(temp);
         }
         else if (value instanceof List)
         {
             List<String> items = (List<String>) value;
-            StringBuilder sb = new StringBuilder();
             for (String item : items)
             {
                 sb.append("<value>").append(escapeXML(item)).append("</value>\n");
@@ -138,7 +144,10 @@ public class FDFField implements COSObjectable
         String rt = getRichText();
         if (rt != null)
         {
-            output.write("<value-richtext>" + escapeXML(rt) + "</value-richtext>\n");
+            temp = sb.append("<value-richtext>").append(escapeXML(rt)).append("</value-richtext>\n").toString();
+            output.write(temp);
+
+            sb.setLength(0);
         }
         List<FDFField> kids = getKids();
         if (kids != null)
