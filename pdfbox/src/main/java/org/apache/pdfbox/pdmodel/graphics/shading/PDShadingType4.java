@@ -127,12 +127,12 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
             }
 
             boolean eof = false;
+            Point2D[] ps = new Point2D[3];
             while (!eof)
             {
                 Vertex p0;
                 Vertex p1;
                 Vertex p2;
-                Point2D[] ps;
                 float[][] cs;
                 int lastIndex;
                 try
@@ -156,7 +156,10 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
                             }
                             p2 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange,
                                             matrix, xform);
-                            ps = new Point2D[] { p0.point, p1.point, p2.point };
+                            //use the same array as track to deliver value to constructor. This array will be cloned.
+                            ps[0] = p0.point;
+                            ps[1] = p1.point;
+                            ps[2] = p2.point;
                             cs = new float[][] { p0.color, p1.color, p2.color };
                             list.add(new ShadedTriangle(ps, cs));
                             flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
@@ -173,12 +176,22 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
                                 ShadedTriangle preTri = list.get(lastIndex);
                                 p2 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY,
                                                 colRange, matrix, xform);
-                                ps = new Point2D[] { flag == 1 ? preTri.corner[1] : preTri.corner[0],
-                                                     preTri.corner[2],
-                                                     p2.point };
-                                cs = new float[][] { flag == 1 ? preTri.color[1] : preTri.color[0],
-                                                     preTri.color[2],
-                                                     p2.color };
+
+                                if (flag == 1)
+                                {
+                                    ps[0] = preTri.corner[1];
+                                    cs = new float[][] { preTri.color[1], preTri.color[2], p2.color };
+                                }
+                                else
+                                {
+                                    ps[0] = preTri.corner[0];
+                                    cs = new float[][] { preTri.color[0], preTri.color[2], p2.color };
+                                }
+
+                                //use the same array as track to deliver value to constructor. This array will be cloned.
+                                ps[1] = preTri.corner[2];
+                                ps[2] = p2.point;
+
                                 list.add(new ShadedTriangle(ps, cs));
                                 flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
                             }
