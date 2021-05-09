@@ -142,14 +142,15 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
             }
         }
 
+        Point2D[] ps = new Point2D[3];
+
         for (int i = 0; i < rowNum - 1; i++)
         {
             for (int j = 0; j < numPerRow - 1; j++)
             {
-                Point2D[] ps = new Point2D[] {
-                    latticeArray[i][j].point,
-                    latticeArray[i][j + 1].point,
-                    latticeArray[i + 1][j].point  };
+                ps[0] = latticeArray[i][j].point;
+                ps[1] = latticeArray[i][j + 1].point;
+                ps[2] = latticeArray[i + 1][j].point;
 
                 float[][] cs = new float[][] {
                     latticeArray[i][j].color,
@@ -158,10 +159,10 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
 
                 list.add(new ShadedTriangle(ps, cs));
 
-                ps = new Point2D[] {
-                    latticeArray[i][j + 1].point,
-                    latticeArray[i + 1][j].point,
-                    latticeArray[i + 1][j + 1].point };
+                //this array will be cloned inside of constructors
+                ps[0] =  latticeArray[i][j + 1].point;
+                ps[1] = latticeArray[i + 1][j].point;
+                ps[2] = latticeArray[i + 1][j + 1].point;
 
                 cs = new float[][]{
                     latticeArray[i][j + 1].color,
