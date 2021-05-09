@@ -97,12 +97,15 @@ class CubicBezierCurve
         StringBuilder sb = new StringBuilder("Cubic Bezier curve{control points p0, p1, p2, p3: ");
         for (Point2D p : controlPoints)
         {
-            if (sb.length() > 0)
-            {
-                sb.append(' ');
-            }
-            sb.append(p);
+            sb.append(p).append(' ');
         }
+
+        //remove last space if need
+        if (controlPoints.length > 0 && sb.charAt(sb.length() - 1) == ' ')
+        {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
         return sb.append("}").toString();
     }
 }
