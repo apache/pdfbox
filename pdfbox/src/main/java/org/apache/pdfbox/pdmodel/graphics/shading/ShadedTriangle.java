@@ -56,7 +56,10 @@ class ShadedTriangle
      */
     public ShadedTriangle(Point2D[] p, float[][] c)
     {
-        corner = p.clone();
+        corner = new Point2D[3];
+        corner[0] = (Point2D) p[0].clone();
+        corner[1] = (Point2D) p[1].clone();
+        corner[2] = (Point2D) p[2].clone();
         color = c.clone();
         area = getArea(p[0], p[1], p[2]);
         degree = calcDeg(p);
