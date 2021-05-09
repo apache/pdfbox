@@ -850,17 +850,7 @@ public abstract class BaseParser
             // check for second left bracket
             c = (char) seqSource.peek();
             seqSource.unread(leftBracket);
-            if(c == '<')
-            {
-
-                COSDictionary retval = parseCOSDictionary();
-                skipSpaces();
-                return retval;
-            }
-            else
-            {
-                return parseCOSString();
-            }
+            return c == '<' ? parseCOSDictionary() : parseCOSString();
         case '[':
             // array
             return parseCOSArray();
