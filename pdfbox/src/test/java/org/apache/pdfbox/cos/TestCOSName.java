@@ -50,11 +50,4 @@ public class TestCOSName
         document.close();
     }
 
-    @Test
-    public void testEmptyName()
-    {
-        assertNull(null);
-        assertNull(COSName.getPDFName(""));
-    }
-
 }
