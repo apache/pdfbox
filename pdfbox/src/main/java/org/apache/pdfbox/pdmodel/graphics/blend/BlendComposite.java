@@ -237,16 +237,29 @@ public final class BlendComposite implements Composite
                         
                         nonSeparableBlendMode.blend(srcConverted, dstConverted, rgbResult);
 
-                        for (int k = 0; k < 3; k++)
-                        {
-                            float srcValue = srcConverted[k];
-                            float dstValue = dstConverted[k];
-                            float value = rgbResult[k];
-                            value = Math.max(Math.min(value, 1.0f), 0.0f);
-                            value = srcValue + dstAlpha * (value - srcValue);
-                            value = dstValue + srcAlphaRatio * (value - dstValue);
-                            rgbResult[k] = value;
-                        }
+                        float srcValue = srcConverted[0];
+                        float dstValue = dstConverted[0];
+                        float value = rgbResult[0];
+                        value = Math.max(Math.min(value, 1.0f), 0.0f);
+                        value = srcValue + dstAlpha * (value - srcValue);
+                        value = dstValue + srcAlphaRatio * (value - dstValue);
+                        rgbResult[0] = value;
+
+                        srcValue = srcConverted[1];
+                        dstValue = dstConverted[1];
+                        value = rgbResult[1];
+                        value = Math.max(Math.min(value, 1.0f), 0.0f);
+                        value = srcValue + dstAlpha * (value - srcValue);
+                        value = dstValue + srcAlphaRatio * (value - dstValue);
+                        rgbResult[1] = value;
+
+                        srcValue = srcConverted[2];
+                        dstValue = dstConverted[2];
+                        value = rgbResult[2];
+                        value = Math.max(Math.min(value, 1.0f), 0.0f);
+                        value = srcValue + dstAlpha * (value - srcValue);
+                        value = dstValue + srcAlphaRatio * (value - dstValue);
+                        rgbResult[2] = value;
 
                         if (dstColorSpaceType == ColorSpace.TYPE_RGB)
                         {
