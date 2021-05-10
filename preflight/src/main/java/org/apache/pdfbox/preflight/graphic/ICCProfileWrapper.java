@@ -123,29 +123,30 @@ public class ICCProfileWrapper
         PDDocumentCatalog catalog = document.getDocumentCatalog();
         COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
 
-        if (outputIntents != null)
+        if (outputIntents == null)
         {
-            for (int i = 0; i < outputIntents.size(); ++i)
+            return null;
+        }
+        for (int i = 0; i < outputIntents.size(); ++i)
+        {
+            COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
+            COSBase destOutputProfile = outputIntentDict
+                    .getDictionaryObject(COSName.DEST_OUTPUT_PROFILE);
+            if (destOutputProfile instanceof COSStream)
             {
-                COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
-                COSBase destOutputProfile = outputIntentDict
-                        .getDictionaryObject(COSName.DEST_OUTPUT_PROFILE);
-                if (destOutputProfile instanceof COSStream)
+                try (InputStream is = ((COSStream) destOutputProfile).createInputStream())
                 {
-                    try (InputStream is = ((COSStream) destOutputProfile).createInputStream())
-                    {
-                        return new ICCProfileWrapper(ICC_Profile.getInstance(is));
-                    }
-                    catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e)
-                    {
-                        context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
-                                "DestOutputProfile isn't a valid ICCProfile. Caused by : " + e.getMessage(), e));
-                    }
-                    catch (IOException e)
-                    {
-                        context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
-                                "Unable to parse the ICCProfile. Caused by : " + e.getMessage(), e));
-                    }
+                    return new ICCProfileWrapper(ICC_Profile.getInstance(is));
+                }
+                catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e)
+                {
+                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
+                            "DestOutputProfile isn't a valid ICCProfile. Caused by : " + e.getMessage(), e));
+                }
+                catch (IOException e)
+                {            
+                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
+                        "Unable to parse the ICCProfile. Caused by : " + e.getMessage(), e));
                 }
             }
         }

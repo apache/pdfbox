@@ -16,15 +16,22 @@
  */
 package org.apache.pdfbox.pdfwriter.compress;
 
-import org.apache.pdfbox.cos.*;
-import org.apache.pdfbox.pdfparser.PDFXRefStream;
-import org.apache.pdfbox.pdmodel.PDDocument;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+
+import org.apache.pdfbox.pdfparser.PDFXRefStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSObjectKey;
+import org.apache.pdfbox.cos.COSStream;
 
 /**
  * An instance of this class compresses the contents of a given {@link PDDocument}.

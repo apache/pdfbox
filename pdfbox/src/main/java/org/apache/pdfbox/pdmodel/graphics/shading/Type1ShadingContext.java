@@ -15,7 +15,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import java.awt.PaintContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.ColorModel;
@@ -32,7 +31,7 @@ import org.apache.pdfbox.util.Matrix;
  *
  * @author Tilman Hausherr
  */
-class Type1ShadingContext extends ShadingContext implements PaintContext
+class Type1ShadingContext extends ShadingContext
 {
     private static final Log LOG = LogFactory.getLog(Type1ShadingContext.class);
 
@@ -86,14 +85,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
     public void dispose()
     {
         super.dispose();
-        
         type1ShadingType = null;
-    }
-
-    @Override
-    public ColorModel getColorModel()
-    {
-        return super.getColorModel();
     }
 
     @Override

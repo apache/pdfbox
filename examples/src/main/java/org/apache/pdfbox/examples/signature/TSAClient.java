@@ -22,9 +22,11 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Random;
 
 import org.apache.commons.logging.Log;
@@ -142,7 +144,14 @@ public class TSAClient
 
         if (username != null && password != null && !username.isEmpty() && !password.isEmpty())
         {
-            connection.setRequestProperty(username, password);
+            String contentEncoding = connection.getContentEncoding();
+            if (contentEncoding == null)
+            {
+                contentEncoding = StandardCharsets.UTF_8.name();
+            }
+            connection.setRequestProperty("Authorization", 
+                    "Basic " + new String(Base64.getEncoder().encode((username + ":" + password).
+                            getBytes(contentEncoding))));
         }
 
         // read response

@@ -41,11 +41,9 @@ abstract class Patch
     /**
      * Constructor of Patch.
      *
-     * @param ctl control points, size is 12 (for type 6 shading) or 16 (for
-     * type 7 shading)
      * @param color 4 corner's colors
      */
-    Patch(Point2D[] ctl, float[][] color)
+    Patch(float[][] color)
     {
         cornerColor = color.clone();
     }

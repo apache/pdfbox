@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import java.awt.PaintContext;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -38,7 +37,7 @@ import org.apache.pdfbox.util.Matrix;
  *
  * @author Shaola Ren
  */
-public class AxialShadingContext extends ShadingContext implements PaintContext
+public class AxialShadingContext extends ShadingContext
 {
     private static final Log LOG = LogFactory.getLog(AxialShadingContext.class);
 
@@ -161,12 +160,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     {
         super.dispose();
         axialShadingType = null;
-    }
-
-    @Override
-    public ColorModel getColorModel()
-    {
-        return super.getColorModel();
     }
 
     @Override
