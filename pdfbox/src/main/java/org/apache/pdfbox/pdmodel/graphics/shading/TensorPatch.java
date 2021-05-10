@@ -34,7 +34,7 @@ class TensorPatch extends Patch
      */
     protected TensorPatch(Point2D[] tcp, float[][] color)
     {
-        super(tcp, color);
+        super(color);
         controlPoints = reshapeControlPoints(tcp);
         level = calcLevel();
         listOfTriangles = getTriangles();

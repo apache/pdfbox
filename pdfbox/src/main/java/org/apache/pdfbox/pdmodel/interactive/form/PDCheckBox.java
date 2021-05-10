@@ -102,7 +102,6 @@ public final class PDCheckBox extends PDButton
         PDAnnotationWidget widget = this.getWidgets().get(0);
         PDAppearanceDictionary apDictionary = widget.getAppearance();
         
-        String onValue = "";
         if (apDictionary != null) 
         {
             PDAppearanceEntry normalAppearance = apDictionary.getNormalAppearance();
@@ -113,11 +112,11 @@ public final class PDCheckBox extends PDButton
                 {
                     if (COSName.Off.compareTo(entry) != 0)
                     {
-                        onValue = entry.getName();
+                        return entry.getName();
                     }
                 }
             }
         }
-        return onValue;
+        return "";
     }
 }

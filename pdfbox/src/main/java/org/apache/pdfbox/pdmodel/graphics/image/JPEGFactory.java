@@ -48,7 +48,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.filter.MissingImageReaderException;
+import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -149,24 +149,8 @@ public final class JPEGFactory
 
     private static Dimensions retrieveDimensions(ByteArrayInputStream stream) throws IOException
     {
-        // find suitable image reader
-        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
-        ImageReader reader = null;
-        while (readers.hasNext())
-        {
-            reader = readers.next();
-            if (reader.canReadRaster())
-            {
-                break;
-            }
-        }
-
-        if (reader == null)
-        {
-            throw new MissingImageReaderException(
-                    "Cannot read JPEG image: a suitable JAI I/O image filter is not installed");
-        }
-
+        ImageReader reader =
+                Filter.findImageReader("JPEG", "a suitable JAI I/O image filter is not installed");
         try (ImageInputStream iis = ImageIO.createImageInputStream(stream))
         {
             reader.setInput(iis);
@@ -349,11 +333,10 @@ public final class JPEGFactory
 
     private static ImageWriter getJPEGImageWriter() throws IOException
     {
-        ImageWriter writer;
         Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("jpeg");
         while (writers.hasNext())
         {
-            writer = writers.next();
+            ImageWriter writer = writers.next();
             if (writer == null)
             {
                 continue;
@@ -363,12 +346,8 @@ public final class JPEGFactory
             {
                 return writer;
             }
-            else
-            {
-                writer.dispose();
-            }
+            writer.dispose();
         }
-
         throw new IOException("No ImageWriter found for JPEG format");
     }
 

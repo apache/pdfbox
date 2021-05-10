@@ -16,7 +16,11 @@
  */
 package org.apache.pdfbox.pdfparser.xref;
 
-import org.apache.pdfbox.cos.*;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSObjectKey;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
 
 /**

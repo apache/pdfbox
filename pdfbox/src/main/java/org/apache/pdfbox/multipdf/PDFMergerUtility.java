@@ -431,64 +431,65 @@ public class PDFMergerUtility
     private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting,
             CompressParameters compressParameters) throws IOException
     {
-        if (sources.isEmpty())
-            return;
+        if (!sources.isEmpty())
+        {
+            // Make sure that:
+            // - first Exception is kept
+            // - all PDDocuments are closed
+            // - all FileInputStreams are closed
+            // - there's a way to see which errors occurred
 
-        // Make sure that:
-        // - first Exception is kept
-        // - all PDDocuments are closed
-        // - all FileInputStreams are closed
-        // - there's a way to see which errors occurred
-
-        MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ?
+            List<PDDocument> tobeclosed = new ArrayList<>(sources.size());
+            MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
                     memUsageSetting.getPartitionedCopy(sources.size()+1) :
                     MemoryUsageSetting.setupMainMemoryOnly();
-
-        PDDocument sourceDoc = null;
-        try (PDDocument destination = new PDDocument(partitionedMemSetting))
-        {
-            for (Object sourceObject : sources)
+            try (PDDocument destination = new PDDocument(partitionedMemSetting))
             {
-                if (sourceObject instanceof File)
+                for (Object sourceObject : sources)
                 {
-                    sourceDoc = Loader.loadPDF((File) sourceObject, partitionedMemSetting);
+                    PDDocument sourceDoc = null;
+                    if (sourceObject instanceof File)
+                    {
+                        sourceDoc = Loader.loadPDF((File) sourceObject, partitionedMemSetting);
+                    }
+                    else
+                    {
+                        sourceDoc = Loader.loadPDF((InputStream) sourceObject,
+                                partitionedMemSetting);
+                    }
+                    tobeclosed.add(sourceDoc);
+                    appendDocument(destination, sourceDoc);
+                }
+                
+                // optionally set meta data
+                if (destinationDocumentInformation != null)
+                {
+                    destination.setDocumentInformation(destinationDocumentInformation);
+                }
+                if (destinationMetadata != null)
+                {
+                    destination.getDocumentCatalog().setMetadata(destinationMetadata);
+                }
+                
+                if (destinationStream == null)
+                {
+                    destination.save(destinationFileName, compressParameters);
                 }
                 else
                 {
-                    sourceDoc = Loader.loadPDF((InputStream) sourceObject,
-                            partitionedMemSetting);
+                    destination.save(destinationStream, compressParameters);
                 }
-                appendDocument(destination, sourceDoc);
-                IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
-                sourceDoc = null;
             }
-                
-            // optionally set meta data
-            if (destinationDocumentInformation != null)
+            finally
             {
-                destination.setDocumentInformation(destinationDocumentInformation);
+                for (PDDocument doc : tobeclosed)
+                {
+                    IOUtils.closeAndLogException(doc, LOG, "PDDocument", null);
+                }
             }
-            if (destinationMetadata != null)
-            {
-                destination.getDocumentCatalog().setMetadata(destinationMetadata);
-            }
-                
-            if (destinationStream == null)
-            {
-                destination.save(destinationFileName, compressParameters);
-            }
-            else
-            {
-                destination.save(destinationStream, compressParameters);
-            }
-        }
-        finally
-        {
-            if (sourceDoc != null)
-               IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
         }
     }
-
+  
     /**
      * append all pages from source to destination.
      *
@@ -608,7 +609,6 @@ public class PDFMergerUtility
         if (srcDests != null)
         {
             PDDocumentNameDestinationDictionary destDests = destCatalog.getDests();
-
             if (destDests == null)
             {
                 destCatalog.getCOSObject().setItem(COSName.DESTS, cloner.cloneForNewDocument(srcDests));
@@ -623,7 +623,6 @@ public class PDFMergerUtility
         if (srcOutline != null)
         {
             PDDocumentOutline destOutline = destCatalog.getDocumentOutline();
-
             if (destOutline == null || destOutline.getFirstChild() == null)
             {
                 PDDocumentOutline cloned = new PDDocumentOutline((COSDictionary) cloner.cloneForNewDocument(srcOutline));
@@ -928,9 +927,10 @@ public class PDFMergerUtility
         if (destCatalog.getLanguage() == null)
         {
             String srcLanguage = srcCatalog.getLanguage();
-
             if (srcLanguage != null)
+            {
                 destCatalog.setLanguage(srcLanguage);
+            }
         }
     }
 
@@ -998,14 +998,11 @@ public class PDFMergerUtility
             PDStructureTreeRoot destStructTree) throws IOException
     {
         PDNameTreeNode<PDStructureElement> srcIDTree = srcStructTree.getIDTree();
-
         if (srcIDTree == null)
         {
             return;
         }
-
         PDNameTreeNode<PDStructureElement> destIDTree = destStructTree.getIDTree();
-
         if (destIDTree == null)
         {
             destIDTree = new PDStructureElementNameTreeNode();

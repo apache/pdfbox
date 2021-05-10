@@ -16,16 +16,15 @@
  */
 package org.apache.pdfbox.tools;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,18 +32,12 @@ import org.junit.jupiter.api.Test;
  * Test for running the PDFBox CLI in a headless environment.
  *
  */
-class PDFBoxHeadlessTest
+class PDFBoxNonHeadlessTest
 {
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
-
-    @BeforeAll
-    public static void setHeadless()
-    {
-        System.setProperty("java.awt.headless", "true");
-    } 
 
     @BeforeEach
     public void setUpStreams()
@@ -63,20 +56,20 @@ class PDFBoxHeadlessTest
     }
    
     @Test
-    void isHeadlessTest()
+    void isNonHeadlessTest()
     {
-        assumeTrue(GraphicsEnvironment.isHeadless(), "couldn't set headless skipping test");
-        assertTrue(GraphicsEnvironment.isHeadless());
+        assumeFalse(GraphicsEnvironment.isHeadless(), "running in a headless environment skipping test");
+        assertFalse(GraphicsEnvironment.isHeadless());
     }
 
     @Test
-    void isHeadlessPDFBoxTest()
+    void isNonHeadlessPDFBoxTest()
     {
         final String[] args = {"debug"};
-        assumeTrue(GraphicsEnvironment.isHeadless(), "couldn't set headless skipping test");
+        assumeFalse(GraphicsEnvironment.isHeadless(), "running in a headless environment skipping test");
         assertDoesNotThrow(() -> {
             PDFBox.main(args);
         });
-        assertTrue(err.toString().contains("Unmatched argument at index 0: 'debug'"));
+        assertFalse(err.toString().contains("Unmatched argument at index 0: 'debug'"));
     }
 }

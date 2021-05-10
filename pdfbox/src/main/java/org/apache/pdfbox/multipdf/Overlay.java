@@ -379,7 +379,6 @@ public class Overlay implements Closeable
             {
                 continue;
             }
-
             COSDictionary pageDictionary = page.getCOSObject();
             COSBase originalContent = pageDictionary.getDictionaryObject(COSName.CONTENTS);
             COSArray newContentArray = new COSArray();

@@ -76,6 +76,8 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
         float maxA = aRange.getMax();
         float minB = bRange.getMin();
         float maxB = bRange.getMax();
+        float deltaA = maxA - minA;
+        float deltaB = maxB - minB;
 
         // always three components: ABC
         float[] abc = new float[3];
@@ -92,8 +94,8 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
                 
                 // scale to range
                 abc[0] *= 100;
-                abc[1] = minA + (abc[1] * (maxA - minA));
-                abc[2] = minB + (abc[2] * (maxB - minB));
+                abc[1] = minA + abc[1] * deltaA;
+                abc[2] = minB + abc[2] * deltaB;
 
                 float[] rgb = toRGB(abc);
 
@@ -157,7 +159,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     public float[] getDefaultDecode(int bitsPerComponent)
     {
         PDRange a = getARange();
-        PDRange b = getARange();
+        PDRange b = getBRange();
         return new float[] { 0, 100, a.getMin(), a.getMax(), b.getMin(), b.getMax() };
     }
 

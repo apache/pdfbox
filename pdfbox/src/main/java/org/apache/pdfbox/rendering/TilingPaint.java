@@ -199,19 +199,25 @@ class TilingPaint implements Paint
     /**
      * Returns the anchor rectangle, which includes the XStep/YStep and scaling.
      */
-    private Rectangle2D getAnchorRect(PDTilingPattern pattern)
+    private Rectangle2D getAnchorRect(PDTilingPattern pattern) throws IOException
     {
-        PDRectangle anchor = pattern.getBBox();
+        PDRectangle bbox = pattern.getBBox();
+        if (bbox == null)
+        {
+            throw new IOException("Pattern /BBox is missing");
+        }
         float xStep = pattern.getXStep();
         if (Float.compare(xStep, 0) == 0)
         {
-            xStep = anchor.getWidth();
+            LOG.warn("/XStep is 0, using pattern /BBox width");
+            xStep = bbox.getWidth();
         }
 
         float yStep = pattern.getYStep();
         if (Float.compare(yStep, 0) == 0)
         {
-            yStep = anchor.getHeight();
+            LOG.warn("/YStep is 0, using pattern /BBox height");
+            yStep = bbox.getHeight();
         }
 
         float xScale = patternMatrix.getScalingFactorX();
@@ -225,7 +231,7 @@ class TilingPaint implements Paint
             LOG.info("Pattern surface is too large, will be clipped");
             LOG.info("width: " + width + ", height: " + height);
             LOG.info("XStep: " + xStep + ", YStep: " + yStep);
-            LOG.info("bbox: " + anchor);
+            LOG.info("bbox: " + bbox);
             LOG.info("pattern matrix: " + pattern.getMatrix());
             LOG.info("concatenated matrix: " + patternMatrix);
             width = Math.min(MAXEDGE, Math.abs(width)) * Math.signum(width);
@@ -234,8 +240,8 @@ class TilingPaint implements Paint
         }
 
         // returns the anchor rect with scaling applied
-        return new Rectangle2D.Float(anchor.getLowerLeftX() * xScale,
-                                     anchor.getLowerLeftY() * yScale,
+        return new Rectangle2D.Float(bbox.getLowerLeftX() * xScale,
+                                     bbox.getLowerLeftY() * yScale,
                                      width, height);
     }
 }

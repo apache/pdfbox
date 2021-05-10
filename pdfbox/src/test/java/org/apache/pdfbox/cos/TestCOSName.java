@@ -17,6 +17,7 @@
 package org.apache.pdfbox.cos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -54,5 +55,12 @@ class TestCOSName
             assertTrue(catalogDict.containsKey(special));
             assertEquals(special, catalogDict.getString(special));
         }
+    }
+
+    @Test
+    void testEmptyName()
+    {
+        assertNull(null);
+        assertNull(COSName.getPDFName(""));
     }
 }

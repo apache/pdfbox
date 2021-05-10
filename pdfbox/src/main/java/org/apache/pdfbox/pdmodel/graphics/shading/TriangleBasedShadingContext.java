@@ -15,7 +15,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import java.awt.PaintContext;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -35,7 +34,7 @@ import org.apache.pdfbox.util.Matrix;
  * @author Shaola Ren
  * @author Tilman Hausherr
  */
-abstract class TriangleBasedShadingContext extends ShadingContext implements PaintContext
+abstract class TriangleBasedShadingContext extends ShadingContext
 {
     // map of pixels within triangles to their RGB color
     private Map<Point, Integer> pixelTable;
@@ -158,18 +157,6 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
      * Returns true if the shading has an empty data stream.
      */
     abstract boolean isDataEmpty();
-
-    @Override
-    public final ColorModel getColorModel()
-    {
-        return super.getColorModel();
-    }
-
-    @Override
-    public void dispose()
-    {
-        super.dispose();
-    }
 
     @Override
     public final Raster getRaster(int x, int y, int w, int h)
