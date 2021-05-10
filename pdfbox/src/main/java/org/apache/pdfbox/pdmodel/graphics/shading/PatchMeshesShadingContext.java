@@ -20,7 +20,6 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     /**
      * patch list
      */
-    private List<Patch> patchList = new ArrayList<>();
+    private List<Patch> patchList;
     
     /**
      * Constructor creates an instance to be used for fill operations.
