@@ -17,9 +17,6 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +25,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
+import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -44,6 +43,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
 
 /**
  * Tests font embedding.
@@ -403,12 +406,18 @@ class TestFontEmbedding
         PDDocument doc = new PDDocument();
         COSDictionary cosDictionary = new COSDictionary();
         InputStream input = PDFont.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
-        TrueTypeFont ttf = new TrueTypeFont(input);
-
-        TrueTypeEmbedderTester tester = new TrueTypeEmbedderTester(doc, cosDictionary, XXX, true);
+        TrueTypeFont ttf = new TTFParser().parseEmbedded(input);
+        TrueTypeEmbedderTester tester = new TrueTypeEmbedderTester(doc, cosDictionary, ttf, true);
+        TrueTypeFont mockTtf = Mockito.mock(TrueTypeFont.class);
+        OS2WindowsMetricsTable mockOS2 = Mockito.mock(OS2WindowsMetricsTable.class);
+        given(mockTtf.getOS2Windows()).willReturn(mockOS2);
+        Boolean embeddingIsPermitted;
 
         // TEST
+        given( mockTtf.getOS2Windows().getFsType() ).willReturn((short) 0x0002);
+        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
 
         // VERIFY
+        assertFalse(embeddingIsPermitted);
     }
 }
