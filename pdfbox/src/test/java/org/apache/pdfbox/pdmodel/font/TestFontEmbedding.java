@@ -413,11 +413,80 @@ class TestFontEmbedding
         given(mockTtf.getOS2Windows()).willReturn(mockOS2);
         Boolean embeddingIsPermitted;
 
-        // TEST
+        // TEST 1: 0000 -- Installable embedding versions 0-3+
+        given( mockTtf.getOS2Windows().getFsType() ).willReturn((short) 0x0000);
+        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+
+        // VERIFY
+        assertTrue(embeddingIsPermitted);
+
+        // no test for 0001, since bit 0 is permanently reserved, and its use is deprecated
+
+        // TEST 2: 0010 -- Restricted License embedding versions 0-3+
         given( mockTtf.getOS2Windows().getFsType() ).willReturn((short) 0x0002);
         embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
 
         // VERIFY
         assertFalse(embeddingIsPermitted);
+
+        // no test for 0011
+
+        // TEST 3: 0100 -- Preview & Print embedding versions 0-3+
+        given( mockTtf.getOS2Windows().getFsType() ).willReturn((short) 0x0004);
+        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+
+        // VERIFY
+        assertTrue(embeddingIsPermitted);
+
+        // no test for 0101
+
+        // TEST 4: 0110 -- Restricted License embedding AND Preview & Print embedding versions 0-2
+        //              -- illegal permissions combination for versions 3+
+        given( mockTtf.getOS2Windows().getFsType() ).willReturn((short) 0x0006);
+        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+
+        // VERIFY
+        assertTrue(embeddingIsPermitted);
+
+        // no test for 0111
+
+        // TEST 5: 1000 -- Editable embedding versions 0-3+
+        given( mockTtf.getOS2Windows().getFsType() ).willReturn((short) 0x0008);
+        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+
+        // VERIFY
+        assertTrue(embeddingIsPermitted);
+
+        // no test for 1001
+
+        // TEST 6: 1010 -- Restricted License embedding AND Editable embedding versions 0-2
+        //              -- illegal permissions combination for versions 3+
+        given( mockTtf.getOS2Windows().getFsType() ).willReturn((short) 0x000A);
+        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+
+        // VERIFY
+        assertTrue(embeddingIsPermitted);
+
+        // no test for 1011
+
+        // TEST 7: 1100 -- Editable embedding AND Preview & Print embedding versions 0-2
+        //              -- illegal permissions combination for versions 3+
+        given( mockTtf.getOS2Windows().getFsType() ).willReturn((short) 0x000C);
+        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+
+        // VERIFY
+        assertTrue(embeddingIsPermitted);
+
+        // no test for 1101
+
+        // TEST 8: 1110 Editable embedding AND Preview & Print embedding AND Restricted License embedding versions 0-2
+        //              -- illegal permissions combination for versions 3+
+        given( mockTtf.getOS2Windows().getFsType() ).willReturn((short) 0x000E);
+        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+
+        // VERIFY
+        assertTrue(embeddingIsPermitted);
+
+        // no test for 1111
     }
 }
