@@ -285,11 +285,6 @@ public abstract class BaseParser
     private boolean parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException
     {
         COSName key = parseCOSName();
-        if (key == null)
-        {
-            LOG.warn("Empty COSName at offset " + seqSource.getPosition());
-            return false;
-        }
         COSBase value = parseCOSDictionaryValue();
         skipSpaces();
         if (value == null)
@@ -657,13 +652,18 @@ public abstract class BaseParser
             else
             {
                 //it could be a bad object in the array which is just skipped
-                LOG.warn("Corrupt object reference at offset " +
-                        seqSource.getPosition() + ", start offset: " + startPosition);
-
+                LOG.warn("Corrupt array element at offset "
+                        + seqSource.getPosition() + ", start offset: " + startPosition);
+                String isThisTheEnd = readString();
+                // return immediately if a corrupt element is followed by another array
+                // to avoid a possible infinite recursion as most likely the whole array is corrupted
+                if (isThisTheEnd.isEmpty() && seqSource.peek() == '[')
+                {
+                    return po;
+                }
+                seqSource.unread(isThisTheEnd.getBytes(ISO_8859_1));
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
-                String isThisTheEnd = readString();
-                seqSource.unread(isThisTheEnd.getBytes(ISO_8859_1));
                 if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
                 {
                     return po;
