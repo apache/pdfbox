@@ -381,7 +381,6 @@ class TestFontEmbedding
         /**
          * Common functionality for testing the TrueTypeFontEmbedder
          *
-         * @author Larry Lynn
          */
         TrueTypeEmbedderTester(PDDocument document, COSDictionary dict, TrueTypeFont ttf, boolean embedSubset) throws IOException {
             super(document, dict, ttf, embedSubset);
@@ -395,7 +394,7 @@ class TestFontEmbedding
     }
 
     /**
-     * XXX Populate Me
+     * Test that we validate embedding permissions properly for all legal permissions combinations
      *
      * @throws IOException
      */
