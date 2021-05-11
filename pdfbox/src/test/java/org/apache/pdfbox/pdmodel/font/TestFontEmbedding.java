@@ -25,8 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -370,5 +372,43 @@ class TestFontEmbedding
             String extractedText = stripper.getText(document);
             assertEquals(text1 + " " + text2, extractedText.trim());
         }
+    }
+
+    private class TrueTypeEmbedderTester extends TrueTypeEmbedder {
+        /**
+         * Common functionality for testing the TrueTypeFontEmbedder
+         *
+         * @author Larry Lynn
+         */
+        TrueTypeEmbedderTester(PDDocument document, COSDictionary dict, TrueTypeFont ttf, boolean embedSubset) throws IOException {
+            super(document, dict, ttf, embedSubset);
+        }
+
+        @Override
+        protected void buildSubset(InputStream ttfSubset, String tag, Map<Integer, Integer> gidToCid) throws IOException {
+            // no-op.  Need to define method to extend abstract class, but
+            // this method is not currently needed for testing
+        }
+    }
+
+    /**
+     * XXX Populate Me
+     *
+     * @throws IOException
+     */
+    @Test
+    void testIsEmbeddingPermittedMultipleVersons() throws IOException
+    {
+        // SETUP
+        PDDocument doc = new PDDocument();
+        COSDictionary cosDictionary = new COSDictionary();
+        InputStream input = PDFont.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont ttf = new TrueTypeFont(input);
+
+        TrueTypeEmbedderTester tester = new TrueTypeEmbedderTester(doc, cosDictionary, XXX, true);
+
+        // TEST
+
+        // VERIFY
     }
 }
