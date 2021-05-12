@@ -141,8 +141,9 @@ abstract class TrueTypeEmbedder implements Subsetter
         if (ttf.getOS2Windows() != null)
         {
             int fsType = ttf.getOS2Windows().getFsType();
+            int maskedFsType = fsType & 0x000F;
             // use two's complement arithmetic to check if fsType is a power of 2
-            boolean powerOfTwo = fsType != 0 && (fsType & (fsType - 1)) == 0;
+            boolean powerOfTwo = maskedFsType != 0 && (maskedFsType & (maskedFsType - 1)) == 0;
             if (
                     powerOfTwo &&
                     (fsType & OS2WindowsMetricsTable.FSTYPE_RESTRICTED) == OS2WindowsMetricsTable.FSTYPE_RESTRICTED
