@@ -143,6 +143,8 @@ abstract class TrueTypeEmbedder implements Subsetter
             int fsType = ttf.getOS2Windows().getFsType();
             int maskedFsType = fsType & 0x000F;
             // use two's complement arithmetic to check if fsType is a power of 2
+            // all legal fsType combinations for fonts having a version 3 OS2 table are powers of 2
+            // there are more legal combinations for versions 0-2, but the most permissive pit takes precedence
             boolean powerOfTwo = maskedFsType != 0 && (maskedFsType & (maskedFsType - 1)) == 0;
             if (
                     powerOfTwo &&
