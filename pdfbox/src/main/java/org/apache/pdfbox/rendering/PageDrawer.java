@@ -1741,15 +1741,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // http://stackoverflow.com/a/21181943/535646
         private BufferedImage create2ByteGrayAlphaImage(int width, int height) 
         {
-            /**
-             * gray + alpha
-             */
+            // gray + alpha
             int[] bandOffsets = new int[] {1, 0};
             int bands = bandOffsets.length;
 
-            /**
-             * Color Model used for raw GRAY + ALPHA
-             */
+            // Color Model used for raw GRAY + ALPHA
             final ColorModel CM_GRAY_ALPHA
                 = new ComponentColorModel(
                         ColorSpace.getInstance(ColorSpace.CS_GRAY),
