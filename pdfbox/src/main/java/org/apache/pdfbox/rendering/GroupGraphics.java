@@ -117,7 +117,9 @@ class GroupGraphics extends Graphics2D
         {
             return new GroupGraphics(groupImage, (Graphics2D)g, groupAlphaImage, (Graphics2D)a);
         }
-        throw new UnsupportedOperationException();
+        g.dispose();
+        a.dispose();
+        throw new UnsupportedOperationException("Only Graphics2D supported by this method");
     }
 
     @Override
