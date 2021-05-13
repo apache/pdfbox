@@ -160,7 +160,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     /**
      * Ensure that the RandomAccessReadMemoryMappedFile is not closed
      * 
-     * @throws IOException
+     * @throws IOException If RandomAccessBuffer already closed
      */
     private void checkClosed() throws IOException
     {

@@ -185,7 +185,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     /**
      * Ensure that the SequenceRandomAccessRead is not closed
      * 
-     * @throws IOException
+     * @throws IOException If RandomAccessBuffer already closed
      */
     private void checkClosed() throws IOException
     {
