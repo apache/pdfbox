@@ -238,7 +238,7 @@ final class PNGConverter
         int highVal = (plte.length / 3) - 1;
         if (highVal > 255)
         {
-            LOG.error(String.format("To much colors in PLTE, only 256 allowed, found %d colors.",
+            LOG.error(String.format("Too much colors in PLTE, only 256 allowed, found %d colors.",
                     highVal + 1));
             return null;
         }
@@ -278,18 +278,16 @@ final class PNGConverter
             for (int i = 0; i < bytes.length; i++)
             {
                 int idx = (int) iis.readBits(bitsPerComponent);
-                byte v;
                 if (idx < transparencyTable.length)
                 {
                     // Inside the table, use the transparency value
-                    v = transparencyTable[idx];
+                    bytes[i] = transparencyTable[idx];
                 }
                 else
                 {
                     // Outside the table -> transparent value is 0xFF here.
-                    v = (byte) 0xFF;
+                    bytes[i] = (byte) 0xFF;
                 }
-                bytes[i] = v;
                 w++;
                 if (w == state.width)
                 {
