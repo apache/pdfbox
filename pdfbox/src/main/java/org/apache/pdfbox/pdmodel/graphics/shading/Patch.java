@@ -179,8 +179,10 @@ abstract class Patch
         {
             for (int j = 1; j < szU; j++)
             {
-                Point2D p0 = patchCC[i - 1][j - 1].coordinate, p1 = patchCC[i - 1][j].coordinate, p2 = patchCC[i][j].coordinate,
-                        p3 = patchCC[i][j - 1].coordinate;
+                Point2D p0 = patchCC[i - 1][j - 1].coordinate;
+                Point2D p1 = patchCC[i - 1][j].coordinate;
+                Point2D p2 = patchCC[i][j].coordinate;
+                Point2D p3 = patchCC[i][j - 1].coordinate;
                 boolean ll = true;
                 if (overlaps(p0, p1) || overlaps(p0, p3))
                 {
