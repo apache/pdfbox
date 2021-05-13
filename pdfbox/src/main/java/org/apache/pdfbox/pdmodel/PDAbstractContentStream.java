@@ -29,6 +29,7 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
@@ -457,11 +458,12 @@ abstract class PDAbstractContentStream implements Closeable
         sb.append("/");
         sb.append(inlineImage.getColorSpace().getName());
 
-        if (inlineImage.getDecode() != null && inlineImage.getDecode().size() > 0)
+        COSArray decodeArray = inlineImage.getDecode();
+        if (decodeArray != null && decodeArray.size() > 0)
         {
             sb.append("\n /D ");
             sb.append("[");
-            for (COSBase base : inlineImage.getDecode())
+            for (COSBase base : decodeArray)
             {
                 sb.append(((COSNumber) base).intValue());
                 sb.append(" ");
