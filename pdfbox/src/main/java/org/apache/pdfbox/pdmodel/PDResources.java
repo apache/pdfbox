@@ -204,7 +204,7 @@ public final class PDResources implements COSObjectable
         }
 
         // we can't cache PDPattern, because it holds page resources, see PDFBOX-2370
-        if (cache != null && !(colorSpace instanceof PDPattern))
+        if (cache != null && indirect != null && !(colorSpace instanceof PDPattern))
         {
             cache.put(indirect, colorSpace);
         }
@@ -250,7 +250,7 @@ public final class PDResources implements COSObjectable
             extGState = new PDExtendedGraphicsState((COSDictionary) base);
         }
 
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             cache.put(indirect, extGState);
         }
@@ -286,7 +286,7 @@ public final class PDResources implements COSObjectable
             shading = PDShading.create((COSDictionary) base);
         }
         
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             cache.put(indirect, shading);
         }
@@ -322,7 +322,7 @@ public final class PDResources implements COSObjectable
             pattern = PDAbstractPattern.create((COSDictionary) base, getResourceCache());
         }
 
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             cache.put(indirect, pattern);
         }
@@ -356,7 +356,7 @@ public final class PDResources implements COSObjectable
             propertyList = PDPropertyList.create((COSDictionary) base);
         }
 
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             cache.put(indirect, propertyList);
         }
@@ -425,7 +425,7 @@ public final class PDResources implements COSObjectable
         {
             xobject = PDXObject.createXObject(value, this);
         }
-        if (cache != null && isAllowedCache(xobject))
+        if (cache != null && indirect != null && isAllowedCache(xobject))
         {
             cache.put(indirect, xobject);
         }
