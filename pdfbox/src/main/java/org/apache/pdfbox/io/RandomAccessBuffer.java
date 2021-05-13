@@ -427,7 +427,7 @@ public class RandomAccessBuffer implements RandomAccess, Cloneable
     
     /**
      * Ensure that the RandomAccessBuffer is not closed
-     * @throws IOException
+     * @throws IOException if the RandomAccessBuffer is already closed
      */
     private void checkClosed() throws IOException
     {
