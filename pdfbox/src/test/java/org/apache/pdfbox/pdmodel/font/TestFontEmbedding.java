@@ -410,7 +410,7 @@ class TestFontEmbedding
      * @throws IOException
      */
     @Test
-    void testIsEmbeddingPermittedMultipleVersons() throws IOException
+    void testIsEmbeddingPermittedMultipleVersions() throws IOException
     {
         // SETUP
         PDDocument doc = new PDDocument();
