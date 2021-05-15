@@ -69,6 +69,16 @@ public final class COSInteger extends COSNumber
     public static final COSInteger THREE = get(3); 
 
     /**
+     * Constant for an out of range value which is bigger than Log.MAX_VALUE.
+     */
+    protected static final COSInteger OUT_OF_RANGE_MAX = getInvalid(true);
+
+    /**
+     * Constant for an out of range value which is smaller than Log.MIN_VALUE.
+     */
+    protected static final COSInteger OUT_OF_RANGE_MIN = getInvalid(false);
+
+    /**
      * Returns a COSInteger instance with the given value.
      *
      * @param val integer value
@@ -82,23 +92,32 @@ public final class COSInteger extends COSNumber
             // no synchronization needed
             if (STATIC[index] == null)
             {
-                STATIC[index] = new COSInteger(val);
+                STATIC[index] = new COSInteger(val, true);
             }
             return STATIC[index];
         }
-        return new COSInteger(val);
+        return new COSInteger(val, true);
+    }
+
+    private static COSInteger getInvalid(boolean maxValue)
+    {
+        return maxValue ? new COSInteger(Long.MAX_VALUE, false)
+                : new COSInteger(Long.MIN_VALUE, false);
     }
 
     private final long value;
+    private final boolean isValid;
 
     /**
      * constructor.
      *
      * @param val The integer value of this object.
+     * @param valid indicates if the value is valid.
      */
-    private COSInteger( long val )
+    private COSInteger(long val, boolean valid)
     {
         value = val;
+        isValid = valid;
     }
 
     /**
@@ -162,6 +181,16 @@ public final class COSInteger extends COSNumber
     public long longValue()
     {
         return value;
+    }
+
+    /**
+     * Indicates whether this instance represents a valid value.
+     * 
+     * @return true if the value is valid
+     */
+    public boolean isValid()
+    {
+        return isValid;
     }
 
     /**

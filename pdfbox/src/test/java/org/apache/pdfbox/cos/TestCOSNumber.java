@@ -18,9 +18,10 @@
 package org.apache.pdfbox.cos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -86,15 +87,33 @@ abstract class TestCOSNumber extends TestCOSBase
     }
 
     /**
-     * PDFBOX-4895: large number, too big for a long leads to a null value.
+     * PDFBOX-5176: large number, too big for a long leads to an COSInteger value which is marked as invalid.
      * 
      * @throws IOException
      */
-    @Test
-    void testLargeNumber() throws IOException
+    public void testLargeNumber() throws IOException
     {
-        assertNull(COSNumber.get("18446744073307448448"));
-        assertNull(COSNumber.get("-18446744073307448448"));
+        // max value
+        COSNumber cosNumber = COSNumber.get(Long.toString(Long.MAX_VALUE));
+        assertTrue(cosNumber instanceof COSInteger);
+        COSInteger cosInteger = (COSInteger) cosNumber;
+        assertTrue(cosInteger.isValid());
+        // min value
+        cosNumber = COSNumber.get(Long.toString(Long.MIN_VALUE));
+        assertTrue(cosNumber instanceof COSInteger);
+        cosInteger = (COSInteger) cosNumber;
+        assertTrue(cosInteger.isValid());
+
+        // out of range, max value
+        cosNumber = COSNumber.get("18446744073307448448");
+        assertTrue(cosNumber instanceof COSInteger);
+        cosInteger = (COSInteger) cosNumber;
+        assertFalse(cosInteger.isValid());
+        // out of range, min value
+        cosNumber = COSNumber.get("-18446744073307448448");
+        assertTrue(cosNumber instanceof COSInteger);
+        cosInteger = (COSInteger) cosNumber;
+        assertFalse(cosInteger.isValid());
     }
 
     @Test

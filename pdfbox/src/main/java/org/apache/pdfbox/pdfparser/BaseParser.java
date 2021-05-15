@@ -294,6 +294,10 @@ public abstract class BaseParser
             LOG.warn("Bad dictionary declaration at offset " + source.getPosition());
             return false;
         }
+        else if (value instanceof COSInteger && !((COSInteger) value).isValid())
+        {
+            LOG.warn("Skipped out of range number value at offset " + source.getPosition());
+        }
         else
         {
             // label this item as direct, to avoid signature problems.
