@@ -118,7 +118,9 @@ public abstract class COSNumber extends COSBase
             {
                 throw new IOException("Not a number: " + number);
             }
-            return null;
+            // return a limited COSInteger value which is marked as invalid
+            return number.startsWith("-") ? COSInteger.OUT_OF_RANGE_MIN
+                    : COSInteger.OUT_OF_RANGE_MAX;
         }
     }
 
