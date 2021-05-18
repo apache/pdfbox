@@ -287,17 +287,16 @@ public abstract class BaseParser
     private boolean parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException
     {
         COSName key = parseCOSName();
-        if (key == null)
-        {
-            LOG.warn("Empty COSName at offset " + source.getPosition());
-            return false;
-        }
         COSBase value = parseCOSDictionaryValue();
         skipSpaces();
         if (value == null)
         {
             LOG.warn("Bad dictionary declaration at offset " + source.getPosition());
             return false;
+        }
+        else if (value instanceof COSInteger && !((COSInteger) value).isValid())
+        {
+            LOG.warn("Skipped out of range number value at offset " + source.getPosition());
         }
         else
         {
@@ -659,13 +658,18 @@ public abstract class BaseParser
             else
             {
                 //it could be a bad object in the array which is just skipped
-                LOG.warn("Corrupt object reference at offset " +
-                        source.getPosition() + ", start offset: " + startPosition);
-
+                LOG.warn("Corrupt array element at offset " + source.getPosition()
+                        + ", start offset: " + startPosition);
+                String isThisTheEnd = readString();
+                // return immediately if a corrupt element is followed by another array
+                // to avoid a possible infinite recursion as most likely the whole array is corrupted
+                if (isThisTheEnd.isEmpty() && source.peek() == '[')
+                {
+                    return po;
+                }
+                source.rewind(isThisTheEnd.getBytes(StandardCharsets.ISO_8859_1).length);
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
-                String isThisTheEnd = readString();
-                source.rewind(isThisTheEnd.getBytes(StandardCharsets.ISO_8859_1).length);
                 if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
                 {
                     return po;

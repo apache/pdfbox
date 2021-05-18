@@ -100,7 +100,7 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
         }
         int numPerRow = getVerticesPerRow();
         PDRange[] colRange = new PDRange[getNumberOfColorComponents()];
-        for (int i = 0; i < getNumberOfColorComponents(); ++i)
+        for (int i = 0; i < colRange.length; ++i)
         {
             colRange[i] = getDecodeForParameter(2 + i);
         }
@@ -142,8 +142,8 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
             }
         }
 
-        Point2D[] ps = new Point2D[3];
-
+        Point2D[] ps = new Point2D[3]; // array will be shallow-cloned in ShadedTriangle constructor
+        float[][] cs = new float[3][];
         for (int i = 0; i < rowNum - 1; i++)
         {
             for (int j = 0; j < numPerRow - 1; j++)
@@ -152,22 +152,19 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
                 ps[1] = latticeArray[i][j + 1].point;
                 ps[2] = latticeArray[i + 1][j].point;
 
-                float[][] cs = new float[][] {
-                    latticeArray[i][j].color,
-                    latticeArray[i][j + 1].color,
-                    latticeArray[i + 1][j].color };
+                cs[0] = latticeArray[i][j].color;
+                cs[1] = latticeArray[i][j + 1].color;
+                cs[2] = latticeArray[i + 1][j].color;
 
                 list.add(new ShadedTriangle(ps, cs));
 
-                //this array will be cloned inside of constructors
-                ps[0] =  latticeArray[i][j + 1].point;
+                ps[0] = latticeArray[i][j + 1].point;
                 ps[1] = latticeArray[i + 1][j].point;
                 ps[2] = latticeArray[i + 1][j + 1].point;
 
-                cs = new float[][]{
-                    latticeArray[i][j + 1].color,
-                    latticeArray[i + 1][j].color,
-                    latticeArray[i + 1][j + 1].color };
+                cs[0] = latticeArray[i][j + 1].color;
+                cs[1] = latticeArray[i + 1][j].color;
+                cs[2] = latticeArray[i + 1][j + 1].color;
 
                 list.add(new ShadedTriangle(ps, cs));
             }

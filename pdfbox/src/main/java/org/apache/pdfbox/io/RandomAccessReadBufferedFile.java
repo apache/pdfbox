@@ -236,7 +236,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
 
     /**
      * Ensure that the RandomAccessBuffer is not closed
-     * @throws IOException
+     * @throws IOException If RandomAccessBuffer already closed
      */
     private void checkClosed() throws IOException
     {

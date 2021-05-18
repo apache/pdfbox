@@ -136,13 +136,14 @@ abstract class TrueTypeEmbedder implements Subsetter
     /**
      * Returns true if the fsType in the OS/2 table permits embedding.
      */
-    private boolean isEmbeddingPermitted(TrueTypeFont ttf) throws IOException
+    boolean isEmbeddingPermitted(TrueTypeFont ttf) throws IOException
     {
         if (ttf.getOS2Windows() != null)
         {
             int fsType = ttf.getOS2Windows().getFsType();
-            if ((fsType & OS2WindowsMetricsTable.FSTYPE_RESTRICTED) ==
-                             OS2WindowsMetricsTable.FSTYPE_RESTRICTED)
+            int maskedFsType = fsType & 0x000F;
+            // PDFBOX-5191: don't check the bit because permissions are exclusive
+            if (maskedFsType == OS2WindowsMetricsTable.FSTYPE_RESTRICTED)
             {
                 // restricted License embedding
                 return false;

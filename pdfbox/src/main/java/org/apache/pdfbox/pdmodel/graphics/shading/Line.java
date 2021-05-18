@@ -102,13 +102,13 @@ class Line
      */
     protected float[] calcColor(Point p)
     {
-        int numberOfColorComponents = color0.length;
-        float[] pc = new float[numberOfColorComponents];
         if (point0.x == point1.x && point0.y == point1.y)
         {
             return color0;
         }
-        else if (point0.x == point1.x)
+        int numberOfColorComponents = color0.length;
+        float[] pc = new float[numberOfColorComponents];
+        if (point0.x == point1.x)
         {
             float l = point1.y - point0.y;
             for (int i = 0; i < numberOfColorComponents; i++)

@@ -843,16 +843,14 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     {
         Object underneathObject = getUnderneathObject(obj);
         return underneathObject instanceof COSDictionary &&
-                ((COSDictionary) underneathObject).containsKey(COSName.TYPE) &&
-                ((COSDictionary) underneathObject).getCOSName(COSName.TYPE).equals(COSName.FONT_DESC);
+                COSName.FONT_DESC.equals(((COSDictionary) underneathObject).getCOSName(COSName.TYPE));
     }
 
     private boolean isAnnot(Object obj)
     {
         Object underneathObject = getUnderneathObject(obj);
         return underneathObject instanceof COSDictionary &&
-                ((COSDictionary) underneathObject).containsKey(COSName.TYPE) &&
-                ((COSDictionary) underneathObject).getCOSName(COSName.TYPE).equals(COSName.ANNOT);
+                COSName.ANNOT.equals(((COSDictionary) underneathObject).getCOSName(COSName.TYPE));
     }
 
     private boolean isStream(Object selectedNode)
@@ -870,19 +868,16 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         selectedNode = getUnderneathObject(selectedNode);
         if (selectedNode instanceof COSDictionary)
         {
-            COSDictionary dic = (COSDictionary)selectedNode;
-            return dic.containsKey(COSName.TYPE) &&
-                    dic.getCOSName(COSName.TYPE).equals(COSName.FONT) &&
-                    !isCIDFont(dic);
+            COSDictionary dic = (COSDictionary) selectedNode;
+            return COSName.FONT.equals(dic.getCOSName(COSName.TYPE)) && !isCIDFont(dic);
         }
         return false;
     }
 
     private boolean isCIDFont(COSDictionary dic)
     {
-        return dic.containsKey(COSName.SUBTYPE) &&
-                (dic.getCOSName(COSName.SUBTYPE).equals(COSName.CID_FONT_TYPE0)
-                || dic.getCOSName(COSName.SUBTYPE).equals(COSName.CID_FONT_TYPE2));
+        return COSName.CID_FONT_TYPE0.equals(dic.getCOSName(COSName.SUBTYPE)) ||
+               COSName.CID_FONT_TYPE2.equals(dic.getCOSName(COSName.SUBTYPE));
     }
 
     /**

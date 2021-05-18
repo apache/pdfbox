@@ -102,6 +102,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
             catch (EOFException ex)
             {
                 LOG.error(ex);
+                return list;
             }
 
             boolean eof = false;

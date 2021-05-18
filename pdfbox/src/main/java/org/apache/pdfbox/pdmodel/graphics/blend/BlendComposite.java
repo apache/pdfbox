@@ -74,7 +74,6 @@ public final class BlendComposite implements Composite
 
     private BlendComposite(BlendMode blendMode, float constantAlpha)
     {
-        super();
         this.blendMode = blendMode;
         this.constantAlpha = constantAlpha;
     }
@@ -83,21 +82,18 @@ public final class BlendComposite implements Composite
     public CompositeContext createContext(ColorModel srcColorModel, ColorModel dstColorModel,
             RenderingHints hints)
     {
-        return new BlendCompositeContext(srcColorModel, dstColorModel, hints);
+        return new BlendCompositeContext(srcColorModel, dstColorModel);
     }
 
     class BlendCompositeContext implements CompositeContext
     {
         private final ColorModel srcColorModel;
         private final ColorModel dstColorModel;
-        private final RenderingHints hints;
 
-        BlendCompositeContext(ColorModel srcColorModel, ColorModel dstColorModel,
-                RenderingHints hints)
+        BlendCompositeContext(ColorModel srcColorModel, ColorModel dstColorModel)
         {
             this.srcColorModel = srcColorModel;
             this.dstColorModel = dstColorModel;
-            this.hints = hints;
         }
 
         @Override

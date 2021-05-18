@@ -116,38 +116,35 @@ public class FDFField implements COSObjectable
      */
     public void writeXML(Writer output) throws IOException
     {
-        StringBuilder sb = new StringBuilder();
-        String temp = sb.append("<field name=\"").append(getPartialFieldName()).append("\">\n").toString();
-        sb.setLength(0);
+        output.write("<field name=\"");
+        output.write(getPartialFieldName());
+        output.write("\">\n");
 
-        output.write(temp);
         Object value = getValue();
 
         if (value instanceof String)
         {
-            temp = sb.append("<value>").append(escapeXML((String) value)).append("</value>\n").toString();
-            sb.setLength(0);
-
-            output.write(temp);
+            output.write("<value>");
+            output.write(escapeXML((String) value));
+            output.write("</value>\n");
         }
         else if (value instanceof List)
         {
             List<String> items = (List<String>) value;
             for (String item : items)
             {
-                sb.append("<value>").append(escapeXML(item)).append("</value>\n");
-                output.write(sb.toString());
-                sb.setLength(0);
+                output.write("<value>");
+                output.write(escapeXML(item));
+                output.write("</value>\n");
             }
         }
 
         String rt = getRichText();
         if (rt != null)
         {
-            temp = sb.append("<value-richtext>").append(escapeXML(rt)).append("</value-richtext>\n").toString();
-            output.write(temp);
-
-            sb.setLength(0);
+            output.write("<value-richtext>");
+            output.write(escapeXML(rt));
+            output.write("</value-richtext>\n");
         }
         List<FDFField> kids = getKids();
         if (kids != null)
@@ -366,7 +363,7 @@ public class FDFField implements COSObjectable
     }
 
     /**
-     * This will get the SetFf entry of the cos dictionary. If it it not present then this method will return null.
+     * This will get the Set Ff entry of the cos dictionary. If it it not present then this method will return null.
      *
      * @return The field flags.
      */

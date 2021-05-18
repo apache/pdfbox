@@ -154,6 +154,7 @@ public class PDNumberFormatDictionary implements COSObjectable
     /** 
      * This will set the value for the manner to display a fractional value.
      * Allowed values are "D", "F", "R", "T" and null.
+     * 
      * @param fractionalDisplay the manner to display a fractional value
      */
     public void setFractionalDisplay(String fractionalDisplay)
@@ -301,9 +302,9 @@ public class PDNumberFormatDictionary implements COSObjectable
     }
 
     /**
-     * This will set the value indicating the ordering of the label specified by U to the calculated unit value.
-     * Possible values are "S", "P" and null.
-     * 
+     * This will set the value indicating the ordering of the label specified by U to the calculated
+     * unit value. Possible values are "S", "P" and null.
+     *
      * @param labelPositionToValue label position 
      */
     public void setLabelPositionToValue(String labelPositionToValue)
