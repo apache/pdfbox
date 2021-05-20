@@ -198,7 +198,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Could not load font file: " + file, e);
+                LOG.warn("Could not load font file: " + file, e);
             }
             return null;
         }
@@ -275,7 +275,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Could not load font file: " + file, e);
+                LOG.warn("Could not load font file: " + file, e);
             }
             return null;
         }
@@ -294,7 +294,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Could not load font file: " + file, e);
+                LOG.warn("Could not load font file: " + file, e);
             }
             return null;
         }
@@ -384,7 +384,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Error parsing font " + file.getPath(), e);
+                LOG.warn("Error parsing font " + file.getPath(), e);
             }
         }
     }
@@ -518,7 +518,7 @@ final class FileSystemFontProvider extends FontProvider
                     String[] parts = line.split("\\|", 10);
                     if (parts.length < 10)
                     {
-                        LOG.error("Incorrect line '" + line + "' in font disk cache is skipped");
+                        LOG.warn("Incorrect line '" + line + "' in font disk cache is skipped");
                         continue;
                     }
 
@@ -581,7 +581,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Error loading font cache, will be re-built", e);
+                LOG.warn("Error loading font cache, will be re-built", e);
                 return null;
             }
         }
@@ -607,7 +607,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.error("Could not load font file: " + ttcFile, e);
+            LOG.warn("Could not load font file: " + ttcFile, e);
         }
     }
 
@@ -633,7 +633,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.error("Could not load font file: " + ttfFile, e);
+            LOG.warn("Could not load font file: " + ttfFile, e);
         }
     }
 
@@ -735,7 +735,7 @@ final class FileSystemFontProvider extends FontProvider
         catch (IOException e)
         {
             fontInfoList.add(new FSIgnored(file, FontFormat.TTF, "*skipexception*"));
-            LOG.error("Could not load font file: " + file, e);
+            LOG.warn("Could not load font file: " + file, e);
         }
         finally
         {
@@ -768,7 +768,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.error("Could not load font file: " + pfbFile, e);
+            LOG.warn("Could not load font file: " + pfbFile, e);
         }
     }
 
