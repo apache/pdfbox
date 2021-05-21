@@ -18,10 +18,13 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import java.util.Arrays;
 
@@ -277,6 +280,27 @@ class JPEGFactoryTest
         assertNull(ximage.getSoftMask());
 
         doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg-ushort555rgb.pdf");
+    }
+
+    /**
+     * PDFBOX-5137 and PDFBOX-5196: check that numFrameComponents and not numScanComponents is used
+     * to determine the color space.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox5137() throws IOException
+    {
+        byte[] ba = Files.readAllBytes(Paths.get("target/imgs", "PDFBOX-5196-lotus.jpg"));
+
+        PDDocument document = new PDDocument();
+
+        PDImageXObject ximage = JPEGFactory.createFromByteArray(document, ba);
+
+        validate(ximage, 8, 500, 500, "jpg", PDDeviceRGB.INSTANCE.getName());
+
+        doWritePDF(document, ximage, TESTRESULTSDIR, "PDFBOX-5196-lotus.pdf");
+        checkJpegStream(TESTRESULTSDIR, "PDFBOX-5196-lotus.pdf", new ByteArrayInputStream(ba));        
     }
 
     // check whether it is possible to extract the jpeg stream exactly 
