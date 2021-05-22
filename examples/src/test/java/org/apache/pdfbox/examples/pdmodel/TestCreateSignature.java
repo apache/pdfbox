@@ -62,7 +62,6 @@ import java.util.Set;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.examples.interactive.form.CreateSimpleForm;
@@ -839,7 +838,7 @@ class TestCreateSignature
             for (int i = 0; i < sigCertArray.size(); ++i)
             {
                 COSStream certStream = (COSStream) sigCertArray.getObject(i);
-                try (COSInputStream is = certStream.createInputStream())
+                try (InputStream is = certStream.createInputStream())
                 {
                     sigCertHolderSetFromVRIArray.add(new X509CertificateHolder(IOUtils.toByteArray(is)));
                 }
@@ -858,7 +857,7 @@ class TestCreateSignature
             for (int i = 0; i < dssCertArray.size(); ++i)
             {
                 COSStream certStream = (COSStream) dssCertArray.getObject(i);
-                try (COSInputStream is = certStream.createInputStream())
+                try (InputStream is = certStream.createInputStream())
                 {
                     X509Certificate cert = (X509Certificate) certificateFactory.generateCertificate(is);
                     certSet.add(cert);
@@ -888,7 +887,7 @@ class TestCreateSignature
             for (int i = 0; i < crlArray.size(); ++i)
             {
                 COSStream crlStream = (COSStream) crlArray.getObject(i);
-                try (COSInputStream is = crlStream.createInputStream())
+                try (InputStream is = crlStream.createInputStream())
                 {
                     X509CRL cert = (X509CRL) certificateFactory.generateCRL(is);
                     crlSet.add(cert);
@@ -922,7 +921,7 @@ class TestCreateSignature
                 COSArray certArray2 = crlSigDict.getCOSArray(COSName.getPDFName("Cert"));
                 COSStream certStream = (COSStream) certArray2.getObject(0);
                 X509CertificateHolder certHolder2;
-                try (COSInputStream is2 = certStream.createInputStream())
+                try (InputStream is2 = certStream.createInputStream())
                 {
                     certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
                 }
@@ -935,7 +934,7 @@ class TestCreateSignature
             for (int i = 0; i < ocspArray.size(); ++i)
             {
                 COSStream ocspStream = (COSStream) ocspArray.getObject(i);
-                try (COSInputStream is = ocspStream.createInputStream())
+                try (InputStream is = ocspStream.createInputStream())
                 {
                     OCSPResp ocspResp = new OCSPResp(is);
                     oscpSet.add(ocspResp);
@@ -962,7 +961,7 @@ class TestCreateSignature
                 COSArray certArray2 = ocspSigDict.getCOSArray(COSName.getPDFName("Cert"));
                 COSStream certStream = (COSStream) certArray2.getObject(0);
                 X509CertificateHolder certHolder2;
-                try (COSInputStream is2 = certStream.createInputStream())
+                try (InputStream is2 = certStream.createInputStream())
                 {
                     certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
                 }
