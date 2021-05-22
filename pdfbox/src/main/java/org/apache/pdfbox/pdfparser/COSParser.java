@@ -39,7 +39,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
@@ -2000,7 +1999,6 @@ public class COSParser extends BaseParser
                 readExpectedString(OBJ_MARKER, true);
                 int nrOfObjects = 0;
                 COSStream stream = null;
-                COSInputStream is = null;
                 List<Long> objectNumbers = null;
                 try
                 {
@@ -2033,10 +2031,6 @@ public class COSParser extends BaseParser
                 }
                 finally
                 {
-                    if (is != null)
-                    {
-                        is.close();
-                    }
                     if (stream != null)
                     {
                         stream.close();
