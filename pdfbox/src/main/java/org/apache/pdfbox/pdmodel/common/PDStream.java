@@ -222,8 +222,14 @@ public class PDStream implements COSObjectable
                 else
                 {
                     Filter filter = FilterFactory.INSTANCE.getFilter(nextFilter);
-                    filter.decode(is, os, stream, i);
-                    IOUtils.closeQuietly(is);
+                    try
+                    {
+                        filter.decode(is, os, stream, i);
+                    }
+                    finally
+                    {
+                        IOUtils.closeQuietly(is);
+                    }
                     is = new ByteArrayInputStream(os.toByteArray());
                     os.reset();
                 }
