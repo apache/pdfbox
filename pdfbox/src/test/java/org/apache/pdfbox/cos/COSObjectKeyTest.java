@@ -17,18 +17,45 @@
 package org.apache.pdfbox.cos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
 class COSObjectKeyTest
 {
     @Test
+    void testInputValues()
+    {
+        try
+        {
+            new COSObjectKey(-1L, 0);
+            fail("An IllegalArgumentException shouzld have been thrown");
+        }
+        catch (IllegalArgumentException exception)
+        {
+
+        }
+
+        try
+        {
+            new COSObjectKey(1L, -1);
+            fail("An IllegalArgumentException shouzld have been thrown");
+        }
+        catch (IllegalArgumentException exception)
+        {
+
+        }
+    }
+
+    @Test
     void compareToInputNotNullOutputZero()
     {
         // Arrange
-        final COSObjectKey objectUnderTest = new COSObjectKey(0L, 0);
-        final COSObjectKey other = new COSObjectKey(0L, 0);
+        final COSObjectKey objectUnderTest = new COSObjectKey(1L, 0);
+        final COSObjectKey other = new COSObjectKey(1L, 0);
 
         // Act
         final int retval = objectUnderTest.compareTo(other);
@@ -38,17 +65,46 @@ class COSObjectKeyTest
     }
 
     @Test
-    void compareToInputNotNullOutputPositive()
+    void compareToInputNotNullOutputNotNull()
     {
         // Arrange
-        final COSObjectKey objectUnderTest = new COSObjectKey(0L, 0);
-        final COSObjectKey other = new COSObjectKey(-9_223_372_036_854_775_808L, 0);
+        final COSObjectKey objectUnderTest = new COSObjectKey(1L, 0);
+        final COSObjectKey other = new COSObjectKey(9_999_999L, 0);
 
         // Act
-        final int retval = objectUnderTest.compareTo(other);
+        final int retvalNegative = objectUnderTest.compareTo(other);
+        final int retvalPositive = other.compareTo(objectUnderTest);
 
-        // Assert result
-        assertEquals(1, retval);
+        // Assert results
+        assertEquals(-1, retvalNegative);
+        assertEquals(1, retvalPositive);
+    }
+
+    @Test
+    void testEquals()
+    {
+        assertTrue(new COSObjectKey(100, 0).equals(new COSObjectKey(100, 0)));
+        assertFalse(new COSObjectKey(100, 0).equals(new COSObjectKey(101, 0)));
+    }
+
+    @Test
+    void testInternalRepresentation()
+    {
+        COSObjectKey key = new COSObjectKey(100, 0);
+        assertEquals(100, key.getNumber());
+        assertEquals(0, key.getGeneration());
+
+        key = new COSObjectKey(200, 4);
+        assertEquals(200, key.getNumber());
+        assertEquals(4, key.getGeneration());
+
+        key = new COSObjectKey(200000, 0);
+        assertEquals(200000, key.getNumber());
+        assertEquals(0, key.getGeneration());
+
+        key = new COSObjectKey(87654321, 123);
+        assertEquals(87654321, key.getNumber());
+        assertEquals(123, key.getGeneration());
     }
 
     @Test
