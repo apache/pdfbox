@@ -71,11 +71,8 @@ public class PostScriptTable extends TTFTable
 
         if (Float.compare(formatType, 1.0f) == 0)
         {
-            /*
-             * This TrueType font file contains exactly the 258 glyphs in the standard Macintosh TrueType.
-             */
-            glyphNames = new String[WGL4Names.NUMBER_OF_MAC_GLYPHS];
-            System.arraycopy(WGL4Names.MAC_GLYPH_NAMES, 0, glyphNames, 0, WGL4Names.NUMBER_OF_MAC_GLYPHS);
+            // This TrueType font file contains exactly the 258 glyphs in the standard Macintosh TrueType.
+            glyphNames = WGL4Names.getAllNames();
         }
         else if (Float.compare(formatType, 2.0f) == 0)
         {
@@ -123,7 +120,7 @@ public class PostScriptTable extends TTFTable
                 int index = glyphNameIndex[i];
                 if (index >= 0 && index < WGL4Names.NUMBER_OF_MAC_GLYPHS)
                 {
-                    glyphNames[i] = WGL4Names.MAC_GLYPH_NAMES[index];
+                    glyphNames[i] = WGL4Names.getGlyphName(index);
                 }
                 else if (index >= WGL4Names.NUMBER_OF_MAC_GLYPHS && index <= 32767 && nameArray != null)
                 {
@@ -151,7 +148,7 @@ public class PostScriptTable extends TTFTable
                 int index = glyphNameIndex[i];
                 if (index >= 0 && index < WGL4Names.NUMBER_OF_MAC_GLYPHS)
                 {
-                    String name = WGL4Names.MAC_GLYPH_NAMES[index];
+                    String name = WGL4Names.getGlyphName(index);
                     if (name != null)
                     {
                         glyphNames[i] = name;

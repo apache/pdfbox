@@ -854,7 +854,7 @@ public final class TTFSubsetter
         for (int gid : glyphIds)
         {
             String name = post.getName(gid);
-            Integer macId = WGL4Names.MAC_GLYPH_NAMES_INDICES.get(name);
+            Integer macId = WGL4Names.getGlyphIndex(name);
             if (macId != null)
             {
                 // the name is implicit, as it's from MacRoman

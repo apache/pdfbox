@@ -32,7 +32,7 @@ public final class WGL4Names
     /**
      * The 258 standard mac glyph names a used in 'post' format 1 and 2.
      */
-    public static final String[] MAC_GLYPH_NAMES = new String[]
+    private static final String[] MAC_GLYPH_NAMES = new String[]
     {
         ".notdef",".null", "nonmarkingreturn", "space", "exclam", "quotedbl",
         "numbersign", "dollar", "percent", "ampersand", "quotesingle",
@@ -81,7 +81,7 @@ public final class WGL4Names
     /**
      * The indices of the standard mac glyph names.
      */
-    public static final Map<String,Integer> MAC_GLYPH_NAMES_INDICES;
+    private static final Map<String, Integer> MAC_GLYPH_NAMES_INDICES;
 
     static
     {
@@ -94,5 +94,39 @@ public final class WGL4Names
     
     private WGL4Names()
     {
+    }
+
+    /**
+     * Returns the index of the glyph with the given name.
+     * 
+     * @param name the name of the glyph
+     * @return the index of the given glyph name or null for an invalid glyph name
+     */
+    public static Integer getGlyphIndex(String name)
+    {
+        return MAC_GLYPH_NAMES_INDICES.get(name);
+    }
+
+    /**
+     * Returns the name of the glyph at the given index.
+     * 
+     * @param index the index of the glyph
+     * @return the name of the glyph at the given index or null fo an invalid glyph index
+     */
+    public static String getGlyphName(int index)
+    {
+        return index >= 0 && index < NUMBER_OF_MAC_GLYPHS ? MAC_GLYPH_NAMES[index] : null;
+    }
+
+    /**
+     * Returns a new array with all glyph names.
+     * 
+     * @return the array with all glyph names
+     */
+    public static String[] getAllNames()
+    {
+        String[] glyphNames = new String[NUMBER_OF_MAC_GLYPHS];
+        System.arraycopy(MAC_GLYPH_NAMES, 0, glyphNames, 0, NUMBER_OF_MAC_GLYPHS);
+        return glyphNames;
     }
 }
