@@ -1735,7 +1735,6 @@ public class COSParser extends BaseParser
      */
     private boolean bfSearchForTrailer(COSDictionary trailer) throws IOException
     {
-        Map<String, COSDictionary> trailerDicts = new HashMap<String, COSDictionary>();
         long originOffset = source.getPosition();
         source.seek(MINIMUM_SEARCH_OFFSET);
         while (!source.isEOF())
@@ -1750,28 +1749,53 @@ public class COSParser extends BaseParser
                     boolean infoFound = false;
                     skipSpaces();
                     COSDictionary trailerDict = parseCOSDictionary();
-                    StringBuilder trailerKeys = new StringBuilder();
                     COSObject rootObj = trailerDict.getCOSObject(COSName.ROOT);
                     if (rootObj != null)
                     {
-                        long objNumber = rootObj.getObjectNumber();
-                        int genNumber = rootObj.getGenerationNumber();
-                        trailerKeys.append(objNumber).append(" ");
-                        trailerKeys.append(genNumber).append(" ");
-                        rootFound = true;
+                        // check if the dictionary can be dereferenced and is the one we are looking for
+                        COSDictionary rootDict = retrieveCOSDictionary(rootObj);
+                        if (rootDict != null && isCatalog(rootDict))
+                        {
+                            rootFound = true;
+                        }
                     }
                     COSObject infoObj = trailerDict.getCOSObject(COSName.INFO);
                     if (infoObj != null)
                     {
-                        long objNumber = infoObj.getObjectNumber();
-                        int genNumber = infoObj.getGenerationNumber();
-                        trailerKeys.append(objNumber).append(" ");
-                        trailerKeys.append(genNumber).append(" ");
-                        infoFound = true;
+                        // check if the dictionary can be dereferenced and is the one we are looking for
+                        COSDictionary infoDict = retrieveCOSDictionary(infoObj);
+                        if (infoDict != null && isInfo(infoDict))
+                        {
+                            infoFound = true;
+                        }
                     }
                     if (rootFound && infoFound)
                     {
-                        trailerDicts.put(trailerKeys.toString(), trailerDict);
+                        trailer.setItem(COSName.ROOT, rootObj);
+                        trailer.setItem(COSName.INFO, infoObj);
+                        if (trailerDict.containsKey(COSName.ENCRYPT))
+                        {
+                            COSObject encObj = trailerDict.getCOSObject(COSName.ENCRYPT);
+                            if (encObj != null)
+                            {
+                                // check if the dictionary can be dereferenced
+                                // TODO check if the dictionary is an encryption dictionary?
+                                COSDictionary encDict = retrieveCOSDictionary(encObj);
+                                if (encDict != null)
+                                {
+                                    trailer.setItem(COSName.ENCRYPT, encObj);
+                                }
+                            }
+                        }
+                        if (trailerDict.containsKey(COSName.ID))
+                        {
+                            COSBase idObj = trailerDict.getItem(COSName.ID);
+                            if (idObj instanceof COSArray)
+                            {
+                                trailer.setItem(COSName.ID, idObj);
+                            }
+                        }
+                        return true;
                     }
                 }
                 catch (IOException exception)
@@ -1782,61 +1806,6 @@ public class COSParser extends BaseParser
             source.read();
         }
         source.seek(originOffset);
-        // continue if one entry is left only
-        if (trailerDicts.size() == 1)
-        {
-            boolean rootFound = false;
-            boolean infoFound = false;
-            COSDictionary trailerDict = trailerDicts.values().iterator().next();
-            COSBase rootObj = trailerDict.getItem(COSName.ROOT);
-            if (rootObj instanceof COSObject)
-            {
-                // check if the dictionary can be dereferenced and is the one we are looking for
-                COSDictionary rootDict = retrieveCOSDictionary((COSObject) rootObj);
-                if (rootDict != null && isCatalog(rootDict))
-                {
-                    rootFound = true;
-                }
-            }
-            COSBase infoObj = trailerDict.getItem(COSName.INFO);
-            if (infoObj instanceof COSObject)
-            {
-                // check if the dictionary can be dereferenced and is the one we are looking for
-                COSDictionary infoDict = retrieveCOSDictionary((COSObject) infoObj);
-                if (infoDict != null && isInfo(infoDict))
-                {
-                    infoFound = true;
-                }
-            }
-            if (rootFound && infoFound)
-            {
-                trailer.setItem(COSName.ROOT, rootObj);
-                trailer.setItem(COSName.INFO, infoObj);
-                if (trailerDict.containsKey(COSName.ENCRYPT))
-                {
-                    COSBase encObj = trailerDict.getItem(COSName.ENCRYPT);
-                    if (encObj instanceof COSObject)
-                    {
-                        // check if the dictionary can be dereferenced
-                        // TODO check if the dictionary is an encryption dictionary?
-                        COSDictionary encDict = retrieveCOSDictionary((COSObject) encObj);
-                        if (encDict != null)
-                        {
-                            trailer.setItem(COSName.ENCRYPT, encObj);
-                        }
-                    }
-                }
-                if (trailerDict.containsKey(COSName.ID))
-                {
-                    COSBase idObj = trailerDict.getItem(COSName.ID);
-                    if (idObj instanceof COSArray)
-                    {
-                        trailer.setItem(COSName.ID, idObj);
-                    }
-                }
-                return true;
-            }
-        }
         return false;
     }
 
@@ -2248,7 +2217,10 @@ public class COSParser extends BaseParser
         Long offset = bfSearchCOSObjectKeyOffsets.get(key);
         if (offset != null)
         {
-            return retrieveCOSDictionary(key, offset);
+            long currentPosition = source.getPosition();
+            COSDictionary dictionary = retrieveCOSDictionary(key, offset);
+            source.seek(currentPosition);
+            return dictionary;
         }
         return null;
     }
