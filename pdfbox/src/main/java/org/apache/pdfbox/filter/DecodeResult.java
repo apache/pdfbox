@@ -27,9 +27,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
  */
 public final class DecodeResult
 {
-    /** Default decode result. */
-    public static final DecodeResult DEFAULT = new DecodeResult(new COSDictionary());
-
     private final COSDictionary parameters;
     private PDJPXColorSpace colorSpace;
 
@@ -42,6 +39,16 @@ public final class DecodeResult
     {
         this.parameters = parameters;
         this.colorSpace = colorSpace;
+    }
+
+    /**
+     * Return a default DecodeResult.
+     *
+     * @return 
+     */
+    public static DecodeResult createDefault()
+    {
+        return new DecodeResult(new COSDictionary());
     }
 
     /**

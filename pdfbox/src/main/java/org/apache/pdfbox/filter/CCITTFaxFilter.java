@@ -137,7 +137,6 @@ final class CCITTFaxFilter extends Filter
                 break;
             }
         }
-        decoderStream.close();
     }
 
     private void invertBitmap(byte[] bufferData)
@@ -157,6 +156,5 @@ final class CCITTFaxFilter extends Filter
         CCITTFaxEncoderStream ccittFaxEncoderStream = 
                 new CCITTFaxEncoderStream(encoded, cols, rows, TIFFExtension.FILL_LEFT_TO_RIGHT);
         IOUtils.copy(input, ccittFaxEncoderStream);
-        input.close();
     }
 }

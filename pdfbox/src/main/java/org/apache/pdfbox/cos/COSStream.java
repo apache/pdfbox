@@ -213,7 +213,14 @@ public class COSStream extends COSDictionary implements Closeable
                     input = new ByteArrayInputStream(output.toByteArray());
                     output.reset();
                 }
-                filterList.get(i).decode(input, output, this, i, DecodeOptions.DEFAULT);
+                try
+                {
+                    filterList.get(i).decode(input, output, this, i, DecodeOptions.DEFAULT);
+                }
+                finally
+                {
+                    IOUtils.closeQuietly(input);
+                }
             }
             return new RandomAccessReadBuffer(output.toByteArray());
         }
