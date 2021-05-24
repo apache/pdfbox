@@ -31,6 +31,7 @@ import java.awt.print.PrinterIOException;
 import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.RenderDestination;
@@ -42,7 +43,7 @@ import org.apache.pdfbox.rendering.RenderDestination;
  */
 public final class PDFPrintable implements Printable
 {
-    private final PDDocument document;
+    private final PDPageTree pageTree;
     private final PDFRenderer renderer;
     
     private final boolean showPageBorder;
@@ -129,7 +130,7 @@ public final class PDFPrintable implements Printable
     public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi,
                         boolean center, PDFRenderer renderer)
     {
-        this.document = document;
+        this.pageTree = document.getPages();
         this.renderer = renderer;
         this.scaling = scaling;
         this.showPageBorder = showPageBorder;
@@ -191,7 +192,7 @@ public final class PDFPrintable implements Printable
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
             throws PrinterException
     {
-        if (pageIndex < 0 || pageIndex >= document.getNumberOfPages())
+        if (pageIndex < 0 || pageIndex >= pageTree.getCount())
         {
             return NO_SUCH_PAGE;
         }
@@ -199,7 +200,7 @@ public final class PDFPrintable implements Printable
         {
             Graphics2D graphics2D = (Graphics2D)graphics;
 
-            PDPage page = document.getPage(pageIndex);
+            PDPage page = pageTree.get(pageIndex);
             PDRectangle cropBox = getRotatedCropBox(page);
 
             // the imageable area is the area within the page margins
