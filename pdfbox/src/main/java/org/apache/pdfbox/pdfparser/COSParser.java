@@ -1782,28 +1782,12 @@ public class COSParser extends BaseParser
             source.read();
         }
         source.seek(originOffset);
-        // eliminate double entries
-        int trailerdictsSize = trailerDicts.size();
-        String firstEntry = null;
-        if (trailerdictsSize > 0)
-        {
-            String[] keys = new String[trailerdictsSize];
-            trailerDicts.keySet().toArray(keys);
-            firstEntry = keys[0];
-            for (int i = 1; i < trailerdictsSize; i++)
-            {
-                if (firstEntry.equals(keys[i]))
-                {
-                    trailerDicts.remove(keys[i]);
-                }
-            }
-        }
         // continue if one entry is left only
         if (trailerDicts.size() == 1)
         {
             boolean rootFound = false;
             boolean infoFound = false;
-            COSDictionary trailerDict = trailerDicts.get(firstEntry);
+            COSDictionary trailerDict = trailerDicts.values().iterator().next();
             COSBase rootObj = trailerDict.getItem(COSName.ROOT);
             if (rootObj instanceof COSObject)
             {
