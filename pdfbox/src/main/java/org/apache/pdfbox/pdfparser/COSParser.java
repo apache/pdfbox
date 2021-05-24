@@ -138,7 +138,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * Contains all found objects of a brute force search.
      */
     private Map<COSObjectKey, Long> bfSearchCOSObjectKeyOffsets = null;
-    boolean bruteForceSearchTriggered = false;
+    private boolean bruteForceSearchTriggered = false;
     private PDEncryption encryption = null;
 
     /**
