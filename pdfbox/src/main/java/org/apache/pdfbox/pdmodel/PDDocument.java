@@ -93,8 +93,8 @@ public class PDDocument implements Closeable
 
     private static final Log LOG = LogFactory.getLog(PDDocument.class);
 
-    /**
-     * avoid concurrency issues with PDDeviceRGB
+    /*
+      avoid concurrency issues with PDDeviceRGB
      */
     static
     {
