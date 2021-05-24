@@ -779,7 +779,13 @@ final class FileSystemFontProvider extends FontProvider
         try
         {
             Type1Font type1 = Type1Font.createWithPFB(input);
-            if (type1.getName() != null && type1.getName().contains("|"))
+            if (type1.getName() == null)
+            {
+                fontInfoList.add(new FSIgnored(pfbFile, FontFormat.PFB, "*skipnoname*"));
+                LOG.warn("Missing 'name' entry for PostScript name in font " + pfbFile);
+                return;
+            }
+            if (type1.getName().contains("|"))
             {
                 fontInfoList.add(new FSIgnored(pfbFile, FontFormat.PFB, "*skippipeinname*"));
                 LOG.warn("Skipping font with '|' in name " + type1.getName() + " in file " + pfbFile);
