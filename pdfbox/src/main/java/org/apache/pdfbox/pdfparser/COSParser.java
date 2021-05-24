@@ -1454,7 +1454,6 @@ public class COSParser extends BaseParser implements ICOSParser
                 boolean infoFound = false;
                 skipSpaces();
                 COSDictionary trailerDict = parseCOSDictionary();
-                trailerKeys.setLength(0);
                 COSObject rootObj = trailerDict.getCOSObject(COSName.ROOT);
                 if (rootObj != null)
                 {
@@ -1476,7 +1475,6 @@ public class COSParser extends BaseParser implements ICOSParser
                 if (rootFound && infoFound)
                 {
                     trailerDicts.put(trailerKeys.toString(), trailerDict);
-                    trailerKeys.setLength(0);
                 }
             }
             catch (IOException exception)
@@ -1485,6 +1483,7 @@ public class COSParser extends BaseParser implements ICOSParser
                         exception);
             }
             trailerOffset = findString(TRAILER_MARKER);
+            trailerKeys.setLength(0);
         }
         source.seek(originOffset);
         // continue if one entry is left only
