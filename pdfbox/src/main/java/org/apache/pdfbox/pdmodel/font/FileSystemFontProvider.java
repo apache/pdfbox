@@ -645,7 +645,7 @@ final class FileSystemFontProvider extends FontProvider
     {
         try
         {
-            if (ttfFile.getPath().endsWith(".otf"))
+            if (ttfFile.getPath().toLowerCase().endsWith(".otf"))
             {
                 OTFParser parser = new OTFParser(false, true);
                 OpenTypeFont otf = parser.parse(ttfFile);
