@@ -2246,7 +2246,7 @@ public class COSParser extends BaseParser implements ICOSParser
         if ( headerStart > 0 )
         {
             //trim off any leading characters
-            header = header.substring( headerStart, header.length() );
+            header = header.substring( headerStart);
         }
     
         // This is used if there is garbage after the header on the same line
@@ -2260,7 +2260,7 @@ public class COSParser extends BaseParser implements ICOSParser
             }
             else
             {
-                String headerGarbage = header.substring(headerMarker.length() + 3, header.length()) + "\n";
+                String headerGarbage = header.substring(headerMarker.length() + 3) + "\n";
                 header = header.substring(0, headerMarker.length() + 3);
                 source.rewind(headerGarbage.getBytes(StandardCharsets.ISO_8859_1).length);
             }
