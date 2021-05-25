@@ -606,7 +606,7 @@ public class PDFMergerUtilityTest extends TestCase
             }
         }
         br.close();
-        assertEquals(1, count);
+        assertEquals(file.getPath(), 1, count);
     }
 
     /**
