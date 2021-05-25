@@ -1479,14 +1479,11 @@ public class COSParser extends BaseParser implements ICOSParser
                     if (trailerDict.containsKey(COSName.ENCRYPT))
                     {
                         COSObject encObj = trailerDict.getCOSObject(COSName.ENCRYPT);
-                        if (encObj != null)
+                        // check if the dictionary can be dereferenced
+                        // TODO check if the dictionary is an encryption dictionary?
+                        if (encObj != null && encObj.getObject() instanceof COSDictionary)
                         {
-                            // check if the dictionary can be dereferenced
-                            // TODO check if the dictionary is an encryption dictionary?
-                            if (encObj.getObject() instanceof COSDictionary)
-                            {
-                                trailer.setItem(COSName.ENCRYPT, encObj);
-                            }
+                            trailer.setItem(COSName.ENCRYPT, encObj);
                         }
                     }
                     if (trailerDict.containsKey(COSName.ID))
