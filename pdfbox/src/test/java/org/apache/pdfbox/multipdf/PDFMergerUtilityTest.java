@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -624,7 +625,8 @@ class PDFMergerUtilityTest
     {
         try (PDDocument pdf = Loader.loadPDF(file))
         {
-            assertEquals(1, pdf.getDocument().getObjectsByType(COSName.STRUCT_TREE_ROOT).size());
+            List<COSObject> structTreeRootObjects = pdf.getDocument().getObjectsByType(COSName.STRUCT_TREE_ROOT);
+            assertEquals(1, structTreeRootObjects.size(), file.getPath() + " " + structTreeRootObjects);
         }
     }
 
