@@ -1580,7 +1580,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 PDColor backdropColor) throws IOException
         {
             Graphics2D savedGraphics = graphics;
-            Area savedLastClip=  lastClip;
+            Area savedLastClip = lastClip;
             Shape savedInitialClip = initialClip;
 
             // get the CTM x Form Matrix transform
@@ -1647,7 +1647,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     backdropImage = renderer.getPageImage();
                     needsBackdrop = backdropImage != null;
                     backdropX = minX;
-                    backdropY = (backdropImage != null) ? (backdropImage.getHeight() - maxY) : 0;
+                    backdropY = needsBackdrop ? (backdropImage.getHeight() - maxY) : 0;
                 }
                 else
                 {
