@@ -457,6 +457,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PARENT = new COSName("Parent");
     public static final COSName PARENT_TREE = new COSName("ParentTree");
     public static final COSName PARENT_TREE_NEXT_KEY = new COSName("ParentTreeNextKey");
+    public static final COSName PART = new COSName("Part");
     public static final COSName PATH = new COSName("Path");
     public static final COSName PATTERN = new COSName("Pattern");
     public static final COSName PATTERN_TYPE = new COSName("PatternType");
