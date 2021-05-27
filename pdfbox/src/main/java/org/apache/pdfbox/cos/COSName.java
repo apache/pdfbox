@@ -57,6 +57,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName AESV2 = new COSName("AESV2");
     public static final COSName AESV3 = new COSName("AESV3");
     public static final COSName AFTER = new COSName("After");
+    public static final COSName AI_META_DATA = new COSName("AIMetaData");
     public static final COSName AIS = new COSName("AIS");
     public static final COSName ALL_OFF = new COSName("AllOff");
     public static final COSName ALL_ON = new COSName("AllOn");
@@ -312,6 +313,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName IDENTITY_H = new COSName("Identity-H");
     public static final COSName IDENTITY_V = new COSName("Identity-V");
     public static final COSName IF = new COSName("IF");
+    public static final COSName ILLUSTRATOR = new COSName("Illustrator");
     public static final COSName IM = new COSName("IM");
     public static final COSName IMAGE = new COSName("Image");
     public static final COSName IMAGE_MASK = new COSName("ImageMask");
@@ -462,6 +464,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PDF_DOC_ENCODING = new COSName("PDFDocEncoding");
     public static final COSName PERMS = new COSName("Perms");
     public static final COSName PERCEPTUAL = new COSName("Perceptual");
+    public static final COSName PIECE_INFO = new COSName("PieceInfo");
     public static final COSName PG = new COSName("Pg");
     public static final COSName PI = new COSName("PI");
     public static final COSName PO = new COSName("PO");
@@ -474,6 +477,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PRINT_CLIP = new COSName("PrintClip");
     public static final COSName PRINT_SCALING = new COSName("PrintScaling");
     public static final COSName PRINT_STATE = new COSName("PrintState");
+    public static final COSName PRIVATE = new COSName("Private");
     public static final COSName PROC_SET = new COSName("ProcSet");
     public static final COSName PROCESS = new COSName("Process");
     public static final COSName PRODUCER = new COSName("Producer");
