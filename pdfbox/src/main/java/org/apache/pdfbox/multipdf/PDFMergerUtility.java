@@ -958,40 +958,120 @@ public class PDFMergerUtility
                       PDStructureTreeRoot srcStructTree,
                       PDStructureTreeRoot destStructTree) throws IOException
     {
-        // make new /K with array that has the input /K entries
-        COSArray newKArray = new COSArray();
+        COSArray dstKArray = new COSArray();
         if (destStructTree.getK() != null)
         {
             COSBase base = destStructTree.getK();
             if (base instanceof COSArray)
             {
-                newKArray.addAll((COSArray) base);
+                dstKArray.addAll((COSArray) base);
             }
-            else
+            else if (base instanceof COSDictionary)
             {
-                newKArray.add(base);
+                dstKArray.add(base);
             }
         }
+
+        COSArray srcKArray = new COSArray();
         if (srcStructTree.getK() != null)
         {
             COSBase base = cloner.cloneForNewDocument(srcStructTree.getK());
             if (base instanceof COSArray)
             {
-                newKArray.addAll((COSArray) base);
+                srcKArray.addAll((COSArray) base);
             }
-            else
+            else if (base instanceof COSDictionary)
             {
-                newKArray.add(base);
+                srcKArray.add(base);
             }
         }
-        if (newKArray.size() > 0)
+
+        if (srcKArray.size() == 0)
         {
-            COSDictionary kDictLevel0 = new COSDictionary();
-            updateParentEntry(newKArray, kDictLevel0);
-            kDictLevel0.setItem(COSName.K, newKArray);
-            kDictLevel0.setItem(COSName.P, destStructTree);
-            kDictLevel0.setItem(COSName.S, COSName.DOCUMENT);
-            destStructTree.setK(kDictLevel0);
+            return;
+        }
+
+        if (dstKArray.size() == 1 && dstKArray.getObject(0) instanceof COSDictionary)
+        {
+            // Only one element in the destination. If it is a /Document and its children
+            // are /Document or /Part, then we can insert there
+            COSDictionary topKDict = (COSDictionary) dstKArray.getObject(0);
+            if (COSName.DOCUMENT.equals(topKDict.getCOSName(COSName.S)))
+            {
+                COSArray kLevelOneArray = topKDict.getCOSArray(COSName.K);
+                if (kLevelOneArray != null)
+                {
+                    boolean onlyDocuments = hasOnlyDocumentsOrParts(kLevelOneArray);
+                    if (onlyDocuments)
+                    {
+                        // insert src elements at level 1
+                        kLevelOneArray.addAll(srcKArray);
+                        updateParentEntry(kLevelOneArray, topKDict, COSName.PART);
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (dstKArray.size() == 0)
+        {
+            updateParentEntry(srcKArray, destStructTree.getCOSObject(), null);
+            destStructTree.setK(srcKArray);
+            return;
+        }
+
+        // whatever this is, merge this under a new /Document element
+        dstKArray.addAll(srcKArray);
+        COSDictionary kLevelZeroDict = new COSDictionary();
+        // If it is all Document, then make it all Part
+        COSName newStructureType = hasOnlyDocumentsOrParts(dstKArray) ? COSName.PART : null;
+        updateParentEntry(dstKArray, kLevelZeroDict, newStructureType);
+        kLevelZeroDict.setItem(COSName.K, dstKArray);
+        kLevelZeroDict.setItem(COSName.P, destStructTree);
+        kLevelZeroDict.setItem(COSName.S, COSName.DOCUMENT);
+        destStructTree.setK(kLevelZeroDict);
+    }
+
+    private boolean hasOnlyDocumentsOrParts(COSArray kLevelOneArray)
+    {
+        for (int i = 0; i < kLevelOneArray.size(); ++i)
+        {
+            COSBase base = kLevelOneArray.getObject(i);
+            if (!(base instanceof COSDictionary))
+            {
+                return false;
+            }
+            COSDictionary dict = (COSDictionary) base;
+            if (!COSName.DOCUMENT.equals(dict.getCOSName(COSName.S)) &&
+                !COSName.PART.equals(dict.getCOSName(COSName.S)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Update the P reference to the new parent dictionary.
+     *
+     * @param kArray the kids array
+     * @param newParent the new parent
+     * @param newStructureType the new structure type in /S or null so it doesn't get replaced
+     */
+    private void updateParentEntry(COSArray kArray, COSDictionary newParent, COSName newStructureType)
+    {
+        for (int i = 0; i < kArray.size(); i++)
+        {
+            COSBase subEntry = kArray.getObject(i);
+            if (subEntry instanceof COSDictionary)
+            {
+                COSDictionary dictEntry = (COSDictionary) subEntry;
+                dictEntry.setItem(COSName.P, newParent);
+                if (newStructureType != null)
+                {
+                    dictEntry.setItem(COSName.S, newStructureType);
+                }
+            }
         }
     }
 
@@ -1519,28 +1599,6 @@ public class PDFMergerUtility
             else if (subEntry instanceof COSDictionary)
             {
                 updatePageReferences(cloner, (COSDictionary) subEntry, objMapping);
-            }
-        }
-    }
-
-    /**
-     * Update the P reference to the new parent dictionary.
-     *
-     * @param kArray the kids array
-     * @param newParent the new parent
-     */
-    private void updateParentEntry(COSArray kArray, COSDictionary newParent)
-    {
-        for (int i = 0; i < kArray.size(); i++)
-        {
-            COSBase subEntry = kArray.getObject(i);
-            if (subEntry instanceof COSDictionary)
-            {
-                COSDictionary dictEntry = (COSDictionary) subEntry;
-                if (dictEntry.getDictionaryObject(COSName.P) != null)
-                {
-                    dictEntry.setItem(COSName.P, newParent);
-                }
             }
         }
     }
