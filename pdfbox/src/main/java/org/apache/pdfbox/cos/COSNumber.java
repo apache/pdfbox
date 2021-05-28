@@ -64,15 +64,12 @@ public abstract class COSNumber extends COSBase
             {
                 return COSInteger.get((long) digit - '0');
             } 
-            else if (digit == '-' || digit == '.') 
+            if (digit == '-' || digit == '.')
             {
                 // See https://issues.apache.org/jira/browse/PDFBOX-592
                 return COSInteger.ZERO;
             } 
-            else 
-            {
-                throw new IOException("Not a number: " + number);
-            }
+            throw new IOException("Not a number: " + number);
         } 
         if (isFloat(number))
         {
