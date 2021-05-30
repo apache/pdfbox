@@ -318,9 +318,9 @@ public class COSWriter implements ICOSVisitor
         return compressParameters != null && compressParameters.isCompress();
     }
 
-    private void prepareIncrement(PDDocument doc)
+    private void prepareIncrement()
     {
-        COSDocument cosDoc = doc.getDocument();
+        COSDocument cosDoc = pdDocument.getDocument();
         Set<COSObjectKey> keySet = cosDoc.getXrefTable().keySet();
         for (COSObjectKey cosObjectKey : keySet)
         {
@@ -743,9 +743,8 @@ public class COSWriter implements ICOSVisitor
             trailer.setLong(COSName.PREV, doc.getStartXref());
             if (hybridPrev != -1)
             {
-                COSName xrefStm = COSName.XREF_STM;
-                trailer.removeItem(xrefStm);
-                trailer.setLong(xrefStm, getStartxref());
+                trailer.removeItem(COSName.XREF_STM);
+                trailer.setLong(COSName.XREF_STM, getStartxref());
             }
             doWriteXRefTable();
             doWriteTrailer(doc);
@@ -1470,26 +1469,24 @@ public class COSWriter implements ICOSVisitor
      */
     public void write(PDDocument doc, SignatureInterface signInterface) throws IOException
     {
-        Long idTime = doc.getDocumentId() == null ? System.currentTimeMillis() : 
-                                                    doc.getDocumentId();
-
         pdDocument = doc;
         signatureInterface = signInterface;
         number = pdDocument.getDocument().getHighestXRefObjectNumber();
-
         if(incrementalUpdate)
         {
-            prepareIncrement(doc);
+            prepareIncrement();
         }
-        
+        Long idTime = pdDocument.getDocumentId() == null ? System.currentTimeMillis()
+                : pdDocument.getDocumentId();
+        COSDocument cosDoc = pdDocument.getDocument();
+        COSDictionary trailer = cosDoc.getTrailer();
+
         // if the document says we should remove encryption, then we shouldn't encrypt
         if(doc.isAllSecurityToBeRemoved())
         {
             willEncrypt = false;
             // also need to get rid of the "Encrypt" in the trailer so readers 
             // don't try to decrypt a document which is not encrypted
-            COSDocument cosDoc = doc.getDocument();
-            COSDictionary trailer = cosDoc.getTrailer();
             trailer.removeItem(COSName.ENCRYPT);
         }
         else
@@ -1515,8 +1512,6 @@ public class COSWriter implements ICOSVisitor
             }
         }
 
-        COSDocument cosDoc = pdDocument.getDocument();
-        COSDictionary trailer = cosDoc.getTrailer();
         COSArray idArray;
         boolean missingID = true;
         COSBase base = trailer.getDictionaryObject(COSName.ID);
