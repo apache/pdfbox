@@ -703,9 +703,9 @@ public class COSWriter implements ICOSVisitor
         trailer.accept(this);
     }
 
-    private void doWriteXRefInc(COSDocument doc, long hybridPrev) throws IOException
+    private void doWriteXRefInc(COSDocument doc, boolean hasHybridXRef) throws IOException
     {
-        if (doc.isXRefStream() || hybridPrev != -1)
+        if (doc.isXRefStream() || hasHybridXRef)
         {
             // the file uses XrefStreams, so we need to update
             // it with an xref stream. We create a new one and fill it
@@ -736,12 +736,11 @@ public class COSWriter implements ICOSVisitor
             COSStream stream2 = pdfxRefStream.getStream();
             doWriteObject(stream2);
         }
-
-        if (!doc.isXRefStream() || hybridPrev != -1)
+        else
         {
             COSDictionary trailer = doc.getTrailer();
             trailer.setLong(COSName.PREV, doc.getStartXref());
-            if (hybridPrev != -1)
+            if (hasHybridXRef)
             {
                 trailer.removeItem(COSName.XREF_STM);
                 trailer.setLong(COSName.XREF_STM, getStartxref());
@@ -1296,16 +1295,16 @@ public class COSWriter implements ICOSVisitor
 
         // get the previous trailer
         COSDictionary trailer = doc.getTrailer();
-        long hybridPrev = -1;
+        boolean hasHybridXRef = false;
 
         if (trailer != null)
         {
-            hybridPrev = trailer.getLong(COSName.XREF_STM);
+            hasHybridXRef = trailer.getLong(COSName.XREF_STM) != -1;
         }
 
         if(incrementalUpdate || doc.isXRefStream())
         {
-            doWriteXRefInc(doc, hybridPrev);
+            doWriteXRefInc(doc, hasHybridXRef);
         }
         else
         {
