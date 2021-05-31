@@ -220,8 +220,8 @@ public class GlyfSimpleDescript extends GlyfDescript
                 {
                     if (index + i >= flags.length)
                     {
-                        throw new IOException(
-                                "repeat count (" + repeats + ") higher than remaining space");
+                        LOG.error("repeat count (" + repeats + ") higher than remaining space");
+                        return;
                     }
                     flags[index + i] = flags[index];
                 }
