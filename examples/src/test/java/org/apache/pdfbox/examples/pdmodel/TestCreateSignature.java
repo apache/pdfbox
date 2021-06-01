@@ -850,7 +850,9 @@ class TestCreateSignature
                     continue; // not relevant here
                 }
                 assertTrue(sigCertHolderSetFromVRIArray.contains(holder),
-                        "VRI/signaturehash/Cert array doesn't contain " + holder.getSubject());
+                        "File '" + outFile + "' Root/DSS/VRI/" + hexSignatureHash +
+                                "/Cert array doesn't contain a certificate with subject '" +
+                                holder.getSubject() + "' and serial " + holder.getSerialNumber());
             }
             // Get all certificates. Each one should either be issued (= signed) by a certificate of the set
             Set<X509Certificate> certSet = new HashSet<>();
