@@ -862,7 +862,9 @@ public class TestCreateSignature
             {
                 continue; // not relevant here
             }
-            Assert.assertTrue("VRI/signaturehash/Cert array doesn't contain " + holder.getSubject(),
+            Assert.assertTrue("File '" + outFile + "' Root/DSS/VRI/" + hexSignatureHash +
+                    "/Cert array doesn't contain a certificate with subject '" +
+                    holder.getSubject() + "' and serial " + holder.getSerialNumber(),
                     sigCertHolderSetFromVRIArray.contains(holder));
         }
 
