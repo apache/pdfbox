@@ -206,7 +206,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     @Override
     public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
     {
-        throw new IOException(getClass().getName() + ".createView isn't supported.");
+        throw new UnsupportedOperationException(getClass().getName() + ".createView isn't supported.");
     }
 
 }
