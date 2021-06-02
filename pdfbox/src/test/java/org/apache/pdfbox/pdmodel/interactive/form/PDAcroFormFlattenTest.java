@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -26,6 +28,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
@@ -35,6 +39,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -135,6 +140,30 @@ class PDAcroFormFlattenTest
     })
     void testFlatten(String sourceUrl, String targetFileName) throws IOException {
         flattenAndCompare(sourceUrl, targetFileName);
+    }
+
+    @Test
+    void flattenSingleField() throws IOException
+    {
+        final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
+        final String NAME_OF_PDF = "MultilineFields.pdf";
+
+        PDDocument document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
+        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+        int numFieldsBefore = acroForm.getFields().size();
+    
+        List<PDField> toBeFlattened = new ArrayList<>();
+        PDTextField field = (PDTextField) acroForm.getField("AlignLeft-Filled");
+        toBeFlattened.add(field);
+        acroForm.flatten(toBeFlattened,false);
+
+        assertEquals(numFieldsBefore, acroForm.getFields().size() + 1, "the number of form fields shall be reduced by one");
+        assertNull(acroForm.getField("AlignLeft-Filled"), "the flattened field shall no longer exist");
+
+        // Store for manual comparison if needed
+        // final File OUT_DIR = new File("target/test-output");
+        // File file = new File(OUT_DIR, "MultilineFields-SingleFieldFlattened.pdf");
+        // document.save(file);
     }
 
     /*

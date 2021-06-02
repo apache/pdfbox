@@ -83,8 +83,8 @@ class COSObjectKeyTest
     @Test
     void testEquals()
     {
-        assertTrue(new COSObjectKey(100, 0).equals(new COSObjectKey(100, 0)));
-        assertFalse(new COSObjectKey(100, 0).equals(new COSObjectKey(101, 0)));
+        assertEquals(new COSObjectKey(100, 0), new COSObjectKey(100, 0));
+        assertNotEquals(new COSObjectKey(100, 0), new COSObjectKey(101, 0));
     }
 
     @Test

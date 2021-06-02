@@ -48,7 +48,7 @@ class SequenceRandomAccessReadTest
                 randomAccessReadBuffer2);
         try (SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList))
         {
-            assertThrows(IOException.class, () -> sequenceRandomAccessRead.createView(0, 10));
+            assertThrows(UnsupportedOperationException.class, () -> sequenceRandomAccessRead.createView(0, 10));
             
             int overallLength = input1.length() + input2.length();
             assertEquals(overallLength, sequenceRandomAccessRead.length());

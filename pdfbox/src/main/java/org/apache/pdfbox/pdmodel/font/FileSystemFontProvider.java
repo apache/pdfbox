@@ -618,7 +618,7 @@ final class FileSystemFontProvider extends FontProvider
     {
         try
         {
-            if (ttfFile.getPath().endsWith(".otf"))
+            if (ttfFile.getPath().toLowerCase().endsWith(".otf"))
             {
                 OTFParser parser = new OTFParser(false, true);
                 OpenTypeFont otf = parser.parse(ttfFile);
@@ -751,7 +751,13 @@ final class FileSystemFontProvider extends FontProvider
         try (InputStream input = new FileInputStream(pfbFile))
         {
             Type1Font type1 = Type1Font.createWithPFB(input);
-            if (type1.getName() != null && type1.getName().contains("|"))
+            if (type1.getName() == null)
+            {
+                fontInfoList.add(new FSIgnored(pfbFile, FontFormat.PFB, "*skipnoname*"));
+                LOG.warn("Missing 'name' entry for PostScript name in font " + pfbFile);
+                return;
+            }
+            if (type1.getName().contains("|"))
             {
                 fontInfoList.add(new FSIgnored(pfbFile, FontFormat.PFB, "*skippipeinname*"));
                 LOG.warn("Skipping font with '|' in name " + type1.getName() + " in file " + pfbFile);
