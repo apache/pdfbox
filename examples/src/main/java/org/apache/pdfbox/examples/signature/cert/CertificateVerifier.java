@@ -208,23 +208,26 @@ public final class CertificateVerifier
             // root, we're done
             return;
         }
-        X509Certificate issuerCert = null;
         for (X509Certificate additionalCert : additionalCerts)
         {
             try
             {
                 cert.verify(additionalCert.getPublicKey(), SecurityProvider.getProvider().getName());
-                issuerCert = additionalCert;
-                break;
+                checkRevocationsWithIssuer(cert, additionalCert, additionalCerts, signDate);
+                // there can be several issuers
             }
             catch (GeneralSecurityException ex)
             {
                 // not the issuer
             }
-        }
-        // issuerCert is never null here. If it hadn't been found, then there wouldn't be a 
-        // verifiedCertChain earlier.
+        }        
+    }
 
+    private static void checkRevocationsWithIssuer(X509Certificate cert, X509Certificate issuerCert,
+            Set<X509Certificate> additionalCerts, Date signDate)
+            throws CertificateVerificationException, IOException, RevokedCertificateException,
+            GeneralSecurityException, OCSPException
+    {
         // Try checking the certificate through OCSP (faster than CRL)
         String ocspURL = extractOCSPURL(cert);
         if (ocspURL != null)
