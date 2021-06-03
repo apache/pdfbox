@@ -1851,10 +1851,12 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     private boolean searchForTrailerItems(COSDictionary trailer) throws IOException
     {
-        boolean rootFound = false;
-        for (COSObjectKey key : getBFCOSObjectOffsets().keySet())
+        COSObject rootObject = null;
+        COSObject infoObject = null;
+        for (Entry<COSObjectKey, Long> entrySet : getBFCOSObjectOffsets().entrySet())
         {
-            COSObject cosObject = document.getObjectFromPool(key);
+            COSObjectKey currentKey = entrySet.getKey();
+            COSObject cosObject = document.getObjectFromPool(currentKey);
             COSBase baseObject = cosObject.getObject();
 
             if (!(baseObject instanceof COSDictionary))
@@ -1865,18 +1867,45 @@ public class COSParser extends BaseParser implements ICOSParser
             // document catalog
             if (isCatalog(dictionary))
             {
-                trailer.setItem(COSName.ROOT, cosObject);
-                rootFound = true;
+                rootObject = compareCOSObjects(cosObject, entrySet.getValue(), rootObject);
             }
             // info dictionary
             else if (isInfo(dictionary))
             {
-                trailer.setItem(COSName.INFO, cosObject);
+                infoObject = compareCOSObjects(cosObject, entrySet.getValue(), infoObject);
             }
             // encryption dictionary, if existing, is lost
             // We can't run "Algorithm 2" from PDF specification because of missing ID
         }
-        return rootFound;
+        if (rootObject != null)
+        {
+            trailer.setItem(COSName.ROOT, rootObject);
+        }
+        if (infoObject != null)
+        {
+            trailer.setItem(COSName.INFO, infoObject);
+        }
+        return rootObject != null;
+    }
+
+    private COSObject compareCOSObjects(COSObject newObject, Long newOffset,
+            COSObject currentObject)
+    {
+        if (currentObject != null && currentObject.getKey() != null)
+        {
+            COSObjectKey currentKey = currentObject.getKey();
+            COSObjectKey newKey = newObject.getKey();
+            // check if the current object is an updated version of the previous found object
+            if (currentKey.getNumber() == newKey.getNumber())
+            {
+                return currentKey.getGeneration() < newKey.getGeneration() ? newObject
+                        : currentObject;
+            }
+            // most likely the object with the bigger offset is the newer one
+            Long currentOffset = document.getXrefTable().get(currentKey);
+            return currentOffset != null && newOffset > currentOffset ? newObject : currentObject;
+        }
+        return newObject;
     }
 
     /**
