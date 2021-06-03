@@ -48,6 +48,10 @@ public class SetStrokingColorSpace extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
+        if (arguments.isEmpty())
+        {
+            return;
+        }
         //(PDF 1.1) Set color space for stroking operations
         COSName name = (COSName)arguments.get( 0 );
         PDColorSpace cs = PDColorSpaceFactory.createColorSpace( name, context.getColorSpaces(), 
