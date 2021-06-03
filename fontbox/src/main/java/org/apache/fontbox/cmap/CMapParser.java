@@ -242,6 +242,21 @@ public class CMapParser
         }
     }
 
+    /**
+     * Throws an IOException if expectedOperatorName not equals operator.op
+     * @param operator Instance of operator
+     * @param expectedOperatorName Expected name of operator
+     * @param rangeName The name of the range in which the operator is expected (without a tilde character).
+     */
+    private void checkExpectedOperator(Operator operator, String expectedOperatorName, String rangeName) throws IOException
+    {
+        if (!operator.op.equals(expectedOperatorName))
+        {
+            throw new IOException("Error : ~" + rangeName + " contains an unexpected operator : "
+                    + operator.op);
+        }
+    }
+
     private void parseBegincodespacerange(Number cosCount, PushbackInputStream cmapStream, CMap result) throws IOException
     {
         for (int j = 0; j < cosCount.intValue(); j++)
@@ -249,11 +264,7 @@ public class CMapParser
             Object nextToken = parseNextToken(cmapStream);
             if (nextToken instanceof Operator)
             {
-                if (!((Operator) nextToken).op.equals("endcodespacerange"))
-                {
-                    throw new IOException("Error : ~codespacerange contains an unexpected operator : "
-                            + ((Operator) nextToken).op);
-                }
+                checkExpectedOperator((Operator)nextToken, "endcodespacerange", "codespacerange");
                 break;
             }
             byte[] startRange = (byte[]) nextToken;
@@ -276,11 +287,7 @@ public class CMapParser
             Object nextToken = parseNextToken(cmapStream);
             if (nextToken instanceof Operator)
             {
-                if (!((Operator) nextToken).op.equals("endbfchar"))
-                {
-                    throw new IOException("Error : ~bfchar contains an unexpected operator : "
-                            + ((Operator) nextToken).op);
-                }
+                checkExpectedOperator((Operator)nextToken, "endbfchar", "bfchar");
                 break;
             }
             byte[] inputCode = (byte[]) nextToken;
@@ -310,11 +317,7 @@ public class CMapParser
             Object nextToken = parseNextToken(cmapStream);
             if (nextToken instanceof Operator)
             {
-                if (!((Operator) nextToken).op.equals("endcidrange"))
-                {
-                    throw new IOException("Error : ~cidrange contains an unexpected operator : "
-                            + ((Operator) nextToken).op);
-                }
+                checkExpectedOperator((Operator)nextToken, "endcidrange", "cidrange");
                 break;
             }
             byte[] startCode = (byte[]) nextToken;
@@ -347,11 +350,7 @@ public class CMapParser
             Object nextToken = parseNextToken(cmapStream);
             if (nextToken instanceof Operator)
             {
-                if (!((Operator) nextToken).op.equals("endcidchar"))
-                {
-                    throw new IOException("Error : ~cidchar contains an unexpected operator : "
-                            + ((Operator) nextToken).op);
-                }
+                checkExpectedOperator((Operator)nextToken, "endcidchar", "cidchar");
                 break;
             }
             byte[] inputCode = (byte[]) nextToken;
@@ -367,11 +366,7 @@ public class CMapParser
             Object nextToken = parseNextToken(cmapStream);
             if (nextToken instanceof Operator)
             {
-                if (!((Operator) nextToken).op.equals("endbfrange"))
-                {
-                    throw new IOException("Error : ~bfrange contains an unexpected operator : "
-                            + ((Operator) nextToken).op);
-                }
+                checkExpectedOperator((Operator)nextToken, "endbfrange", "bfrange");
                 break;
             }
             byte[] startCode = (byte[]) nextToken;
