@@ -213,7 +213,7 @@ final class FileSystemFontProvider extends FontProvider
                 // ttc not closed here because it is needed later when ttf is accessed,
                 // e.g. rendering PDF with non-embedded font which is in ttc file in our font directory
                 TrueTypeCollection ttc = new TrueTypeCollection(file);
-                TrueTypeFont ttf = null;
+                TrueTypeFont ttf;
                 try
                 {
                     ttf = ttc.getFontByName(postScriptName);
@@ -247,7 +247,7 @@ final class FileSystemFontProvider extends FontProvider
                     // ttc not closed here because it is needed later when ttf is accessed,
                     // e.g. rendering PDF with non-embedded font which is in ttc file in our font directory
                     TrueTypeCollection ttc = new TrueTypeCollection(file);
-                    TrueTypeFont ttf = null;
+                    TrueTypeFont ttf;
                     try
                     {
                         ttf = ttc.getFontByName(postScriptName);
