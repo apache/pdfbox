@@ -2186,7 +2186,10 @@ public class COSParser extends BaseParser
      */
     private boolean searchForTrailerItems(COSDictionary trailer) throws IOException
     {
-        boolean rootFound = false;
+        COSObject rootObject = null;
+        Long rootOffset = null;
+        COSObject infoObject = null;
+        Long infoOffset = null;
         for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
         {
             COSDictionary dictionary = retrieveCOSDictionary(entry.getKey(), entry.getValue());
@@ -2197,18 +2200,53 @@ public class COSParser extends BaseParser
             // document catalog
             if (isCatalog(dictionary))
             {
-                trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
-                rootFound = true;
+                COSObject cosObject = document.getObjectFromPool(entry.getKey());
+                rootObject = compareCOSObjects(cosObject, entry.getValue(), rootObject, rootOffset);
+                if (rootObject == cosObject)
+                {
+                    rootOffset = entry.getValue();
+                }
             }
             // info dictionary
             else if (isInfo(dictionary))
             {
-                trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
+                COSObject cosObject = document.getObjectFromPool(entry.getKey());
+                infoObject = compareCOSObjects(cosObject, entry.getValue(), infoObject, infoOffset);
+                if (infoObject == cosObject)
+                {
+                    infoOffset = entry.getValue();
+                }
             }
             // encryption dictionary, if existing, is lost
             // We can't run "Algorithm 2" from PDF specification because of missing ID
         }
-        return rootFound;
+        if (rootObject != null)
+        {
+            trailer.setItem(COSName.ROOT, rootObject);
+        }
+        if (infoObject != null)
+        {
+            trailer.setItem(COSName.INFO, infoObject);
+        }
+        return rootObject != null;
+    }
+
+    private COSObject compareCOSObjects(COSObject newObject, Long newOffset,
+            COSObject currentObject, Long currentOffset)
+    {
+        if (currentObject != null)
+        {
+            // check if the current object is an updated version of the previous found object
+            if (currentObject.getObjectNumber() == newObject.getObjectNumber())
+            {
+                return currentObject.getGenerationNumber() < newObject.getGenerationNumber()
+                        ? newObject
+                        : currentObject;
+            }
+            // most likely the object with the bigger offset is the newer one
+            return currentOffset != null && newOffset > currentOffset ? newObject : currentObject;
+        }
+        return newObject;
     }
 
     private COSDictionary retrieveCOSDictionary(COSObject object) throws IOException
