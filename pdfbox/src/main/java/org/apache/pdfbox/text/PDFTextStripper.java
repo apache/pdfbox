@@ -1909,7 +1909,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 {
                     builder = new StringBuilder(strLength * 2);
                 }
-                builder.append(word.substring(p, q));
+                builder.append(word, p, q);
                 // Some fonts map U+FDF2 differently than the Unicode spec.
                 // They add an extra U+0627 character to compensate.
                 // This removes the extra character for those fonts.
@@ -1933,7 +1933,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         }
         else
         {
-            builder.append(word.substring(p, q));
+            builder.append(word, p, q);
             return handleDirection(builder.toString());
         }
     }
