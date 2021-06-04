@@ -242,7 +242,7 @@ public class Type1CharString
         }
         else if ("closepath".equals(name))
         {
-            closepath();
+            closeCharString1Path();
         }
         else if ("sbw".equals(name))
         {
@@ -459,7 +459,7 @@ public class Type1CharString
     /**
      * Close path.
      */
-    private void closepath()
+    private void closeCharString1Path()
     {
         if (path.getCurrentPoint() == null)
         {
