@@ -238,7 +238,7 @@ public class Type1CharString
             }
             break;
         case CLOSEPATH:
-            closepath();
+            closeCharString1Path();
             break;
         case SBW:
             if (numbers.size() >= 3)
@@ -439,7 +439,7 @@ public class Type1CharString
     /**
      * Close path.
      */
-    private void closepath()
+    private void closeCharString1Path()
     {
         if (path.getCurrentPoint() == null)
         {
