@@ -178,10 +178,9 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
             float tolerance = (text.getWidth()/textCharacter.length())/3.0f;
             for (TextPosition sameTextCharacter : sameTextCharacters)
             {
-                TextPosition character = sameTextCharacter;
-                String charCharacter = character.getUnicode();
-                float charX = character.getX();
-                float charY = character.getY();
+                String charCharacter = sameTextCharacter.getUnicode();
+                float charX = sameTextCharacter.getX();
+                float charY = sameTextCharacter.getY();
                 //only want to suppress
                 if( charCharacter != null &&
                         //charCharacter.equals( textCharacter ) &&
