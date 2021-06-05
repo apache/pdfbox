@@ -373,9 +373,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
     }
 
-    // sets the clipping path using caching for performance, we track lastClip manually because
-    // Graphics2D#getClip() returns a new object instead of the same one passed to setClip
-    private void setClip()
+    /**
+     * Sets the clipping path using caching for performance. We track lastClip manually because
+     * {@link Graphics2D#getClip()} returns a new object instead of the same one passed to
+     * {@link Graphics2D#setClip(java.awt.Shape) setClip()}. You may need to call this if you override
+     * {@link #showGlyph(Matrix, PDFont, int, Vector) showGlyph()}. See
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-5093">PDFBOX-5093</a> for more.
+     */
+    protected final void setClip()
     {
         Area clippingPath = getGraphicsState().getCurrentClippingPath();
         if (clippingPath != lastClip)
@@ -658,8 +663,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 getPaint(graphicsState.getStrokingColor()), graphicsState.getSoftMask());
     }
 
-    // returns the non-stroking AWT Paint
-    private Paint getNonStrokingPaint() throws IOException
+    /**
+     * Returns the non-stroking AWT Paint. You may need to call this if you override
+     * {@link #showGlyph(Matrix, PDFont, int, Vector) showGlyph()}. See
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-5093">PDFBOX-5093</a> for more.
+     *
+     * @return The non-stroking AWT Paint.
+     * @throws IOException
+     */
+    protected final Paint getNonStrokingPaint() throws IOException
     {
         PDGraphicsState graphicsState = getGraphicsState();
         return applySoftMaskToPaint(
