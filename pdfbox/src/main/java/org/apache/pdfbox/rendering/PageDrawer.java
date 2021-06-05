@@ -1645,9 +1645,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 {
                     // Use the current page as the parent group.
                     backdropImage = renderer.getPageImage();
-                    needsBackdrop = backdropImage != null;
-                    backdropX = minX;
-                    backdropY = needsBackdrop ? (backdropImage.getHeight() - maxY) : 0;
+                    if (backdropImage == null)
+                    {
+                        needsBackdrop = false;
+                    }
+                    else
+                    {
+                        backdropX = minX;
+                        backdropY = backdropImage.getHeight() - maxY;
+                    }
                 }
                 else
                 {

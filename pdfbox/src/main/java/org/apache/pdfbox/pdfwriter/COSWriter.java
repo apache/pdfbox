@@ -1064,14 +1064,16 @@ public class COSWriter implements ICOSVisitor
         if( actual instanceof COSObject )
         {
             actual = ((COSObject)obj).getObject();
+            COSObjectKey key = obj.getKey();
+            if (key != null)
+            {
+                objectKeys.put(obj, key);
+                return key;
+            }
         }
         // PDFBOX-4540: because objectKeys is accessible from outside, it is possible
         // that a COSObject obj is already in the objectKeys map.
-        COSObjectKey key = objectKeys.get(obj);
-        if( key == null && actual != null )
-        {
-            key = objectKeys.get(actual);
-        }
+        COSObjectKey key = actual != null ? objectKeys.get(actual) : null;
         if (key == null)
         {
             key = new COSObjectKey(++number, 0);
