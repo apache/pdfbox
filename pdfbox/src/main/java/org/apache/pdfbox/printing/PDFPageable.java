@@ -34,6 +34,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 public final class PDFPageable extends Book
 {
     private final PDDocument document;
+    private final int numberOfPages;
     private final boolean showPageBorder;
     private final float dpi;
     private final Orientation orientation;
@@ -90,6 +91,7 @@ public final class PDFPageable extends Book
         this.orientation = orientation;
         this.showPageBorder = showPageBorder;
         this.dpi = dpi;
+        numberOfPages = document.getNumberOfPages();
     }
 
     /**
@@ -145,7 +147,7 @@ public final class PDFPageable extends Book
     @Override
     public int getNumberOfPages()
     {
-        return document.getNumberOfPages();
+        return numberOfPages;
     }
 
     /**
@@ -211,9 +213,9 @@ public final class PDFPageable extends Book
     @Override
     public Printable getPrintable(int i)
     {
-        if (i >= getNumberOfPages())
+        if (i >= numberOfPages)
         {
-            throw new IndexOutOfBoundsException(i + " >= " + getNumberOfPages());
+            throw new IndexOutOfBoundsException(i + " >= " + numberOfPages);
         }
         PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
         printable.setSubsamplingAllowed(subsamplingAllowed);
