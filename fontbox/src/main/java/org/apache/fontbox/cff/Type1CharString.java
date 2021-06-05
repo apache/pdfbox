@@ -95,14 +95,11 @@ public class Type1CharString
      */
     public Rectangle2D getBounds()
     {
-        if (path == null)
+        synchronized(LOG)
         {
-            synchronized(LOG)
+            if (path == null)
             {
-                if (path == null)
-                {
-                    render();
-                }
+                render();
             }
         }
 
@@ -115,14 +112,11 @@ public class Type1CharString
      */
     public int getWidth()
     {
-        if (path == null)
+        synchronized(LOG)
         {
-            synchronized(LOG)
+            if (path == null)
             {
-                if (path == null)
-                {
-                    render();
-                }
+                render();
             }
         }
 
@@ -135,14 +129,11 @@ public class Type1CharString
      */
     public GeneralPath getPath()
     {
-        if (path == null)
+        synchronized(LOG)
         {
-            synchronized(LOG)
+            if (path == null)
             {
-                if (path == null)
-                {
-                    render();
-                }
+                render();
             }
         }
 
