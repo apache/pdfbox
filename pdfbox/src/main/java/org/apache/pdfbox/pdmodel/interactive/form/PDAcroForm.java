@@ -314,7 +314,7 @@ public final class PDAcroForm implements COSObjectable
      * Refreshes the appearance streams and appearance dictionaries for 
      * the widget annotations of all fields.
      * 
-     * @throws IOException
+     * @throws IOException if the appearance couldn't be generated
      */
     public void refreshAppearances() throws IOException
     {
@@ -331,8 +331,8 @@ public final class PDAcroForm implements COSObjectable
      * Refreshes the appearance streams and appearance dictionaries for 
      * the widget annotations of the specified fields.
      * 
-     * @param fields
-     * @throws IOException
+     * @param fields List of PDField instances.
+     * @throws IOException if the appearance couldn't be generated
      */
     public void refreshAppearances(List<PDField> fields) throws IOException
     {
