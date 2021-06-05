@@ -653,7 +653,8 @@ public abstract class PDFStreamEngine
             }
             else
             {
-                throw new IOException("Unknown type in array for TJ operation:" + obj);
+                throw new IOException("Unknown type " + obj.getClass().getSimpleName() +
+                        " in array for TJ operation:" + obj);
             }
         }
     }
