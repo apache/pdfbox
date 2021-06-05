@@ -117,7 +117,7 @@ public class PDFStreamParser extends BaseParser
 
                 if (c == '<')
                 {
-                    return parseCOSDictionary();
+                    return parseCOSDictionary(true);
                 }
                 else
                 {

@@ -192,16 +192,18 @@ public abstract class BaseParser
     /**
      * This will parse a PDF dictionary.
      *
+     * @param isDirect indicates whether the dictionary to be read is a direct object
      * @return The parsed dictionary, never null.
      *
      * @throws IOException If there is an error reading the stream.
      */
-    protected COSDictionary parseCOSDictionary() throws IOException
+    protected COSDictionary parseCOSDictionary(boolean isDirect) throws IOException
     {
         readExpectedChar('<');
         readExpectedChar('<');
         skipSpaces();
         COSDictionary obj = new COSDictionary();
+        obj.setDirect(isDirect);
         boolean done = false;
         while (!done)
         {
@@ -812,7 +814,7 @@ public abstract class BaseParser
             // check for second left bracket
             c = (char) source.peek();
             source.rewind(1);
-            return c == '<' ? parseCOSDictionary() : parseCOSString();
+            return c == '<' ? parseCOSDictionary(true) : parseCOSString();
         case '[':
             // array
             return parseCOSArray();

@@ -429,7 +429,7 @@ public class COSParser extends BaseParser implements ICOSParser
         readGenerationNumber();
         readExpectedString(OBJ_MARKER, true);
 
-        COSDictionary dict = parseCOSDictionary();
+        COSDictionary dict = parseCOSDictionary(false);
         try (COSStream xrefStream = parseCOSStream(dict))
         {
             parseXrefStream(xrefStream, objByteOffset, isStandalone);
@@ -1104,7 +1104,7 @@ public class COSParser extends BaseParser implements ICOSParser
                     readGenerationNumber();
                     readExpectedString(OBJ_MARKER, true);
                     // check the dictionary to avoid false positives
-                    COSDictionary dict = parseCOSDictionary();
+                    COSDictionary dict = parseCOSDictionary(false);
                     source.seek(startXRefOffset);
                     if ("XRef".equals(dict.getNameAsString(COSName.TYPE)))
                     {
@@ -1451,7 +1451,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 boolean rootFound = false;
                 boolean infoFound = false;
                 skipSpaces();
-                COSDictionary trailerDict = parseCOSDictionary();
+                COSDictionary trailerDict = parseCOSDictionary(true);
                 COSObject rootObj = trailerDict.getCOSObject(COSName.ROOT);
                 if (rootObj != null)
                 {
@@ -1585,7 +1585,7 @@ public class COSParser extends BaseParser implements ICOSParser
             COSStream stream = null;
             try
             {
-                COSDictionary dict = parseCOSDictionary();
+                COSDictionary dict = parseCOSDictionary(false);
                 stream = parseCOSStream(dict);
                 if (securityHandler != null)
                 {
@@ -2176,7 +2176,7 @@ public class COSParser extends BaseParser implements ICOSParser
         // Acrobat reader can also deal with this.
         skipSpaces();
     
-        COSDictionary parsedTrailer = parseCOSDictionary();
+        COSDictionary parsedTrailer = parseCOSDictionary(true);
         xrefTrailerResolver.setTrailer( parsedTrailer );
     
         skipSpaces();
