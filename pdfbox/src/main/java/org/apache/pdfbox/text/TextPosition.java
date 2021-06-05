@@ -680,7 +680,7 @@ public final class TextPosition
         widths2[i + 1] = 0;
 
         // get the rest of the string
-        sb.append(unicode.substring(i + 1, unicode.length()));
+        sb.append(unicode.substring(i + 1));
         System.arraycopy(widths, i + 1, widths2, i + 2, widths.length - i - 1);
 
         unicode = sb.toString();
