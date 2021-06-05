@@ -211,9 +211,10 @@ public final class PDFPageable extends Book
     @Override
     public Printable getPrintable(int i)
     {
-        if (i >= getNumberOfPages())
+        int numberOfPages = getNumberOfPages();
+        if (i >= numberOfPages)
         {
-            throw new IndexOutOfBoundsException(i + " >= " + getNumberOfPages());
+            throw new IndexOutOfBoundsException(i + " >= " + numberOfPages);
         }
         PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
         printable.setSubsamplingAllowed(subsamplingAllowed);
