@@ -97,13 +97,14 @@ public class Splitter
      *                         The first parameter is the new document instance.
      *                         The second parameter is the page number depending on parent document.
      * @throws IOException If there is an IOError
-     * @throws NullPointerException The documentConsumer parameter is null or document is null.
+     * @throws IllegalArgumentException The documentConsumer parameter is null or document is null.
      */
     public void split(PDDocument document, ObjIntConsumer<PDDocument> documentConsumer) throws IOException
     {
         if (documentConsumer == null)
-            throw new NullPointerException("The documentConsumer parameter is null.");
-
+        {
+            throw new IllegalArgumentException("The documentConsumer parameter is null.");
+        }
         // reset the currentPageNumber for a case if the split method will be used several times
         currentPageNumber = 0;
         destinationDocuments = new ArrayList<>();
