@@ -902,6 +902,7 @@ public abstract class BaseParser
             // This is not suppose to happen, but we will allow for it
             // so we are more compatible with POS writers that don't
             // follow the spec
+            long startOffset = seqSource.getPosition();
             String badString = readString();
             if (badString.isEmpty())
             {
@@ -909,7 +910,8 @@ public abstract class BaseParser
                 // we can end up in an infinite loop otherwise
                 throw new IOException(
                         "Unknown dir object c='" + c + "' cInt=" + (int) c + " peek='" + (char) peek
-                                + "' peekInt=" + peek + " at offset " + seqSource.getPosition());
+                        + "' peekInt=" + peek + " at offset " + seqSource.getPosition()
+                        + " (start offset: " + startOffset + ")");
             }
 
             // if it's an endstream/endobj, we want to put it back so the caller will see it
@@ -920,7 +922,7 @@ public abstract class BaseParser
             else
             {
                 LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
-                        + seqSource.getPosition());
+                        + seqSource.getPosition() + " (start offset: " + startOffset + ")");
             }
         }
         return null;
