@@ -41,6 +41,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -371,10 +372,12 @@ public class Overlay implements Closeable
     private void processPages(PDDocument document) throws IOException
     {
         int pageCounter = 0;
-        for (PDPage page : document.getPages())
+        PDPageTree pageTree = document.getPages();
+        int numberOfPages = pageTree.getCount();
+        for (PDPage page : pageTree)
         {
             pageCounter++;
-            LayoutPage layoutPage = getLayoutPage(pageCounter, document.getNumberOfPages());
+            LayoutPage layoutPage = getLayoutPage(pageCounter, numberOfPages);
             if (layoutPage == null)
             {
                 continue;
