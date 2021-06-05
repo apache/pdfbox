@@ -24,10 +24,10 @@ package org.apache.pdfbox.cos;
  */
 public final class COSObjectKey implements Comparable<COSObjectKey>
 {
-    private static final int GENERATION_OFFSET = Long.SIZE - Short.SIZE;
-    private static final long NUMBER_MASK = (long) Math.pow(2, GENERATION_OFFSET) - 1;
+    private static final int NUMBER_OFFSET = Short.SIZE;
+    private static final long GENERATION_MASK = (long) Math.pow(2, NUMBER_OFFSET) - 1;
     // combined number and generation
-    // The highest 16 bits hold the generation 0-65535
+    // The lowest 16 bits hold the generation 0-65535
     // The rest is used for the number (even though 34 bit are sufficient for 10 digits)
     private final long numberAndGeneration;
     
@@ -57,7 +57,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
         {
             throw new IllegalArgumentException("Generation number must not be a negative value");
         }
-        numberAndGeneration = (long) gen << GENERATION_OFFSET | (num & NUMBER_MASK);
+        numberAndGeneration = num << NUMBER_OFFSET | (gen & GENERATION_MASK);
     }
 
     /**
@@ -78,7 +78,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
      */
     public int getGeneration()
     {
-        return (int) (numberAndGeneration >>> GENERATION_OFFSET);
+        return (int) (numberAndGeneration & GENERATION_MASK);
     }
 
     /**
@@ -88,7 +88,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
      */
     public long getNumber()
     {
-        return numberAndGeneration & NUMBER_MASK;
+        return numberAndGeneration >>> NUMBER_OFFSET;
     }
 
     /**

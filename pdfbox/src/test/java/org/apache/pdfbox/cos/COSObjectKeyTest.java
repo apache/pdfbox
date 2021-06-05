@@ -17,9 +17,7 @@
 package org.apache.pdfbox.cos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
@@ -105,6 +103,22 @@ class COSObjectKeyTest
         key = new COSObjectKey(87654321, 123);
         assertEquals(87654321, key.getNumber());
         assertEquals(123, key.getGeneration());
+    }
+
+    @Test
+    void testSortingOrder()
+    {
+        // comparison is done by comparing the object numbers first
+        // if they are equal the generation numbers are taken into account
+        COSObjectKey key40 = new COSObjectKey(4, 0);
+        COSObjectKey key41 = new COSObjectKey(4, 1);
+        COSObjectKey key50 = new COSObjectKey(5, 0);
+
+        assertEquals(0, key40.compareTo(key40));
+        assertEquals(0, key41.compareTo(key41));
+        assertEquals(-1, key40.compareTo(key41));
+        assertEquals(-1, key40.compareTo(key50));
+        assertEquals(-1, key41.compareTo(key50));
     }
 
     @Test
