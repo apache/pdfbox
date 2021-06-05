@@ -2596,7 +2596,7 @@ public class COSParser extends BaseParser
         if ( headerStart > 0 )
         {
             //trim off any leading characters
-            header = header.substring( headerStart, header.length() );
+            header = header.substring(headerStart);
         }
     
         // This is used if there is garbage after the header on the same line
