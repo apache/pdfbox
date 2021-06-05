@@ -19,7 +19,6 @@ package org.apache.pdfbox.multipdf;
 
 import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 
@@ -34,7 +33,7 @@ public class PageExtractor
     // first page to extract is page 1 (by default)
     private int startPage = 1;
     
-    private int endPage = 0;
+    private int endPage;
     
     /** 
      * Creates a new instance of PageExtractor
@@ -54,7 +53,7 @@ public class PageExtractor
      */
     public PageExtractor(PDDocument sourceDocument, int startPage, int endPage)
     {
-        this(sourceDocument);
+        this.sourceDocument = sourceDocument;
         this.startPage = startPage;
         this.endPage = endPage;
     }
