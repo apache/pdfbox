@@ -229,14 +229,15 @@ public class PDPageLabels implements COSObjectable
      */
     public String[] getLabelsByPageIndices()
     {
-        final String[] map = new String[doc.getNumberOfPages()];
+        final int numberOfPages = doc.getNumberOfPages();
+        final String[] map = new String[numberOfPages];
         computeLabels(new LabelHandler()
         {
             @Override
             public void newLabel(int pageIndex, String label)
             {
-                if(pageIndex < doc.getNumberOfPages())
-                { 
+                if (pageIndex < numberOfPages)
+                {
                     map[pageIndex] = label;
                 }
             }
