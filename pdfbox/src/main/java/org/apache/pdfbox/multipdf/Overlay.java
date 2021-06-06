@@ -372,9 +372,9 @@ public class Overlay implements Closeable
     private void processPages(PDDocument document) throws IOException
     {
         int pageCounter = 0;
-        PDPageTree tree = document.getPages();
-        int numberOfPages = tree.getCount();
-        for (PDPage page : tree)
+        PDPageTree pageTree = document.getPages();
+        int numberOfPages = pageTree.getCount();
+        for (PDPage page : pageTree)
         {
             pageCounter++;
             LayoutPage layoutPage = getLayoutPage(pageCounter, numberOfPages);
