@@ -293,6 +293,7 @@ public class PDPageLabels implements COSObjectable
      */
     private static class LabelGenerator implements Iterator<String>
     {
+        private final StringBuilder resultBuffer = new StringBuilder();
         private final PDPageLabelRange labelInfo;
         private final int numPages;
         private int currentPage;
@@ -317,25 +318,27 @@ public class PDPageLabels implements COSObjectable
             {
                 throw new NoSuchElementException();
             }
-            StringBuilder buf = new StringBuilder();
-            if (labelInfo.getPrefix() != null)
+            String label = labelInfo.getPrefix();
+            if (label != null)
             {
-                String label = labelInfo.getPrefix();
                 // there may be some labels with some null bytes at the end
                 // which will lead to an incomplete output, see PDFBOX-1047
                 while (label.lastIndexOf(0) != -1)
                 {
                     label = label.substring(0, label.length()-1);
                 }
-                buf.append(label);
+                resultBuffer.append(label);
             }
-            if (labelInfo.getStyle() != null)
+            String style = labelInfo.getStyle();
+            if (style != null)
             {
-                buf.append(getNumber(labelInfo.getStart() + currentPage,
-                        labelInfo.getStyle()));
+                resultBuffer.append(getNumber(labelInfo.getStart() + currentPage,
+                        style));
             }
             currentPage++;
-            return buf.toString();
+            String result = resultBuffer.toString();
+            resultBuffer.setLength(0);
+            return result;
         }
 
         private String getNumber(int pageIndex, String style)
