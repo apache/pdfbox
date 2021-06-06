@@ -242,9 +242,6 @@ public final class PDAcroForm implements COSObjectable
             refreshAppearances(fields);
         }
 
-        // the content stream to write to
-        PDPageContentStream contentStream;
-
         // get the widgets per page
         Map<COSDictionary,Set<COSDictionary>> pagesWidgetsMap = buildPagesWidgetsMap(fields);
         
@@ -267,24 +264,31 @@ public final class PDAcroForm implements COSObjectable
                 }
                 else if (isVisibleAnnotation(annotation))
                 {
-                    contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, !isContentStreamWrapped);
-                    isContentStreamWrapped = true;
-                    
-                    PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
-                    
-                    PDFormXObject fieldObject = new PDFormXObject(appearanceStream.getCOSObject());
-                    
-                    contentStream.saveGraphicsState();
-                    
-                    // see https://stackoverflow.com/a/54091766/1729265 for an explanation
-                    // of the steps required
-                    // this will transform the appearance stream form object into the rectangle of the
-                    // annotation bbox and map the coordinate systems
-                    Matrix transformationMatrix = resolveTransformationMatrix(annotation, appearanceStream);
-                    contentStream.transform(transformationMatrix);                    
-                    contentStream.drawForm(fieldObject);
-                    contentStream.restoreGraphicsState();
-                    contentStream.close();
+                    PDPageContentStream contentStream = new PDPageContentStream(
+                            document, page, AppendMode.APPEND, true, !isContentStreamWrapped);
+                    try
+                    {
+                        isContentStreamWrapped = true;
+
+                        PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+
+                        PDFormXObject fieldObject = new PDFormXObject(appearanceStream.getCOSObject());
+
+                        contentStream.saveGraphicsState();
+
+                        // see https://stackoverflow.com/a/54091766/1729265 for an explanation
+                        // of the steps required
+                        // this will transform the appearance stream form object into the rectangle of the
+                        // annotation bbox and map the coordinate systems
+                        Matrix transformationMatrix = resolveTransformationMatrix(annotation, appearanceStream);
+                        contentStream.transform(transformationMatrix);
+                        contentStream.drawForm(fieldObject);
+                        contentStream.restoreGraphicsState();
+                    }
+                    finally
+                    {
+                        contentStream.close();
+                    }
                 }
             }
             page.setAnnotations(annotations);
