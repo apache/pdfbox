@@ -26,7 +26,7 @@ public class PDPanoseClassification
 {
     private final byte[] bytes;
 
-    PDPanoseClassification(byte[] bytes)
+    public PDPanoseClassification(byte[] bytes)
     {
         this.bytes = bytes;
     }
