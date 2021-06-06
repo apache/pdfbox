@@ -740,11 +740,6 @@ public class COSWriter implements ICOSVisitor
         {
             COSDictionary trailer = doc.getTrailer();
             trailer.setLong(COSName.PREV, doc.getStartXref());
-            if (hasHybridXRef)
-            {
-                trailer.removeItem(COSName.XREF_STM);
-                trailer.setLong(COSName.XREF_STM, getStartxref());
-            }
             doWriteXRefTable();
             doWriteTrailer(doc);
         }
