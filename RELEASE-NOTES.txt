@@ -1,4 +1,4 @@
-Release Notes -- Apache PDFBox -- Version 2.0.23
+Release Notes -- Apache PDFBox -- Version 2.0.24
 
 Introduction
 ------------
@@ -14,43 +14,54 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-3000] - Transparency Group issues
-[PDFBOX-4398] - getLastSignatureDictionary modifies internal structure of PDDocument
-[PDFBOX-5050] - NullPointerexception in AcroFormOrphanWidgetsProcessor.resolveNonRootField()
-[PDFBOX-5060] - AcroForm PDTextField formatting lost when setting value
-[PDFBOX-5063] - testCreateCheckBox fails on travis / github
-[PDFBOX-5072] - java.lang.IndexOutOfBoundsException
-[PDFBOX-5078] - Failure to modify cropBox when splitting a PDF Page vertically into 2 pieces
-[PDFBOX-5080] - Type1Parser.parseASCII throws inconsistent exceptions
-[PDFBOX-5081] - CFFParser.ByteSource.readRealNumber can better throw IOException
-[PDFBOX-5090] - Missing text extraction under certain conditions starting with apache pdfbox 2.0.18
-[PDFBOX-5091] - Performance issue when converting PDF to image after upgrading from PDFBox 2.0.20 to 2.0.21
-[PDFBOX-5094] - Wrong glyph when rendering a symbolic TTF font with WinANSIEncoding
-[PDFBOX-5100] - Sometimes unneeded message "Removed /IDTree from /Names dictionary, doesn't belong there"
-[PDFBOX-5104] - ArrayIndexOutOfBoundsException in isOwnerPassword
-[PDFBOX-5105] - IllegalArgumentException in computeEncryptedKeyRev56
-[PDFBOX-5106] - IllegalArgumentException in PDFObjectStreamParser.privateReadObjectNumbers
-[PDFBOX-5107] - ClassCastException in COSStream.getFilterList
-[PDFBOX-5108] - ArrayIndexOutOfBoundsException in PDFXrefStreamParser.parseValue
-[PDFBOX-5115] - U+00AD ('sfthyphen') is not available in this font Times-Roman encoding: WinAnsiEncoding
-[PDFBOX-5123] - OS2WindowsMetricsTable "version" variable confused with OpenType specification version
-[PDFBOX-5124] - Improperly declared OS2WindowsMetricsTable version (v0 table declard as v3) in embedded font stops parsing with EOFException
+[PDFBOX-5051] - Slow rendering for specific PDF file
+[PDFBOX-5134] - Very slow rendering on PageDrawer.shadingFill
+[PDFBOX-5135] - Glyphs missed in rendering
+[PDFBOX-5137] - Wrong classification of an JPEG image leading to a blank image added to a pdf document
+[PDFBOX-5138] - Embedded files not extracted from PDF files with multilevel EmbeddedFiles tree
+[PDFBOX-5150] - 3.0.0-RC1: PDComboBox.setValue() throws IllegalArgumentException: /DA is a required entry
+[PDFBOX-5151] - Issue with COSObjectKey::fixGeneration
+[PDFBOX-5155] - Error extracting text from PDF - Can't read the embedded Type1 font FDFBJU+NewsGothic
+[PDFBOX-5156] - Error in identification of PDF comment symbol % as a token separator with PDF names
+[PDFBOX-5163] - Stack overflow when reading a corrupt dictionary
+[PDFBOX-5168] - dash pattern [0] should be invisible
+[PDFBOX-5175] - Behaviour change in 2.0.20 due to use of IOUtils.populateBuffer in SecurityHandler.prepareAESInitializationVector leading to IOException for certain PDF
+[PDFBOX-5176] - java.io.IOException: Page tree root must be a dictionary
+[PDFBOX-5180] - Snapshot Deploy not working
+[PDFBOX-5187] - TSAClient with username+password
+[PDFBOX-5188] - COSOutputStream.flush doesn't call super
+[PDFBOX-5190] - BaseParser: stack overflow when reading a corrupt pdf
+[PDFBOX-5191] - isEmbeddingPermitted() is too restrictive on TTFs with OS2 table versions 0-2
+[PDFBOX-5192] - Wild rendering when repeating truetype glyph flag is outside of range
+[PDFBOX-5193] - v2.0.22 and v3.0.0-RC1 PDF Debugger app crashes with java.lang.NullPointerException
+[PDFBOX-5194] - CreateCheckBox example draws too large, clipped checkmark
+[PDFBOX-5196] - Wrong color space detected for some Jpeg images
+[PDFBOX-5199] - Possible memory leak after calling decode filter
+[PDFBOX-5204] - Ink annotation not rendered
 
 Improvement
 
-[PDFBOX-3017] - Improve document signing
-[PDFBOX-5055] - Minor improvement
-[PDFBOX-5103] - Allow reuse of subsetted fonts by inverting the ToUnicode CMap
-[PDFBOX-5110] - improve performance in signature validation
-[PDFBOX-5112] - Add more checks to PDFXrefStreamParser and reduce memory footprint
-[PDFBOX-5116] - Add rotated box to ShowColorBoxes.java example
-[PDFBOX-5121] - Use StringBuilder for key in PDDeviceN.toRGBWithTintTransform()
-[PDFBOX-5122] - Don't use RGB loop in PDDeviceN.toRGBWithTintTransform()
+[PDFBOX-5093] - Pass PDFRenderer to PDFPrintable constructor
+[PDFBOX-5141] - Create tests for HelloWorld examples
+[PDFBOX-5145] - Faster PDImageXObject.applyMask
+[PDFBOX-5154] - Custom folder for fonts in FontMapper
+[PDFBOX-5157] - allow to make timestamp only signature "LTV"
+[PDFBOX-5164] - Create portable collection PDF
+[PDFBOX-5177] - Optimize memory footprint of PDFObjectStreamParser
+[PDFBOX-5183] - Add getter/setter for suppressDuplicateOverlappingText in PDFMarkedContentExtractor
+[PDFBOX-5200] - Cache PageTree in PDFPrintable
+[PDFBOX-5201] - Add Adobe Illustrator COSNames
+[PDFBOX-5208] - Make constructors of CIDSystemInfo and PDPanoseClassification public
+
+Wish
+
+[PDFBOX-5198] - When merging multiple pdf ua documents, Tags become nested
 
 Task
 
-[PDFBOX-5045] - testFlattenOpenOfficeForm() has differences
-[PDFBOX-5057] - Review CCITTFaxDecoder updates
+[PDFBOX-5133] - Failing testFlattenPDFBox2469Filled on Ubuntu
+[PDFBOX-5184] - Add test for PDFMarkedContentExtractor class
+[PDFBOX-5186] - Create test for CreateGradientShadingPDF
 
 Release Contents
 ----------------
