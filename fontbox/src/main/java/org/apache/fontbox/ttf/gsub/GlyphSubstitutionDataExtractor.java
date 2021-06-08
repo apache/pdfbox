@@ -18,7 +18,6 @@
 package org.apache.fontbox.ttf.gsub;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -174,7 +173,7 @@ public class GlyphSubstitutionDataExtractor
             int coverageGlyphId = coverageTable.getGlyphId(i);
             int substituteGlyphId = coverageGlyphId + singleSubstTableFormat1.getDeltaGlyphID();
             putNewSubstitutionEntry(glyphSubstitutionMap, substituteGlyphId,
-                    Arrays.asList(coverageGlyphId));
+                    Collections.singletonList(coverageGlyphId));
         }
     }
 
@@ -197,7 +196,7 @@ public class GlyphSubstitutionDataExtractor
             int substituteGlyphId = coverageGlyphId
                     + singleSubstTableFormat2.getSubstituteGlyphIDs()[i];
             putNewSubstitutionEntry(glyphSubstitutionMap, substituteGlyphId,
-                    Arrays.asList(coverageGlyphId));
+                    Collections.singletonList(coverageGlyphId));
         }
     }
 
