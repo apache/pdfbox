@@ -140,7 +140,6 @@ public class GsubWorkerForBengali implements GsubWorker
     private List<Integer> applyGsubFeature(ScriptFeature scriptFeature,
             List<Integer> originalGlyphs)
     {
-
         GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
                 scriptFeature.getAllGlyphIdsForSubstitution());
 
@@ -153,7 +152,7 @@ public class GsubWorkerForBengali implements GsubWorker
             if (scriptFeature.canReplaceGlyphs(chunk))
             {
                 // gsub system kicks in, you get the glyphId directly
-                int glyphId = scriptFeature.getReplacementForGlyphs(chunk);
+                Integer glyphId = scriptFeature.getReplacementForGlyphs(chunk);
                 gsubProcessedGlyphs.add(glyphId);
             }
             else
