@@ -335,9 +335,10 @@ public class PDPageLabels implements COSObjectable
                 String label = labelInfo.getPrefix();
                 // there may be some labels with some null bytes at the end
                 // which will lead to an incomplete output, see PDFBOX-1047
-                while (label.lastIndexOf(0) != -1)
+                int index = label.indexOf(0);
+                if (index > -1)
                 {
-                    label = label.substring(0, label.length()-1);
+                    label = label.substring(0, index);
                 }
                 buf.append(label);
             }
