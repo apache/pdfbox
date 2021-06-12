@@ -29,7 +29,7 @@ import org.apache.fontbox.util.Charsets;
 public class DataInput
 {
 
-    private byte[] inputBuffer = null;
+    private final byte[] inputBuffer;
     private int bufferPosition = 0;
 
     /**
