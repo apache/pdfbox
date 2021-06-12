@@ -304,7 +304,7 @@ public class SigUtils
         // https://stackoverflow.com/questions/42114742/
         @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
         Collection<X509CertificateHolder> tstMatches =
-                timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
+                timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
         X509CertificateHolder certificateHolder = tstMatches.iterator().next();
         SignerInformationVerifier siv = 
                 new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(certificateHolder);

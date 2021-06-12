@@ -433,7 +433,7 @@ public final class ShowSignature
         SignerInformation signerInformation = signers.iterator().next();
         @SuppressWarnings("unchecked")
         Collection<X509CertificateHolder> matches =
-                certificatesStore.getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
+                certificatesStore.getMatches(signerInformation.getSID());
         if (matches.isEmpty())
         {
             throw new IOException("Signer '" + signerInformation.getSID().getIssuer() + 
@@ -456,7 +456,7 @@ public final class ShowSignature
             SigUtils.validateTimestampToken(timeStampToken);
             @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
             Collection<X509CertificateHolder> tstMatches =
-                timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
+                timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
             X509CertificateHolder tstCertHolder = tstMatches.iterator().next();
             X509Certificate certFromTimeStamp = new JcaX509CertificateConverter().getCertificate(tstCertHolder);
             // merge both stores using a set to remove duplicates
