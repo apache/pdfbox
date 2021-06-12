@@ -658,7 +658,7 @@ class GroupGraphics extends Graphics2D
                     }
 
                     // Alpha factor alpha0 / alphagn - alpha0 is in range 0.0-1.0.
-                    float alphaFactor = alpha0 / (float)alphagn - alpha0 / 255.0f;
+                    float alphaFactor = alpha0 / alphagn - alpha0 / 255.0f;
                     int groupRGB = groupData[index]; // color of group pixel
 
                     // Compute backdrop removal for RGB components.
