@@ -510,9 +510,7 @@ public class PDFMergerUtility
             throw new IOException("Error: destination PDF is closed.");
         }
 
-        PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
         PDDocumentCatalog srcCatalog = source.getDocumentCatalog();
-        
         if (isDynamicXfa(srcCatalog.getAcroForm()))
         {
             throw new IOException("Error: can't merge source document containing dynamic XFA form content.");
@@ -532,6 +530,7 @@ public class PDFMergerUtility
         }
 
         int pageIndexOpenActionDest = -1;
+        PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
         if (destCatalog.getOpenAction() == null)
         {
             // PDFBOX-3972: get local dest page index, it must be reassigned after the page cloning
