@@ -1075,7 +1075,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             byte[] k = md.digest(input);
             
             byte[] e = null;
-            for (int round = 0; round < 64 || ((int)e[e.length-1] & 0xFF) > round - 32; round++)
+            for (int round = 0; round < 64 || (e[e.length-1] & 0xFF) > round - 32; round++)
             {                
                 byte[] k1;
                 if (userKey != null && userKey.length >= 48)
