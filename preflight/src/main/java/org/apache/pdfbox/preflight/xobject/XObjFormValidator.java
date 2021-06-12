@@ -85,7 +85,7 @@ public class XObjFormValidator extends AbstractXObjValidator
     protected void checkMandatoryFields()
     {
         boolean lastMod = this.xobject.getItem(COSName.LAST_MODIFIED) != null;
-        boolean pieceInfo = this.xobject.getItem("PieceInfo") != null;
+        boolean pieceInfo = this.xobject.getItem(COSName.PIECE_INFO) != null;
         // type and subtype checked before to create the Validator.
         if (lastMod ^ pieceInfo)
         {
