@@ -658,12 +658,12 @@ public class PDFMergerUtility
             destCatalog.setPageMode(srcPageMode);
         }
 
-        COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
         COSDictionary srcLabels = srcCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
         if (srcLabels != null)
         {
             int destPageCount = destination.getNumberOfPages();
             COSArray destNums;
+            COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
             if (destLabels == null)
             {
                 destLabels = new COSDictionary();
