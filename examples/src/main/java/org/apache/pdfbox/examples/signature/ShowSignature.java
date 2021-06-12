@@ -70,7 +70,6 @@ import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.tsp.TimeStampTokenInfo;
 import org.bouncycastle.util.CollectionStore;
-import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 
 /**
