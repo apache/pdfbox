@@ -269,6 +269,7 @@ public final class ExtractText  implements Callable<Integer>
                     angleCollector.setStartPage(p);
                     angleCollector.setEndPage(p);
                     angleCollector.writeText(document, new NullWriter());
+                    COSArray cosArray = (COSArray) page.getCOSObject().getItem(COSName.CONTENTS);
                     // rotation magic
                     for (int angle : angleCollector.getAngles())
                     {
@@ -283,7 +284,7 @@ public final class ExtractText  implements Callable<Integer>
                         stripper.writeText(document, output);
 
                         // remove prepended transformation
-                        ((COSArray) page.getCOSObject().getItem(COSName.CONTENTS)).remove(0);
+                        cosArray.remove(0);
                     }
                     page.setRotation(rotation);
                 }
