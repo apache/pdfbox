@@ -154,6 +154,19 @@
                       <sha512>eec730efc741d52ec2de5a26bb74e34fda3d01f8f547a92c4730478d4e35cd383c9c9f3c397e388ee0882166a18c1396d9576c6f9ab0a70c9551fb49c0ee3e6f</sha512>
                   </configuration>
               </execution>
+              <execution>
+                  <id>testDoubleVisibleSignatureOnEncryptedFile</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://issues.apache.org/jira/secure/attachment/12682897/FormI-9-English.pdf</url>
+                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <outputFileName>PDFBOX-2469-1-AcroForm-AES128.pdf</outputFileName>
+                      <sha512>a5067d67da88dcb3f2b6e63c6387d2fc7170db104d67e81de59d12e9e6b1ad473c0325411fc1cc235e12fbc56a37a67181f85b4e49cb208fbea0c0a01ebe6dd2</sha512>
+                  </configuration>
+              </execution>
           </executions>
       </plugin>
       <!-- JDK9 -->
