@@ -1,5 +1,4 @@
-/*****************************************************************************
- * 
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,8 +15,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- * 
- ****************************************************************************/
+ */
 
 package org.apache.xmpbox.type;
 
@@ -81,11 +79,8 @@ public abstract class AbstractField
      */
     public final void setAttribute(Attribute value)
     {
-        if (attributes.containsKey(value.getName()))
-        {
-            // if same name in element, attribute will be replaced
-            attributes.remove(value.getName());
-        }
+        // if same name in element, attribute will be replaced
+        attributes.remove(value.getName());
         attributes.put(value.getName(), value);
     }
 
@@ -135,7 +130,6 @@ public abstract class AbstractField
         {
             attributes.remove(qualifiedName);
         }
-
     }
 
     public final XMPMetadata getMetadata()
@@ -151,5 +145,4 @@ public abstract class AbstractField
      * @return the prefix specified
      */
     public abstract String getPrefix();
-
 }
