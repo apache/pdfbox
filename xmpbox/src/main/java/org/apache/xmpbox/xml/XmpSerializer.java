@@ -1,4 +1,4 @@
-/*****************************************************************************
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -15,8 +15,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- * 
- ****************************************************************************/
+ */
 
 package org.apache.xmpbox.xml;
 
@@ -117,16 +116,17 @@ public class XmpSerializer
 
     public void serializeFields(Document doc, Element parent, List<AbstractField> fields, String resourceNS, String prefix, boolean wrapWithProperty)
     {
+        boolean usePrefix = prefix != null && !prefix.isEmpty();
+
         for (AbstractField field : fields)
         {
-
             if (field instanceof AbstractSimpleProperty)
             {
                 AbstractSimpleProperty simple = (AbstractSimpleProperty) field;
                 
                 String localPrefix;
                 
-                if (prefix != null && !prefix.isEmpty())
+                if (usePrefix)
                 {
                     localPrefix = prefix;
                 }
@@ -221,8 +221,6 @@ public class XmpSerializer
     private List<Attribute> normalizeAttributes(AbstractComplexProperty property)
     {
         List<Attribute> attributes = property.getAllAttributes();
-        
-
         List<Attribute> toSerialize = new ArrayList<>();
         List<AbstractField> fields = property.getAllProperties();
                 
