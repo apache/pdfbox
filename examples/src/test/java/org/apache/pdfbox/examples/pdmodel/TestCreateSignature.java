@@ -68,6 +68,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -455,6 +456,16 @@ public class TestCreateSignature
         document.close();
 
         document = PDDocument.load(signedFile);
+        
+        // early detection of problems in the page structure
+        int p = 0;
+        PDPageTree pageTree = document.getPages();
+        for (PDPage page : document.getPages())
+        {
+            Assert.assertEquals(p, pageTree.indexOf(page));
+            ++p;
+        }
+
         // PDFBOX-4261: check that object number stays the same 
         Assert.assertEquals(origPageKey, document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString());
 
@@ -822,6 +833,40 @@ public class TestCreateSignature
         addValidationInformation.validateSignature(inFile, outFile);
 
         checkLTV(outFile);
+    }
+    
+    @Test
+    public void testDoubleVisibleSignatureOnEncryptedFile()
+            throws IOException, CMSException, OperatorCreationException, GeneralSecurityException, TSPException, CertificateVerificationException
+    {
+        // load the keystore
+        KeyStore keystore = KeyStore.getInstance("PKCS12");
+        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
+
+        // sign PDF
+        String inPath = "target/pdfs/PDFBOX-2469-1-AcroForm-AES128.pdf";
+        FileInputStream fis = new FileInputStream(jpegPath);
+        CreateVisibleSignature signing = new CreateVisibleSignature(keystore, password.toCharArray());
+        signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
+        signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
+        signing.setExternalSigning(externallySign);
+        File destFile = new File(outDir, getOutputFileName("2signed{0}_visible.pdf"));
+        signing.signPDF(new File(inPath), destFile, null);
+        fis.close();
+
+        checkSignature(new File(inPath), destFile, false);
+
+        inPath = destFile.getAbsolutePath();
+        fis = new FileInputStream(jpegPath);
+        signing = new CreateVisibleSignature(keystore, password.toCharArray());
+        signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 2);
+        signing.setVisibleSignatureProperties("name", "location", "Security", 0, 2, true);
+        signing.setExternalSigning(externallySign);
+        destFile = new File(outDir, getOutputFileName("2signed{0}_visible_signed{0}_visible.pdf"));
+        signing.signPDF(new File(inPath), destFile, null);
+        fis.close();
+
+        checkSignature(new File(inPath), destFile, false);
     }
 
     private void checkLTV(File outFile)
