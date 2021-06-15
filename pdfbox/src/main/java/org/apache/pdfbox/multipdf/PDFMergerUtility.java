@@ -516,7 +516,6 @@ public class PDFMergerUtility
             throw new IOException("Error: can't merge source document containing dynamic XFA form content.");
         }
 
-        PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
         PDDocumentInformation destInfo = destination.getDocumentInformation();
         PDDocumentInformation srcInfo = source.getDocumentInformation();
         mergeInto(srcInfo.getCOSObject(), destInfo.getCOSObject(), Collections.<COSName>emptySet());
@@ -660,7 +659,6 @@ public class PDFMergerUtility
         COSDictionary srcLabels = srcCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
         if (srcLabels != null)
         {
-            COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
             int destPageCount = destination.getNumberOfPages();
             COSArray destNums;
             COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
