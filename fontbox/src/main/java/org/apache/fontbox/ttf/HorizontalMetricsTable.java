@@ -52,7 +52,7 @@ public class HorizontalMetricsTable extends TTFTable
         HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
         if (hHeader == null)
         {
-            throw new IOException("Could not get hhea table");
+            throw new IOException("Could not get hmtx table");
         }
         numHMetrics = hHeader.getNumberOfHMetrics();
         int numGlyphs = ttf.getNumberOfGlyphs();
