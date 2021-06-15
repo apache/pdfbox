@@ -46,11 +46,6 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     private long realpos = 0;
     
     /**
-     * Buffer size.
-     */
-    private final int BUFSIZE;
-
-    /**
      * Creates a new instance of the BufferedRandomAccessFile.
      *
      * @param filename The path of the file to open.
@@ -66,8 +61,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
             throws FileNotFoundException
     {
         super(filename, mode);
-        BUFSIZE = bufsize;
-        buffer = new byte[BUFSIZE];
+        buffer = new byte[bufsize];
     }
 
     /**
@@ -86,8 +80,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
             throws FileNotFoundException
     {
         super(file, mode);
-        BUFSIZE = bufsize;
-        buffer = new byte[BUFSIZE];
+        buffer = new byte[bufsize];
     }
 
     /**
@@ -110,7 +103,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     }
 
     /**
-     * Reads the next BUFSIZE bytes into the internal buffer.
+     * Reads as much bytes as possible into the internal buffer.
      *
      * @return The total number of bytes read into the buffer, or -1 if there is no more data
      * because the end of the file has been reached.
@@ -119,7 +112,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
      */
     private int fillBuffer() throws IOException
     {
-        int n = super.read(buffer, 0, BUFSIZE);
+        int n = super.read(buffer);
 
         if (n >= 0)
         {
