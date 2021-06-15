@@ -244,9 +244,13 @@ public class CMapParser
 
     /**
      * Throws an IOException if expectedOperatorName not equals operator.op
+     *
      * @param operator Instance of operator
      * @param expectedOperatorName Expected name of operator
-     * @param rangeName The name of the range in which the operator is expected (without a tilde character).
+     * @param rangeName The name of the range in which the operator is expected (without a tilde
+     * character), to be used in the exception message.
+     * 
+     * @throws IOException if expectedOperatorName not equals operator.op
      */
     private void checkExpectedOperator(Operator operator, String expectedOperatorName, String rangeName) throws IOException
     {
@@ -264,7 +268,7 @@ public class CMapParser
             Object nextToken = parseNextToken(cmapStream);
             if (nextToken instanceof Operator)
             {
-                checkExpectedOperator((Operator)nextToken, "endcodespacerange", "codespacerange");
+                checkExpectedOperator((Operator) nextToken, "endcodespacerange", "codespacerange");
                 break;
             }
             byte[] startRange = (byte[]) nextToken;
@@ -287,7 +291,7 @@ public class CMapParser
             Object nextToken = parseNextToken(cmapStream);
             if (nextToken instanceof Operator)
             {
-                checkExpectedOperator((Operator)nextToken, "endbfchar", "bfchar");
+                checkExpectedOperator((Operator) nextToken, "endbfchar", "bfchar");
                 break;
             }
             byte[] inputCode = (byte[]) nextToken;
@@ -317,7 +321,7 @@ public class CMapParser
             Object nextToken = parseNextToken(cmapStream);
             if (nextToken instanceof Operator)
             {
-                checkExpectedOperator((Operator)nextToken, "endcidrange", "cidrange");
+                checkExpectedOperator((Operator) nextToken, "endcidrange", "cidrange");
                 break;
             }
             byte[] startCode = (byte[]) nextToken;
@@ -350,7 +354,7 @@ public class CMapParser
             Object nextToken = parseNextToken(cmapStream);
             if (nextToken instanceof Operator)
             {
-                checkExpectedOperator((Operator)nextToken, "endcidchar", "cidchar");
+                checkExpectedOperator((Operator) nextToken, "endcidchar", "cidchar");
                 break;
             }
             byte[] inputCode = (byte[]) nextToken;
@@ -366,7 +370,7 @@ public class CMapParser
             Object nextToken = parseNextToken(cmapStream);
             if (nextToken instanceof Operator)
             {
-                checkExpectedOperator((Operator)nextToken, "endbfrange", "bfrange");
+                checkExpectedOperator((Operator) nextToken, "endbfrange", "bfrange");
                 break;
             }
             byte[] startCode = (byte[]) nextToken;

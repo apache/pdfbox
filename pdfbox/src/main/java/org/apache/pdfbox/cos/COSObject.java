@@ -173,7 +173,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     public Object accept( ICOSVisitor visitor ) throws IOException
     {
         COSBase object = getObject();
-        return object != null ? object.accept( visitor ) : COSNull.NULL.accept( visitor );
+        return object != null ? object.accept(visitor) : COSNull.NULL.accept(visitor);
     }
     
     /**

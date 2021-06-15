@@ -58,7 +58,6 @@ import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
-import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 
 /**
@@ -310,7 +309,7 @@ public class SigUtils
         // https://stackoverflow.com/questions/42114742/
         @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
         Collection<X509CertificateHolder> tstMatches =
-                timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
+                timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
         X509CertificateHolder certificateHolder = tstMatches.iterator().next();
         SignerInformationVerifier siv = 
                 new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(certificateHolder);

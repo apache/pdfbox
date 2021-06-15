@@ -80,7 +80,6 @@ import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.tsp.TimeStampTokenInfo;
 import org.bouncycastle.util.CollectionStore;
-import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 
 /**
@@ -456,7 +455,7 @@ public final class ShowSignature
         SignerInformation signerInformation = signers.iterator().next();
         @SuppressWarnings("unchecked")
         Collection<X509CertificateHolder> matches =
-                certificatesStore.getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
+                certificatesStore.getMatches(signerInformation.getSID());
         if (matches.isEmpty())
         {
             throw new IOException("Signer '" + signerInformation.getSID().getIssuer() + 

@@ -79,6 +79,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
@@ -109,6 +110,7 @@ import org.bouncycastle.tsp.TimeStampTokenInfo;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -446,6 +448,42 @@ class TestCreateSignature
         }
     }
 
+    //@ParameterizedTest
+    //@MethodSource("signingTypes")
+    void testDoubleVisibleSignatureOnEncryptedFile(boolean externallySign)
+            throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
+            TSPException, CertificateVerificationException
+    {
+        // sign PDF
+        String inPath = "target/pdfs/PDFBOX-2469-1-AcroForm-AES128.pdf";
+        CreateVisibleSignature signing;
+        File destFile;
+        try (FileInputStream fis = new FileInputStream(JPEG_PATH))
+        {
+            signing = new CreateVisibleSignature(keyStore, PASSWORD.toCharArray());
+            signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
+            signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
+            signing.setExternalSigning(externallySign);
+            destFile = new File(OUT_DIR, getOutputFileName("2signed{0}_visible.pdf", externallySign));
+            signing.signPDF(new File(inPath), destFile, null);
+        }
+
+        checkSignature(new File(inPath), destFile, false);
+
+        inPath = destFile.getAbsolutePath();
+        try (FileInputStream fis = new FileInputStream(JPEG_PATH))
+        {
+            signing = new CreateVisibleSignature(keyStore, PASSWORD.toCharArray());
+            signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 2);
+            signing.setVisibleSignatureProperties("name", "location", "Security", 0, 2, true);
+            signing.setExternalSigning(externallySign);
+            destFile = new File(OUT_DIR, getOutputFileName("2signed{0}_visible_signed{0}_visible.pdf", externallySign));
+            signing.signPDF(new File(inPath), destFile, null);
+        }
+
+        checkSignature(new File(inPath), destFile, false);
+    }
+
     private String getOutputFileName(String filePattern, boolean externallySign)
     {
         return MessageFormat.format(filePattern, (externallySign ? "_ext" : ""));
@@ -464,6 +502,15 @@ class TestCreateSignature
         }
         try (PDDocument document = Loader.loadPDF(signedFile))
         {
+            // early detection of problems in the page structure
+            int p = 0;
+            PDPageTree pageTree = document.getPages();
+            for (PDPage page : document.getPages())
+            {
+                assertEquals(p, pageTree.indexOf(page));
+                ++p;
+            }
+
             // PDFBOX-4261: check that object number stays the same 
             assertEquals(origPageKey, document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString());
 

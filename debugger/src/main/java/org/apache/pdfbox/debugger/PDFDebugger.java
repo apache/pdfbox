@@ -1230,6 +1230,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         currentFilePath = file.getPath();
         recentFiles.removeFile(file.getPath());
         LogDialog.instance().clear();
+        TextDialog.instance().setVisible(false);
         
         DocumentOpener documentOpener = new DocumentOpener(password)
         {
@@ -1269,6 +1270,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
         currentFilePath = urlString;
         LogDialog.instance().clear();
+        TextDialog.instance().setVisible(false);
+
         DocumentOpener documentOpener = new DocumentOpener(password)
         {
             @Override

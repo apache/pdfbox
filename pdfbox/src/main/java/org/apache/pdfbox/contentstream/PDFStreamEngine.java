@@ -631,6 +631,10 @@ public abstract class PDFStreamEngine
                 byte[] string = ((COSString)obj).getBytes();
                 showText(string);
             }
+            else if (obj instanceof COSArray)
+            {
+                LOG.error("Nested arrays are not allowed in an array for TJ operation:" + obj);
+            }
             else
             {
                 throw new IOException("Unknown type " + obj.getClass().getSimpleName() +

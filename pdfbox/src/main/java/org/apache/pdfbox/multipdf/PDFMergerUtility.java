@@ -511,7 +511,6 @@ public class PDFMergerUtility
         }
 
         PDDocumentCatalog srcCatalog = source.getDocumentCatalog();
-        
         if (isDynamicXfa(srcCatalog.getAcroForm()))
         {
             throw new IOException("Error: can't merge source document containing dynamic XFA form content.");
@@ -532,6 +531,7 @@ public class PDFMergerUtility
         }
 
         int pageIndexOpenActionDest = -1;
+        PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
         if (destCatalog.getOpenAction() == null)
         {
             // PDFBOX-3972: get local dest page index, it must be reassigned after the page cloning
@@ -663,6 +663,7 @@ public class PDFMergerUtility
             COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
             int destPageCount = destination.getNumberOfPages();
             COSArray destNums;
+            COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
             if (destLabels == null)
             {
                 destLabels = new COSDictionary();

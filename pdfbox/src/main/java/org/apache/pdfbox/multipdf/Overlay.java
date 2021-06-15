@@ -304,7 +304,7 @@ public class Overlay implements Closeable
     private Map<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
     {
         int i = 0;
-        Map<Integer,LayoutPage> layoutPages = new HashMap<>();
+        Map<Integer, LayoutPage> layoutPages = new HashMap<>();
         for (PDPage page : doc.getPages())
         {
             COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
@@ -372,6 +372,7 @@ public class Overlay implements Closeable
     private void processPages(PDDocument document) throws IOException
     {
         int pageCounter = 0;
+        PDFCloneUtility cloner = new PDFCloneUtility(document);
         PDPageTree pageTree = document.getPages();
         int numberOfPages = pageTree.getCount();
         for (PDPage page : pageTree)
@@ -394,11 +395,11 @@ public class Overlay implements Closeable
                     // restore state
                     newContentArray.add(createStream("Q\n"));
                     // overlay content last
-                    overlayPage(page, layoutPage, newContentArray);
+                    overlayPage(page, layoutPage, newContentArray, cloner);
                     break;
                 case BACKGROUND:
                     // overlay content first
-                    overlayPage(page, layoutPage, newContentArray);
+                    overlayPage(page, layoutPage, newContentArray, cloner);
 
                     addOriginalContent(originalContent, newContentArray);
                     break;
@@ -430,7 +431,8 @@ public class Overlay implements Closeable
         }
     }
 
-    private void overlayPage(PDPage page, LayoutPage layoutPage, COSArray array)
+    private void overlayPage(PDPage page, LayoutPage layoutPage, COSArray array,
+            PDFCloneUtility cloner)
             throws IOException
     {
         PDResources resources = page.getResources();
@@ -439,7 +441,7 @@ public class Overlay implements Closeable
             resources = new PDResources();
             page.setResources(resources);
         }
-        COSName xObjectId = createOverlayXObject(page, layoutPage);
+        COSName xObjectId = createOverlayXObject(page, layoutPage, cloner);
         array.add(createOverlayStream(page, layoutPage, xObjectId));
     }
 
@@ -478,10 +480,12 @@ public class Overlay implements Closeable
         return layoutPage;
     }
 
-    private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage)
+    private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage, PDFCloneUtility cloner)
+            throws IOException
     {
         PDFormXObject xobjForm = new PDFormXObject(layoutPage.overlayContentStream);
-        xobjForm.setResources(new PDResources(layoutPage.overlayResources));
+        xobjForm.setResources(new PDResources(
+                (COSDictionary) cloner.cloneForNewDocument(layoutPage.overlayResources)));
         xobjForm.setFormType(1);
         xobjForm.setBBox(layoutPage.overlayMediaBox.createRetranslatedRectangle());
         AffineTransform at = new AffineTransform();

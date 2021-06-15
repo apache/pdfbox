@@ -25,6 +25,7 @@ import java.io.IOException;
  */
 public class DataInput
 {
+
     private final byte[] inputBuffer;
     private int bufferPosition = 0;
 
