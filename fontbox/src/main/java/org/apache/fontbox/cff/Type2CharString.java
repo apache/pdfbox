@@ -100,17 +100,17 @@ public class Type2CharString extends Type1CharString
         {
         case HSTEM:
         case HSTEMHM:
-            numbers = clearStack(numbers, numbers.size() % 2 != 0);
+            clearStack(numbers, numbers.size() % 2 != 0);
             expandStemHints(numbers, true);
             break;
         case VSTEM:
         case VSTEMHM:
-            numbers = clearStack(numbers, numbers.size() % 2 != 0);
+            clearStack(numbers, numbers.size() % 2 != 0);
             expandStemHints(numbers, false);
             break;
         case VMOVETO:
         case HMOVETO:
-            numbers = clearStack(numbers, numbers.size() > 1);
+            clearStack(numbers, numbers.size() > 1);
             markPath();
             addCommand(numbers, command);
             break;
@@ -127,7 +127,7 @@ public class Type2CharString extends Type1CharString
             addCommandsAsListOfLists(split(numbers, 6), command);
             break;
         case ENDCHAR:
-            numbers = clearStack(numbers, numbers.size() == 5 || numbers.size() == 1);
+            clearStack(numbers, numbers.size() == 5 || numbers.size() == 1);
             closeCharString2Path();
             if (numbers.size() == 4)
             {
@@ -141,7 +141,7 @@ public class Type2CharString extends Type1CharString
             }
             break;
         case RMOVETO:
-            numbers = clearStack(numbers, numbers.size() > 2);
+            clearStack(numbers, numbers.size() > 2);
             markPath();
             addCommand(numbers, command);
             break;
@@ -194,7 +194,7 @@ public class Type2CharString extends Type1CharString
         }
         case HINTMASK:
         case CNTRMASK:
-            numbers = clearStack(numbers, numbers.size() % 2 != 0);
+            clearStack(numbers, numbers.size() % 2 != 0);
             if (!numbers.isEmpty())
             {
                 expandStemHints(numbers, false);
@@ -231,7 +231,7 @@ public class Type2CharString extends Type1CharString
         return Collections.emptyList();
     }
 
-    private List<Number> clearStack(List<Number> numbers, boolean flag)
+    private void clearStack(List<Number> numbers, boolean flag)
     {
         if (type1Sequence.isEmpty())
         {
@@ -246,7 +246,6 @@ public class Type2CharString extends Type1CharString
                 addCommand(new Number[]{0, defWidthX}, new CharStringCommand(13));
             }
         }
-        return numbers;
     }
 
     /**
