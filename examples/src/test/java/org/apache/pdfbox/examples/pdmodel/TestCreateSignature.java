@@ -839,14 +839,10 @@ public class TestCreateSignature
     public void testDoubleVisibleSignatureOnEncryptedFile()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException, TSPException, CertificateVerificationException
     {
-        // load the keystore
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
-
         // sign PDF
         String inPath = "target/pdfs/PDFBOX-2469-1-AcroForm-AES128.pdf";
         FileInputStream fis = new FileInputStream(jpegPath);
-        CreateVisibleSignature signing = new CreateVisibleSignature(keystore, password.toCharArray());
+        CreateVisibleSignature signing = new CreateVisibleSignature(keyStore, password.toCharArray());
         signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
         signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
         signing.setExternalSigning(externallySign);
@@ -858,7 +854,7 @@ public class TestCreateSignature
 
         inPath = destFile.getAbsolutePath();
         fis = new FileInputStream(jpegPath);
-        signing = new CreateVisibleSignature(keystore, password.toCharArray());
+        signing = new CreateVisibleSignature(keyStore, password.toCharArray());
         signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 2);
         signing.setVisibleSignatureProperties("name", "location", "Security", 0, 2, true);
         signing.setExternalSigning(externallySign);
