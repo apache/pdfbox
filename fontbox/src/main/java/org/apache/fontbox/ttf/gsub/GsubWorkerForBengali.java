@@ -153,19 +153,19 @@ public class GsubWorkerForBengali implements GsubWorker
 
         List<Integer> gsubProcessedGlyphs = new ArrayList<>(tokens.size());
 
-        for (List<Integer> chunk : tokens)
+        tokens.forEach(chunk ->
         {
             if (scriptFeature.canReplaceGlyphs(chunk))
             {
                 // gsub system kicks in, you get the glyphId directly
-                int glyphId = scriptFeature.getReplacementForGlyphs(chunk);
+                Integer glyphId = scriptFeature.getReplacementForGlyphs(chunk);
                 gsubProcessedGlyphs.add(glyphId);
             }
             else
             {
                 gsubProcessedGlyphs.addAll(chunk);
             }
-        }
+        });
 
         LOG.debug("originalGlyphs: " + originalGlyphs + ", gsubProcessedGlyphs: "
                 + gsubProcessedGlyphs);
