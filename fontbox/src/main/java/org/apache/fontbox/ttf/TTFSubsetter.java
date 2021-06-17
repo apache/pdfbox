@@ -468,6 +468,8 @@ public final class TTFSubsetter
         long[] offsets = ttf.getIndexToLocation().getOffsets();
         GlyphTable g = ttf.getGlyph();
         boolean hasNested;
+        GlyphTable g = ttf.getGlyph();
+        long[] offsets = ttf.getIndexToLocation().getOffsets();
         do
         {
             InputStream is = ttf.getOriginalData();

@@ -147,7 +147,7 @@ public class GsubWorkerForBengali implements GsubWorker
 
         List<Integer> gsubProcessedGlyphs = new ArrayList<>(tokens.size());
 
-        for (List<Integer> chunk : tokens)
+        tokens.forEach(chunk ->
         {
             if (scriptFeature.canReplaceGlyphs(chunk))
             {
@@ -159,7 +159,7 @@ public class GsubWorkerForBengali implements GsubWorker
             {
                 gsubProcessedGlyphs.addAll(chunk);
             }
-        }
+        });
 
         LOG.debug("originalGlyphs: " + originalGlyphs + ", gsubProcessedGlyphs: "
                 + gsubProcessedGlyphs);
