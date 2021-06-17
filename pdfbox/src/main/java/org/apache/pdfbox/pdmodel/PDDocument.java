@@ -865,7 +865,7 @@ public class PDDocument implements Closeable
      * is closed when the PDDocument is closed to avoid memory leaks. Users don't have to call this
      * method, it is done by the appropriate PDFont classes.
      *
-     * @param ttf
+     * @param ttf TTF font instance
      */
     public void registerTrueTypeFontForClosing(TrueTypeFont ttf)
     {
