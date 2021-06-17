@@ -117,16 +117,16 @@ public class XmpSerializer
 
     public void serializeFields(Document doc, Element parent, List<AbstractField> fields, String resourceNS, String prefix, boolean wrapWithProperty)
     {
+        boolean usePrefix = prefix != null && !prefix.isEmpty();
         for (AbstractField field : fields)
         {
-
             if (field instanceof AbstractSimpleProperty)
             {
                 AbstractSimpleProperty simple = (AbstractSimpleProperty) field;
                 
                 String localPrefix;
                 
-                if (prefix != null && !prefix.isEmpty())
+                if (usePrefix)
                 {
                     localPrefix = prefix;
                 }
