@@ -17,7 +17,6 @@
 package org.apache.fontbox.cff;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -115,7 +114,7 @@ public class Type2CharString extends Type1CharString
             addCommand(numbers, command);
             break;
         case RLINETO:
-            addCommandsAsListOfLists(split(numbers, 2), command);
+            addCommandsList(split(numbers, 2), command);
             break;
         case HLINETO:
             drawAlternatingLine(numbers, true);
@@ -124,7 +123,7 @@ public class Type2CharString extends Type1CharString
             drawAlternatingLine(numbers, false);
             break;
         case RRCURVETO:
-            addCommandsAsListOfLists(split(numbers, 6), command);
+            addCommandsList(split(numbers, 6), command);
             break;
         case ENDCHAR:
             clearStack(numbers, numbers.size() == 5 || numbers.size() == 1);
@@ -156,15 +155,19 @@ public class Type2CharString extends Type1CharString
             Number[] first = new Number[]{numbers.get(0), 0, numbers.get(1), numbers.get(2),
                     numbers.get(3), 0};
             Number[] second = new Number[]{numbers.get(4), 0, numbers.get(5),
-                    -(numbers.get(2).floatValue()), numbers.get(6), 0};
-            addCommandsAsListOfArrays(Arrays.asList(first, second), new CharStringCommand(8));
+                    -numbers.get(2).floatValue(), numbers.get(6), 0};
+            CharStringCommand command8 = new CharStringCommand(8);
+            addCommand(first, command8);
+            addCommand(second, command8);
             break;
         }
         case FLEX:
         {
             Number[] first = subArray(numbers,0, 6);
             Number[] second = subArray(numbers,6, 12);
-            addCommandsAsListOfArrays(Arrays.asList(first, second), new CharStringCommand(8));
+            CharStringCommand command8 = new CharStringCommand(8);
+            addCommand(first, command8);
+            addCommand(second, command8);
             break;
         }
         case HFLEX1:
@@ -173,7 +176,9 @@ public class Type2CharString extends Type1CharString
                     numbers.get(3), numbers.get(4), 0};
             Number[] second = new Number[]{numbers.get(5), 0, numbers.get(6), numbers.get(7),
                     numbers.get(8), 0};
-            addCommandsAsListOfArrays(Arrays.asList(first, second), new CharStringCommand(8));
+            CharStringCommand command8 = new CharStringCommand(8);
+            addCommand(first, command8);
+            addCommand(second, command8);
             break;
         }
         case FLEX1:
@@ -187,9 +192,11 @@ public class Type2CharString extends Type1CharString
             }
             Number[] first = subArray(numbers,0, 6);
             Number[] second = new Number[]{numbers.get(6), numbers.get(7), numbers.get(8),
-                    numbers.get(9), (Math.abs(dx) > Math.abs(dy) ? numbers.get(10) : -dx),
-                    (Math.abs(dx) > Math.abs(dy) ? -dy : numbers.get(10))};
-            addCommandsAsListOfArrays(Arrays.asList(first, second), new CharStringCommand(8));
+                    numbers.get(9), Math.abs(dx) > Math.abs(dy) ? numbers.get(10) : -dx,
+                    Math.abs(dx) > Math.abs(dy) ? -dy : numbers.get(10)};
+            CharStringCommand command8 = new CharStringCommand(8);
+            addCommand(first, command8);
+            addCommand(second, command8);
             break;
         }
         case HINTMASK:
@@ -203,7 +210,7 @@ public class Type2CharString extends Type1CharString
         case RCURVELINE:
             if (numbers.size() >= 2)
             {
-                addCommandsAsListOfLists(split(numbers.subList(0, numbers.size() - 2), 6),
+                addCommandsList(split(numbers.subList(0, numbers.size() - 2), 6),
                         new CharStringCommand(8));
                 addCommand(subArray(numbers,numbers.size() - 2, numbers.size()),
                         new CharStringCommand(5));
@@ -212,7 +219,7 @@ public class Type2CharString extends Type1CharString
         case RLINECURVE:
             if (numbers.size() >= 6)
             {
-                addCommandsAsListOfLists(split(numbers.subList(0, numbers.size() - 6), 2),
+                addCommandsList(split(numbers.subList(0, numbers.size() - 6), 2),
                         new CharStringCommand(5));
                 addCommand(subArray(numbers, numbers.size() - 6, numbers.size()),
                         new CharStringCommand(8));
@@ -393,12 +400,7 @@ public class Type2CharString extends Type1CharString
         }
     }
 
-    private void addCommandsAsListOfLists(List<List<Number>> numbers, CharStringCommand command)
-    {
-        numbers.forEach(ns -> addCommand(ns, command));
-    }
-
-    private void addCommandsAsListOfArrays(List<Number[]> numbers, CharStringCommand command)
+    private void addCommandsList(List<List<Number>> numbers, CharStringCommand command)
     {
         numbers.forEach(ns -> addCommand(ns, command));
     }
