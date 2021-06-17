@@ -295,82 +295,98 @@ public class Type2CharString extends Type1CharString
 
     private void drawAlternatingCurve(List<Number> numbers, boolean horizontal)
     {
-        while (numbers.size() >= 4)
+        int startIndex = 0;
+        int numbersCount = numbers.size();
+
+        while (numbersCount >= 4)
         {
-            boolean last = numbers.size() == 5;
+            boolean last = numbersCount == 5;
             if (horizontal)
             {
-                addCommand(new Number[]{numbers.get(0), 0,
-                        numbers.get(1), numbers.get(2), last ? numbers.get(4)
-                                : 0, numbers.get(3)},
+                addCommand(new Number[]{numbers.get(startIndex), 0,
+                        numbers.get(startIndex + 1), numbers.get(startIndex + 2), last ? numbers.get(startIndex + 4)
+                                : 0, numbers.get(startIndex + 3)},
                         new CharStringCommand(8));
             } 
             else
             {
-                addCommand(new Number[]{0, numbers.get(0),
-                        numbers.get(1), numbers.get(2), numbers.get(3),
-                        last ? numbers.get(4) : 0},
+                addCommand(new Number[]{0, numbers.get(startIndex),
+                        numbers.get(startIndex + 1), numbers.get(startIndex + 2), numbers.get(startIndex + 3),
+                        last ? numbers.get(startIndex + 4) : 0},
                         new CharStringCommand(8));
             }
-            //todo sublist operation slows down list operations in a loop. Reason is sublist linked list architecture
-            numbers = numbers.subList(last ? 5 : 4, numbers.size());
+
+            if (last)
+            {
+                startIndex += 5;
+                numbersCount -= 5;
+            }
+            else
+            {
+                startIndex += 4;
+                numbersCount -= 4;
+            }
+
             horizontal = !horizontal;
         }
     }
 
     private void drawCurve(List<Number> numbers, boolean horizontal)
     {
+        int startIndex = 0;
+        int numbersCount = numbers.size();
+
         if (horizontal)
         {
-            while (numbers.size() >= 4)
+            while (numbersCount >= 4)
             {
                 //is first?
-                if (numbers.size() % 4 == 1)
+                if (numbersCount % 4 == 1)
                 {
-                    addCommand(new Number[]{numbers.get(1),
-                            numbers.get(0), numbers.get(2),
-                            numbers.get(3), numbers.get(4),
+                    addCommand(new Number[]{numbers.get(startIndex + 1),
+                            numbers.get(startIndex), numbers.get(startIndex + 2),
+                            numbers.get(startIndex + 3), numbers.get(startIndex + 4),
                             0}, new CharStringCommand(8));
 
-                    //todo sublist operation slows down list operations in a loop. Reason is sublist linked list architecture
-                    numbers = numbers.subList(5, numbers.size());
+                    startIndex += 5;
+                    numbersCount -= 5;
                 }
                 else
                 {
-                    addCommand(new Number[]{numbers.get(0),
-                            0, numbers.get(1),
-                            numbers.get(2), numbers.get(3),
+                    addCommand(new Number[]{numbers.get(startIndex),
+                            0, numbers.get(startIndex + 1),
+                            numbers.get(startIndex + 2), numbers.get(startIndex + 3),
                             0}, new CharStringCommand(8));
 
-                    //todo sublist operation slows down list operations in a loop. Reason is sublist linked list architecture
-                    numbers = numbers.subList(4, numbers.size());
+                    startIndex += 4;
+                    numbersCount -= 4;
                 }
             }
         }
         else
         {
-            while (numbers.size() >= 4)
+            while (numbersCount >= 4)
             {
                 //is first?
-                if (numbers.size() % 4 == 1)
+                if (numbersCount % 4 == 1)
                 {
-                    addCommand(new Number[]{numbers.get(0), numbers.get(1),
-                                numbers.get(2), numbers.get(3),
-                                0, numbers.get(4)},
+                    addCommand(new Number[]{numbers.get(startIndex), numbers.get(startIndex + 1),
+                                numbers.get(startIndex + 2), numbers.get(startIndex + 3),
+                                0, numbers.get(startIndex + 4)},
                                 new CharStringCommand(8));
 
-                    //todo sublist operation slows down list operations in a loop. Reason is sublist linked list architecture
-                    numbers = numbers.subList(5, numbers.size());
+                    startIndex += 5;
+                    numbersCount -= 5;
                 }
                 else
                 {
-                    addCommand(new Number[]{0, numbers.get(0),
-                                numbers.get(1), numbers.get(2),
-                                0, numbers.get(3)},
+                    addCommand(new Number[]{0, numbers.get(startIndex),
+                                numbers.get(startIndex + 1), numbers.get(startIndex + 2),
+                                0, numbers.get(startIndex + 3)},
                                 new CharStringCommand(8));
 
-                    //todo sublist operation slows down list operations in a loop. Reason is sublist linked list architecture
-                    numbers = numbers.subList(4, numbers.size());
+                    startIndex += 4;
+                    numbersCount -= 4;
                 }
             }
         }
