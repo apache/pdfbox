@@ -363,13 +363,21 @@ public class Type1CharString
             // make the first point relative to the start point
             first.setLocation(first.getX() - current.getX(), first.getY() - current.getY());
 
-            rrcurveTo(flexPoints.get(1).getX(), flexPoints.get(1).getY(),
-                      flexPoints.get(2).getX(), flexPoints.get(2).getY(),
-                      flexPoints.get(3).getX(), flexPoints.get(3).getY());
+            Point2D.Float p1 = flexPoints.get(1);
+            Point2D.Float p2 = flexPoints.get(2);
+            Point2D.Float p3 = flexPoints.get(3);
 
-            rrcurveTo(flexPoints.get(4).getX(), flexPoints.get(4).getY(),
-                      flexPoints.get(5).getX(), flexPoints.get(5).getY(),
-                      flexPoints.get(6).getX(), flexPoints.get(6).getY());
+            rrcurveTo(p1.getX(), p1.getY(),
+                      p2.getX(), p2.getY(),
+                      p3.getX(), p3.getY());
+
+            Point2D.Float p4 = flexPoints.get(4);
+            Point2D.Float p5 = flexPoints.get(5);
+            Point2D.Float p6 = flexPoints.get(6);
+
+            rrcurveTo(p4.getX(), p4.getY(),
+                      p5.getX(), p5.getY(),
+                      p6.getX(), p6.getY());
 
             flexPoints.clear();
         }
