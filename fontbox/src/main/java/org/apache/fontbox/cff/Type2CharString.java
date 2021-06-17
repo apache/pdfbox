@@ -37,7 +37,7 @@ public class Type2CharString extends Type1CharString
     private int pathCount = 0;
     private final List<Object> type2sequence;
     private final int gid;
-
+    //todo think about to use an CharStringCommand(8) as static final field
     /**
      * Constructor.
      * @param font Parent CFF font
@@ -284,10 +284,11 @@ public class Type2CharString extends Type1CharString
     private void drawAlternatingLine(List<Number> numbers, boolean horizontal)
     {
         int i = 0;
+        CharStringCommand command6 = new CharStringCommand(6);
+        CharStringCommand command7 = new CharStringCommand(7);
         while (i < numbers.size())
         {
-            addCommand(numbers.get(i), new CharStringCommand(
-                    horizontal ? 6 : 7));
+            addCommand(numbers.get(i), horizontal ? command6 : command7);
             horizontal = !horizontal;
             ++i;
         }
@@ -297,23 +298,23 @@ public class Type2CharString extends Type1CharString
     {
         int startIndex = 0;
         int numbersCount = numbers.size();
-
+        CharStringCommand command8 = new CharStringCommand(8);
         while (numbersCount >= 4)
         {
             boolean last = numbersCount == 5;
             if (horizontal)
             {
                 addCommand(new Number[]{numbers.get(startIndex), 0,
-                        numbers.get(startIndex + 1), numbers.get(startIndex + 2), last ? numbers.get(startIndex + 4)
-                                : 0, numbers.get(startIndex + 3)},
-                        new CharStringCommand(8));
+                        numbers.get(startIndex + 1), numbers.get(startIndex + 2),
+                        last ? numbers.get(startIndex + 4) : 0, numbers.get(startIndex + 3)},
+                        command8);
             } 
             else
             {
                 addCommand(new Number[]{0, numbers.get(startIndex),
                         numbers.get(startIndex + 1), numbers.get(startIndex + 2), numbers.get(startIndex + 3),
                         last ? numbers.get(startIndex + 4) : 0},
-                        new CharStringCommand(8));
+                        command8);
             }
 
             if (last)
@@ -335,7 +336,7 @@ public class Type2CharString extends Type1CharString
     {
         int startIndex = 0;
         int numbersCount = numbers.size();
-
+        CharStringCommand command8 = new CharStringCommand(8);
         if (horizontal)
         {
             while (numbersCount >= 4)
@@ -346,7 +347,7 @@ public class Type2CharString extends Type1CharString
                     addCommand(new Number[]{numbers.get(startIndex + 1),
                             numbers.get(startIndex), numbers.get(startIndex + 2),
                             numbers.get(startIndex + 3), numbers.get(startIndex + 4),
-                            0}, new CharStringCommand(8));
+                            0}, command8);
 
                     startIndex += 5;
                     numbersCount -= 5;
@@ -356,7 +357,7 @@ public class Type2CharString extends Type1CharString
                     addCommand(new Number[]{numbers.get(startIndex),
                             0, numbers.get(startIndex + 1),
                             numbers.get(startIndex + 2), numbers.get(startIndex + 3),
-                            0}, new CharStringCommand(8));
+                            0}, command8);
 
                     startIndex += 4;
                     numbersCount -= 4;
@@ -373,7 +374,7 @@ public class Type2CharString extends Type1CharString
                     addCommand(new Number[]{numbers.get(startIndex), numbers.get(startIndex + 1),
                                 numbers.get(startIndex + 2), numbers.get(startIndex + 3),
                                 0, numbers.get(startIndex + 4)},
-                                new CharStringCommand(8));
+                                command8);
 
                     startIndex += 5;
                     numbersCount -= 5;
@@ -383,7 +384,7 @@ public class Type2CharString extends Type1CharString
                     addCommand(new Number[]{0, numbers.get(startIndex),
                                 numbers.get(startIndex + 1), numbers.get(startIndex + 2),
                                 0, numbers.get(startIndex + 3)},
-                                new CharStringCommand(8));
+                                command8);
 
                     startIndex += 4;
                     numbersCount -= 4;
