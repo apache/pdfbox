@@ -25,6 +25,7 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import java.awt.image.BufferedImage;
 import static org.apache.pdfbox.tools.imageio.MetaUtil.debugLogMetadata;
+import org.w3c.dom.NodeList;
 
 /**
  * Used by ImageIOUtil to write TIFF files.
@@ -86,14 +87,15 @@ final class TIFFUtil
 
         IIOMetadataNode root = new IIOMetadataNode(metaDataFormat);
         IIOMetadataNode ifd;
-        if (root.getElementsByTagName("TIFFIFD").getLength() == 0)
+        NodeList nodeListTIFFIFD = root.getElementsByTagName("TIFFIFD");
+        if (nodeListTIFFIFD.getLength() == 0)
         {
             ifd = new IIOMetadataNode("TIFFIFD");
             root.appendChild(ifd);
         }
         else
         {
-            ifd = (IIOMetadataNode)root.getElementsByTagName("TIFFIFD").item(0);
+            ifd = (IIOMetadataNode) nodeListTIFFIFD.item(0);
         }
 
         // standard metadata does not work, so we set the DPI manually
