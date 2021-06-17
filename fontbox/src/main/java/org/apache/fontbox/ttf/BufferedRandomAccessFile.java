@@ -44,7 +44,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
      * The position inside the actual file.
      */
     private long realpos = 0;
-
+    
     /**
      * Creates a new instance of the BufferedRandomAccessFile.
      *
@@ -103,7 +103,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     }
 
     /**
-     * Reads the next BUFSIZE bytes into the internal buffer.
+     * Reads as much bytes as possible into the internal buffer.
      *
      * @return The total number of bytes read into the buffer, or -1 if there is no more data
      * because the end of the file has been reached.

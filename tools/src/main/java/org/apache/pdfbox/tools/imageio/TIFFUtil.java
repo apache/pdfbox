@@ -26,6 +26,7 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import java.awt.image.BufferedImage;
 import static org.apache.pdfbox.tools.imageio.MetaUtil.debugLogMetadata;
+import org.w3c.dom.NodeList;
 
 /**
  * Used by ImageIOUtil to write TIFF files.
@@ -95,7 +96,7 @@ final class TIFFUtil
         }
         else
         {
-            ifd = (IIOMetadataNode)nodeListTIFFIFD.item(0);
+            ifd = (IIOMetadataNode) nodeListTIFFIFD.item(0);
         }
 
         // standard metadata does not work, so we set the DPI manually

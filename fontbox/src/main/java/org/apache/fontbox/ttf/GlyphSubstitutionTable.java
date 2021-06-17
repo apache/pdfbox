@@ -578,9 +578,8 @@ public class GlyphSubstitutionTable extends TTFTable
 
         if (enabledFeatures != null && result.size() > 1)
         {
-            result.sort((o1, o2) -> Integer.compare(
-                    enabledFeatures.indexOf(o1.getFeatureTag()),
-                    enabledFeatures.indexOf(o2.getFeatureTag())));
+            result.sort((o1, o2) -> Integer.compare(enabledFeatures.indexOf(o1.getFeatureTag()),
+                                                    enabledFeatures.indexOf(o2.getFeatureTag())));
         }
 
         return result;
