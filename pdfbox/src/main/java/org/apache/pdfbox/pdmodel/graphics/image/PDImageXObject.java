@@ -575,11 +575,11 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     /**
      * @param image The image to apply the mask to as alpha channel.
-     * @param mask A mask image in 8 bit Gray. Even for a non soft mask image due to {@link #getOpaqueImage()}
+     * @param mask A mask image in 8 bit Gray. Even for a stencil mask image due to {@link #getOpaqueImage()}
      *   and {@link SampledImageReader}'s {@code from1Bit()} special handling of DeviceGray.
      * @param interpolateMask interpolation flag of the mask image.
-     * @param isSoft if a soft mask. If not a soft mask, then alpha needs to be inverted. 
-     * @param matte an optional RGB matte if {@code isSoft==true}.
+     * @param isSoft {@code true} if a soft mask. If not stencil mask, then alpha will be inverted by this method. 
+     * @param matte an optional RGB matte if a soft mask.
      * @return an ARGB image (can be the altered original image)
      */
     private BufferedImage applyMask(BufferedImage image, BufferedImage mask, boolean interpolateMask,
@@ -608,7 +608,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         else if (image.getType() != BufferedImage.TYPE_INT_ARGB)
         {
-            image = scaleImage(image, width, height, BufferedImage.TYPE_INT_ARGB, getInterpolate());
+            image = scaleImage(image, width, height, BufferedImage.TYPE_INT_ARGB, false);
         }
 
         // compose alpha into ARGB image, either:
@@ -616,11 +616,12 @@ public final class PDImageXObject extends PDXObject implements PDImage
         // - fast by letting the sample model do a bulk band operation if no matte is set.
         // - slow and complex by matte calculations on individual pixel components.
         final WritableRaster raster = image.getRaster(), alpha = mask.getRaster();
-        if ( !isSoft && mask.getType()==BufferedImage.TYPE_BYTE_GRAY
+        if ( !isSoft && mask.getType() == BufferedImage.TYPE_BYTE_GRAY
             && raster.getDataBuffer().getSize() == alpha.getDataBuffer().getSize() )
         {
             final DataBuffer dst = raster.getDataBuffer(), src = alpha.getDataBuffer();
-            for ( int i = 0, c = dst.getSize(); c>0; i++, c-- ) {
+            for ( int i = 0, c = dst.getSize(); c > 0; i++, c-- )
+            {
                 dst.setElem(i, dst.getElem(i) & 0xffffff | ~src.getElem(i) << 24);
             }
         }
@@ -651,9 +652,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
             {
                 raster.getPixels(0, y, width, 1, pixels);
                 alpha.getSamples(0, y, width, 1, 0, alphas);
-                for (int x = 0, offset = 0; x < width; )
+                for (int x = 0, offset = 0; x < width; x++)
                 {
-                    int a = alphas[x++];
+                    int a = alphas[x];
                     if (a == 0) {
                         offset += 3;
                     } else {
