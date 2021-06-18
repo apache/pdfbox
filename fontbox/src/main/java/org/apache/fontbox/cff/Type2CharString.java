@@ -114,7 +114,7 @@ public class Type2CharString extends Type1CharString
             addCommand(numbers, command);
             break;
         case RLINETO:
-            addCommandsList(split(numbers, 2), command);
+            addCommandsList(numbers, 2, command);
             break;
         case HLINETO:
             drawAlternatingLine(numbers, true);
@@ -123,7 +123,7 @@ public class Type2CharString extends Type1CharString
             drawAlternatingLine(numbers, false);
             break;
         case RRCURVETO:
-            addCommandsList(split(numbers, 6), command);
+            addCommandsList(numbers, 6, command);
             break;
         case ENDCHAR:
             clearStack(numbers, numbers.size() == 5 || numbers.size() == 1);
@@ -210,7 +210,7 @@ public class Type2CharString extends Type1CharString
         case RCURVELINE:
             if (numbers.size() >= 2)
             {
-                addCommandsList(split(numbers.subList(0, numbers.size() - 2), 6),
+                addCommandsList(numbers.subList(0, numbers.size() - 2), 6,
                         new CharStringCommand(8));
                 addCommand(subArray(numbers,numbers.size() - 2, numbers.size()),
                         new CharStringCommand(5));
@@ -219,7 +219,7 @@ public class Type2CharString extends Type1CharString
         case RLINECURVE:
             if (numbers.size() >= 6)
             {
-                addCommandsList(split(numbers.subList(0, numbers.size() - 6), 2),
+                addCommandsList(numbers.subList(0, numbers.size() - 6), 2,
                         new CharStringCommand(5));
                 addCommand(subArray(numbers, numbers.size() - 6, numbers.size()),
                         new CharStringCommand(8));
@@ -400,9 +400,13 @@ public class Type2CharString extends Type1CharString
         }
     }
 
-    private void addCommandsList(List<List<Number>> numbers, CharStringCommand command)
+    private void addCommandsList(List<Number> list, int size, CharStringCommand command)
     {
-        numbers.forEach(ns -> addCommand(ns, command));
+        int listSize = list.size() / size;
+        for (int i = 0; i < listSize; i++)
+        {
+            addCommand(list.subList(i * size, (i + 1) * size), command);
+        }
     }
 
     private void addCommand(Number number, CharStringCommand command)
@@ -436,16 +440,5 @@ public class Type2CharString extends Type1CharString
         }
 
         return arr;
-    }
-
-    private static List<List<Number>> split(List<Number> list, int size)
-    {
-        int listSize = list.size() / size;
-        List<List<Number>> result = new ArrayList<>(listSize);
-        for (int i = 0; i < listSize; i++)
-        {
-            result.add(list.subList(i * size, (i + 1) * size));
-        }
-        return result;
     }
 }
