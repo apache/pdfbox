@@ -33,7 +33,7 @@ import java.net.URL;
  * The example is very important to prevent OOM when parsing complex PDF files.
  * <pre>
  *     PDDocument.load(in, MemoryUsageSetting.setupTempFileOnly())
- *     renderer.setSubsamplingAllowed(true);
+ *     renderer.setSubsamplingAllowed(true)
  * </pre>
  *
  * @author lanshiqin
