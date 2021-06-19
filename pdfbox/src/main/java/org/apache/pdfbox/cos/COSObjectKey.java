@@ -103,7 +103,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
     @Override
     public String toString()
     {
-        return Long.toString(getNumber()) + " " + Integer.toString(getGeneration()) + " R";
+        return getNumber() + " " + getGeneration() + " R";
     }
 
     @Override
