@@ -633,9 +633,14 @@ public class PDFMergerUtility
             {
                 // search last sibling for dest, because /Last entry is sometimes wrong
                 PDOutlineItem destLastOutlineItem = destOutline.getFirstChild();
-                while (destLastOutlineItem.getNextSibling() != null)
+                while (true)
                 {
-                    destLastOutlineItem = destLastOutlineItem.getNextSibling();
+                    PDOutlineItem outlineItem = destLastOutlineItem.getNextSibling();
+                    if (outlineItem == null)
+                    {
+                        break;
+                    }
+                    destLastOutlineItem = outlineItem;
                 }
                 for (PDOutlineItem item : srcOutline.children())
                 {
