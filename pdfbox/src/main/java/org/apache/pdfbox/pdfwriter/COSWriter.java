@@ -182,6 +182,8 @@ public class COSWriter implements ICOSVisitor
 
     // the current object number
     private long number = 0;
+    // indicates whether existing object keys should be reused or not
+    private boolean reuseObjectNumbers = true;
 
     // maps the object to the keys generated in the writer
     // these are used for indirect references in other objects
@@ -269,7 +271,9 @@ public class COSWriter implements ICOSVisitor
         // write to buffer instead of output
         setOutput(new ByteArrayOutputStream());
         setStandardOutput(new COSStandardOutputStream(output, inputData.length()));
-
+        // don't reuse object numbers to avoid overlapping keys
+        // as inputData already contains a lot of objects
+        reuseObjectNumbers = false;
         incrementalInput = inputData;
         incrementalOutput = outputStream;
         incrementalUpdate = true;
@@ -1058,11 +1062,14 @@ public class COSWriter implements ICOSVisitor
         COSBase actual = obj;
         if( actual instanceof COSObject )
         {
-            COSObjectKey key = obj.getKey();
-            if (key != null)
+            if (reuseObjectNumbers)
             {
-                objectKeys.put(obj, key);
-                return key;
+                COSObjectKey key = obj.getKey();
+                if (key != null)
+                {
+                    objectKeys.put(obj, key);
+                    return key;
+                }
             }
             actual = ((COSObject) obj).getObject();
         }
