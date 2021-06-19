@@ -170,7 +170,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      */
     public boolean hasChildren()
     {
-        return getFirstChild() != null;
+        return getCOSObject().getCOSDictionary(COSName.FIRST) != null;
     }
 
     PDOutlineItem getOutlineItem(COSName name)
