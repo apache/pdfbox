@@ -228,7 +228,7 @@ public class COSWriter implements ICOSVisitor
     private SignatureInterface signatureInterface;
     private byte[] incrementPart;
     private COSArray byteRangeArray;
-    private CompressParameters compressParameters = null;
+    private final CompressParameters compressParameters;
     private boolean blockAddingObject = false;
 
     /**
@@ -274,6 +274,8 @@ public class COSWriter implements ICOSVisitor
         // don't reuse object numbers to avoid overlapping keys
         // as inputData already contains a lot of objects
         reuseObjectNumbers = false;
+        // disable compressed object streams
+        compressParameters = CompressParameters.NO_COMPRESSION;
         incrementalInput = inputData;
         incrementalOutput = outputStream;
         incrementalUpdate = true;
