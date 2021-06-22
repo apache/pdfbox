@@ -648,7 +648,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             // it with an xref stream. We create a new one and fill it
             // with data available here
 
-            // create a new XRefStrema object
+            // create a new XRefStream object
             PDFXRefStream pdfxRefStream = new PDFXRefStream(doc);
 
             // add all entries from the incremental update.
@@ -717,9 +717,10 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             while (x < xRefLength)
             {
-                writeXrefRange(xRefRanges[x], xRefRanges[x + 1]);
+                long xRefRangeX1 = xRefRanges[x + 1];
+                writeXrefRange(xRefRanges[x], xRefRangeX1);
 
-                for (int i = 0; i < xRefRanges[x + 1]; ++i)
+                for (int i = 0; i < xRefRangeX1; ++i)
                 {
                     writeXrefEntry(xRefEntries.get(j++));
                 }
