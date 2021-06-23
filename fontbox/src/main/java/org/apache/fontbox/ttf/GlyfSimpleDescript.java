@@ -42,8 +42,6 @@ public class GlyfSimpleDescript extends GlyfDescript
 
     /**
      * Constructor for an empty description.
-     * 
-     * @throws IOException is thrown if something went wrong
      */
     GlyfSimpleDescript()
     {
@@ -171,7 +169,7 @@ public class GlyfSimpleDescript extends GlyfDescript
             {
                 if ((flags[i] & X_SHORT_VECTOR) != 0)
                 {
-                    x += (short) -((short) bais.readUnsignedByte());
+                    x += -(short) bais.readUnsignedByte();
                 }
                 else
                 {
@@ -194,7 +192,7 @@ public class GlyfSimpleDescript extends GlyfDescript
             {
                 if ((flags[i] & Y_SHORT_VECTOR) != 0)
                 {
-                    y += (short) -((short) bais.readUnsignedByte());
+                    y += -(short) bais.readUnsignedByte();
                 }
                 else
                 {
