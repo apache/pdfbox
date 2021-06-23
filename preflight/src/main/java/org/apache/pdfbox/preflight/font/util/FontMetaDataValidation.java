@@ -85,19 +85,16 @@ public class FontMetaDataValidation
             }
             catch (BadFieldValueException badFieldValueException)
             {
-                StringBuilder sb = new StringBuilder(80);
-                sb.append("Title property of XMP information is not a multi-lingual property");
-                ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_FORMAT, sb.toString()));
+                ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_FORMAT,
+                                    "Title property of XMP information is not a multi-lingual property"));
                 return false;
             }
             if (defaultTitle != null)
             {
                 if (!defaultTitle.equals(fontName) && (noSubSetName != null && !defaultTitle.equals(noSubSetName)))
                 {
-                    StringBuilder sb = new StringBuilder(80);
-                    sb.append("FontName")
-                            .append(" present in the FontDescriptor dictionary doesn't match with XMP information dc:title of the Font File Stream.");
-                    ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString()));
+                    ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH,
+                                        "FontName present in the FontDescriptor dictionary doesn't match with XMP information dc:title of the Font File Stream."));
                     return false;
                 }
 
@@ -124,17 +121,15 @@ public class FontMetaDataValidation
                 }
 
                 // title doesn't match, it is an error.
-                StringBuilder sb = new StringBuilder(80);
-                sb.append("FontName");
                 if (empty)
                 {
-                    sb.append(" present in the FontDescriptor dictionary can't be found in XMP information the Font File Stream.");
-                    ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_MISSING, sb.toString()));
+                    ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_MISSING,
+                                               "FontName present in the FontDescriptor dictionary can't be found in XMP information the Font File Stream."));
                 }
                 else
                 {
-                    sb.append(" present in the FontDescriptor dictionary doesn't match with XMP information dc:title of the Font File Stream.");
-                    ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString()));
+                    ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH,
+                                         "FontName present in the FontDescriptor dictionary doesn't match with XMP information dc:title of the Font File Stream."));
                 }
                 return false;
             }
