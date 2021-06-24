@@ -685,7 +685,6 @@ public final class PDImageXObject extends PDXObject implements PDImage
     private static BufferedImage scaleImage(BufferedImage image, int width, int height, int type, boolean interpolate)
     {
         final int imgWidth = image.getWidth(), imgHeight = image.getHeight();
-        System.out.println("scaleImage(" + width + ", " + height + " <- " + imgWidth + ", " + imgHeight + ", " + type + ", " + interpolate);
         // largeScale switch is arbitrarily chosen as to where bicubic becomes very slow
         int computations = type==BufferedImage.TYPE_BYTE_GRAY ? 1 : 3;
         boolean largeScale = ((long)width * height / imgWidth / imgHeight) > 3 * 3 && width * height > 3000 * 3000 * 3 / computations;
