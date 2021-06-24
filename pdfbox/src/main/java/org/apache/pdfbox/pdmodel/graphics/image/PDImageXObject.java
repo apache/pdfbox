@@ -20,8 +20,11 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
+import java.awt.image.ImagingOpException;
 import java.awt.image.WritableRaster;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -590,8 +593,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
             return image;
         }
 
-        int width = image.getWidth();
-        int height = image.getHeight();
+        final int width  = Math.max(image.getWidth(),  mask.getWidth());
+        final int height = Math.max(image.getHeight(), mask.getHeight());
 
         // scale mask to fit image, or image to fit mask, whichever is larger.
         // also make sure that image is ARGB as this is what needs to be returned.
@@ -600,10 +603,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
             mask = scaleImage(mask, width, height, mask.getType(), interpolateMask);
         }
 
-        if (mask.getWidth() > width || mask.getHeight() > height)
+        if (image.getWidth() < width || image.getHeight() < height)
         {
-            width = mask.getWidth();
-            height = mask.getHeight();
             image = scaleImage(image, width, height, BufferedImage.TYPE_INT_ARGB, getInterpolate());
         }
         else if (image.getType() != BufferedImage.TYPE_INT_ARGB)
@@ -623,6 +624,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             for ( int i = 0, c = dst.getSize(); c > 0; i++, c-- )
             {
                 dst.setElem(i, dst.getElem(i) & 0xffffff | ~src.getElem(i) << 24);
+                //dst.setElem(i, dst.getElem(i) & 0xffffff | ~((byte)src.getElem(i)) & 0xff000000);
             }
         }
         else if ( matte==null )
@@ -632,6 +634,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             {
                 alpha.getSamples (0, y, width, 1, 0, samples);
                 if ( !isSoft ) for (int x = 0; x < width; x++) samples[x] ^= -1;
+                //if ( !isSoft ) for (int x = 0; x < width; x++) samples[x] = ~((byte)samples[x]) >> 24;
                 raster.setSamples(0, y, width, 1, 3, samples);
             }
         }
@@ -682,17 +685,32 @@ public final class PDImageXObject extends PDXObject implements PDImage
     private static BufferedImage scaleImage(BufferedImage image, int width, int height, int type, boolean interpolate)
     {
         final int imgWidth = image.getWidth(), imgHeight = image.getHeight();
+        System.out.println("scaleImage(" + width + ", " + height + " <- " + imgWidth + ", " + imgHeight + ", " + type + ", " + interpolate);
+        // largeScale switch is arbitrarily chosen as to where bicubic becomes very slow
+        int computations = type==BufferedImage.TYPE_BYTE_GRAY ? 1 : 3;
+        boolean largeScale = ((long)width * height / imgWidth / imgHeight) > 3 * 3 && width * height > 3000 * 3000 * 3 / computations;
+        interpolate &= imgWidth!=width || imgHeight!=height;
+
         BufferedImage image2 = new BufferedImage(width, height, type);
-        Graphics2D g = image2.createGraphics();
-        if (interpolate && (imgWidth!=width || imgHeight!=height))
+        if (interpolate) 
         {
-            // largeScale switch is arbitrarily chosen as to where bicubic becomes very slow
-            int computations = type==BufferedImage.TYPE_BYTE_GRAY ? 1 : 3;
-            boolean largeScale = ((long)width * height / imgWidth / imgHeight) > 3 * 3 && width * height > 3000 * 3000 * 3 / computations;
+            AffineTransform af = AffineTransform.getScaleInstance((double)width / imgWidth, (double)height / imgHeight);
+            AffineTransformOp afo = new AffineTransformOp(af, largeScale ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_BICUBIC);
+            try {
+                afo.filter(image, image2);
+                return image2;
+            }
+            catch (ImagingOpException e)
+            {
+            }
+        }
+        Graphics2D g = image2.createGraphics();
+        if (interpolate) 
+        {
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 largeScale ? RenderingHints.VALUE_INTERPOLATION_BILINEAR : RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             g.setRenderingHint(RenderingHints.KEY_RENDERING,
-                largeScale ? RenderingHints.VALUE_RENDER_SPEED : RenderingHints.VALUE_RENDER_QUALITY);
+                largeScale ? RenderingHints.VALUE_RENDER_DEFAULT : RenderingHints.VALUE_RENDER_QUALITY);
         }
         g.drawImage(image, 0, 0, width, height, 0, 0, imgWidth, imgHeight, null);
         g.dispose();
