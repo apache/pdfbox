@@ -366,7 +366,6 @@ final class SampledImageReader
         final float[] decode = getDecodeArray(pdImage);
         BufferedImage bim = null;
         WritableRaster raster;
-        byte[] output;
 
         DecodeOptions options = new DecodeOptions(currentSubsampling);
         options.setSourceRegion(clipped);
@@ -409,58 +408,40 @@ final class SampledImageReader
             {
                 raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, width, height, 1, new Point(0, 0));
             }
-            output = ((DataBufferByte) raster.getDataBuffer()).getData();
-            final boolean isIndexed = colorSpace instanceof PDIndexed;
 
-            int rowLen = inputWidth / 8;
-            if (inputWidth % 8 > 0)
-            {
-                rowLen++;
-            }
-
-            // read stream
-            byte value0;
-            byte value1;
-            if (isIndexed || decode[0] < decode[1])
-            {
-                value0 = 0;
-                value1 = (byte) 255;
-            }
-            else
-            {
-                value0 = (byte) 255;
-                value1 = 0;
-            }
-            byte[] buff = new byte[rowLen];
+            final byte[] output = ((DataBufferByte) raster.getDataBuffer()).getData();
             int idx = 0;
+
+            // read stream byte per byte, invert pixel bits if necessary,
+            // and then simply shift bits out to the left, detecting set bits via sign 
+            final boolean nosubsampling = currentSubsampling == 1;
+            final int stride = (inputWidth + 7) / 8;
+            final int invert = colorSpace instanceof PDIndexed || decode[0] < decode[1] ? 0 : -1;
+            final int endX = startx + scanWidth;
+            final byte[] buff = new byte[stride];
             for (int y = 0; y < starty + scanHeight; y++)
             {
-                int x = 0;
-                int readLen = (int) IOUtils.populateBuffer(iis, buff);
-                if (y < starty || y % currentSubsampling > 0)
+                int read = (int) IOUtils.populateBuffer(iis, buff);
+                if (y >= starty && y % currentSubsampling == 0)
                 {
-                    continue;
-                }
-                for (int r = 0; r < rowLen && r < readLen; r++)
-                {
-                    int value = buff[r];
-                    int mask = 128;
-                    for (int i = 0; i < 8; i++)
+                    for (int x = startx, r = x / 8; r < stride && r < read; r++)
                     {
-                        if (x >= startx + scanWidth)
+                        int value = (buff[r] ^ invert) << (24 + (x & 7));
+                        for (int count = Math.min(8 - (x & 7), endX - x); count > 0; x++, count--)
                         {
-                            break;
+                            if (nosubsampling || x % currentSubsampling == 0)
+                            {
+                                if (value < 0)
+                                {
+                                    output[idx] = (byte) 255;
+                                }
+                                idx++;
+                            }
+                            value <<= 1;
                         }
-                        int bit = value & mask;
-                        mask >>= 1;
-                        if (x >= startx && x % currentSubsampling == 0)
-                        {
-                            output[idx++] = bit == 0 ? value0 : value1;
-                        }
-                        x++;
                     }
                 }
-                if (readLen != rowLen)
+                if (read != stride)
                 {
                     LOG.warn("premature EOF, image will be incomplete");
                     break;
