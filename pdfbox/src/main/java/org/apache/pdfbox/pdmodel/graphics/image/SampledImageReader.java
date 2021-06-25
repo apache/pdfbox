@@ -447,7 +447,8 @@ final class SampledImageReader
                 int read = (int) IOUtils.populateBuffer(iis, buff);
                 if (y >= starty && y % currentSubsampling == 0)
                 {
-                    for (int x = startx, r = x / 8; r < stride && r < read; r++)
+                    int x = startx;
+                    for (int r = x / 8; r < stride && r < read; r++)
                     {
                         int value = (buff[r] ^ invert) << (24 + (x & 7));
                         for (int count = Math.min(8 - (x & 7), endX - x); count > 0; x++, count--)
