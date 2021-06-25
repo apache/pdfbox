@@ -597,10 +597,15 @@ public final class PDImageXObject extends PDXObject implements PDImage
         final int height = Math.max(image.getHeight(), mask.getHeight());
 
         // scale mask to fit image, or image to fit mask, whichever is larger.
-        // also make sure that image is ARGB as this is what needs to be returned.
+        // also make sure that mask is 8 bit gray and image is ARGB as this
+        // is what needs to be returned.
         if (mask.getWidth() < width || mask.getHeight() < height)
         {
-            mask = scaleImage(mask, width, height, mask.getType(), interpolateMask);
+            mask = scaleImage(mask, width, height, BufferedImage.TYPE_BYTE_GRAY, interpolateMask);
+        }
+        else if (mask.getType() != BufferedImage.TYPE_BYTE_GRAY)
+        {
+            mask = scaleImage(mask, width, height, BufferedImage.TYPE_BYTE_GRAY, false);
         }
 
         if (image.getWidth() < width || image.getHeight() < height)
@@ -617,8 +622,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         // - fast by letting the sample model do a bulk band operation if no matte is set.
         // - slow and complex by matte calculations on individual pixel components.
         final WritableRaster raster = image.getRaster(), alpha = mask.getRaster();
-        if ( !isSoft && mask.getType() == BufferedImage.TYPE_BYTE_GRAY
-            && raster.getDataBuffer().getSize() == alpha.getDataBuffer().getSize() )
+        if ( !isSoft && raster.getDataBuffer().getSize() == alpha.getDataBuffer().getSize() )
         {
             final DataBuffer dst = raster.getDataBuffer(), src = alpha.getDataBuffer();
             for ( int i = 0, c = dst.getSize(); c > 0; i++, c-- )
@@ -686,8 +690,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     {
         final int imgWidth = image.getWidth(), imgHeight = image.getHeight();
         // largeScale switch is arbitrarily chosen as to where bicubic becomes very slow
-        int computations = type==BufferedImage.TYPE_BYTE_GRAY ? 1 : 3;
-        boolean largeScale = ((long)width * height / imgWidth / imgHeight) > 3 * 3 && width * height > 3000 * 3000 * 3 / computations;
+        boolean largeScale = width * height > 3000 * 3000 * (type == BufferedImage.TYPE_BYTE_GRAY ? 3 : 1);
         interpolate &= imgWidth!=width || imgHeight!=height;
 
         BufferedImage image2 = new BufferedImage(width, height, type);
