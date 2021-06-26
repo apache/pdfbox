@@ -27,6 +27,11 @@ import java.util.Arrays;
  */
 public class PDPanose
 {
+    /**
+     * Length.
+     */
+    static public final int LENGTH = 12;
+
     private final byte[] bytes;
 
     public PDPanose(byte[] bytes)
