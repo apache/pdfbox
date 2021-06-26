@@ -854,7 +854,10 @@ public final class PDFontDescriptor implements COSObjectable
         {
             COSString panose = (COSString)style.getDictionaryObject(COSName.PANOSE);
             byte[] bytes = panose.getBytes();
-            return new PDPanose(bytes);
+            if (bytes.length >= PDPanose.LENGTH)
+            {
+                return new PDPanose(bytes);
+            }
         }
         return null;
     }
