@@ -106,24 +106,11 @@ public class AcroFormValidationProcess extends AbstractProcess
         if (lFields != null)
         {
             // the list can be null if the field doesn't have children
-            for (Object obj : lFields)
+            for (PDField obj : lFields)
             {
-                if (obj instanceof PDField)
+                if (!validateField(ctx, obj))
                 {
-                    if (!validateField(ctx, (PDField) obj))
-                    {
-                        return false;
-                    }
-                }
-                else if (obj instanceof PDAnnotationWidget)
-                {
-                    // "A field's children in the hierarchy may also include widget annotations"
-                    ContextHelper.validateElement(ctx, ((PDAnnotationWidget) obj).getCOSObject(), ANNOTATIONS_PROCESS);
-                }
-                else
-                {
-                    addValidationError(ctx, new ValidationError(ERROR_SYNTAX_BODY,
-                            "Field can only have fields or widget annotations as KIDS"));
+                    return false;
                 }
             }
         }
