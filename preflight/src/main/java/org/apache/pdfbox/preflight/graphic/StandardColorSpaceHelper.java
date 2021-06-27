@@ -280,7 +280,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 {
                     return;
                 }
-                validateICCProfileAlternateEntry(iccBased);
+                validateICCProfileAlternateEntry(iccBased, altpdcs);
             }
         }
         catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e)
@@ -543,9 +543,8 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         return true;
     }
 
-    private void validateICCProfileAlternateEntry(PDICCBased iccBased) throws IOException
+    private void validateICCProfileAlternateEntry(PDICCBased iccBased, PDColorSpace altCS) throws IOException
     {
-        PDColorSpace altCS = iccBased.getAlternateColorSpace();
         if (altCS != null && altCS.getNumberOfComponents() != iccBased.getNumberOfComponents())
         {
             // https://github.com/veraPDF/veraPDF-library/issues/773
