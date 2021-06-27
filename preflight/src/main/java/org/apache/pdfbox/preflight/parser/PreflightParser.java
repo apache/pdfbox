@@ -642,13 +642,10 @@ public class PreflightParser extends PDFParser
         // sanity test to circumvent loops with broken documents
         if (requireExistingNotCompressedObj && offsetOrObjstmObNr == null)
         {
-            addValidationError(new ValidationError(ERROR_SYNTAX_MISSING_OFFSET,
-                    "Object must be defined and must not be compressed object: "
-                            + objKey.getNumber() + ":" + objKey.getGeneration()));
-            throw new SyntaxValidationException(
-                    "Object must be defined and must not be compressed object: "
-                            + objKey.getNumber() + ":" + objKey.getGeneration(),
-                    validationResult);
+            String message = "Object must be defined and must not be compressed object: "
+                    + objKey.getNumber() + ":" + objKey.getGeneration();
+            addValidationError(new ValidationError(ERROR_SYNTAX_MISSING_OFFSET, message));
+            throw new SyntaxValidationException(message, validationResult);
         }
 
         if (offsetOrObjstmObNr != null)
@@ -705,7 +702,7 @@ public class PreflightParser extends PDFParser
 
             addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER,
                     "Single space expected [offset=" + offset + "; key="
-                            + offsetOrObjstmObNr.toString() + "; line=" + line + "; object="
+                            + offsetOrObjstmObNr + "; line=" + line + "; object="
                             + objKey.getNumber() + " " + objKey.getGeneration() + "]"));
 
             // reset source cursor to read object information
@@ -717,12 +714,9 @@ public class PreflightParser extends PDFParser
             {
                 if (source.read() != c)
                 {
-                    addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER,
-                            "Expected pattern '" + new String(OBJ_MARKER)
-                                    + " but missed at character '" + c + "'"));
-                    throw new SyntaxValidationException("Expected pattern '"
-                            + new String(OBJ_MARKER) + " but missed at character '" + c + "'",
-                            validationResult);
+                    String message = "Expected pattern '" + new String(OBJ_MARKER) + " but missed at character '" + c + "'";
+                    addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER, message));
+                    throw new SyntaxValidationException(message, validationResult);
                 }
             }
         }
