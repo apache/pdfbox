@@ -447,8 +447,8 @@ class TestCreateSignature
         }
     }
 
-    //@ParameterizedTest
-    //@MethodSource("signingTypes")
+    @ParameterizedTest
+    @MethodSource("signingTypes")
     void testDoubleVisibleSignatureOnEncryptedFile(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
             TSPException, CertificateVerificationException

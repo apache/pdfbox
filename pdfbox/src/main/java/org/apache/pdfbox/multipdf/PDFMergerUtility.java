@@ -633,12 +633,12 @@ public class PDFMergerUtility
                 PDOutlineItem destLastOutlineItem = destOutline.getFirstChild();
                 while (true)
                 {
-                    PDOutlineItem pdOutlineItem = destLastOutlineItem.getNextSibling();
-                    if (pdOutlineItem == null)
+                    PDOutlineItem outlineItem = destLastOutlineItem.getNextSibling();
+                    if (outlineItem == null)
                     {
                         break;
                     }
-                    destLastOutlineItem = pdOutlineItem;
+                    destLastOutlineItem = outlineItem;
                 }
 
                 for (PDOutlineItem item : srcOutline.children())

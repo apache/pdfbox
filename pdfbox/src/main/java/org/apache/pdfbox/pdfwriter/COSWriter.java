@@ -182,6 +182,8 @@ public class COSWriter implements ICOSVisitor
 
     // the current object number
     private long number = 0;
+    // indicates whether existing object keys should be reused or not
+    private boolean reuseObjectNumbers = true;
 
     // maps the object to the keys generated in the writer
     // these are used for indirect references in other objects
@@ -226,7 +228,7 @@ public class COSWriter implements ICOSVisitor
     private SignatureInterface signatureInterface;
     private byte[] incrementPart;
     private COSArray byteRangeArray;
-    private CompressParameters compressParameters = null;
+    private final CompressParameters compressParameters;
     private boolean blockAddingObject = false;
 
     /**
@@ -269,7 +271,11 @@ public class COSWriter implements ICOSVisitor
         // write to buffer instead of output
         setOutput(new ByteArrayOutputStream());
         setStandardOutput(new COSStandardOutputStream(output, inputData.length()));
-
+        // don't reuse object numbers to avoid overlapping keys
+        // as inputData already contains a lot of objects
+        reuseObjectNumbers = false;
+        // disable compressed object streams
+        compressParameters = CompressParameters.NO_COMPRESSION;
         incrementalInput = inputData;
         incrementalOutput = outputStream;
         incrementalUpdate = true;
@@ -782,10 +788,10 @@ public class COSWriter implements ICOSVisitor
         {
             while (x < xRefLength)
             {
-                Long xRefRange = xRefRanges[x + 1];
-                writeXrefRange(xRefRanges[x], xRefRange);
+                long xRefRangeX1 = xRefRanges[x + 1];
+                writeXrefRange(xRefRanges[x], xRefRangeX1);
 
-                for (int i = 0; i < xRefRange; ++i)
+                for (int i = 0; i < xRefRangeX1; ++i)
                 {
                     writeXrefEntry(tmpXRefEntries.get(j++));
                 }
@@ -1059,11 +1065,14 @@ public class COSWriter implements ICOSVisitor
         COSBase actual = obj;
         if( actual instanceof COSObject )
         {
-            COSObjectKey key = obj.getKey();
-            if (key != null)
+            if (reuseObjectNumbers)
             {
-                objectKeys.put(obj, key);
-                return key;
+                COSObjectKey key = obj.getKey();
+                if (key != null)
+                {
+                    objectKeys.put(obj, key);
+                    return key;
+                }
             }
             actual = ((COSObject) obj).getObject();
         }
