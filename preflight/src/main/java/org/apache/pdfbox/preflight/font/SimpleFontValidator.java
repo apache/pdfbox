@@ -104,10 +104,7 @@ public abstract class SimpleFontValidator<T extends FontContainer> extends FontV
 
         if (!areFieldsPresent)
         {
-            if (missingFields.endsWith(", "))
-            {
-                missingFields = missingFields.substring(0, missingFields.length() - 2);
-            }
+            missingFields = missingFields.substring(0, missingFields.length() - 2);
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
                     this.font.getName()
                     + ": some required fields are missing from the Font dictionary: " + missingFields + "."));
