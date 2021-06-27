@@ -36,6 +36,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.MAX_STRING_LENGTH;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -87,7 +88,7 @@ public class StubOperator extends OperatorProcessor
             OperatorName.NON_STROKING_GRAY, OperatorName.STROKING_COLOR_GRAY,
             OperatorName.SET_FLATNESS, OperatorName.SET_LINE_MITERLIMIT);
 
-    private static final List<String> CHECK_ARRAY_OPERANDS = Arrays.asList( //
+    private static final List<String> CHECK_ARRAY_OPERANDS = Collections.singletonList( //
             OperatorName.SHOW_TEXT_ADJUSTED);
 
     public StubOperator(String name)
@@ -272,7 +273,7 @@ public class StubOperator extends OperatorProcessor
      */
     private void checkTagAndPropertyOperands(List<COSBase> arguments) throws ContentStreamException
     {
-        if (arguments == null || arguments.isEmpty() || arguments.size() != 2)
+        if (arguments == null || arguments.size() != 2)
         {
             throw createInvalidArgumentsError();
         }
