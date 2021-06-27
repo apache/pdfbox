@@ -141,20 +141,14 @@ public final class COSOutputStream extends FilterOutputStream
                             else
                             {
                                 RandomAccess filteredBuffer = scratchFile.createBuffer();
-                                try
+                                try (OutputStream filteredOut = new RandomAccessOutputStream(filteredBuffer))
                                 {
-                                    try (OutputStream filteredOut = new RandomAccessOutputStream(filteredBuffer))
-                                    {
-                                        filters.get(i).encode(unfilteredIn, filteredOut, parameters, i);
-                                    }
-
-                                    RandomAccess tmpSwap = filteredBuffer;
-                                    filteredBuffer = buffer;
-                                    buffer = tmpSwap;
+                                    filters.get(i).encode(unfilteredIn, filteredOut, parameters, i);
                                 }
                                 finally
                                 {
-                                    filteredBuffer.close();
+                                    buffer.close();
+                                    buffer = filteredBuffer;
                                 }
                             }
                         }
