@@ -134,7 +134,7 @@ final class FlateFilter extends Filter
             if (mayRead > 0)
             {
                 byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
-                while ((amountRead = input.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
+                while ((amountRead = input.read(buffer)) != -1)
                 {
                     out.write(buffer, 0, amountRead);
                 }
