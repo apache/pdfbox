@@ -1681,4 +1681,31 @@ abstract class PDAbstractContentStream implements Closeable
         return glyphIdsAfterGsub;
 
     }
+
+    /**
+     * Does a length unit conversion from millimeters or inches (depending on user choice) to points.
+     *
+     * @param items Items that needs to be converted.
+     * @param unit_type Specifies desired length unit (mm or inch) for conversion.
+     * @throws IllegalArgumentException If desired length unit is not supported.
+     */
+    public static final void convertUnit(List<Float> items, String unitType)
+    {
+        float multiplier = 1;
+        switch (unitType) {
+            case "mm":
+                multiplier = 1 / (10 * 2.54f) * 72;
+                break;
+            case "inch":
+                multiplier = 72;
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "could not find the unit type: " + unitType);
+        }
+
+        for (int i=0; i < items.size(); i++) {
+            items.set(i, items.get(i) * multiplier);
+        }
+    }
 }

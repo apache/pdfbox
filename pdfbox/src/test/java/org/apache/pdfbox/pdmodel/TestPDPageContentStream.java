@@ -17,8 +17,10 @@
 package org.apache.pdfbox.pdmodel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -166,5 +168,30 @@ class TestPDPageContentStream
             contentStream.close();
             contentStream.close();
         }
+    }
+    
+     /**
+     * PDFBOX-4073: test implemented choosable coordinate-unitsystem
+     * Checks that unitconversion is done right. 
+     * Arguably the test could be also in some other file
+     */
+    @Test 
+     void testUnitConversion() 
+     {
+        List<Float> itemsMm = Arrays.asList(1.0f, 2.4f);
+        List<Float> itemsInch = Arrays.asList(1.0f, 2.4f);
+        List<Float> itemsInMm = Arrays.asList(1.0f /(10 * 2.54f) * 72, 2.4f /(10 * 2.54f) * 72);
+        List<Float> itemsInInch = Arrays.asList(1.0f * 72, 2.4f * 72);
+
+        PDAbstractContentStream.convertUnit(itemsMm, "mm");
+        PDAbstractContentStream.convertUnit(itemsInch, "inch");
+        // Should be converted to millimeters
+        assertEquals(itemsInMm, itemsMm);
+        // Should be converted to inches
+        assertEquals(itemsInInch, itemsInch);
+        // Should throw IllegalArgumentException if the unit is not valid
+        assertThrows(IllegalArgumentException.class, () -> {
+            PDAbstractContentStream.convertUnit(itemsMm, "invalid_unit");
+        });   
     }
 }
