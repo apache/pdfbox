@@ -28,7 +28,7 @@ public class PDPanoseClassification
     /**
      * Length.
      */
-    static public final int LENGTH = 10;
+    public static final int LENGTH = 10;
 
     private final byte[] bytes;
 
