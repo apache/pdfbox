@@ -445,7 +445,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
         // get RGB image w/o reference because applyMask might modify it, take long time and a lot of memory. 
         final BufferedImage image;
-        final PDImageXObject softMask = getSoftMask(), mask = getMask();
+        final PDImageXObject softMask = getSoftMask();
+        final PDImageXObject mask = getMask();
         // soft mask (overrides explicit mask)
         if (softMask != null)
         {
@@ -638,7 +639,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
             {
                 raster.getPixels(0, y, width, 1, pixels);
                 alpha.getSamples(0, y, width, 1, 0, alphas);
-                for (int x = 0, offset = 0; x < width; x++)
+                int offset = 0;
+                for (int x = 0; x < width; x++)
                 {
                     int a = alphas[x];
                     if (a == 0)
@@ -670,7 +672,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     private static BufferedImage scaleImage(BufferedImage image, int width, int height, int type, boolean interpolate)
     {
-        final int imgWidth = image.getWidth(), imgHeight = image.getHeight();
+        final int imgWidth = image.getWidth();
+        final int imgHeight = image.getHeight();
         // largeScale switch is arbitrarily chosen as to where bicubic becomes very slow
         boolean largeScale = width * height > 3000 * 3000 * (type == BufferedImage.TYPE_BYTE_GRAY ? 3 : 1);
         interpolate &= imgWidth != width || imgHeight != height;
