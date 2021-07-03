@@ -165,7 +165,7 @@ public class PDFCloneUtility
        */
       public void cloneMerge( final COSObjectable base, COSObjectable target) throws IOException
       {
-          if( base == null )
+          if (base == null || base == target)
           {
               return;
           }

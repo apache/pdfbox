@@ -101,6 +101,9 @@ public class TestLayerUtility extends TestCase
             PDOptionalContentProperties ocgs = catalog.getOCProperties();
             PDOptionalContentGroup overlay = ocgs.getGroup("overlay");
             assertEquals(ocg.getName(), overlay.getName());
+
+            // test PDFBOX-5232 (never ended)
+            new LayerUtility(doc).importPageAsForm(doc, 0);
         }
         finally
         {
