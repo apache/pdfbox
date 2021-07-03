@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -39,7 +40,9 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
 import org.apache.pdfbox.util.Matrix;
+
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link org.apache.pdfbox.multipdf.LayerUtility} class.
@@ -47,28 +50,29 @@ import org.junit.jupiter.api.BeforeAll;
  */
 public class TestLayerUtility
 {
-
-    private final File testResultsDir = new File("target/test-output");
+    private static final File TESTRESULTSDIR = new File("target/test-output");
 
     @BeforeAll
-    protected void setUp() throws Exception
+    static void setUp() throws Exception
     {
-        testResultsDir.mkdirs();
+        TESTRESULTSDIR.mkdirs();
     }
 
     /**
      * Tests layer import.
      * @throws Exception if an error occurs
      */
+    @Test
     public void testLayerImport() throws Exception
     {
         File mainPDF = createMainPDF();
         File overlay1 = createOverlay1();
-        File targetFile = new File(testResultsDir, "text-with-form-overlay.pdf");
+        File targetFile = new File(TESTRESULTSDIR, "text-with-form-overlay.pdf");
 
         try (PDDocument targetDoc = Loader.loadPDF(mainPDF);
                 PDDocument overlay1Doc = Loader.loadPDF(overlay1))
         {
+            assertEquals(1.4f, targetDoc.getVersion());
             LayerUtility layerUtil = new LayerUtility(targetDoc);
             PDFormXObject form = layerUtil.importPageAsForm(overlay1Doc, 0);
             PDPage targetPage = targetDoc.getPage(0);
@@ -76,7 +80,10 @@ public class TestLayerUtility
             AffineTransform at = new AffineTransform();
             layerUtil.appendFormAsLayer(targetPage, form, at, "overlay");
 
-            targetDoc.save(targetFile.getAbsolutePath());
+            assertEquals(1.5f, targetDoc.getVersion());
+            // save with no compression to avoid version going up to 1.6
+            targetDoc.save(targetFile.getAbsolutePath(), CompressParameters.NO_COMPRESSION);
+            assertEquals(1.5f, targetDoc.getVersion());
         }
 
         try (PDDocument doc = Loader.loadPDF(targetFile))
@@ -100,7 +107,7 @@ public class TestLayerUtility
 
     private File createMainPDF() throws IOException
     {
-        File targetFile = new File(testResultsDir, "text-doc.pdf");
+        File targetFile = new File(TESTRESULTSDIR, "text-doc.pdf");
         try (PDDocument doc = new PDDocument())
         {
             //Create new page
@@ -143,14 +150,15 @@ public class TestLayerUtility
                 }
                 contentStream.endText();
             }
-            doc.save(targetFile.getAbsolutePath());
+            // save with no compression to avoid version going up to 1.6
+            doc.save(targetFile.getAbsolutePath(), CompressParameters.NO_COMPRESSION);
         }
         return targetFile;
     }
 
     private File createOverlay1() throws IOException
     {
-        File targetFile = new File(testResultsDir, "overlay1.pdf");
+        File targetFile = new File(TESTRESULTSDIR, "overlay1.pdf");
         try (PDDocument doc = new PDDocument())
         {
             //Create new page
