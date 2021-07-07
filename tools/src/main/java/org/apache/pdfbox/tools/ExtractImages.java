@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +51,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
@@ -262,14 +264,15 @@ public final class ExtractImages implements Callable<Integer>
                                  int code,
                                  Vector displacement) throws IOException
         {
-            RenderingMode renderingMode = getGraphicsState().getTextState().getRenderingMode();
+            PDGraphicsState graphicsState = getGraphicsState();
+            RenderingMode renderingMode = graphicsState.getTextState().getRenderingMode();
             if (renderingMode.isFill())
             {
-                processColor(getGraphicsState().getNonStrokingColor());
+                processColor(graphicsState.getNonStrokingColor());
             }
             if (renderingMode.isStroke())
             {
-                processColor(getGraphicsState().getStrokingColor());
+                processColor(graphicsState.getStrokingColor());
             }
         }
 
@@ -403,7 +406,7 @@ public final class ExtractImages implements Callable<Integer>
                     {
                         // RGB or Gray colorspace: get and write the unmodified JPEG2000 stream
                         InputStream data = pdImage.createInputStream(
-                                Arrays.asList(COSName.JPX_DECODE.getName()));
+                                Collections.singletonList(COSName.JPX_DECODE.getName()));
                         IOUtils.copy(data, imageOutput);
                         IOUtils.closeQuietly(data);
                     }

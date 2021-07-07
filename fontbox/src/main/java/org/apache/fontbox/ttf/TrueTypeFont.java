@@ -478,9 +478,10 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     @Override
     public String getName() throws IOException
     {
-        if (getNaming() != null)
+        NamingTable namingTable = getNaming();
+        if (namingTable != null)
         {
-            return getNaming().getPostScriptName();
+            return namingTable.getPostScriptName();
         }
         else
         {
@@ -768,9 +769,10 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     {
         try
         {
-            if (getNaming() != null)
+            NamingTable namingTable = getNaming();
+            if (namingTable != null)
             {
-                return getNaming().getPostScriptName();
+                return namingTable.getPostScriptName();
             }
             else
             {

@@ -120,8 +120,12 @@ public class FontFileFinder
             if (file.isDirectory())
             {
                 // skip hidden directories
-                if (file.getName().startsWith("."))
+                if (file.isHidden())
                 {
+                    if (LOG.isDebugEnabled())
+                    {
+                        LOG.debug("skip hidden directory " + file);
+                    }
                     continue;
                 }
                 walk(file, results);

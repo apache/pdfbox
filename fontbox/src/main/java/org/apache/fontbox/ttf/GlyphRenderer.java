@@ -66,7 +66,7 @@ class GlyphRenderer
         int endPtIndex = 0;
         int endPtOfContourIndex = -1;
         Point[] points = new Point[gd.getPointCount()];
-        for (int i = 0; i < gd.getPointCount(); i++)
+        for (int i = 0; i < points.length; i++)
         {
             if (endPtOfContourIndex == -1)
             {

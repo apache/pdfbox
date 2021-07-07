@@ -128,7 +128,7 @@ public class Type2CharString extends Type1CharString
             break;
         case ENDCHAR:
             numbers = clearStack(numbers, numbers.size() == 5 || numbers.size() == 1);
-            closePath();
+            closeCharString2Path();
             if (numbers.size() == 4)
             {
                 // deprecated "seac" operator
@@ -262,12 +262,12 @@ public class Type2CharString extends Type1CharString
     {
         if (pathCount > 0)
         {
-            closePath();
+            closeCharString2Path();
         }
         pathCount++;
     }
 
-    private void closePath()
+    private void closeCharString2Path()
     {
         CharStringCommand command = pathCount > 0 ? (CharStringCommand) type1Sequence
                 .get(type1Sequence.size() - 1)

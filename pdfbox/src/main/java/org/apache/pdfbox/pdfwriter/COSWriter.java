@@ -182,6 +182,8 @@ public class COSWriter implements ICOSVisitor
 
     // the current object number
     private long number = 0;
+    // indicates whether existing object keys should be reused or not
+    private boolean reuseObjectNumbers = true;
 
     // the list of x ref entries to be made so far
     private final List<XReferenceEntry> xRefEntries = new ArrayList<>();
@@ -217,7 +219,7 @@ public class COSWriter implements ICOSVisitor
     private SignatureInterface signatureInterface;
     private byte[] incrementPart;
     private COSArray byteRangeArray;
-    private CompressParameters compressParameters = null;
+    private final CompressParameters compressParameters;
     private boolean blockAddingObject = false;
 
     private COSWriterObjectStorage objectStorage;
@@ -273,7 +275,11 @@ public class COSWriter implements ICOSVisitor
         // write to buffer instead of output
         setOutput(new ByteArrayOutputStream());
         setStandardOutput(new COSStandardOutputStream(output, inputData.length()));
-
+        // don't reuse object numbers to avoid overlapping keys
+        // as inputData already contains a lot of objects
+        reuseObjectNumbers = false;
+        // disable compressed object streams
+        compressParameters = CompressParameters.NO_COMPRESSION;
         incrementalInput = inputData;
         incrementalOutput = outputStream;
         incrementalUpdate = true;
@@ -684,15 +690,15 @@ public class COSWriter implements ICOSVisitor
         trailer.accept(this);
     }
 
-    private void doWriteXRefInc(COSDocument doc, long hybridPrev) throws IOException
+    private void doWriteXRefInc(COSDocument doc, boolean hasHybridXRef) throws IOException
     {
-        if (doc.isXRefStream() || hybridPrev != -1)
+        if (doc.isXRefStream() || hasHybridXRef)
         {
             // the file uses XrefStreams, so we need to update
             // it with an xref stream. We create a new one and fill it
             // with data available here
 
-            // create a new XRefStrema object
+            // create a new XRefStream object
             PDFXRefStream pdfxRefStream = new PDFXRefStream(doc);
 
             // add all entries from the incremental update.
@@ -717,17 +723,10 @@ public class COSWriter implements ICOSVisitor
             COSStream stream2 = pdfxRefStream.getStream();
             doWriteObject(stream2);
         }
-
-        if (!doc.isXRefStream() || hybridPrev != -1)
+        else
         {
             COSDictionary trailer = doc.getTrailer();
             trailer.setLong(COSName.PREV, doc.getStartXref());
-            if (hybridPrev != -1)
-            {
-                COSName xrefStm = COSName.XREF_STM;
-                trailer.removeItem(xrefStm);
-                trailer.setLong(xrefStm, getStartxref());
-            }
             doWriteXRefTable();
             doWriteTrailer(doc);
         }
@@ -770,9 +769,10 @@ public class COSWriter implements ICOSVisitor
         {
             while (x < xRefLength)
             {
-                writeXrefRange(xRefRanges[x], xRefRanges[x + 1]);
+                long xRefRangeX1 = xRefRanges[x + 1];
+                writeXrefRange(xRefRanges[x], xRefRangeX1);
 
-                for (int i = 0; i < xRefRanges[x + 1]; ++i)
+                for (int i = 0; i < xRefRangeX1; ++i)
                 {
                     writeXrefEntry(tmpXRefEntries.get(j++));
                 }
@@ -1033,7 +1033,7 @@ public class COSWriter implements ICOSVisitor
         }
         return list.toArray(new Long[list.size()]);
     }
-    
+
     /**
      * This will get the object key for the object.
      *
@@ -1041,8 +1041,44 @@ public class COSWriter implements ICOSVisitor
      *
      * @return The object key for the object.
      */
+//    private COSObjectKey getObjectKey( COSBase obj )
+//    {
+//        COSBase actual = objectStorage.toActual(obj);
+//
+//        // PDFBOX-4540: because objectKeys is accessible from outside, it is possible
+//        // that a COSObject obj is already in the objectKeys map.
+//        COSObjectKey key = objectStorage.getKey(obj);
+//        if( key == null && actual != null )
+//        {
+//            key = objectStorage.getKey(actual);
+//        }
+//        if (key == null)
+//        {
+//            key = new COSObjectKey(++number, 0);
+//            if( actual != null )
+//            {
+//                objectStorage.put(key, actual);
+//            }
+//            else
+//            {
+//                objectStorage.put(key, obj);
+//            }
+//        }
+//        return key;
+//    }
+
     private COSObjectKey getObjectKey( COSBase obj )
     {
+        if(
+            reuseObjectNumbers &&
+            obj instanceof COSObject &&
+            obj.getKey() != null
+        )
+        {
+            objectStorage.put(obj.getKey(), obj);
+            return obj.getKey();
+        }
+
         COSBase actual = objectStorage.toActual(obj);
 
         // PDFBOX-4540: because objectKeys is accessible from outside, it is possible
@@ -1064,8 +1100,10 @@ public class COSWriter implements ICOSVisitor
                 objectStorage.put(key, obj);
             }
         }
+
         return key;
     }
+
 
     @Override
     public Object visitFromArray( COSArray obj ) throws IOException
@@ -1278,16 +1316,16 @@ public class COSWriter implements ICOSVisitor
 
         // get the previous trailer
         COSDictionary trailer = doc.getTrailer();
-        long hybridPrev = -1;
+        boolean hasHybridXRef = false;
 
         if (trailer != null)
         {
-            hybridPrev = trailer.getLong(COSName.XREF_STM);
+            hasHybridXRef = trailer.getLong(COSName.XREF_STM) != -1;
         }
 
         if(incrementalUpdate || doc.isXRefStream())
         {
-            doWriteXRefInc(doc, hybridPrev);
+            doWriteXRefInc(doc, hasHybridXRef);
         }
         else
         {
@@ -1451,26 +1489,24 @@ public class COSWriter implements ICOSVisitor
      */
     public void write(PDDocument doc, SignatureInterface signInterface) throws IOException
     {
-        Long idTime = doc.getDocumentId() == null ? System.currentTimeMillis() : 
-                                                    doc.getDocumentId();
-
         pdDocument = doc;
         signatureInterface = signInterface;
         number = pdDocument.getDocument().getHighestXRefObjectNumber();
-
         if(incrementalUpdate)
         {
             objectStorage.setDocument(doc.getDocument());
         }
-        
+        Long idTime = pdDocument.getDocumentId() == null ? System.currentTimeMillis()
+                : pdDocument.getDocumentId();
+        COSDocument cosDoc = pdDocument.getDocument();
+        COSDictionary trailer = cosDoc.getTrailer();
+
         // if the document says we should remove encryption, then we shouldn't encrypt
         if(doc.isAllSecurityToBeRemoved())
         {
             willEncrypt = false;
             // also need to get rid of the "Encrypt" in the trailer so readers 
             // don't try to decrypt a document which is not encrypted
-            COSDocument cosDoc = doc.getDocument();
-            COSDictionary trailer = cosDoc.getTrailer();
             trailer.removeItem(COSName.ENCRYPT);
         }
         else
@@ -1496,8 +1532,6 @@ public class COSWriter implements ICOSVisitor
             }
         }
 
-        COSDocument cosDoc = pdDocument.getDocument();
-        COSDictionary trailer = cosDoc.getTrailer();
         COSArray idArray;
         boolean missingID = true;
         COSBase base = trailer.getDictionaryObject(COSName.ID);

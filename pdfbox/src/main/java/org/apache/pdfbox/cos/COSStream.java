@@ -213,7 +213,14 @@ public class COSStream extends COSDictionary implements Closeable
                     input = new ByteArrayInputStream(output.toByteArray());
                     output.reset();
                 }
-                filterList.get(i).decode(input, output, this, i, DecodeOptions.DEFAULT);
+                try
+                {
+                    filterList.get(i).decode(input, output, this, i, DecodeOptions.DEFAULT);
+                }
+                finally
+                {
+                    IOUtils.closeQuietly(input);
+                }
             }
             return new RandomAccessReadBuffer(output.toByteArray());
         }
@@ -355,8 +362,8 @@ public class COSStream extends COSDictionary implements Closeable
     {
         if (isWriting)
         {
-            throw new IllegalStateException("There is an open OutputStream associated with " +
-                                            "this COSStream. It must be closed before querying" +
+            throw new IllegalStateException("There is an open OutputStream associated with this " +
+                                            "COSStream. It must be closed before querying the " +
                                             "length of this COSStream.");
         }
         return getInt(COSName.LENGTH, 0);

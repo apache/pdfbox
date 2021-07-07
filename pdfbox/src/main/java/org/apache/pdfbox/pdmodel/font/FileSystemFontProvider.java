@@ -86,7 +86,8 @@ final class FileSystemFontProvider extends FontProvider
             this.ulCodePageRange1 = ulCodePageRange1;
             this.ulCodePageRange2 = ulCodePageRange2;
             this.macStyle = macStyle;
-            this.panose = panose != null ? new PDPanoseClassification(panose) : null;
+            this.panose = panose != null && panose.length >= PDPanoseClassification.LENGTH ?
+                    new PDPanoseClassification(panose) : null;
             this.parent = parent;
         }
 
@@ -198,7 +199,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Could not load font file: " + file, e);
+                LOG.warn("Could not load font file: " + file, e);
             }
             return null;
         }
@@ -211,7 +212,7 @@ final class FileSystemFontProvider extends FontProvider
                 // ttc not closed here because it is needed later when ttf is accessed,
                 // e.g. rendering PDF with non-embedded font which is in ttc file in our font directory
                 TrueTypeCollection ttc = new TrueTypeCollection(file);
-                TrueTypeFont ttf = null;
+                TrueTypeFont ttf;
                 try
                 {
                     ttf = ttc.getFontByName(postScriptName);
@@ -245,7 +246,7 @@ final class FileSystemFontProvider extends FontProvider
                     // ttc not closed here because it is needed later when ttf is accessed,
                     // e.g. rendering PDF with non-embedded font which is in ttc file in our font directory
                     TrueTypeCollection ttc = new TrueTypeCollection(file);
-                    TrueTypeFont ttf = null;
+                    TrueTypeFont ttf;
                     try
                     {
                         ttf = ttc.getFontByName(postScriptName);
@@ -275,7 +276,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Could not load font file: " + file, e);
+                LOG.warn("Could not load font file: " + file, e);
             }
             return null;
         }
@@ -294,7 +295,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Could not load font file: " + file, e);
+                LOG.warn("Could not load font file: " + file, e);
             }
             return null;
         }
@@ -384,7 +385,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Error parsing font " + file.getPath(), e);
+                LOG.warn("Error parsing font " + file.getPath(), e);
             }
         }
     }
@@ -518,7 +519,7 @@ final class FileSystemFontProvider extends FontProvider
                     String[] parts = line.split("\\|", 10);
                     if (parts.length < 10)
                     {
-                        LOG.error("Incorrect line '" + line + "' in font disk cache is skipped");
+                        LOG.warn("Incorrect line '" + line + "' in font disk cache is skipped");
                         continue;
                     }
 
@@ -581,7 +582,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Error loading font cache, will be re-built", e);
+                LOG.warn("Error loading font cache, will be re-built", e);
                 return null;
             }
         }
@@ -607,7 +608,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.error("Could not load font file: " + ttcFile, e);
+            LOG.warn("Could not load font file: " + ttcFile, e);
         }
     }
 
@@ -618,7 +619,7 @@ final class FileSystemFontProvider extends FontProvider
     {
         try
         {
-            if (ttfFile.getPath().endsWith(".otf"))
+            if (ttfFile.getPath().toLowerCase().endsWith(".otf"))
             {
                 OTFParser parser = new OTFParser(false, true);
                 OpenTypeFont otf = parser.parse(ttfFile);
@@ -633,7 +634,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.error("Could not load font file: " + ttfFile, e);
+            LOG.warn("Could not load font file: " + ttfFile, e);
         }
     }
 
@@ -735,7 +736,7 @@ final class FileSystemFontProvider extends FontProvider
         catch (IOException e)
         {
             fontInfoList.add(new FSIgnored(file, FontFormat.TTF, "*skipexception*"));
-            LOG.error("Could not load font file: " + file, e);
+            LOG.warn("Could not load font file: " + file, e);
         }
         finally
         {
@@ -751,7 +752,13 @@ final class FileSystemFontProvider extends FontProvider
         try (InputStream input = new FileInputStream(pfbFile))
         {
             Type1Font type1 = Type1Font.createWithPFB(input);
-            if (type1.getName() != null && type1.getName().contains("|"))
+            if (type1.getName() == null)
+            {
+                fontInfoList.add(new FSIgnored(pfbFile, FontFormat.PFB, "*skipnoname*"));
+                LOG.warn("Missing 'name' entry for PostScript name in font " + pfbFile);
+                return;
+            }
+            if (type1.getName().contains("|"))
             {
                 fontInfoList.add(new FSIgnored(pfbFile, FontFormat.PFB, "*skippipeinname*"));
                 LOG.warn("Skipping font with '|' in name " + type1.getName() + " in file " + pfbFile);
@@ -768,7 +775,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.error("Could not load font file: " + pfbFile, e);
+            LOG.warn("Could not load font file: " + pfbFile, e);
         }
     }
 

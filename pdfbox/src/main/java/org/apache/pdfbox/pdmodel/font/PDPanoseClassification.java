@@ -24,9 +24,15 @@ package org.apache.pdfbox.pdmodel.font;
  */
 public class PDPanoseClassification
 {
+
+    /**
+     * Length.
+     */
+    public static final int LENGTH = 10;
+
     private final byte[] bytes;
 
-    PDPanoseClassification(byte[] bytes)
+    public PDPanoseClassification(byte[] bytes)
     {
         this.bytes = bytes;
     }

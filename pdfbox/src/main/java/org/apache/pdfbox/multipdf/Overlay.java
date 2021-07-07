@@ -41,6 +41,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -302,11 +303,10 @@ public class Overlay implements Closeable
     
     private Map<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
     {
-        int numberOfPages = doc.getNumberOfPages();
-        Map<Integer,LayoutPage> layoutPages = new HashMap<>(numberOfPages);
-        for (int i=0;i<numberOfPages;i++)
+        int i = 0;
+        Map<Integer, LayoutPage> layoutPages = new HashMap<>();
+        for (PDPage page : doc.getPages())
         {
-            PDPage page = doc.getPage(i);
             COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
             PDResources resources = page.getResources();
             if (resources == null)
@@ -315,6 +315,7 @@ public class Overlay implements Closeable
             }
             layoutPages.put(i, new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents), 
                     resources.getCOSObject(), page.getRotation()));
+            i++;
         }
         return layoutPages;
     }
@@ -371,10 +372,13 @@ public class Overlay implements Closeable
     private void processPages(PDDocument document) throws IOException
     {
         int pageCounter = 0;
-        for (PDPage page : document.getPages())
+        PDFCloneUtility cloner = new PDFCloneUtility(document);
+        PDPageTree pageTree = document.getPages();
+        int numberOfPages = pageTree.getCount();
+        for (PDPage page : pageTree)
         {
             pageCounter++;
-            LayoutPage layoutPage = getLayoutPage(pageCounter, document.getNumberOfPages());
+            LayoutPage layoutPage = getLayoutPage(pageCounter, numberOfPages);
             if (layoutPage == null)
             {
                 continue;
@@ -391,11 +395,11 @@ public class Overlay implements Closeable
                     // restore state
                     newContentArray.add(createStream("Q\n"));
                     // overlay content last
-                    overlayPage(page, layoutPage, newContentArray);
+                    overlayPage(page, layoutPage, newContentArray, cloner);
                     break;
                 case BACKGROUND:
                     // overlay content first
-                    overlayPage(page, layoutPage, newContentArray);
+                    overlayPage(page, layoutPage, newContentArray, cloner);
 
                     addOriginalContent(originalContent, newContentArray);
                     break;
@@ -427,7 +431,8 @@ public class Overlay implements Closeable
         }
     }
 
-    private void overlayPage(PDPage page, LayoutPage layoutPage, COSArray array)
+    private void overlayPage(PDPage page, LayoutPage layoutPage, COSArray array,
+            PDFCloneUtility cloner)
             throws IOException
     {
         PDResources resources = page.getResources();
@@ -436,7 +441,7 @@ public class Overlay implements Closeable
             resources = new PDResources();
             page.setResources(resources);
         }
-        COSName xObjectId = createOverlayXObject(page, layoutPage);
+        COSName xObjectId = createOverlayXObject(page, layoutPage, cloner);
         array.add(createOverlayStream(page, layoutPage, xObjectId));
     }
 
@@ -475,10 +480,12 @@ public class Overlay implements Closeable
         return layoutPage;
     }
 
-    private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage)
+    private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage, PDFCloneUtility cloner)
+            throws IOException
     {
         PDFormXObject xobjForm = new PDFormXObject(layoutPage.overlayContentStream);
-        xobjForm.setResources(new PDResources(layoutPage.overlayResources));
+        xobjForm.setResources(new PDResources(
+                (COSDictionary) cloner.cloneForNewDocument(layoutPage.overlayResources)));
         xobjForm.setFormType(1);
         xobjForm.setBBox(layoutPage.overlayMediaBox.createRetranslatedRectangle());
         AffineTransform at = new AffineTransform();

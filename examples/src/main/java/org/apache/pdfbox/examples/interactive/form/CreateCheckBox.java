@@ -159,28 +159,24 @@ public class CreateCheckBox
             }
             else
             {
-                // The caption is not unicode, but the Zapf Dingbats code in the PDF
-                // Thus convert it back to unicode
-                // Assume that only the first character is used.
-                String name = PDType1Font.ZAPF_DINGBATS.codeToName(normalCaption.codePointAt(0));
-                String unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(name);
-                Rectangle2D bounds = PDType1Font.ZAPF_DINGBATS.getPath(name).getBounds2D();
-                if (bounds.isEmpty())
+                Rectangle2D bounds = new Rectangle2D.Float();
+                String unicode = null;
+
+                // ZapfDingbats font may be missing or substituted, let's use AFM resources instead.
+                AFMParser parser = new AFMParser(PDType1Font.class.getResourceAsStream(
+                        "/org/apache/pdfbox/resources/afm/ZapfDingbats.afm"));
+                FontMetrics metric = parser.parse();
+                for (CharMetric cm : metric.getCharMetrics())
                 {
-                    // ZapfDingbats font missing, let's use AFM resources instead.
-                    // You can remove this code block if you know that you have the font.
-                    AFMParser parser = new AFMParser(PDType1Font.class.getResourceAsStream(
-                            "/org/apache/pdfbox/resources/afm/ZapfDingbats.afm"));
-                    FontMetrics metric = parser.parse();
-                    for (CharMetric cm : metric.getCharMetrics())
+                    // The caption is not unicode, but the Zapf Dingbats code in the PDF.
+                    // Assume that only the first character is used.
+                    if (normalCaption.codePointAt(0) == cm.getCharacterCode())
                     {
-                        if (normalCaption.codePointAt(0) == cm.getCharacterCode())
-                        {
-                            BoundingBox bb = cm.getBoundingBox();
-                            bounds = new Rectangle2D.Float(bb.getLowerLeftX(), bb.getLowerLeftY(), 
-                                                           bb.getWidth(), bb.getHeight());
-                            unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(cm.getName());
-                        }
+                        BoundingBox bb = cm.getBoundingBox();
+                        bounds = new Rectangle2D.Float(bb.getLowerLeftX(), bb.getLowerLeftY(), 
+                                                       bb.getWidth(), bb.getHeight());
+                        unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(cm.getName());
+                        break;
                     }
                 }
                 if (bounds.isEmpty())

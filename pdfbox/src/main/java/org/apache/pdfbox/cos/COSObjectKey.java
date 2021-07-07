@@ -22,10 +22,14 @@ package org.apache.pdfbox.cos;
  * @author Michael Traut
  * 
  */
-public class COSObjectKey implements Comparable<COSObjectKey>
+public final class COSObjectKey implements Comparable<COSObjectKey>
 {
-    private final long number;
-    private final int generation;
+    private static final int NUMBER_OFFSET = Short.SIZE;
+    private static final long GENERATION_MASK = (long) Math.pow(2, NUMBER_OFFSET) - 1;
+    // combined number and generation
+    // The lowest 16 bits hold the generation 0-65535
+    // The rest is used for the number (even though 34 bit are sufficient for 10 digits)
+    private final long numberAndGeneration;
     
     /**
      * Constructor.
@@ -45,8 +49,15 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      */
     public COSObjectKey(long num, int gen)
     {
-        number = num;
-        generation = gen;
+        if (num < 0)
+        {
+            throw new IllegalArgumentException("Object number must not be a negative value");
+        }
+        if (gen < 0)
+        {
+            throw new IllegalArgumentException("Generation number must not be a negative value");
+        }
+        numberAndGeneration = num << NUMBER_OFFSET | (gen & GENERATION_MASK);
     }
 
     /**
@@ -56,9 +67,8 @@ public class COSObjectKey implements Comparable<COSObjectKey>
     public boolean equals(Object obj)
     {
         COSObjectKey objToBeCompared = obj instanceof COSObjectKey ? (COSObjectKey)obj : null;
-        return objToBeCompared != null &&
-                objToBeCompared.getNumber() == getNumber() &&
-                objToBeCompared.getGeneration() == getGeneration();
+        return objToBeCompared != null
+                && objToBeCompared.numberAndGeneration == numberAndGeneration;
     }
 
     /**
@@ -68,7 +78,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      */
     public int getGeneration()
     {
-        return generation;
+        return (int) (numberAndGeneration & GENERATION_MASK);
     }
 
     /**
@@ -78,7 +88,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      */
     public long getNumber()
     {
-        return number;
+        return numberAndGeneration >>> NUMBER_OFFSET;
     }
 
     /**
@@ -87,26 +97,19 @@ public class COSObjectKey implements Comparable<COSObjectKey>
     @Override
     public int hashCode()
     {
-        // most likely generation is 0. Shift number 4 times (fast as multiply)
-        // to support generation numbers up to 15
-        return Long.valueOf((number << 4) + generation).hashCode();
+        return Long.hashCode(numberAndGeneration);
     }
 
     @Override
     public String toString()
     {
-        return number + " " + generation + " R";
+        return getNumber() + " " + getGeneration() + " R";
     }
 
     @Override
     public int compareTo(COSObjectKey other)
     {
-        int result = Long.compare(getNumber(), other.getNumber());
-        if (result == 0)
-        {
-            return Integer.compare(getGeneration(), other.getGeneration());
-        }
-        return result;
+        return Long.compare(numberAndGeneration, other.numberAndGeneration);
     }
 
 }

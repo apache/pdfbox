@@ -467,10 +467,10 @@ public final class TTFSubsetter
         hasAddedCompoundReferences = true;
 
         boolean hasNested;
+        GlyphTable g = ttf.getGlyph();
+        long[] offsets = ttf.getIndexToLocation().getOffsets();
         do
         {
-            GlyphTable g = ttf.getGlyph();
-            long[] offsets = ttf.getIndexToLocation().getOffsets();
             InputStream is = ttf.getOriginalData();
             Set<Integer> glyphIdsToAdd = null;
             try
@@ -621,10 +621,7 @@ public final class TTFSubsetter
 
                         // glyphIndex
                         int componentGid = (buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
-                        if (!glyphIds.contains(componentGid))
-                        {
-                            glyphIds.add(componentGid);
-                        }
+                        glyphIds.add(componentGid);
 
                         int newComponentGid = getNewGlyphId(componentGid);
                         buf[off]   = (byte)(newComponentGid >>> 8);
@@ -854,7 +851,7 @@ public final class TTFSubsetter
         for (int gid : glyphIds)
         {
             String name = post.getName(gid);
-            Integer macId = WGL4Names.MAC_GLYPH_NAMES_INDICES.get(name);
+            Integer macId = WGL4Names.getGlyphIndex(name);
             if (macId != null)
             {
                 // the name is implicit, as it's from MacRoman
@@ -891,11 +888,7 @@ public final class TTFSubsetter
         // more info: https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hmtx.html
         int lastgid = h.getNumberOfHMetrics() - 1;
         // true if lastgid is not in the set: we'll need its width (but not its left side bearing) later
-        boolean needLastGidWidth = false;
-        if (glyphIds.last() > lastgid && !glyphIds.contains(lastgid))
-        {
-            needLastGidWidth = true;
-        }
+        boolean needLastGidWidth = glyphIds.last() > lastgid && !glyphIds.contains(lastgid);
 
         try
         {

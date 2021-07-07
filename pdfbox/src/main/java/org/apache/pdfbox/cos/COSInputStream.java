@@ -108,7 +108,7 @@ public final class COSInputStream extends FilterInputStream
     {
         if (decodeResults.isEmpty())
         {
-            return DecodeResult.DEFAULT;
+            return DecodeResult.createDefault();
         }
         else
         {

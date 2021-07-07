@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
  */
 public class CompoundCharacterTokenizer
 {
-
     private final Pattern regexExpression;
 
     public CompoundCharacterTokenizer(Set<String> compoundWords)
@@ -56,7 +55,6 @@ public class CompoundCharacterTokenizer
 
         while (regexMatcher.find())
         {
-
             int beginIndexOfNextMatch = regexMatcher.start();
 
             String prevToken = text.substring(lastIndexOfPrevMatch, beginIndexOfNextMatch);
@@ -74,7 +72,7 @@ public class CompoundCharacterTokenizer
 
         }
 
-        String tail = text.substring(lastIndexOfPrevMatch, text.length());
+        String tail = text.substring(lastIndexOfPrevMatch);
 
         if (tail.length() > 0)
         {
@@ -87,7 +85,7 @@ public class CompoundCharacterTokenizer
     private String getRegexFromTokens(Set<String> compoundWords)
     {
         StringJoiner sj = new StringJoiner(")|(", "(", ")");
-        compoundWords.stream().forEach(sj::add);
+        compoundWords.forEach(sj::add);
         return sj.toString();
     }
 

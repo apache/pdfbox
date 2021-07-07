@@ -192,16 +192,18 @@ public abstract class BaseParser
     /**
      * This will parse a PDF dictionary.
      *
+     * @param isDirect indicates whether the dictionary to be read is a direct object
      * @return The parsed dictionary, never null.
      *
      * @throws IOException If there is an error reading the stream.
      */
-    protected COSDictionary parseCOSDictionary() throws IOException
+    protected COSDictionary parseCOSDictionary(boolean isDirect) throws IOException
     {
         readExpectedChar('<');
         readExpectedChar('<');
         skipSpaces();
         COSDictionary obj = new COSDictionary();
+        obj.setDirect(isDirect);
         boolean done = false;
         while (!done)
         {
@@ -812,7 +814,7 @@ public abstract class BaseParser
             // check for second left bracket
             c = (char) source.peek();
             source.rewind(1);
-            return c == '<' ? parseCOSDictionary() : parseCOSString();
+            return c == '<' ? parseCOSDictionary(true) : parseCOSString();
         case '[':
             // array
             return parseCOSArray();
@@ -844,13 +846,15 @@ public abstract class BaseParser
             // This is not suppose to happen, but we will allow for it
             // so we are more compatible with POS writers that don't
             // follow the spec
+            long startOffset = source.getPosition();
             String badString = readString();
             if (badString.isEmpty())
             {
                 int peek = source.peek();
                 // we can end up in an infinite loop otherwise
                 throw new IOException("Unknown dir object c='" + c + "' cInt=" + (int) c + " peek='"
-                        + (char) peek + "' peekInt=" + peek + " at offset " + source.getPosition());
+                        + (char) peek + "' peekInt=" + peek + " at offset " + source.getPosition()
+                        + " (start offset: " + startOffset + ")");
             }
 
             // if it's an endstream/endobj, we want to put it back so the caller will see it
@@ -861,7 +865,7 @@ public abstract class BaseParser
             else
             {
                 LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
-                        + source.getPosition());
+                        + source.getPosition() + " (start offset: " + startOffset + ")");
             }
         }
         return null;

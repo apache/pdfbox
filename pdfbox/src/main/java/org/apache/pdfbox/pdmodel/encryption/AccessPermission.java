@@ -59,7 +59,7 @@ public class AccessPermission
     private static final int ASSEMBLE_DOCUMENT_BIT = 11;
     private static final int DEGRADED_PRINT_BIT = 12;
 
-    private int bytes = DEFAULT_PERMISSIONS;
+    private int bytes;
 
     private boolean readOnly = false;
 
