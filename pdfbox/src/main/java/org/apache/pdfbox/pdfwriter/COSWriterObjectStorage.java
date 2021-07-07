@@ -5,7 +5,9 @@ import org.apache.pdfbox.cos.*;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * Bidirectional COSObject-COSObjectKey Storage for COSWriter.
+ */
 class COSWriterObjectStorage
 {
     private final Map<COSBase, COSObjectKey> objectToKeyMap;
