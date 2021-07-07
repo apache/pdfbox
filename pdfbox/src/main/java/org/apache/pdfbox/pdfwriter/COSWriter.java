@@ -30,9 +30,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +48,6 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
@@ -246,7 +243,7 @@ public class COSWriter implements ICOSVisitor
         setOutput(outputStream);
         setStandardOutput(new COSStandardOutputStream(output));
         this.compressParameters = compressParameters;
-        this.objectStorage = new EagerCOSWriterObjectStorage();
+        this.objectStorage = new COSWriterObjectStorage();
     }
 
     /**
@@ -262,16 +259,6 @@ public class COSWriter implements ICOSVisitor
      */
     public COSWriter(OutputStream outputStream, RandomAccessRead inputData) throws IOException
     {
-        this(outputStream, inputData, new LazyCOSWriterObjectStorage());
-    }
-
-    public COSWriter(OutputStream outputStream, RandomAccessRead inputData, COSWriterObjectStorage objectStorage) throws IOException
-    {
-        if(objectStorage == null)
-        {
-            throw new IllegalArgumentException("Object storage must not be null.");
-        }
-
         // write to buffer instead of output
         setOutput(new ByteArrayOutputStream());
         setStandardOutput(new COSStandardOutputStream(output, inputData.length()));
@@ -284,7 +271,7 @@ public class COSWriter implements ICOSVisitor
         incrementalOutput = outputStream;
         incrementalUpdate = true;
 
-        this.objectStorage = objectStorage;
+        this.objectStorage = new COSWriterObjectStorage();
     }
 
     /**
@@ -528,7 +515,7 @@ public class COSWriter implements ICOSVisitor
         {
             return;
         }
-        COSBase actual = objectStorage.toActual(object);
+        COSBase actual = objectStorage.convertToActual(object);
 
         if (!writtenObjects.contains(object) //
                 && !objectsToWrite.contains(object) //
@@ -1079,7 +1066,7 @@ public class COSWriter implements ICOSVisitor
             return obj.getKey();
         }
 
-        COSBase actual = objectStorage.toActual(obj);
+        COSBase actual = objectStorage.convertToActual(obj);
 
         // PDFBOX-4540: because objectKeys is accessible from outside, it is possible
         // that a COSObject obj is already in the objectKeys map.
@@ -1127,7 +1114,7 @@ public class COSWriter implements ICOSVisitor
             }
             else if( current instanceof COSObject )
             {
-                COSBase subValue = objectStorage.toActual(current);
+                COSBase subValue = objectStorage.convertToActual(current);
                 if (willEncrypt || incrementalUpdate //
                         || subValue instanceof COSDictionary //
                         || subValue instanceof COSArray //
@@ -1232,7 +1219,7 @@ public class COSWriter implements ICOSVisitor
                 }
                 else if( value instanceof COSObject )
                 {
-                    COSBase subValue = objectStorage.toActual(value);
+                    COSBase subValue = objectStorage.convertToActual(value);
                     if (willEncrypt || incrementalUpdate //
                             || subValue instanceof COSDictionary //
                             || subValue instanceof COSArray //
