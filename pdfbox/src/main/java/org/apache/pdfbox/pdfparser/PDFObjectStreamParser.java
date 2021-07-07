@@ -94,6 +94,10 @@ public class PDFObjectStreamParser extends BaseParser
                 // jump to the offset of the object to be parsed
                 source.skip(objectOffset);
                 streamObject = parseDirObject();
+                if (streamObject != null)
+                {
+                    streamObject.setDirect(false);
+                }
             }
         }
         finally

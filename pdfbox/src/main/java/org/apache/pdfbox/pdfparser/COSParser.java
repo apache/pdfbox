@@ -686,6 +686,10 @@ public class COSParser extends BaseParser implements ICOSParser
 
         skipSpaces();
         COSBase parsedObject = parseDirObject();
+        if (parsedObject != null)
+        {
+            parsedObject.setDirect(false);
+        }
         String endObjectKey = readString();
 
         if (endObjectKey.equals(STREAM_STRING))
