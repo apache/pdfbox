@@ -25,6 +25,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 
 /**
  * @author Yegor Kozlov
@@ -178,4 +179,34 @@ public class TestPDPageContentStream extends TestCase
         contentStream.close();
         doc.close();
     }
+
+    /**
+     * Check that general graphics state operators are allowed in text mode.
+     * 
+     * @throws IOException
+     */
+    public void testGeneralGraphicStateOperatorTextMode() throws IOException
+    {
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage();
+        doc.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(doc, page);
+        contentStream.beginText();
+        // J
+        contentStream.setLineCapStyle(0);
+        // j
+        contentStream.setLineJoinStyle(0);
+        // w
+        contentStream.setLineWidth(10f);
+        // d
+        contentStream.setLineDashPattern(new float[] { 2, 1 }, 0f);
+        // M
+        contentStream.setMiterLimit(1.0f);
+        // gs
+        contentStream.setGraphicsStateParameters(new PDExtendedGraphicsState());
+        // ri, i are not supported with a specific setter
+        contentStream.endText();
+        contentStream.close();
+    }
+
 }
