@@ -1221,14 +1221,9 @@ abstract class PDAbstractContentStream implements Closeable
      *
      * @param lineWidth The width which is used for drawing.
      * @throws IOException If the content stream could not be written
-     * @throws IllegalStateException If the method was called within a text block.
      */
     public void setLineWidth(float lineWidth) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: setLineWidth is not allowed within a text block.");
-        }
         writeOperand(lineWidth);
         writeOperator(OperatorName.SET_LINE_WIDTH);
     }
@@ -1238,15 +1233,10 @@ abstract class PDAbstractContentStream implements Closeable
      *
      * @param lineJoinStyle 0 for miter join, 1 for round join, and 2 for bevel join.
      * @throws IOException If the content stream could not be written.
-     * @throws IllegalStateException If the method was called within a text block.
      * @throws IllegalArgumentException If the parameter is not a valid line join style.
      */
     public void setLineJoinStyle(int lineJoinStyle) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: setLineJoinStyle is not allowed within a text block.");
-        }
         if (lineJoinStyle >= 0 && lineJoinStyle <= 2)
         {
             writeOperand(lineJoinStyle);
@@ -1263,15 +1253,10 @@ abstract class PDAbstractContentStream implements Closeable
      *
      * @param lineCapStyle 0 for butt cap, 1 for round cap, and 2 for projecting square cap.
      * @throws IOException If the content stream could not be written.
-     * @throws IllegalStateException If the method was called within a text block.
      * @throws IllegalArgumentException If the parameter is not a valid line cap style.
      */
     public void setLineCapStyle(int lineCapStyle) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: setLineCapStyle is not allowed within a text block.");
-        }
         if (lineCapStyle >= 0 && lineCapStyle <= 2)
         {
             writeOperand(lineCapStyle);
@@ -1289,14 +1274,9 @@ abstract class PDAbstractContentStream implements Closeable
      * @param pattern The pattern array
      * @param phase The phase of the pattern
      * @throws IOException If the content stream could not be written.
-     * @throws IllegalStateException If the method was called within a text block.
      */
     public void setLineDashPattern(float[] pattern, float phase) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: setLineDashPattern is not allowed within a text block.");
-        }
         write("[");
         for (float value : pattern)
         {
@@ -1312,13 +1292,10 @@ abstract class PDAbstractContentStream implements Closeable
      *
      * @param miterLimit the new miter limit.
      * @throws IOException If the content stream could not be written.
+     * @throws IllegalArgumentException If the parameter is <= 0.
      */
     public void setMiterLimit(float miterLimit) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: setMiterLimit is not allowed within a text block.");
-        }
         if (miterLimit <= 0.0)
         {
             throw new IllegalArgumentException("A miter limit <= 0 is invalid and will not render in Acrobat Reader");
