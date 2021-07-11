@@ -191,21 +191,28 @@ public class TestPDPageContentStream extends TestCase
         PDPage page = new PDPage();
         doc.addPage(page);
         PDPageContentStream contentStream = new PDPageContentStream(doc, page);
-        contentStream.beginText();
-        // J
-        contentStream.setLineCapStyle(0);
-        // j
-        contentStream.setLineJoinStyle(0);
-        // w
-        contentStream.setLineWidth(10f);
-        // d
-        contentStream.setLineDashPattern(new float[] { 2, 1 }, 0f);
-        // M
-        contentStream.setMiterLimit(1.0f);
-        // gs
-        contentStream.setGraphicsStateParameters(new PDExtendedGraphicsState());
-        // ri, i are not supported with a specific setter
-        contentStream.endText();
+        try
+        {
+            contentStream.beginText();
+            // J
+            contentStream.setLineCapStyle(0);
+            // j
+            contentStream.setLineJoinStyle(0);
+            // w
+            contentStream.setLineWidth(10f);
+            // d
+            contentStream.setLineDashPattern(new float[] { 2, 1 }, 0f);
+            // M
+            contentStream.setMiterLimit(1.0f);
+            // gs
+            contentStream.setGraphicsStateParameters(new PDExtendedGraphicsState());
+            // ri, i are not supported with a specific setter
+            contentStream.endText();
+        }
+        catch (IllegalArgumentException exception)
+        {
+            fail(exception.getCause().getMessage());
+        }
         contentStream.close();
     }
 
