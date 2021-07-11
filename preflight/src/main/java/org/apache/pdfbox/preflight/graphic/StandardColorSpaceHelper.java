@@ -550,8 +550,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         return true;
     }
 
-    private void validateICCProfileAlternateEntry(
-            PDICCBased iccBased, PDColorSpace alternateColorSpace) throws IOException
+    private void validateICCProfileAlternateEntry(PDICCBased iccBased, PDColorSpace alternateColorSpace)
     {
         if (alternateColorSpace.getNumberOfComponents() != iccBased.getNumberOfComponents())
         {
