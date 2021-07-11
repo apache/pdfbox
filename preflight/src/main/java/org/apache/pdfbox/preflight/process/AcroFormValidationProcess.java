@@ -37,11 +37,9 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
-
 import static org.apache.pdfbox.preflight.PreflightConfiguration.ANNOTATIONS_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTIONS_FIELD;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_BODY;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_DICT_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
 
@@ -97,33 +95,21 @@ public class AcroFormValidationProcess extends AbstractProcess
      * @see #validateField(PreflightContext, PDField) 
      * 
      * @param ctx the preflight context.
-     * @param lFields the list of fields, can be null.
+     * @param fields the list of fields, can be null (this will no longer be allowed in 3.0, and it
+     * isn't null currently unless methods are extended).
      * @return the result of the validation.
      * @throws IOException
      */
-    protected boolean exploreFields(PreflightContext ctx, List<PDField> lFields) throws IOException
+    protected boolean exploreFields(PreflightContext ctx, List<PDField> fields) throws IOException
     {
-        if (lFields != null)
+        if (fields != null)
         {
             // the list can be null if the field doesn't have children
-            for (Object obj : lFields)
+            for (PDField field : fields)
             {
-                if (obj instanceof PDField)
+                if (!validateField(ctx, field))
                 {
-                    if (!validateField(ctx, (PDField) obj))
-                    {
-                        return false;
-                    }
-                }
-                else if (obj instanceof PDAnnotationWidget)
-                {
-                    // "A field's children in the hierarchy may also include widget annotations"
-                    ContextHelper.validateElement(ctx, ((PDAnnotationWidget) obj).getCOSObject(), ANNOTATIONS_PROCESS);
-                }
-                else
-                {
-                    addValidationError(ctx, new ValidationError(ERROR_SYNTAX_BODY,
-                            "Field can only have fields or widget annotations as KIDS"));
+                    return false;
                 }
             }
         }
