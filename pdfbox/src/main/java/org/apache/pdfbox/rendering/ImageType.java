@@ -52,6 +52,16 @@ public enum ImageType
             return BufferedImage.TYPE_INT_RGB;
         }
     },
+    
+    /** Blue, Green, Red */
+    BGR
+    {
+        @Override
+        int toBufferedImageType()
+        {
+            return BufferedImage.TYPE_3BYTE_BGR;
+        }
+    },
 
     /** Alpha, Red, Green, Blue */
     ARGB
