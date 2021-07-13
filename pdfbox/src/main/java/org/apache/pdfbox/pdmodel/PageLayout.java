@@ -33,13 +33,20 @@ public enum PageLayout
     /** Display the pages in two columns), with odd numbered pages on the left. */
     TWO_COLUMN_LEFT("TwoColumnLeft"),
 
-    /** Display the pages in two columns), with odd numbered pages on the right.  */
+    /**
+     * Display the pages in two columns), with odd numbered pages on the right. See also
+     * {@link PDViewerPreferences#setReadingDirection(org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences.READING_DIRECTION) PDViewerPreferences.setReadingDirection()}
+     * if dealing with RTL language.
+     */
     TWO_COLUMN_RIGHT("TwoColumnRight"),
 
     /** Display the pages two at a time), with odd-numbered pages on the left. */
     TWO_PAGE_LEFT("TwoPageLeft"),
 
-    /** Display the pages two at a time), with odd-numbered pages on the right. */
+    /** Display the pages two at a time), with odd-numbered pages on the right. See also
+     * {@link PDViewerPreferences#setReadingDirection(org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences.READING_DIRECTION) PDViewerPreferences.setReadingDirection()}
+     * if dealing with RTL language.
+     */
     TWO_PAGE_RIGHT("TwoPageRight");
 
     public static PageLayout fromString(String value)
