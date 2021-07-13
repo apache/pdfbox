@@ -38,7 +38,6 @@ import org.apache.pdfbox.io.IOUtils;
 final class FlateFilter extends Filter
 {
     private static final Log LOG = LogFactory.getLog(FlateFilter.class);
-    private static final int BUFFER_SIZE = 0x4000;
 
     @Override
     public DecodeResult decode(InputStream encoded, OutputStream decoded,
