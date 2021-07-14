@@ -1292,7 +1292,7 @@ abstract class PDAbstractContentStream implements Closeable
      *
      * @param miterLimit the new miter limit.
      * @throws IOException If the content stream could not be written.
-     * @throws IllegalArgumentException If the parameter is <= 0.
+     * @throws IllegalArgumentException If the parameter is \u2264 0.
      */
     public void setMiterLimit(float miterLimit) throws IOException
     {
