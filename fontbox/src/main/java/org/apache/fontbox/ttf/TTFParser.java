@@ -29,6 +29,7 @@ public class TTFParser
 {
     private boolean isEmbedded = false;
     private boolean parseOnDemandOnly = false;
+    protected boolean useAlternateATT = false;
 
     /**
      * Constructor.
@@ -56,8 +57,21 @@ public class TTFParser
      */
     public TTFParser(boolean isEmbedded, boolean parseOnDemand)
     {
+        this(isEmbedded, parseOnDemand, false);
+    }
+
+    /**
+     *  Constructor.
+     *  
+     * @param isEmbedded true if the font is embedded in PDF
+     * @param parseOnDemand true if the tables of the font should be parsed on demand
+     * @param useAlternateATT true if using alternate ATT (advanced typograph tables) implementation
+     */
+    public TTFParser(boolean isEmbedded, boolean parseOnDemand, boolean useAlternateATT)
+    {
         this.isEmbedded = isEmbedded;
-        parseOnDemandOnly = parseOnDemand;
+        this.parseOnDemandOnly = parseOnDemand;
+        this.useAlternateATT = useAlternateATT;
     }
 
     /**
@@ -155,7 +169,7 @@ public class TTFParser
 
     TrueTypeFont newFont(TTFDataStream raf)
     {
-        return new TrueTypeFont(raf);
+        return new TrueTypeFont(raf, useAlternateATT);
     }
 
     /**
@@ -238,7 +252,7 @@ public class TTFParser
 
     private TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
     {
-        TTFTable table;
+        TTFTable table = null;
         String tag = raf.readString(4);
         switch (tag)
         {
@@ -288,12 +302,14 @@ public class TTFParser
                 table = new VerticalOriginTable(font);
                 break;
             case GlyphSubstitutionTable.TAG:
-                table = new GlyphSubstitutionTable(font);
+                if (!useAlternateATT)
+                    table = new GlyphSubstitutionTable(font);
                 break;
             default:
-                table = readTable(font, tag);
                 break;
         }
+        if (table == null)
+            table = readTable(font, tag);
         table.setTag(tag);
         table.setCheckSum(raf.readUnsignedInt());
         table.setOffset(raf.readUnsignedInt());

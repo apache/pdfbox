@@ -81,7 +81,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
     @Override
     @SuppressWarnings({"squid:S1854"})
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         long start = data.getCurrentPosition();
         @SuppressWarnings({"unused"})

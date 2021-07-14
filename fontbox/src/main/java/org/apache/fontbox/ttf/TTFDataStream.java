@@ -30,7 +30,7 @@ import java.util.TimeZone;
  * 
  * @author Ben Litchfield
  */
-abstract class TTFDataStream implements Closeable
+public abstract class TTFDataStream implements Closeable
 {
     TTFDataStream()
     {
@@ -95,6 +95,16 @@ abstract class TTFDataStream implements Closeable
      * @throws IOException If there is an error reading the data.
      */
     public abstract int read() throws IOException;
+
+    /**
+     * Skip bytes.
+     * 
+     * @throws IOException If there is an error reading the data.
+     */
+    public void skip(int count) throws IOException {
+        while (count-- > 0)
+            read();
+    }
 
     /**
      * Read an unsigned byte.
@@ -297,7 +307,6 @@ abstract class TTFDataStream implements Closeable
      * This will get the original data size that was used for this stream.
      * 
      * @return The size of the original data.
-     * @throws IOException If there is an issue reading the data.
      */
     public abstract long getOriginalDataSize();
 }

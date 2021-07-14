@@ -34,7 +34,18 @@ public class OpenTypeFont extends TrueTypeFont
      */
     OpenTypeFont(TTFDataStream fontData)
     {
-        super(fontData);
+        this(fontData, false);
+    }
+
+    /**
+     * Constructor. Clients should use the OTFParser to create a new OpenTypeFont object.
+     *
+     * @param fontData The font data.
+     * @param useAlternateATT true if using alternate ATT (advanced typograph tables) implementation.
+     */
+    OpenTypeFont(TTFDataStream fontData, boolean useAlternateATT)
+    {
+        super(fontData, useAlternateATT);
     }
 
     @Override
@@ -94,4 +105,44 @@ public class OpenTypeFont extends TrueTypeFont
                tables.containsKey("GSUB") ||
                tables.containsKey("JSTF");
     }
+
+    /**
+     * Get the "GDEF" table for this OTF.
+     *
+     * @return The "GDEF" table.
+     */
+    public org.apache.fontbox.ttf.advanced.GlyphDefinitionTable getGDEF() throws IOException
+    {
+        if (useAlternateATT)
+            return (org.apache.fontbox.ttf.advanced.GlyphDefinitionTable) getTable(org.apache.fontbox.ttf.advanced.GlyphDefinitionTable.TAG);
+        else
+            return null;
+    }
+
+    /**
+     * Get the "GSUB" table for this OTF.
+     *
+     * @return The "GSUB" table.
+     */
+    public org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable getGSUB() throws IOException
+    {
+        if (useAlternateATT)
+            return (org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable) getTable(org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable.TAG);
+        else
+            return null;
+    }
+
+    /**
+     * Get the "GPOS" table for this OTF.
+     *
+     * @return The "GPOS" table.
+     */
+    public org.apache.fontbox.ttf.advanced.GlyphPositioningTable getGPOS() throws IOException
+    {
+        if (useAlternateATT)
+            return (org.apache.fontbox.ttf.advanced.GlyphPositioningTable) getTable(org.apache.fontbox.ttf.advanced.GlyphPositioningTable.TAG);
+        else
+            return null;
+    }
+
 }

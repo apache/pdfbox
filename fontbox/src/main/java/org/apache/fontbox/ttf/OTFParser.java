@@ -31,7 +31,7 @@ public final class OTFParser extends TTFParser
      */
     public OTFParser()
     {
-        super();
+        this(false);
     }
 
     /**
@@ -52,7 +52,19 @@ public final class OTFParser extends TTFParser
      */
     public OTFParser(boolean isEmbedded, boolean parseOnDemand)
     {
-        super(isEmbedded, parseOnDemand);
+        this(isEmbedded, parseOnDemand, false);
+    }
+
+    /**
+     *  Constructor.
+     *  
+     * @param isEmbedded true if the font is embedded in PDF
+     * @param parseOnDemand true if the tables of the font should be parsed on demand
+     * @param useAlternateATT true if using alternate ATT (advanced typograph tables) implementation
+     */
+    public OTFParser(boolean isEmbedded, boolean parseOnDemand, boolean useAlternateATT)
+    {
+        super(isEmbedded, parseOnDemand, useAlternateATT);
     }
 
     @Override
@@ -82,21 +94,25 @@ public final class OTFParser extends TTFParser
     @Override
     OpenTypeFont newFont(TTFDataStream raf)
     {
-        return new OpenTypeFont(raf);
+        return new OpenTypeFont(raf, useAlternateATT);
     }
 
     @Override
     protected TTFTable readTable(TrueTypeFont font, String tag)
     {
         // todo: this is a stub, a full implementation is needed
+        assert font instanceof OpenTypeFont;
         switch (tag)
         {
             case "BASE":
-            case "GDEF":
-            case "GPOS":
-            case "GSUB":
             case "JSTF":
                 return new OTLTable(font);
+            case "GDEF":
+                return new org.apache.fontbox.ttf.advanced.GlyphDefinitionTable((OpenTypeFont) font);
+            case "GPOS":
+                return new org.apache.fontbox.ttf.advanced.GlyphPositioningTable((OpenTypeFont) font);
+            case "GSUB":
+                return new org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable((OpenTypeFont) font);
             case "CFF ":
                 return new CFFTable(font);
             default:
