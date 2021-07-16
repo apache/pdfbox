@@ -90,7 +90,7 @@ public class PDBoxStyle implements COSObjectable
             colorValues.add( COSInteger.ZERO );
             dictionary.setItem(COSName.C, colorValues);
         }
-        return new PDColor(colorValues.toFloatArray(), PDDeviceRGB.INSTANCE);
+        return PDColor.create(colorValues.toFloatArray(), false, PDDeviceRGB.INSTANCE);
     }
 
     /**

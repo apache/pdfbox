@@ -116,7 +116,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                     float r = ((color >> 16) & 0xFF) / 255f;
                     float g = ((color >> 8) & 0xFF) / 255f;
                     float b = (color & 0xFF) / 255f;
-                    textColor = new PDColor( new float[] { r, g, b }, PDDeviceRGB.INSTANCE);
+                    textColor = PDColor.create( new float[] { r, g, b }, false, PDDeviceRGB.INSTANCE);
                 }
             }
 
@@ -369,7 +369,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
         // Another alternative might be to create a PDDocument and a PDPage with /DA content as /Content,
         // process the whole thing and then get the non stroking color.
 
-        PDColor strokingColor = new PDColor(new float[]{0}, PDDeviceGray.INSTANCE);
+        PDColor strokingColor = PDColor.create(new float[]{0}, false, PDDeviceGray.INSTANCE);
         String defaultAppearance = annotation.getDefaultAppearance();
         if (defaultAppearance == null)
         {
