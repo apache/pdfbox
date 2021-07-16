@@ -82,6 +82,13 @@ public final class PDColor
         this.colorSpace = colorSpace;
     }
 
+    private PDColor(float[] components, boolean cloneComponents, PDColorSpace colorSpace)
+    {
+        this.components = cloneComponents ? components.clone() : components;
+        this.patternName = null;
+        this.colorSpace = colorSpace;
+    }
+
     /**
      * Creates a PDColor containing the given pattern name.
      * @param patternName the name of a pattern in a pattern dictionary
@@ -187,5 +194,10 @@ public final class PDColor
     public String toString()
     {
         return "PDColor{components=" + Arrays.toString(components) + ", patternName=" + patternName + ", colorSpace=" + colorSpace + '}';
+    }
+
+    public static PDColor createWithoutCloningComponents(float[] components, PDColorSpace colorSpace)
+    {
+        return new PDColor(components, false, colorSpace);
     }
 }
