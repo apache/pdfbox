@@ -183,6 +183,12 @@ public class COSWriterObjectStream
                 : (COSBase) object;
         if (base == null)
         {
+            // the object reference can't be dereferenced
+            // be lenient and write the reference nevertheless
+            if (!topLevel && object instanceof COSObject)
+            {
+                writeObjectReference(output, ((COSObject) object).getKey());
+            }
             return;
         }
         if (!topLevel && this.compressionPool.contains(base))

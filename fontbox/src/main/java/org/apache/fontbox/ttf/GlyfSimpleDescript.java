@@ -169,7 +169,7 @@ public class GlyfSimpleDescript extends GlyfDescript
             {
                 if ((flags[i] & X_SHORT_VECTOR) != 0)
                 {
-                    x += -(short) bais.readUnsignedByte();
+                    x -= (short) bais.readUnsignedByte();
                 }
                 else
                 {
@@ -192,7 +192,7 @@ public class GlyfSimpleDescript extends GlyfDescript
             {
                 if ((flags[i] & Y_SHORT_VECTOR) != 0)
                 {
-                    y += -(short) bais.readUnsignedByte();
+                    y -= (short) bais.readUnsignedByte();
                 }
                 else
                 {

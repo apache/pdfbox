@@ -30,7 +30,7 @@ public class PDPanose
     /**
      * Length.
      */
-    static public final int LENGTH = 12;
+    public static final int LENGTH = 12;
 
     private final byte[] bytes;
 

@@ -86,7 +86,7 @@ final class FileSystemFontProvider extends FontProvider
             this.ulCodePageRange1 = ulCodePageRange1;
             this.ulCodePageRange2 = ulCodePageRange2;
             this.macStyle = macStyle;
-            this.panose = panose != null && panose.length >= PDPanose.LENGTH ?
+            this.panose = panose != null && panose.length >= PDPanoseClassification.LENGTH ?
                     new PDPanoseClassification(panose) : null;
             this.parent = parent;
         }
