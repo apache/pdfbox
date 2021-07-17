@@ -81,7 +81,7 @@ public final class ImageIOUtil
         String formatName = filename.substring(filename.lastIndexOf('.') + 1);
         if ("png".equalsIgnoreCase(formatName))
         {
-            // PDFBOX-4655: prevent huge PNG files on jdk11 / jdk12 / jjdk13
+            // PDFBOX-4655: prevent huge PNG files on jdk11 / jdk12 / jdk13
             compressionQuality = 0f;
         }
         return writeImage(image, filename, dpi, compressionQuality);
@@ -186,7 +186,7 @@ public final class ImageIOUtil
         float compressionQuality = 1f;
         if ("png".equalsIgnoreCase(formatName))
         {
-            // PDFBOX-4655: prevent huge PNG files on jdk11 / jdk12 / jjdk13
+            // PDFBOX-4655: prevent huge PNG files on jdk11 / jdk12 / jdk13
             compressionQuality = 0f;
         }
         return writeImage(image, formatName, output, dpi, compressionQuality);
