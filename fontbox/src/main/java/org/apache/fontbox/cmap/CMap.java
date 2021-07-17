@@ -128,12 +128,15 @@ public class CMap
                 bytes[byteCount] = (byte)in.read();
             }
         }
-        String seq = "";
-        for (int i = 0; i < maxCodeLength; ++i)
+        if (LOG.isWarnEnabled())
         {
-            seq += String.format("0x%02X (%04o) ", bytes[i], bytes[i]);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < maxCodeLength; ++i)
+            {
+                sb.append(String.format("0x%02X (%04o) ", bytes[i], bytes[i]));
+            }
+            LOG.warn("Invalid character code sequence " + sb + "in CMap " + cmapName);
         }
-        LOG.warn("Invalid character code sequence " + seq + "in CMap " + cmapName);
         // PDFBOX-4811 reposition to where we were after initial read
         if (in.markSupported())
         {
@@ -225,7 +228,7 @@ public class CMap
     /**
      * Get the code bytes for an unicode string.
      *
-     * @param unicode
+     * @param unicode The unicode string.
      * @return the code bytes or null if there is none.
      */
     public byte[] getCodesFromUnicode(String unicode)
