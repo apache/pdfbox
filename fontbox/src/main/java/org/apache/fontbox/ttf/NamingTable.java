@@ -202,12 +202,7 @@ public class NamingTable extends TTFTable
                         NameRecord.PLATFORM_MACINTOSH,
                         NameRecord.ENCODING_MACINTOSH_ROMAN,
                         NameRecord.LANGUAGE_MACINTOSH_ENGLISH);
-        if (nameMac != null)
-        {
-            return nameMac;
-        }
-
-        return null;
+        return nameMac;
     }
 
     /**
