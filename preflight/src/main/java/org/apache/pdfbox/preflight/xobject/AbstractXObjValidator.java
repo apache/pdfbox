@@ -70,10 +70,8 @@ public abstract class AbstractXObjValidator implements XObjectValidator
      */
     protected void checkSMask()
     {
-        COSBase smask = xobject.getItem(COSName.SMASK);
-        if (smask != null
-                && !(COSUtils.isString(smask, cosDocument) && TRANSPARENCY_DICTIONARY_VALUE_SOFT_MASK_NONE
-                        .equals(COSUtils.getAsString(smask, cosDocument))))
+        COSBase smask = xobject.getDictionaryObject(COSName.SMASK);
+        if (smask != null && !COSName.NONE.equals(smask))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_SMASK,
                     "Soft Mask must be null or None ["+xobject.toString()+"]"));
