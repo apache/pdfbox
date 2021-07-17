@@ -69,8 +69,9 @@ public class COSUtils
     }
 
     /**
-     * return true if the elt is a COSString or a reference to a COSString
-     * 
+     * return true if the element is a COSString or a COSName or a reference to a COSString or a
+     * COSName.
+     *
      * @param elt
      * @param doc
      * @return
@@ -251,9 +252,10 @@ public class COSUtils
     }
 
     /**
-     * Return the COSBase object as COSString if the COSBase object is an instance of COSString or a reference to a
-     * COSString object. In other cases, this method returns null;
-     * 
+     * Return the COSBase object as COSString if the COSBase object is an instance of COSString or a
+     * COSName or a reference to a COSString or a COSName object. In other cases, this method
+     * returns null.
+     *
      * @param cbase
      * @param cDoc
      * @return
