@@ -115,11 +115,8 @@ public class TextToPDF
 
             final int margin = 40;
             float height = font.getBoundingBox().getHeight() / FONTSCALE;
-            PDRectangle actualMediaBox = mediaBox;
-            if (landscape)
-            {
-                actualMediaBox = new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth());
-            }
+            PDRectangle actualMediaBox =
+                    landscape ? new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth()) : mediaBox;
 
             //calculate font height and increase by a factor.
             height = height*fontSize*LINE_HEIGHT_FACTOR;
@@ -198,7 +195,7 @@ public class TextToPDF
                                 nextWord = nextWord.substring(0, indexFF);
                             }
                             
-                            String lineWithNextWord = nextLineToDraw.toString() + " " + nextWord;
+                            String lineWithNextWord = nextLineToDraw + " " + nextWord;
                             lengthIfUsingNextWord =
                                 (font.getStringWidth( lineWithNextWord )/FONTSCALE) * fontSize;
                         }
