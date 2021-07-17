@@ -17,6 +17,8 @@
 
 package org.apache.pdfbox.pdmodel;
 
+import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
+
 /**
  * A name object specifying the page layout shall be used when the document is opened.
  *
