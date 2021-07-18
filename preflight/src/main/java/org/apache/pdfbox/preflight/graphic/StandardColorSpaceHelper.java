@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
@@ -520,15 +521,14 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
 
     private boolean validateICCProfileNEntry(COSStream stream, ICC_Profile iccp)
     {
-        COSDictionary streamDict = (COSDictionary) stream.getCOSObject();
-        if (!streamDict.containsKey(COSName.N))
+        COSBase nValue = stream.getItem(COSName.N);
+        if (nValue == null)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
                     "/N entry of ICC profile is mandatory"));
             return false;
         }
-        COSBase nValue = streamDict.getItem(COSName.N);
-        if (!(nValue instanceof COSNumber))
+        if (!(nValue instanceof COSInteger))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
                     "/N entry of ICC profile must be a number, but is " + nValue));
