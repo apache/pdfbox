@@ -64,7 +64,7 @@ public class BookmarkValidationProcess extends AbstractProcess
                 COSObject firstObj = toCOSObject(dict.getItem(COSName.FIRST));
                 COSObject lastObj = toCOSObject(dict.getItem(COSName.LAST));
 
-                // Count entry is mandatory if there are childrens
+                // Count entry is mandatory if there are children
                 if (!isCountEntryPresent(dict)
                         && (outlineHierarchy.getFirstChild() != null || outlineHierarchy.getLastChild() != null))
                 {
@@ -307,7 +307,7 @@ public class BookmarkValidationProcess extends AbstractProcess
         }
         if (!(base instanceof COSObject))
         {
-            throw new IllegalArgumentException("Paremater " + base + " should be null, COSNull or a COSObject");
+            throw new IllegalArgumentException("Parameter " + base + " should be null, COSNull or a COSObject");
         }
         return (COSObject) base;
     }
