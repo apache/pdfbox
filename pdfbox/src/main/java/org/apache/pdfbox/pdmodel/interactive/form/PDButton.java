@@ -176,11 +176,12 @@ public abstract class PDButton extends PDTerminalField
      */
     public void setValue(int index) throws IOException
     {
-        if (getExportValues().isEmpty() || index < 0 || index >= getExportValues().size())
+        List<String> exportValues = getExportValues();
+        if (exportValues.isEmpty() || index < 0 || index >= exportValues.size())
         {
             throw new IllegalArgumentException("index '" + index
                     + "' is not a valid index for the field " + getFullyQualifiedName()
-                    + ", valid indices are from 0 to " + (getExportValues().size() - 1));
+                    + ", valid indices are from 0 to " + (exportValues.size() - 1));
         }
 
         updateByValue(String.valueOf(index));

@@ -146,7 +146,7 @@ public abstract class Filter
      * @return The image reader for the format.
      * @throws MissingImageReaderException if no image reader is found.
      */
-    public static final ImageReader findImageReader(String formatName, String errorCause)
+    public static ImageReader findImageReader(String formatName, String errorCause)
             throws MissingImageReaderException
     {
         Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(formatName);

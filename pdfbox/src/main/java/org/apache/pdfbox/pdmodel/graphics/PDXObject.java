@@ -44,6 +44,25 @@ public class PDXObject implements COSObjectable
     /**
      * Creates a new XObject instance of the appropriate type for the COS stream.
      *
+     * @param stream The stream which is wrapped by this XObject.
+     * @param resources
+     * @return A new XObject instance.
+     * @throws java.io.IOException if there is an error creating the XObject.
+     */
+    public static PDXObject createXObject(COSStream stream, PDResources resources) throws IOException
+    {
+        if (stream == null)
+        {
+            // TODO throw an exception?
+            return null;
+        }
+
+        return getPdxObject(stream, resources);
+    }
+
+    /**
+     * Creates a new XObject instance of the appropriate type for the COS stream.
+     *
      * @param base The stream which is wrapped by this XObject.
      * @param resources
      * @return A new XObject instance.
@@ -62,7 +81,11 @@ public class PDXObject implements COSObjectable
             throw new IOException("Unexpected object type: " + base.getClass().getName());
         }
 
-        COSStream stream = (COSStream)base;
+        return getPdxObject((COSStream)base, resources);
+    }
+
+    private static PDXObject getPdxObject(COSStream stream, PDResources resources) throws IOException
+    {
         String subtype = stream.getNameAsString(COSName.SUBTYPE);
 
         if (COSName.IMAGE.getName().equals(subtype))

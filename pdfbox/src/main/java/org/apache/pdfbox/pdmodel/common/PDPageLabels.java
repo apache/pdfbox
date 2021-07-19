@@ -100,9 +100,9 @@ public class PDPageLabels implements COSObjectable
     private void findLabels(PDNumberTreeNode node) throws IOException 
     {
         List<PDNumberTreeNode> kids = node.getKids();
-        if (node.getKids() != null) 
+        if (kids != null)
         {
-            for (PDNumberTreeNode kid : kids) 
+            for (PDNumberTreeNode kid : kids)
             {
                 findLabels(kid);
             }
@@ -293,6 +293,7 @@ public class PDPageLabels implements COSObjectable
      */
     private static class LabelGenerator implements Iterator<String>
     {
+        private final StringBuilder resultBuffer = new StringBuilder();
         private final PDPageLabelRange labelInfo;
         private final int numPages;
         private int currentPage;
@@ -317,7 +318,6 @@ public class PDPageLabels implements COSObjectable
             {
                 throw new NoSuchElementException();
             }
-            StringBuilder buf = new StringBuilder();
             String label = labelInfo.getPrefix();
             if (label != null)
             {
@@ -328,15 +328,18 @@ public class PDPageLabels implements COSObjectable
                 {
                     label = label.substring(0, index);
                 }
-                buf.append(label);
+                resultBuffer.append(label);
             }
             String style = labelInfo.getStyle();
             if (style != null)
             {
-                buf.append(getNumber(labelInfo.getStart() + currentPage, style));
+                resultBuffer.append(getNumber(labelInfo.getStart() + currentPage,
+                        style));
             }
             currentPage++;
-            return buf.toString();
+            String result = resultBuffer.toString();
+            resultBuffer.setLength(0);
+            return result;
         }
 
         private String getNumber(int pageIndex, String style)

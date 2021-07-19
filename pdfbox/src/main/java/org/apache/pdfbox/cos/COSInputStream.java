@@ -63,11 +63,10 @@ public final class COSInputStream extends FilterInputStream
      * @return Decoded stream.
      * @throws IOException If the stream could not be read.
      */
-    static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
+    static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream input,
             DecodeOptions options) throws IOException
     {
         List<DecodeResult> results = new ArrayList<>();
-        InputStream input = in;
         if (!filters.isEmpty())
         {
             Set<Filter> filterSet = new HashSet<>(filters);

@@ -384,7 +384,7 @@ public class XMPBasicSchema extends XMPSchema
     /**
      * Get the Advisory property values
      * 
-     * @return list of adivory values
+     * @return list of advisory values
      */
     public List<String> getAdvisory()
     {

@@ -835,7 +835,12 @@ final class Type1Parser
     private Token read(Token.Kind kind) throws IOException
     {
         Token token = lexer.nextToken();
-        if (token == null || token.getKind() != kind)
+        if (token == null)
+        {
+            throw new IOException("Found token is null but expected " + kind);
+        }
+        else
+        if (token.getKind() != kind)
         {
             throw new IOException("Found " + token + " but expected " + kind);
         }

@@ -150,7 +150,7 @@ public final class ImageToPDF implements Callable<Integer>
         }
         else
         {
-            // return default if wron size was specified
+            // return default if wrong size was specified
             return PDRectangle.LETTER;
         }
     }

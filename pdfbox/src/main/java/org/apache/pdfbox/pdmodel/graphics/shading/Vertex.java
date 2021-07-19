@@ -38,14 +38,18 @@ class Vertex
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
+        sb.append("Vertex{ ").append(point).append(", colors=[");
         for (float f : color)
         {
-            if (sb.length() > 0)
-            {
-                sb.append(' ');
-            }
-            sb.append(String.format("%3.2f", f));
+            sb.append(String.format("%3.2f", f)).append(' ');
         }
-        return "Vertex{ " + point + ", colors=[" + sb + "] }";
+
+        //remove last space if need
+        if (color.length > 0 && sb.charAt(sb.length() - 1) == ' ')
+        {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        return sb.append("] }").toString();
     }
 }

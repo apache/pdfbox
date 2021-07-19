@@ -271,15 +271,18 @@ class PlainTextFormatter
             lastPos += offset; 
 
             List<Word> words = line.getWords();
+            int indexOfWord = 0;
             for (Word word : words)
             {
                 contents.showText(word.getText());
                 wordWidth = (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
-                if (words.indexOf(word) != words.size() -1)
+                if (indexOfWord != words.size() -1)
                 {
                     contents.newLineAtOffset(wordWidth + interWordSpacing, 0f);
                     lastPos = lastPos + wordWidth + interWordSpacing;
                 }
+
+                ++indexOfWord;
             }
         }
         horizontalOffset = horizontalOffset - lastPos;

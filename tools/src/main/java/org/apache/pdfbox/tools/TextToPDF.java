@@ -229,7 +229,6 @@ public class TextToPDF implements Callable<Integer>
     {
         try
         {
-
             final int margin = 40;
             float height = font.getBoundingBox().getHeight() / FONTSCALE;
             PDRectangle actualMediaBox =
@@ -251,7 +250,6 @@ public class TextToPDF implements Callable<Integer>
 
             while( (nextLine = data.readLine()) != null )
             {
-
                 // The input text is nonEmpty. New pages will be created and added
                 // to the PDF document as they are needed, depending on the length of
                 // the text.
@@ -259,6 +257,7 @@ public class TextToPDF implements Callable<Integer>
 
                 String[] lineWords = nextLine.replaceAll("[\\n\\r]+$", "").split(" ");
                 int lineIndex = 0;
+
                 while( lineIndex < lineWords.length )
                 {
                     nextLineToDraw.setLength(0);

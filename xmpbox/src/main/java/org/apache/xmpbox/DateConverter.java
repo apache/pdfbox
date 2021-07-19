@@ -88,7 +88,6 @@ public final class DateConverter
         if ((date != null) && (date.trim().length() > 0))
         {
             date = date.trim();
-
             // these are the default values
             int month = 1;
             int day = 1;
@@ -196,7 +195,6 @@ public final class DateConverter
             }
             catch (NumberFormatException e)
             {
-
                 // remove the arbitrary : in the timezone. SimpleDateFormat can't handle it
                 if (date.charAt(date.length() - 3) == ':' && 
                     (date.charAt(date.length() - 6) == '+' || date.charAt(date.length() - 6) == '-'))

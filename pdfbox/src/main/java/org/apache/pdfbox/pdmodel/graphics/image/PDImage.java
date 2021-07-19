@@ -70,7 +70,7 @@ public interface PDImage extends COSObjectable
      * Use this method if you want to extract the image without loosing any color information, as
      * no color conversion will be performed.
      *
-     * You can alwoys use {@link #getRawRaster()}, if you want to access the raw data even if
+     * You can always use {@link #getRawRaster()}, if you want to access the raw data even if
      * no matching java.awt.ColorSpace exists
      *
      * @return the raw image with a java.awt.ColorSpace or null

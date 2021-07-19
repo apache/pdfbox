@@ -484,7 +484,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             }
             try
             {
-                readPDFurl(urlString, "");
+                readPDFUrl(urlString, "");
             }
             catch (IOException e)
             {
@@ -501,7 +501,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             {
                 if (currentFilePath.startsWith("http"))
                 {
-                    readPDFurl(currentFilePath, "");
+                    readPDFUrl(currentFilePath, "");
                 }
                 else
                 {
@@ -1258,7 +1258,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         addRecentFileItems();
     }
     
-    private void readPDFurl(final String urlString, String password) throws IOException
+    private void readPDFUrl(final String urlString, String password) throws IOException
     {
         if (document != null)
         {
@@ -1437,7 +1437,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         if (pageLabels != null)
         {
             String[] labels = pageLabels.getLabelsByPageIndices();
-            if (labels[pageIndex] != null)
+            if (labels.length > 0 && labels[pageIndex] != null)
             {
                 return labels[pageIndex];
             }

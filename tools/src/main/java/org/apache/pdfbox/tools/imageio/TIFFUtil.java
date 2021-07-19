@@ -18,6 +18,7 @@ package org.apache.pdfbox.tools.imageio;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.NodeList;
 
 import javax.imageio.ImageWriteParam;
 import javax.imageio.metadata.IIOInvalidTreeException;
@@ -107,7 +108,7 @@ final class TIFFUtil
         ifd.appendChild(createAsciiField(305, "Software", "PDFBOX"));
 
         if (image.getType() == BufferedImage.TYPE_BYTE_BINARY && 
-                image.getColorModel().getPixelSize() == 1)
+            image.getColorModel().getPixelSize() == 1)
         {
             // set PhotometricInterpretation WhiteIsZero
             // because of bug in Windows XP preview

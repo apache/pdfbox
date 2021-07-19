@@ -275,9 +275,8 @@ public class PDSeedValueCertificate implements COSObjectable
         COSArray cosArray = dictionary.getCOSArray(COSName.SUBJECT_DN);
         if (cosArray != null)
         {
-            List<? extends COSBase> subjectDNList = cosArray.toList();
             List<Map<String, String>> result = new LinkedList<>();
-            for (COSBase subjectDNItem : subjectDNList)
+            for (COSBase subjectDNItem : cosArray)
             {
                 if (subjectDNItem instanceof COSDictionary)
                 {

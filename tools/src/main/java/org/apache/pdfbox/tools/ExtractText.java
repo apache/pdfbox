@@ -34,12 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
-import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -258,6 +253,7 @@ public final class ExtractText  implements Callable<Integer>
             PDFTextStripper stripper, PDDocument document, Writer output,
             boolean rotationMagic, boolean alwaysNext) throws IOException
     {
+        PDPageTree pages = document.getPages();
         for (int p = startPage; p <= endPage; ++p)
         {
             stripper.setStartPage(p);
@@ -266,7 +262,7 @@ public final class ExtractText  implements Callable<Integer>
             {
                 if (rotationMagic)
                 {
-                    PDPage page = document.getPage(p - 1);
+                    PDPage page = pages.get(p - 1);
                     int rotation = page.getRotation();
                     page.setRotation(0);
                     AngleCollector angleCollector = new AngleCollector();

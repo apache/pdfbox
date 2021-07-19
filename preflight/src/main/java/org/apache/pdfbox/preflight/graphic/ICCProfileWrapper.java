@@ -150,6 +150,7 @@ public class ICCProfileWrapper
                 }
             }
         }
+
         return null;
     }
 

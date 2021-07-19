@@ -167,7 +167,7 @@ public class FDFIconFit implements COSObjectable
     }
 
     /**
-     * This will set frational space to allocate.
+     * This will set fractional space to allocate.
      *
      * @param space The space to allocate.
      */

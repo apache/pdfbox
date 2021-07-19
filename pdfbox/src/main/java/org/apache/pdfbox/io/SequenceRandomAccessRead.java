@@ -203,6 +203,12 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         return currentPosition >= totalLength;
     }
 
+    /**
+     * This method throws UnsupportedOperationException.
+     * @param startPosition This parameter will not be used.
+     * @param streamLength This parameter will not be used.
+     * @return Return value will not be used.
+     * */
     @Override
     public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
     {

@@ -88,7 +88,7 @@ public abstract class PDFStreamEngine
     private Matrix initialMatrix;
 
     // used to monitor potentially recursive operations.
-    private int level = 0;
+    private short level = 0;
 
     /**
      * Creates a new PDFStreamEngine.
@@ -254,7 +254,7 @@ public abstract class PDFStreamEngine
         getGraphicsState().setCurrentTransformationMatrix(textRenderingMatrix);
 
         // transform the CTM using the stream's matrix (this is the FontMatrix)
-        getGraphicsState().getCurrentTransformationMatrix().concatenate(charProc.getMatrix());
+        textRenderingMatrix.concatenate(charProc.getMatrix());
 
         // note: we don't clip to the BBox as it is often wrong, see PDFBOX-1917
 

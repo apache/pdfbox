@@ -191,11 +191,12 @@ public class CatalogValidationProcess extends AbstractProcess
     private void validateOutputIntent(PreflightContext ctx) throws ValidationException
     {
         COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
-        Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<>();
         if (outputIntents == null)
         {
             return;
         }
+
+        Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<>();
         for (int i = 0; i < outputIntents.size(); ++i)
         {
             COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
@@ -230,7 +231,7 @@ public class CatalogValidationProcess extends AbstractProcess
                 /*
                  * If OutputConditionIdentifier is "Custom" or a non Standard ICC Characterization : DestOutputProfile
                  * and Info are mandatory DestOutputProfile must be a ICC Profile
-                 * 
+                 *
                  * Because of PDF/A conforming file needs to specify the color characteristics, the DestOutputProfile is
                  * checked even if the OutputConditionIdentifier isn't "Custom"
                  */
@@ -273,7 +274,7 @@ public class CatalogValidationProcess extends AbstractProcess
     private void validateICCProfile(COSBase destOutputProfile,
             Map<COSObjectKey, Boolean> mapDestOutputProfile,
             PreflightContext ctx) throws ValidationException
-            {
+    {
         try
         {
             // destOutputProfile should be an instance of COSObject because of this is a object reference

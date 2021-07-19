@@ -232,7 +232,7 @@ class Type1Lexer
         buffer.mark();
 
         StringBuilder sb = new StringBuilder();
-        StringBuilder radix = null;
+        String radix = null;
         char c = getChar();
         boolean hasDigit = false;
 
@@ -260,8 +260,8 @@ class Type1Lexer
         else if (c == '#')
         {
             // PostScript radix number takes the form base#number
-            radix = sb;
-            sb = new StringBuilder();
+            radix = sb.toString();
+            sb.setLength(0);
             c = getChar();
         }
         else if (sb.length() == 0 || !hasDigit)
@@ -334,7 +334,7 @@ class Type1Lexer
         buffer.position(buffer.position() - 1);
         if (radix != null)
         {
-            Integer val = Integer.parseInt(sb.toString(), Integer.parseInt(radix.toString()));
+            Integer val = Integer.parseInt(sb.toString(), Integer.parseInt(radix));
             return new Token(val.toString(), Token.INTEGER);
         }
         return new Token(sb.toString(), Token.REAL);

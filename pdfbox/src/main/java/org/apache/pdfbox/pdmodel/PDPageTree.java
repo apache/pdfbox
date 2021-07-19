@@ -19,6 +19,13 @@ package org.apache.pdfbox.pdmodel;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Stack;
+import java.util.NoSuchElementException;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -27,11 +34,6 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -167,33 +169,60 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     private final class PageIterator implements Iterator<PDPage>
     {
         private final Queue<COSDictionary> queue = new ArrayDeque<>();
-        private Set<COSDictionary> set = new HashSet<>();
+        private final ResourceCache resourceCache;
 
         private PageIterator(COSDictionary node)
         {
             enqueueKids(node);
-            set = null; // release memory, we don't use this anymore
+            resourceCache = document != null ? document.getResourceCache() : null;
         }
 
         private void enqueueKids(COSDictionary node)
         {
             if (isPageTreeNode(node))
             {
+                Set<COSDictionary> set = new HashSet<>();
+                Stack<Iterator<COSDictionary>> stack = new Stack<>();
                 List<COSDictionary> kids = getKids(node);
-                for (COSDictionary kid : kids)
-                {
-                    if (set.contains(kid))
+                Iterator<COSDictionary> iterator = kids.iterator();
+
+                do{
+                    while (iterator.hasNext())
                     {
-                        // PDFBOX-5009, PDFBOX-3953: prevent stack overflow with malformed PDFs
-                        LOG.error("This page tree node has already been visited");
-                        continue;
+                        COSDictionary kid = iterator.next();
+                        if (set.contains(kid))
+                        {
+                            // PDFBOX-5009, PDFBOX-3953: prevent stack overflow with malformed PDFs
+                            LOG.error("This page tree node has already been visited");
+                            continue;
+                        }
+                        else if (kid.containsKey(COSName.KIDS))
+                        {
+                            set.add(kid);
+                        }
+
+                        if (isPageTreeNode(kid))
+                        {
+                            kids = getKids(kid);
+                            //save previous iterator
+                            stack.push(iterator);
+                            iterator = kids.iterator();
+                        }
+                        else
+                        {
+                            queue.add(kid);
+                        }
                     }
-                    else if (kid.containsKey(COSName.KIDS))
+
+                    if (!stack.isEmpty())
                     {
-                        set.add(kid);
+                        //use previous iterator
+                        iterator = stack.pop();
+                    }else
+                    {
+                        break;
                     }
-                    enqueueKids(kid);
-                }
+                }while(true);
             }
             else
             {
@@ -215,10 +244,9 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                 throw new NoSuchElementException();
             }
             COSDictionary next = queue.poll();
-            
+            //todo can a 'next' be null here?
             sanitizeType(next);
 
-            ResourceCache resourceCache = document != null ? document.getResourceCache() : null;
             return new PDPage(next, resourceCache);
         }
 
@@ -354,48 +382,42 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     public int indexOf(PDPage page)
     {
         SearchContext context = new SearchContext(page);
-        if (findPage(context, root))
-        {
-            return context.index;
-        }
-        return -1;
+        return findPage(context, root) ? context.index : -1;
     }
 
     private boolean findPage(SearchContext context, COSDictionary node)
     {
         for (COSDictionary kid : getKids(node))
         {
-            if (context.found)
-            {
-                break;
-            }
             if (isPageTreeNode(kid))
             {
-                findPage(context, kid);
+                if (findPage(context, kid))
+                    return true;
             }
             else
             {
-                context.visitPage(kid);
+                if (context.isMatch(kid))
+                    return true;
             }
         }
-        return context.found;
+
+        return false;
     }
 
     private static final class SearchContext
     {
         private final COSDictionary searched;
         private int index = -1;
-        private boolean found;
 
         private SearchContext(PDPage page)
         {
             searched = page.getCOSObject();
         }
 
-        private void visitPage(COSDictionary current)
+        private boolean isMatch(COSDictionary current)
         {
             index++;
-            found = searched == current;
+            return searched == current;
         }
     }
 

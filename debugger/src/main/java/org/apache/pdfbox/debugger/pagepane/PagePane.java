@@ -16,7 +16,8 @@
 
 package org.apache.pdfbox.debugger.pagepane;
 
-import java.awt.Graphics2D;
+import java.awt.*;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.debugger.PDFDebugger;
 import org.apache.pdfbox.debugger.ui.ImageUtil;

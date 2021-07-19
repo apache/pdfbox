@@ -489,7 +489,7 @@ public class PDFMergerUtility
             }
         }
     }
-
+  
     /**
      * append all pages from source to destination.
      *
@@ -640,6 +640,7 @@ public class PDFMergerUtility
                     }
                     destLastOutlineItem = outlineItem;
                 }
+
                 for (PDOutlineItem item : srcOutline.children())
                 {
                     // get each child, clone its dictionary, remove siblings info,

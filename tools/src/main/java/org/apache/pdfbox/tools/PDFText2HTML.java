@@ -239,7 +239,7 @@ public class PDFText2HTML extends PDFTextStripper
                 builder.append("&gt;");
                 break;
             default:
-                builder.append(String.valueOf(character));
+                builder.append(character);
             }
         }
     }
@@ -362,7 +362,7 @@ public class PDFText2HTML extends PDFTextStripper
             {
                 String tag = stateList.get(i);
                 tagsBuilder.append(closeTag(tag));
-                if (endTag != null && tag.equals(endTag))
+                if (tag.equals(endTag))
                 {
                     return i;
                 }

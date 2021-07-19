@@ -100,12 +100,19 @@ final class DebugTextOverlay
                 List<PDThreadBead> pageArticles = page.getThreadBeads();
                 for (PDThreadBead bead : pageArticles)
                 {
-                    if (bead == null || bead.getRectangle() == null)
+                    if (bead == null)
                     {
                         continue;
                     }
-                    PDRectangle r = bead.getRectangle();
-                    Shape s = r.toGeneralPath().createTransformedShape(transAT);
+
+                    PDRectangle rect = bead.getRectangle();
+
+                    if (rect == null)
+                    {
+                        continue;
+                    }
+
+                    Shape s = rect.toGeneralPath().createTransformedShape(transAT);
                     s = flipAT.createTransformedShape(s);
                     graphics.setColor(Color.green);
                     graphics.draw(s);

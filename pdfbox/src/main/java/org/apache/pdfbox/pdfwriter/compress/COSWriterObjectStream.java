@@ -308,7 +308,7 @@ public class COSWriterObjectStream
     private void writeCOSArray(OutputStream output, COSArray cosArray) throws IOException
     {
         output.write(COSWriter.ARRAY_OPEN);
-        for (COSBase value : cosArray.toList())
+        for (COSBase value : cosArray)
         {
             if (value == null)
             {

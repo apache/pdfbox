@@ -88,27 +88,25 @@ public class StreamValidationProcess extends AbstractProcess
     protected void checkFilters(COSStream stream, PreflightContext context)
     {
         COSBase bFilter = stream.getDictionaryObject(COSName.FILTER);
-        if (bFilter != null)
+
+        if (bFilter instanceof COSArray)
         {
-            if (bFilter instanceof COSArray)
+            COSArray afName = (COSArray) bFilter;
+            for (int i = 0; i < afName.size(); ++i)
             {
-                COSArray afName = (COSArray) bFilter;
-                for (int i = 0; i < afName.size(); ++i)
-                {
-                    FilterHelper.isAuthorizedFilter(context, afName.getString(i));
-                }
+                FilterHelper.isAuthorizedFilter(context, afName.getString(i));
             }
-            else if (bFilter instanceof COSName)
-            {
-                String fName = ((COSName) bFilter).getName();
-                FilterHelper.isAuthorizedFilter(context, fName);
-            }
-            else
-            {
-                // ---- The filter type is invalid
-                addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER,
-                        "Filter should be a Name or an Array"));
-            }
+        }
+        else if (bFilter instanceof COSName)
+        {
+            String fName = ((COSName) bFilter).getName();
+            FilterHelper.isAuthorizedFilter(context, fName);
+        }
+        else if (bFilter != null)
+        {
+            // ---- The filter type is invalid
+            addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER,
+                    "Filter should be a Name or an Array"));
         }
         // else Filter entry is optional
     }

@@ -93,8 +93,8 @@ public class PDDocument implements Closeable
 
     private static final Log LOG = LogFactory.getLog(PDDocument.class);
 
-    /**
-     * avoid concurrency issues with PDDeviceRGB
+    /*
+      avoid concurrency issues with PDDeviceRGB
      */
     static
     {
@@ -336,15 +336,16 @@ public class PDDocument implements Closeable
 
         // Create SignatureForm for signature and append it to the document
 
+        PDPageTree pages = getPages();
         // Get the first valid page
-        int pageCount = getNumberOfPages();
+        int pageCount = pages.getCount();
         if (pageCount == 0)
         {
             throw new IllegalStateException("Cannot sign an empty document");
         }
 
         int startIndex = Math.min(Math.max(options.getPage(), 0), pageCount - 1);
-        PDPage page = getPage(startIndex);
+        PDPage page = pages.get(startIndex);
 
         // Get the AcroForm from the Root-Dictionary and append the annotation
         PDDocumentCatalog catalog = getDocumentCatalog();
@@ -864,7 +865,7 @@ public class PDDocument implements Closeable
      * is closed when the PDDocument is closed to avoid memory leaks. Users don't have to call this
      * method, it is done by the appropriate PDFont classes.
      *
-     * @param ttf
+     * @param ttf TTF font instance
      */
     public void registerTrueTypeFontForClosing(TrueTypeFont ttf)
     {

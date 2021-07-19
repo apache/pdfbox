@@ -73,9 +73,8 @@ public class RubberStampWithImage
                     throw new IOException( "Encrypted documents are not supported for this example" );
                 }
     
-                for (int i = 0; i < document.getNumberOfPages(); i++)
+                for (PDPage page : document.getPages())
                 {
-                    PDPage page = document.getPage(i);
                     List<PDAnnotation> annotations = page.getAnnotations();
                     PDAnnotationRubberStamp rubberStamp = new PDAnnotationRubberStamp();
                     rubberStamp.setName(PDAnnotationRubberStamp.NAME_TOP_SECRET);

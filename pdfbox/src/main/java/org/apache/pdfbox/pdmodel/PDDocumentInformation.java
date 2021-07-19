@@ -309,7 +309,7 @@ public class PDDocumentInformation implements COSObjectable
             !value.equals( "Unknown" ) )
         {
             throw new IllegalArgumentException( "Valid values for trapped are " +
-                                        "'True', 'False', or 'Unknown'" );
+                                        "'True', 'False' or 'Unknown'" );
         }
 
         info.setName( COSName.TRAPPED, value );

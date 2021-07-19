@@ -363,7 +363,7 @@ public class FDFField implements COSObjectable
     }
 
     /**
-     * This will get the SetFf entry of the cos dictionary. If it it not present then this method will return null.
+     * This will get the Set Ff entry of the cos dictionary. If it it not present then this method will return null.
      *
      * @return The field flags.
      */

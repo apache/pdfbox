@@ -174,7 +174,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      * Create the validation object for CIDType2 Font
      *
      * @param fDict a CIDType2 font dictionary.
-     * @return a CIDType2 tont font validator.
+     * @return a CIDType2 font validator.
      */
     protected FontValidator<? extends FontContainer<PDCIDFontType2>> createCIDType2FontValidator(COSDictionary fDict)
     {
@@ -220,7 +220,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         else if (encoding instanceof COSStream)
         {
             /*
-             * If the CMap is a stream, some fields are mandatory and the CIDSytemInfo must be compared with the
+             * If the CMap is a stream, some fields are mandatory and the CIDSystemInfo must be compared with the
              * CIDSystemInfo entry of the CIDFont.
              */
             processCMapAsStream((COSStream) encoding);

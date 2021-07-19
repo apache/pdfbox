@@ -326,6 +326,7 @@ public class COSStream extends COSDictionary implements Closeable
     {
         List<Filter> filterList;
         COSBase filters = getFilters();
+
         if (filters instanceof COSName)
         {
             filterList = new ArrayList<>(1);
@@ -350,6 +351,7 @@ public class COSStream extends COSDictionary implements Closeable
         {
             filterList = new ArrayList<>();
         }
+
         return filterList;
     }
     
