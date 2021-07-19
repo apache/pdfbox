@@ -196,8 +196,8 @@ public final class PDColor
         return "PDColor{components=" + Arrays.toString(components) + ", patternName=" + patternName + ", colorSpace=" + colorSpace + '}';
     }
 
-    public static PDColor create(float[] components, boolean cloneComponents, PDColorSpace colorSpace)
+    public static PDColor createWithoutCloningComponents(float[] components, PDColorSpace colorSpace)
     {
-        return new PDColor(components, cloneComponents, colorSpace);
+        return new PDColor(components, false, colorSpace);
     }
 }

@@ -44,8 +44,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 public final class PDIndexed extends PDSpecialColorSpace
 {
-    private final PDColor initialColor = PDColor.create(new float[] { 0 }, false, this);
-
+    private final PDColor initialColor = PDColor.createWithoutCloningComponents(new float[] { 0 }, this);
     private PDColorSpace baseColorSpace = null;
 
     // cached lookup data

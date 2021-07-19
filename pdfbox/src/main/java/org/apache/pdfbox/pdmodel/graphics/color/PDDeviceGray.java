@@ -32,8 +32,8 @@ public final class PDDeviceGray extends PDDeviceColorSpace
 {
     /** The single instance of this class. */
     public static final PDDeviceGray INSTANCE = new PDDeviceGray();
-    
-    private final PDColor initialColor = PDColor.create(new float[] { 0 }, false, this);
+
+    private final PDColor initialColor = PDColor.createWithoutCloningComponents(new float[] { 0 }, this);
 
     private PDDeviceGray()
     {

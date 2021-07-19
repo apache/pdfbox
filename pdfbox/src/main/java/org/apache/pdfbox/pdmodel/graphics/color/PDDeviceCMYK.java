@@ -46,7 +46,7 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
         INSTANCE = new PDDeviceCMYK();
     }
 
-    private final PDColor initialColor = PDColor.create(new float[] { 0, 0, 0, 1 }, false, this);
+    private final PDColor initialColor = PDColor.createWithoutCloningComponents(new float[] { 0, 0, 0, 1 }, this);
     private ICC_ColorSpace awtColorSpace;
     private volatile boolean initDone = false;
     private boolean usePureJavaCMYKConversion = false;
