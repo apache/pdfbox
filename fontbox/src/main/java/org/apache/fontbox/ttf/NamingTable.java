@@ -198,12 +198,10 @@ public class NamingTable extends TTFTable
         }
 
         // Macintosh, Roman, English
-        String nameMac =
-                getName(nameId,
+        return getName(nameId,
                         NameRecord.PLATFORM_MACINTOSH,
                         NameRecord.ENCODING_MACINTOSH_ROMAN,
                         NameRecord.LANGUAGE_MACINTOSH_ENGLISH);
-        return nameMac;
     }
 
     /**
