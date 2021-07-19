@@ -101,7 +101,7 @@ public class PDDeviceN extends PDSpecialColorSpace
         {
             initial[i] = 1;
         }
-        initialColor = PDColor.createWithoutCloningComponents(initial, this);
+        initialColor = new PDColor(initial, this);
     }
 
     // initializes the color conversion cache

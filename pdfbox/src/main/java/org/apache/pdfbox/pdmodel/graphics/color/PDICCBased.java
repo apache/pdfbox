@@ -221,7 +221,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 {
                     initial[c] = Math.max(0, getRangeForComponent(c).getMin());
                 }
-                initialColor = PDColor.createWithoutCloningComponents(initial, this);
+                initialColor = new PDColor(initial, this);
 
                 if (IS_KCMS)
                 {

@@ -168,7 +168,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     {
         if (initialColor == null)
         {
-            initialColor = PDColor.createWithoutCloningComponents(new float[] {
+            initialColor = new PDColor(new float[] {
                     0,
                     Math.max(0, getARange().getMin()),
                     Math.max(0, getBRange().getMin()) },
