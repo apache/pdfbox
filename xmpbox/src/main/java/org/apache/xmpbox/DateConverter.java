@@ -195,10 +195,9 @@ public final class DateConverter
             }
             catch (NumberFormatException e)
             {
-
-                // remove the arbitrary : in the timezone. SimpleDateFormat
-                // can't handle it
-                if (date.charAt(date.length() - 3) == ':' && (date.charAt(date.length() - 6) == '+' || date.charAt(date.length() - 6) == '-'))
+                // remove the arbitrary : in the timezone. SimpleDateFormat can't handle it
+                if (date.charAt(date.length() - 3) == ':' && 
+                    (date.charAt(date.length() - 6) == '+' || date.charAt(date.length() - 6) == '-'))
                 {
                     // that's a timezone string, remove the :
                     date = date.substring(0, date.length() - 3) + date.substring(date.length() - 2);

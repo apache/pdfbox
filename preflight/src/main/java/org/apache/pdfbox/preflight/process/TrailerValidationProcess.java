@@ -113,7 +113,7 @@ public class TrailerValidationProcess extends AbstractProcess
 
         if (xrefs.isEmpty())
         {
-            // no XRef CosObject, may be this pdf file used the PDF 1.4 syntax
+            // no XRef CosObject, maybe this pdf file used the PDF 1.4 syntax
             checkTrailersForLinearizedPDF14(ctx);
         }
         else

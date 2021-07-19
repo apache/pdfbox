@@ -231,7 +231,8 @@ public class TextToPDF implements Callable<Integer>
         {
             final int margin = 40;
             float height = font.getBoundingBox().getHeight() / FONTSCALE;
-            PDRectangle actualMediaBox = landscape ? new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth()) : mediaBox;
+            PDRectangle actualMediaBox =
+                    landscape ? new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth()) : mediaBox;
 
             //calculate font height and increase by a factor.
             height = height*fontSize*LINE_HEIGHT_FACTOR;

@@ -949,7 +949,8 @@ public class PDDocument implements Closeable
         if (file.exists())
         {
             LOG.warn(
-                    "You are overwriting an existing file, this will produce a corrupted file if you're also reading from it");
+                    "You are overwriting the existing file " + file.getName()
+                            + ", this will produce a corrupted file if you're also reading from it");
         }
         try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
                 new FileOutputStream(file)))

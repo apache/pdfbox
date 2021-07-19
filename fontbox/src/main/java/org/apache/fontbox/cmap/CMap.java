@@ -384,7 +384,7 @@ public class CMap
     /**
      * Get the code bytes for an unicode string.
      *
-     * @param unicode The unicode string
+     * @param unicode The unicode string.
      * @return the code bytes or null if there is none.
      */
     public byte[] getCodesFromUnicode(String unicode)
