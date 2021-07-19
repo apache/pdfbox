@@ -43,7 +43,7 @@ import org.apache.pdfbox.pdmodel.common.function.PDFunction;
  */
 public class PDSeparation extends PDSpecialColorSpace
 {
-    private final PDColor initialColor = new PDColor(new float[] { 1 }, this);
+    private final PDColor initialColor = PDColor.create(new float[] { 1 }, false, this);
 
     // array indexes
     private static final int COLORANT_NAMES = 1;

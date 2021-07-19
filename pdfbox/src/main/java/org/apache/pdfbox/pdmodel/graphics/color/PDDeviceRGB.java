@@ -34,7 +34,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     /**  This is the single instance of this class. */
     public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
     
-    private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
+    private final PDColor initialColor = PDColor.create(new float[] { 0, 0, 0 },  false, this);
 
     private PDDeviceRGB()
     {
