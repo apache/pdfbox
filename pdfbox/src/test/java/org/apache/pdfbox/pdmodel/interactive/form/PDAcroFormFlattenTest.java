@@ -187,8 +187,8 @@ class PDAcroFormFlattenTest
         }
 
         // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
-        if (!testPDFToImage.doTestFile(outputFile, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        if (!TestPDFToImage.doTestFile(outputFile, IN_DIR.getAbsolutePath(),
+                OUT_DIR.getAbsolutePath()))
         {
             fail("Rendering of " + outputFile + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
         }
