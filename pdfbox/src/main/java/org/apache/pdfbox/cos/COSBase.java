@@ -29,6 +29,7 @@ public abstract class COSBase implements COSObjectable
 {
     private boolean direct;
     private COSObjectKey key;
+    private COSObject referencedObject;
 
     /**
      * Constructor.
@@ -98,4 +99,13 @@ public abstract class COSBase implements COSObjectable
         this.key = key;
     }
 
+    public COSObject getReferencedObject()
+    {
+        return referencedObject;
+    }
+
+    public void setReferencedObject(COSObject referencedObject)
+    {
+        this.referencedObject = referencedObject;
+    }
 }

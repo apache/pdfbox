@@ -106,24 +106,49 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSBase getObject()
     {
-        if (!isDereferenced && parser != null)
+        COSBase dereferencedObject = dereferenceObject();
+
+        if(dereferencedObject != null)
         {
+            isDereferenced = true;
+            baseObject = dereferencedObject;
+        }
+
+        return baseObject;
+    }
+
+    public COSBase getObjectWithoutCaching() {
+        if(baseObject != null)
+        {
+            return baseObject;
+        }
+
+        return dereferenceObject();
+    }
+
+    private COSBase dereferenceObject()
+    {
+        COSBase dereferencedObject = null;
+
+        if(!isDereferenced && parser != null) {
             try
             {
                 // mark as dereferenced to avoid endless recursions
-                isDereferenced = true;
-                baseObject = parser.dereferenceCOSObject(this);
+                dereferencedObject = parser.dereferenceCOSObject(this);
+
+                if(dereferencedObject != null)
+                {
+                    dereferencedObject.setReferencedObject(this);
+                }
+
             }
-            catch (IOException e)
+            catch(IOException e)
             {
                 LOG.error("Can't dereference " + this, e);
             }
-            finally
-            {
-                parser = null;
-            }
         }
-        return baseObject;
+
+        return dereferencedObject;
     }
 
     /**
