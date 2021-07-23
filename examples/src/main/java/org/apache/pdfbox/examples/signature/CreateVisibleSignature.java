@@ -80,7 +80,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param y position of the signature field
      * @param zoomPercent increase (positive value) or decrease (negative value) image with x percent.
      * @param imageStream input stream of an image.
-     * @param page the signature should be placed on
+     * @param page the signature should be placed on (1-based)
      * @throws IOException
      */
     public void setVisibleSignDesigner(String filename, int x, int y, int zoomPercent, 
