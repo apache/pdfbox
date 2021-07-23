@@ -112,7 +112,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param location
      * @param reason
      * @param preferredSize
-     * @param page
+     * @param page the signature should be placed on (1-based)
      * @param visualSignEnabled
      */
     public void setVisibleSignatureProperties(String name, String location, String reason, int preferredSize, 
