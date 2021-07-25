@@ -163,8 +163,7 @@ class TilingPaint implements Paint
 
         // apply only the scaling from the pattern transform, doing scaling here improves the
         // image quality and prevents large scale-down factors from creating huge tiling cells.
-        Matrix newPatternMatrix;
-        newPatternMatrix = Matrix.getScaleInstance(
+        Matrix newPatternMatrix = Matrix.getScaleInstance(
                 Math.abs(patternMatrix.getScalingFactorX()),
                 Math.abs(patternMatrix.getScalingFactorY()));
 
