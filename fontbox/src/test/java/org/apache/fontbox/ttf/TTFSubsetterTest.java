@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -141,11 +142,8 @@ class TTFSubsetterTest
                 simhei = new File(uri);
             }
         }
-        if (simhei == null)
-        {
-            System.err.println("SimHei font not available on this machine, test skipped");
-            return;
-        }
+        Assumptions.assumeTrue(simhei != null, "SimHei font not available on this machine, test skipped");
+
         System.out.println("SimHei font found!");
         TrueTypeFont full = new TTFParser().parse(simhei);
 

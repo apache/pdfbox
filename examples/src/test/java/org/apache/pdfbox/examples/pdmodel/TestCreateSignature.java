@@ -111,6 +111,7 @@ import org.bouncycastle.tsp.TimeStampTokenInfo;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -191,12 +192,8 @@ class TestCreateSignature
         checkSignature(new File(IN_DIR, "sign_me.pdf"), new File(OUT_DIR, fileName), false);
 
         // Also test CreateEmbeddedTimeStamp if tsa URL is available
-        if (tsa == null || tsa.isEmpty())
-        {
-            System.err.println("No TSA URL defined, test skipped");
-            return;
-        }
-        
+        Assumptions.assumeTrue(tsa != null && !tsa.isEmpty(), "No TSA URL defined, test skipped");
+
         CreateEmbeddedTimeStamp tsaSigning = new CreateEmbeddedTimeStamp(tsa);
         tsaSigning.embedTimeStamp(new File(OUT_DIR, fileName), new File(OUT_DIR, fileName2));
         checkSignature(new File(OUT_DIR, fileName), new File(OUT_DIR, fileName2), true);
@@ -256,11 +253,7 @@ class TestCreateSignature
 
         mockServer.stopServer();
 
-        if (tsa == null || tsa.isEmpty())
-        {
-            System.err.println("No TSA URL defined, test skipped");
-            return;
-        }
+        Assumptions.assumeTrue(tsa != null && !tsa.isEmpty(), "No TSA URL defined, test skipped");
 
         CreateSignature signing2 = new CreateSignature(keyStore, PASSWORD.toCharArray());
         signing2.setExternalSigning(externallySign);
@@ -284,11 +277,8 @@ class TestCreateSignature
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException, OCSPException
     {
-        if (tsa == null || tsa.isEmpty())
-        {
-            System.err.println("No TSA URL defined, test skipped");
-            return;
-        }
+        Assumptions.assumeTrue(tsa != null && !tsa.isEmpty(), "No TSA URL defined, test skipped");
+
         final String fileName = "timestamped.pdf";
         CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsa);
         signing.signDetached(new File(IN_DIR + "sign_me.pdf"), new File(OUT_DIR + fileName));
