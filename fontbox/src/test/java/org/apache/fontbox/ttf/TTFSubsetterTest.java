@@ -30,6 +30,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.Assume;
 import org.junit.Test;
 
 /**
@@ -138,11 +139,7 @@ public class TTFSubsetterTest
                 simhei = new File(uri);
             }
         }
-        if (simhei == null)
-        {
-            System.err.println("SimHei font not available on this machine, test skipped");
-            return;
-        }
+        Assume.assumeTrue("SimHei font not available on this machine, test skipped", simhei != null);
         System.out.println("SimHei font found!");
         TrueTypeFont full = new TTFParser().parse(simhei);
 

@@ -103,6 +103,7 @@ import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -180,11 +181,7 @@ public class TestCreateSignature
         checkSignature(new File(inDir, "sign_me.pdf"), new File(outDir, fileName), false);
 
         // Also test CreateEmbeddedTimeStamp if tsa URL is available
-        if (tsa == null || tsa.isEmpty())
-        {
-            System.err.println("No TSA URL defined, test skipped");
-            return;
-        }
+        Assume.assumeTrue("No TSA URL defined, test skipped", tsa != null && !tsa.isEmpty());
         
         CreateEmbeddedTimeStamp tsaSigning = new CreateEmbeddedTimeStamp(tsa);
         tsaSigning.embedTimeStamp(new File(outDir, fileName), new File(outDir, fileName2));
@@ -246,11 +243,7 @@ public class TestCreateSignature
 
         mockServer.stopServer();
 
-        if (tsa == null || tsa.isEmpty())
-        {
-            System.err.println("No TSA URL defined, test skipped");
-            return;
-        }
+        Assume.assumeTrue("No TSA URL defined, test skipped", tsa != null && !tsa.isEmpty());
 
         CreateSignature signing2 = new CreateSignature(keyStore, password.toCharArray());
         signing2.setExternalSigning(externallySign);
@@ -274,15 +267,8 @@ public class TestCreateSignature
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException, OCSPException
     {
-        if (externallySign)
-        {
-            return; // runs only once, independent of externallySign
-        }
-        if (tsa == null || tsa.isEmpty())
-        {
-            System.err.println("No TSA URL defined, test skipped");
-            return;
-        }
+        Assume.assumeTrue(externallySign); // run only once, independent of externallySign
+        Assume.assumeTrue("No TSA URL defined, test skipped", tsa != null && !tsa.isEmpty());
         final String fileName = "timestamped.pdf";
         CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsa);
         signing.signDetached(new File(inDir + "sign_me.pdf"), new File(outDir + fileName));

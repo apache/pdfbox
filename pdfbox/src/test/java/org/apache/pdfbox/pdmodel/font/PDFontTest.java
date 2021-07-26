@@ -42,6 +42,7 @@ import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -97,11 +98,7 @@ public class PDFontTest
     public void testPDFBox3747() throws IOException
     {
         File file = new File("c:/windows/fonts", "calibri.ttf");
-        if (!file.exists())
-        {
-            System.out.println("testPDFBox3747 skipped");
-            return;
-        }
+        Assume.assumeTrue("testPDFBox3747 skipped", file.exists());
         PDDocument doc = new PDDocument();
         PDPage page = new PDPage();
         doc.addPage(page);
@@ -240,11 +237,7 @@ public class PDFontTest
                 break;
             }
         }
-        if (ttc == null)
-        {
-            System.out.println("testFullEmbeddingTTC skipped, no .ttc files available");
-            return;
-        }
+        Assume.assumeTrue("testFullEmbeddingTTC skipped, no .ttc files available", ttc != null);
 
         final List<String> names = new ArrayList<String>();
         ttc.processAllFonts(new TrueTypeCollection.TrueTypeFontProcessor()
