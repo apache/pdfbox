@@ -49,13 +49,13 @@ public final class PDColor
         {
             // color components (optional), for the color of an uncoloured tiling pattern
             components = new float[array.size() - 1];
-            for (int i = 0; i < array.size() - 1; i++)
+            for (int i = 0; i < components.length; i++)
             {
                 components[i] = ((COSNumber)array.get(i)).floatValue();
             }
 
             // pattern name (required)
-            patternName = (COSName)array.get(array.size() - 1);
+            patternName = (COSName)array.get(components.length);
         }
         else
         {
