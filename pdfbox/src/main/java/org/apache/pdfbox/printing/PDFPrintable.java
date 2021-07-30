@@ -99,7 +99,26 @@ public final class PDFPrintable implements Printable
     {
         this(document, scaling, showPageBorder, dpi, true);
     }
-    
+
+    /**
+     * Creates a new PDFPrintable with the given page scaling and with optional page borders shown.
+     * The image will be rasterized at the given DPI before being sent to the printer.
+     *
+     * @param pdPageTree the page tree of document to print
+     * @param scaling page scaling policy
+     * @param showPageBorder true if page borders are to be printed
+     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     */
+    PDFPrintable(PDPageTree pdPageTree, Scaling scaling, boolean showPageBorder, float dpi)
+    {
+        this.pageTree = pdPageTree;
+        this.renderer = new PDFRenderer(pageTree);
+        this.scaling = scaling;
+        this.showPageBorder = showPageBorder;
+        this.dpi = dpi;
+        this.center = true;
+    }
+
     /**
      * Creates a new PDFPrintable with the given page scaling and with optional page borders shown.
      * The image will be rasterized at the given DPI before being sent to the printer.
@@ -113,7 +132,12 @@ public final class PDFPrintable implements Printable
     public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi,
                         boolean center)
     {
-        this(document, scaling, showPageBorder, dpi, center, new PDFRenderer(document));
+        this.pageTree = document.getPages();
+        this.renderer = new PDFRenderer(pageTree);
+        this.scaling = scaling;
+        this.showPageBorder = showPageBorder;
+        this.dpi = dpi;
+        this.center = center;
     }
 
     /**

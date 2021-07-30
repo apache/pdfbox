@@ -30,6 +30,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.rendering.ImageType;
@@ -144,17 +145,18 @@ public final class PDFToImage implements Callable<Integer>
                 acroForm.refreshAppearances();
             }
 
+            PDPageTree pageTree = document.getPages();
             if (cropbox != null)
             {
-                changeCropBox(document, cropbox[0], cropbox[1], cropbox[2], cropbox[3]);
+                changeCropBox(pageTree, cropbox[0], cropbox[1], cropbox[2], cropbox[3]);
             }
 
             long startTime = System.nanoTime();
 
             // render the pages
             boolean success = true;
-            endPage = Math.min(endPage, document.getNumberOfPages());
-            PDFRenderer renderer = new PDFRenderer(document);
+            endPage = Math.min(endPage, pageTree.getCount());
+            PDFRenderer renderer = new PDFRenderer(pageTree);
             renderer.setSubsamplingAllowed(subsampling);
             for (int i = startPage - 1; i < endPage; i++)
             {
@@ -205,10 +207,13 @@ public final class PDFToImage implements Callable<Integer>
         return retval.toString();
     }
 
-    private static void changeCropBox(PDDocument document, float a, float b, float c, float d)
+    private static void changeCropBox(PDPageTree pageTree, float a, float b, float c, float d)
     {
-        for (PDPage page : document.getPages())
+        PDPage page;
+        int pagesCount = pageTree.getCount();
+        for (int i = 0; i < pagesCount; ++i)
         {
+            page = pageTree.get(i);
             PDRectangle rectangle = new PDRectangle();
             rectangle.setLowerLeftX(a);
             rectangle.setLowerLeftY(b);

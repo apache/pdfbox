@@ -24,7 +24,9 @@ import java.awt.print.Paper;
 import java.awt.print.Printable;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
  * Prints a PDF document using its original paper size.
@@ -33,7 +35,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  */
 public final class PDFPageable extends Book
 {
-    private final PDDocument document;
+    private final PDPageTree pageTree;
     private final int numberOfPages;
     private final boolean showPageBorder;
     private final float dpi;
@@ -87,11 +89,11 @@ public final class PDFPageable extends Book
     public PDFPageable(PDDocument document, Orientation orientation, boolean showPageBorder,
                        float dpi)
     {
-        this.document = document;
+        this.pageTree = document.getPages();
         this.orientation = orientation;
         this.showPageBorder = showPageBorder;
         this.dpi = dpi;
-        numberOfPages = document.getNumberOfPages();
+        this.numberOfPages = pageTree.getCount();
     }
 
     /**
@@ -158,7 +160,7 @@ public final class PDFPageable extends Book
     @Override
     public PageFormat getPageFormat(int pageIndex)
     {
-        PDPage page = document.getPage(pageIndex);
+        PDPage page = pageTree.get(pageIndex);
         PDRectangle mediaBox = PDFPrintable.getRotatedMediaBox(page);
         PDRectangle cropBox = PDFPrintable.getRotatedCropBox(page);
         
@@ -217,7 +219,7 @@ public final class PDFPageable extends Book
         {
             throw new IndexOutOfBoundsException(i + " >= " + numberOfPages);
         }
-        PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
+        PDFPrintable printable = new PDFPrintable(pageTree, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
         printable.setSubsamplingAllowed(subsamplingAllowed);
         printable.setRenderingHints(renderingHints);
         return printable;

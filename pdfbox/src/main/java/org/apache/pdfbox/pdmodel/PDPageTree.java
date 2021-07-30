@@ -572,6 +572,16 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         increaseParents(parentDict);
     }
 
+    /**
+     * Returns PDDocument instance of this page tree. Can be null if no document is attached.
+     *
+     * @return PDDocument instance or null.
+     * */
+    public PDDocument getPDDocument()
+    {
+        return document;
+    }
+
     private void increaseParents(COSDictionary parentDict)
     {
         do
