@@ -309,14 +309,15 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
                 break;
             case PDAnnotationLine.LE_R_OPEN_ARROW:
             case PDAnnotationLine.LE_R_CLOSED_ARROW:
-                drawArrow(cs, x + (0 - sign) * width, y, (0 - sign) * width * 9);
+                drawArrow(cs, x + (-sign) * width, y, (-sign) * width * 9);
                 break;
             case PDAnnotationLine.LE_SLASH:
+                float width9 = width * 9;
                 // the line is 18 x linewidth at an angle of 60°
-                cs.moveTo(x + (float) (Math.cos(Math.toRadians(60)) * width * 9),
-                          y + (float) (Math.sin(Math.toRadians(60)) * width * 9));
-                cs.lineTo(x + (float) (Math.cos(Math.toRadians(240)) * width * 9),
-                          y + (float) (Math.sin(Math.toRadians(240)) * width * 9));
+                cs.moveTo(x + (float) (Math.cos(Math.toRadians(60)) * width9),
+                          y + (float) (Math.sin(Math.toRadians(60)) * width9));
+                cs.lineTo(x + (float) (Math.cos(Math.toRadians(240)) * width9),
+                          y + (float) (Math.sin(Math.toRadians(240)) * width9));
                 break;
             default:
                 return;
@@ -344,13 +345,15 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      */
     void drawArrow(PDAppearanceContentStream cs, float x, float y, float len) throws IOException
     {
+        float tmpX = x + (float) (Math.cos(ARROW_ANGLE) * len);
+        float tmpY = (float) (Math.sin(ARROW_ANGLE) * len);
         // strategy for arrows: angle 30°, arrow arm length = 9 * line width
         // cos(angle) = x position
         // sin(angle) = y position
         // this comes very close to what Adobe is doing
-        cs.moveTo(x + (float) (Math.cos(ARROW_ANGLE) * len), y + (float) (Math.sin(ARROW_ANGLE) * len));
+        cs.moveTo(tmpX, y + tmpY);
         cs.lineTo(x, y);
-        cs.lineTo(x + (float) (Math.cos(ARROW_ANGLE) * len), y - (float) (Math.sin(ARROW_ANGLE) * len));
+        cs.lineTo(tmpX, y - tmpY);
     }
 
     /**
@@ -517,11 +520,13 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
             // the differences rectangle
             annotation.setRectDifferences(lineWidth / 2);
             annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
+            PDRectangle rect = getRectangle();
             // when the normal appearance stream was generated BBox and Matrix have been set to the
             // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
-            annotation.getNormalAppearanceStream().setBBox(getRectangle());
-            AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(), -getRectangle().getLowerLeftY());
-            annotation.getNormalAppearanceStream().setMatrix(transform);
+            PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+            AffineTransform transform = AffineTransform.getTranslateInstance(-rect.getLowerLeftX(), -rect.getLowerLeftY());
+            appearanceStream.setBBox(rect);
+            appearanceStream.setMatrix(transform);
         }
         else
         {
