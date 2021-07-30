@@ -217,9 +217,9 @@ public final class PDICCBased extends PDCIEBasedColorSpace
 
                 // set initial colour
                 float[] initial = new float[getNumberOfComponents()];
-                for (int c = 0; c < getNumberOfComponents(); c++)
+                for (int c = 0; c < initial.length; c++)
                 {
-                    initial[c] = Math.max(0, getRangeForComponent(c).getMin());
+                    initial[c] = Math.max(0f, getMinValueForComponent(c));
                 }
 
                 initialColor = PDColor.createWithoutCloningComponents(initial, this);
@@ -469,6 +469,22 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             return new PDRange(); // 0..1
         }
         return new PDRange(rangeArray, n);
+    }
+
+    /**
+     * Returns the min value of range for a certain component number.
+     * If it is not present then the 0 will be returned.
+     * @param n the component number to get the range for
+     * @return the min value of range for this component
+     */
+    private float getMinValueForComponent(int n)
+    {
+        COSArray rangeArray = stream.getCOSObject().getCOSArray(COSName.RANGE);
+        if (rangeArray == null || rangeArray.size() < getNumberOfComponents() * 2)
+        {
+            return 0f;
+        }
+        return PDRange.getMin(rangeArray, n);
     }
 
     /**

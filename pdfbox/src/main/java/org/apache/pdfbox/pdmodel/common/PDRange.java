@@ -95,8 +95,7 @@ public class PDRange implements COSObjectable
      */
     public float getMin()
     {
-        COSNumber min = (COSNumber)rangeArray.getObject( startingIndex*2 );
-        return min.floatValue();
+        return getMin(rangeArray, startingIndex);
     }
 
     /**
@@ -138,5 +137,10 @@ public class PDRange implements COSObjectable
     {
         return "PDRange{" + getMin() + ", " + getMax() + '}';
     }
-    
+
+    public static float getMin(COSArray rangeArray, int startingIndex)
+    {
+        COSNumber min = (COSNumber)rangeArray.getObject( startingIndex*2 );
+        return min.floatValue();
+    }
 }
