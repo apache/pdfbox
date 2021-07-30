@@ -63,7 +63,8 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationLink annotation = (PDAnnotationLink) getAnnotation();
-        if (annotation.getRectangle() == null)
+        PDRectangle rect = annotation.getRectangle();
+        if (rect == null)
         {
             // 660402-p1-AnnotationEmptyRect.pdf has /Rect entry with 0 elements
             return;
@@ -93,7 +94,6 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
             {
                 // QuadPoints shall be ignored if any coordinate in the array lies outside
                 // the region specified by Rect.
-                PDRectangle rect = annotation.getRectangle();
                 for (int i = 0; i < pathsArray.length / 2; ++i)
                 {
                     if (!rect.contains(pathsArray[i * 2], pathsArray[i * 2 + 1]))
@@ -122,11 +122,19 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                 pathsArray[7] = borderEdge.getUpperRightY();
             }
 
+            String borderStyle = null;
+            if (7 < pathsArray.length)
+            {
+                PDBorderStyleDictionary borderStyleDic = annotation.getBorderStyle();
+                if (borderStyleDic != null)
+                {
+                    borderStyle = borderStyleDic.getStyle();
+                }
+            }
             int of = 0;
             while (of + 7 < pathsArray.length)
             {
-                if (annotation.getBorderStyle() != null &&
-                    annotation.getBorderStyle().getStyle().equals(PDBorderStyleDictionary.STYLE_UNDERLINE))
+                if (PDBorderStyleDictionary.STYLE_UNDERLINE.equals(borderStyle))
                 {
                     contentStream.moveTo(pathsArray[of], pathsArray[of + 1]);
                     contentStream.lineTo(pathsArray[of + 2], pathsArray[of + 3]);
