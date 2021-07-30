@@ -102,8 +102,8 @@ class ContentStreamWriterTest
             }
             doc.save(new File(testDirIn, filename));
         }
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
-        if (!testPDFToImage.doTestFile(new File(testDirIn, filename), testDirIn.getAbsolutePath(), testDirOut.getAbsolutePath()))
+        if (!TestPDFToImage.doTestFile(new File(testDirIn, filename), testDirIn.getAbsolutePath(),
+                testDirOut.getAbsolutePath()))
         {
             fail("Rendering failed or is not identical, see in " + testDirOut);
         }

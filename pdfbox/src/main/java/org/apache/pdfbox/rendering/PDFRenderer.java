@@ -51,16 +51,12 @@ public class PDFRenderer
     private static final Log LOG = LogFactory.getLog(PDFRenderer.class);
 
     protected final PDDocument document;
-    private final PDPageTree pageTree;
     // TODO keep rendering state such as caches here
+    
     /**
-     * Default annotations filter, returns all annotations
-     */
-    private static final AnnotationFilter defaultAnnotationFilter = annotation -> true;
-    /**
-    * Current annotations filter
+    * Default annotations filter, returns all annotations
     */
-    private AnnotationFilter annotationFilter = defaultAnnotationFilter;
+    private AnnotationFilter annotationFilter = annotation -> true;
 
     private boolean subsamplingAllowed = false;
 
@@ -73,6 +69,8 @@ public class PDFRenderer
     private static boolean kcmsLogged = false;
 
     private float imageDownscalingOptimizationThreshold = 0.5f;
+
+    private final PDPageTree pageTree;
 
     /**
      * Creates a new PDFRenderer.

@@ -88,7 +88,6 @@ public class StreamValidationProcess extends AbstractProcess
     protected void checkFilters(COSStream stream, PreflightContext context)
     {
         COSBase bFilter = stream.getDictionaryObject(COSName.FILTER);
-
         if (bFilter instanceof COSArray)
         {
             COSArray afName = (COSArray) bFilter;

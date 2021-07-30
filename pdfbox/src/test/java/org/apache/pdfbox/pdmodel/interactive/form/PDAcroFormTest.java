@@ -111,8 +111,7 @@ class PDAcroFormTest
             testPdf.save(file);
         }
         // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
-        if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        if (!TestPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             // don't fail, rendering is different on different systems, result must be viewed manually
             System.out.println("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
@@ -146,8 +145,7 @@ class PDAcroFormTest
             testPdf.save(file);
         }
         // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
-        if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        if (!TestPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             // don't fail, rendering is different on different systems, result must be viewed manually
             System.out.println("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
