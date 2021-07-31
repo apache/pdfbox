@@ -234,7 +234,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
 
                 // set initial colour
                 float[] initial = new float[getNumberOfComponents()];
-                for (int c = 0; c < getNumberOfComponents(); c++)
+                for (int c = 0; c < initial.length; c++)
                 {
                     initial[c] = Math.max(0, getRangeForComponent(c).getMin());
                 }
