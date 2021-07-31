@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
 import org.apache.pdfbox.preflight.PreflightContext;
 
 /**
- * Validation class for the BudderStampAnnotation
+ * Validation class for the RubberStampAnnotation
  */
 public class RubberStampAnnotationValidator extends AnnotationValidator
 {
