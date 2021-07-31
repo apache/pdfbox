@@ -309,14 +309,15 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
                 break;
             case PDAnnotationLine.LE_R_OPEN_ARROW:
             case PDAnnotationLine.LE_R_CLOSED_ARROW:
-                drawArrow(cs, x + (0 - sign) * width, y, (0 - sign) * width * 9);
+                drawArrow(cs, x + (-sign) * width, y, (-sign) * width * 9);
                 break;
             case PDAnnotationLine.LE_SLASH:
+                float width9 = width * 9;
                 // the line is 18 x linewidth at an angle of 60°
-                cs.moveTo(x + (float) (Math.cos(Math.toRadians(60)) * width * 9),
-                          y + (float) (Math.sin(Math.toRadians(60)) * width * 9));
-                cs.lineTo(x + (float) (Math.cos(Math.toRadians(240)) * width * 9),
-                          y + (float) (Math.sin(Math.toRadians(240)) * width * 9));
+                cs.moveTo(x + (float) (Math.cos(Math.toRadians(60)) * width9),
+                          y + (float) (Math.sin(Math.toRadians(60)) * width9));
+                cs.lineTo(x + (float) (Math.cos(Math.toRadians(240)) * width9),
+                          y + (float) (Math.sin(Math.toRadians(240)) * width9));
                 break;
             default:
                 return;
@@ -348,9 +349,11 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         // cos(angle) = x position
         // sin(angle) = y position
         // this comes very close to what Adobe is doing
-        cs.moveTo(x + (float) (Math.cos(ARROW_ANGLE) * len), y + (float) (Math.sin(ARROW_ANGLE) * len));
+        float armX = x + (float) (Math.cos(ARROW_ANGLE) * len);
+        float armYdelta = (float) (Math.sin(ARROW_ANGLE) * len);
+        cs.moveTo(armX, y + armYdelta);
         cs.lineTo(x, y);
-        cs.lineTo(x + (float) (Math.cos(ARROW_ANGLE) * len), y - (float) (Math.sin(ARROW_ANGLE) * len));
+        cs.lineTo(armX, y - armYdelta);
     }
 
     /**
