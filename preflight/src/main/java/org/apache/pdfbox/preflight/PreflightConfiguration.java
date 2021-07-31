@@ -76,7 +76,7 @@ public class PreflightConfiguration
     public static final String GRAPHIC_PROCESS = "graphic-process";
     public static final String FONT_PROCESS = "font-process";
     public static final String EXTGSTATE_PROCESS = "extgstate-process";
-    public static final String SHADING_PATTERN_PROCESS = "shadding-pattern-process";
+    public static final String SHADING_PATTERN_PROCESS = "shading-pattern-process";
     public static final String TILING_PATTERN_PROCESS = "tiling-pattern-process";
     public static final String DESTINATION_PROCESS = "destination-process";
 
