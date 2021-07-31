@@ -92,8 +92,7 @@ class TestRendering
 
         new File(OUTPUT_DIR).mkdirs();
         // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
-        if (!testPDFToImage.doTestFile(new File(INPUT_DIR, fileName), INPUT_DIR, OUTPUT_DIR))
+        if (!TestPDFToImage.doTestFile(new File(INPUT_DIR, fileName), INPUT_DIR, OUTPUT_DIR))
         {
             fail("Rendering of " + fileName + " failed or is not identical to expected rendering in " + INPUT_DIR + " directory");
         }

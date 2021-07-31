@@ -94,7 +94,8 @@ public class FontMetaDataValidation
                 if (!defaultTitle.equals(fontName) && (noSubSetName != null && !defaultTitle.equals(noSubSetName)))
                 {
                     ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH,
-                                        "FontName present in the FontDescriptor dictionary doesn't match with XMP information dc:title of the Font File Stream."));
+                            "FontName present in the FontDescriptor dictionary doesn't match with "
+                                    + "XMP information dc:title of the Font File Stream."));
                     return false;
                 }
 
@@ -124,12 +125,14 @@ public class FontMetaDataValidation
                 if (empty)
                 {
                     ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_MISSING,
-                                               "FontName present in the FontDescriptor dictionary can't be found in XMP information the Font File Stream."));
+                            "FontName present in the FontDescriptor dictionary can't be found in "
+                            + "XMP information the Font File Stream."));
                 }
                 else
                 {
                     ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH,
-                                         "FontName present in the FontDescriptor dictionary doesn't match with XMP information dc:title of the Font File Stream."));
+                            "FontName present in the FontDescriptor dictionary doesn't match with XMP "
+                            + "information dc:title of the Font File Stream."));
                 }
                 return false;
             }

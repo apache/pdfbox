@@ -64,19 +64,12 @@ public class TestPDFToImage
 
     static String inDir = "src/test/resources/input/rendering";
     static String outDir = "target/test-output/rendering/";
-    
-    final String filename;
 
     /**
-     * Test class constructor.
-     *
-     * @param filename The name of the test class.
-     *
-     * @throws IOException If there is an error creating the test.
+     * Constructor.
      */
-    public TestPDFToImage(String filename) throws IOException
+    public TestPDFToImage()
     {
-        this.filename = filename;
     }
 
     /**
@@ -90,7 +83,8 @@ public class TestPDFToImage
      *
      * @return
      */
-    private BufferedImage createEmptyDiffImage(int minWidth, int minHeight, int maxWidth, int maxHeight)
+    private static BufferedImage createEmptyDiffImage(int minWidth, int minHeight, int maxWidth,
+            int maxHeight)
     {
         BufferedImage bim3 = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
         Graphics graphics = bim3.getGraphics();
@@ -117,7 +111,8 @@ public class TestPDFToImage
      *
      * @throws IOException
      */
-    private BufferedImage diffImages(BufferedImage bim1, BufferedImage bim2) throws IOException
+    private static BufferedImage diffImages(BufferedImage bim1, BufferedImage bim2)
+            throws IOException
     {
         int minWidth = Math.min(bim1.getWidth(), bim2.getWidth());
         int minHeight = Math.min(bim1.getHeight(), bim2.getHeight());
@@ -171,7 +166,8 @@ public class TestPDFToImage
      * (all identical)
      * @throws IOException when there is an exception
      */
-    public boolean doTestFile(final File file, String inDir, String outDir) throws IOException
+    public static boolean doTestFile(final File file, String inDir, String outDir)
+            throws IOException
     {
         PDDocument document = null;
         boolean failed = false;
@@ -303,7 +299,7 @@ public class TestPDFToImage
         return !failed;
     }
 
-    private boolean filesAreIdentical(File left, File right) throws IOException
+    private static boolean filesAreIdentical(File left, File right) throws IOException
     {
         //http://forum.java.sun.com/thread.jspa?threadID=688105&messageID=4003259
         //http://web.archive.org/web/20060515173719/http://forum.java.sun.com/thread.jspa?threadID=688105&messageID=4003259

@@ -81,6 +81,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -473,14 +474,21 @@ class TestCreateSignature
         try (FileInputStream fis = new FileInputStream(JPEG_PATH))
         {
             signing = new CreateVisibleSignature(keyStore, PASSWORD.toCharArray());
-            signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 2);
-            signing.setVisibleSignatureProperties("name", "location", "Security", 0, 2, true);
+            signing.setVisibleSignDesigner(inPath, 200, 100, -50, fis, 1);
+            signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
             signing.setExternalSigning(externallySign);
             destFile = new File(OUT_DIR, getOutputFileName("2signed{0}_visible_signed{0}_visible.pdf", externallySign));
             signing.signPDF(new File(inPath), destFile, null);
         }
 
         checkSignature(new File(inPath), destFile, false);
+
+        // PDFBOX-5243: check that there are two annotations
+        try (PDDocument doc = Loader.loadPDF(destFile))
+        {
+            List<PDAnnotation> annotations = doc.getPage(0).getAnnotations();
+            assertEquals(2, annotations.size());
+        }
     }
 
     private String getOutputFileName(String filePattern, boolean externallySign)
