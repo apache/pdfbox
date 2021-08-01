@@ -31,7 +31,7 @@ public final class CFFExpertSubsetCharset extends CFFCharsetType1
     private CFFExpertSubsetCharset()
     {
         // Table of character codes and their corresponding names.
-        Object[][] CFF_EXPERT_SUBSET_CHARSET_TABLE = {
+        Object[][] cffExpertSubsetCharsetTable = {
                 {0, ".notdef"},
                 {1, "space"},
                 {231, "dollaroldstyle"},
@@ -121,7 +121,7 @@ public final class CFFExpertSubsetCharset extends CFFCharsetType1
                 {346, "commainferior"}
         };
         int gid = 0;
-        for (Object[] charsetEntry : CFF_EXPERT_SUBSET_CHARSET_TABLE)
+        for (Object[] charsetEntry : cffExpertSubsetCharsetTable)
         {
             addSID(gid++, (Integer) charsetEntry[CHAR_CODE], charsetEntry[CHAR_NAME].toString());
         }

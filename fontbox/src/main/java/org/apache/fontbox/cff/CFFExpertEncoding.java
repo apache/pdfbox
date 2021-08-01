@@ -30,7 +30,7 @@ public final class CFFExpertEncoding extends CFFEncoding
     private CFFExpertEncoding()
     {
         // Table of character codes and their corresponding sid.
-        int[][] CFF_EXPERT_ENCODING_TABLE = {
+        int[][] cffExpertEncodingTable = {
                 {0, 0},
                 {1, 0},
                 {2, 0},
@@ -289,7 +289,7 @@ public final class CFFExpertEncoding extends CFFEncoding
                 {255, 378}
         };
 
-        for (int[] encodingEntry : CFF_EXPERT_ENCODING_TABLE)
+        for (int[] encodingEntry : cffExpertEncodingTable)
         {
             add(encodingEntry[CHAR_CODE], encodingEntry[CHAR_SID]);
         }

@@ -29,7 +29,7 @@ public final class CFFExpertCharset extends CFFCharsetType1
     private CFFExpertCharset()
     {
         // Table of character codes and their corresponding names.
-        Object[][] CFF_EXPERT_CHARSET_TABLE = {
+        Object[][] cffExpertCharsetTable = {
                 {0, ".notdef"},
                 {1, "space"},
                 {229, "exclamsmall"},
@@ -199,7 +199,7 @@ public final class CFFExpertCharset extends CFFCharsetType1
         };
 
         int gid = 0;
-        for (Object[] charsetEntry : CFF_EXPERT_CHARSET_TABLE)
+        for (Object[] charsetEntry : cffExpertCharsetTable)
         {
             addSID(gid++, (Integer) charsetEntry[CHAR_CODE], charsetEntry[CHAR_NAME].toString());
         }
