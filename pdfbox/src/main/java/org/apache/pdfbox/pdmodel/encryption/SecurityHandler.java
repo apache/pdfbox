@@ -120,7 +120,17 @@ public abstract class SecurityHandler
     {
         this.decryptMetadata = decryptMetadata;
     }
-    
+
+    /**
+     * Returns true if meta data is to be decrypted.
+     *
+     * @return True if meta data has to be decrypted.
+     */
+    public boolean isDecryptMetadata()
+    {
+        return decryptMetadata;
+    }
+
     /**
      * Set the string filter name.
      * 

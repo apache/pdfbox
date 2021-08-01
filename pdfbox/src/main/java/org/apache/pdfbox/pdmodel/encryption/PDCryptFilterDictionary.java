@@ -17,6 +17,8 @@
 
 package org.apache.pdfbox.pdmodel.encryption;
 
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -119,4 +121,30 @@ public class PDCryptFilterDictionary implements COSObjectable
         return (COSName)cryptFilterDictionary.getDictionaryObject( COSName.CFM );
     }
 
+    /**
+     * Will get the EncryptMetaData dictionary info.
+     *
+     * @return true if EncryptMetaData is explicitly set (the default is true)
+     */
+    public boolean isEncryptMetaData()
+    {
+        COSBase value = getCOSObject().getDictionaryObject(COSName.ENCRYPT_META_DATA);
+        if (value instanceof COSBoolean)
+        {
+            return ((COSBoolean) value).getValue();
+        }
+
+        // default is true (see 7.6.3.2 Standard Encryption Dictionary PDF 32000-1:2008)
+        return true;
+    }
+
+    /**
+     * Set the EncryptMetaData dictionary info.
+     *
+     * @param encryptMetaData true if EncryptMetaData shall be set.
+     */
+    public void setEncryptMetaData(boolean encryptMetaData)
+    {
+        getCOSObject().setBoolean(COSName.ENCRYPT_META_DATA, encryptMetaData);
+    }
 }
