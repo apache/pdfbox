@@ -68,6 +68,7 @@ import org.bouncycastle.cms.KeyTransRecipientId;
 import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
+import org.bouncycastle.util.Arrays;
 
 /**
  * This class implements the public key security handler described in the PDF specification.
@@ -126,15 +127,16 @@ public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyPro
                             + "did you pass a null keyStore?");
         }
 
-        setDecryptMetadata(encryption.isEncryptMetaData());
         PDCryptFilterDictionary defaultCryptFilterDictionary = encryption.getDefaultCryptFilterDictionary();
         if (defaultCryptFilterDictionary != null && defaultCryptFilterDictionary.getLength() != 0)
         {
             setKeyLength(defaultCryptFilterDictionary.getLength());
+            setDecryptMetadata(defaultCryptFilterDictionary.isEncryptMetaData());
         }
         else if (encryption.getLength() != 0)
         {
             setKeyLength(encryption.getLength());
+            setDecryptMetadata(encryption.isEncryptMetaData());
         }
 
         PublicKeyDecryptionMaterial material = (PublicKeyDecryptionMaterial) decryptionMaterial;
@@ -244,6 +246,13 @@ public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyPro
             byte[] mdResult;
             if (encryption.getVersion() == 4 || encryption.getVersion() == 5)
             {
+                if (!isDecryptMetadata())
+                {
+                    // "4 bytes with the value 0xFF if the key being generated is intended for use in
+                    // document-level encryption and the document metadata is being left as plaintext"
+                    sha1Input = Arrays.copyOf(sha1Input, sha1Input.length + 4);
+                    System.arraycopy(new byte[]{ (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}, 0, sha1Input, sha1Input.length - 4, 4);
+                }
                 if (encryption.getVersion() == 4)
                 {
                     mdResult = MessageDigests.getSHA1().digest(sha1Input);
