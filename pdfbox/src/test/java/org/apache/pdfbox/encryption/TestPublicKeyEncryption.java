@@ -366,4 +366,50 @@ public class TestPublicKeyEncryption
         is.close();
         doc.close();
     }
+
+    /**
+     * PDFBOX-5249: Read a file encrypted with AES128 but not with PDFBox, and with exposed
+     * Metadata.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testReadPubkeyEncryptedAES128withMetadataExposed() throws IOException
+    {
+        InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AES128ExposedMeta.pdf");
+        PDDocument doc = PDDocument.load(is, "",
+                TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-5249.p12"), "test",
+                MemoryUsageSetting.setupMainMemoryOnly());
+        Assert.assertEquals("PublicKeySecurityHandler",
+                doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
+        Assert.assertEquals(128, doc.getEncryption().getSecurityHandler().getKeyLength());
+        PDFTextStripper stripper = new PDFTextStripper();
+        stripper.setLineSeparator("\n");
+        Assert.assertEquals("AES key length: 128\nwith exposed Metadata", stripper.getText(doc).trim());
+        doc.close();
+        is.close();
+    }
+
+    /**
+     * PDFBOX-5249: Read a file encrypted with AES128 but not with PDFBox, and with exposed
+     * Metadata.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testReadPubkeyEncryptedAES256withMetadataExposed() throws IOException
+    {
+        InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AES256ExposedMeta.pdf");
+        PDDocument doc = PDDocument.load(is, "",
+                TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-5249.p12"), "test",
+                MemoryUsageSetting.setupMainMemoryOnly());
+        Assert.assertEquals("PublicKeySecurityHandler",
+                doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
+        Assert.assertEquals(256, doc.getEncryption().getSecurityHandler().getKeyLength());
+        PDFTextStripper stripper = new PDFTextStripper();
+        stripper.setLineSeparator("\n");
+        Assert.assertEquals("AES key length: 256 \nwith exposed Metadata", stripper.getText(doc).trim());
+        doc.close();
+        is.close();
+    }
 }
