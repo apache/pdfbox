@@ -325,7 +325,7 @@ class TestPublicKeyEncryption
 
     /**
      * PDFBOX-4421: Read a file encrypted with AES128 but not with PDFBox, and with missing /Length
-     * entry. Test to be changed so it's done locally with small file.
+     * entry.
      *
      * @throws IOException
      */
@@ -349,7 +349,7 @@ class TestPublicKeyEncryption
 
     /**
      * PDFBOX-4421: Read a file encrypted with AES128 but not with PDFBox, and with missing /Length
-     * entry. Test to be changed so it's done locally with small file.
+     * entry.
      *
      * @throws IOException
      */
