@@ -377,7 +377,7 @@ class TestPublicKeyEncryption
      * @throws IOException
      */
     @Test
-    public void testReadPubkeyEncryptedAES128withMetadataExposed() throws IOException
+    void testReadPubkeyEncryptedAES128withMetadataExposed() throws IOException
     {
         try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AES128ExposedMeta.pdf");
              PDDocument doc = Loader.loadPDF(is, "",
@@ -400,7 +400,7 @@ class TestPublicKeyEncryption
      * @throws IOException
      */
     @Test
-    public void testReadPubkeyEncryptedAES256withMetadataExposed() throws IOException
+    void testReadPubkeyEncryptedAES256withMetadataExposed() throws IOException
     {
         try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AES256ExposedMeta.pdf");
              PDDocument doc = Loader.loadPDF(is, "",
