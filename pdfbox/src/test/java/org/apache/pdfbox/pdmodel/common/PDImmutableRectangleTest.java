@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDImmutableRectangleTest
+class PDImmutableRectangleTest
 {
     private PDRectangle rect = PDRectangle.A4;
 
