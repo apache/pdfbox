@@ -20,6 +20,11 @@ import java.awt.BasicStroke;
 import java.awt.Composite;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.pdfbox.cos.COSBase;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -39,7 +44,8 @@ import org.apache.pdfbox.util.Matrix;
 public class PDGraphicsState implements Cloneable
 {
     private boolean isClippingPathDirty;
-    private Area clippingPath;
+    private List<GeneralPath> clippingPaths = new ArrayList<>();
+    private Map<GeneralPath, Area> clippingCache = new IdentityHashMap<>();
     private Matrix currentTransformationMatrix = new Matrix();
     private PDColor strokingColor = PDDeviceGray.INSTANCE.getInitialColor();
     private PDColor nonStrokingColor = PDDeviceGray.INSTANCE.getInitialColor();
@@ -76,7 +82,7 @@ public class PDGraphicsState implements Cloneable
      */
     public PDGraphicsState(PDRectangle page)
     {
-        clippingPath = new Area(page.toGeneralPath());
+        clippingPaths.add(page.toGeneralPath());
     }
 
     /**
@@ -473,7 +479,8 @@ public class PDGraphicsState implements Cloneable
             clone.strokingColor = strokingColor; // immutable
             clone.nonStrokingColor = nonStrokingColor; // immutable
             clone.lineDashPattern = lineDashPattern; // immutable
-            clone.clippingPath = clippingPath; // not cloned, see intersectClippingPath
+            clone.clippingPaths = clippingPaths; // not cloned, see intersectClippingPath
+            clone.clippingCache = clippingCache;
             clone.isClippingPathDirty = false;
             return clone;
         }
@@ -570,7 +577,23 @@ public class PDGraphicsState implements Cloneable
      */
     public void intersectClippingPath(GeneralPath path)
     {
-        intersectClippingPath(new Area(path));
+        intersectClippingPath(path, true);
+    }
+
+    private void intersectClippingPath(GeneralPath path, boolean clonePath) {
+        // lazy cloning of clipping path for performance
+        if (!isClippingPathDirty)
+        {
+            // shallow copy
+            List<GeneralPath> cloned = new ArrayList<>();
+            cloned.addAll(clippingPaths);
+            clippingPaths = cloned;
+
+            isClippingPathDirty = true;
+        }
+
+        // add path to current clipping paths, combined later (see getCurrentClippingPath)
+        clippingPaths.add(clonePath ? (GeneralPath) path.clone() : path);
     }
 
     /**
@@ -579,19 +602,7 @@ public class PDGraphicsState implements Cloneable
      */
     public void intersectClippingPath(Area area)
     {
-        // lazy cloning of clipping path for performance
-        if (!isClippingPathDirty)
-        {
-            // deep copy (can't use clone() as it performs only a shallow copy)
-            Area cloned = new Area();
-            cloned.add(clippingPath);
-            clippingPath = cloned;
-
-            isClippingPathDirty = true;
-        }
-
-        // intersection as usual
-        clippingPath.intersect(area);
+        intersectClippingPath(new GeneralPath(area), false);
     }
 
     /**
@@ -601,7 +612,30 @@ public class PDGraphicsState implements Cloneable
      */
     public Area getCurrentClippingPath()
     {
-        return clippingPath;
+        if (clippingPaths.size() == 1)
+        {
+            // If there is just a single clipping path, no intersections are needed.
+            GeneralPath path = clippingPaths.get(0);
+            return clippingCache.computeIfAbsent(path, Area::new);
+        }
+        // If there are multiple clipping paths, combine them to a single area.
+        Area clippingArea = new Area();
+        clippingArea.add(new Area(clippingPaths.get(0)));
+        for (int i = 1; i < clippingPaths.size(); i++)
+        {
+            clippingArea.intersect(new Area(clippingPaths.get(i)));
+        }
+        // Replace the list of individual clipping paths with the intersection, and add it to the cache.
+        GeneralPath newPath = new GeneralPath(clippingArea);
+        clippingPaths = new ArrayList<>();
+        clippingPaths.add(newPath);
+        clippingCache.put(newPath, clippingArea);
+        return clippingArea;
+    }
+
+    public List<GeneralPath> getCurrentClippingPaths()
+    {
+        return clippingPaths;
     }
 
     public Composite getStrokingJavaComposite()

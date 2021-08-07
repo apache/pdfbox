@@ -140,7 +140,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private GeneralPath linePath = new GeneralPath();
     
     // last clipping path
-    private Area lastClip;
+    private List<GeneralPath> lastClips;
 
     // clip when drawPage() is called, can be null, must be intersected when clipping
     private Shape initialClip;
@@ -293,8 +293,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         int savedClipWindingRule = clipWindingRule;
         clipWindingRule = -1;
 
-        Area savedLastClip = lastClip;
-        lastClip = null;
+        List<GeneralPath> savedLastClips = lastClips;
+        lastClips = null;
         Shape savedInitialClip = initialClip;
         initialClip = null;
         
@@ -307,7 +307,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         flipTG = savedFlipTG;
         graphics = savedGraphics;
         linePath = savedLinePath;
-        lastClip = savedLastClip;
+        lastClips = savedLastClips;
         initialClip = savedInitialClip;
         clipWindingRule = savedClipWindingRule;
     }
@@ -382,25 +382,30 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     protected final void setClip()
     {
-        Area clippingPath = getGraphicsState().getCurrentClippingPath();
-        if (clippingPath != lastClip)
+        List<GeneralPath> clippingPaths = getGraphicsState().getCurrentClippingPaths();
+        if (clippingPaths != lastClips)
         {
-            if (clippingPath.getPathIterator(null).isDone())
-            {
-                // PDFBOX-4821: avoid bug with java printing that empty clipping path is ignored by
-                // replacing with empty rectangle, works because this is not an empty path
-                graphics.setClip(new Rectangle());
-            }
-            else
-            {
-                graphics.setClip(clippingPath);
-            }
+            transferClip(getGraphicsState(), graphics);
             if (initialClip != null)
             {
                 // apply the remembered initial clip, but transform it first
                 //TODO see PDFBOX-4583
             }
-            lastClip = clippingPath;
+            lastClips = clippingPaths;
+        }
+    }
+
+    protected void transferClip(PDGraphicsState graphicsState, Graphics2D graphics) {
+        Area clippingPath = graphicsState.getCurrentClippingPath();
+        if (clippingPath.getPathIterator(null).isDone())
+        {
+            // PDFBOX-4821: avoid bug with java printing that empty clipping path is ignored by
+            // replacing with empty rectangle, works because this is not an empty path
+            graphics.setClip(new Rectangle());
+        }
+        else
+        {
+            graphics.setClip(clippingPath);
         }
     }
 
@@ -449,7 +454,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             // PDFBOX-3681: lastClip needs to be reset, because after intersection it is still the same 
             // object, thus setClip() would believe that it is cached.
-            lastClip = null;
+            lastClips = null;
         }
     }
 
@@ -995,7 +1000,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same 
             // object, thus setClip() would believe that it is cached.
-            lastClip = null;
+            lastClips = null;
 
             clipWindingRule = -1;
         }
@@ -1366,7 +1371,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         graphics.setPaint(paint);
         graphics.setClip(null);
-        lastClip = null;
+        lastClips = null;
 
         // get the transformed BBox and intersect with current clipping path
         // need to do it here and not in shading getRaster() because it may have been rotated
@@ -1403,7 +1408,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void showAnnotation(PDAnnotation annotation) throws IOException
     {
-        lastClip = null;
+        lastClips = null;
         int deviceType = -1;
         GraphicsConfiguration graphicsConfiguration = graphics.getDeviceConfiguration();
         if (graphicsConfiguration != null)
@@ -1592,7 +1597,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 PDColor backdropColor) throws IOException
         {
             Graphics2D savedGraphics = graphics;
-            Area savedLastClip = lastClip;
+            List<GeneralPath> savedLastClips = lastClips;
             Shape savedInitialClip = initialClip;
 
             // get the CTM x Form Matrix transform
@@ -1740,7 +1745,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             finally 
             {
                 flipTG = savedFlipTG;
-                lastClip = savedLastClip;
+                lastClips = savedLastClips;
                 graphics.dispose();
                 graphics = savedGraphics;
                 initialClip = savedInitialClip;
