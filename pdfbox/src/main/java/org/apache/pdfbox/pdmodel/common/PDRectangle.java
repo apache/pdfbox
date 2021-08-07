@@ -42,30 +42,39 @@ public class PDRectangle implements COSObjectable
     private static final float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
 
     /** An immutable rectangle the size of U.S. Letter, 8.5" x 11". */
+    @SuppressWarnings("java:S2390") // see also https://jira.sonarsource.com/browse/SONARJAVA-3580
     public static final PDRectangle LETTER = new PDImmutableRectangle(8.5f * POINTS_PER_INCH,
                                                              11f *POINTS_PER_INCH);
     /**  An immutable rectangle the size of U.S. Legal, 8.5" x 14". */
+    @SuppressWarnings("java:S2390")
     public static final PDRectangle LEGAL = new PDImmutableRectangle(8.5f * POINTS_PER_INCH,
                                                             14f * POINTS_PER_INCH);
     /**  An immutable rectangle the size of A0 Paper. */
+    @SuppressWarnings("java:S2390")
     public static final PDRectangle A0 = new PDImmutableRectangle(841 * POINTS_PER_MM, 1189 * POINTS_PER_MM);
 
     /** An immutable rectangle the size of A1 Paper. */
+    @SuppressWarnings("java:S2390")
     public static final PDRectangle A1 = new PDImmutableRectangle(594 * POINTS_PER_MM, 841 * POINTS_PER_MM);
 
     /**  An immutable rectangle the size of A2 Paper. */
+    @SuppressWarnings("java:S2390")
     public static final PDRectangle A2 = new PDImmutableRectangle(420 * POINTS_PER_MM, 594 * POINTS_PER_MM);
 
     /** An immutable rectangle the size of A3 Paper.  */
+    @SuppressWarnings("java:S2390")
     public static final PDRectangle A3 = new PDImmutableRectangle(297 * POINTS_PER_MM, 420 * POINTS_PER_MM);
 
     /**  An immutable rectangle the size of A4 Paper. */
+    @SuppressWarnings("java:S2390")
     public static final PDRectangle A4 = new PDImmutableRectangle(210 * POINTS_PER_MM, 297 * POINTS_PER_MM);
 
     /** An immutable rectangle the size of A5 Paper. */
+    @SuppressWarnings("java:S2390")
     public static final PDRectangle A5 = new PDImmutableRectangle(148 * POINTS_PER_MM, 210 * POINTS_PER_MM);
 
     /**  An immutable rectangle the size of A6 Paper. */
+    @SuppressWarnings("java:S2390")
     public static final PDRectangle A6 = new PDImmutableRectangle(105 * POINTS_PER_MM, 148 * POINTS_PER_MM);
 
     private final COSArray rectArray;
