@@ -164,11 +164,11 @@ public class COSWriter implements ICOSVisitor
      */
     public static final byte[] ENDSTREAM = "endstream".getBytes(StandardCharsets.US_ASCII);
     
-    private final NumberFormat formatXrefOffset = new DecimalFormat("0000000000",
+    private static final NumberFormat formatXrefOffset = new DecimalFormat("0000000000",
             DecimalFormatSymbols.getInstance(Locale.US));
 
     // the decimal format for the xref object generation number data
-    private final NumberFormat formatXrefGeneration = new DecimalFormat("00000",
+    private static final NumberFormat formatXrefGeneration = new DecimalFormat("00000",
             DecimalFormatSymbols.getInstance(Locale.US));
 
     // the stream where we create the pdf output
@@ -586,6 +586,11 @@ public class COSWriter implements ICOSVisitor
      */
     public void doWriteObject(COSObjectKey key, COSBase obj) throws IOException
     {
+        // don't write missing objects to avoid broken xref tables
+        if (obj == null || (obj instanceof COSObject && ((COSObject) obj).getObject() == null))
+        {
+            return;
+        }
         // add a x ref entry
         addXRefEntry(new NormalXReference(getStandardOutput().getPos(), key, obj));
         // write the object
@@ -597,13 +602,7 @@ public class COSWriter implements ICOSVisitor
         getStandardOutput().write(SPACE);
         getStandardOutput().write(OBJ);
         getStandardOutput().writeEOL();
-        // null test added to please Sonar
-        // TODO: shouldn't all public methods be guarded against passing null. Passing null to most methods will
-        // fail with an NPE
-        if (obj != null)
-        {
-            obj.accept(this);
-        }
+        obj.accept(this);
         getStandardOutput().writeEOL();
         getStandardOutput().write(ENDOBJ);
         getStandardOutput().writeEOL();
