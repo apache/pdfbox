@@ -1679,9 +1679,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             GeneralPath transformedBox = form.getBBox().transform(transform);
 
             // clip the bbox to prevent giant bboxes from consuming all memory
-            Area clip = (Area)getGraphicsState().getCurrentClippingPath().clone();
-            clip.intersect(new Area(transformedBox));
-            Rectangle2D clipRect = clip.getBounds2D();
+            Area transformed = new Area(transformedBox);
+            transformed.intersect(getGraphicsState().getCurrentClippingPath());
+            Rectangle2D clipRect = transformed.getBounds2D();
             Matrix m = new Matrix(xform);
             scaleX = Math.abs(m.getScalingFactorX());
             scaleY = Math.abs(m.getScalingFactorY());
@@ -1702,7 +1702,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             // apply the underlying Graphics2D device's DPI transform
             AffineTransform dpiTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
-            Rectangle2D bounds = dpiTransform.createTransformedShape(clip.getBounds2D()).getBounds2D();
+            Rectangle2D bounds = dpiTransform.createTransformedShape(clipRect).getBounds2D();
 
             minX = (int) Math.floor(bounds.getMinX());
             minY = (int) Math.floor(bounds.getMinY());
