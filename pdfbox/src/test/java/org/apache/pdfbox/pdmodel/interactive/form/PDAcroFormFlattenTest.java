@@ -279,9 +279,23 @@ public class PDAcroFormFlattenTest
     }
 
     /**
+     * PDFBOX-5254: appearance streams with empty /BBox.
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testFlattenPDFBox5254() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13005793/f1040sb%20test.pdf";
+        String targetFileName = "PDFBOX-4889-5254.pdf";
+
+        flattenAndCompare(sourceUrl, targetFileName);
+    }
+
+    /**
      * PDFBOX-4955: appearance streams with forms that are not used.
      * 
-     * @throws IOException 
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBox4955() throws IOException
