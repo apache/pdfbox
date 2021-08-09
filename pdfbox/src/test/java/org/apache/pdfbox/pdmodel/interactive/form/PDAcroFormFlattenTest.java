@@ -36,6 +36,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.jupiter.api.BeforeAll;
@@ -164,6 +165,41 @@ class PDAcroFormFlattenTest
         // final File OUT_DIR = new File("target/test-output");
         // File file = new File(OUT_DIR, "MultilineFields-SingleFieldFlattened.pdf");
         // document.save(file);
+    }
+
+    @Test
+    void flattenTestPDFBOX5254() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13005793/f1040sb%20test.pdf";
+        String targetFileName = "PDFBOX-4889-5254.pdf";
+        generateSamples(sourceUrl, targetFileName);
+
+        File inputFile = new File(IN_DIR, targetFileName);
+        File outputFile = new File(OUT_DIR, targetFileName);
+
+        try (PDDocument testPdf = Loader.loadPDF(inputFile))
+        {
+            testPdf.getDocumentCatalog().getAcroForm().flatten();
+            testPdf.setAllSecurityToBeRemoved(true);
+            assertTrue(testPdf.getDocumentCatalog().getAcroForm().getFields().isEmpty());
+            testPdf.save(outputFile, CompressParameters.NO_COMPRESSION);
+        }
+
+        // compare rendering
+        if (!TestPDFToImage.doTestFile(outputFile, IN_DIR.getAbsolutePath(),
+                OUT_DIR.getAbsolutePath()))
+        {
+            fail("Rendering of " + outputFile
+                    + " failed or is not identical to expected rendering in " + IN_DIR
+                    + " directory");
+        }
+        else
+        {
+            // cleanup input and output directory for matching files.
+            removeAllRenditions(inputFile);
+            inputFile.delete();
+            outputFile.delete();
+        }
     }
 
     /*
