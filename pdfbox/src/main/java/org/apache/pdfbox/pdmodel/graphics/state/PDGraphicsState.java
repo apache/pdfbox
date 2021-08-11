@@ -632,6 +632,11 @@ public class PDGraphicsState implements Cloneable
         return clippingArea;
     }
 
+    /**
+     * This will get the current clipping path, as one or more individual paths. Do not modify the list or the paths!
+     *
+     * @return The current clipping paths.
+     */
     public List<Path2D.Double> getCurrentClippingPaths()
     {
         return clippingPaths;
