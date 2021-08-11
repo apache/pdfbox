@@ -20,6 +20,7 @@ import java.awt.BasicStroke;
 import java.awt.Composite;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -44,8 +45,8 @@ import org.apache.pdfbox.util.Matrix;
 public class PDGraphicsState implements Cloneable
 {
     private boolean isClippingPathDirty;
-    private List<GeneralPath> clippingPaths = new ArrayList<>();
-    private Map<GeneralPath, Area> clippingCache = new IdentityHashMap<>();
+    private List<Path2D.Double> clippingPaths = new ArrayList<>();
+    private Map<Path2D.Double, Area> clippingCache = new IdentityHashMap<>();
     private Matrix currentTransformationMatrix = new Matrix();
     private PDColor strokingColor = PDDeviceGray.INSTANCE.getInitialColor();
     private PDColor nonStrokingColor = PDDeviceGray.INSTANCE.getInitialColor();
@@ -82,7 +83,7 @@ public class PDGraphicsState implements Cloneable
      */
     public PDGraphicsState(PDRectangle page)
     {
-        clippingPaths.add(page.toGeneralPath());
+        clippingPaths.add(new Path2D.Double(page.toGeneralPath()));
     }
 
     /**
@@ -577,23 +578,21 @@ public class PDGraphicsState implements Cloneable
      */
     public void intersectClippingPath(GeneralPath path)
     {
-        intersectClippingPath(path, true);
+        intersectClippingPath(new Path2D.Double(path), true);
     }
 
-    private void intersectClippingPath(GeneralPath path, boolean clonePath) {
+    private void intersectClippingPath(Path2D.Double path, boolean clonePath) {
         // lazy cloning of clipping path for performance
         if (!isClippingPathDirty)
         {
             // shallow copy
-            List<GeneralPath> cloned = new ArrayList<>();
-            cloned.addAll(clippingPaths);
-            clippingPaths = cloned;
+            clippingPaths = new ArrayList<>(clippingPaths);
 
             isClippingPathDirty = true;
         }
 
         // add path to current clipping paths, combined later (see getCurrentClippingPath)
-        clippingPaths.add(clonePath ? (GeneralPath) path.clone() : path);
+        clippingPaths.add(clonePath ? (Path2D.Double) path.clone() : path);
     }
 
     /**
@@ -602,7 +601,7 @@ public class PDGraphicsState implements Cloneable
      */
     public void intersectClippingPath(Area area)
     {
-        intersectClippingPath(new GeneralPath(area), false);
+        intersectClippingPath(new Path2D.Double(area), false);
     }
 
     /**
@@ -615,7 +614,7 @@ public class PDGraphicsState implements Cloneable
         if (clippingPaths.size() == 1)
         {
             // If there is just a single clipping path, no intersections are needed.
-            GeneralPath path = clippingPaths.get(0);
+            Path2D.Double path = clippingPaths.get(0);
             return clippingCache.computeIfAbsent(path, Area::new);
         }
         // If there are multiple clipping paths, combine them to a single area.
@@ -626,14 +625,14 @@ public class PDGraphicsState implements Cloneable
             clippingArea.intersect(new Area(clippingPaths.get(i)));
         }
         // Replace the list of individual clipping paths with the intersection, and add it to the cache.
-        GeneralPath newPath = new GeneralPath(clippingArea);
+        Path2D.Double newPath = new Path2D.Double(clippingArea);
         clippingPaths = new ArrayList<>();
         clippingPaths.add(newPath);
         clippingCache.put(newPath, clippingArea);
         return clippingArea;
     }
 
-    public List<GeneralPath> getCurrentClippingPaths()
+    public List<Path2D.Double> getCurrentClippingPaths()
     {
         return clippingPaths;
     }

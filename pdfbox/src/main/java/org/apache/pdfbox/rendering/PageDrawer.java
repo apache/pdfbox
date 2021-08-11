@@ -140,7 +140,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private GeneralPath linePath = new GeneralPath();
     
     // last clipping path
-    private List<GeneralPath> lastClips;
+    private List<Path2D.Double> lastClips;
 
     // clip when drawPage() is called, can be null, must be intersected when clipping
     private Shape initialClip;
@@ -293,7 +293,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         int savedClipWindingRule = clipWindingRule;
         clipWindingRule = -1;
 
-        List<GeneralPath> savedLastClips = lastClips;
+        List<Path2D.Double> savedLastClips = lastClips;
         lastClips = null;
         Shape savedInitialClip = initialClip;
         initialClip = null;
@@ -382,7 +382,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     protected final void setClip()
     {
-        List<GeneralPath> clippingPaths = getGraphicsState().getCurrentClippingPaths();
+        List<Path2D.Double> clippingPaths = getGraphicsState().getCurrentClippingPaths();
         if (clippingPaths != lastClips)
         {
             transferClip(getGraphicsState(), graphics);
@@ -1597,7 +1597,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 PDColor backdropColor) throws IOException
         {
             Graphics2D savedGraphics = graphics;
-            List<GeneralPath> savedLastClips = lastClips;
+            List<Path2D.Double> savedLastClips = lastClips;
             Shape savedInitialClip = initialClip;
 
             // get the CTM x Form Matrix transform
