@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  * 
  * @author Palash Ray
  */
-class GSUBTableDebugger
+public class GSUBTableDebugger
 {
 
     private static final String LOHIT_BENGALI_FONT_FILE = "/ttf/Lohit-Bengali.ttf";
