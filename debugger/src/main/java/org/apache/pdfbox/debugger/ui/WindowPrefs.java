@@ -32,7 +32,7 @@ public class WindowPrefs
     private static final String KEY = "window_prefs_";
     private final Preferences pref;
 
-    public WindowPrefs(Class className)
+    public WindowPrefs(Class<?> className)
     {
         this.pref = Preferences.userNodeForPackage(className);
     }

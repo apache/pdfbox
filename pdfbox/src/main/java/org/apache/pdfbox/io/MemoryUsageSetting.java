@@ -58,7 +58,7 @@ public final class MemoryUsageSetting
                         long maxMainMemoryBytes, long maxStorageBytes)
     {
         // do some checks; adjust values as needed to get consistent setting
-        boolean locUseMainMemory = useTempFile ? useMainMemory : true;
+        boolean locUseMainMemory = !useTempFile || useMainMemory;
         long    locMaxMainMemoryBytes = useMainMemory ? maxMainMemoryBytes : -1;
         long    locMaxStorageBytes = maxStorageBytes > 0 ? maxStorageBytes : -1;
         

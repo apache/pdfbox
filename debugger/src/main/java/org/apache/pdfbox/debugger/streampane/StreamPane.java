@@ -197,7 +197,8 @@ public class StreamPane implements ActionListener
     {
         if ("comboBoxChanged".equals(actionEvent.getActionCommand()))
         {
-            JComboBox comboBox = (JComboBox) actionEvent.getSource();
+            @SuppressWarnings("unchecked")
+            JComboBox<String> comboBox = (JComboBox<String>) actionEvent.getSource();
             String currentFilter = (String) comboBox.getSelectedItem();
 
             try

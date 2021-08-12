@@ -48,7 +48,7 @@ import org.junit.jupiter.api.Test;
  * Tests the {@link org.apache.pdfbox.multipdf.LayerUtility} class.
  *
  */
-public class TestLayerUtility
+class TestLayerUtility
 {
     private static final File TESTRESULTSDIR = new File("target/test-output");
 
