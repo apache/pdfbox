@@ -332,7 +332,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         cs.drawShape(width, hasStroke, 
                      // make sure to only paint a background color (/IC value) 
                      // for interior color styles, even if an /IC value is set.
-                     INTERIOR_COLOR_STYLES.contains(style) ? hasBackground : false);
+                     INTERIOR_COLOR_STYLES.contains(style) && hasBackground);
     }
 
     /**

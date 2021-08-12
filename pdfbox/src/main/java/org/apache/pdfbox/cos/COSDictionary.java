@@ -1508,7 +1508,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         {
             if (retval instanceof COSArray)
             {
-                int idx = Integer.parseInt(pathString.replaceAll("\\[", "").replaceAll("\\]", ""));
+                int idx = Integer.parseInt(pathString.replace("\\[", "").replace("\\]", ""));
                 retval = ((COSArray) retval).getObject(idx);
             }
             else if (retval instanceof COSDictionary)

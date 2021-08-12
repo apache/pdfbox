@@ -45,7 +45,7 @@ public class RecentFiles
      * to create preference instance.
      * @param maximumFile the number of recent files to remember.
      */
-    public RecentFiles(Class className, int maximumFile)
+    public RecentFiles(Class<?> className, int maximumFile)
     {
         this.maximum = maximumFile;
         this.pref = Preferences.userNodeForPackage(className);
