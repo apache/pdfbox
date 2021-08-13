@@ -37,6 +37,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
@@ -81,12 +82,12 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     /**
      * Constructor for Standard 14.
      */
-    PDFont(String baseFont)
+    PDFont(FontName baseFont)
     {
         dict = new COSDictionary();
         dict.setItem(COSName.TYPE, COSName.FONT);
         toUnicodeCMap = null;
-        afmStandard14 = Standard14Fonts.getAFM(baseFont);
+        afmStandard14 = Standard14Fonts.getAFM(baseFont.getName());
         if (afmStandard14 == null)
         {
             throw new IllegalArgumentException("No AFM for font " + baseFont);

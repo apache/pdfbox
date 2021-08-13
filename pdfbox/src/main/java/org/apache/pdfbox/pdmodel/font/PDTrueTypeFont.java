@@ -38,6 +38,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.BuiltInEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
@@ -238,12 +239,12 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             }
             
             // normalise the standard 14 name, e.g "Symbol,Italic" -> "Symbol"
-            String standard14Name = Standard14Fonts.getMappedFontName(getName());
+            FontName standard14Name = Standard14Fonts.getMappedFontName(getName());
             
             // likewise, if the font is standard 14 then we know it's Standard Encoding
             if (isStandard14() &&
-                !standard14Name.equals("Symbol") &&
-                !standard14Name.equals("ZapfDingbats"))
+                    standard14Name != FontName.SYMBOL &&
+                    standard14Name != FontName.ZAPF_DINGBATS)
             {
                 return StandardEncoding.INSTANCE;
             }
