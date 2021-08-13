@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 
@@ -55,7 +56,7 @@ public class EmbeddedMultipleFonts
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
 
-            PDFont font1 = PDType1Font.HELVETICA; // always have a simple font as first one
+            PDFont font1 = new PDType1Font(FontName.HELVETICA); // always have a simple font as first one
             PDType0Font font2 = PDType0Font.load(document, ttc2.getFontByName("Batang"), true); // Korean
             PDType0Font font3 = PDType0Font.load(document, ttc3.getFontByName("MingLiU"), true); // Chinese
             PDType0Font font4 = PDType0Font.load(document, new File("c:/windows/fonts/mangal.ttf")); // Indian

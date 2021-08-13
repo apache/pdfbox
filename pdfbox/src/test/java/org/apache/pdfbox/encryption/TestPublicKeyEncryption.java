@@ -44,6 +44,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -325,13 +326,12 @@ class TestPublicKeyEncryption
 
     /**
      * PDFBOX-4421: Read a file encrypted with AES128 but not with PDFBox, and with missing /Length
-     * entry. Test to be changed so it's done locally with small file.
+     * entry.
      *
      * @throws IOException
      */
-    @ParameterizedTest
-    @MethodSource("keyLengths")
-    void testReadPubkeyEncryptedAES128(int keyLength) throws IOException
+    @Test
+    void testReadPubkeyEncryptedAES128() throws IOException
     {
         try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength128.pdf");
              PDDocument doc = Loader.loadPDF(is,
@@ -349,13 +349,12 @@ class TestPublicKeyEncryption
 
     /**
      * PDFBOX-4421: Read a file encrypted with AES128 but not with PDFBox, and with missing /Length
-     * entry. Test to be changed so it's done locally with small file.
+     * entry.
      *
      * @throws IOException
      */
-    @ParameterizedTest
-    @MethodSource("keyLengths")
-    void testReadPubkeyEncryptedAES256(int keyLength) throws IOException
+    @Test
+    void testReadPubkeyEncryptedAES256() throws IOException
     {
         try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength256.pdf");
              PDDocument doc = Loader.loadPDF(is,
@@ -368,6 +367,52 @@ class TestPublicKeyEncryption
             assertEquals(256, doc.getEncryption().getSecurityHandler().getKeyLength());
             PDFTextStripper stripper = new PDFTextStripper();
             assertEquals("Key length: 256", stripper.getText(doc).trim());
+        }
+    }
+
+    /**
+     * PDFBOX-5249: Read a file encrypted with AES128 but not with PDFBox, and with exposed
+     * Metadata.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testReadPubkeyEncryptedAES128withMetadataExposed() throws IOException
+    {
+        try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AES128ExposedMeta.pdf");
+             PDDocument doc = Loader.loadPDF(is, "",
+                     TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-5249.p12"), "test",
+                     MemoryUsageSetting.setupMainMemoryOnly()))
+        {
+            assertEquals("PublicKeySecurityHandler",
+                    doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
+            assertEquals(128, doc.getEncryption().getSecurityHandler().getKeyLength());
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setLineSeparator("\n");
+            assertEquals("AES key length: 128\nwith exposed Metadata", stripper.getText(doc).trim());
+        }
+    }
+
+    /**
+     * PDFBOX-5249: Read a file encrypted with AES128 but not with PDFBox, and with exposed
+     * Metadata.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testReadPubkeyEncryptedAES256withMetadataExposed() throws IOException
+    {
+        try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AES256ExposedMeta.pdf");
+             PDDocument doc = Loader.loadPDF(is, "",
+                     TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-5249.p12"), "test",
+                     MemoryUsageSetting.setupMainMemoryOnly()))
+        {
+            assertEquals("PublicKeySecurityHandler",
+                    doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
+            assertEquals(256, doc.getEncryption().getSecurityHandler().getKeyLength());
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setLineSeparator("\n");
+            assertEquals("AES key length: 256 \nwith exposed Metadata", stripper.getText(doc).trim());
         }
     }
 }

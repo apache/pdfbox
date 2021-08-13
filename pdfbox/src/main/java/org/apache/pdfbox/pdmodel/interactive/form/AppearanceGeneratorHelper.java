@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
@@ -150,6 +151,10 @@ class AppearanceGeneratorHelper
             {
                 continue;
             }
+            COSDictionary widgetFontDict = widgetResources.getCOSObject()
+                    .getCOSDictionary(COSName.FONT);
+            COSDictionary acroFormFontDict = acroFormResources.getCOSObject()
+                    .getCOSDictionary(COSName.FONT);
             for (COSName fontResourceName : widgetResources.getFontNames())
             {
                 try
@@ -157,7 +162,9 @@ class AppearanceGeneratorHelper
                     if (acroFormResources.getFont(fontResourceName) == null)
                     {
                         LOG.debug("Adding font resource " + fontResourceName + " from widget to AcroForm");
-                        acroFormResources.put(fontResourceName, widgetResources.getFont(fontResourceName));
+                        // use the COS-object to preserve a possible indirect object reference
+                        acroFormFontDict.setItem(fontResourceName,
+                                widgetFontDict.getItem(fontResourceName));
                     }
                 }
                 catch (IOException e)

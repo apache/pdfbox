@@ -450,18 +450,24 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      * @param object The object to search for.
      * @return The index of the object or -1.
      */
-    public int indexOf( COSBase object )
+    public int indexOf(COSBase object)
     {
-        int retval = -1;
         for (int i = 0; i < size(); i++)
         {
-            if( get( i ).equals( object ) )
+            COSBase item = get(i);
+            if (item == null)
             {
-                retval = i;
-                break;
+                if (object == null)
+                {
+                    return i;
+                }
+            }
+            else if (item.equals(object))
+            {
+                return i;
             }
         }
-        return retval;
+        return -1;
     }
 
     /**
@@ -473,18 +479,23 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public int indexOfObject(COSBase object)
     {
-        int retval = -1;
         for (int i = 0; i < this.size(); i++)
         {
             COSBase item = this.get(i);
-            if (item.equals(object) ||
-                item instanceof COSObject && ((COSObject) item).getObject().equals(object))
+            if (item == null)
             {
-                retval = i;
-                break;
+                if (item == object)
+                {
+                    return i;
+                }
+            }
+            else if (item.equals(object)
+                    || item instanceof COSObject && ((COSObject) item).getObject().equals(object))
+            {
+                return i;
             }
         }
-        return retval;
+        return -1;
     }
 
     /**

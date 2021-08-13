@@ -32,6 +32,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -61,7 +62,7 @@ public class TextToPDF implements Callable<Integer>
     private static final float LINE_HEIGHT_FACTOR = 1.05f;
 
     private PDRectangle mediaBox = PDRectangle.LETTER;
-    private PDFont font = Standard14Fonts.HELVETICA.getFont();
+    private PDFont font = null;
 
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
@@ -78,7 +79,7 @@ public class TextToPDF implements Callable<Integer>
 
     @Option(names = "-standardFont", 
         description = "the font to use for the text. Either this or -ttf should be specified but not both.\nCandidates: ${COMPLETION-CANDIDATES} (default: ${DEFAULT-VALUE})")
-    private Standard14Fonts standardFont = Standard14Fonts.HELVETICA;
+    private FontName standardFont = FontName.HELVETICA;
 
     @Option(names = "-ttf", paramLabel="<ttf file>", description = "the TTF font to use for the text. Either this or -standardFont should be specified but not both.")
     private File ttf;
@@ -115,44 +116,6 @@ public class TextToPDF implements Callable<Integer>
         }
     }
 
-    private enum Standard14Fonts
-    {
-        TIMES_ROMAN(PDType1Font.TIMES_ROMAN.getBaseFont(), PDType1Font.TIMES_ROMAN),
-        TIMES_BOLD(PDType1Font.TIMES_BOLD.getBaseFont(), PDType1Font.TIMES_BOLD),
-        TIMES_ITALIC(PDType1Font.TIMES_ITALIC.getBaseFont(), PDType1Font.TIMES_ITALIC),
-        TIMES_BOLD_ITALIC(PDType1Font.TIMES_BOLD_ITALIC.getBaseFont(), PDType1Font.TIMES_BOLD_ITALIC),
-        HELVETICA(PDType1Font.HELVETICA.getBaseFont(), PDType1Font.HELVETICA),
-        HELVETICA_BOLD(PDType1Font.HELVETICA_BOLD.getBaseFont(), PDType1Font.HELVETICA_BOLD),
-        HELVETICA_OBLIQUE(PDType1Font.HELVETICA_OBLIQUE.getBaseFont(), PDType1Font.HELVETICA_OBLIQUE),
-        HELVETICA_BOLD_OBLIQUE(PDType1Font.HELVETICA_BOLD_OBLIQUE.getBaseFont(), PDType1Font.HELVETICA_BOLD_OBLIQUE),
-        COURIER(PDType1Font.COURIER.getBaseFont(), PDType1Font.COURIER),
-        COURIER_BOLD(PDType1Font.COURIER_BOLD.getBaseFont(), PDType1Font.COURIER_BOLD),
-        COURIER_OBLIQUE(PDType1Font.COURIER_OBLIQUE.getBaseFont(), PDType1Font.COURIER_OBLIQUE),
-        COURIER_BOLD_OBLIQUE(PDType1Font.COURIER_BOLD_OBLIQUE.getBaseFont(), PDType1Font.COURIER_BOLD_OBLIQUE),
-        SYMBOL(PDType1Font.SYMBOL.getBaseFont(), PDType1Font.SYMBOL),
-        ZAPF_DINGBATS(PDType1Font.ZAPF_DINGBATS.getBaseFont(), PDType1Font.ZAPF_DINGBATS);
-
-        final String displayName;
-        final PDFont font;
-
-        private Standard14Fonts(String displayName, PDFont font)
-        {
-            this.displayName = displayName;
-            this.font = font;
-        }
-
-        public PDFont getFont()
-        {
-            return font;
-        }
-        
-
-        @Override 
-        public String toString() { 
-            return this.displayName; 
-        }
-    }
-
     /**
      * This will create a PDF document with some text in it.
      * <br>
@@ -169,6 +132,7 @@ public class TextToPDF implements Callable<Integer>
         System.exit(exitCode);
     }
 
+    @Override
     public Integer call()
     {
         try (PDDocument doc = new PDDocument())
@@ -179,7 +143,7 @@ public class TextToPDF implements Callable<Integer>
             }
             else
             {
-                font = standardFont.getFont();
+                font = new PDType1Font(standardFont);
             }
 
             setFont(font);
@@ -229,6 +193,11 @@ public class TextToPDF implements Callable<Integer>
     {
         try
         {
+            // for some reason the font isn't initialized -> use default font
+            if (font == null)
+            {
+                font = new PDType1Font(standardFont);
+            }
             final int margin = 40;
             float height = font.getBoundingBox().getHeight() / FONTSCALE;
             PDRectangle actualMediaBox =

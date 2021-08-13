@@ -1281,7 +1281,11 @@ public class PDFMergerUtility
                 String fieldName = destField.getPartialName();
                 if (fieldName.startsWith(prefix))
                 {
-                    nextFieldNum = Math.max(nextFieldNum, Integer.parseInt(fieldName.substring(prefixLength)) + 1);
+                    String suffix = fieldName.substring(prefixLength);
+                    if (suffix.matches("\\d+"))
+                    {
+                        nextFieldNum = Math.max(nextFieldNum, Integer.parseInt(suffix) + 1);
+                    }
                 }
             }
 

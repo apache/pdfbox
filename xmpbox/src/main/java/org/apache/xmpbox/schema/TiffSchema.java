@@ -48,7 +48,7 @@ public class TiffSchema extends XMPSchema
     public static final String IMAGE_WIDTH = "ImageWidth";
 
     @PropertyType(type = Types.Integer, card = Cardinality.Simple)
-    public static final String IMAGE_LENGHT = "ImageLength";
+    public static final String IMAGE_LENGTH = "ImageLength";
 
     @PropertyType(type = Types.Integer, card = Cardinality.Seq)
     public static final String  BITS_PER_SAMPLE= "BitsPerSample";

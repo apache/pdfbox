@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecifica
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.junit.jupiter.api.Test;
 
@@ -222,7 +223,7 @@ class COSDocumentCompressionTest
             {
                 contentStream.beginText();
                 contentStream.newLineAtOffset(20, 80);
-                contentStream.setFont(PDType1Font.HELVETICA, 12);
+                contentStream.setFont(new PDType1Font(FontName.HELVETICA), 12);
                 contentStream.showText("Test");
                 contentStream.endText();
             }

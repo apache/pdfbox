@@ -29,7 +29,7 @@ public final class CFFStandardEncoding extends CFFEncoding
     private CFFStandardEncoding()
     {
         // Table of character codes and their corresponding sid.
-        int[][] CFF_STANDARD_ENCODING_TABLE = {
+        int[][] cffStandardEncodingTable = {
                 {0, 0},
                 {1, 0},
                 {2, 0},
@@ -287,7 +287,7 @@ public final class CFFStandardEncoding extends CFFEncoding
                 {254, 0},
                 {255, 0}
         };
-        for (int[] encodingEntry : CFF_STANDARD_ENCODING_TABLE)
+        for (int[] encodingEntry : cffStandardEncodingTable)
         {
             add(encodingEntry[CHAR_CODE], encodingEntry[CHAR_SID]);
         }

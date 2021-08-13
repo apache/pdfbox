@@ -30,7 +30,7 @@ public final class CFFISOAdobeCharset extends CFFCharsetType1
     private CFFISOAdobeCharset()
     {
         // Table of character codes and their corresponding names.
-        Object[][] CFF_ISO_ADOBE_CHARSET_TABLE = {
+        Object[][] cffIsoAdobeCharsetTable = {
                 {0, ".notdef"},
                 {1, "space"},
                 {2, "exclam"},
@@ -262,7 +262,7 @@ public final class CFFISOAdobeCharset extends CFFCharsetType1
                 {228, "zcaron"}
         };
         int gid = 0;
-        for (Object[] charsetEntry : CFF_ISO_ADOBE_CHARSET_TABLE)
+        for (Object[] charsetEntry : cffIsoAdobeCharsetTable)
         {
             addSID(gid++, (Integer) charsetEntry[CHAR_CODE], charsetEntry[CHAR_NAME].toString());
         }

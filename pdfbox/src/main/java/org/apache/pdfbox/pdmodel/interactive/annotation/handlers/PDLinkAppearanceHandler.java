@@ -122,27 +122,22 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                 pathsArray[7] = borderEdge.getUpperRightY();
             }
 
-            String borderStyle = null;
-            if (7 < pathsArray.length)
+            boolean underlined = false;
+            if (pathsArray.length >= 8)
             {
                 PDBorderStyleDictionary borderStyleDic = annotation.getBorderStyle();
                 if (borderStyleDic != null)
                 {
-                    borderStyle = borderStyleDic.getStyle();
+                    underlined = PDBorderStyleDictionary.STYLE_UNDERLINE.equals(borderStyleDic.getStyle());
                 }
             }
             int of = 0;
             while (of + 7 < pathsArray.length)
             {
-                if (PDBorderStyleDictionary.STYLE_UNDERLINE.equals(borderStyle))
+                contentStream.moveTo(pathsArray[of], pathsArray[of + 1]);
+                contentStream.lineTo(pathsArray[of + 2], pathsArray[of + 3]);
+                if (!underlined)
                 {
-                    contentStream.moveTo(pathsArray[of], pathsArray[of + 1]);
-                    contentStream.lineTo(pathsArray[of + 2], pathsArray[of + 3]);
-                }
-                else
-                {
-                    contentStream.moveTo(pathsArray[of], pathsArray[of + 1]);
-                    contentStream.lineTo(pathsArray[of + 2], pathsArray[of + 3]);
                     contentStream.lineTo(pathsArray[of + 4], pathsArray[of + 5]);
                     contentStream.lineTo(pathsArray[of + 6], pathsArray[of + 7]);
                     contentStream.closePath();

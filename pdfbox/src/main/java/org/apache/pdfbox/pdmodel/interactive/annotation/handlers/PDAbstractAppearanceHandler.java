@@ -330,7 +330,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         cs.drawShape(width, hasStroke, 
                      // make sure to only paint a background color (/IC value) 
                      // for interior color styles, even if an /IC value is set.
-                     INTERIOR_COLOR_STYLES.contains(style) ? hasBackground : false);
+                     INTERIOR_COLOR_STYLES.contains(style) && hasBackground);
     }
 
     /**
@@ -345,15 +345,15 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      */
     void drawArrow(PDAppearanceContentStream cs, float x, float y, float len) throws IOException
     {
-        float tmpX = x + (float) (Math.cos(ARROW_ANGLE) * len);
-        float tmpY = (float) (Math.sin(ARROW_ANGLE) * len);
         // strategy for arrows: angle 30°, arrow arm length = 9 * line width
         // cos(angle) = x position
         // sin(angle) = y position
         // this comes very close to what Adobe is doing
-        cs.moveTo(tmpX, y + tmpY);
+        float armX = x + (float) (Math.cos(ARROW_ANGLE) * len);
+        float armYdelta = (float) (Math.sin(ARROW_ANGLE) * len);
+        cs.moveTo(armX, y + armYdelta);
         cs.lineTo(x, y);
-        cs.lineTo(tmpX, y - tmpY);
+        cs.lineTo(armX, y - armYdelta);
     }
 
     /**
@@ -520,11 +520,12 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
             // the differences rectangle
             annotation.setRectDifferences(lineWidth / 2);
             annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
-            PDRectangle rect = getRectangle();
             // when the normal appearance stream was generated BBox and Matrix have been set to the
             // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
+            PDRectangle rect = getRectangle();
             PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
-            AffineTransform transform = AffineTransform.getTranslateInstance(-rect.getLowerLeftX(), -rect.getLowerLeftY());
+            AffineTransform transform =
+                    AffineTransform.getTranslateInstance(-rect.getLowerLeftX(), -rect.getLowerLeftY());
             appearanceStream.setBBox(rect);
             appearanceStream.setMatrix(transform);
         }

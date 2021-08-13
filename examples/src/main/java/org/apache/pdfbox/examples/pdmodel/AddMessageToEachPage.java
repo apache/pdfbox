@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -59,7 +60,7 @@ public class AddMessageToEachPage
     {
         try (PDDocument doc = Loader.loadPDF(new File(file)))
         {
-            PDFont font = PDType1Font.HELVETICA_BOLD;
+            PDFont font = new PDType1Font(FontName.HELVETICA_BOLD);
             float fontSize = 36.0f;
 
             for( PDPage page : doc.getPages() )

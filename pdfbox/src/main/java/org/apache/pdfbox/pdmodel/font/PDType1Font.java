@@ -39,6 +39,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
@@ -60,20 +61,22 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     private static final Log LOG = LogFactory.getLog(PDType1Font.class);
 
     // todo: replace with enum? or getters?
-    public static final PDType1Font TIMES_ROMAN = new PDType1Font("Times-Roman");
-    public static final PDType1Font TIMES_BOLD = new PDType1Font("Times-Bold");
-    public static final PDType1Font TIMES_ITALIC = new PDType1Font("Times-Italic");
-    public static final PDType1Font TIMES_BOLD_ITALIC = new PDType1Font("Times-BoldItalic");
-    public static final PDType1Font HELVETICA = new PDType1Font("Helvetica");
-    public static final PDType1Font HELVETICA_BOLD = new PDType1Font("Helvetica-Bold");
-    public static final PDType1Font HELVETICA_OBLIQUE = new PDType1Font("Helvetica-Oblique");
-    public static final PDType1Font HELVETICA_BOLD_OBLIQUE = new PDType1Font("Helvetica-BoldOblique");
-    public static final PDType1Font COURIER = new PDType1Font("Courier");
-    public static final PDType1Font COURIER_BOLD = new PDType1Font("Courier-Bold");
-    public static final PDType1Font COURIER_OBLIQUE = new PDType1Font("Courier-Oblique");
-    public static final PDType1Font COURIER_BOLD_OBLIQUE = new PDType1Font("Courier-BoldOblique");
-    public static final PDType1Font SYMBOL = new PDType1Font("Symbol");
-    public static final PDType1Font ZAPF_DINGBATS = new PDType1Font("ZapfDingbats");
+    public static final PDType1Font TIMES_ROMAN = new PDType1Font(FontName.TIMES_ROMAN);
+    public static final PDType1Font TIMES_BOLD = new PDType1Font(FontName.TIMES_BOLD);
+    public static final PDType1Font TIMES_ITALIC = new PDType1Font(FontName.TIMES_ITALIC);
+    public static final PDType1Font TIMES_BOLD_ITALIC = new PDType1Font(FontName.TIMES_BOLD_ITALIC);
+    public static final PDType1Font HELVETICA = new PDType1Font(FontName.HELVETICA);
+    public static final PDType1Font HELVETICA_BOLD = new PDType1Font(FontName.HELVETICA_BOLD);
+    public static final PDType1Font HELVETICA_OBLIQUE = new PDType1Font(FontName.HELVETICA_OBLIQUE);
+    public static final PDType1Font HELVETICA_BOLD_OBLIQUE = new PDType1Font(
+            FontName.HELVETICA_BOLD_OBLIQUE);
+    public static final PDType1Font COURIER = new PDType1Font(FontName.COURIER);
+    public static final PDType1Font COURIER_BOLD = new PDType1Font(FontName.COURIER_BOLD);
+    public static final PDType1Font COURIER_OBLIQUE = new PDType1Font(FontName.COURIER_OBLIQUE);
+    public static final PDType1Font COURIER_BOLD_OBLIQUE = new PDType1Font(
+            FontName.COURIER_BOLD_OBLIQUE);
+    public static final PDType1Font SYMBOL = new PDType1Font(FontName.SYMBOL);
+    public static final PDType1Font ZAPF_DINGBATS = new PDType1Font(FontName.ZAPF_DINGBATS);
 
     // alternative names for glyphs which are commonly encountered
     private static final Map<String, String> ALT_NAMES = new HashMap<>();
@@ -117,24 +120,24 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
      *
      * @param baseFont One of the standard 14 PostScript names
      */
-    private PDType1Font(String baseFont)
+    public PDType1Font(FontName baseFont)
     {
         super(baseFont);
         
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
-        dict.setName(COSName.BASE_FONT, baseFont);
+        dict.setName(COSName.BASE_FONT, baseFont.getName());
         switch (baseFont)
         {
-            case "ZapfDingbats":
-                encoding = ZapfDingbatsEncoding.INSTANCE;
-                break;
-            case "Symbol":
-                encoding = SymbolEncoding.INSTANCE;
-                break;
-            default:
-                encoding = WinAnsiEncoding.INSTANCE;
-                dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
-                break;
+        case ZAPF_DINGBATS:
+            encoding = ZapfDingbatsEncoding.INSTANCE;
+            break;
+        case SYMBOL:
+            encoding = SymbolEncoding.INSTANCE;
+            break;
+        default:
+            encoding = WinAnsiEncoding.INSTANCE;
+            dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
+            break;
         }
 
         // standard 14 fonts may be accessed concurrently, as they are singletons

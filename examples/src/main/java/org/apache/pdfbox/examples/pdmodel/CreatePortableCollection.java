@@ -36,6 +36,7 @@ import org.apache.pdfbox.pdmodel.PageMode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 
 /**
  * This is an example on how to create a portable collection PDF, as described in the PDF 1.7
@@ -72,7 +73,7 @@ public class CreatePortableCollection
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
             {
                 contentStream.beginText();
-                contentStream.setFont(PDType1Font.HELVETICA, 12);
+                contentStream.setFont(new PDType1Font(FontName.HELVETICA), 12);
                 contentStream.newLineAtOffset(100, 700);
                 contentStream.showText("Example of a portable collection");
                 contentStream.endText();
