@@ -686,11 +686,8 @@ class AppearanceGeneratorHelper
     private void insertGeneratedCombAppearance(PDAppearanceContentStream contents, PDAppearanceStream appearanceStream,
             PDFont font, float fontSize) throws IOException
     {
-        
-        // TODO:    Currently the quadding is not taken into account
-        //          so the comb is always filled from left to right.
-        
         int maxLen = ((PDTextField) field).getMaxLen();
+        int quadding = ((PDTextField) field).getQ();
         int numChars = Math.min(value.length(), maxLen);
         
         PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
@@ -703,6 +700,16 @@ class AppearanceGeneratorHelper
         float prevCharWidth = 0f;
         
         float xOffset = combWidth / 2;
+
+        // add to initial offset if right aligned or centered
+        if (quadding == 2)
+        {
+            xOffset = xOffset + (maxLen - numChars) * combWidth;
+        }
+        else if (quadding == 1)
+        {
+            xOffset = xOffset + Math.floorDiv(maxLen - numChars, 2) * combWidth;
+        }
 
         for (int i = 0; i < numChars; i++) 
         {
