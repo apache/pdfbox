@@ -647,7 +647,7 @@ class AppearanceGeneratorHelper {
         }
         else if (quadding == 1)
         {
-            xOffset = xOffset + Math.floorDiv(maxLen - numChars, 2) * combWidth;
+            xOffset = xOffset + (maxLen - numChars) / 2 * combWidth;
         }
  
         for (int i = 0; i < numChars; i++)
