@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -175,7 +176,7 @@ public class CreateCheckBox
                         BoundingBox bb = cm.getBoundingBox();
                         bounds = new Rectangle2D.Float(bb.getLowerLeftX(), bb.getLowerLeftY(), 
                                                        bb.getWidth(), bb.getHeight());
-                        unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(cm.getName());
+                        unicode = GlyphList.getZapfDingbats().toUnicode(cm.getName());
                         break;
                     }
                 }
