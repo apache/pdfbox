@@ -31,6 +31,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -117,7 +118,7 @@ class OverlayTest
             {
                 float fontHeight = 12;
                 float y = page.getMediaBox().getHeight() - fontHeight * 2;
-                PDFont font = PDType1Font.HELVETICA;
+                PDFont font = new PDType1Font(FontName.HELVETICA);
                 cs.setFont(font, fontHeight);
                 cs.beginText();
                 cs.setLeading(fontHeight * 2 + 1);
