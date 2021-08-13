@@ -121,7 +121,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
@@ -266,14 +265,10 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
 
             // trigger premature initializations for more accurate rendering benchmarks
             // See discussion in PDFBOX-3988
-            if (PDType1Font.COURIER.isStandard14())
-            {
-                // Yes this is always true
-                PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
-                PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
-                IIORegistry.getDefaultInstance();
-                FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
-            }
+            PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0 });
+            PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 });
+            IIORegistry.getDefaultInstance();
+            FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
 
             if (infile != null && infile.exists())
             {
@@ -1237,7 +1232,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             @Override
             PDDocument open() throws IOException
             {
-                return Loader.loadPDF(file, password);
+                return Loader.loadPDF(new FileInputStream(file), password);
+                // return Loader.loadPDF(file, password);
             }
         };
         document = documentOpener.parse();
