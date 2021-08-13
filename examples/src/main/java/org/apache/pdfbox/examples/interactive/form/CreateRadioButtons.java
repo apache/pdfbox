@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -104,12 +105,13 @@ public class CreateRadioButtons
             acroForm.getFields().add(radioButton);
 
             // Set the texts
+            PDType1Font helvetica = new PDType1Font(FontName.HELVETICA);
             try (PDPageContentStream contents = new PDPageContentStream(document, page))
             {
                 for (int i = 0; i < options.size(); i++)
                 {
                     contents.beginText();
-                    contents.setFont(PDType1Font.HELVETICA, 15);
+                    contents.setFont(helvetica, 15);
                     contents.newLineAtOffset(70, PDRectangle.A4.getHeight() - 30 - i * 35);
                     contents.showText(options.get(i));
                     contents.endText();

@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -102,7 +103,7 @@ public class CreateSimpleFormWithEmbeddedFont
             try (PDPageContentStream cs = new PDPageContentStream(doc, page))
             {
                 cs.beginText();
-                cs.setFont(PDType1Font.HELVETICA, 15);
+                cs.setFont(new PDType1Font(FontName.HELVETICA), 15);
                 cs.newLineAtOffset(50, 760);
                 cs.showText("Field:");
                 cs.endText();

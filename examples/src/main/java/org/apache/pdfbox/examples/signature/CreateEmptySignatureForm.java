@@ -25,6 +25,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
@@ -51,9 +52,9 @@ public final class CreateEmptySignatureForm
 
             // Adobe Acrobat uses Helvetica as a default font and
             // stores that under the name '/Helv' in the resources dictionary
-            PDFont font = PDType1Font.HELVETICA;
+            PDFont font = new PDType1Font(FontName.HELVETICA);
             PDResources resources = new PDResources();
-            resources.put(COSName.getPDFName("Helv"), font);
+            resources.put(COSName.HELV, font);
 
             // Add a new AcroForm and add that to the document
             PDAcroForm acroForm = new PDAcroForm(document);
