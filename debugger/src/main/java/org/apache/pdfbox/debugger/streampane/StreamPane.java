@@ -511,7 +511,7 @@ public class StreamPane implements ActionListener
                 }
                 docu.insertString(docu.getLength(), ">> ", null);
             }
-            else if (obj instanceof COSNull)
+            else if (obj == COSNull.NULL)
             {
                 docu.insertString(docu.getLength(), "null ", null);
             }

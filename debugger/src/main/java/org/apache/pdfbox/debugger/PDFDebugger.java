@@ -1065,7 +1065,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         {
             data = "" + ((COSFloat)selectedNode).floatValue();
         }
-        else if( selectedNode instanceof COSNull )
+        else if( selectedNode == COSNull.NULL )
         {
             data = "null";
         }

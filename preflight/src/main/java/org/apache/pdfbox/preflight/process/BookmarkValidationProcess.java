@@ -284,7 +284,7 @@ public class BookmarkValidationProcess extends AbstractProcess
     private boolean checkIndirectObject(PreflightContext ctx, COSDictionary dictionary, COSName name)
     {
         COSBase item = dictionary.getItem(name);
-        if (item == null || item instanceof COSNull || item instanceof COSObject)
+        if (item == null || item == COSNull.NULL || item instanceof COSObject)
         {
             return true;
         }
@@ -305,7 +305,7 @@ public class BookmarkValidationProcess extends AbstractProcess
      */
     private COSObject toCOSObject(COSBase base)
     {
-        if (base == null || base instanceof COSNull)
+        if (base == null || base == COSNull.NULL)
         {
             return null;
         }

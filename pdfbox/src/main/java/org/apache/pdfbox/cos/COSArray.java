@@ -207,7 +207,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         {
             obj = ((COSObject)obj).getObject();
         }
-        if (obj instanceof COSNull)
+        if (obj == COSNull.NULL)
         {
             obj = null;
         }

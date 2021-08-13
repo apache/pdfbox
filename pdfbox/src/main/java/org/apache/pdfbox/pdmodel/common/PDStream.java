@@ -439,7 +439,7 @@ public class PDStream implements COSObjectable
             {
                 retval = new PDMetadata((COSStream) mdStream);
             } 
-            else if (mdStream instanceof COSNull)
+            else if (mdStream == COSNull.NULL)
             {
                 // null is authorized
             } 

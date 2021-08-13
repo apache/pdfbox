@@ -194,7 +194,7 @@ public class ContentStreamWriter
                 output.write( EOL );
             }
         }
-        else if (o instanceof COSNull)
+        else if (o == COSNull.NULL)
         {
             output.write("null".getBytes(StandardCharsets.US_ASCII));
             output.write(SPACE);

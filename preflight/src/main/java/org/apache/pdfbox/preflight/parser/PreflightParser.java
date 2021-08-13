@@ -669,7 +669,7 @@ public class PreflightParser extends PDFParser
                 referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
             }
         }
-        if (referencedObject == null || referencedObject instanceof COSNull)
+        if (referencedObject == null || referencedObject == COSNull.NULL)
         {
             // not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
             // or some other issue with dereferencing
