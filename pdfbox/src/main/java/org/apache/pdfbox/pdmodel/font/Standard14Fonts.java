@@ -250,5 +250,11 @@ public final class Standard14Fonts
         {
             return name;
         }
+
+        @Override
+        public String toString()
+        {
+            return name;
+        }
     }
 }
