@@ -145,7 +145,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private GeneralPath linePath = new GeneralPath();
 
     // last clipping path
-    private List<Path2D.Double> lastClips;
+    private List<Path2D> lastClips;
 
     // clip when drawPage() is called, can be null, must be intersected when clipping
     private Shape initialClip;
@@ -305,7 +305,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         int savedClipWindingRule = clipWindingRule;
         clipWindingRule = -1;
 
-        List<Path2D.Double> savedLastClips = lastClips;
+        List<Path2D> savedLastClips = lastClips;
         lastClips = null;
         Shape savedInitialClip = initialClip;
         initialClip = null;
@@ -394,10 +394,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     protected final void setClip()
     {
-        List<Path2D.Double> clippingPaths = getGraphicsState().getCurrentClippingPaths();
+        List<Path2D> clippingPaths = getGraphicsState().getCurrentClippingPaths();
         if (clippingPaths != lastClips)
         {
-            transferClip(getGraphicsState(), graphics);
+            transferClip(graphics);
             if (initialClip != null)
             {
                 // apply the remembered initial clip, but transform it first
@@ -410,15 +410,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     /**
      * Transfer clip to the destination device. Override this if you want to avoid to do slow
      * intersecting operations but want the destination device to do this (e.g. SVG). You can get
-     * the individual clippings with {@link PDGraphicsState#getCurrentClippingPaths()}. See
+     * the individual clippings via {@link PDGraphicsState#getCurrentClippingPaths()}. See
      * <a href="https://issues.apache.org/jira/browse/PDFBOX-5258">PDFBOX-5258</a> for sample code.
      *
-     * @param graphicsState
      * @param graphics graphics device
      */
-    protected void transferClip(PDGraphicsState graphicsState, Graphics2D graphics)
+    protected void transferClip(Graphics2D graphics)
     {
-        Area clippingPath = graphicsState.getCurrentClippingPath();
+        Area clippingPath = getGraphicsState().getCurrentClippingPath();
         if (clippingPath.getPathIterator(null).isDone())
         {
             // PDFBOX-4821: avoid bug with java printing that empty clipping path is ignored by
@@ -1684,7 +1683,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 PDColor backdropColor) throws IOException
         {
             Graphics2D savedGraphics = graphics;
-            List<Path2D.Double> savedLastClips = lastClips;
+            List<Path2D> savedLastClips = lastClips;
             Shape savedInitialClip = initialClip;
 
             // get the CTM x Form Matrix transform
