@@ -75,7 +75,7 @@ public class GlyfCompositeDescript extends GlyfDescript
         // Are there hinting instructions to read?
         if ((comp.getFlags() & GlyfCompositeComp.WE_HAVE_INSTRUCTIONS) != 0)
         {
-            readInstructions(bais, (bais.readUnsignedShort()));
+            readInstructions(bais, bais.readUnsignedShort());
         }
         initDescriptions();
     }
