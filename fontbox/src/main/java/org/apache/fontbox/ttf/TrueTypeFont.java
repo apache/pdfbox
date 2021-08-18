@@ -731,7 +731,14 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     public List<Number> getFontMatrix() throws IOException
     {
         float scale = 1000f / getUnitsPerEm();
-        return Arrays.<Number>asList(0.001f * scale, 0, 0, 0.001f * scale, 0, 0);
+        List<Number> list = new ArrayList<>(6);
+        list.add(0.001f * scale);
+        list.add(0);
+        list.add(0);
+        list.add(0.001f * scale);
+        list.add(0);
+        list.add(0);
+        return list;
     }
 
     /**
