@@ -477,7 +477,7 @@ public final class TTFSubsetter
             {
                 long isResult = is.skip(g.getOffset());
                 
-                if (Long.compare(isResult, g.getOffset()) != 0)
+                if (isResult != g.getOffset())
                 {
                     LOG.debug("Tried skipping " + g.getOffset() + " bytes but skipped only " + isResult + " bytes");
                 }
@@ -489,7 +489,7 @@ public final class TTFSubsetter
                     long len = offsets[glyphId + 1] - offset;
                     isResult = is.skip(offset - lastOff);
                     
-                    if (Long.compare(isResult, offset - lastOff) != 0)
+                    if (isResult != offset - lastOff)
                     {
                         LOG.debug("Tried skipping " + (offset - lastOff) + " bytes but skipped only " + isResult + " bytes");
                     }
@@ -497,7 +497,7 @@ public final class TTFSubsetter
                     byte[] buf = new byte[(int)len];
                     isResult = is.read(buf);
 
-                    if (Long.compare(isResult, len) != 0)
+                    if (isResult != len)
                     {
                         LOG.debug("Tried reading " + len + " bytes but only " + isResult + " bytes read");
                     }
