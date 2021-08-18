@@ -89,9 +89,10 @@ public class GlyphSubstitutionDataExtractor
         {
             for (String scriptName : lang.getScriptNames())
             {
-                if (scriptList.containsKey(scriptName))
+                ScriptTable value = scriptList.get(scriptName);
+                if (value != null)
                 {
-                    return new ScriptTableDetails(lang, scriptName, scriptList.get(scriptName));
+                    return new ScriptTableDetails(lang, scriptName, value);
                 }
             }
         }
@@ -219,10 +220,10 @@ public class GlyphSubstitutionDataExtractor
     private void extractDataFromLigatureTable(Map<List<Integer>, Integer> glyphSubstitutionMap,
             LigatureTable ligatureTable)
     {
+        int[] componentGlyphIDs = ligatureTable.getComponentGlyphIDs();
+        List<Integer> glyphsToBeSubstituted = new ArrayList<>(componentGlyphIDs.length);
 
-        List<Integer> glyphsToBeSubstituted = new ArrayList<>();
-
-        for (int componentGlyphID : ligatureTable.getComponentGlyphIDs())
+        for (int componentGlyphID : componentGlyphIDs)
         {
             glyphsToBeSubstituted.add(componentGlyphID);
         }
