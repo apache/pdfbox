@@ -110,8 +110,8 @@ public class COSWriterObjectStream
         stream.setItem(COSName.TYPE, COSName.OBJ_STM);
         stream.setInt(COSName.N, objectCount);
         // Prepare the compressible objects for writing.
-        List<Long> objectNumbers = new ArrayList<>();
-        List<byte[]> objectsBuffer = new ArrayList<>();
+        List<Long> objectNumbers = new ArrayList<>(objectCount);
+        List<byte[]> objectsBuffer = new ArrayList<>(objectCount);
         for (int i = 0; i < objectCount; i++)
         {
             try (ByteArrayOutputStream partialOutput = new ByteArrayOutputStream())
@@ -128,7 +128,7 @@ public class COSWriterObjectStream
         long nextObjectOffset = 0;
         try (ByteArrayOutputStream partialOutput = new ByteArrayOutputStream())
         {
-            for (int i = 0; i < objectNumbers.size(); i++)
+            for (int i = 0; i < objectCount; i++)
             {
                 partialOutput.write(
                         String.valueOf(objectNumbers.get(i)).getBytes(StandardCharsets.ISO_8859_1));
