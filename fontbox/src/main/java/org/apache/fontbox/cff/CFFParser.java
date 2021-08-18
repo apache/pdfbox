@@ -472,12 +472,21 @@ public class CFFParser
         font.addValueToTopDict("UnderlineThickness", topDict.getNumber("UnderlineThickness", 50));
         font.addValueToTopDict("PaintType", topDict.getNumber("PaintType", 0));
         font.addValueToTopDict("CharstringType", topDict.getNumber("CharstringType", 2));
-        font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix", Arrays.<Number>asList(
-                                                      0.001, (double) 0, (double) 0, 0.001,
-                                                      (double) 0, (double) 0)));
+        List<Number> defaultDoubles = new ArrayList<>(6);
+        defaultDoubles.add(0.001);
+        defaultDoubles.add(0d);
+        defaultDoubles.add(0d);
+        defaultDoubles.add(0.001);
+        defaultDoubles.add(0d);
+        defaultDoubles.add(0d);
+        font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix", defaultDoubles));
         font.addValueToTopDict("UniqueID", topDict.getNumber("UniqueID", null));
-        font.addValueToTopDict("FontBBox", topDict.getArray("FontBBox",
-                                                    Arrays.<Number> asList(0, 0, 0, 0)));
+        List<Number> defaultNumbers = new ArrayList<>(4);
+        defaultNumbers.add(0);
+        defaultNumbers.add(0);
+        defaultNumbers.add(0);
+        defaultNumbers.add(0);
+        font.addValueToTopDict("FontBBox", topDict.getArray("FontBBox", defaultNumbers));
         font.addValueToTopDict("StrokeWidth", topDict.getNumber("StrokeWidth", 0));
         font.addValueToTopDict("XUID", topDict.getArray("XUID", null));
 
@@ -570,9 +579,16 @@ public class CFFParser
                 }
                 else
                 {
+                    List<Number> defaultDoubles1 = new ArrayList<>(6);
+                    defaultDoubles1.add(0.001);
+                    defaultDoubles1.add(0d);
+                    defaultDoubles1.add(0d);
+                    defaultDoubles1.add(0.001);
+                    defaultDoubles1.add(0d);
+                    defaultDoubles1.add(0d);
                     // default
                     font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix",
-                            Arrays.<Number> asList(0.001, 0.0, 0.0, 0.001, 0.0, 0.0)));
+                            defaultDoubles1));
                 }
             }
             else if (privMatrix != null)
