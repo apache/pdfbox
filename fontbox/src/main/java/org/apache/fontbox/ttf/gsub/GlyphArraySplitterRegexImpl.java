@@ -71,7 +71,8 @@ public class GlyphArraySplitterRegexImpl implements GlyphArraySplitter
 
         for (String glyphId : glyphIdsAsString.split(GLYPH_ID_SEPARATOR))
         {
-            if (glyphId.trim().length() == 0)
+            glyphId = glyphId.trim();
+            if (glyphId.length() == 0)
             {
                 continue;
             }
@@ -80,5 +81,4 @@ public class GlyphArraySplitterRegexImpl implements GlyphArraySplitter
 
         return gsubProcessedGlyphsIds;
     }
-
 }
