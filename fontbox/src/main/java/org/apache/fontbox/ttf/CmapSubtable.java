@@ -156,7 +156,7 @@ public class CmapSubtable implements CmapLookup
             // -- process simple validation
             if (firstCode > endCode || 0 > firstCode)
             {
-                throw new IOException("Range invalid");
+                throw new IOException("Range is invalid");
             }
 
             for (long j = firstCode; j <= endCode; ++j)
