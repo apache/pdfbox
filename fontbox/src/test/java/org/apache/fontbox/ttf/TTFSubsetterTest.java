@@ -137,13 +137,14 @@ class TTFSubsetterTest
         File simhei = null;
         for (URI uri : files)
         {
-            if (uri.getPath() != null && uri.getPath().toLowerCase(Locale.US).endsWith("simhei.ttf"))
+            String path = uri.getPath();
+            if (path != null && path.toLowerCase(Locale.US).endsWith("simhei.ttf"))
             {
                 simhei = new File(uri);
+                break;
             }
         }
         Assumptions.assumeTrue(simhei != null, "SimHei font not available on this machine, test skipped");
-
         System.out.println("SimHei font found!");
         TrueTypeFont full = new TTFParser().parse(simhei);
 
