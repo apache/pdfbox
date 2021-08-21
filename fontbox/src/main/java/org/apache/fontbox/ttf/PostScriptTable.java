@@ -98,7 +98,7 @@ public class PostScriptTable extends TTFTable
             if (maxIndex >= WGL4Names.NUMBER_OF_MAC_GLYPHS)
             {
                 nameArray = new String[maxIndex - WGL4Names.NUMBER_OF_MAC_GLYPHS + 1];
-                for (int i = 0; i < maxIndex - WGL4Names.NUMBER_OF_MAC_GLYPHS + 1; i++)
+                for (int i = 0; i < nameArray.length; i++)
                 {
                     int numberOfChars = data.readUnsignedByte();
                     try
