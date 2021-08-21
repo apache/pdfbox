@@ -134,9 +134,11 @@ public class TTFSubsetterTest
         File simhei = null;
         for (URI uri : files)
         {
-            if (uri.getPath() != null && uri.getPath().toLowerCase(Locale.US).endsWith("simhei.ttf"))
+            String path = uri.getPath();
+            if (path != null && path.toLowerCase(Locale.US).endsWith("simhei.ttf"))
             {
                 simhei = new File(uri);
+                break;
             }
         }
         Assume.assumeTrue("SimHei font not available on this machine, test skipped", simhei != null);
