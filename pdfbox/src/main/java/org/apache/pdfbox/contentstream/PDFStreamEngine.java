@@ -492,7 +492,7 @@ public abstract class PDFStreamEngine
             if (token instanceof Operator)
             {
                 processOperator((Operator) token, arguments);
-                arguments = new ArrayList<>();
+                arguments.clear();
             }
             else
             {
@@ -548,8 +548,9 @@ public abstract class PDFStreamEngine
     {
         if (rectangle != null)
         {
-            GeneralPath clip = rectangle.transform(getGraphicsState().getCurrentTransformationMatrix());
-            getGraphicsState().intersectClippingPath(clip);
+            PDGraphicsState graphicsState = getGraphicsState();
+            GeneralPath clip = rectangle.transform(graphicsState.getCurrentTransformationMatrix());
+            graphicsState.intersectClippingPath(clip);
         }
     }
 
@@ -929,7 +930,7 @@ public abstract class PDFStreamEngine
     protected final Deque<PDGraphicsState> saveGraphicsStack()
     {
         Deque<PDGraphicsState> savedStack = graphicsStack;
-        graphicsStack = new ArrayDeque<>();
+        graphicsStack = new ArrayDeque<>(1);
         graphicsStack.add(savedStack.peek().clone());
         return savedStack;
     }
