@@ -34,7 +34,6 @@ import org.apache.fontbox.ttf.model.ScriptFeature;
  */
 public class GsubWorkerForBengali implements GsubWorker
 {
-
     private static final Log LOG = LogFactory.getLog(GsubWorkerForBengali.class);
 
     private static final String INIT_FEATURE = "init";
@@ -43,9 +42,9 @@ public class GsubWorkerForBengali implements GsubWorker
      * This sequence is very important. This has been taken from <a href=
      * "https://docs.microsoft.com/en-us/typography/script-development/bengali">https://docs.microsoft.com/en-us/typography/script-development/bengali</a>
      */
-    private static final List<String> FEATURES_IN_ORDER = Arrays.asList("locl", "nukt", "akhn",
+    private static final String[] FEATURES_IN_ORDER = { "locl", "nukt", "akhn",
             "rphf", "blwf", "pstf", "half", "vatu", "cjct", INIT_FEATURE, "pres", "abvs", "blws",
-            "psts", "haln", "calt");
+            "psts", "haln", "calt" };
 
     private static final char[] BEFORE_HALF_CHARS = new char[] { '\u09BF', '\u09C7', '\u09C8' };
     private static final BeforeAndAfterSpanComponent[] BEFORE_AND_AFTER_SPAN_CHARS = new BeforeAndAfterSpanComponent[] {
