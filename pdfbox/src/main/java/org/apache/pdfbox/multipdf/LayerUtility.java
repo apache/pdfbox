@@ -147,7 +147,13 @@ public class LayerUtility
     }
 
     private static final Set<String> PAGE_TO_FORM_FILTER =
-            new HashSet<>(Arrays.asList("Group", "LastModified", "Metadata"));
+            new HashSet<>(3);
+
+    static{
+        PAGE_TO_FORM_FILTER.add("Group");
+        PAGE_TO_FORM_FILTER.add("LastModified");
+        PAGE_TO_FORM_FILTER.add("Metadata");
+    }
 
     /**
      * Imports a page from some PDF file as a Form XObject so it can be placed on another page
@@ -216,12 +222,8 @@ public class LayerUtility
             form.setMatrix(at);
         }
 
-        BoundingBox bbox = new BoundingBox();
-        bbox.setLowerLeftX(viewBox.getLowerLeftX());
-        bbox.setLowerLeftY(viewBox.getLowerLeftY());
-        bbox.setUpperRightX(viewBox.getUpperRightX());
-        bbox.setUpperRightY(viewBox.getUpperRightY());
-        form.setBBox(new PDRectangle(bbox));
+        form.setBBox(new PDRectangle(
+                viewBox.getLowerLeftX(), viewBox.getLowerLeftY(), viewBox.getUpperRightX(), viewBox.getUpperRightY()));
 
         return form;
     }
