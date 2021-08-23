@@ -33,7 +33,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     // use the default chunk size
     private int chunkSize = DEFAULT_CHUNK_SIZE_4KB;
     // list containing all chunks
-    private List<ByteBuffer> bufferList = null;
+    private final List<ByteBuffer> bufferList;
     // current chunk
     private ByteBuffer currentBuffer;
     // current pointer to the whole buffer
@@ -63,7 +63,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         // starting with one chunk
         chunkSize = definedChunkSize;
         currentBuffer = ByteBuffer.allocate(chunkSize);
-        bufferList = new ArrayList<>();
+        bufferList = new ArrayList<>(1);
         bufferList.add(currentBuffer);
     }
 
