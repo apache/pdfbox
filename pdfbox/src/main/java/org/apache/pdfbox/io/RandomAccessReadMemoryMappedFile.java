@@ -42,7 +42,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     private FileChannel fileChannel;
 
     // function to unmap the byte buffer
-    private Consumer<? super ByteBuffer> unmapper = IOUtils::unmap;
+    private final Consumer<? super ByteBuffer> unmapper;
 
     /**
      * Default constructor.
@@ -68,6 +68,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
         }
         // map the whole file to memory
         mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, size);
+        unmapper = IOUtils::unmap;
     }
 
     private RandomAccessReadMemoryMappedFile(RandomAccessReadMemoryMappedFile parent)
@@ -89,7 +90,10 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
         {
             fileChannel.close();
         }
-        Optional.ofNullable(unmapper).ifPresent(u -> u.accept(mappedByteBuffer));
+        if (unmapper != null)
+        {
+            unmapper.accept(mappedByteBuffer);
+        }
         mappedByteBuffer = null;
     }
 
@@ -143,8 +147,9 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
             return -1;
         }
         int remainingBytes = (int)size - mappedByteBuffer.position();
-        mappedByteBuffer.get(b, offset, Math.min(remainingBytes, length));
-        return Math.min(remainingBytes, length);
+        length = Math.min(remainingBytes, length);
+        mappedByteBuffer.get(b, offset, length);
+        return length;
     }
 
     /**
