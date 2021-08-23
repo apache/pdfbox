@@ -28,7 +28,6 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     private final List<RandomAccessRead> readerList;
     private final long[] startPositions;
     private final long[] endPositions;
-    private final int numberOfReader;
     private int currentIndex = 0;
     private long currentPosition = 0;
     private long totalLength = 0;
@@ -57,10 +56,9 @@ public class SequenceRandomAccessRead implements RandomAccessRead
                     }
                 }).collect(Collectors.toList());
         currentRandomAccessRead = readerList.get(currentIndex);
-        numberOfReader = readerList.size();
-        startPositions = new long[numberOfReader];
-        endPositions = new long[numberOfReader];
-        for(int i=0;i<numberOfReader;i++) 
+        startPositions = new long[readerList.size()];
+        endPositions = new long[readerList.size()];
+        for(int i=0;i<startPositions.length;i++)
         {
             try
             {
@@ -89,7 +87,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
 
     private RandomAccessRead getCurrentReader() throws IOException
     {
-        if (currentRandomAccessRead.isEOF() && currentIndex < numberOfReader - 1)
+        if (currentRandomAccessRead.isEOF() && currentIndex < startPositions.length - 1)
         {
             currentIndex++;
             currentRandomAccessRead = readerList.get(currentIndex);
@@ -150,12 +148,12 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         // jump to the end of the reader
         if (position >= totalLength)
         {
-            currentIndex = numberOfReader - 1;
+            currentIndex = startPositions.length - 1;
             currentPosition = totalLength;
         }
         else
         {
-            for (int i = 0; i < numberOfReader; i++)
+            for (int i = 0; i < startPositions.length; i++)
             {
                 if (position >= startPositions[i] && position <= endPositions[i])
                 {
