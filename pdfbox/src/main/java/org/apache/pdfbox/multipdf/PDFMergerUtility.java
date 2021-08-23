@@ -710,9 +710,11 @@ public class PDFMergerUtility
         {
             try
             {
-                PDStream newStream = new PDStream(destination, srcMetadata.createInputStream(), (COSName) null);                
-                mergeInto(srcMetadata, newStream.getCOSObject(),
-                        new HashSet<>(Arrays.asList(COSName.FILTER, COSName.LENGTH)));                
+                PDStream newStream = new PDStream(destination, srcMetadata.createInputStream(), (COSName) null);
+                HashSet<COSName> set = new HashSet<>(2);
+                set.add(COSName.FILTER);
+                set.add(COSName.LENGTH);
+                mergeInto(srcMetadata, newStream.getCOSObject(), set);
                 destCatalog.getCOSObject().setItem(COSName.METADATA, newStream);
             }
             catch (IOException ex)
@@ -961,37 +963,32 @@ public class PDFMergerUtility
                       PDStructureTreeRoot srcStructTree,
                       PDStructureTreeRoot destStructTree) throws IOException
     {
-        COSArray dstKArray = new COSArray();
-        if (destStructTree.getK() != null)
-        {
-            COSBase base = destStructTree.getK();
-            if (base instanceof COSArray)
-            {
-                dstKArray.addAll((COSArray) base);
-            }
-            else if (base instanceof COSDictionary)
-            {
-                dstKArray.add(base);
-            }
-        }
-
         COSArray srcKArray = new COSArray();
-        if (srcStructTree.getK() != null)
+        COSBase kEntry = srcStructTree.getK();
+        COSBase base = cloner.cloneForNewDocument(kEntry);
+        if (base instanceof COSArray)
         {
-            COSBase base = cloner.cloneForNewDocument(srcStructTree.getK());
-            if (base instanceof COSArray)
-            {
-                srcKArray.addAll((COSArray) base);
-            }
-            else if (base instanceof COSDictionary)
-            {
-                srcKArray.add(base);
-            }
+            srcKArray.addAll((COSArray) base);
+        }
+        else if (base instanceof COSDictionary)
+        {
+            srcKArray.add(base);
         }
 
         if (srcKArray.size() == 0)
         {
             return;
+        }
+
+        COSArray dstKArray = new COSArray();
+        kEntry = destStructTree.getK();
+        if (kEntry instanceof COSArray)
+        {
+            dstKArray.addAll((COSArray) kEntry);
+        }
+        else if (kEntry instanceof COSDictionary)
+        {
+            dstKArray.add(kEntry);
         }
 
         if (dstKArray.size() == 1 && dstKArray.getObject(0) instanceof COSDictionary)
@@ -1045,8 +1042,9 @@ public class PDFMergerUtility
                 return false;
             }
             COSDictionary dict = (COSDictionary) base;
-            if (!COSName.DOCUMENT.equals(dict.getCOSName(COSName.S)) &&
-                !COSName.PART.equals(dict.getCOSName(COSName.S)))
+            COSName cosName = dict.getCOSName(COSName.S);
+            if (!COSName.DOCUMENT.equals(cosName) &&
+                !COSName.PART.equals(cosName))
             {
                 return false;
             }
@@ -1481,17 +1479,19 @@ public class PDFMergerUtility
      */
     private void updateStructParentEntries(PDPage page, int structParentOffset) throws IOException
     {
-        if (page.getStructParents() >= 0)
+        int structParents = page.getStructParents();
+        if (structParents >= 0)
         {
-            page.setStructParents(page.getStructParents() + structParentOffset);
+            page.setStructParents(structParents + structParentOffset);
         }
         List<PDAnnotation> annots = page.getAnnotations();
         List<PDAnnotation> newannots = new ArrayList<>(annots.size());
         annots.forEach(annot ->
         {
-            if (annot.getStructParent() >= 0)
+            int structParent = annot.getStructParent();
+            if (structParent >= 0)
             {
-                annot.setStructParent(annot.getStructParent() + structParentOffset);
+                annot.setStructParent(structParent + structParentOffset);
             }
             newannots.add(annot);
         });
