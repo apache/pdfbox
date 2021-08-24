@@ -281,7 +281,7 @@ public class PDNumberTreeNode implements COSObjectable
     {
         Integer retval = null;
         COSArray arr = (COSArray)node.getDictionaryObject( COSName.LIMITS );
-        if( arr != null && arr.get(0) != null )
+        if( arr != null && arr.get(1) != null )
         {
             retval = arr.getInt( 1 );
         }
