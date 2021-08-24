@@ -25,6 +25,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 
@@ -139,14 +140,26 @@ public class FDFJavaScript implements COSObjectable
     public Map<String, PDActionJavaScript> getDoc()
     {
         Map<String, PDActionJavaScript> map = new LinkedHashMap<String, PDActionJavaScript>();
-        COSArray array = (COSArray) dictionary.getDictionaryObject(COSName.DOC);
+        COSArray array = dictionary.getCOSArray(COSName.DOC);
         if (array == null)
         {
             return null;
         }
-        for (int i = 0; i < array.size(); i++)
+        for (int i = 0; i + 1 < array.size(); i += 2)
         {
-            PDActionFactory.createAction((COSDictionary) array.getObject(i));
+            String name = array.getName(i);
+            if (name != null)
+            {
+                COSBase base = array.getObject(i + 1);
+                if (base instanceof COSDictionary)
+                {
+                    PDAction action = PDActionFactory.createAction((COSDictionary) base);
+                    if (action instanceof PDActionJavaScript)
+                    {
+                        map.put(name, (PDActionJavaScript) action);
+                    }
+                }
+            }
         }
         return map;
     }
