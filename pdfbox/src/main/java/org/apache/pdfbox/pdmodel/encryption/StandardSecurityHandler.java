@@ -145,9 +145,10 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         {
             throw new IOException("Decryption material is not compatible with the document");
         }
-        
+
+        int encryptionVersion = encryption.getVersion();
         // This is only used with security version 4 and 5.
-        if (encryption.getVersion() >= 4) {
+        if (encryptionVersion >= 4) {
 	        setStreamFilterName(encryption.getStreamFilterName());
 	        setStringFilterName(encryption.getStreamFilterName());
         }
@@ -162,11 +163,11 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
 
         int dicPermissions = encryption.getPermissions();
         int dicRevision = encryption.getRevision();
-        int dicLength = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
+        int dicLength = encryptionVersion == 1 ? 5 : encryption.getLength() / 8;
 
         byte[] documentIDBytes = getDocumentIDBytes(documentIDArray);
 
-        // we need to know whether the meta data was encrypted for password calculation
+        // we need to know whether the metadata was encrypted for password calculation
         boolean encryptMetadata = encryption.isEncryptMetaData();
         
         byte[] userKey = encryption.getUserKey();
@@ -244,7 +245,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             validatePerms(encryption, dicPermissions, encryptMetadata);
         }
 
-        if (encryption.getVersion() == 4 || encryption.getVersion() == 5)
+        if (encryptionVersion == 4 || encryptionVersion == 5)
         {
             // detect whether AES encryption is used. This assumes that the encryption algo is 
             // stored in the PDCryptFilterDictionary
@@ -959,7 +960,35 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         else
         {
             // compare first 16 bytes only
-            return Arrays.equals(Arrays.copyOf(user, 16), Arrays.copyOf(passwordBytes, 16));
+            boolean userArrIsBigger = user.length > passwordBytes.length;
+            int minLength = userArrIsBigger ? passwordBytes.length : user.length;
+            int maxLength = userArrIsBigger ? user.length : passwordBytes.length;
+
+            if (minLength > 16)
+            {
+                minLength = 16;
+            }
+
+            if (maxLength > 16)
+            {
+                maxLength = 16;
+            }
+
+            for (int i = 0; i < minLength; ++i)
+                if (user[i] != passwordBytes[i])
+                {
+                    return false;
+                }
+
+            byte[] arr = userArrIsBigger ? user : passwordBytes;
+
+            for (int i = minLength; i < maxLength; ++i)
+                if (arr[i] != 0)
+                {
+                    return false;
+                }
+
+            return true;
         }
     }
 
