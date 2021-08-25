@@ -94,7 +94,7 @@ public class FDFTemplate implements COSObjectable
         COSArray array = template.getCOSArray(COSName.FIELDS);
         if (array != null)
         {
-            List<FDFField> fields = new ArrayList<>();
+            List<FDFField> fields = new ArrayList<>(array.size());
             for (int i = 0; i < array.size(); i++)
             {
                 fields.add(new FDFField((COSDictionary) array.getObject(i)));
