@@ -155,6 +155,21 @@ class TestPDDocument
             // catalog version version has to be 1.5
             assertEquals("1.5", document.getDocumentCatalog().getVersion());
         }
+
+        // PDFBOX-5265: check that all versions are 1.6 when compression is used (default)
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument document = new PDDocument())
+        {
+            document.addPage(new PDPage());
+            document.save(baos);
+        }
+        try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
+        {
+            assertEquals("1.6", document.getDocumentCatalog().getVersion());
+            assertEquals(1.6f, document.getDocument().getVersion());
+            assertEquals(1.6f, document.getVersion());
+        }
+        assertEquals("%PDF-1.6", new String(baos.toByteArray(), 0, 8));
     }
 
     /**
