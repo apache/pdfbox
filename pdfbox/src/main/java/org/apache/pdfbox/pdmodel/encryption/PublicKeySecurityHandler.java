@@ -32,7 +32,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Iterator;
-
+import java.security.Provider;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -476,9 +476,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyPro
         Cipher cipher;
         try
         {
-            apg = AlgorithmParameterGenerator.getInstance(algorithm, SecurityProvider.getProvider());
-            keygen = KeyGenerator.getInstance(algorithm, SecurityProvider.getProvider());
-            cipher = Cipher.getInstance(algorithm, SecurityProvider.getProvider());
+            Provider provider = SecurityProvider.getProvider();
+            apg = AlgorithmParameterGenerator.getInstance(algorithm, provider);
+            keygen = KeyGenerator.getInstance(algorithm, provider);
+            cipher = Cipher.getInstance(algorithm, provider);
         }
         catch (NoSuchAlgorithmException e)
         {
