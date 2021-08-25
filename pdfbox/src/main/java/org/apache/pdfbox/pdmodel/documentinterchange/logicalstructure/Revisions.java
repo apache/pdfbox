@@ -123,13 +123,14 @@ public class Revisions<T>
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < this.getObjects().size(); i++)
+        List<T> objects = this.getObjects();
+        for (int i = 0; i < objects.size(); i++)
         {
             if (i > 0)
             {
                 sb.append("; ");
             }
-            sb.append("object=").append(this.getObjects().get(i))
+            sb.append("object=").append(objects.get(i))
                 .append(", revisionNumber=").append(this.getRevisionNumber(i));
         }
         return sb.toString();
