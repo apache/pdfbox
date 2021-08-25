@@ -63,13 +63,13 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
 {
     private static final Log LOG = LogFactory.getLog(SecurityHandler.class);
 
-    private static final int DEFAULT_KEY_LENGTH = 40;
+    private static final short DEFAULT_KEY_LENGTH = 40;
 
     // see 7.6.2, page 58, PDF 32000-1:2008
     private static final byte[] AES_SALT = { (byte) 0x73, (byte) 0x41, (byte) 0x6c, (byte) 0x54 };
 
     /** The length in bits of the secret key used to encrypt the document. */
-    private int keyLength = DEFAULT_KEY_LENGTH;
+    private short keyLength = DEFAULT_KEY_LENGTH;
 
     /** The encryption key that will used to encrypt / decrypt.*/
     private byte[] encryptionKey;
@@ -128,7 +128,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     protected SecurityHandler(T_POLICY protectionPolicy)
     {
         this.protectionPolicy = protectionPolicy;
-        keyLength = protectionPolicy.getEncryptionKeyLength();
+        keyLength = (short)protectionPolicy.getEncryptionKeyLength();
     }
 
     /**
@@ -693,7 +693,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      */
     public void setKeyLength(int keyLen)
     {
-        this.keyLength = keyLen;
+        this.keyLength = (short)keyLen;
     }
 
     /**
