@@ -245,7 +245,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
                     length1 = repairLength1(bytes, length1);
                     length2 = repairLength2(bytes, length1, length2);
 
-                    if (bytes.length > 0 && (bytes[0] & 0xff) == PFB_START_MARKER)
+                    if ((bytes[0] & 0xff) == PFB_START_MARKER)
                     {
                         // some bad files embed the entire PFB, see PDFBOX-2607
                         t1 = Type1Font.createWithPFB(bytes);
@@ -398,7 +398,6 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     @Override
     public float getHeight(int code) throws IOException
     {
-        String name = codeToName(code);
         if (getStandard14AFM() != null)
         {
             String afmName = getEncoding().getName(code);
@@ -406,6 +405,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         }
         else
         {
+            String name = codeToName(code);
             // todo: should be scaled by font matrix
             return (float) genericFont.getPath(name).getBounds().getHeight();
         }
