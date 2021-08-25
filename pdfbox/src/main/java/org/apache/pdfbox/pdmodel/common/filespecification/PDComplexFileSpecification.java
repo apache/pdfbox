@@ -104,19 +104,23 @@ public class PDComplexFileSpecification extends PDFileSpecification
         if (filename == null)
         {
             filename = getFileDos();
+
+            if (filename == null)
+            {
+                filename = getFileMac();
+
+                if (filename == null)
+                {
+                    filename = getFileUnix();
+
+                    if (filename == null)
+                    {
+                        filename = getFile();
+                    }
+                }
+            }
         }
-        if (filename == null)
-        {
-            filename = getFileMac();
-        }
-        if (filename == null)
-        {
-            filename = getFileUnix();
-        }
-        if (filename == null)
-        {
-            filename = getFile();
-        }
+
         return filename;
     }
 

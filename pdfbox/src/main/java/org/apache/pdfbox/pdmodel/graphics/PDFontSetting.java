@@ -37,7 +37,7 @@ import java.io.IOException;
  */
 public class PDFontSetting implements COSObjectable
 {
-    private COSArray fontSetting = null;
+    private final COSArray fontSetting;
 
     /**
      * Creates a blank font setting, font will be null, size will be 1.
