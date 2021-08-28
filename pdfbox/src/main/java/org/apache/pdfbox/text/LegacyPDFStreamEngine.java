@@ -82,8 +82,23 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
     private int pageRotation;
     private PDRectangle pageSize;
     private Matrix translateMatrix;
-    private final GlyphList glyphList;
+    private static final GlyphList GLYPHLIST;
     private final Map<COSDictionary, Float> fontHeightMap = new WeakHashMap<>();
+
+    static
+    {
+        // load additional glyph list for Unicode mapping
+        String path = "/org/apache/pdfbox/resources/glyphlist/additional.txt";
+        //no need to use a BufferedInputSteam here, as GlyphList uses a BufferedReader
+        try (InputStream input = GlyphList.class.getResourceAsStream(path))
+        {
+            GLYPHLIST = new GlyphList(GlyphList.getAdobeGlyphList(), input);
+        }
+        catch (IOException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+    }
 
     /**
      * Constructor.
@@ -112,14 +127,6 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         addOperator(new SetTextHorizontalScaling());
         addOperator(new ShowTextLine());
         addOperator(new ShowTextLineAndSpace());
-
-        // load additional glyph list for Unicode mapping
-        String path = "/org/apache/pdfbox/resources/glyphlist/additional.txt";
-        //no need to use a BufferedInputSteam here, as GlyphList uses a BufferedReader
-        try (InputStream input = GlyphList.class.getResourceAsStream(path))
-        {
-            glyphList = new GlyphList(GlyphList.getAdobeGlyphList(), input);
-        }
     }
 
     /**
@@ -266,7 +273,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         float spaceWidthDisplay = spaceWidthText * textRenderingMatrix.getScalingFactorX();
 
         // use our additional glyph list for Unicode mapping
-        String unicode = font.toUnicode(code, glyphList);
+        String unicode = font.toUnicode(code, GLYPHLIST);
 
         // when there is no Unicode mapping available, Acrobat simply coerces the character code
         // into Unicode, so we do the same. Subclasses of PDFStreamEngine don't necessarily want
