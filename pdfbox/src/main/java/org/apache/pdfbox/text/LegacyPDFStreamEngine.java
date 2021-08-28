@@ -103,7 +103,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
     /**
      * Constructor.
      */
-    LegacyPDFStreamEngine() throws IOException
+    LegacyPDFStreamEngine()
     {
         addOperator(new BeginText());
         addOperator(new Concatenate());
