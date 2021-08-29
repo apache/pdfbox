@@ -145,7 +145,6 @@ class TTFSubsetterTest
             }
         }
         Assumptions.assumeTrue(simhei != null, "SimHei font not available on this machine, test skipped");
-
         System.out.println("SimHei font found!");
         TrueTypeFont full = new TTFParser().parse(simhei);
 

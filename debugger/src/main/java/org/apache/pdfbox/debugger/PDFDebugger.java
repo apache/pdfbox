@@ -1232,8 +1232,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             @Override
             PDDocument open() throws IOException
             {
-                return Loader.loadPDF(new FileInputStream(file), password);
-                // return Loader.loadPDF(file, password);
+                return Loader.loadPDF(file, password);
             }
         };
         document = documentOpener.parse();

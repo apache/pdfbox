@@ -72,7 +72,7 @@ public class GlyphArraySplitterRegexImpl implements GlyphArraySplitter
         for (String glyphId : glyphIdsAsString.split(GLYPH_ID_SEPARATOR))
         {
             glyphId = glyphId.trim();
-            if (glyphId.length() == 0)
+            if (glyphId.isEmpty())
             {
                 continue;
             }
