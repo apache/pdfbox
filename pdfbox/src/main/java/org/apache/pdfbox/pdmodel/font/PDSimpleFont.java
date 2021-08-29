@@ -190,7 +190,7 @@ public abstract class PDSimpleFont extends PDFont
         {
             if (encoding == null)
             {
-                // sanity check, should never happen
+                // check, should never happen
                 if (!(this instanceof PDTrueTypeFont))
                 {
                     throw new IllegalStateException("PDFBox bug: encoding should not be null!");
