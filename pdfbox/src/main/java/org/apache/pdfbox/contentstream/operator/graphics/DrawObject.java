@@ -71,7 +71,7 @@ public final class DrawObject extends GraphicsOperatorProcessor
             try
             {
                 context.increaseLevel();
-                if (context.getLevel() > 25)
+                if (context.getLevel() > 50)
                 {
                     LOG.error("recursion is too deep, skipping form XObject");
                     return;
