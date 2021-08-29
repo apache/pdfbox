@@ -21,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +50,7 @@ public final class Standard14Fonts
      * Metrics are loaded into this map on demand, only if needed.
      * @see #getAFM
      */
-    private static final Map<FontName, FontMetrics> FONTS = new HashMap<>(14);
+    private static final Map<FontName, FontMetrics> FONTS = new EnumMap<>(FontName.class);
 
     static
     {

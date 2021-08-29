@@ -222,7 +222,6 @@ public class GlyphSubstitutionDataExtractor
     {
         int[] componentGlyphIDs = ligatureTable.getComponentGlyphIDs();
         List<Integer> glyphsToBeSubstituted = new ArrayList<>(componentGlyphIDs.length);
-
         for (int componentGlyphID : componentGlyphIDs)
         {
             glyphsToBeSubstituted.add(componentGlyphID);

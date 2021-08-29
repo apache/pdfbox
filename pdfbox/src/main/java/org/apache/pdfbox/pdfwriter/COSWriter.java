@@ -649,6 +649,8 @@ public class COSWriter implements ICOSVisitor
     {
         if (isCompress())
         {
+            pdDocument.setVersion(
+                    Math.max(pdDocument.getVersion(), COSWriterCompressionPool.MINIMUM_SUPPORTED_VERSION));
             doc.setVersion(
                     Math.max(doc.getVersion(), COSWriterCompressionPool.MINIMUM_SUPPORTED_VERSION));
         }

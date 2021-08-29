@@ -211,9 +211,17 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         {
             setLineDashPattern(bs.getDashStyle().getDashArray(), 0);
         }
-        else if (bs == null && border.size() > 3 && border.getObject(3) instanceof COSArray)
+        else if (bs == null && border.size() > 3)
         {
-            setLineDashPattern(((COSArray) border.getObject(3)).toFloatArray(), 0);
+            if (border.getObject(3) instanceof COSArray)
+            {
+                setLineDashPattern(((COSArray) border.getObject(3)).toFloatArray(), 0);
+            }
+            else
+            {
+                // PDFBOX-5266: invalid dash array, be invisible
+                setLineDashPattern(new float[1], 0);
+            }
         }
         setLineWidthOnDemand(lineWidth);
     }
