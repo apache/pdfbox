@@ -227,7 +227,7 @@ public class XrefTrailerResolver
                 }
                 xrefSeqBytePos.add( prevBytePos );
 
-                // sanity check to prevent infinite loops
+                // prevent infinite loops
                 if ( xrefSeqBytePos.size() >= bytePosToXrefMap.size() )
                 {
                     break;
