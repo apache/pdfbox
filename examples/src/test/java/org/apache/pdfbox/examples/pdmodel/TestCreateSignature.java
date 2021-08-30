@@ -718,7 +718,7 @@ public class TestCreateSignature
         byte[] defaultSignedTwo = signEncrypted(null, signingTime);
         Assert.assertFalse(Arrays.equals(defaultSignedOne, defaultSignedTwo));
 
-        // a dummy value for FixedSecureRandom is used (for real use-cases a secure value should be provided)
+        // a zero placeholder value for FixedSecureRandom is used (a secure value should be provided for real use-cases )
         byte[] fixedRandomSignedOne = signEncrypted(new FixedSecureRandom(new byte[128]),
                 signingTime);
         byte[] fixedRandomSignedTwo = signEncrypted(new FixedSecureRandom(new byte[128]),
