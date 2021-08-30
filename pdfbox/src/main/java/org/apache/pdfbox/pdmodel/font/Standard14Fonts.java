@@ -25,6 +25,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetrics;
 
@@ -39,18 +40,26 @@ public final class Standard14Fonts
     /**
      * Contains all base names and alias names for the known fonts.
      * For base fonts both the key and the value will be the base name.
-     * For aliases, the key is an alias, and the value is a base name.
+     * For aliases, the key is an alias, and the value is a FontName.
      * We want a single lookup in the map to find the font both by a base name or an alias.
      */
     private static final Map<String, FontName> ALIASES = new HashMap<>(38);
 
     /**
-     * Contains the font metrics for the base fonts.
-     * The key is a base font name, value is a FontMetrics instance.
+     * Contains the font metrics for the standard 14 fonts. 
+     * The key is the font name, value is a FontMetrics instance.
      * Metrics are loaded into this map on demand, only if needed.
+     * 
      * @see #getAFM
      */
     private static final Map<FontName, FontMetrics> FONTS = new EnumMap<>(FontName.class);
+
+    /**
+     * Contains the mapped fonts for the standard 14 fonts. 
+     * The key is the font name, value is a FontBoxFont instance.
+     * FontBoxFont are loaded into this map on demand, only if needed.
+     */
+    private static final Map<FontName, FontBoxFont> GENERIC_FONTS = new HashMap<>(14);
 
     static
     {
@@ -134,7 +143,7 @@ public final class Standard14Fonts
      * an alias.
      *
      * @see #getAFM
-     * @param baseName the base name of the font; must be one of the 14 standard fonts
+     * @param baseName the font name of the Standard 14 font
      */
     private static void mapName(FontName baseName)
     {
@@ -146,7 +155,7 @@ public final class Standard14Fonts
      * name as value). We want a single lookup in tbaseNamehe map to find the font both by a base name or an alias.
      *
      * @param alias an alias for the font
-     * @param baseName the base name of the font; must be one of the 14 standard fonts
+     * @param baseName  the font name of the Standard 14 font
      */
     private static void mapName(String alias, FontName baseName)
     {
@@ -221,6 +230,28 @@ public final class Standard14Fonts
     }
 
     /**
+     * Returns the mapped font for the specified Standard 14 font. The mapped font is cached.
+     *
+     * @param baseName name of the standard 14 font
+     * @return the mapped font
+     */
+    public static FontBoxFont getMappedFont(FontName baseName)
+    {
+        if (GENERIC_FONTS.get(baseName) == null)
+        {
+            synchronized (GENERIC_FONTS)
+            {
+                if (GENERIC_FONTS.get(baseName) == null)
+                {
+                    PDType1Font type1Font = new PDType1Font(baseName);
+                    return GENERIC_FONTS.put(baseName, type1Font.getFontBoxFont());
+                }
+            }
+        }
+        return GENERIC_FONTS.get(baseName);
+    }
+
+    /**
      * Enum for the names of the 14 standard fonts.
      */
     public enum FontName
@@ -258,4 +289,5 @@ public final class Standard14Fonts
             return name;
         }
     }
+
 }

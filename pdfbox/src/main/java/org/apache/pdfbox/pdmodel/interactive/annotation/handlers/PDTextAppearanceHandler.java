@@ -27,7 +27,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -342,7 +343,8 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of an Helvetica bold "?" and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.HELVETICA_BOLD.getPath("question");
+        GeneralPath path = Standard14Fonts.getMappedFont(FontName.HELVETICA_BOLD)
+                .getPath("question");
         addPath(contentStream, path);
         contentStream.restoreGraphicsState();
         // draw the outer circle counterclockwise to fill area between circle and "?"
@@ -384,7 +386,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of an Helvetica "?" and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.HELVETICA.getPath("paragraph");
+        GeneralPath path = Standard14Fonts.getMappedFont(FontName.HELVETICA).getPath("paragraph");
         addPath(contentStream, path);
         contentStream.restoreGraphicsState();
         contentStream.fillAndStroke();
@@ -412,9 +414,11 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         // values gathered by trial and error
         contentStream.transform(Matrix.getScaleInstance(0.001f * 4, 0.001f * 4));
         contentStream.transform(Matrix.getTranslateInstance(200, 0));
-        addPath(contentStream, PDType1Font.HELVETICA_BOLD.getPath("N"));
+        addPath(contentStream,
+                Standard14Fonts.getMappedFont(FontName.HELVETICA_BOLD).getPath("N"));
         contentStream.transform(Matrix.getTranslateInstance(1300, 0));
-        addPath(contentStream, PDType1Font.HELVETICA_BOLD.getPath("P"));
+        addPath(contentStream,
+                Standard14Fonts.getMappedFont(FontName.HELVETICA_BOLD).getPath("P"));
         contentStream.fill();
     }
 
@@ -434,7 +438,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of a Zapf Dingbats star (0x2605) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a35");
+        GeneralPath path = Standard14Fonts.getMappedFont(FontName.ZAPF_DINGBATS).getPath("a35");
         addPath(contentStream, path);
         contentStream.fillAndStroke();
     }
@@ -459,7 +463,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of a Zapf Dingbats check (0x2714) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a20");
+        GeneralPath path = Standard14Fonts.getMappedFont(FontName.ZAPF_DINGBATS).getPath("a20");
         addPath(contentStream, path);
         contentStream.fillAndStroke();
     }
@@ -482,7 +486,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of a Zapf Dingbats right pointer (0x27A4) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a174");
+        GeneralPath path = Standard14Fonts.getMappedFont(FontName.ZAPF_DINGBATS).getPath("a174");
         addPath(contentStream, path);
         contentStream.fillAndStroke();
     }
@@ -504,7 +508,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of a Symbol crosshair (0x2295) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.SYMBOL.getPath("circleplus");
+        GeneralPath path = Standard14Fonts.getMappedFont(FontName.SYMBOL).getPath("circleplus");
         addPath(contentStream, path);
         contentStream.fillAndStroke();
     }
@@ -585,7 +589,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         // we get the shape of a Zapf Dingbats right arrow (0x2794) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a160");
+        GeneralPath path = Standard14Fonts.getMappedFont(FontName.ZAPF_DINGBATS).getPath("a160");
         addPath(contentStream, path);
         contentStream.restoreGraphicsState();
         // surprisingly, this one not counterclockwise.
