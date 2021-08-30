@@ -41,7 +41,6 @@ public class PDPageXYZDestination extends PDPageDestination
      */
     public PDPageXYZDestination()
     {
-        super();
         array.growToSize(5);
         array.setName( 1, TYPE );
     }
@@ -74,7 +73,7 @@ public class PDPageXYZDestination extends PDPageDestination
      */
     public void setLeft( int x )
     {
-        array.growToSize( 3 );
+        array.growToSize(5);
         if( x == -1 )
         {
             array.set(2, null);
@@ -103,7 +102,7 @@ public class PDPageXYZDestination extends PDPageDestination
      */
     public void setTop( int y )
     {
-        array.growToSize( 4 );
+        array.growToSize(5);
         if( y == -1 )
         {
             array.set(3, null);
