@@ -41,7 +41,6 @@ public class PDPageFitHeightDestination extends PDPageDestination
      */
     public PDPageFitHeightDestination()
     {
-        super();
         array.growToSize(3);
         array.setName( 1, TYPE );
 
@@ -103,7 +102,7 @@ public class PDPageFitHeightDestination extends PDPageDestination
      */
     public void setFitBoundingBox( boolean fitBoundingBox )
     {
-        array.growToSize( 2 );
+        array.growToSize(3);
         if( fitBoundingBox )
         {
             array.setName( 1, TYPE_BOUNDED );
