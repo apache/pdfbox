@@ -60,24 +60,6 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
 {
     private static final Log LOG = LogFactory.getLog(PDType1Font.class);
 
-    // todo: replace with enum? or getters?
-    public static final PDType1Font TIMES_ROMAN = new PDType1Font(FontName.TIMES_ROMAN);
-    public static final PDType1Font TIMES_BOLD = new PDType1Font(FontName.TIMES_BOLD);
-    public static final PDType1Font TIMES_ITALIC = new PDType1Font(FontName.TIMES_ITALIC);
-    public static final PDType1Font TIMES_BOLD_ITALIC = new PDType1Font(FontName.TIMES_BOLD_ITALIC);
-    public static final PDType1Font HELVETICA = new PDType1Font(FontName.HELVETICA);
-    public static final PDType1Font HELVETICA_BOLD = new PDType1Font(FontName.HELVETICA_BOLD);
-    public static final PDType1Font HELVETICA_OBLIQUE = new PDType1Font(FontName.HELVETICA_OBLIQUE);
-    public static final PDType1Font HELVETICA_BOLD_OBLIQUE = new PDType1Font(
-            FontName.HELVETICA_BOLD_OBLIQUE);
-    public static final PDType1Font COURIER = new PDType1Font(FontName.COURIER);
-    public static final PDType1Font COURIER_BOLD = new PDType1Font(FontName.COURIER_BOLD);
-    public static final PDType1Font COURIER_OBLIQUE = new PDType1Font(FontName.COURIER_OBLIQUE);
-    public static final PDType1Font COURIER_BOLD_OBLIQUE = new PDType1Font(
-            FontName.COURIER_BOLD_OBLIQUE);
-    public static final PDType1Font SYMBOL = new PDType1Font(FontName.SYMBOL);
-    public static final PDType1Font ZAPF_DINGBATS = new PDType1Font(FontName.ZAPF_DINGBATS);
-
     // alternative names for glyphs which are commonly encountered
     private static final Map<String, String> ALT_NAMES = new HashMap<>();
     private static final int PFB_START_MARKER = 0x80;
