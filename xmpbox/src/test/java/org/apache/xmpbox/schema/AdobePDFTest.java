@@ -112,7 +112,7 @@ class AdobePDFTest
     void testBadPDFAConformanceId() throws BadFieldValueException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         String conformance = "kiohiohiohiohio";
         assertThrows(BadFieldValueException.class, () -> {
             pdfaid.setConformance(conformance);
