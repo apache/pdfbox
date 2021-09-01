@@ -169,6 +169,10 @@ public class PDType1CFont extends PDSimpleFont
         }
         if ("nbspace".equals(name))
         {
+            if (!hasGlyph("space"))
+            {
+                return new GeneralPath();
+            }
             return genericFont.getPath("space");
         }
         return genericFont.getPath(name);
