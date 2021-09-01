@@ -244,7 +244,7 @@ public final class Standard14Fonts
                 if (GENERIC_FONTS.get(baseName) == null)
                 {
                     PDType1Font type1Font = new PDType1Font(baseName);
-                    return GENERIC_FONTS.put(baseName, type1Font.getFontBoxFont());
+                    GENERIC_FONTS.put(baseName, type1Font.getFontBoxFont());
                 }
             }
         }
