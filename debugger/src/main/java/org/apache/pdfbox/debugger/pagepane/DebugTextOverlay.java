@@ -66,7 +66,7 @@ final class DebugTextOverlay
         private AffineTransform flipAT;
         private AffineTransform transAT;
         
-        DebugTextStripper(Graphics2D graphics) throws IOException
+        DebugTextStripper(Graphics2D graphics)
         {
             this.graphics = graphics;
         }
