@@ -48,7 +48,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
     /**
      * Instantiate a new PDFTextStripper object.
      */
-    public PDFMarkedContentExtractor() throws IOException
+    public PDFMarkedContentExtractor()
     {
         this(null);
     }
