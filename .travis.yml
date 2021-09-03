@@ -28,3 +28,7 @@ jdk:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq fonts-liberation
+
+cache:
+  directories:
+  - $HOME/.m2
