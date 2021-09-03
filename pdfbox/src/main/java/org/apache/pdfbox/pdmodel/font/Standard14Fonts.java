@@ -17,6 +17,9 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
+
+import java.awt.geom.GeneralPath;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +31,8 @@ import java.util.Set;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetrics;
+import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
+import org.apache.pdfbox.pdmodel.font.encoding.SymbolEncoding;
 
 /**
  * The "Standard 14" PDF fonts, also known as the "base 14" fonts.
@@ -235,22 +240,76 @@ public final class Standard14Fonts
      * @param baseName name of the standard 14 font
      * @return the mapped font
      */
-    public static FontBoxFont getMappedFont(FontName baseName)
+    private static FontBoxFont getMappedFont(FontName baseName)
     {
-        if (GENERIC_FONTS.get(baseName) == null)
+        if (!GENERIC_FONTS.containsKey(baseName))
         {
             synchronized (GENERIC_FONTS)
             {
-                if (GENERIC_FONTS.get(baseName) == null)
+                if (!GENERIC_FONTS.containsKey(baseName))
                 {
                     PDType1Font type1Font = new PDType1Font(baseName);
-                    GENERIC_FONTS.put(baseName, type1Font.getFontBoxFont());
+                    if (type1Font != null)
+                    {
+                        GENERIC_FONTS.put(baseName, type1Font.getFontBoxFont());
+                    }
                 }
             }
         }
         return GENERIC_FONTS.get(baseName);
     }
 
+    /**
+     * Returns the path for the character with the given name for the specified Standard 14 font. The mapped font is
+     * cached. The path may differ in different environments as it depends on the mapped font.
+     *
+     * @param baseName name of the standard 14 font
+     * @param glyphName name of glyph
+     * @return the mapped font
+     */
+    public static GeneralPath getGlyphPath(FontName baseName, String glyphName) throws IOException
+    {
+        // copied and adapted from PDType1Font.getNameInFont(String)
+        if (!glyphName.equals(".notdef"))
+        {
+            FontBoxFont mappedFont = getMappedFont(baseName);
+            if (mappedFont != null)
+            {
+                if (mappedFont.hasGlyph(glyphName))
+                {
+                    return mappedFont.getPath(glyphName);
+                }
+                String unicodes = getGlyphList(baseName).toUnicode(glyphName);
+                if (unicodes != null && unicodes.length() == 1)
+                {
+                    String uniName = getUniNameOfCodePoint(unicodes.codePointAt(0));
+                    if (mappedFont.hasGlyph(uniName))
+                    {
+                        return mappedFont.getPath(uniName);
+                    }
+                }
+                if ("SymbolMT".equals(mappedFont.getName()))
+                {
+                    Integer code = SymbolEncoding.INSTANCE.getNameToCodeMap().get(glyphName);
+                    if (code != null)
+                    {
+                        String uniName = getUniNameOfCodePoint(code + 0xF000);
+                        if (mappedFont.hasGlyph(uniName))
+                        {
+                            return mappedFont.getPath(uniName);
+                        }
+                    }
+                }
+            }
+        }
+        return new GeneralPath();
+    }
+
+    private static GlyphList getGlyphList(FontName baseName)
+    {
+        return FontName.ZAPF_DINGBATS == baseName ? GlyphList.getZapfDingbats()
+                : GlyphList.getAdobeGlyphList();
+    }
     /**
      * Enum for the names of the 14 standard fonts.
      */
