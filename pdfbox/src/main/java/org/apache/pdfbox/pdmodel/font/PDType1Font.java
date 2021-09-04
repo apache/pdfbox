@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.EncodedFont;
@@ -93,7 +92,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     /**
      * to improve encoding speed.
      */
-    private final Map <Integer,byte[]> codeToBytesMap;
+    private final Map<Integer, byte[]> codeToBytesMap = new HashMap<>();
     private Matrix fontMatrix;
     private BoundingBox fontBBox;
 
@@ -121,9 +120,6 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
             dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
             break;
         }
-
-        // standard 14 fonts may be accessed concurrently, as they are singletons
-        codeToBytesMap = new ConcurrentHashMap<>();
 
         // todo: could load the PFB font here if we wanted to support Standard 14 embedding
         type1font = null;
@@ -181,7 +177,6 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         isEmbedded = true;
         isDamaged = false;
         fontMatrixTransform = new AffineTransform();
-        codeToBytesMap = new HashMap<>();
     }
 
     /**
@@ -194,7 +189,6 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     public PDType1Font(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
-        codeToBytesMap = new HashMap<>();
 
         PDFontDescriptor fd = getFontDescriptor();
         Type1Font t1 = null;
