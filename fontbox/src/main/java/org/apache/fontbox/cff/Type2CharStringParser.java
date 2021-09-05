@@ -19,7 +19,6 @@ package org.apache.fontbox.cff;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
 
@@ -29,7 +28,6 @@ import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
  */
 public class Type2CharStringParser
 {
-
     // 1-byte commands
     private static final int CALLSUBR = 10;
     private static final int CALLGSUBR = 29;
@@ -37,33 +35,17 @@ public class Type2CharStringParser
     private int hstemCount;
     private int vstemCount;
     private final List<Object> sequence = new ArrayList<>();
-    @SuppressWarnings("unused")
     private final String fontName;
-    @SuppressWarnings("unused")
-    private final String glyphName;
+    private String currentGlyph;
 
     /**
      * Constructs a new Type1CharStringParser object for a Type 1-equivalent font.
      *
      * @param fontName font name
-     * @param glyphName glyph name
      */
-    public Type2CharStringParser(String fontName, String glyphName)
+    public Type2CharStringParser(String fontName)
     {
         this.fontName = fontName;
-        this.glyphName = glyphName;
-    }
-
-    /**
-     * Constructs a new Type1CharStringParser object for a CID-Keyed font.
-     *
-     * @param fontName font name
-     * @param cid CID
-     */
-    public Type2CharStringParser(String fontName, int cid)
-    {
-        this.fontName = fontName;
-        this.glyphName = String.format(Locale.US, "%04x", cid); // for debugging only
     }
 
     /**
@@ -75,12 +57,14 @@ public class Type2CharStringParser
      * @return the Type2 sequence
      * @throws IOException if an error occurs during reading
      */
-    public List<Object> parse(byte[] bytes, byte[][] globalSubrIndex, byte[][] localSubrIndex) throws IOException
+    public List<Object> parse(byte[] bytes, byte[][] globalSubrIndex, byte[][] localSubrIndex,
+            String glyphName) throws IOException
     {
         // reset values if the parser is used multiple times
         hstemCount = 0;
         vstemCount = 0;
         sequence.clear();
+        currentGlyph = glyphName;
         return parseSequence(bytes, globalSubrIndex, localSubrIndex);
     }
 
@@ -126,7 +110,7 @@ public class Type2CharStringParser
         if (subrNumber < localSubrIndex.length)
         {
             byte[] subrBytes = localSubrIndex[subrNumber];
-            parse(subrBytes, globalSubrIndex, localSubrIndex);
+            parseSequence(subrBytes, globalSubrIndex, localSubrIndex);
             Object lastItem = sequence.get(sequence.size() - 1);
             if (lastItem instanceof CharStringCommand
                     && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
@@ -145,7 +129,7 @@ public class Type2CharStringParser
         if (subrNumber < globalSubrIndex.length)
         {
             byte[] subrBytes = globalSubrIndex[subrNumber];
-            parse(subrBytes, globalSubrIndex, localSubrIndex);
+            parseSequence(subrBytes, globalSubrIndex, localSubrIndex);
             Object lastItem = sequence.get(sequence.size() - 1);
             if (lastItem instanceof CharStringCommand
                     && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
@@ -261,5 +245,11 @@ public class Type2CharStringParser
             count++;
         }
         return count;
+    }
+
+    @Override
+    public String toString()
+    {
+        return fontName + ", current glpyh " + currentGlyph;
     }
 }
