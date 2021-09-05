@@ -50,9 +50,11 @@ public class Type2CharStringParser
 
     /**
      * The given byte array will be parsed and converted to a Type2 sequence.
+     * 
      * @param bytes the given mapping as byte array
      * @param globalSubrIndex array containing all global subroutines
      * @param localSubrIndex array containing all local subroutines
+     * @param glyphName the name of the current glyph
      * 
      * @return the Type2 sequence
      * @throws IOException if an error occurs during reading
