@@ -34,7 +34,7 @@ public class Type2CharStringParser
 
     private int hstemCount;
     private int vstemCount;
-    private final List<Object> sequence = new ArrayList<>();
+    private List<Object> sequence;
     private final String fontName;
     private String currentGlyph;
 
@@ -63,7 +63,8 @@ public class Type2CharStringParser
         // reset values if the parser is used multiple times
         hstemCount = 0;
         vstemCount = 0;
-        sequence.clear();
+        // create a new list as it is used as return value
+        sequence = new ArrayList<>();
         currentGlyph = glyphName;
         return parseSequence(bytes, globalSubrIndex, localSubrIndex);
     }
