@@ -103,6 +103,7 @@ import org.apache.pdfbox.debugger.ui.OSXAdapter;
 import org.apache.pdfbox.debugger.ui.PDFTreeCellRenderer;
 import org.apache.pdfbox.debugger.ui.PDFTreeModel;
 import org.apache.pdfbox.debugger.ui.PageEntry;
+import org.apache.pdfbox.debugger.ui.PrintDpiMenu;
 import org.apache.pdfbox.debugger.ui.ReaderBottomPanel;
 import org.apache.pdfbox.debugger.ui.RecentFiles;
 import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
@@ -120,6 +121,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
+import org.apache.pdfbox.printing.Orientation;
 import org.apache.pdfbox.printing.PDFPageable;
 
 /**
@@ -169,6 +171,7 @@ public class PDFDebugger extends JFrame
     private JMenuItem saveMenuItem;
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
+    private JMenu printDpiMenu;
     private JMenuItem reopenMenuItem;
     
     // edit > find menu
@@ -436,6 +439,10 @@ public class PDFDebugger extends JFrame
 
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
+
+        printDpiMenu = PrintDpiMenu.getInstance().getMenu();
+        printDpiMenu.setEnabled(false);
+        fileMenu.add(printDpiMenu);
 
         if (!IS_MAC_OS)
         {
@@ -1155,7 +1162,7 @@ public class PDFDebugger extends JFrame
         try
         {
             PrinterJob job = PrinterJob.getPrinterJob();
-            job.setPageable(new PDFPageable(document));
+            job.setPageable(new PDFPageable(document, Orientation.AUTO, false, PrintDpiMenu.getDpiSelection()));
             PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
             PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
             if (vp != null && vp.getDuplex() != null)
@@ -1303,6 +1310,7 @@ public class PDFDebugger extends JFrame
         };
         document = documentOpener.parse();
         printMenuItem.setEnabled(true);
+        printDpiMenu.setEnabled(true);
         reopenMenuItem.setEnabled(true);
         
         initTree();
