@@ -423,7 +423,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                 }
                 catch (UnsupportedFlavorException e)
                 {
-                    throw new RuntimeException(e);
+                    new ErrorDialog(e).setVisible(true);
+                    return false;
                 }
                 return true;
             }
@@ -514,15 +515,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         reopenMenuItem.setEnabled(false);
         fileMenu.add(reopenMenuItem);
 
-        try
-        {
-            recentFiles = new RecentFiles(this.getClass(), 5);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-
+        recentFiles = new RecentFiles(this.getClass(), 5);
         recentFilesMenu = new JMenu("Open Recent");
         recentFilesMenu.setEnabled(false);
         addRecentFileItems();
@@ -660,7 +653,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
         catch (IOException e)
         {
-            throw new RuntimeException(e);
+            new ErrorDialog(e).setVisible(true);
         }
     }
 
@@ -701,7 +694,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
         catch (IOException e)
         {
-            throw new RuntimeException(e);
+            new ErrorDialog(e).setVisible(true);
         }
     }
 
@@ -1139,7 +1132,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             }
             catch( IOException e )
             {
-                throw new RuntimeException(e);
+                // no dialogbox, don't interfere with exit wish
+                e.printStackTrace();
             }
         }
         windowPrefs.setExtendedState(getExtendedState());
@@ -1209,7 +1203,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
         catch (PrinterException e)
         {
-            throw new RuntimeException(e);
+            new ErrorDialog(e).setVisible(true);
         }
     }
 
