@@ -219,7 +219,15 @@ public abstract class PDAnnotation implements COSObjectable
     public PDAnnotation(COSDictionary dict)
     {
         dictionary = dict;
-        dictionary.setItem(COSName.TYPE, COSName.ANNOT);
+        COSBase type = dict.getDictionaryObject(COSName.TYPE);
+        if (type == null)
+        {
+            dictionary.setItem(COSName.TYPE, COSName.ANNOT);
+        }
+        else if (!COSName.ANNOT.equals(type))
+        {
+            LOG.warn("Annotation has type " + type + ", further mayhem may follow");
+        }
     }
 
     /**
@@ -406,6 +414,7 @@ public abstract class PDAnnotation implements COSObjectable
         }
         else
         {
+// PDAppearanceStream extends PDFormXObject, but does not reference the resource cache
             return normalAppearance.getAppearanceStream();
         }
     }
