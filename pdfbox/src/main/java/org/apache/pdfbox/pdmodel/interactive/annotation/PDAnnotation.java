@@ -414,7 +414,6 @@ public abstract class PDAnnotation implements COSObjectable
         }
         else
         {
-// PDAppearanceStream extends PDFormXObject, but does not reference the resource cache
             return normalAppearance.getAppearanceStream();
         }
     }
