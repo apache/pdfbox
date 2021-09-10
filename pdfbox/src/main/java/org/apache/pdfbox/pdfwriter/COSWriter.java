@@ -30,9 +30,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +48,6 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
@@ -185,15 +182,6 @@ public class COSWriter implements ICOSVisitor
     // indicates whether existing object keys should be reused or not
     private boolean reuseObjectNumbers = true;
 
-    // maps the object to the keys generated in the writer
-    // these are used for indirect references in other objects
-    //A hashtable is used on purpose over a hashmap
-    //so that null entries will not get added.
-    @SuppressWarnings({"squid:S1149"})
-    private final Map<COSBase,COSObjectKey> objectKeys = new Hashtable<>();
-
-    private final Map<COSObjectKey,COSBase> keyObject = new HashMap<>();
-
     // the list of x ref entries to be made so far
     private final List<XReferenceEntry> xRefEntries = new ArrayList<>();
 
@@ -231,6 +219,8 @@ public class COSWriter implements ICOSVisitor
     private final CompressParameters compressParameters;
     private boolean blockAddingObject = false;
 
+    private COSWriterObjectStorage objectStorage;
+
     /**
      * COSWriter constructor.
      *
@@ -253,6 +243,7 @@ public class COSWriter implements ICOSVisitor
         setOutput(outputStream);
         setStandardOutput(new COSStandardOutputStream(output));
         this.compressParameters = compressParameters;
+        this.objectStorage = new COSWriterObjectStorage();
     }
 
     /**
@@ -279,6 +270,8 @@ public class COSWriter implements ICOSVisitor
         incrementalInput = inputData;
         incrementalOutput = outputStream;
         incrementalUpdate = true;
+
+        this.objectStorage = new COSWriterObjectStorage();
     }
 
     /**
@@ -322,24 +315,6 @@ public class COSWriter implements ICOSVisitor
     public boolean isCompress()
     {
         return compressParameters != null && compressParameters.isCompress();
-    }
-
-    private void prepareIncrement()
-    {
-        COSDocument cosDoc = pdDocument.getDocument();
-        Set<COSObjectKey> keySet = cosDoc.getXrefTable().keySet();
-        for (COSObjectKey cosObjectKey : keySet)
-        {
-            COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
-            if (object != null && cosObjectKey != null && !(object instanceof COSNumber))
-            {
-                // FIXME see PDFBOX-4997: objectKeys is (theoretically) risky because a COSName in
-                // different objects would appear only once. Rev 1092855 considered this
-                // but only for COSNumber.
-                objectKeys.put(object, cosObjectKey);
-                keyObject.put(cosObjectKey, object);
-            }
-        }
     }
     
     /**
@@ -474,21 +449,19 @@ public class COSWriter implements ICOSVisitor
             {
                 COSBase object = compressionPool.getObject(key);
                 writtenObjects.add(object);
-                objectKeys.put(object, key);
-                keyObject.put(key, object);
+                objectStorage.put(key, object);
             }
             // Append top level objects to document.
             for (COSObjectKey key : compressionPool.getTopLevelObjects())
             {
                 COSBase object = compressionPool.getObject(key);
                 writtenObjects.add(object);
-                objectKeys.put(object, key);
-                keyObject.put(key, object);
+                objectStorage.put(key, object);
             }
             for (COSObjectKey key : compressionPool.getTopLevelObjects())
             {
                 currentObjectKey = key;
-                doWriteObject(key, keyObject.get(key));
+                doWriteObject(key, objectStorage.getObject(key));
             }
             // Append object streams to document.
             number = compressionPool.getHighestXRefObjectNumber();
@@ -520,8 +493,7 @@ public class COSWriter implements ICOSVisitor
                 COSObjectKey encryptKey = new COSObjectKey(++number, 0);
                 currentObjectKey = encryptKey;
                 writtenObjects.add(encrypt);
-                keyObject.put(encryptKey, encrypt);
-                objectKeys.put(encrypt, encryptKey);
+                objectStorage.put(encryptKey, encrypt);
 
                 doWriteObject(encryptKey, encrypt);
             }
@@ -543,11 +515,7 @@ public class COSWriter implements ICOSVisitor
         {
             return;
         }
-        COSBase actual = object;
-        if( actual instanceof COSObject )
-        {
-            actual = ((COSObject)actual).getObject();
-        }
+        COSBase actual = objectStorage.convertToActual(object);
 
         if (!writtenObjects.contains(object) //
                 && !objectsToWrite.contains(object) //
@@ -557,13 +525,13 @@ public class COSWriter implements ICOSVisitor
             COSObjectKey cosObjectKey = null;
             if (actual != null)
             {
-                cosObjectKey = objectKeys.get(actual);
+                cosObjectKey = objectStorage.getKey(actual);
             }
             if (cosObjectKey != null)
             {
-                cosBase = keyObject.get(cosObjectKey);
+                cosBase = objectStorage.getObject(cosObjectKey);
             }
-            if (actual != null && objectKeys.containsKey(actual) && !isNeedToBeUpdated(object)
+            if (actual != null && objectStorage.getKey(actual) != null && !isNeedToBeUpdated(object)
                     && !isNeedToBeUpdated(cosBase))
             {
                 return;
@@ -1053,7 +1021,7 @@ public class COSWriter implements ICOSVisitor
         }
         return list.toArray(new Long[list.size()]);
     }
-    
+
     /**
      * This will get the object key for the object.
      *
@@ -1063,24 +1031,41 @@ public class COSWriter implements ICOSVisitor
      */
     private COSObjectKey getObjectKey( COSBase obj )
     {
-        COSBase actual = obj;
-        if( actual instanceof COSObject )
+        if(
+            reuseObjectNumbers &&
+            obj instanceof COSObject &&
+            obj.getKey() != null
+        )
         {
-            if (reuseObjectNumbers)
-            {
-                COSObjectKey key = obj.getKey();
-                if (key != null)
-                {
-                    objectKeys.put(obj, key);
-                    return key;
-                }
-            }
-            actual = ((COSObject) obj).getObject();
+            objectStorage.put(obj.getKey(), obj);
+            return obj.getKey();
         }
+
+        COSBase actual = objectStorage.convertToActual(obj);
+
         // PDFBOX-4540: because objectKeys is accessible from outside, it is possible
         // that a COSObject obj is already in the objectKeys map.
-        return objectKeys.computeIfAbsent(actual, k -> new COSObjectKey(++number, 0));
+        COSObjectKey key = objectStorage.getKey(obj);
+        if( key == null && actual != null )
+        {
+            key = objectStorage.getKey(actual);
+        }
+        if (key == null)
+        {
+            key = new COSObjectKey(++number, 0);
+            if( actual != null )
+            {
+                objectStorage.put(key, actual);
+            }
+            else
+            {
+                objectStorage.put(key, obj);
+            }
+        }
+
+        return key;
     }
+
 
     @Override
     public Object visitFromArray( COSArray obj ) throws IOException
@@ -1104,7 +1089,7 @@ public class COSWriter implements ICOSVisitor
             }
             else if( current instanceof COSObject )
             {
-                COSBase subValue = ((COSObject)current).getObject();
+                COSBase subValue = objectStorage.convertToActual(current);
                 if (willEncrypt || incrementalUpdate //
                         || subValue instanceof COSDictionary //
                         || subValue instanceof COSArray //
@@ -1209,7 +1194,7 @@ public class COSWriter implements ICOSVisitor
                 }
                 else if( value instanceof COSObject )
                 {
-                    COSBase subValue = ((COSObject)value).getObject();
+                    COSBase subValue = objectStorage.convertToActual(value);
                     if (willEncrypt || incrementalUpdate //
                             || subValue instanceof COSDictionary //
                             || subValue instanceof COSArray //
@@ -1471,7 +1456,7 @@ public class COSWriter implements ICOSVisitor
         number = pdDocument.getDocument().getHighestXRefObjectNumber();
         if(incrementalUpdate)
         {
-            prepareIncrement();
+            objectStorage.setDocument(doc.getDocument());
         }
         Long idTime = pdDocument.getDocumentId() == null ? System.currentTimeMillis()
                 : pdDocument.getDocumentId();

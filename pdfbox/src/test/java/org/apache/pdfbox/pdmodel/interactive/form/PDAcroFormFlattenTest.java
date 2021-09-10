@@ -53,7 +53,6 @@ import org.junit.jupiter.params.provider.CsvSource;
  * as the test results need manual inspection. Enable as needed.
  *
  */
-@Execution(ExecutionMode.CONCURRENT)
 class PDAcroFormFlattenTest
 {
 
