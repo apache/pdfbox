@@ -960,37 +960,32 @@ public class PDFMergerUtility
                       PDStructureTreeRoot srcStructTree,
                       PDStructureTreeRoot destStructTree) throws IOException
     {
-        COSArray dstKArray = new COSArray();
-        if (destStructTree.getK() != null)
-        {
-            COSBase base = destStructTree.getK();
-            if (base instanceof COSArray)
-            {
-                dstKArray.addAll((COSArray) base);
-            }
-            else if (base instanceof COSDictionary)
-            {
-                dstKArray.add(base);
-            }
-        }
-
+        COSBase srcKEntry = srcStructTree.getK();
         COSArray srcKArray = new COSArray();
-        if (srcStructTree.getK() != null)
+        COSBase clonedSrcKEntry = cloner.cloneForNewDocument(srcKEntry);
+        if (clonedSrcKEntry instanceof COSArray)
         {
-            COSBase base = cloner.cloneForNewDocument(srcStructTree.getK());
-            if (base instanceof COSArray)
-            {
-                srcKArray.addAll((COSArray) base);
-            }
-            else if (base instanceof COSDictionary)
-            {
-                srcKArray.add(base);
-            }
+            srcKArray.addAll((COSArray) clonedSrcKEntry);
+        }
+        else if (clonedSrcKEntry instanceof COSDictionary)
+        {
+            srcKArray.add(clonedSrcKEntry);
         }
 
         if (srcKArray.size() == 0)
         {
             return;
+        }
+
+        COSArray dstKArray = new COSArray();
+        COSBase dstKEntry = destStructTree.getK();
+        if (dstKEntry instanceof COSArray)
+        {
+            dstKArray.addAll((COSArray) dstKEntry);
+        }
+        else if (dstKEntry instanceof COSDictionary)
+        {
+            dstKArray.add(dstKEntry);
         }
 
         if (dstKArray.size() == 1 && dstKArray.getObject(0) instanceof COSDictionary)
@@ -1044,8 +1039,8 @@ public class PDFMergerUtility
                 return false;
             }
             COSDictionary dict = (COSDictionary) base;
-            if (!COSName.DOCUMENT.equals(dict.getCOSName(COSName.S)) &&
-                !COSName.PART.equals(dict.getCOSName(COSName.S)))
+            COSName sEntry = dict.getCOSName(COSName.S);
+            if (!COSName.DOCUMENT.equals(sEntry) && !COSName.PART.equals(sEntry))
             {
                 return false;
             }
@@ -1480,17 +1475,19 @@ public class PDFMergerUtility
      */
     private void updateStructParentEntries(PDPage page, int structParentOffset) throws IOException
     {
-        if (page.getStructParents() >= 0)
+        int structParents = page.getStructParents();
+        if (structParents >= 0)
         {
-            page.setStructParents(page.getStructParents() + structParentOffset);
+            page.setStructParents(structParents + structParentOffset);
         }
         List<PDAnnotation> annots = page.getAnnotations();
         List<PDAnnotation> newannots = new ArrayList<>(annots.size());
         annots.forEach(annot ->
         {
-            if (annot.getStructParent() >= 0)
+            int structParent = annot.getStructParent();
+            if (structParent >= 0)
             {
-                annot.setStructParent(annot.getStructParent() + structParentOffset);
+                annot.setStructParent(structParent + structParentOffset);
             }
             newannots.add(annot);
         });
