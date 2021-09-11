@@ -16,15 +16,37 @@
  */
 package org.apache.pdfbox.cos;
 
-public interface COSUpdateInfo 
+import org.apache.pdfbox.cos.observer.COSIncrementObserver;
+import org.apache.pdfbox.cos.observer.event.COSDirectUpdateEvent;
+import org.apache.pdfbox.cos.observer.COSObserver;
+
+public interface COSUpdateInfo
 {
+
     /**
      * Get the update state for the COSWriter. This indicates whether an object is to be written
      * when there is an incremental save.
      *
      * @return the update state.
      */
-    boolean isNeedToBeUpdated();
+    default boolean isNeedToBeUpdated()
+    {
+        COSBase instance = getCOSObject();
+        if (instance != null)
+        {
+            for (COSObserver observer : instance.getRegisteredObservers())
+            {
+                if (observer instanceof COSIncrementObserver)
+                {
+                    if (((COSIncrementObserver) observer).isNeedToBeUpdated(instance))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Set the update state of the dictionary for the COSWriter. This indicates whether an object is
@@ -32,6 +54,21 @@ public interface COSUpdateInfo
      *
      * @param flag the update state.
      */
-    void setNeedToBeUpdated(boolean flag);
+    default void setNeedToBeUpdated(boolean flag)
+    {
+        COSBase instance = getCOSObject();
+        if (instance != null)
+        {
+            instance.reportUpdate(new COSDirectUpdateEvent<>(instance, flag));
+        }
+    }
+
+    /**
+     * Convert this standard java object to a COS object.
+     *
+     * @return The cos object that matches this Java object.
+     * @see COSBase#getCOSObject()
+     */
+    COSBase getCOSObject();
 
 }

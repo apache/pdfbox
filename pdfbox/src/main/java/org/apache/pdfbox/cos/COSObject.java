@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.observer.event.COSDereferenceEvent;
+import org.apache.pdfbox.cos.observer.event.COSRemoveEvent;
 
 /**
  * This class represents a PDF object.
@@ -32,7 +34,6 @@ public class COSObject extends COSBase implements COSUpdateInfo
     private COSBase baseObject;
     private long objectNumber;
     private int generationNumber;
-    private boolean needToBeUpdated;
     private ICOSParser parser;
     private boolean isDereferenced = false;
 
@@ -47,6 +48,8 @@ public class COSObject extends COSBase implements COSUpdateInfo
     public COSObject(COSBase object)
     {
         baseObject = object;
+        isDereferenced = true;
+        reportUpdate(new COSDereferenceEvent<>(this, baseObject));
     }
 
     /**
@@ -59,6 +62,8 @@ public class COSObject extends COSBase implements COSUpdateInfo
     {
         this(objectKey, null);
         baseObject = object;
+        isDereferenced = true;
+        reportUpdate(new COSDereferenceEvent<>(this, baseObject));
     }
 
     /**
@@ -71,6 +76,10 @@ public class COSObject extends COSBase implements COSUpdateInfo
     public COSObject(COSBase object, ICOSParser parser)
     {
         baseObject = object;
+        isDereferenced = object != null;
+        if (isDereferenced) {
+            reportUpdate(new COSDereferenceEvent<>(this, baseObject));
+        }
         this.parser = parser;
     }
 
@@ -113,6 +122,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
                 // mark as dereferenced to avoid endless recursions
                 isDereferenced = true;
                 baseObject = parser.dereferenceCOSObject(this);
+                reportUpdate(new COSDereferenceEvent<>(this, baseObject));
             }
             catch (IOException e)
             {
@@ -131,6 +141,10 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public final void setToNull()
     {
+        if(baseObject != null)
+        {
+            reportUpdate(new COSRemoveEvent<>(this, baseObject));
+        }
         baseObject = COSNull.NULL;
         parser = null;
     }
@@ -175,27 +189,15 @@ public class COSObject extends COSBase implements COSUpdateInfo
         COSBase object = getObject();
         return object != null ? object.accept(visitor) : COSNull.NULL.accept(visitor);
     }
-    
+
     /**
-     * Get the update state for the COSWriter.
-     * 
-     * @return the update state.
+     * Returns {@code true}, if the hereby referenced {@link COSBase} has already been parsed and loaded.
+     *
+     * @return {@code true}, if the hereby referenced {@link COSBase} has already been parsed and loaded.
      */
-    @Override
-    public boolean isNeedToBeUpdated() 
+    public boolean isDereferenced()
     {
-        return needToBeUpdated;
-    }
-    
-    /**
-     * Set the update state of the dictionary for the COSWriter.
-     * 
-     * @param flag the update state.
-     */
-    @Override
-    public void setNeedToBeUpdated(boolean flag) 
-    {
-        needToBeUpdated = flag;
+        return isDereferenced;
     }
 
 }
