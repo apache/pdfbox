@@ -34,73 +34,39 @@ class CharStringCommandTest
     @Test
     void testKey()
     {
-        Key key1 = new Key(1);
-        int[] value1 = key1.getValue();
-        assertEquals(1, value1.length);
-        assertEquals(1, value1[0]);
-        assertEquals(1, key1.hashCode());
-        assertEquals(Arrays.toString(new int[] { 1 }), key1.toString());
-
-        Key key12_0 = new Key(12, 0);
-        int[] value12_0 = key12_0.getValue();
-        assertEquals(2, value12_0.length);
-        assertEquals(12, value12_0[0]);
-        assertEquals(0, value12_0[1]);
-        assertEquals(12 ^ 0, key12_0.hashCode());
-        assertEquals(Arrays.toString(new int[] { 12, 0 }), key12_0.toString());
-
-        int[] keyValues12_3 = new int[] { 12, 3 };
-        Key key12_3 = new Key(keyValues12_3);
-        int[] value12_3 = key12_3.getValue();
-        assertEquals(2, value12_3.length);
-        assertEquals(12, value12_3[0]);
-        assertEquals(3, value12_3[1]);
-        assertEquals(12 ^ 3, key12_3.hashCode());
-
-        assertEquals(Type1KeyWord.HSTEM.key, key1);
-        assertNotEquals(key1, key12_0);
-        assertNotEquals(key12_0, key1);
-        assertNotEquals(key12_0, key12_3);
-        assertNotEquals(key12_0, new Key(new int[] { 12, 3, 0 }));
+        assertEquals(Key.HSTEM, Key.valueOfKey(1));
+        assertEquals(Key.ESCAPE, Key.valueOfKey(12));
+        assertEquals(Key.DOTSECTION, Key.valueOfKey(12, 0));
+        assertEquals(Key.AND, Key.valueOfKey(12, 3));
+        assertEquals(Key.HSBW, Key.valueOfKey(13));
     }
 
     @Test
     void testCharStringCommand()
     {
         CharStringCommand charStringCommand1 = new CharStringCommand(1);
-        assertEquals(1, charStringCommand1.getKey().getValue()[0]);
         assertEquals(Type1KeyWord.HSTEM, charStringCommand1.getType1KeyWord());
         assertEquals(Type2KeyWord.HSTEM, charStringCommand1.getType2KeyWord());
-        assertEquals(1, charStringCommand1.hashCode());
         assertEquals("HSTEM|", charStringCommand1.toString());
 
         CharStringCommand charStringCommand12_0 = new CharStringCommand(12, 0);
-        assertEquals(12, charStringCommand12_0.getKey().getValue()[0]);
-        assertEquals(0, charStringCommand12_0.getKey().getValue()[1]);
         assertEquals(Type1KeyWord.DOTSECTION, charStringCommand12_0.getType1KeyWord());
         assertNull(charStringCommand12_0.getType2KeyWord());
-        assertEquals(12 ^ 0, charStringCommand12_0.hashCode());
         assertEquals("DOTSECTION|", charStringCommand12_0.toString());
 
         int[] values12_3 = new int[] { 12, 3 };
         CharStringCommand charStringCommand12_3 = new CharStringCommand(values12_3);
-        assertEquals(12, charStringCommand12_3.getKey().getValue()[0]);
-        assertEquals(3, charStringCommand12_3.getKey().getValue()[1]);
         assertNull(charStringCommand12_3.getType1KeyWord());
         assertEquals(Type2KeyWord.AND, charStringCommand12_3.getType2KeyWord());
-        assertEquals(12 ^ 3, charStringCommand12_3.hashCode());
         assertEquals("AND|", charStringCommand12_3.toString());
 
-        assertNotEquals(charStringCommand1, charStringCommand12_0);
-        assertNotEquals(charStringCommand12_0, charStringCommand12_3);
     }
 
     @Test
     void testUnknownCharStringCommand()
     {
         CharStringCommand charStringCommandUnknown = new CharStringCommand(99);
-        assertEquals(99, charStringCommandUnknown.getKey().getValue()[0]);
-        assertEquals("[99]|", charStringCommandUnknown.toString());
+        assertEquals("unknown command|", charStringCommandUnknown.toString());
     }
 
 }

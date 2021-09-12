@@ -165,8 +165,7 @@ public class Type1CharString
         if (type1KeyWord == null)
         {
             // indicates an invalid charstring
-            LOG.warn("Unknown charstring command: " + command.getKey() + " in glyph " + glyphName
-                    + " of font " + fontName);
+            LOG.warn("Unknown charstring command in glyph " + glyphName + " of font " + fontName);
             return Collections.emptyList();
         }
         switch(type1KeyWord)
@@ -311,8 +310,8 @@ public class Type1CharString
             break;
         case RET:
             // indicates an invalid charstring
-            LOG.warn("Unexpected charstring command: " + command.getKey() + " in glyph " +
-                    glyphName + " of font " + fontName);
+            LOG.warn("Unexpected charstring command: RET in glyph " + glyphName + " of font "
+                    + fontName);
             break;
         default:
             // indicates a PDFBox bug

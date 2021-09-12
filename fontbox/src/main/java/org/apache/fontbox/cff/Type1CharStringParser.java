@@ -210,7 +210,7 @@ public class Type1CharStringParser
             int b = (Integer) sequence.remove(sequence.size() - 1);
             return b / a;
         }
-        throw new IOException("Unexpected char string command: " + command.getKey());
+        throw new IOException("Unexpected char string command: " + command.getType1KeyWord());
     }
 
     private CharStringCommand readCommand(DataInput input, int b0) throws IOException
