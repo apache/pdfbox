@@ -34,7 +34,7 @@ public class FileOpenSaveDialog
 {
     private final Component mainUI;
 
-    private static final JFileChooser fileChooser = new JFileChooser() 
+    private static final JFileChooser FILE_CHOOSER = new JFileChooser() 
     {
         @Override
         public void approveSelection()
@@ -64,8 +64,8 @@ public class FileOpenSaveDialog
     public FileOpenSaveDialog(Component parentUI, FileFilter fileFilter)
     {
         mainUI = parentUI;
-        fileChooser.resetChoosableFileFilters();
-        fileChooser.setFileFilter(fileFilter);
+        FILE_CHOOSER.resetChoosableFileFilters();
+        FILE_CHOOSER.setFileFilter(fileFilter);
     }
 
     /**
@@ -77,10 +77,10 @@ public class FileOpenSaveDialog
      */
     public boolean saveFile(byte[] bytes, String extension) throws IOException
     {
-        int result = fileChooser.showSaveDialog(mainUI);
+        int result = FILE_CHOOSER.showSaveDialog(mainUI);
         if (result == JFileChooser.APPROVE_OPTION)
         {
-            String filename = fileChooser.getSelectedFile().getAbsolutePath();
+            String filename = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
             if (extension != null && !filename.endsWith(extension))
             {
                 filename += "." + extension;
@@ -111,10 +111,10 @@ public class FileOpenSaveDialog
      */
     public File openFile() throws IOException
     {
-        int result = fileChooser.showOpenDialog(mainUI);
+        int result = FILE_CHOOSER.showOpenDialog(mainUI);
         if (result == JFileChooser.APPROVE_OPTION)
         {
-            return fileChooser.getSelectedFile();
+            return FILE_CHOOSER.getSelectedFile();
         }
         return null;
     }
