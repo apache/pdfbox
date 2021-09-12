@@ -169,7 +169,6 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private Tree tree;
     // file menu
     private JMenuItem saveAsMenuItem;
-    private JMenuItem saveMenuItem;
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
     private JMenu printDpiMenu;
@@ -521,6 +520,11 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         addRecentFileItems();
         fileMenu.add(recentFilesMenu);
 
+        saveAsMenuItem = new JMenuItem("Save as...");
+        saveAsMenuItem.addActionListener(this::saveAsMenuItemActionPerformed);
+        saveAsMenuItem.setEnabled(false);        
+        fileMenu.add(saveAsMenuItem);
+
         printMenuItem = new JMenuItem("Print");
         printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutKeyMask));
         printMenuItem.setEnabled(false);
@@ -663,6 +667,28 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private void osxQuit()
     {
         exitMenuItemActionPerformed(null);
+    }
+
+    //TODO needs to be expanded like openMenuItemActionPerformed
+    // (FileOpenSaveDialog also needs to be expanded to have a method that saves a PDDocumennt)
+    private void saveAsMenuItemActionPerformed(ActionEvent evt)
+    {
+        try
+        {
+            FileDialog openDialog = new FileDialog(this, "Save", FileDialog.SAVE);
+            openDialog.setFilenameFilter((dir, name) -> name.toLowerCase().endsWith(".pdf"));
+            openDialog.setVisible(true);
+            String file = openDialog.getFile();
+            if (file != null)
+            {
+                document.setAllSecurityToBeRemoved(true);
+                document.save(file);
+            }
+        }
+        catch (IOException e)
+        {
+            new ErrorDialog(e).setVisible(true);
+        }
     }
 
     private void openMenuItemActionPerformed(ActionEvent evt)
