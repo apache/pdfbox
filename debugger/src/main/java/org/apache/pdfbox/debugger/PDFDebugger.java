@@ -669,20 +669,28 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         exitMenuItemActionPerformed(null);
     }
 
-    //TODO needs to be expanded like openMenuItemActionPerformed
-    // (FileOpenSaveDialog also needs to be expanded to have a method that saves a PDDocumennt)
     private void saveAsMenuItemActionPerformed(ActionEvent evt)
     {
         try
         {
-            FileDialog openDialog = new FileDialog(this, "Save", FileDialog.SAVE);
-            openDialog.setFilenameFilter((dir, name) -> name.toLowerCase().endsWith(".pdf"));
-            openDialog.setVisible(true);
-            String file = openDialog.getFile();
-            if (file != null)
+            if (IS_MAC_OS)
             {
-                document.setAllSecurityToBeRemoved(true);
-                document.save(file);
+                FileDialog openDialog = new FileDialog(this, "Save", FileDialog.SAVE);
+                openDialog.setFilenameFilter((dir, name) -> name.toLowerCase().endsWith(".pdf"));
+                openDialog.setVisible(true);
+                String file = openDialog.getFile();
+                if (file != null)
+                {
+                    document.setAllSecurityToBeRemoved(true);
+                    document.save(file);
+                }
+            }
+            else
+            {
+                String[] extensions = new String[] { "pdf", "PDF" };
+                FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
+                FileOpenSaveDialog saveAsDialog = new FileOpenSaveDialog(this, pdfFilter);
+                saveAsDialog.saveFile(bytes, OS_NAME), OS_NAME)
             }
         }
         catch (IOException e)
