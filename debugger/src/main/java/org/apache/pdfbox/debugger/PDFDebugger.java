@@ -690,7 +690,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                 String[] extensions = new String[] { "pdf", "PDF" };
                 FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
                 FileOpenSaveDialog saveAsDialog = new FileOpenSaveDialog(this, pdfFilter);
-                saveAsDialog.saveFile(bytes, OS_NAME), OS_NAME)
+                saveAsDialog.saveDocument(document, "pdf");
             }
         }
         catch (IOException e)
