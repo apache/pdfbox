@@ -512,7 +512,7 @@ public abstract class PDFStreamEngine
             if (token instanceof Operator)
             {
                 processOperator((Operator) token, arguments);
-                arguments = new ArrayList<COSBase>();
+                arguments.clear();
             }
             else
             {
@@ -568,8 +568,9 @@ public abstract class PDFStreamEngine
     {
         if (rectangle != null)
         {
-            GeneralPath clip = rectangle.transform(getGraphicsState().getCurrentTransformationMatrix());
-            getGraphicsState().intersectClippingPath(clip);
+            PDGraphicsState graphicsState = getGraphicsState();
+            GeneralPath clip = rectangle.transform(graphicsState.getCurrentTransformationMatrix());
+            graphicsState.intersectClippingPath(clip);
         }
     }
 
