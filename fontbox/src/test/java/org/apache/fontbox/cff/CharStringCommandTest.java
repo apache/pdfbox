@@ -18,10 +18,7 @@
 package org.apache.fontbox.cff;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-
-import java.util.Arrays;
 
 import org.apache.fontbox.cff.CharStringCommand.Key;
 import org.apache.fontbox.cff.CharStringCommand.Type1KeyWord;
