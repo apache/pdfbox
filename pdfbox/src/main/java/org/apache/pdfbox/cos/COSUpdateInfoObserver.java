@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.pdfbox.cos.observer.COSIncrementObserver;
 import org.apache.pdfbox.cos.observer.COSObserver;
@@ -69,7 +70,7 @@ public class COSUpdateInfoObserver implements COSIncrementObserver, Iterable<COS
     /**
      * A map mapping monitored {@link COSUpdateInfo} to a list of structures, that hold a reference to said object.
      */
-    private final Map<COSUpdateInfo, List<COSUpdateInfo>> referenceHolders = new HashMap<>();
+    private final Map<COSUpdateInfo, List<COSUpdateInfo>> referenceHolders = new ConcurrentHashMap<>();
 
     /**
      * Instantiates a new {@link COSUpdateInfoObserver} for the given {@link COSDocument}.
@@ -425,12 +426,14 @@ public class COSUpdateInfoObserver implements COSIncrementObserver, Iterable<COS
     /**
      * <p>
      * Remove the given {@link COSUpdateInfo} as a referenceHolder for the given {@link COSBase}.<br>
-     * If the reference holder had been the last referenceHolder of that object, remove the object from the increment
-     * and monitored objects all together.
+     * If the reference holder had been the last referenceHolder of that object, remove the object
+     * from the increment and monitored objects all together.
      * </p>
      *
-     * @param referencedObject        The {@link COSBase}, that shall no longer be included in the given reference holder.
-     * @param previousReferenceHolder The {@link COSUpdateInfo} reference holder, that shall no longer include the object.
+     * @param referencedObject        The {@link COSBase}, that shall no longer be included
+     *                                in the given reference holder.
+     * @param previousReferenceHolder The {@link COSUpdateInfo} reference holder, that shall no
+     *                                longer include the object.
      */
     private void removeReferenceHolder(COSBase referencedObject, COSUpdateInfo previousReferenceHolder)
     {
@@ -451,7 +454,7 @@ public class COSUpdateInfoObserver implements COSIncrementObserver, Iterable<COS
         else
         {
             List<COSUpdateInfo> actualReferenceHolders = referenceHolders.get((COSUpdateInfo) referencedObject);
-            actualReferenceHolders.remove((COSUpdateInfo) referencedObject);
+            actualReferenceHolders.remove(previousReferenceHolder);
 
             // The object is no longer referenced and must not be part of the increment,
             // it shall no longer be monitored.

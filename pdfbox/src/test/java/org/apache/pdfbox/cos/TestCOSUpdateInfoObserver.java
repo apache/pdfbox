@@ -43,6 +43,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ConcurrentModificationException;
 
 public class TestCOSUpdateInfoObserver
 {
@@ -52,7 +53,7 @@ public class TestCOSUpdateInfoObserver
      * Create a document from scratch - incrementally making changes - checking results of previous steps.
      */
     @Test
-    public void testIncrementallyCreateDocument()
+    void testIncrementallyCreateDocument()
     {
         byte[] documentData = new byte[0];
 
@@ -243,6 +244,34 @@ public class TestCOSUpdateInfoObserver
             fail("Writing 'out.pdf' failed.");
         }*/
     }
+
+    /**
+     * PDFBOX-5263: There was a ConcurrentModificationException with
+     * YTW2VWJQTDAE67PGJT6GS7QSKW3GNUQR.pdf - test that this issues has been resolved.
+     * 
+     * @throws IOException
+     */
+    @Test
+    void testConcurrentModification() throws IOException
+    {
+        URL pdfLocation = 
+            new URL("https://issues.apache.org/jira/secure/attachment/12891316/YTW2VWJQTDAE67PGJT6GS7QSKW3GNUQR.pdf");
+        
+        try (PDDocument document = Loader.loadPDF(pdfLocation.openStream()))
+        {
+            document.setAllSecurityToBeRemoved(true);
+            try
+            {
+                document.save(new ByteArrayOutputStream());
+            }
+            catch (ConcurrentModificationException e)
+            {
+                fail("There shouldn't be a ConcurrentModificationException", e.getCause());
+            }
+        }
+    }
+
+
 
     private PDDocument loadDocument(byte[] documentData) {
         return assertDoesNotThrow(() -> Loader.loadPDF(documentData), "Loading the document failed.");

@@ -22,8 +22,8 @@ import org.apache.pdfbox.cos.observer.COSObserver;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The base object that all objects in the PDF document will extend.
@@ -33,7 +33,7 @@ import java.util.List;
 public abstract class COSBase implements COSObjectable
 {
 
-    private final List<COSObserver> cosChangeObservers = new ArrayList<>();
+    private final List<COSObserver> cosChangeObservers = new CopyOnWriteArrayList<>();
     private boolean direct;
     private COSObjectKey key;
 
