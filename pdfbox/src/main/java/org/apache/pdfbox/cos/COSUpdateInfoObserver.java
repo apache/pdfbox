@@ -17,7 +17,6 @@
 package org.apache.pdfbox.cos;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +107,8 @@ public class COSUpdateInfoObserver implements COSIncrementObserver, Iterable<COS
      * Stops the observer from tracking the following changes.
      */
     @Override
-    public void stopTrackingChanges() {
+    public void stopTrackingChanges()
+    {
         trackingChanges = false;
     }
 
