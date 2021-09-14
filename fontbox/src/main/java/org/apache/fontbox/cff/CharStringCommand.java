@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.cff;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -153,7 +154,7 @@ public class CharStringCommand
     /**
      * Enum of all valid type1 key words
      */
-    public static enum Type1KeyWord
+    public enum Type1KeyWord
     {
         HSTEM(Key.HSTEM), VSTEM(Key.VSTEM), VMOVETO(Key.VMOVETO), RLINETO(Key.RLINETO), //
         HLINETO(Key.HLINETO), VLINETO(Key.VLINETO), RRCURVETO(Key.RRCURVETO), //
@@ -172,7 +173,7 @@ public class CharStringCommand
             this.key = key;
         }
 
-        private static final Map<Key, Type1KeyWord> BY_KEY = new HashMap<>();
+        private static final Map<Key, Type1KeyWord> BY_KEY = new EnumMap<>(Key.class);
             
         static
         {
@@ -202,7 +203,7 @@ public class CharStringCommand
     /**
      * Enum of all valid type2 key words
      */
-    public static enum Type2KeyWord
+    public enum Type2KeyWord
     {
         HSTEM(Key.HSTEM), VSTEM(Key.VSTEM), VMOVETO(Key.VMOVETO), RLINETO(Key.RLINETO), //
         HLINETO(Key.HLINETO), VLINETO(Key.VLINETO), RRCURVETO(Key.RRCURVETO), CALLSUBR(Key.CALLSUBR), //
@@ -226,7 +227,7 @@ public class CharStringCommand
             this.key = key;
         }
 
-        private static final Map<Key, Type2KeyWord> BY_KEY = new HashMap<>();
+        private static final Map<Key, Type2KeyWord> BY_KEY = new EnumMap<>(Key.class);
             
         static
         {
@@ -252,7 +253,7 @@ public class CharStringCommand
         }
     }
 
-    public static enum Key
+    public enum Key
     {
         HSTEM(1), VSTEM(3), VMOVETO(4), RLINETO(5), //
         HLINETO(6), VLINETO(7), RRCURVETO(8), CLOSEPATH(9), CALLSUBR(10), //
