@@ -328,19 +328,19 @@ public class COSUpdateInfoObserver implements COSIncrementObserver, Iterable<COS
         {
             return;
         }
-        List<COSUpdateInfo> referenceHolders;
-        if (!this.referenceHolders.containsKey((COSUpdateInfo) referencedObject))
+        List<COSUpdateInfo> referenceHoldersForObject;
+        if (!referenceHolders.containsKey((COSUpdateInfo) referencedObject))
         {
-            referenceHolders = new ArrayList<>();
-            this.referenceHolders.put((COSUpdateInfo) referencedObject, referenceHolders);
+            referenceHoldersForObject = new ArrayList<>();
+            referenceHolders.put((COSUpdateInfo) referencedObject, referenceHoldersForObject);
         }
         else
         {
-            referenceHolders = this.referenceHolders.get((COSUpdateInfo) referencedObject);
+            referenceHoldersForObject = referenceHolders.get((COSUpdateInfo) referencedObject);
         }
-        if (!referenceHolders.contains(referenceHolder))
+        if (!referenceHoldersForObject.contains(referenceHolder))
         {
-            referenceHolders.add(referenceHolder);
+            referenceHoldersForObject.add(referenceHolder);
         }
     }
 
