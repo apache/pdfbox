@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ConcurrentModificationException;
 
-public class TestCOSUpdateInfoObserver
+class TestCOSUpdateInfoObserver
 {
 
     // TODO Very basic and primitive test - add in depth testing for all this.
@@ -232,11 +232,13 @@ public class TestCOSUpdateInfoObserver
             assertTrue(document.getPage(1).getResources().getFontNames().iterator().hasNext(),
                 "Page 2 should have contained a font");
         }
-        catch (IOException e) {
+        catch (IOException e)
+        {
             fail("Closing streams failed.");
         }
 
-        // TODO: remove the following - Convenience code - this creates the output file at some path, to see and touch it.
+        // TODO: remove the following - Convenience code - this creates the output file at some path,
+        // to see and touch it.
         /*File outFile = new File("Some/path", "out.pdf");
         try (FileOutputStream outputStream = new FileOutputStream(outFile)) {
             outputStream.write(documentData);
@@ -271,9 +273,8 @@ public class TestCOSUpdateInfoObserver
         }
     }
 
-
-
-    private PDDocument loadDocument(byte[] documentData) {
+    private PDDocument loadDocument(byte[] documentData)
+    {
         return assertDoesNotThrow(() -> Loader.loadPDF(documentData), "Loading the document failed.");
     }
 
