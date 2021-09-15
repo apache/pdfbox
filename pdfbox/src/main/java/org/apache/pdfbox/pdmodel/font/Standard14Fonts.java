@@ -64,7 +64,7 @@ public final class Standard14Fonts
      * The key is the font name, value is a FontBoxFont instance.
      * FontBoxFont are loaded into this map on demand, only if needed.
      */
-    private static final Map<FontName, FontBoxFont> GENERIC_FONTS = new HashMap<>(14);
+    private static final Map<FontName, FontBoxFont> GENERIC_FONTS = new EnumMap<>(FontName.class);
 
     static
     {
@@ -249,10 +249,7 @@ public final class Standard14Fonts
                 if (!GENERIC_FONTS.containsKey(baseName))
                 {
                     PDType1Font type1Font = new PDType1Font(baseName);
-                    if (type1Font != null)
-                    {
-                        GENERIC_FONTS.put(baseName, type1Font.getFontBoxFont());
-                    }
+                    GENERIC_FONTS.put(baseName, type1Font.getFontBoxFont());
                 }
             }
         }
