@@ -1274,6 +1274,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         printMenuItem.setEnabled(true);
         printDpiMenu.setEnabled(true);
         reopenMenuItem.setEnabled(true);
+        saveAsMenuItem.setEnabled(true);
         
         initTree();
         
@@ -1314,6 +1315,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         document = documentOpener.parse();
         printMenuItem.setEnabled(true);
         reopenMenuItem.setEnabled(true);
+        saveAsMenuItem.setEnabled(true);
 
         initTree();
 
