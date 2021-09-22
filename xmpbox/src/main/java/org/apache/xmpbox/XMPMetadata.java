@@ -337,7 +337,7 @@ public class XMPMetadata
      * 
      * @return schema added in order to work on it
      */
-    public PDFAIdentificationSchema createAndAddPFAIdentificationSchema()
+    public PDFAIdentificationSchema createAndAddPDFAIdentificationSchema()
     {
         PDFAIdentificationSchema pdfAId = new PDFAIdentificationSchema(this);
         pdfAId.setAboutAsSimple("");
@@ -352,7 +352,7 @@ public class XMPMetadata
      * 
      * @return The PDFAIdentificationSchema schema or null if not declared
      */
-    public PDFAIdentificationSchema getPDFIdentificationSchema()
+    public PDFAIdentificationSchema getPDFAIdentificationSchema()
     {
         return (PDFAIdentificationSchema) getSchema(PDFAIdentificationSchema.class);
     }

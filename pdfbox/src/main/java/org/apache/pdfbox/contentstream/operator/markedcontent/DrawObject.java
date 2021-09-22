@@ -63,7 +63,7 @@ public class DrawObject extends OperatorProcessor
             try
             {
                 context.increaseLevel();
-                if (context.getLevel() > 25)
+                if (context.getLevel() > 50)
                 {
                     LOG.error("recursion is too deep, skipping form XObject");
                     return;
@@ -74,7 +74,7 @@ public class DrawObject extends OperatorProcessor
                 }
                 else
                 {
-                    context.showForm((PDFormXObject)xobject);
+                    context.showForm((PDFormXObject) xobject);
                 }
             }
             finally

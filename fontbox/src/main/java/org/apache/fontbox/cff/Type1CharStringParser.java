@@ -47,18 +47,16 @@ public class Type1CharStringParser
     private static final int POP = 17;
 
     private final String fontName;
-    private final String glyphName;
+    private String currentGlyph;
 
     /**
      * Constructs a new Type1CharStringParser object.
      *
      * @param fontName font name
-     * @param glyphName glyph name
      */
-    public Type1CharStringParser(String fontName, String glyphName)
+    public Type1CharStringParser(String fontName)
     {
         this.fontName = fontName;
-        this.glyphName = glyphName;
     }
 
     /**
@@ -69,12 +67,14 @@ public class Type1CharStringParser
      * @return the Type1 sequence
      * @throws IOException if an error occurs during reading
      */
-    public List<Object> parse(byte[] bytes, List<byte[]> subrs) throws IOException
+    public List<Object> parse(byte[] bytes, List<byte[]> subrs, String glyphName) throws IOException
     {
+        currentGlyph = glyphName;
         return parse(bytes, subrs, new ArrayList<>());
     }
 
-    private List<Object> parse(byte[] bytes, List<byte[]> subrs, List<Object> sequence) throws IOException
+    private List<Object> parse(byte[] bytes, List<byte[]> subrs, List<Object> sequence)
+            throws IOException
     {
         DataInput input = new DataInput(bytes);
         while (input.hasRemaining())
@@ -111,7 +111,7 @@ public class Type1CharStringParser
         if (!(obj instanceof Integer))
         {
             LOG.warn("Parameter " + obj + " for CALLSUBR is ignored, integer expected in glyph '"
-                    + glyphName + "' of font " + fontName);
+                    + currentGlyph + "' of font " + fontName);
             return;
         }
         Integer operand = (Integer) obj;
@@ -130,7 +130,7 @@ public class Type1CharStringParser
         else
         {
             LOG.warn("CALLSUBR is ignored, operand: " + operand + ", subrs.size(): " + subrs.size()
-                    + " in glyph '" + glyphName + "' of font " + fontName);
+                    + " in glyph '" + currentGlyph + "' of font " + fontName);
             // remove all parameters (there can be more than one)
             while (sequence.get(sequence.size() - 1) instanceof Integer)
             {
@@ -187,7 +187,7 @@ public class Type1CharStringParser
 
         if (!results.isEmpty())
         {
-            LOG.warn("Value left on the PostScript stack in glyph " + glyphName + " of font "
+            LOG.warn("Value left on the PostScript stack in glyph " + currentGlyph + " of font "
                     + fontName);
         }
     }
@@ -210,7 +210,7 @@ public class Type1CharStringParser
             int b = (Integer) sequence.remove(sequence.size() - 1);
             return b / a;
         }
-        throw new IOException("Unexpected char string command: " + command.getKey());
+        throw new IOException("Unexpected char string command: " + command.getType1KeyWord());
     }
 
     private CharStringCommand readCommand(DataInput input, int b0) throws IOException

@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.pdfbox.cos.observer.event.COSAddEvent;
+import org.apache.pdfbox.cos.observer.event.COSReplaceEvent;
+import org.apache.pdfbox.cos.observer.event.COSRemoveEvent;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
@@ -34,7 +37,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInfo
 {
     private final List<COSBase> objects = new ArrayList<>();
-    private boolean needToBeUpdated;
 
     /**
      * Constructor.
@@ -57,6 +59,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         }
         cosObjectables.forEach(cosObjectable ->
             objects.add(cosObjectable != null ? cosObjectable.getCOSObject() : null));
+        reportUpdate(new COSAddEvent<>(this, objects));
     }
 
     /**
@@ -67,6 +70,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public void add( COSBase object )
     {
         objects.add( object );
+        reportUpdate(new COSAddEvent<>(this, object));
     }
 
     /**
@@ -77,6 +81,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public void add( COSObjectable object )
     {
         objects.add( object.getCOSObject() );
+        reportUpdate(new COSAddEvent<>(this, object.getCOSObject()));
     }
 
     /**
@@ -89,6 +94,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public void add( int i, COSBase object)
     {
         objects.add( i, object );
+        reportUpdate(new COSAddEvent<>(this, object));
     }
 
     /**
@@ -96,7 +102,9 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void clear()
     {
+        List<COSBase> removed = new ArrayList<>(objects);
         objects.clear();
+        reportUpdate(new COSRemoveEvent<>(this, removed));
     }
 
     /**
@@ -107,6 +115,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public void removeAll( Collection<COSBase> objectsList )
     {
         objects.removeAll( objectsList );
+        reportUpdate(new COSRemoveEvent<>(this, objectsList));
     }
 
     /**
@@ -116,7 +125,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void retainAll( Collection<COSBase> objectsList )
     {
+        List<COSBase> removed = new ArrayList<>(this.objects);
+        removed.removeAll(objectsList);
         objects.retainAll( objectsList );
+        reportUpdate(new COSRemoveEvent<>(this, removed));
     }
 
     /**
@@ -127,6 +139,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public void addAll( Collection<COSBase> objectsList )
     {
         objects.addAll( objectsList );
+        reportUpdate(new COSAddEvent<>(this, objectsList));
     }
 
     /**
@@ -139,6 +152,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         if( objectList != null )
         {
             objects.addAll( objectList.objects );
+            reportUpdate(new COSAddEvent<>(this, objectList));
         }
     }
 
@@ -152,6 +166,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public void addAll( int i, Collection<COSBase> objectList )
     {
         objects.addAll( i, objectList );
+        reportUpdate(new COSAddEvent<>(this, objectList));
     }
 
     /**
@@ -162,7 +177,13 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void set( int index, COSBase object )
     {
+        COSBase replacedEntry = null;
+        if(index >= 0 && index < size())
+        {
+            replacedEntry = get(index);
+        }
         objects.set( index, object );
+        reportUpdate(new COSReplaceEvent<>(this, replacedEntry, object));
     }
 
     /**
@@ -173,7 +194,14 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void set( int index, int intVal )
     {
-        objects.set( index, COSInteger.get(intVal) );
+        COSBase replacedEntry = null;
+        if(index >= 0 && index < size())
+        {
+            replacedEntry = get(index);
+        }
+        COSBase replacingEntry = COSInteger.get(intVal);
+        objects.set( index, replacingEntry );
+        reportUpdate(new COSReplaceEvent<>(this, replacedEntry, replacingEntry));
     }
 
     /**
@@ -184,12 +212,18 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void set( int index, COSObjectable object )
     {
+        COSBase replacedEntry = null;
+        if(index >= 0 && index < size())
+        {
+            replacedEntry = get(index);
+        }
         COSBase base = null;
         if( object != null )
         {
             base = object.getCOSObject();
         }
         objects.set( index, base );
+        reportUpdate(new COSReplaceEvent<>(this, replacedEntry, base));
     }
 
     /**
@@ -379,7 +413,9 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public COSBase remove( int i )
     {
-        return objects.remove( i );
+        COSBase removedEntry = objects.remove( i );
+        reportUpdate(new COSRemoveEvent<>(this, removedEntry));
+        return removedEntry;
     }
 
     /**
@@ -392,7 +428,9 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public boolean remove( COSBase o )
     {
-        return objects.remove( o );
+        boolean removed = objects.remove( o );
+        reportUpdate(new COSRemoveEvent<>(this, o));
+        return removed;
     }
 
     /**
@@ -520,10 +558,13 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void growToSize( int size, COSBase object )
     {
+        List<COSBase> addedObjects = new ArrayList<>();
         while( size() < size )
         {
             add( object );
+            addedObjects.add(object);
         }
+        reportUpdate(new COSAddEvent<>(this, addedObjects));
     }
 
     /**
@@ -537,27 +578,6 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public Object accept(ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromArray(this);
-    }
-
-    @Override
-    public boolean isNeedToBeUpdated() 
-    {
-      return needToBeUpdated;
-    }
-    
-    /**
-     * {@inheritDoc}
-     *<p>
-     * Although the state is set, it has no effect on COSWriter behavior because arrays are always
-     * written as direct object. If an array is to be part of an incremental save, then the method
-     * should be called for its holding dictionary.
-     *
-     * @param flag
-     */
-    @Override
-    public void setNeedToBeUpdated(boolean flag) 
-    {
-      needToBeUpdated = flag;
     }
 
     /**

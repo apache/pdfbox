@@ -26,6 +26,9 @@ import java.util.Set;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -47,6 +50,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 {
     private final PDAnnotation annotation;
+    private PDFont defaultFont;
     protected final PDDocument document;
 
     /**
@@ -77,6 +81,15 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         this.document = document;
     }
 
+    protected PDFont getDefaultFont()
+    {
+        if (defaultFont == null)
+        {
+            defaultFont = new PDType1Font(FontName.HELVETICA);
+        }
+        return defaultFont;
+    }
+    
     PDAnnotation getAnnotation()
     {
         return annotation;

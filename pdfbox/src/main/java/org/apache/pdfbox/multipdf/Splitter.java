@@ -75,7 +75,8 @@ public class Splitter
      *
      * @return A list of all the split documents. These should all be saved before closing any
      * documents, including the source document. Any further operations should be made after
-     * reloading them, to avoid problems due to resource sharing.
+     * reloading them, to avoid problems due to resource sharing. For the same reason, they should
+     * not be saved with encryption.
      *
      * @throws IOException If there is an IOError
      */

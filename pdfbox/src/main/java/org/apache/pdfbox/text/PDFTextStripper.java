@@ -179,6 +179,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     public PDFTextStripper()
     {
+        // empty
     }
 
     /**

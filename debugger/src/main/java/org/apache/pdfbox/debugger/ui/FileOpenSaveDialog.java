@@ -22,8 +22,10 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * @author Khyrul Bashar
@@ -32,7 +34,9 @@ import java.io.IOException;
  */
 public class FileOpenSaveDialog
 {
-    private static final JFileChooser fileChooser = new JFileChooser()
+    private final Component mainUI;
+
+    private static final JFileChooser FILE_CHOOSER = new JFileChooser()
     {
         @Override
         public void approveSelection()
@@ -53,7 +57,6 @@ public class FileOpenSaveDialog
             super.approveSelection();
         }
     };
-    private final Component mainUI;
 
     /**
      * Constructor.
@@ -63,8 +66,8 @@ public class FileOpenSaveDialog
     public FileOpenSaveDialog(Component parentUI, FileFilter fileFilter)
     {
         mainUI = parentUI;
-        fileChooser.resetChoosableFileFilters();
-        fileChooser.setFileFilter(fileFilter);
+        FILE_CHOOSER.resetChoosableFileFilters();
+        FILE_CHOOSER.setFileFilter(fileFilter);
     }
 
     /**
@@ -77,19 +80,40 @@ public class FileOpenSaveDialog
      */
     public boolean saveFile(byte[] bytes, String extension) throws IOException
     {
-        int result = fileChooser.showSaveDialog(mainUI);
+        int result = FILE_CHOOSER.showSaveDialog(mainUI);
         if (result == JFileChooser.APPROVE_OPTION)
         {
-            String filename = fileChooser.getSelectedFile().getAbsolutePath();
+            String filename = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
             if (extension != null && !filename.endsWith(extension))
             {
                 filename += "." + extension;
             }
+            Files.write(Paths.get(filename), bytes);
+            return true;
+        }
+        return false;
+    }
 
-            try (FileOutputStream outputStream = new FileOutputStream(filename))
+    /**
+     * Saves document into a .pdf file after the user is prompted to choose the destination.
+     *
+     * @param document document to be saved in a .pdf file.
+     * @param extension file extension.
+     * @return true if the file is saved successfully or false if failed.
+     * @throws IOException if there is an error in creation of the file.
+     */
+    public boolean saveDocument(PDDocument document, String extension) throws IOException
+    {
+        int result = FILE_CHOOSER.showSaveDialog(mainUI);
+        if (result == JFileChooser.APPROVE_OPTION)
+        {
+            String filename = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
+            if (!filename.endsWith(extension))
             {
-                outputStream.write(bytes);
+                filename += "." + extension;
             }
+            document.setAllSecurityToBeRemoved(true);
+            document.save(filename);
             return true;
         }
         return false;
@@ -102,10 +126,10 @@ public class FileOpenSaveDialog
      */
     public File openFile() throws IOException
     {
-        int result = fileChooser.showOpenDialog(mainUI);
+        int result = FILE_CHOOSER.showOpenDialog(mainUI);
         if (result == JFileChooser.APPROVE_OPTION)
         {
-            return fileChooser.getSelectedFile();
+            return FILE_CHOOSER.getSelectedFile();
         }
         return null;
     }

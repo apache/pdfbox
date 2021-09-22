@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -57,6 +58,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.cos.ICOSVisitor;
+
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
@@ -1467,9 +1469,18 @@ public class COSWriter implements ICOSVisitor
     public void write(PDDocument doc, SignatureInterface signInterface) throws IOException
     {
         pdDocument = doc;
+        // Whatever the writer wishes to change, the writer itself shall keep track of it.
+        pdDocument.getDocument().getUpdateObserver().stopTrackingChanges();
+        if (incrementalUpdate)
+        {
+            for(COSUpdateInfo updatedObject : pdDocument.getDocument().getUpdateObserver())
+            {
+                addObjectToWrite(updatedObject.getCOSObject());
+            }
+        }
         signatureInterface = signInterface;
         number = pdDocument.getDocument().getHighestXRefObjectNumber();
-        if(incrementalUpdate)
+        if (incrementalUpdate)
         {
             prepareIncrement();
         }
@@ -1479,7 +1490,7 @@ public class COSWriter implements ICOSVisitor
         COSDictionary trailer = cosDoc.getTrailer();
 
         // if the document says we should remove encryption, then we shouldn't encrypt
-        if(doc.isAllSecurityToBeRemoved())
+        if (doc.isAllSecurityToBeRemoved())
         {
             willEncrypt = false;
             // also need to get rid of the "Encrypt" in the trailer so readers 
@@ -1571,6 +1582,15 @@ public class COSWriter implements ICOSVisitor
     public void write(FDFDocument doc) throws IOException
     {
         fdfDocument = doc;
+        // Whatever the writer wishes to change, the writer itself shall keep track of it.
+        fdfDocument.getDocument().getUpdateObserver().stopTrackingChanges();
+        if (incrementalUpdate)
+        {
+            for(COSUpdateInfo updatedObject : pdDocument.getDocument().getUpdateObserver())
+            {
+                addObjectToWrite(updatedObject.getCOSObject());
+            }
+        }
         willEncrypt = false;
         COSDocument cosDoc = fdfDocument.getDocument();
         cosDoc.accept(this);

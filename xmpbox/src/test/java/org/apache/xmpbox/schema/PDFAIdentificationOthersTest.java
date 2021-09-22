@@ -34,7 +34,7 @@ class PDFAIdentificationOthersTest
     void testPDFAIdentification() throws Exception
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
 
         Integer versionId = 1;
         String amdId = "2005";
@@ -53,7 +53,7 @@ class PDFAIdentificationOthersTest
         assertEquals(conformance, pdfaid.getConformanceProperty().getStringValue());
 
         // check retrieve this schema in metadata
-        assertEquals(pdfaid, metadata.getPDFIdentificationSchema());
+        assertEquals(pdfaid, metadata.getPDFAIdentificationSchema());
 
         // SaveMetadataHelper.serialize(metadata, true, System.out);
     }
@@ -62,7 +62,7 @@ class PDFAIdentificationOthersTest
     void testBadPDFAConformanceId() throws BadFieldValueException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         String conformance = "kiohiohiohiohio";
         assertThrows(BadFieldValueException.class, () -> {
 	        pdfaid.setConformance(conformance);
@@ -73,7 +73,7 @@ class PDFAIdentificationOthersTest
     void testBadVersionIdValueType() throws Exception
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         pdfaid.setPartValueWithString("1");
         assertThrows(IllegalArgumentException.class, () -> {
             pdfaid.setPartValueWithString("ojoj");

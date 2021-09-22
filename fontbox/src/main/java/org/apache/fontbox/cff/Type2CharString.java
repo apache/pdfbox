@@ -34,7 +34,6 @@ public class Type2CharString extends Type1CharString
     private float defWidthX = 0;
     private float nominalWidthX = 0;
     private int pathCount = 0;
-    private final List<Object> type2sequence;
     private final int gid;
     //todo think about to use an CharStringCommand(8) as static final field
     /**
@@ -52,7 +51,6 @@ public class Type2CharString extends Type1CharString
     {
         super(font, fontName, glyphName);
         this.gid = gid;
-        type2sequence = sequence;
         defWidthX = defaultWidthX;
         nominalWidthX = nomWidthX;
         convertType1ToType2(sequence);
@@ -64,14 +62,6 @@ public class Type2CharString extends Type1CharString
     public int getGID()
     {
         return gid;
-    }
-
-    /**
-     * Returns the Type 2 charstring sequence.
-     */
-    public List<Object> getType2Sequence()
-    {
-        return type2sequence;
     }
 
     /**

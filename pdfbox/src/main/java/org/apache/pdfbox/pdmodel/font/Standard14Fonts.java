@@ -17,6 +17,9 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
+
+import java.awt.geom.GeneralPath;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,8 +28,11 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetrics;
+import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
+import org.apache.pdfbox.pdmodel.font.encoding.SymbolEncoding;
 
 /**
  * The "Standard 14" PDF fonts, also known as the "base 14" fonts.
@@ -39,18 +45,26 @@ public final class Standard14Fonts
     /**
      * Contains all base names and alias names for the known fonts.
      * For base fonts both the key and the value will be the base name.
-     * For aliases, the key is an alias, and the value is a base name.
+     * For aliases, the key is an alias, and the value is a FontName.
      * We want a single lookup in the map to find the font both by a base name or an alias.
      */
     private static final Map<String, FontName> ALIASES = new HashMap<>(38);
 
     /**
-     * Contains the font metrics for the base fonts.
-     * The key is a base font name, value is a FontMetrics instance.
+     * Contains the font metrics for the standard 14 fonts. 
+     * The key is the font name, value is a FontMetrics instance.
      * Metrics are loaded into this map on demand, only if needed.
+     * 
      * @see #getAFM
      */
     private static final Map<FontName, FontMetrics> FONTS = new EnumMap<>(FontName.class);
+
+    /**
+     * Contains the mapped fonts for the standard 14 fonts. 
+     * The key is the font name, value is a FontBoxFont instance.
+     * FontBoxFont are loaded into this map on demand, only if needed.
+     */
+    private static final Map<FontName, FontBoxFont> GENERIC_FONTS = new EnumMap<>(FontName.class);
 
     static
     {
@@ -134,7 +148,7 @@ public final class Standard14Fonts
      * an alias.
      *
      * @see #getAFM
-     * @param baseName the base name of the font; must be one of the 14 standard fonts
+     * @param baseName the font name of the Standard 14 font
      */
     private static void mapName(FontName baseName)
     {
@@ -146,7 +160,7 @@ public final class Standard14Fonts
      * name as value). We want a single lookup in tbaseNamehe map to find the font both by a base name or an alias.
      *
      * @param alias an alias for the font
-     * @param baseName the base name of the font; must be one of the 14 standard fonts
+     * @param baseName  the font name of the Standard 14 font
      */
     private static void mapName(String alias, FontName baseName)
     {
@@ -221,6 +235,79 @@ public final class Standard14Fonts
     }
 
     /**
+     * Returns the mapped font for the specified Standard 14 font. The mapped font is cached.
+     *
+     * @param baseName name of the standard 14 font
+     * @return the mapped font
+     */
+    private static FontBoxFont getMappedFont(FontName baseName)
+    {
+        if (!GENERIC_FONTS.containsKey(baseName))
+        {
+            synchronized (GENERIC_FONTS)
+            {
+                if (!GENERIC_FONTS.containsKey(baseName))
+                {
+                    PDType1Font type1Font = new PDType1Font(baseName);
+                    GENERIC_FONTS.put(baseName, type1Font.getFontBoxFont());
+                }
+            }
+        }
+        return GENERIC_FONTS.get(baseName);
+    }
+
+    /**
+     * Returns the path for the character with the given name for the specified Standard 14 font. The mapped font is
+     * cached. The path may differ in different environments as it depends on the mapped font.
+     *
+     * @param baseName name of the standard 14 font
+     * @param glyphName name of glyph
+     * @return the mapped font
+     */
+    public static GeneralPath getGlyphPath(FontName baseName, String glyphName) throws IOException
+    {
+        // copied and adapted from PDType1Font.getNameInFont(String)
+        if (!glyphName.equals(".notdef"))
+        {
+            FontBoxFont mappedFont = getMappedFont(baseName);
+            if (mappedFont != null)
+            {
+                if (mappedFont.hasGlyph(glyphName))
+                {
+                    return mappedFont.getPath(glyphName);
+                }
+                String unicodes = getGlyphList(baseName).toUnicode(glyphName);
+                if (unicodes != null && unicodes.length() == 1)
+                {
+                    String uniName = getUniNameOfCodePoint(unicodes.codePointAt(0));
+                    if (mappedFont.hasGlyph(uniName))
+                    {
+                        return mappedFont.getPath(uniName);
+                    }
+                }
+                if ("SymbolMT".equals(mappedFont.getName()))
+                {
+                    Integer code = SymbolEncoding.INSTANCE.getNameToCodeMap().get(glyphName);
+                    if (code != null)
+                    {
+                        String uniName = getUniNameOfCodePoint(code + 0xF000);
+                        if (mappedFont.hasGlyph(uniName))
+                        {
+                            return mappedFont.getPath(uniName);
+                        }
+                    }
+                }
+            }
+        }
+        return new GeneralPath();
+    }
+
+    private static GlyphList getGlyphList(FontName baseName)
+    {
+        return FontName.ZAPF_DINGBATS == baseName ? GlyphList.getZapfDingbats()
+                : GlyphList.getAdobeGlyphList();
+    }
+    /**
      * Enum for the names of the 14 standard fonts.
      */
     public enum FontName
@@ -258,4 +345,5 @@ public final class Standard14Fonts
             return name;
         }
     }
+
 }
