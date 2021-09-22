@@ -589,6 +589,7 @@ final class Type1Parser
                 read(Token.NAME, "def");
                 read(Token.END_PROC);
                 readMaybe(Token.NAME, "executeonly");
+                readMaybe(Token.NAME, "readonly");
                 read(Token.NAME, "def");
             }
             else if ("NP".equals(key))
@@ -598,6 +599,7 @@ final class Type1Parser
                 read(Token.NAME);
                 read(Token.END_PROC);
                 readMaybe(Token.NAME, "executeonly");
+                readMaybe(Token.NAME, "readonly");
                 read(Token.NAME, "def");
             }
             else if ("RD".equals(key))
@@ -607,6 +609,7 @@ final class Type1Parser
                 readProcVoid();
                 readMaybe(Token.NAME, "bind");                
                 readMaybe(Token.NAME, "executeonly");                
+                readMaybe(Token.NAME, "readonly");
                 read(Token.NAME, "def");
             }
             else
