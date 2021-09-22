@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * @author Khyrul Bashar
@@ -99,6 +100,31 @@ public class FileOpenSaveDialog
                     outputStream.close();
                 }
             }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Saves document into a .pdf file after the user is prompted to choose the destination.
+     *
+     * @param document document to be saved in a .pdf file.
+     * @param extension file extension.
+     * @return true if the file is saved successfully or false if failed.
+     * @throws IOException if there is an error in creation of the file.
+     */
+    public boolean saveDocument(PDDocument document, String extension) throws IOException
+    {
+        int result = FILE_CHOOSER.showSaveDialog(mainUI);
+        if (result == JFileChooser.APPROVE_OPTION)
+        {
+            String filename = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
+            if (!filename.endsWith(extension))
+            {
+                filename += "." + extension;
+            }
+            document.setAllSecurityToBeRemoved(true);
+            document.save(filename);
             return true;
         }
         return false;

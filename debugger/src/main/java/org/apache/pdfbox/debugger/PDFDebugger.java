@@ -168,7 +168,6 @@ public class PDFDebugger extends JFrame
     
     // file menu
     private JMenuItem saveAsMenuItem;
-    private JMenuItem saveMenuItem;
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
     private JMenu printDpiMenu;
@@ -418,6 +417,18 @@ public class PDFDebugger extends JFrame
         addRecentFileItems();
         fileMenu.add(recentFilesMenu);
 
+        saveAsMenuItem = new JMenuItem("Save as...");
+        saveAsMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent evt)
+            {
+                saveAsMenuItemActionPerformed(evt);
+            }
+        });
+        saveAsMenuItem.setEnabled(false);        
+        fileMenu.add(saveAsMenuItem);
+
         printMenuItem = new JMenuItem("Print");
         printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, SHORCUT_KEY_MASK));
         printMenuItem.setEnabled(false);
@@ -640,6 +651,43 @@ public class PDFDebugger extends JFrame
     private void osxQuit()
     {
         exitMenuItemActionPerformed(null);
+    }
+
+    private void saveAsMenuItemActionPerformed(ActionEvent evt)
+    {
+        try
+        {
+            if (IS_MAC_OS)
+            {
+                FileDialog openDialog = new FileDialog(this, "Save", FileDialog.SAVE);
+                openDialog.setFilenameFilter(new FilenameFilter()
+                {
+                    @Override
+                    public boolean accept(File dir, String name)
+                    {
+                        return name.toLowerCase().endsWith(".pdf");
+                    }
+                });
+                openDialog.setVisible(true);
+                String file = openDialog.getFile();
+                if (file != null)
+                {
+                    document.setAllSecurityToBeRemoved(true);
+                    document.save(file);
+                }
+            }
+            else
+            {
+                String[] extensions = new String[] { "pdf", "PDF" };
+                FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
+                FileOpenSaveDialog saveAsDialog = new FileOpenSaveDialog(this, pdfFilter);
+                saveAsDialog.saveDocument(document, "pdf");
+            }
+        }
+        catch (IOException e)
+        {
+            new ErrorDialog(e).setVisible(true);
+        }
     }
 
     private void openMenuItemActionPerformed(ActionEvent evt)
@@ -1306,6 +1354,7 @@ public class PDFDebugger extends JFrame
         printMenuItem.setEnabled(true);
         printDpiMenu.setEnabled(true);
         reopenMenuItem.setEnabled(true);
+        saveAsMenuItem.setEnabled(true);
         
         initTree();
         
@@ -1344,6 +1393,7 @@ public class PDFDebugger extends JFrame
         document = documentOpener.parse();
         printMenuItem.setEnabled(true);
         reopenMenuItem.setEnabled(true);
+        saveAsMenuItem.setEnabled(true);
 
         initTree();
 
