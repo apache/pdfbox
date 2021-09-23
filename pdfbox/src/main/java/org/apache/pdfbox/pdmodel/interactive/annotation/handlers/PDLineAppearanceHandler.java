@@ -60,18 +60,18 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationLine annotation = (PDAnnotationLine) getAnnotation();
-        PDRectangle rect = annotation.getRectangle();
         float[] pathsArray = annotation.getLine();
         if (pathsArray == null)
         {
             return;
         }
-        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
         PDColor color = annotation.getColor();
         if (color == null || color.getComponents().length == 0)
         {
             return;
         }
+        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
+        PDRectangle rect = annotation.getRectangle();
         float ll = annotation.getLeaderLineLength();
         float lle = annotation.getLeaderLineExtensionLength();
         float llo = annotation.getLeaderLineOffsetLength();
