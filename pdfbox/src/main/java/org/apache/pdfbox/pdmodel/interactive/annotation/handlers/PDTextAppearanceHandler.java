@@ -177,10 +177,10 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         // there the BBox is also set to fixed values, but the rectangle is left untouched.
         // When no flags are there, Adobe sets /F 24 = NoZoom NoRotate.
             
-        PDRectangle rect = getRectangle();
         PDRectangle bbox;
         if (!annotation.isNoZoom())
         {
+            PDRectangle rect = getRectangle();
             rect.setUpperRightX(rect.getLowerLeftX() + width);
             rect.setLowerLeftY(rect.getUpperRightY() - height);
             annotation.setRectangle(rect);
