@@ -98,7 +98,7 @@ public class PDDocument implements Closeable
      */
     static
     {
-    	try
+        try
         {
             WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, 1, 1, 3, new Point(0, 0));
             PDDeviceRGB.INSTANCE.toRGBImage(raster);
@@ -168,6 +168,7 @@ public class PDDocument implements Closeable
     public PDDocument(MemoryUsageSetting memUsageSetting)
     {
         document = new COSDocument(memUsageSetting);
+        document.getUpdateObserver().startTrackingChanges();
         pdfSource = null;
 
         // First we need a trailer
@@ -221,6 +222,7 @@ public class PDDocument implements Closeable
     public PDDocument(COSDocument doc, RandomAccessRead source, AccessPermission permission)
     {
         document = doc;
+        document.getUpdateObserver().startTrackingChanges();
         pdfSource = source;
         accessPermission = permission;
     }
@@ -506,7 +508,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Check if the widget already exists in the annotation list
+     * Check if the widget already exists in the annotation list.
      *
      * @param annotations the list of PDAnnotation fields.
      * @param widget the annotation widget.

@@ -40,6 +40,7 @@ public class CFFType1Font extends CFFFont implements EncodedFont
             new ConcurrentHashMap<>();
 
     private final PrivateType1CharStringReader reader = new PrivateType1CharStringReader();
+    private Type2CharStringParser charStringParser = null;
 
     private int defaultWidthX = Integer.MIN_VALUE;
     private int nominalWidthX = Integer.MIN_VALUE;
@@ -135,13 +136,22 @@ public class CFFType1Font extends CFFFont implements EncodedFont
                 // .notdef
                 bytes = charStrings[0];
             }
-            Type2CharStringParser parser = new Type2CharStringParser(getName(), name);
-            List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex());
+            List<Object> type2seq = getParser().parse(bytes, globalSubrIndex, getLocalSubrIndex(),
+                    name);
             type2 = new Type2CharString(reader, getName(), name, gid, type2seq, getDefaultWidthX(),
                     getNominalWidthX());
             charStringCache.put(gid, type2);
         }
         return type2;
+    }
+
+    private Type2CharStringParser getParser()
+    {
+        if (charStringParser == null)
+        {
+            charStringParser = new Type2CharStringParser(getName());
+        }
+        return charStringParser;
     }
 
     /**

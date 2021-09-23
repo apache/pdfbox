@@ -18,7 +18,6 @@ package org.apache.pdfbox.examples.interactive.form;
 
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.CharMetric;
 import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.util.BoundingBox;
@@ -29,7 +28,10 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -98,8 +100,9 @@ public class CreateCheckBox
             PDAppearanceEntry normalAppearance = ap.getNormalAppearance();
             
             COSDictionary normalAppearanceDict = normalAppearance.getCOSObject();
-            normalAppearanceDict.setItem(COSName.Off, createAppearanceStream(document, widget, false));
-            normalAppearanceDict.setItem(COSName.YES, createAppearanceStream(document, widget, true));
+            PDFont zapfDingbats = new PDType1Font(FontName.ZAPF_DINGBATS);
+            normalAppearanceDict.setItem(COSName.Off, createAppearanceStream(document, widget, false, zapfDingbats));
+            normalAppearanceDict.setItem(COSName.YES, createAppearanceStream(document, widget, true, zapfDingbats));
             
             // If we ever decide to implement a /D (down) appearance, just
             // replace the background colors c with c * 0.75
@@ -115,7 +118,7 @@ public class CreateCheckBox
     }
 
     private static PDAppearanceStream createAppearanceStream(
-            final PDDocument document, PDAnnotationWidget widget, boolean on) throws IOException
+            final PDDocument document, PDAnnotationWidget widget, boolean on, PDFont font) throws IOException
     {
         PDRectangle rect = widget.getRectangle();
         PDAppearanceCharacteristicsDictionary appearanceCharacteristics;
@@ -164,9 +167,7 @@ public class CreateCheckBox
                 String unicode = null;
 
                 // ZapfDingbats font may be missing or substituted, let's use AFM resources instead.
-                AFMParser parser = new AFMParser(PDType1Font.class.getResourceAsStream(
-                        "/org/apache/pdfbox/resources/afm/ZapfDingbats.afm"));
-                FontMetrics metric = parser.parse();
+                FontMetrics metric = Standard14Fonts.getAFM(FontName.ZAPF_DINGBATS.getName());
                 for (CharMetric cm : metric.getCharMetrics())
                 {
                     // The caption is not unicode, but the Zapf Dingbats code in the PDF.
@@ -194,7 +195,7 @@ public class CreateCheckBox
                 yOffset -= bounds.getY() / 1000 * fontSize;
                 yesAPCS.setNonStrokingColor(0f);
                 yesAPCS.beginText();
-                yesAPCS.setFont(PDType1Font.ZAPF_DINGBATS, fontSize);
+                yesAPCS.setFont(font, fontSize);
                 yesAPCS.newLineAtOffset(xOffset, yOffset);
                 yesAPCS.showText(unicode);
                 yesAPCS.endText();

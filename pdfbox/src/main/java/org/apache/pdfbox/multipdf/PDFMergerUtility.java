@@ -963,34 +963,34 @@ public class PDFMergerUtility
                       PDStructureTreeRoot srcStructTree,
                       PDStructureTreeRoot destStructTree) throws IOException
     {
+        COSBase srcKEntry = srcStructTree.getK();
         COSArray srcKArray = new COSArray();
-        COSBase kEntry = srcStructTree.getK();
-        COSBase base = cloner.cloneForNewDocument(kEntry);
-        if (base instanceof COSArray)
+        COSBase clonedSrcKEntry = cloner.cloneForNewDocument(srcKEntry);
+        if (clonedSrcKEntry instanceof COSArray)
         {
-            srcKArray.addAll((COSArray) base);
+            srcKArray.addAll((COSArray) clonedSrcKEntry);
         }
-        else if (base instanceof COSDictionary)
+        else if (clonedSrcKEntry instanceof COSDictionary)
         {
-            srcKArray.add(base);
+            srcKArray.add(clonedSrcKEntry);
         }
-
+      
         if (srcKArray.size() == 0)
         {
             return;
         }
-
+      
         COSArray dstKArray = new COSArray();
-        kEntry = destStructTree.getK();
-        if (kEntry instanceof COSArray)
+        COSBase dstKEntry = destStructTree.getK();
+        if (dstKEntry instanceof COSArray)
         {
-            dstKArray.addAll((COSArray) kEntry);
+            dstKArray.addAll((COSArray) dstKEntry);
         }
-        else if (kEntry instanceof COSDictionary)
+        else if (dstKEntry instanceof COSDictionary)
         {
-            dstKArray.add(kEntry);
+            dstKArray.add(dstKEntry);
         }
-
+      
         if (dstKArray.size() == 1 && dstKArray.getObject(0) instanceof COSDictionary)
         {
             // Only one element in the destination. If it is a /Document and its children
@@ -1042,9 +1042,8 @@ public class PDFMergerUtility
                 return false;
             }
             COSDictionary dict = (COSDictionary) base;
-            COSName cosName = dict.getCOSName(COSName.S);
-            if (!COSName.DOCUMENT.equals(cosName) &&
-                !COSName.PART.equals(cosName))
+            COSName sEntry = dict.getCOSName(COSName.S);
+            if (!COSName.DOCUMENT.equals(sEntry) && !COSName.PART.equals(sEntry))
             {
                 return false;
             }

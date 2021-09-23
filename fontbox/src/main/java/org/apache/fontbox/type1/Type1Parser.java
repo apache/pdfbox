@@ -580,6 +580,7 @@ final class Type1Parser
                     read(Token.NAME, "def");
                     read(Token.END_PROC);
                     readMaybe(Token.NAME, "executeonly");
+                    readMaybe(Token.NAME, "readonly");
                     read(Token.NAME, "def");
                     break;
                 case "NP":
@@ -588,6 +589,7 @@ final class Type1Parser
                     read(Token.NAME);
                     read(Token.END_PROC);
                     readMaybe(Token.NAME, "executeonly");
+                    readMaybe(Token.NAME, "readonly");
                     read(Token.NAME, "def");
                     break;
                 case "RD":
@@ -596,6 +598,7 @@ final class Type1Parser
                     readProcVoid();
                     readMaybe(Token.NAME, "bind");
                     readMaybe(Token.NAME, "executeonly");
+                    readMaybe(Token.NAME, "readonly");
                     read(Token.NAME, "def");
                     break;
                 default:

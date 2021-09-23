@@ -19,7 +19,6 @@ package org.apache.fontbox.cff;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
 
@@ -29,65 +28,52 @@ import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
  */
 public class Type2CharStringParser
 {
-
     // 1-byte commands
     private static final int CALLSUBR = 10;
     private static final int CALLGSUBR = 29;
 
-    private int hstemCount = 0;
-    private int vstemCount = 0;
-    private List<Object> sequence = null;
-    @SuppressWarnings("unused")
+    private int hstemCount;
+    private int vstemCount;
+    private List<Object> sequence;
     private final String fontName;
-    @SuppressWarnings("unused")
-    private final String glyphName;
+    private String currentGlyph;
 
     /**
      * Constructs a new Type1CharStringParser object for a Type 1-equivalent font.
      *
      * @param fontName font name
-     * @param glyphName glyph name
      */
-    public Type2CharStringParser(String fontName, String glyphName)
+    public Type2CharStringParser(String fontName)
     {
         this.fontName = fontName;
-        this.glyphName = glyphName;
-    }
-
-    /**
-     * Constructs a new Type1CharStringParser object for a CID-Keyed font.
-     *
-     * @param fontName font name
-     * @param cid CID
-     */
-    public Type2CharStringParser(String fontName, int cid)
-    {
-        this.fontName = fontName;
-        this.glyphName = String.format(Locale.US, "%04x", cid); // for debugging only
     }
 
     /**
      * The given byte array will be parsed and converted to a Type2 sequence.
+     * 
      * @param bytes the given mapping as byte array
      * @param globalSubrIndex array containing all global subroutines
      * @param localSubrIndex array containing all local subroutines
+     * @param glyphName the name of the current glyph
      * 
      * @return the Type2 sequence
      * @throws IOException if an error occurs during reading
      */
-    public List<Object> parse(byte[] bytes, byte[][] globalSubrIndex, byte[][] localSubrIndex) throws IOException
+    public List<Object> parse(byte[] bytes, byte[][] globalSubrIndex, byte[][] localSubrIndex,
+            String glyphName) throws IOException
     {
-        return parse(bytes, globalSubrIndex, localSubrIndex, true);
+        // reset values if the parser is used multiple times
+        hstemCount = 0;
+        vstemCount = 0;
+        // create a new list as it is used as return value
+        sequence = new ArrayList<>();
+        currentGlyph = glyphName;
+        return parseSequence(bytes, globalSubrIndex, localSubrIndex);
     }
-    
-    private List<Object> parse(byte[] bytes, byte[][] globalSubrIndex, byte[][] localSubrIndex, boolean init) throws IOException
+
+    private List<Object> parseSequence(byte[] bytes, byte[][] globalSubrIndex,
+            byte[][] localSubrIndex) throws IOException
     {
-        if (init) 
-        {
-            hstemCount = 0;
-            vstemCount = 0;
-            sequence = new ArrayList<>();
-        }
         DataInput input = new DataInput(bytes);
         boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.length > 0;
         boolean globalSubroutineIndexProvided = globalSubrIndex != null && globalSubrIndex.length > 0;
@@ -122,33 +108,18 @@ public class Type2CharStringParser
     private void processCallSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex)
             throws IOException
     {
-        Integer operand = (Integer) sequence.remove(sequence.size() - 1);
-        // get subrbias
-        int bias = 0;
-        int nSubrs = localSubrIndex.length;
-
-        if (nSubrs < 1240)
-        {
-            bias = 107;
-        }
-        else if (nSubrs < 33900)
-        {
-            bias = 1131;
-        }
-        else
-        {
-            bias = 32768;
-        }
-        int subrNumber = bias + operand;
+        int subrNumber = calculateSubrNumber((Integer) sequence.remove(sequence.size() - 1),
+                localSubrIndex.length);
         if (subrNumber < localSubrIndex.length)
         {
             byte[] subrBytes = localSubrIndex[subrNumber];
-            parse(subrBytes, globalSubrIndex, localSubrIndex, false);
+            parseSequence(subrBytes, globalSubrIndex, localSubrIndex);
             Object lastItem = sequence.get(sequence.size() - 1);
             if (lastItem instanceof CharStringCommand
                     && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
             {
-                sequence.remove(sequence.size() - 1); // remove "return" command
+                // remove "return" command
+                sequence.remove(sequence.size() - 1);
             }
         }
     }
@@ -156,36 +127,33 @@ public class Type2CharStringParser
     private void processCallGSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex)
             throws IOException
     {
-        Integer operand = (Integer) sequence.remove(sequence.size() - 1);
-        // get subrbias
-        int bias;
-        int nSubrs = globalSubrIndex.length;
-
-        if (nSubrs < 1240)
-        {
-            bias = 107;
-        }
-        else if (nSubrs < 33900)
-        {
-            bias = 1131;
-        }
-        else
-        {
-            bias = 32768;
-        }
-
-        int subrNumber = bias + operand;
+        int subrNumber = calculateSubrNumber((Integer) sequence.remove(sequence.size() - 1),
+                globalSubrIndex.length);
         if (subrNumber < globalSubrIndex.length)
         {
             byte[] subrBytes = globalSubrIndex[subrNumber];
-            parse(subrBytes, globalSubrIndex, localSubrIndex, false);
+            parseSequence(subrBytes, globalSubrIndex, localSubrIndex);
             Object lastItem = sequence.get(sequence.size() - 1);
             if (lastItem instanceof CharStringCommand
                     && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
             {
-                sequence.remove(sequence.size() - 1); // remove "return" command
+                // remove "return" command
+                sequence.remove(sequence.size() - 1);
             }
         }
+    }
+
+    private int calculateSubrNumber(int operand, int subrIndexlength)
+    {
+        if (subrIndexlength < 1240)
+        {
+            return 107 + operand;
+        }
+        if (subrIndexlength < 33900)
+        {
+            return 1131 + operand;
+        }
+        return 32768 + operand;
     }
 
     private CharStringCommand readCommand(int b0, DataInput input) throws IOException
@@ -193,11 +161,11 @@ public class Type2CharStringParser
 
         if (b0 == 1 || b0 == 18)
         {
-            hstemCount += peekNumbers().size() / 2;
+            hstemCount += countNumbers() / 2;
         } 
         else if (b0 == 3 || b0 == 19 || b0 == 20 || b0 == 23)
         {
-            vstemCount += peekNumbers().size() / 2;
+            vstemCount += countNumbers() / 2;
         } // End if
 
         if (b0 == 12)
@@ -268,19 +236,23 @@ public class Type2CharStringParser
         return length;
     }
 
-    private List<Number> peekNumbers()
+    private int countNumbers()
     {
-        List<Number> numbers = new ArrayList<>();
+        int count = 0;
         for (int i = sequence.size() - 1; i > -1; i--)
         {
-            Object object = sequence.get(i);
-
-            if (!(object instanceof Number))
+            if (!(sequence.get(i) instanceof Number))
             {
-                return numbers;
+                return count;
             }
-            numbers.add(0, (Number) object);
+            count++;
         }
-        return numbers;
+        return count;
+    }
+
+    @Override
+    public String toString()
+    {
+        return fontName + ", current glpyh " + currentGlyph;
     }
 }

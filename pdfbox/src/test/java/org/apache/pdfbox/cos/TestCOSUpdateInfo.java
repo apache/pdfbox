@@ -34,8 +34,12 @@ class TestCOSUpdateInfo
     @Test
     void testIsSetNeedToBeUpdate()
     {
+        COSUpdateInfoObserver observer = new COSUpdateInfoObserver(null);
+        observer.startTrackingChanges();
+
         // COSDictionary
         COSUpdateInfo testCOSDictionary = new COSDictionary();
+        observer.monitor(testCOSDictionary.getCOSObject());
         testCOSDictionary.setNeedToBeUpdated(true);
         assertTrue(testCOSDictionary.isNeedToBeUpdated());
         testCOSDictionary.setNeedToBeUpdated(false);
@@ -44,6 +48,7 @@ class TestCOSUpdateInfo
         // COSObject
         COSUpdateInfo testCOSObject;
         testCOSObject = new COSObject(null);
+        observer.monitor(testCOSObject.getCOSObject());
         testCOSObject.setNeedToBeUpdated(true);
         assertTrue(testCOSObject.isNeedToBeUpdated());
         testCOSObject.setNeedToBeUpdated(false);

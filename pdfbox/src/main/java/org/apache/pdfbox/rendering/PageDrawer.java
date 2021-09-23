@@ -1960,7 +1960,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             LOG.info("/VE entry ignored in Optional Content Membership Dictionary");
         }
         List<Boolean> visibles = new ArrayList<>();
-        ocmd.getOCGs().forEach(prop -> visibles.add(!isHiddenOCG(prop)));
+        List<PDPropertyList> oCGs = ocmd.getOCGs();
+        if (oCGs.isEmpty())
+        {
+            return false;
+        }
+        oCGs.forEach(prop -> visibles.add(!isHiddenOCG(prop)));
         COSName visibilityPolicy = ocmd.getVisibilityPolicy();
         
         // visible if any of the entries in OCGs are OFF

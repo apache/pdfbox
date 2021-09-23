@@ -47,6 +47,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     private static final Log LOG = LogFactory.getLog(COSDocument.class);
 
+    private final COSUpdateInfoObserver updateObserver;
     private float version = 1.4f;
 
     /**
@@ -130,6 +131,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(MemoryUsageSetting memUsageSetting, ICOSParser parser)
     {
+        this.updateObserver = new COSUpdateInfoObserver(this);
         try
         {
             if (memUsageSetting != null)
@@ -167,8 +169,8 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * Creates a new COSStream using the current configuration for scratch files. Not for public use. Only COSParser should
-     * call this method.
+     * Creates a new COSStream using the current configuration for scratch files. Not for public use.
+     * Only COSParser should call this method.
      * 
      * @param dictionary    the corresponding dictionary
      * @param startPosition the start position within the source
@@ -363,6 +365,7 @@ public class COSDocument extends COSBase implements Closeable
     public void setTrailer(COSDictionary newTrailer)
     {
         trailer = newTrailer;
+        updateObserver.monitor(newTrailer);
     }
 
     /**
@@ -539,4 +542,15 @@ public class COSDocument extends COSBase implements Closeable
     {
         isXRefStream = isXRefStreamValue;
     }
+
+    /**
+     * Returns the {@link COSUpdateInfoObserver}, that is keeping track of changes to this {@link COSDocument}.
+     *
+     * @return The {@link COSUpdateInfoObserver}, that is keeping track of changes to this {@link COSDocument}.
+     */
+    public COSUpdateInfoObserver getUpdateObserver()
+    {
+        return updateObserver;
+    }
+
 }

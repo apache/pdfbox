@@ -77,8 +77,8 @@ final class CCITTFaxFilter extends Filter
                 throw new EOFException("Can't read " + streamData.length + " bytes");
             }
             PushbackInputStream pushbackInputStream = new PushbackInputStream(encoded, streamData.length);
-            encoded = pushbackInputStream;
             pushbackInputStream.unread(streamData);
+            encoded = pushbackInputStream;
             if (streamData[0] != 0 || (streamData[1] >> 4 != 1 && streamData[1] != 1))
             {
                 // leading EOL (0b000000000001) not found, search further and try RLE if not
