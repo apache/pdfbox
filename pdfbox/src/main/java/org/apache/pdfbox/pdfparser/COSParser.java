@@ -1235,19 +1235,22 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             source.seek(offset);
             // try to read the given object/generation number
-            if (objectKey.getNumber() == readObjectNumber())
+            long foundObjectNumber = readObjectNumber();
+            if(objectKey.getNumber() != foundObjectNumber){
+                LOG.warn("found wrong object number. expected [" + objectKey.getNumber() +"] found ["+ foundObjectNumber + "]");
+                if(!isLenient) return null;
+            }
+
+            int genNumber = readGenerationNumber();
+            // finally try to read the object marker
+            readExpectedString(OBJ_MARKER, true);
+            if (genNumber == objectKey.getGeneration())
             {
-                int genNumber = readGenerationNumber();
-                // finally try to read the object marker
-                readExpectedString(OBJ_MARKER, true);
-                if (genNumber == objectKey.getGeneration())
-                {
-                    return objectKey;
-                }
-                else if (isLenient && genNumber > objectKey.getGeneration())
-                {
-                    return new COSObjectKey(objectKey.getNumber(), genNumber);
-                }
+                return objectKey;
+            }
+            else if (isLenient && genNumber > objectKey.getGeneration())
+            {
+                return new COSObjectKey(objectKey.getNumber(), genNumber);
             }
         }
         catch (IOException exception)
@@ -1322,7 +1325,7 @@ public class COSParser extends BaseParser implements ICOSParser
                                 // add the former object ID only if there was a subsequent object ID
                                 bfCOSObjectKeyOffsets.put(
                                         new COSObjectKey(lastObjectId, lastGenID), lastObjOffset);
-                            }
+                                }
                             lastObjectId = objectId;
                             lastGenID = genID;
                             lastObjOffset = tempOffset + 1;
