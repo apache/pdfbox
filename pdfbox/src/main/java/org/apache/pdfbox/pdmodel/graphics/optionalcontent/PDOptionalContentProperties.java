@@ -167,12 +167,13 @@ public class PDOptionalContentProperties implements COSObjectable
         COSArray ocgs = getOCGs();
         ocgs.add(ocg.getCOSObject());
 
+        COSDictionary dict = getD();
         //By default, add new group to the "Order" entry so it appears in the user interface
-        COSArray order = getD().getCOSArray(COSName.ORDER);
+        COSArray order = dict.getCOSArray(COSName.ORDER);
         if (order == null)
         {
             order = new COSArray();
-            getD().setItem(COSName.ORDER, order);
+            dict.setItem(COSName.ORDER, order);
         }
         order.add(ocg);
     }
@@ -183,8 +184,8 @@ public class PDOptionalContentProperties implements COSObjectable
      */
     public Collection<PDOptionalContentGroup> getOptionalContentGroups()
     {
-        Collection<PDOptionalContentGroup> coll = new ArrayList<>();
         COSArray ocgs = getOCGs();
+        Collection<PDOptionalContentGroup> coll = new ArrayList<>(ocgs.size());
         for (COSBase base : ocgs)
         {
             coll.add(new PDOptionalContentGroup(toDictionary(base)));
@@ -272,6 +273,7 @@ public class PDOptionalContentProperties implements COSObjectable
             if (groupName.equals(name) && isGroupEnabled(new PDOptionalContentGroup(ocg)))
             {
                 result = true;
+                break;
             }
         }
         return result;
