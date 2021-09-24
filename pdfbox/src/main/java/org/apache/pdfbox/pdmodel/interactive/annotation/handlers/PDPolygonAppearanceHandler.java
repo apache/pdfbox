@@ -64,6 +64,11 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationPolygon annotation = (PDAnnotationPolygon) getAnnotation();
+        float[][] pathArray = getPathArray(annotation);
+        if (pathArray == null)
+        {
+            return;
+        }
         float lineWidth = getLineWidth();
         PDRectangle rect = annotation.getRectangle();
 
@@ -74,11 +79,6 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
         float maxX = Float.MIN_VALUE;
         float maxY = Float.MIN_VALUE;
 
-        float[][] pathArray = getPathArray(annotation);
-        if (pathArray == null)
-        {
-            return;
-        }
         for (int i = 0; i < pathArray.length; ++i)
         {
             for (int j = 0; j < pathArray[i].length / 2; ++j)
