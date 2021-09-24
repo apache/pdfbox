@@ -190,25 +190,23 @@ public final class LosslessFactory
                 imageData[byteIdx++] = (byte) ((pixel >> 16) & 0xFF);
                 imageData[byteIdx++] = (byte) ((pixel >> 8) & 0xFF);
                 imageData[byteIdx++] = (byte) (pixel & 0xFF);
+                // we have the alpha right here, so no need to do it separately
+                // as done prior April 2018
+                if (transparency == Transparency.BITMASK)
+                {
+                    // write a bit
+                    alphaImageData[alphaByteIdx] |= ((pixel >> 24) & 1) << alphaBitPos;
+                    if (--alphaBitPos < 0)
+                    {
+                        alphaBitPos = 7;
+                        ++alphaByteIdx;
+                    }
+                }
+                else
                 if (transparency != Transparency.OPAQUE)
                 {
-                    // we have the alpha right here, so no need to do it separately
-                    // as done prior April 2018
-                    if (transparency == Transparency.BITMASK)
-                    {
-                        // write a bit
-                        alphaImageData[alphaByteIdx] |= ((pixel >> 24) & 1) << alphaBitPos;
-                        if (--alphaBitPos < 0)
-                        {
-                            alphaBitPos = 7;
-                            ++alphaByteIdx;
-                        }
-                    }
-                    else
-                    {
-                        // write a byte
-                        alphaImageData[alphaByteIdx++] = (byte) ((pixel >> 24) & 0xFF);
-                    }
+                    // write a byte
+                    alphaImageData[alphaByteIdx++] = (byte) ((pixel >> 24) & 0xFF);
                 }
             }
 
@@ -352,21 +350,25 @@ public final class LosslessFactory
             Object prevRow;
             Object transferRow;
 
-            switch (imageType)
-            {
+            switch (imageType) {
                 case BufferedImage.TYPE_CUSTOM:
-                    switch (imageRaster.getTransferType())
-                    {
+                    switch (imageRaster.getTransferType()) {
                         case DataBuffer.TYPE_USHORT:
+                        {
                             elementsInRowPerPixel = componentsPerPixel;
-                            prevRow = new short[width * elementsInRowPerPixel];
-                            transferRow = new short[width * elementsInRowPerPixel];
+                            short[] prevRowArr = new short[width * elementsInRowPerPixel];
+                            prevRow = prevRowArr;
+                            transferRow = new short[prevRowArr.length];
                             break;
+                        }
                         case DataBuffer.TYPE_BYTE:
+                        {
                             elementsInRowPerPixel = componentsPerPixel;
-                            prevRow = new byte[width * elementsInRowPerPixel];
-                            transferRow = new byte[width * elementsInRowPerPixel];
+                            byte[] prevRowArr = new byte[width * elementsInRowPerPixel];
+                            prevRow = prevRowArr;
+                            transferRow = new byte[prevRowArr.length];
                             break;
+                        }
                         default:
                             return null;
                     }
@@ -374,19 +376,23 @@ public final class LosslessFactory
 
                 case BufferedImage.TYPE_3BYTE_BGR:
                 case BufferedImage.TYPE_4BYTE_ABGR:
+                {
                     elementsInRowPerPixel = componentsPerPixel;
-                    prevRow = new byte[width * elementsInRowPerPixel];
-                    transferRow = new byte[width * elementsInRowPerPixel];
+                    byte[] prevRowArr = new byte[width * elementsInRowPerPixel];
+                    prevRow = prevRowArr;
+                    transferRow = new byte[prevRowArr.length];
                     break;
-
+                }
                 case BufferedImage.TYPE_INT_BGR:
                 case BufferedImage.TYPE_INT_ARGB:
                 case BufferedImage.TYPE_INT_RGB:
+                {
                     elementsInRowPerPixel = 1;
-                    prevRow = new int[width * elementsInRowPerPixel];
-                    transferRow = new int[width * elementsInRowPerPixel];
+                    int[] prevRowArr = new int[width * elementsInRowPerPixel];
+                    prevRow = prevRowArr;
+                    transferRow = new int[prevRowArr.length];
                     break;
-
+                }
                 default:
                     // We can not handle this unknown format
                     return null;
