@@ -66,24 +66,23 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationSquiggly annotation = (PDAnnotationSquiggly) getAnnotation();
-        PDRectangle rect = annotation.getRectangle();
         float[] pathsArray = annotation.getQuadPoints();
         if (pathsArray == null)
         {
             return;
         }
-        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
         PDColor color = annotation.getColor();
         if (color == null || color.getComponents().length == 0)
         {
             return;
         }
+        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
         if (Float.compare(ab.width, 0) == 0)
         {
             // value found in adobe reader
             ab.width = 1.5f;
         }
-
+        PDRectangle rect = annotation.getRectangle();
         // Adjust rectangle even if not empty, see PLPDF.com-MarkupAnnotations.pdf
         //TODO in a class structure this should be overridable
         // this is similar to polyline but different data type
