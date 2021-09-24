@@ -55,15 +55,18 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        PDAnnotationInk ink = (PDAnnotationInk) getAnnotation();
         // PDF spec does not mention /Border for ink annotations, but it is used if /BS is not available
-        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(ink, ink.getBorderStyle());
+        PDAnnotationInk ink = (PDAnnotationInk) getAnnotation();
         PDColor color = ink.getColor();
-        if (color == null || color.getComponents().length == 0 || Float.compare(ab.width, 0) == 0)
+        if (color == null || color.getComponents().length == 0)
         {
             return;
         }
-
+        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(ink, ink.getBorderStyle());
+        if (Float.compare(ab.width, 0) == 0)
+        {
+            return;
+        }
         // Adjust rectangle even if not empty
         // file from PDF.js issue 13447
         //TODO in a class structure this should be overridable
