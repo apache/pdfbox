@@ -124,9 +124,10 @@ public class PDDeviceN extends PDSpecialColorSpace
             colorantToComponent[c] = -1;
         }
 
-        if (attributes.getProcess() != null)
+        PDDeviceNProcess pdDeviceNProcess = attributes.getProcess();
+        if (pdDeviceNProcess != null)
         {
-            List<String> components = attributes.getProcess().getComponents();
+            List<String> components = pdDeviceNProcess.getComponents();
 
             // map each colorant to the corresponding process component (if any)
             for (int c = 0; c < numColorants; c++)
@@ -135,7 +136,7 @@ public class PDDeviceN extends PDSpecialColorSpace
             }
 
             // process color space
-            processColorSpace = attributes.getProcess().getColorSpace();
+            processColorSpace = pdDeviceNProcess.getColorSpace();
         }
 
         // spot colorants
