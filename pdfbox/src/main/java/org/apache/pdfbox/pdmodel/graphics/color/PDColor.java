@@ -82,9 +82,9 @@ public final class PDColor
         this.colorSpace = colorSpace;
     }
 
-    private PDColor(float[] components, boolean cloneComponents, PDColorSpace colorSpace)
+    private PDColor(PDColorSpace colorSpace, float[] components)
     {
-        this.components = cloneComponents ? components.clone() : components;
+        this.components = components;
         this.patternName = null;
         this.colorSpace = colorSpace;
     }
@@ -198,6 +198,6 @@ public final class PDColor
 
     public static PDColor createWithoutCloningComponents(float[] components, PDColorSpace colorSpace)
     {
-        return new PDColor(components, false, colorSpace);
+        return new PDColor(colorSpace, components);
     }
 }
