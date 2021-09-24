@@ -65,7 +65,7 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
             setOpacity(contentStream, annotation.getConstantOpacity());
 
             PDRectangle rect = getRectangle();
-            PDRectangle bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
+            PDRectangle bbox;
             if (!annotation.getCOSObject().containsKey(COSName.RD))
             {
                 // Adobe creates the /RD entry with a number that is decided
@@ -83,6 +83,10 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
                 PDRectangle rect2 = new PDRectangle(rect.getLowerLeftX() - rd, rect.getLowerLeftY() - rd,
                                                     rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
                 annotation.setRectangle(rect2);
+            }
+            else
+            {
+                bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
             }
             annotation.getNormalAppearanceStream().setBBox(bbox);
 
