@@ -17,6 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.action;
 
 import java.io.IOException;
+
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
 
 import org.apache.pdfbox.cos.COSDictionary;
@@ -211,9 +213,10 @@ public class PDActionLaunch extends PDAction
      */
     public OpenMode getOpenInNewWindow()
     {
-        if (getCOSObject().getDictionaryObject(COSName.NEW_WINDOW) instanceof COSBoolean)
+        COSBase object = getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
+        if (object instanceof COSBoolean)
         {
-            COSBoolean b = (COSBoolean) getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
+            COSBoolean b = (COSBoolean) object;
             return b.getValue() ? OpenMode.NEW_WINDOW : OpenMode.SAME_WINDOW;
         }
         return OpenMode.USER_PREFERENCE;
