@@ -263,7 +263,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         PDResources innerFormResources = new PDResources();
         pdfStructure.setInnerFormResources(innerFormResources);
         LOG.info("Resources of another form (inner form - it will be inside holder form)" +
-                 "have been created");
+                 " have been created");
     }
 
     @Override
@@ -373,8 +373,14 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
 
     public void appendRawCommands(OutputStream os, String commands) throws IOException
     {
-        os.write(commands.getBytes(StandardCharsets.UTF_8));
-        os.close();
+        try
+        {
+            os.write(commands.getBytes(StandardCharsets.UTF_8));
+        }
+        finally
+        {
+            os.close();
+        }
     }
 
     @Override
@@ -399,7 +405,13 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     @Override
     public void closeTemplate(PDDocument template) throws IOException
     {
-        template.close();
-        pdfStructure.getTemplate().close();
+        try
+        {
+            template.close();
+        }
+        finally
+        {
+            pdfStructure.getTemplate().close();
+        }
     }
 }
