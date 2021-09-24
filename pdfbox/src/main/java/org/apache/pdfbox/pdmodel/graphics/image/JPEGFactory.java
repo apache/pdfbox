@@ -374,8 +374,9 @@ public final class JPEGFactory
             IIOMetadata data = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
             Element tree = (Element)data.getAsTree("javax_imageio_jpeg_image_1.0");
             Element jfif = (Element)tree.getElementsByTagName("app0JFIF").item(0);
-            jfif.setAttribute("Xdensity", Integer.toString(dpi));
-            jfif.setAttribute("Ydensity", Integer.toString(dpi));
+            String stDPI = Integer.toString(dpi);
+            jfif.setAttribute("Xdensity", stDPI);
+            jfif.setAttribute("Ydensity", stDPI);
             jfif.setAttribute("resUnits", "1"); // 1 = dots/inch
 
             // write
