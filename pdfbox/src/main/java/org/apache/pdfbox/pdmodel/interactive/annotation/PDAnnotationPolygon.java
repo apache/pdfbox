@@ -140,17 +140,18 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
         COSArray array = getCOSObject().getCOSArray(COSName.PATH);
         if (array != null)
         {
+            final float[] emptyArr = new float[0];
             float[][] pathArray = new float[array.size()][];
             for (int i = 0; i < array.size(); ++i)
             {
                 COSBase base2 = array.getObject(i);
                 if (base2 instanceof COSArray)
                 {
-                    pathArray[i] = ((COSArray) array.getObject(i)).toFloatArray();
+                    pathArray[i] = ((COSArray) base2).toFloatArray();
                 }
                 else
                 {
-                    pathArray[i] = new float[0];
+                    pathArray[i] = emptyArr;
                 }
             }
             return pathArray;

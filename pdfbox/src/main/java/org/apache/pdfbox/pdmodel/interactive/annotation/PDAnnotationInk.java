@@ -90,17 +90,18 @@ public class PDAnnotationInk extends PDAnnotationMarkup
         COSArray array = getCOSObject().getCOSArray(COSName.INKLIST);
         if (array != null)
         {
+            final float[] emptyArr = new float[0];
             float[][] inkList = new float[array.size()][];
             for (int i = 0; i < array.size(); ++i)
             {
                 COSBase base2 = array.getObject(i);
                 if (base2 instanceof COSArray)
                 {
-                    inkList[i] = ((COSArray) array.getObject(i)).toFloatArray();
+                    inkList[i] = ((COSArray) base2).toFloatArray();
                 }
                 else
                 {
-                    inkList[i] = new float[0];
+                    inkList[i] = emptyArr;
                 }
             }
             return inkList;
