@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -28,9 +29,9 @@ public class SplitterTest
 
         /////
         String text = "some text";
-        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+        contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 12);
         contentStream.beginText();
-        contentStream.newLineAtOffset(100,750);//Y снизу!
+        contentStream.newLineAtOffset(100,750);
         contentStream.showText(text);
         contentStream.endText();
 
@@ -45,7 +46,7 @@ public class SplitterTest
 
         /////
         String text2 = "another text";
-        contentStream.setFont(PDType1Font.TIMES_ITALIC, 16);
+        contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.TIMES_ITALIC), 16);
         contentStream.beginText();
         contentStream.newLineAtOffset(200,750);
         contentStream.showText(text2);
