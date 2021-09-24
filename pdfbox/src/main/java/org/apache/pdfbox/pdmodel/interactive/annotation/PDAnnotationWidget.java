@@ -108,7 +108,7 @@ public class PDAnnotationWidget extends PDAnnotation
         else
         {
             throw new IllegalArgumentException("Valid values for highlighting mode are "
-                    + "'N', 'N', 'O', 'P' or 'T'");
+                    + "'N', 'I', 'O', 'P' or 'T'");
         }
     }
 
