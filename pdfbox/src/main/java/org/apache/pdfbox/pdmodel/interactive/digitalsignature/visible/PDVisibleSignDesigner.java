@@ -212,7 +212,7 @@ public class PDVisibleSignDesigner
      * 
      * @param document
      * @param page The 1-based page number for which the page size should be calculated.
-     * @throws IllegalArgumentException if the page argument is lower than 0.
+     * @throws IllegalArgumentException if the page argument is lower than 1.
      */
     private void calculatePageSize(PDDocument document, int page)
     {

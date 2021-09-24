@@ -375,7 +375,7 @@ public class PDSeedValueCertificate implements COSObjectable
     }
 
     /**
-     * (Optional; PDF 1.7) specifies an acceptable key-usage extension that must be presennt in the
+     * (Optional; PDF 1.7) specifies an acceptable key-usage extension that must be present in the
      * signing certificate for works like {@link #setKeyUsage(List)} but takes only one string
      *
      * @param keyUsageExtension String that consist only of {0, 1, X}
