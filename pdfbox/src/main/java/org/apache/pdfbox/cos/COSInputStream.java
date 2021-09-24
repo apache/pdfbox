@@ -22,10 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.DecodeResult;
@@ -58,7 +55,7 @@ public final class COSInputStream extends FilterInputStream
      *
      * @param filters Filters to be applied.
      * @param parameters Filter parameters.
-     * @param in Encoded input stream.
+     * @param input Encoded input stream.
      * @param options decode options for the encoded stream
      * @return Decoded stream.
      * @throws IOException If the stream could not be read.
@@ -66,7 +63,6 @@ public final class COSInputStream extends FilterInputStream
     static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream input,
             DecodeOptions options) throws IOException
     {
-        List<DecodeResult> results = new ArrayList<>();
         if (!filters.isEmpty())
         {
             Set<Filter> filterSet = new HashSet<>(filters);
@@ -74,6 +70,7 @@ public final class COSInputStream extends FilterInputStream
             {
                 throw new IOException("Duplicate");
             }
+            List<DecodeResult> results = new ArrayList<>(filters.size());
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             // apply filters
             for (int i = 0; i < filters.size(); i++)
@@ -82,8 +79,10 @@ public final class COSInputStream extends FilterInputStream
                 results.add(filters.get(i).decode(input, output, parameters, i, options));
                 input = new ByteArrayInputStream(output.toByteArray());
             }
+            return new COSInputStream(input, results);
         }
-        return new COSInputStream(input, results);
+        else
+            return new COSInputStream(input, Collections.emptyList());
     }
 
     private final List<DecodeResult> decodeResults;
