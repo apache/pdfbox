@@ -64,19 +64,22 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationPolyline annotation = (PDAnnotationPolyline) getAnnotation();
-        PDRectangle rect = annotation.getRectangle();
         float[] pathsArray = annotation.getVertices();
         if (pathsArray == null || pathsArray.length < 4)
         {
             return;
         }
-        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
         PDColor color = annotation.getColor();
-        if (color == null || color.getComponents().length == 0 || Float.compare(ab.width, 0) == 0)
+        if (color == null || color.getComponents().length == 0)
         {
             return;
         }
-
+        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
+        if (Float.compare(ab.width, 0) == 0)
+        {
+            return;
+        }
+        PDRectangle rect = annotation.getRectangle();
         // Adjust rectangle even if not empty
         // CTAN-example-Annotations.pdf and pdf_commenting_new.pdf p11
         //TODO in a class structure this should be overridable
