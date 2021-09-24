@@ -665,7 +665,7 @@ public final class PDAcroForm implements COSObjectable
         Rectangle2D transformedAppearanceBox = getTransformedAppearanceBBox(appearanceStream);
         PDRectangle annotationRect = annotation.getRectangle();
 
-        // 2nd step caclulate matrix to transform calculated rectangle into the annotation Rect boundaries
+        // 2nd step calculate matrix to transform calculated rectangle into the annotation Rect boundaries
         Matrix transformationMatrix = new Matrix();
         transformationMatrix.translate((float) (annotationRect.getLowerLeftX()-transformedAppearanceBox.getX()), (float) (annotationRect.getLowerLeftY()-transformedAppearanceBox.getY()));
         transformationMatrix.scale((float) (annotationRect.getWidth()/transformedAppearanceBox.getWidth()), (float) (annotationRect.getHeight()/transformedAppearanceBox.getHeight()));
