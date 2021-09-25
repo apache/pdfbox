@@ -23,6 +23,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,41 +62,43 @@ public final class COSInputStream extends FilterInputStream
     static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
                                  ScratchFile scratchFile, DecodeOptions options) throws IOException
     {
-        List<DecodeResult> results = new ArrayList<DecodeResult>();
         InputStream input = in;
-        if (!filters.isEmpty())
+        if (filters.isEmpty())
         {
-            Set<Filter> filterSet = new HashSet<Filter>(filters);
-            if (filterSet.size() != filters.size())
+            return new COSInputStream(in, Collections.<DecodeResult>emptyList());
+        }
+
+        List<DecodeResult> results = new ArrayList<DecodeResult>(filters.size());
+        Set<Filter> filterSet = new HashSet<Filter>(filters);
+        if (filterSet.size() != filters.size())
+        {
+            throw new IOException("Duplicate");
+        }
+        // apply filters
+        for (int i = 0; i < filters.size(); i++)
+        {
+            if (scratchFile != null)
             {
-                throw new IOException("Duplicate");
-            }
-            // apply filters
-            for (int i = 0; i < filters.size(); i++)
-            {
-                if (scratchFile != null)
+                // scratch file
+                final RandomAccess buffer = scratchFile.createBuffer();
+                DecodeResult result = filters.get(i).decode(input, new RandomAccessOutputStream(buffer), parameters, i, options);
+                results.add(result);
+                input = new RandomAccessInputStream(buffer)
                 {
-                    // scratch file
-                    final RandomAccess buffer = scratchFile.createBuffer();
-                    DecodeResult result = filters.get(i).decode(input, new RandomAccessOutputStream(buffer), parameters, i, options);
-                    results.add(result);
-                    input = new RandomAccessInputStream(buffer)
+                    @Override
+                    public void close() throws IOException
                     {
-                        @Override
-                        public void close() throws IOException
-                        {
-                            buffer.close();
-                        }
-                    };
-                }
-                else
-                {
-                    // in-memory
-                    ByteArrayOutputStream output = new ByteArrayOutputStream();
-                    DecodeResult result = filters.get(i).decode(input, output, parameters, i, options);
-                    results.add(result);
-                    input = new ByteArrayInputStream(output.toByteArray());
-                }
+                        buffer.close();
+                    }
+                };
+            }
+            else
+            {
+                // in-memory
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                DecodeResult result = filters.get(i).decode(input, output, parameters, i, options);
+                results.add(result);
+                input = new ByteArrayInputStream(output.toByteArray());
             }
         }
         return new COSInputStream(input, results);
