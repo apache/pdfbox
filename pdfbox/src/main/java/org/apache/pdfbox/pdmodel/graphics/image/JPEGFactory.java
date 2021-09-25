@@ -331,6 +331,7 @@ public final class JPEGFactory
         return pdImage;
     }
 
+    // never returns null
     private static ImageWriter getJPEGImageWriter() throws IOException
     {
         Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("jpeg");
@@ -374,8 +375,9 @@ public final class JPEGFactory
             IIOMetadata data = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
             Element tree = (Element)data.getAsTree("javax_imageio_jpeg_image_1.0");
             Element jfif = (Element)tree.getElementsByTagName("app0JFIF").item(0);
-            jfif.setAttribute("Xdensity", Integer.toString(dpi));
-            jfif.setAttribute("Ydensity", Integer.toString(dpi));
+            String dpiString = Integer.toString(dpi);
+            jfif.setAttribute("Xdensity", dpiString);
+            jfif.setAttribute("Ydensity", dpiString);
             jfif.setAttribute("resUnits", "1"); // 1 = dots/inch
 
             // write
@@ -389,10 +391,7 @@ public final class JPEGFactory
             {
                 ios.close();
             }
-            if (imageWriter != null)
-            {
-                imageWriter.dispose();
-            }
+            imageWriter.dispose();
         }
     }
     
