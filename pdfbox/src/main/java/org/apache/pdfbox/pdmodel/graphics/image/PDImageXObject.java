@@ -232,7 +232,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     public static PDImageXObject createFromFileByExtension(File file, PDDocument doc) throws IOException
     {
         String name = file.getName();
-        int dot = file.getName().lastIndexOf('.');
+        int dot = name.lastIndexOf('.');
         if (dot == -1)
         {
             throw new IllegalArgumentException("Image type not supported: " + name);
