@@ -191,25 +191,23 @@ public final class LosslessFactory
                 imageData[byteIdx++] = (byte) ((pixel >> 16) & 0xFF);
                 imageData[byteIdx++] = (byte) ((pixel >> 8) & 0xFF);
                 imageData[byteIdx++] = (byte) (pixel & 0xFF);
-                if (transparency != Transparency.OPAQUE)
+
+                // we have the alpha right here, so no need to do it separately
+                // as done prior April 2018
+                if (transparency == Transparency.BITMASK)
                 {
-                    // we have the alpha right here, so no need to do it separately
-                    // as done prior April 2018
-                    if (transparency == Transparency.BITMASK)
+                    // write a bit
+                    alphaImageData[alphaByteIdx] |= ((pixel >> 24) & 1) << alphaBitPos;
+                    if (--alphaBitPos < 0)
                     {
-                        // write a bit
-                        alphaImageData[alphaByteIdx] |= ((pixel >> 24) & 1) << alphaBitPos;
-                        if (--alphaBitPos < 0)
-                        {
-                            alphaBitPos = 7;
-                            ++alphaByteIdx;
-                        }
+                        alphaBitPos = 7;
+                        ++alphaByteIdx;
                     }
-                    else
-                    {
-                        // write a byte
-                        alphaImageData[alphaByteIdx++] = (byte) ((pixel >> 24) & 0xFF);
-                    }
+                }
+                else if (transparency != Transparency.OPAQUE)
+                {
+                    // write a byte
+                    alphaImageData[alphaByteIdx++] = (byte) ((pixel >> 24) & 0xFF);
                 }
             }
 
