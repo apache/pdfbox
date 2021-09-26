@@ -509,7 +509,7 @@ public class PDAnnotationMarkup extends PDAnnotation
                 COSBase base2 = array.getObject(i);
                 if (base2 instanceof COSArray)
                 {
-                    inkList[i] = ((COSArray) array.getObject(i)).toFloatArray();
+                    inkList[i] = ((COSArray) base2).toFloatArray();
                 }
                 else
                 {
@@ -833,7 +833,7 @@ public class PDAnnotationMarkup extends PDAnnotation
                 COSBase base2 = array.getObject(i);
                 if (base2 instanceof COSArray)
                 {
-                    pathArray[i] = ((COSArray) array.getObject(i)).toFloatArray();
+                    pathArray[i] = ((COSArray) base2).toFloatArray();
                 }
                 else
                 {
