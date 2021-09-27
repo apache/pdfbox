@@ -16,26 +16,31 @@
  */
 package org.apache.pdfbox.io;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+
 import java.io.File;
 import java.io.IOException;
-import junit.framework.TestCase;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * This is a unit test for RandomAccessOutputStream.
  * 
  * @author Fredrik Kjellberg 
  */
-public class TestRandomAccessOutputStream extends TestCase
+public class TestRandomAccessOutputStream
 {
     private final File testResultsDir = new File("target/test-output");
 
-    @Override
-    protected void setUp() throws Exception
+    @Before
+    public void setUp() throws Exception
     {
-        super.setUp();
         testResultsDir.mkdirs();
     }
 
+    @Test
     public void testWrite() throws IOException
     {
         RandomAccessOutputStream out;
@@ -105,6 +110,14 @@ public class TestRandomAccessOutputStream extends TestCase
         file.delete();
     }
 
+    @Test
+    public void shouldCleanupMemoryOnClose() throws IOException
+    {
+        MemoryCleanableRandomAccessWrite mock = Mockito.mock(MemoryCleanableRandomAccessWrite.class);
+        new RandomAccessOutputStream(mock).close();
+        Mockito.verify(mock).cleanupMemory();
+    }
+
     protected byte[] createDataSequence(int length, int firstByteValue)
     {
         byte[] buffer = new byte[length];
@@ -114,5 +127,10 @@ public class TestRandomAccessOutputStream extends TestCase
         }
 
         return buffer;
+    }
+
+    public interface MemoryCleanableRandomAccessWrite extends RandomAccessWrite, MemoryCleanable
+    {
+
     }
 }

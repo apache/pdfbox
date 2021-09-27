@@ -51,7 +51,7 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
      */
     private byte[] currentPage;
     /** This flag indicates that current page is initiated. */
-    private boolean currentPageInitiated;
+    private boolean currentPageIsTemporary;
     /**
      * The current position (for next read/write) of the buffer as an offset in the current page.
      */
@@ -112,14 +112,13 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
         {
             return;
         }
-        if (currentPageInitiated)
+        if (currentPageIsTemporary)
         {
-            currentPage = pageHandler.readPage(pageIndexes[currentPagePositionInPageIndexes]);
+            currentPage = new byte[pageSize];
         }
         else
         {
-            currentPage = new byte[pageSize];
-            currentPageInitiated = true;
+            currentPage = pageHandler.readPage(pageIndexes[currentPagePositionInPageIndexes]);
         }
     }
     @Override
@@ -136,6 +135,7 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
         if (currentPageContentChanged)
         {
             pageHandler.writePage(pageIndexes[currentPagePositionInPageIndexes], currentPage);
+            currentPageIsTemporary = false;
             currentPageContentChanged = false;
         }
     }
@@ -171,12 +171,11 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
         currentPagePositionInPageIndexes = pageCount;
         currentPageOffset = ((long)pageCount) * pageSize; 
         pageCount++;
+        currentPageIsTemporary = true;
         if (lazyInitPageBuffer) {
             currentPage = null;
-            currentPageInitiated = false;
         } else {
             currentPage = new byte[pageSize];
-            currentPageInitiated = true;
         }
         positionInPage = 0;
     }
@@ -218,6 +217,7 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
             {
                 // we already have more pages assigned (there was a backward seek before)
                 currentPage = pageHandler.readPage(pageIndexes[++currentPagePositionInPageIndexes]);
+                currentPageIsTemporary = false;
                 currentPageOffset = ((long)currentPagePositionInPageIndexes) * pageSize;
                 positionInPage = 0;
             }
@@ -313,6 +313,7 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
         if (currentPagePositionInPageIndexes > 0)
         {
             currentPage = pageHandler.readPage(pageIndexes[0]);
+            currentPageIsTemporary = false;
             currentPagePositionInPageIndexes = 0;
             currentPageOffset = 0;
         }
@@ -370,6 +371,7 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
             }
             
             currentPage = pageHandler.readPage(pageIndexes[newPagePosition]);
+            currentPageIsTemporary = false;
             currentPagePositionInPageIndexes = newPagePosition;
             currentPageOffset = ((long)currentPagePositionInPageIndexes) * pageSize;
             positionInPage = (int) (seekToPosition - currentPageOffset);
@@ -533,6 +535,7 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
             
             pageIndexes = null;
             currentPage = null;
+            currentPageIsTemporary = true;
             currentPageOffset = 0;
             currentPagePositionInPageIndexes = -1;
             positionInPage = 0;
