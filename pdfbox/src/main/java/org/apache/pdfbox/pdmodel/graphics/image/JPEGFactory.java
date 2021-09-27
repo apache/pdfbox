@@ -382,13 +382,10 @@ public final class JPEGFactory
     private static void encodeImageToJPEGStream(BufferedImage image, float quality, int dpi,
                                                 OutputStream out) throws IOException
     {
-        // encode to JPEG
+        ImageWriter imageWriter = getJPEGImageWriter(); // find JAI writer
         ImageOutputStream ios = null;
-        ImageWriter imageWriter = null;
         try
-        {
-            // find JAI writer
-            imageWriter = getJPEGImageWriter();
+        {  
             ios = ImageIO.createImageOutputStream(out);
             imageWriter.setOutput(ios);
 
