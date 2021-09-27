@@ -43,14 +43,16 @@ public class ScratchFileBufferTest
     private static final int NUM_ITERATIONS = 3;
     private final MemoryUsageSetting memoryUsageSetting;
     @Parameters(name = "{0}")
-    public static Collection<Object[]> testData() {
+    public static Collection<Object[]> testData()
+    {
         List<Object[]> params = new ArrayList<Object[]>();
         params.add(new Object[] {"setupTempFileOnly", MemoryUsageSetting.setupTempFileOnly()});
         params.add(new Object[] {"setupMainMemoryOnly", MemoryUsageSetting.setupMainMemoryOnly()});
         return params;
     }
 
-    public ScratchFileBufferTest(final String name, MemoryUsageSetting memoryUsageSetting) {
+    public ScratchFileBufferTest(final String name, MemoryUsageSetting memoryUsageSetting)
+    {
         this.memoryUsageSetting = memoryUsageSetting;
     }
 
@@ -64,10 +66,12 @@ public class ScratchFileBufferTest
     public void testEOFBugInSeek() throws IOException
     {
         ScratchFile scratchFile = new ScratchFile(memoryUsageSetting);
-        try {
+        try
+        {
             ScratchFileBuffer scratchFileBuffer = new ScratchFileBuffer(scratchFile);
             byte[] bytes = new byte[PAGE_SIZE];
-            for (int i = 0; i < NUM_ITERATIONS; i++) {
+            for (int i = 0; i < NUM_ITERATIONS; i++)
+            {
                 long p0 = scratchFileBuffer.getPosition();
                 scratchFileBuffer.write(bytes);
                 long p1 = scratchFileBuffer.getPosition();
@@ -78,7 +82,9 @@ public class ScratchFileBufferTest
                 scratchFileBuffer.seek(0);
                 scratchFileBuffer.seek(i * 2 * PAGE_SIZE);
             }
-        } finally {
+        }
+        finally
+        {
             scratchFile.close();
         }
     }
@@ -87,7 +93,8 @@ public class ScratchFileBufferTest
     public void testRestorePageOnWrite() throws IOException
     {
         ScratchFile scratchFile = new ScratchFile(memoryUsageSetting);
-        try {
+        try
+        {
             ScratchFileBuffer scratchFileBuffer = new ScratchFileBuffer(scratchFile);
             int pagesCount = 4;
             byte[] sourceData = new byte[PAGE_SIZE * pagesCount];
@@ -124,7 +131,9 @@ public class ScratchFileBufferTest
             scratchFileBuffer.cleanupMemory();
 
             Assert.assertArrayEquals(sourceData, scratchFileBuffer.readFully(sourceData.length));
-        } finally {
+        }
+        finally
+        {
             scratchFile.close();
         }
     }
@@ -133,7 +142,8 @@ public class ScratchFileBufferTest
     public void testRestorePageOnRead() throws IOException
     {
         ScratchFile scratchFile = new ScratchFile(memoryUsageSetting);
-        try {
+        try
+        {
             ScratchFileBuffer scratchFileBuffer = new ScratchFileBuffer(scratchFile);
             int pagesCount = 4;
             byte[] sourceData = new byte[PAGE_SIZE * pagesCount];
@@ -167,7 +177,9 @@ public class ScratchFileBufferTest
             }
 
             Assert.assertArrayEquals(sourceData, readData);
-        } finally {
+        }
+        finally
+        {
             scratchFile.close();
         }
     }
@@ -181,13 +193,16 @@ public class ScratchFileBufferTest
         {
             data[i] = (byte) (i & 255);
         }
-        try {
+        try
+        {
             ScratchFileBuffer scratchFileBuffer = new ScratchFileBuffer(scratchFile);
             scratchFileBuffer.write(data, 0, bytesForWrite);
             scratchFileBuffer.cleanupMemory();
 
             Mockito.verify(scratchFile).writePage(0, data);
-        } finally {
+        }
+        finally
+        {
             scratchFile.close();
         }
     }

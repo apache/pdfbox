@@ -59,9 +59,11 @@ public class RandomAccessOutputStream extends OutputStream
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws IOException
+    {
         super.close();
-        if (writer instanceof MemoryCleanable) {
+        if (writer instanceof MemoryCleanable)
+        {
             ((MemoryCleanable) writer).cleanupMemory();
         }
     }

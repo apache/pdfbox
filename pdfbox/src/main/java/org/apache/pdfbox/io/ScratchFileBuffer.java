@@ -122,7 +122,8 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
         }
     }
     @Override
-    public void cleanupMemory() throws IOException {
+    public void cleanupMemory() throws IOException
+    {
         if (currentPage == null)
         {
             return;
@@ -131,7 +132,8 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
         currentPage = null;
     }
 
-    private void writePageWithChangedContentIfNeeded() throws IOException {
+    private void writePageWithChangedContentIfNeeded() throws IOException
+    {
         if (currentPageContentChanged)
         {
             pageHandler.writePage(pageIndexes[currentPagePositionInPageIndexes], currentPage);
@@ -172,9 +174,12 @@ class ScratchFileBuffer implements RandomAccess, MemoryCleanable
         currentPageOffset = ((long)pageCount) * pageSize; 
         pageCount++;
         currentPageIsTemporary = true;
-        if (lazyInitPageBuffer) {
+        if (lazyInitPageBuffer)
+        {
             currentPage = null;
-        } else {
+        }
+        else
+        {
             currentPage = new byte[pageSize];
         }
         positionInPage = 0;

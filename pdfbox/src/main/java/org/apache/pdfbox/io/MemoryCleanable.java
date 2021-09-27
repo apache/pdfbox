@@ -23,7 +23,8 @@ import java.io.IOException;
  * An interface to allow data cached in a memory to be cleaned.
  * @author V. Vasin
  */
-public interface MemoryCleanable {
+public interface MemoryCleanable
+{
     /**
      * Cleans data cached in a memory.
      *

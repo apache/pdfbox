@@ -120,9 +120,11 @@ public class RandomAccessInputStream extends InputStream
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws IOException
+    {
         super.close();
-        if (input instanceof MemoryCleanable) {
+        if (input instanceof MemoryCleanable)
+        {
             ((MemoryCleanable) input).cleanupMemory();
         }
     }
