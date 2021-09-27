@@ -27,7 +27,7 @@ import org.apache.pdfbox.cos.COSStream;
  * Implementation of {@link RandomAccess} as sequence of multiple fixed size pages handled
  * by {@link ScratchFile}.
  */
-class ScratchFileBuffer implements RandomAccess
+class ScratchFileBuffer implements RandomAccess, MemoryCleanable
 {
     private final int pageSize;
     /**
@@ -50,6 +50,8 @@ class ScratchFileBuffer implements RandomAccess
      * The current page data.
      */
     private byte[] currentPage;
+    /** This flag indicates that current page is initiated. */
+    private boolean currentPageInitiated;
     /**
      * The current position (for next read/write) of the buffer as an offset in the current page.
      */
@@ -63,7 +65,7 @@ class ScratchFileBuffer implements RandomAccess
     private int[] pageIndexes = new int[16];
     /** number of pages held by this buffer */
     private int pageCount = 0;
-    
+
     private static final Log LOG = LogFactory.getLog(ScratchFileBuffer.class);
     
     /**
@@ -81,7 +83,7 @@ class ScratchFileBuffer implements RandomAccess
         
         pageSize = this.pageHandler.getPageSize();
         
-        addPage();
+        addPage(true);
     }
 
     /**
@@ -100,11 +102,51 @@ class ScratchFileBuffer implements RandomAccess
     }
 
     /**
+     * Restores current page.
+     *
+     * @throws IOException If getting current page failed.
+     */
+    private void restoreCurrentPage() throws IOException
+    {
+        if (currentPage != null)
+        {
+            return;
+        }
+        if (currentPageInitiated)
+        {
+            currentPage = pageHandler.readPage(pageIndexes[currentPagePositionInPageIndexes]);
+        }
+        else
+        {
+            currentPage = new byte[pageSize];
+            currentPageInitiated = true;
+        }
+    }
+    @Override
+    public void cleanupMemory() throws IOException {
+        if (currentPage == null)
+        {
+            return;
+        }
+        writePageWithChangedContentIfNeeded();
+        currentPage = null;
+    }
+
+    private void writePageWithChangedContentIfNeeded() throws IOException {
+        if (currentPageContentChanged)
+        {
+            pageHandler.writePage(pageIndexes[currentPagePositionInPageIndexes], currentPage);
+            currentPageContentChanged = false;
+        }
+    }
+
+    /**
      * Adds a new page and positions all pointers to start of new page.
-     * 
+     *
+     * @param lazyInitPageBuffer lazy initialization of page buffer.
      * @throws IOException if requesting a new page fails
      */
-    private void addPage() throws IOException
+    private void addPage(final boolean lazyInitPageBuffer) throws IOException
     {
         if (pageCount+1 >= pageIndexes.length)
         {
@@ -129,7 +171,13 @@ class ScratchFileBuffer implements RandomAccess
         currentPagePositionInPageIndexes = pageCount;
         currentPageOffset = ((long)pageCount) * pageSize; 
         pageCount++;
-        currentPage = new byte[pageSize];
+        if (lazyInitPageBuffer) {
+            currentPage = null;
+            currentPageInitiated = false;
+        } else {
+            currentPage = new byte[pageSize];
+            currentPageInitiated = true;
+        }
         positionInPage = 0;
     }
     
@@ -164,12 +212,7 @@ class ScratchFileBuffer implements RandomAccess
         if (positionInPage >= pageSize)
         {
             // page full
-            if (currentPageContentChanged)
-            {
-                // write page
-                pageHandler.writePage(pageIndexes[currentPagePositionInPageIndexes], currentPage);
-                currentPageContentChanged = false;
-            }
+            writePageWithChangedContentIfNeeded();
             // get new page
             if (currentPagePositionInPageIndexes+1 < pageCount)
             {
@@ -181,7 +224,7 @@ class ScratchFileBuffer implements RandomAccess
             else if (addNewPageIfNeeded)
             {
                 // need new page
-                addPage();
+                addPage(false);
             }
             else
             {
@@ -199,6 +242,7 @@ class ScratchFileBuffer implements RandomAccess
     public void write(int b) throws IOException
     {
         checkClosed();
+        restoreCurrentPage();
         
         ensureAvailableBytesInPage(true);
         
@@ -227,6 +271,7 @@ class ScratchFileBuffer implements RandomAccess
     public void write(byte[] b, int off, int len) throws IOException
     {
         checkClosed();
+        restoreCurrentPage();
 
         int remain = len;
         int bOff   = off;
@@ -293,6 +338,7 @@ class ScratchFileBuffer implements RandomAccess
     public void seek(long seekToPosition) throws IOException
     {
         checkClosed();
+        restoreCurrentPage();
 
         /*
          * for now we won't allow to seek past end of buffer; this can be changed by adding new pages as needed
@@ -315,13 +361,7 @@ class ScratchFileBuffer implements RandomAccess
         else
         {
             // have to go to another page
-            
-            // check if current page needs to be written to file
-            if (currentPageContentChanged)
-            {
-                pageHandler.writePage(pageIndexes[currentPagePositionInPageIndexes], currentPage);
-                currentPageContentChanged = false;
-            }
+            writePageWithChangedContentIfNeeded();
             
             int newPagePosition = (int) (seekToPosition / pageSize);
             if (seekToPosition % pageSize == 0 && seekToPosition == size)
@@ -415,6 +455,7 @@ class ScratchFileBuffer implements RandomAccess
     public int read() throws IOException
     {
         checkClosed();
+        restoreCurrentPage();
 
         if (currentPageOffset + positionInPage >= size)
         {
@@ -446,6 +487,7 @@ class ScratchFileBuffer implements RandomAccess
     public int read(byte[] b, int off, int len) throws IOException
     {
         checkClosed();
+        restoreCurrentPage();
 
         if (currentPageOffset + positionInPage >= size)
         {
