@@ -45,12 +45,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSUpdateInfo;
-import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.MemoryUsageSetting;
-import org.apache.pdfbox.io.RandomAccessBuffer;
-import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
-import org.apache.pdfbox.io.RandomAccessRead;
-import org.apache.pdfbox.io.ScratchFile;
+import org.apache.pdfbox.io.*;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
@@ -1226,6 +1221,9 @@ public class PDDocument implements Closeable
             RandomAccessRead source = scratchFile.createBuffer(input);
             PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
             parser.parse();
+            if (source instanceof MemoryCleanable) {
+                ((MemoryCleanable) source).cleanupMemory();
+            }
             return parser.getPDDocument();
         }
         catch (IOException ioe)
