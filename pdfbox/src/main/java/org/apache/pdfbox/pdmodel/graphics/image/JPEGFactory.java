@@ -27,7 +27,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Iterator;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -334,23 +333,21 @@ public final class JPEGFactory
     private static PDImageXObject createJPEG(PDDocument document, BufferedImage image,
                                              float quality, int dpi) throws IOException
     {
-        // extract alpha channel (if any)
         BufferedImage awtColorImage = getColorImage(image);
-        BufferedImage awtAlphaImage = getAlphaImage(image);
 
         // create XObject
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        encodeImageToJPEGStream(awtColorImage, quality, dpi, baos);
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(baos.toByteArray());
-        
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
-                COSName.DCT_DECODE, awtColorImage.getWidth(), awtColorImage.getHeight(), 
-                8,
+        byte[] encoded = encodeImageToJPEGStream(awtColorImage, quality, dpi);
+        ByteArrayInputStream encodedByteStream = new ByteArrayInputStream(encoded);
+
+        PDImageXObject pdImage = new PDImageXObject(document, encodedByteStream, COSName.DCT_DECODE,
+                awtColorImage.getWidth(), awtColorImage.getHeight(), 8,
                 getColorSpaceFromAWT(awtColorImage));
 
-        // alpha -> soft mask
+        // extract alpha channel (if any)
+        BufferedImage awtAlphaImage = getAlphaImage(image);
         if (awtAlphaImage != null)
         {
+            // alpha -> soft mask
             PDImage xAlpha = JPEGFactory.createFromImage(document, awtAlphaImage, quality);
             pdImage.getCOSObject().setItem(COSName.SMASK, xAlpha);
         }
@@ -379,14 +376,14 @@ public final class JPEGFactory
         throw new IOException("No ImageWriter found for JPEG format");
     }
 
-    private static void encodeImageToJPEGStream(BufferedImage image, float quality, int dpi,
-                                                OutputStream out) throws IOException
+    private static byte[] encodeImageToJPEGStream(BufferedImage image, float quality, int dpi) throws IOException
     {
         ImageWriter imageWriter = getJPEGImageWriter(); // find JAI writer
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageOutputStream ios = null;
         try
         {  
-            ios = ImageIO.createImageOutputStream(out);
+            ios = ImageIO.createImageOutputStream(baos);
             imageWriter.setOutput(ios);
 
             // add compression
@@ -396,21 +393,22 @@ public final class JPEGFactory
 
             // add metadata
             ImageTypeSpecifier imageTypeSpecifier = new ImageTypeSpecifier(image);
-            IIOMetadata data = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
-            Element tree = (Element)data.getAsTree("javax_imageio_jpeg_image_1.0");
-            Element jfif = (Element)tree.getElementsByTagName("app0JFIF").item(0);
+            IIOMetadata metadata = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
+            Element tree = (Element) metadata.getAsTree("javax_imageio_jpeg_image_1.0");
+            Element jfif = (Element) tree.getElementsByTagName("app0JFIF").item(0);
             String dpiString = Integer.toString(dpi);
             jfif.setAttribute("Xdensity", dpiString);
             jfif.setAttribute("Ydensity", dpiString);
             jfif.setAttribute("resUnits", "1"); // 1 = dots/inch
 
             // write
-            imageWriter.write(data, new IIOImage(image, null, null), jpegParam);
+            imageWriter.write(metadata, new IIOImage(image, null, null), jpegParam);
+
+            return baos.toByteArray();
         }
         finally
         {
             // clean up
-            IOUtils.closeQuietly(out);
             if (ios != null)
             {
                 ios.close();
