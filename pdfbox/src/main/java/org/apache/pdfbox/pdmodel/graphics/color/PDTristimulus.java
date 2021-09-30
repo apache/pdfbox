@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public final class PDTristimulus implements COSObjectable
 {
-    private COSArray values = null;
+    private final COSArray values;
 
     /**
      * Constructor. Defaults all values to 0, 0, 0.
