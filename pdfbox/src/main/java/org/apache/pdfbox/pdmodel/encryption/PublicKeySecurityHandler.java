@@ -27,6 +27,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
@@ -476,9 +477,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyPro
         Cipher cipher;
         try
         {
-            apg = AlgorithmParameterGenerator.getInstance(algorithm, SecurityProvider.getProvider());
-            keygen = KeyGenerator.getInstance(algorithm, SecurityProvider.getProvider());
-            cipher = Cipher.getInstance(algorithm, SecurityProvider.getProvider());
+            Provider provider = SecurityProvider.getProvider();
+            apg = AlgorithmParameterGenerator.getInstance(algorithm, provider);
+            keygen = KeyGenerator.getInstance(algorithm, provider);
+            cipher = Cipher.getInstance(algorithm, provider);
         }
         catch (NoSuchAlgorithmException e)
         {
