@@ -54,9 +54,10 @@ public class PDFunctionType2 extends PDFunction
     {
         super(function);
 
-        if (getCOSObject().getDictionaryObject(COSName.C0) instanceof COSArray)
+        COSArray cosArray0 = getCOSObject().getCOSArray(COSName.C0);
+        if (cosArray0 != null)
         {
-            c0 = (COSArray) getCOSObject().getDictionaryObject(COSName.C0);
+            c0 = cosArray0;
         }
         else
         {
@@ -67,9 +68,10 @@ public class PDFunctionType2 extends PDFunction
             c0.add(new COSFloat(0));
         }
 
-        if (getCOSObject().getDictionaryObject(COSName.C1) instanceof COSArray)
+        COSArray cosArray1 = getCOSObject().getCOSArray(COSName.C1);
+        if (cosArray1 != null)
         {
-            c1 = (COSArray) getCOSObject().getDictionaryObject(COSName.C1);
+            c1 = cosArray1;
         }
         else
         {
