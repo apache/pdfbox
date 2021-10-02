@@ -188,7 +188,7 @@ final class FontMapperImpl implements FontMapper
      */
     private Set<String> getPostScriptNames(String postScriptName)
     {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<String>(2);
     
         // built-in PostScript name
         names.add(postScriptName);
