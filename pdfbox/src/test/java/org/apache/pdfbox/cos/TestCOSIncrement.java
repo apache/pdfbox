@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ConcurrentModificationException;
 
-class TestCOSUpdateInfoObserver
+class TestCOSIncrement
 {
 
     // TODO Very basic and primitive test - add in depth testing for all this.
@@ -120,7 +120,7 @@ class TestCOSUpdateInfoObserver
             assertNull(document.getPage(1).getResources(), "Page 2 should not have contained resources");
             try (PDPageContentStream contentStream = new PDPageContentStream(document, document.getPage(0)))
             {
-                URL imageResource = TestCOSUpdateInfoObserver.class.getResource("simple.png");
+                URL imageResource = TestCOSIncrement.class.getResource("simple.png");
                 assertNotNull(imageResource, "Image resource not found.");
                 File image = assertDoesNotThrow(() -> new File(imageResource.toURI()),
                     "Image file could not be loaded");

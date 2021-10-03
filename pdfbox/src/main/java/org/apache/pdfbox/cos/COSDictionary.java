@@ -30,9 +30,6 @@ import java.util.function.BiConsumer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.pdfbox.cos.observer.event.COSAddEvent;
-import org.apache.pdfbox.cos.observer.event.COSReplaceEvent;
-import org.apache.pdfbox.cos.observer.event.COSRemoveEvent;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
@@ -58,13 +55,14 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
      */
     protected Map<COSName, COSBase> items = new SmallMap<>();
+    private final COSUpdateState updateState;
 
     /**
      * Constructor.
      */
     public COSDictionary()
     {
-        // default constructor
+        updateState = new COSUpdateState(this);
     }
 
     /**
@@ -74,8 +72,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public COSDictionary(COSDictionary dict)
     {
+        updateState = new COSUpdateState(this);
         items.putAll(dict.items);
-        reportUpdate(new COSAddEvent<>(this, items.values()));
     }
 
     /**
@@ -131,9 +129,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void clear()
     {
-        List<COSBase> removed = new ArrayList<>(items.values());
         items.clear();
-        reportUpdate(new COSRemoveEvent<>(this, removed));
+        getUpdateState().update();
     }
 
     /**
@@ -206,20 +203,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         else
         {
-            COSBase replacedEntry = null;
-            if (items.containsKey(key))
-            {
-                replacedEntry = items.get(key);
-            }
             items.put(key, value);
-            if(replacedEntry != null)
-            {
-                reportUpdate(new COSReplaceEvent<>(this, replacedEntry, value));
-            }
-            else
-            {
-                reportUpdate(new COSAddEvent<>(this, value));
-            }
+            getUpdateState().update(value);
         }
     }
 
@@ -1168,9 +1153,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void removeItem(COSName key)
     {
-        COSBase removed = getItem(key);
         items.remove(key);
-        reportUpdate(new COSRemoveEvent<>(this, removed));
+        getUpdateState().update();
     }
 
     /**
@@ -1416,4 +1400,17 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         return base.toString();
     }
+    
+    /**
+     * Returns the current {@link COSUpdateState} of this {@link COSDictionary}.
+     *
+     * @return The current {@link COSUpdateState} of this {@link COSDictionary}.
+     * @see COSUpdateState
+     */
+    @Override
+    public COSUpdateState getUpdateState()
+    {
+        return updateState;
+    }
+    
 }

@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -1469,14 +1468,10 @@ public class COSWriter implements ICOSVisitor
     public void write(PDDocument doc, SignatureInterface signInterface) throws IOException
     {
         pdDocument = doc;
-        // Whatever the writer wishes to change, the writer itself shall keep track of it.
-        pdDocument.getDocument().getUpdateObserver().stopTrackingChanges();
-        if (incrementalUpdate)
-        {
-            for(COSUpdateInfo updatedObject : pdDocument.getDocument().getUpdateObserver())
-            {
-                addObjectToWrite(updatedObject.getCOSObject());
-            }
+        COSDocument cosDoc = pdDocument.getDocument();
+        COSDictionary trailer = cosDoc.getTrailer();
+        if(incrementalUpdate){
+            trailer.toIncrement().exclude(trailer).forEach(objectsToWrite::add);
         }
         signatureInterface = signInterface;
         number = pdDocument.getDocument().getHighestXRefObjectNumber();
@@ -1486,8 +1481,6 @@ public class COSWriter implements ICOSVisitor
         }
         Long idTime = pdDocument.getDocumentId() == null ? System.currentTimeMillis()
                 : pdDocument.getDocumentId();
-        COSDocument cosDoc = pdDocument.getDocument();
-        COSDictionary trailer = cosDoc.getTrailer();
 
         // if the document says we should remove encryption, then we shouldn't encrypt
         if (doc.isAllSecurityToBeRemoved())
@@ -1582,17 +1575,12 @@ public class COSWriter implements ICOSVisitor
     public void write(FDFDocument doc) throws IOException
     {
         fdfDocument = doc;
-        // Whatever the writer wishes to change, the writer itself shall keep track of it.
-        fdfDocument.getDocument().getUpdateObserver().stopTrackingChanges();
-        if (incrementalUpdate)
-        {
-            for(COSUpdateInfo updatedObject : pdDocument.getDocument().getUpdateObserver())
-            {
-                addObjectToWrite(updatedObject.getCOSObject());
-            }
+        COSDocument cosDoc = fdfDocument.getDocument();
+        COSDictionary trailer = cosDoc.getTrailer();
+        if(incrementalUpdate){
+            trailer.toIncrement().exclude(trailer).forEach(objectsToWrite::add);
         }
         willEncrypt = false;
-        COSDocument cosDoc = fdfDocument.getDocument();
         cosDoc.accept(this);
     }
     /**

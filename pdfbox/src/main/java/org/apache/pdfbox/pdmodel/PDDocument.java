@@ -168,7 +168,7 @@ public class PDDocument implements Closeable
     public PDDocument(MemoryUsageSetting memUsageSetting)
     {
         document = new COSDocument(memUsageSetting);
-        document.getUpdateObserver().startTrackingChanges();
+        document.getDocumentState().setParsing(false);
         pdfSource = null;
 
         // First we need a trailer
@@ -222,7 +222,7 @@ public class PDDocument implements Closeable
     public PDDocument(COSDocument doc, RandomAccessRead source, AccessPermission permission)
     {
         document = doc;
-        document.getUpdateObserver().startTrackingChanges();
+        document.getDocumentState().setParsing(false);
         pdfSource = source;
         accessPermission = permission;
     }
