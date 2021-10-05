@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class CombAlignmentTest
+class CombAlignmentTest
 {
     private static final File OUT_DIR = new File("target/test-output");
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
@@ -36,7 +36,7 @@ public class CombAlignmentTest
     private static final String TEST_VALUE = "1234567";
 
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         OUT_DIR.mkdirs();
     }
