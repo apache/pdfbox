@@ -1159,6 +1159,7 @@ public class COSParser extends BaseParser implements ICOSParser
             return true;
         }
         Map<COSObjectKey, COSObjectKey> correctedKeys = new HashMap<>();
+        Map<COSObjectKey, COSObjectKey> validKeys = new HashMap<>();
         for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
         {
             COSObjectKey objectKey = objectEntry.getKey();
@@ -1178,13 +1179,18 @@ public class COSParser extends BaseParser implements ICOSParser
                 {
                     // Generation was fixed - need to update map later, after iteration
                     correctedKeys.put(objectKey, foundObjectKey);
+                } else {
+                    validKeys.put(objectKey, foundObjectKey);
                 }
             }
         }
         for (Entry<COSObjectKey, COSObjectKey> correctedKeyEntry : correctedKeys.entrySet())
         {
-            xrefOffset.put(correctedKeyEntry.getValue(),
-                    xrefOffset.remove(correctedKeyEntry.getKey()));
+            if(!validKeys.containsKey(correctedKeyEntry.getValue())) {
+                // Only replacy entries, if the original entry does not point to a valid object
+                xrefOffset.put(correctedKeyEntry.getValue(),
+                        xrefOffset.remove(correctedKeyEntry.getKey()));
+            }
         }
         return true;
     }
@@ -1239,6 +1245,7 @@ public class COSParser extends BaseParser implements ICOSParser
             if(objectKey.getNumber() != foundObjectNumber){
                 LOG.warn("found wrong object number. expected [" + objectKey.getNumber() +"] found ["+ foundObjectNumber + "]");
                 if(!isLenient) return null;
+                else objectKey = new COSObjectKey(foundObjectNumber, objectKey.getGeneration());
             }
 
             int genNumber = readGenerationNumber();
