@@ -1159,7 +1159,7 @@ public class COSParser extends BaseParser implements ICOSParser
             return true;
         }
         Map<COSObjectKey, COSObjectKey> correctedKeys = new HashMap<>();
-        Map<COSObjectKey, COSObjectKey> validKeys = new HashMap<>();
+        HashSet<COSObjectKey> validKeys = new HashSet<>();
         for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
         {
             COSObjectKey objectKey = objectEntry.getKey();
@@ -1180,13 +1180,13 @@ public class COSParser extends BaseParser implements ICOSParser
                     // Generation was fixed - need to update map later, after iteration
                     correctedKeys.put(objectKey, foundObjectKey);
                 } else {
-                    validKeys.put(objectKey, foundObjectKey);
+                    validKeys.add(objectKey);
                 }
             }
         }
         for (Entry<COSObjectKey, COSObjectKey> correctedKeyEntry : correctedKeys.entrySet())
         {
-            if(!validKeys.containsKey(correctedKeyEntry.getValue())) {
+            if(!validKeys.contains(correctedKeyEntry.getValue())) {
                 // Only replacy entries, if the original entry does not point to a valid object
                 xrefOffset.put(correctedKeyEntry.getValue(),
                         xrefOffset.remove(correctedKeyEntry.getKey()));
@@ -1332,7 +1332,7 @@ public class COSParser extends BaseParser implements ICOSParser
                                 // add the former object ID only if there was a subsequent object ID
                                 bfCOSObjectKeyOffsets.put(
                                         new COSObjectKey(lastObjectId, lastGenID), lastObjOffset);
-                                }
+                            }
                             lastObjectId = objectId;
                             lastGenID = genID;
                             lastObjOffset = tempOffset + 1;
