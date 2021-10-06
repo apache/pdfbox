@@ -506,31 +506,30 @@ public class COSWriter implements ICOSVisitor, Closeable
             actual = ((COSObject)actual).getObject();
         }
 
-        if( !writtenObjects.contains( object ) &&
-            !objectsToWriteSet.contains( object ) &&
-            !actualsAdded.contains( actual ) )
+        if (writtenObjects.contains(object) || objectsToWriteSet.contains(object)
+                || actualsAdded.contains(actual))
         {
-            COSBase cosBase=null;
-            COSObjectKey cosObjectKey = null;
-            if(actual != null)
-            {
-                cosObjectKey= objectKeys.get(actual);
-            }
-            if(cosObjectKey!=null)
+            return;
+        }
+        COSBase cosBase = null;
+        COSObjectKey cosObjectKey = null;
+        if (actual != null)
+        {
+            cosObjectKey = objectKeys.get(actual);
+            if (cosObjectKey != null)
             {
                 cosBase = keyObject.get(cosObjectKey);
+                if (!isNeedToBeUpdated(object) && !isNeedToBeUpdated(cosBase))
+                {
+                    return;
+                }
             }
-            if (actual != null && objectKeys.containsKey(actual) 
-                    && !isNeedToBeUpdated(object) && !isNeedToBeUpdated(cosBase))
-            {
-                return;
-            }
-            objectsToWrite.add( object );
-            objectsToWriteSet.add( object );
-            if( actual != null )
-            {
-                actualsAdded.add( actual );
-            }
+        }
+        objectsToWrite.add(object);
+        objectsToWriteSet.add(object);
+        if (actual != null)
+        {
+            actualsAdded.add(actual);
         }
     }
 
