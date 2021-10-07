@@ -204,7 +204,7 @@ public class COSStream extends COSDictionary implements Closeable
                 throw new IOException("Duplicate");
             }
             InputStream input = createRawInputStream();
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            ByteArrayOutputStream output = new ByteArrayOutputStream(input.available());
             // apply filters
             for (int i = 0; i < filterList.size(); i++)
             {
