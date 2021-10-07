@@ -331,6 +331,7 @@ public class PDSignature implements COSObjectable
      * @param pdfFile The signed pdf file as InputStream. It will be closed in this method.
      * @return a byte array containing the signature
      * @throws IOException if the pdfFile can't be read
+     * @throws IndexOutOfBoundsException if the byterange array is not long enough
      */
     public byte[] getContents(InputStream pdfFile) throws IOException
     {
@@ -347,6 +348,7 @@ public class PDSignature implements COSObjectable
      * @param pdfFile The signed pdf file as byte array
      * @return a byte array containing the signature
      * @throws IOException if the pdfFile can't be read
+     * @throws IndexOutOfBoundsException if the byterange array is not long enough
      */
     public byte[] getContents(byte[] pdfFile) throws IOException
     {
