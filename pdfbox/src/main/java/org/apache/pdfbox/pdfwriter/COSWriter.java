@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -34,7 +35,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -199,7 +199,7 @@ public class COSWriter implements ICOSVisitor
     private final List<XReferenceEntry> xRefEntries = new ArrayList<>();
 
     //A list of objects to write.
-    private final Deque<COSBase> objectsToWrite = new LinkedList<>();
+    private final Deque<COSBase> objectsToWrite = new ArrayDeque<>();
 
     //a list of objects already written
     private final Set<COSBase> writtenObjects = new HashSet<>();
