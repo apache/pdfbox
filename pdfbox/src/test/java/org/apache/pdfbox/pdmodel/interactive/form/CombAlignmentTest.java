@@ -50,9 +50,9 @@ class CombAlignmentTest
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             PDField field = acroForm.getField("PDFBoxCombLeft");
             field.setValue(TEST_VALUE);
-            field = (PDTextField) acroForm.getField("PDFBoxCombMiddle");
+            field = acroForm.getField("PDFBoxCombMiddle");
             field.setValue(TEST_VALUE);
-            field = (PDTextField) acroForm.getField("PDFBoxCombRight");
+            field = acroForm.getField("PDFBoxCombRight");
             field.setValue(TEST_VALUE);
             // compare rendering
             File file = new File(OUT_DIR, NAME_OF_PDF);
