@@ -156,13 +156,21 @@ public class SignatureOptions implements Closeable
     @Override
     public void close() throws IOException
     {
-        if (visualSignature != null)
+        try
         {
-            visualSignature.close();
+            if (visualSignature != null)
+            {
+                visualSignature.close();
+                visualSignature = null;
+            }
         }
-        if (pdfSource != null)
+        finally
         {
-            pdfSource.close();
+            if (pdfSource != null)
+            {
+                pdfSource.close();
+                pdfSource = null;
+            }
         }
     }
 }
