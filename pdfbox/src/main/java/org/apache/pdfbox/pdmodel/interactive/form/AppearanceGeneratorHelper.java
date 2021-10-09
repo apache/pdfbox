@@ -41,6 +41,7 @@ import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -241,16 +242,17 @@ class AppearanceGeneratorHelper
                 appearanceDict.setNormalAppearance(appearanceStream);
                 // TODO support appearances other than "normal"
             }
-                
+
+            PDAppearanceCharacteristicsDictionary characteristicsDictionary = widget.getAppearanceCharacteristics();
             /*
              * Adobe Acrobat always recreates the complete appearance stream if there is an appearance characteristics
              * entry (the widget dictionaries MK entry). In addition, if there is no content yet also create the appearance
              * stream from the entries.
              * 
              */
-            if (widget.getAppearanceCharacteristics() != null || appearanceStream.getContentStream().getLength() == 0)
+            if (characteristicsDictionary != null || appearanceStream.getContentStream().getLength() == 0)
             {
-                initializeAppearanceContent(widget, appearanceStream);
+                initializeAppearanceContent(widget, characteristicsDictionary, appearanceStream);
             }
                 
             setAppearanceContent(widget, appearanceStream);
@@ -266,18 +268,21 @@ class AppearanceGeneratorHelper
         // format the field value for the appearance if there is scripting support and the field
         // has a format event
         PDFormFieldAdditionalActions actions = field.getActions();
-
-        if (actions != null && actions.getF() != null)
+        if (actions == null)
+        {
+            return apValue;
+        }
+        PDAction actionF = actions.getF();
+        if (actionF != null)
         {
             if (field.getAcroForm().getScriptingHandler() != null)
             {
                 ScriptingHandler scriptingHandler = field.getAcroForm().getScriptingHandler();
-                return scriptingHandler.format((PDActionJavaScript) actions.getF(), apValue);
+                return scriptingHandler.format((PDActionJavaScript) actionF, apValue);
             }
             else
             {
                 LOG.info("Field contains a formatting action but no ScriptingHandler has been supplied - formatted value might be incorrect");
-                return apValue;
             }
         }
         return apValue;
@@ -350,16 +355,17 @@ class AppearanceGeneratorHelper
      * around the widget
      * 
      * @param widget the field widget
+     * @param characteristicsDictionary the appearance characteristics dictionary from widget instance or null
      * @param appearanceStream the appearance stream to be used
      * @throws IOException in case we can't write to the appearance stream
      */
-    private void initializeAppearanceContent(PDAnnotationWidget widget, PDAppearanceStream appearanceStream) throws IOException
+    private void initializeAppearanceContent(PDAnnotationWidget widget, PDAppearanceCharacteristicsDictionary characteristicsDictionary,
+                                             PDAppearanceStream appearanceStream) throws IOException
     {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream();
                 PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output))
         {
-
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
+            PDAppearanceCharacteristicsDictionary appearanceCharacteristics = characteristicsDictionary;
             
             // TODO: support more entries like patterns, etc.
             if (appearanceCharacteristics != null)
@@ -548,7 +554,7 @@ class AppearanceGeneratorHelper
             }
             else
             {
-                // Adobe shows the text 'shiftet up' in case the caps don't fit into the clipping area
+                // Adobe shows the text 'shifted up' in case the caps don't fit into the clipping area
                 if (fontCapAtSize > clipRect.getHeight())
                 {
                     y = clipRect.getLowerLeftY() + -fontDescentAtSize;
