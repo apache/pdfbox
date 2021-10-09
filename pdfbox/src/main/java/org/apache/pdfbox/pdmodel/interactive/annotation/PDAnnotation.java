@@ -219,7 +219,15 @@ public abstract class PDAnnotation implements COSObjectable
     public PDAnnotation(COSDictionary dict)
     {
         dictionary = dict;
-        dictionary.setItem(COSName.TYPE, COSName.ANNOT);
+        COSBase type = dict.getDictionaryObject(COSName.TYPE);
+        if (type == null)
+        {
+            dictionary.setItem(COSName.TYPE, COSName.ANNOT);
+        }
+        else if (!COSName.ANNOT.equals(type))
+        {
+            LOG.warn("Annotation has type " + type + ", further mayhem may follow");
+        }
     }
 
     /**
@@ -740,11 +748,12 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will retrieve the border array. If none is available then it will return the default,
-     * which is [0 0 1]. The array consists of at least three numbers defining the horizontal corner
-     * radius, vertical corner radius, and border width. The array may have a fourth element, an
-     * optional dash array defining a pattern of dashes and gaps that shall be used in drawing the
-     * border. If the array has less than three elements, it will be filled with 0.
+     * This will retrieve the border array. If none is available then it will create and return a
+     * default array, which is [0 0 1]. The array consists of at least three numbers defining the
+     * horizontal corner radius, vertical corner radius, and border width. The array may have a
+     * fourth element, an optional dash array defining a pattern of dashes and gaps that shall be
+     * used in drawing the border. If the array has less than three elements, the original array
+     * will be copied and missing elements with value 0 will be added.
      *
      * @return the border array, never null.
      */

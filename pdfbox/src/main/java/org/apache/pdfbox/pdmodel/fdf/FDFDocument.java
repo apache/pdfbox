@@ -50,6 +50,7 @@ public class FDFDocument implements Closeable
     public FDFDocument()
     {
         document = new COSDocument();
+        document.getDocumentState().setParsing(false);
         document.setVersion(1.2f);
 
         // First we need a trailer
@@ -68,6 +69,7 @@ public class FDFDocument implements Closeable
     public FDFDocument(COSDocument doc)
     {
         document = doc;
+        document.getDocumentState().setParsing(false);
     }
 
     /**

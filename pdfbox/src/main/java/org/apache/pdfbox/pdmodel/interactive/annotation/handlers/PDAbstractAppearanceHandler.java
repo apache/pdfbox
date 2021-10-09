@@ -26,6 +26,9 @@ import java.util.Set;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -47,6 +50,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 {
     private final PDAnnotation annotation;
+    private PDFont defaultFont;
     protected final PDDocument document;
 
     /**
@@ -77,6 +81,15 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         this.document = document;
     }
 
+    protected PDFont getDefaultFont()
+    {
+        if (defaultFont == null)
+        {
+            defaultFont = new PDType1Font(FontName.HELVETICA);
+        }
+        return defaultFont;
+    }
+    
     PDAnnotation getAnnotation()
     {
         return annotation;
@@ -309,14 +322,15 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
                 break;
             case PDAnnotationLine.LE_R_OPEN_ARROW:
             case PDAnnotationLine.LE_R_CLOSED_ARROW:
-                drawArrow(cs, x + (0 - sign) * width, y, (0 - sign) * width * 9);
+                drawArrow(cs, x + (-sign) * width, y, (-sign) * width * 9);
                 break;
             case PDAnnotationLine.LE_SLASH:
+                float width9 = width * 9;
                 // the line is 18 x linewidth at an angle of 60°
-                cs.moveTo(x + (float) (Math.cos(Math.toRadians(60)) * width * 9),
-                          y + (float) (Math.sin(Math.toRadians(60)) * width * 9));
-                cs.lineTo(x + (float) (Math.cos(Math.toRadians(240)) * width * 9),
-                          y + (float) (Math.sin(Math.toRadians(240)) * width * 9));
+                cs.moveTo(x + (float) (Math.cos(Math.toRadians(60)) * width9),
+                          y + (float) (Math.sin(Math.toRadians(60)) * width9));
+                cs.lineTo(x + (float) (Math.cos(Math.toRadians(240)) * width9),
+                          y + (float) (Math.sin(Math.toRadians(240)) * width9));
                 break;
             default:
                 return;
@@ -329,7 +343,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         cs.drawShape(width, hasStroke, 
                      // make sure to only paint a background color (/IC value) 
                      // for interior color styles, even if an /IC value is set.
-                     INTERIOR_COLOR_STYLES.contains(style) ? hasBackground : false);
+                     INTERIOR_COLOR_STYLES.contains(style) && hasBackground);
     }
 
     /**
@@ -348,9 +362,11 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         // cos(angle) = x position
         // sin(angle) = y position
         // this comes very close to what Adobe is doing
-        cs.moveTo(x + (float) (Math.cos(ARROW_ANGLE) * len), y + (float) (Math.sin(ARROW_ANGLE) * len));
+        float armX = x + (float) (Math.cos(ARROW_ANGLE) * len);
+        float armYdelta = (float) (Math.sin(ARROW_ANGLE) * len);
+        cs.moveTo(armX, y + armYdelta);
         cs.lineTo(x, y);
-        cs.lineTo(x + (float) (Math.cos(ARROW_ANGLE) * len), y - (float) (Math.sin(ARROW_ANGLE) * len));
+        cs.lineTo(armX, y - armYdelta);
     }
 
     /**
@@ -519,9 +535,12 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
             annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
             // when the normal appearance stream was generated BBox and Matrix have been set to the
             // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
-            annotation.getNormalAppearanceStream().setBBox(getRectangle());
-            AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(), -getRectangle().getLowerLeftY());
-            annotation.getNormalAppearanceStream().setMatrix(transform);
+            PDRectangle rect = getRectangle();
+            PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+            AffineTransform transform =
+                    AffineTransform.getTranslateInstance(-rect.getLowerLeftX(), -rect.getLowerLeftY());
+            appearanceStream.setBBox(rect);
+            appearanceStream.setMatrix(transform);
         }
         else
         {

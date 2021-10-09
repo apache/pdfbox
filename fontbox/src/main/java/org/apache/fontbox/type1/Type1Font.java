@@ -129,6 +129,8 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
     // private caches
     private final Map<String, Type1CharString> charStringCache = new ConcurrentHashMap<>();
 
+    private Type1CharStringParser charStringParser = null;
+
     // raw data
     private final byte[] segment1;
     private final byte[] segment2;
@@ -197,12 +199,20 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
             {
                 bytes = charstrings.get(".notdef");
             }
-            Type1CharStringParser parser = new Type1CharStringParser(fontName, name);
-            List<Object> sequence = parser.parse(bytes, subrs);
+            List<Object> sequence = getParser().parse(bytes, subrs, name);
             type1 = new Type1CharString(this, fontName, name, sequence);
             charStringCache.put(name, type1);
         }
         return type1;
+    }
+
+    private Type1CharStringParser getParser()
+    {
+        if (charStringParser == null)
+        {
+            charStringParser = new Type1CharStringParser(fontName);
+        }
+        return charStringParser;
     }
 
     // font dictionary

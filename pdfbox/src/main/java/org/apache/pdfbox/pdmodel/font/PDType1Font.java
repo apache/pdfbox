@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.EncodedFont;
@@ -39,6 +38,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
@@ -58,22 +58,6 @@ import org.apache.pdfbox.pdmodel.font.encoding.SymbolEncoding;
 public class PDType1Font extends PDSimpleFont implements PDVectorFont
 {
     private static final Log LOG = LogFactory.getLog(PDType1Font.class);
-
-    // todo: replace with enum? or getters?
-    public static final PDType1Font TIMES_ROMAN = new PDType1Font("Times-Roman");
-    public static final PDType1Font TIMES_BOLD = new PDType1Font("Times-Bold");
-    public static final PDType1Font TIMES_ITALIC = new PDType1Font("Times-Italic");
-    public static final PDType1Font TIMES_BOLD_ITALIC = new PDType1Font("Times-BoldItalic");
-    public static final PDType1Font HELVETICA = new PDType1Font("Helvetica");
-    public static final PDType1Font HELVETICA_BOLD = new PDType1Font("Helvetica-Bold");
-    public static final PDType1Font HELVETICA_OBLIQUE = new PDType1Font("Helvetica-Oblique");
-    public static final PDType1Font HELVETICA_BOLD_OBLIQUE = new PDType1Font("Helvetica-BoldOblique");
-    public static final PDType1Font COURIER = new PDType1Font("Courier");
-    public static final PDType1Font COURIER_BOLD = new PDType1Font("Courier-Bold");
-    public static final PDType1Font COURIER_OBLIQUE = new PDType1Font("Courier-Oblique");
-    public static final PDType1Font COURIER_BOLD_OBLIQUE = new PDType1Font("Courier-BoldOblique");
-    public static final PDType1Font SYMBOL = new PDType1Font("Symbol");
-    public static final PDType1Font ZAPF_DINGBATS = new PDType1Font("ZapfDingbats");
 
     // alternative names for glyphs which are commonly encountered
     private static final Map<String, String> ALT_NAMES = new HashMap<>();
@@ -108,7 +92,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     /**
      * to improve encoding speed.
      */
-    private final Map <Integer,byte[]> codeToBytesMap;
+    private final Map<Integer, byte[]> codeToBytesMap = new HashMap<>();
     private Matrix fontMatrix;
     private BoundingBox fontBBox;
 
@@ -117,28 +101,25 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
      *
      * @param baseFont One of the standard 14 PostScript names
      */
-    private PDType1Font(String baseFont)
+    public PDType1Font(FontName baseFont)
     {
         super(baseFont);
         
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
-        dict.setName(COSName.BASE_FONT, baseFont);
+        dict.setName(COSName.BASE_FONT, baseFont.getName());
         switch (baseFont)
         {
-            case "ZapfDingbats":
-                encoding = ZapfDingbatsEncoding.INSTANCE;
-                break;
-            case "Symbol":
-                encoding = SymbolEncoding.INSTANCE;
-                break;
-            default:
-                encoding = WinAnsiEncoding.INSTANCE;
-                dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
-                break;
+        case ZAPF_DINGBATS:
+            encoding = ZapfDingbatsEncoding.INSTANCE;
+            break;
+        case SYMBOL:
+            encoding = SymbolEncoding.INSTANCE;
+            break;
+        default:
+            encoding = WinAnsiEncoding.INSTANCE;
+            dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
+            break;
         }
-
-        // standard 14 fonts may be accessed concurrently, as they are singletons
-        codeToBytesMap = new ConcurrentHashMap<>();
 
         // todo: could load the PFB font here if we wanted to support Standard 14 embedding
         type1font = null;
@@ -196,7 +177,6 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         isEmbedded = true;
         isDamaged = false;
         fontMatrixTransform = new AffineTransform();
-        codeToBytesMap = new HashMap<>();
     }
 
     /**
@@ -209,7 +189,6 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     public PDType1Font(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
-        codeToBytesMap = new HashMap<>();
 
         PDFontDescriptor fd = getFontDescriptor();
         Type1Font t1 = null;
@@ -242,7 +221,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
                     length1 = repairLength1(bytes, length1);
                     length2 = repairLength2(bytes, length1, length2);
 
-                    if (bytes.length > 0 && (bytes[0] & 0xff) == PFB_START_MARKER)
+                    if ((bytes[0] & 0xff) == PFB_START_MARKER)
                     {
                         // some bad files embed the entire PFB, see PDFBOX-2607
                         t1 = Type1Font.createWithPFB(bytes);
@@ -395,7 +374,6 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     @Override
     public float getHeight(int code) throws IOException
     {
-        String name = codeToName(code);
         if (getStandard14AFM() != null)
         {
             String afmName = getEncoding().getName(code);
@@ -403,6 +381,8 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         }
         else
         {
+            String name = codeToName(code);
+
             // todo: should be scaled by font matrix
             return (float) genericFont.getPath(name).getBounds().getHeight();
         }

@@ -93,7 +93,7 @@ public class SigUtils
             if (signatureDict != null)
             {
                 COSArray refArray = signatureDict.getCOSArray(COSName.REFERENCE);
-                if (refArray instanceof COSArray)
+                if (refArray != null)
                 {
                     for (int i = 0; i < refArray.size(); ++i)
                     {

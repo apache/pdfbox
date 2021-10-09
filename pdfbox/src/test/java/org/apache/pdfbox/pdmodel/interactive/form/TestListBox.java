@@ -35,6 +35,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,9 +75,9 @@ class TestListBox
         
         // Adobe Acrobat uses Helvetica as a default font and 
         // stores that under the name '/Helv' in the resources dictionary
-        PDFont font = PDType1Font.HELVETICA;
+        PDFont font = new PDType1Font(FontName.HELVETICA);
         PDResources resources = new PDResources();
-        resources.put(COSName.getPDFName("Helv"), font);
+        resources.put(COSName.HELV, font);
         
         // Add and set the resources and default appearance at the form level
         form.setDefaultResources(resources);

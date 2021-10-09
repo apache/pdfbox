@@ -46,7 +46,7 @@ public class COSDocument extends COSBase implements Closeable
      * Log instance.
      */
     private static final Log LOG = LogFactory.getLog(COSDocument.class);
-
+    
     private float version = 1.4f;
 
     /**
@@ -63,7 +63,7 @@ public class COSDocument extends COSBase implements Closeable
         new HashMap<>();
 
     /**
-     * List containing all streams which are created when creating a new pdf. 
+     * List containing all streams which are created when creating a new pdf.
      */
     private final List<COSStream> streams = new ArrayList<>();
     
@@ -72,8 +72,8 @@ public class COSDocument extends COSBase implements Closeable
      */
     private COSDictionary trailer;
     
-    /** 
-     * Signal that document is already decrypted. 
+    /**
+     * Signal that document is already decrypted.
      */
     private boolean isDecrypted = false;
     
@@ -91,6 +91,8 @@ public class COSDocument extends COSBase implements Closeable
     private long highestXRefObjectNumber;
 
     private final ICOSParser parser;
+    
+    private final COSDocumentState documentState = new COSDocumentState();
 
     /**
      * Constructor. Uses main memory to buffer PDF streams.
@@ -167,8 +169,8 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * Creates a new COSStream using the current configuration for scratch files. Not for public use. Only COSParser should
-     * call this method.
+     * Creates a new COSStream using the current configuration for scratch files. Not for public use.
+     * Only COSParser should call this method.
      * 
      * @param dictionary    the corresponding dictionary
      * @param startPosition the start position within the source
@@ -363,6 +365,7 @@ public class COSDocument extends COSBase implements Closeable
     public void setTrailer(COSDictionary newTrailer)
     {
         trailer = newTrailer;
+        trailer.getUpdateState().setOriginDocumentState(documentState);
     }
 
     /**
@@ -539,4 +542,16 @@ public class COSDocument extends COSBase implements Closeable
     {
         isXRefStream = isXRefStreamValue;
     }
+    
+    /**
+     * Returns the {@link COSDocumentState} of this {@link COSDocument}.
+     *
+     * @return The {@link COSDocumentState} of this {@link COSDocument}.
+     * @see COSDocumentState
+     */
+    public COSDocumentState getDocumentState()
+    {
+        return documentState;
+    }
+    
 }

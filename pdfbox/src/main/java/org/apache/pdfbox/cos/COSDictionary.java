@@ -48,21 +48,21 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * Log instance.
      */
     private static final Log LOG = LogFactory.getLog(COSDictionary.class);
-	
+
     private static final String PATH_SEPARATOR = "/";
-    private boolean needToBeUpdated;
 
     /**
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
      */
     protected Map<COSName, COSBase> items = new SmallMap<>();
+    private final COSUpdateState updateState;
 
     /**
      * Constructor.
      */
     public COSDictionary()
     {
-        // default constructor
+        updateState = new COSUpdateState(this);
     }
 
     /**
@@ -72,6 +72,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public COSDictionary(COSDictionary dict)
     {
+        updateState = new COSUpdateState(this);
         items.putAll(dict.items);
     }
 
@@ -129,6 +130,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public void clear()
     {
         items.clear();
+        getUpdateState().update();
     }
 
     /**
@@ -202,6 +204,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         else
         {
             items.put(key, value);
+            getUpdateState().update(value);
         }
     }
 
@@ -1151,6 +1154,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public void removeItem(COSName key)
     {
         items.remove(key);
+        getUpdateState().update();
     }
 
     /**
@@ -1255,18 +1259,6 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     {
         return visitor.visitFromDictionary(this);
     }
-    
-    @Override
-    public boolean isNeedToBeUpdated() 
-    {
-      return needToBeUpdated;
-    }
-    
-    @Override
-    public void setNeedToBeUpdated(boolean flag) 
-    {
-      needToBeUpdated = flag;
-    }
 
     /**
      * This will add all of the dictionaries keys/values to this dictionary. Existing key/value pairs will be
@@ -1316,7 +1308,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         {
             if (retval instanceof COSArray)
             {
-                int idx = Integer.parseInt(pathString.replaceAll("\\[", "").replaceAll("\\]", ""));
+                int idx = Integer.parseInt(pathString.replace("\\[", "").replace("\\]", ""));
                 retval = ((COSArray) retval).getObject(idx);
             }
             else if (retval instanceof COSDictionary)
@@ -1408,4 +1400,17 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         return base.toString();
     }
+    
+    /**
+     * Returns the current {@link COSUpdateState} of this {@link COSDictionary}.
+     *
+     * @return The current {@link COSUpdateState} of this {@link COSDictionary}.
+     * @see COSUpdateState
+     */
+    @Override
+    public COSUpdateState getUpdateState()
+    {
+        return updateState;
+    }
+    
 }

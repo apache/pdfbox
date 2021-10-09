@@ -146,7 +146,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
                 COSBase base2 = array.getObject(i);
                 if (base2 instanceof COSArray)
                 {
-                    pathArray[i] = ((COSArray) array.getObject(i)).toFloatArray();
+                    pathArray[i] = ((COSArray) base2).toFloatArray();
                 }
                 else
                 {

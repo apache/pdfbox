@@ -32,10 +32,10 @@ public class COSObject extends COSBase implements COSUpdateInfo
     private COSBase baseObject;
     private long objectNumber;
     private int generationNumber;
-    private boolean needToBeUpdated;
     private ICOSParser parser;
     private boolean isDereferenced = false;
-
+    private final COSUpdateState updateState;
+    
     private static final Log LOG = LogFactory.getLog(COSObject.class);
 
     /**
@@ -46,7 +46,9 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSObject(COSBase object)
     {
+        updateState = new COSUpdateState(this);
         baseObject = object;
+        isDereferenced = true;
     }
 
     /**
@@ -59,6 +61,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     {
         this(objectKey, null);
         baseObject = object;
+        isDereferenced = true;
     }
 
     /**
@@ -70,7 +73,9 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSObject(COSBase object, ICOSParser parser)
     {
+        updateState = new COSUpdateState(this);
         baseObject = object;
+        isDereferenced = object != null;
         this.parser = parser;
     }
 
@@ -83,6 +88,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSObject(COSObjectKey key, ICOSParser parser)
     {
+        updateState = new COSUpdateState(this);
         this.parser = parser;
         objectNumber = key.getNumber();
         generationNumber = key.getGeneration();
@@ -113,6 +119,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
                 // mark as dereferenced to avoid endless recursions
                 isDereferenced = true;
                 baseObject = parser.dereferenceCOSObject(this);
+                getUpdateState().dereferenceChild(baseObject);
             }
             catch (IOException e)
             {
@@ -131,6 +138,10 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public final void setToNull()
     {
+        if(baseObject != null)
+        {
+            getUpdateState().update();
+        }
         baseObject = COSNull.NULL;
         parser = null;
     }
@@ -175,27 +186,27 @@ public class COSObject extends COSBase implements COSUpdateInfo
         COSBase object = getObject();
         return object != null ? object.accept(visitor) : COSNull.NULL.accept(visitor);
     }
-    
-    /**
-     * Get the update state for the COSWriter.
-     * 
-     * @return the update state.
-     */
-    @Override
-    public boolean isNeedToBeUpdated() 
-    {
-        return needToBeUpdated;
-    }
-    
-    /**
-     * Set the update state of the dictionary for the COSWriter.
-     * 
-     * @param flag the update state.
-     */
-    @Override
-    public void setNeedToBeUpdated(boolean flag) 
-    {
-        needToBeUpdated = flag;
-    }
 
+    /**
+     * Returns {@code true}, if the hereby referenced {@link COSBase} has already been parsed and loaded.
+     *
+     * @return {@code true}, if the hereby referenced {@link COSBase} has already been parsed and loaded.
+     */
+    public boolean isDereferenced()
+    {
+        return isDereferenced;
+    }
+    
+    /**
+     * Returns the current {@link COSUpdateState} of this {@link COSObject}.
+     *
+     * @return The current {@link COSUpdateState} of this {@link COSObject}.
+     * @see COSUpdateState
+     */
+    @Override
+    public COSUpdateState getUpdateState()
+    {
+        return updateState;
+    }
+    
 }

@@ -36,6 +36,7 @@ import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 
 /**
  * Font mapper, locates non-embedded fonts via a pluggable FontProvider.
@@ -105,7 +106,7 @@ final class FontMapperImpl implements FontMapper
         {
             if (!substitutes.containsKey(baseName))
             {
-                String mappedName = Standard14Fonts.getMappedFontName(baseName);
+                FontName mappedName = Standard14Fonts.getMappedFontName(baseName);
                 substitutes.put(baseName, copySubstitutes(mappedName));
             }
         }
@@ -184,7 +185,7 @@ final class FontMapperImpl implements FontMapper
      */
     private Set<String> getPostScriptNames(String postScriptName)
     {
-        Set<String> names = new HashSet<>();
+        Set<String> names = new HashSet<>(2);
     
         // built-in PostScript name
         names.add(postScriptName);
@@ -198,9 +199,9 @@ final class FontMapperImpl implements FontMapper
     /**
      * Copies a list of font substitutes, adding the original font at the start of the list.
      */
-    private List<String> copySubstitutes(String postScriptName)
+    private List<String> copySubstitutes(FontName postScriptName)
     {
-        return new ArrayList<>(substitutes.get(postScriptName));
+        return new ArrayList<>(substitutes.get(postScriptName.getName()));
     }
 
     /**

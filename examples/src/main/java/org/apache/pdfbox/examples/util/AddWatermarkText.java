@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.util.Matrix;
@@ -57,7 +58,7 @@ public class AddWatermarkText
             {
                 for (PDPage page : doc.getPages())
                 {
-                    PDFont font = PDType1Font.HELVETICA;
+                    PDFont font = new PDType1Font(FontName.HELVETICA);
                     addWatermarkText(doc, page, font, text);
                 }
                 doc.save(dstFile);

@@ -37,7 +37,6 @@ public class PDPageFitRectangleDestination extends PDPageDestination
      */
     public PDPageFitRectangleDestination()
     {
-        super();
         array.growToSize(6);
         array.setName( 1, TYPE );
 
@@ -71,7 +70,7 @@ public class PDPageFitRectangleDestination extends PDPageDestination
      */
     public void setLeft( int x )
     {
-        array.growToSize( 3 );
+        array.growToSize(6);
         if( x == -1 )
         {
             array.set(2, null);

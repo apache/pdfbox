@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -165,6 +167,42 @@ class TestPDPageContentStream
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true);
             contentStream.close();
             contentStream.close();
+        }
+    }
+
+    /**
+     * Check that general graphics state operators are allowed in text mode.
+     * 
+     * @throws IOException
+     */
+    @Test
+    void testGeneralGraphicStateOperatorTextMode() throws IOException
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page);
+            contentStream.beginText();
+            // J
+            contentStream.setLineCapStyle(0);
+            // j
+            contentStream.setLineJoinStyle(0);
+            // w
+            contentStream.setLineWidth(10f);
+            // d
+            contentStream.setLineDashPattern(new float[] { 2, 1 }, 0f);
+            // M
+            contentStream.setMiterLimit(1.0f);
+            // gs
+            contentStream.setGraphicsStateParameters(new PDExtendedGraphicsState());
+            // ri, i are not supported with a specific setter
+            contentStream.endText();
+            contentStream.close();
+        }
+        catch (IllegalArgumentException exception)
+        {
+            fail(exception);
         }
     }
 }

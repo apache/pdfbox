@@ -41,7 +41,6 @@ public class PDPageFitDestination extends PDPageDestination
      */
     public PDPageFitDestination()
     {
-        super();
         array.growToSize(2);
         array.setName( 1, TYPE );
 

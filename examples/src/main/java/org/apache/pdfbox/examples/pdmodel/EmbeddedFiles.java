@@ -34,6 +34,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PageMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 
 /**
  * This is an example that creates a simple document and embeds a file into it..
@@ -62,7 +63,7 @@ public class EmbeddedFiles
         {
             PDPage page = new PDPage();
             doc.addPage( page );
-            PDFont font = PDType1Font.HELVETICA_BOLD;
+            PDFont font = new PDType1Font(FontName.HELVETICA_BOLD);
 
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
             {

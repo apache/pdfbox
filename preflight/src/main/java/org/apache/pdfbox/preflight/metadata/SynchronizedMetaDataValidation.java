@@ -525,9 +525,8 @@ public class SynchronizedMetaDataValidation
      */
     protected ValidationError unsynchronizedMetaDataError(String target)
     {
-        StringBuilder sb = new StringBuilder(80);
-        sb.append(target).append(" present in the document catalog dictionary doesn't match with XMP information");
-        return new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString());
+        return new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, target +
+                " present in the document catalog dictionary doesn't match with XMP information");
     }
 
     /**

@@ -87,6 +87,8 @@ public final class DateConverter
         Calendar retval = null;
         if ((date != null) && (date.trim().length() > 0))
         {
+            date = date.trim();
+
             // these are the default values
             int month = 1;
             int day = 1;
@@ -105,7 +107,7 @@ public final class DateConverter
                 }
                 else if (date.startsWith("D:"))
                 {
-                    date = date.substring(2, date.length());
+                    date = date.substring(2);
                 }
 
                 date = date.replaceAll("[-:T]", "");
@@ -195,11 +197,9 @@ public final class DateConverter
             catch (NumberFormatException e)
             {
 
-                // remove the arbitrary : in the timezone. SimpleDateFormat
-                // can't handle it
-                if (date.substring(date.length() - 3, date.length() - 2).equals(":")
-                        && (date.substring(date.length() - 6, date.length() - 5).equals("+") || date.substring(
-                                date.length() - 6, date.length() - 5).equals("-")))
+                // remove the arbitrary : in the timezone. SimpleDateFormat can't handle it
+                if (date.charAt(date.length() - 3) == ':' && 
+                    (date.charAt(date.length() - 6) == '+' || date.charAt(date.length() - 6) == '-'))
                 {
                     // that's a timezone string, remove the :
                     date = date.substring(0, date.length() - 3) + date.substring(date.length() - 2);
@@ -353,9 +353,10 @@ public final class DateConverter
         {
             for (int i = 1; i <= timeZoneMatcher.groupCount(); i++)
             {
-                if (timeZoneMatcher.group(i) != null)
+                String group = timeZoneMatcher.group(i);
+                if (group != null)
                 {
-                    timeZoneString = timeZoneMatcher.group(i);
+                    timeZoneString = group;
                 }
             }
         }

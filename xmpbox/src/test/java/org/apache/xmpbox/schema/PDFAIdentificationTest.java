@@ -41,7 +41,7 @@ class PDFAIdentificationTest
     void initMetadata()
     {
         metadata = XMPMetadata.createXMPMetadata();
-        schema = metadata.createAndAddPFAIdentificationSchema();
+        schema = metadata.createAndAddPDFAIdentificationSchema();
         schemaClass = PDFAIdentificationSchema.class;
     }
     

@@ -78,7 +78,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.11.2</version>
+            <version>3.12.4</version>
             <scope>test</scope>
         </dependency>
         <!-- For legal reasons (incompatible license), these three dependencies below
@@ -159,6 +159,7 @@
                         <exclude>src/test/resources/org/apache/pdfbox/pdfparser/*.fdf</exclude>
                         <exclude>release.properties</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.der</exclude>
+                        <exclude>src/test/resources/org/apache/pdfbox/encryption/*.p12</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.pfx</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/filter/*.bin</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/io/*.txt</exclude>

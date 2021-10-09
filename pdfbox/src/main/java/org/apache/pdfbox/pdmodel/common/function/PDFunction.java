@@ -82,7 +82,7 @@ public abstract class PDFunction implements COSObjectable
      * @return The stream for this object.
      */
     @Override
-    public COSDictionary getCOSObject()
+    public final COSDictionary getCOSObject()
     {
         if (functionStream != null)
         {

@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
@@ -69,6 +70,8 @@ public class PDFRenderer
 
     private float imageDownscalingOptimizationThreshold = 0.5f;
 
+    private final PDPageTree pageTree;
+
     /**
      * Creates a new PDFRenderer.
      * @param document the document to render
@@ -76,6 +79,7 @@ public class PDFRenderer
     public PDFRenderer(PDDocument document)
     {
         this.document = document;
+        this.pageTree = document.getPages();
 
         if (!kcmsLogged)
         {
@@ -272,7 +276,7 @@ public class PDFRenderer
     public BufferedImage renderImage(int pageIndex, float scale, ImageType imageType, RenderDestination destination)
             throws IOException
     {
-        PDPage page = document.getPage(pageIndex);
+        PDPage page = pageTree.get(pageIndex);
 
         PDRectangle cropbBox = page.getCropBox();
         float widthPt = cropbBox.getWidth();
@@ -291,7 +295,7 @@ public class PDFRenderer
 
         int rotationAngle = page.getRotation();
 
-        int bimType = imageType.toBufferedImageType();
+        int bimType;
         if (imageType != ImageType.ARGB && hasBlendMode(page))
         {
             // PDFBOX-4095: if the PDF has blending on the top level, draw on transparent background
@@ -299,6 +303,10 @@ public class PDFRenderer
             // PDF.js renders everything on a fully transparent RGBA canvas. 
             // Finally when the page has been rendered, PDF.js draws the RGBA canvas on a white canvas.
             bimType = BufferedImage.TYPE_INT_ARGB;
+        }
+        else
+        {
+            bimType = imageType.toBufferedImageType();
         }
 
         // swap width and height
@@ -431,7 +439,7 @@ public class PDFRenderer
     public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scaleX, float scaleY, RenderDestination destination)
             throws IOException
     {
-        PDPage page = document.getPage(pageIndex);
+        PDPage page = pageTree.get(pageIndex);
         // TODO need width/height calculations? should these be in PageDrawer?
 
         transform(graphics, page, scaleX, scaleY);

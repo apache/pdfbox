@@ -176,11 +176,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     /**
      * Instantiate a new PDFTextStripper object.
-     *
-     * @throws IOException If there is an error loading the properties.
      */
-    public PDFTextStripper() throws IOException
+    public PDFTextStripper()
     {
+        // empty
     }
 
     /**

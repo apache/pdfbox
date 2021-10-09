@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
@@ -59,7 +60,7 @@ public abstract class PDSimpleFont extends PDFont
     /**
      * Constructor for Standard 14.
      */
-    PDSimpleFont(String baseFont)
+    PDSimpleFont(FontName baseFont)
     {
         super(baseFont);
         assignGlyphList(baseFont);
@@ -122,7 +123,7 @@ public abstract class PDSimpleFont extends PDFont
         }
 
         // normalise the standard 14 name, e.g "Symbol,Italic" -> "Symbol"
-        String standard14Name = Standard14Fonts.getMappedFontName(getName());
+        FontName standard14Name = Standard14Fonts.getMappedFontName(getName());
         assignGlyphList(standard14Name);
     }
     
@@ -184,14 +185,14 @@ public abstract class PDSimpleFont extends PDFont
         }
         else if (isStandard14())
         {
-            String mappedName = Standard14Fonts.getMappedFontName(getName());
-            return mappedName.equals("Symbol") || mappedName.equals("ZapfDingbats");
+            FontName mappedName = Standard14Fonts.getMappedFontName(getName());
+            return mappedName == FontName.SYMBOL || mappedName == FontName.ZAPF_DINGBATS;
         }
         else
         {
             if (encoding == null)
             {
-                // sanity check, should never happen
+                // check, should never happen
                 if (!(this instanceof PDTrueTypeFont))
                 {
                     throw new IllegalStateException("PDFBox bug: encoding should not be null!");
@@ -438,10 +439,10 @@ public abstract class PDSimpleFont extends PDFont
         return false;
     }
 
-    private void assignGlyphList(String baseFont)
+    private void assignGlyphList(FontName fontName)
     {
         // assign the glyph list based on the font
-        if ("ZapfDingbats".equals(baseFont))
+        if (FontName.ZAPF_DINGBATS == fontName)
         {
             glyphList = GlyphList.getZapfDingbats();
         }

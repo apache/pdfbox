@@ -98,7 +98,7 @@ public class PDDocument implements Closeable
      */
     static
     {
-    	try
+        try
         {
             WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, 1, 1, 3, new Point(0, 0));
             PDDeviceRGB.INSTANCE.toRGBImage(raster);
@@ -168,6 +168,7 @@ public class PDDocument implements Closeable
     public PDDocument(MemoryUsageSetting memUsageSetting)
     {
         document = new COSDocument(memUsageSetting);
+        document.getDocumentState().setParsing(false);
         pdfSource = null;
 
         // First we need a trailer
@@ -221,6 +222,7 @@ public class PDDocument implements Closeable
     public PDDocument(COSDocument doc, RandomAccessRead source, AccessPermission permission)
     {
         document = doc;
+        document.getDocumentState().setParsing(false);
         pdfSource = source;
         accessPermission = permission;
     }
@@ -429,11 +431,6 @@ public class PDDocument implements Closeable
         // Create Annotation / Field for signature
         List<PDAnnotation> annotations = page.getAnnotations();
 
-        // Make /Annots a direct object to avoid problem if it is an existing indirect object: 
-        // it would not be updated in incremental save, and if we'd set the /Annots array "to be updated" 
-        // while keeping it indirect, Adobe Reader would claim that the document had been modified.
-        page.setAnnotations(annotations);
-
         // Get the annotations of the page and append the signature-annotation to it
         // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
         if (!(annotations instanceof COSArrayList &&
@@ -452,6 +449,13 @@ public class PDDocument implements Closeable
                 annotations.add(widget);
             }   
         }
+
+        // Make /Annots a direct object by reassigning it,
+        // to avoid problem if it is an existing indirect object: 
+        // it would not be updated in incremental save, and if we'd set the /Annots array "to be updated" 
+        // while keeping it indirect, Adobe Reader would claim that the document had been modified.
+        page.setAnnotations(annotations);
+
         page.getCOSObject().setNeedToBeUpdated(true);
     }
 
@@ -503,7 +507,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Check if the widget already exists in the annotation list
+     * Check if the widget already exists in the annotation list.
      *
      * @param annotations the list of PDAnnotation fields.
      * @param widget the annotation widget.
@@ -948,7 +952,8 @@ public class PDDocument implements Closeable
         if (file.exists())
         {
             LOG.warn(
-                    "You are overwriting an existing file, this will produce a corrupted file if you're also reading from it");
+                    "You are overwriting the existing file " + file.getName()
+                            + ", this will produce a corrupted file if you're also reading from it");
         }
         try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
                 new FileOutputStream(file)))

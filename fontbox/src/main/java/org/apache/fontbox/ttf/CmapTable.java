@@ -81,9 +81,10 @@ public class CmapTable extends TTFTable
             cmap.initData(data);
             cmaps[i] = cmap;
         }
+        int numberOfGlyphs = ttf.getNumberOfGlyphs();
         for (int i = 0; i < numberOfTables; i++)
         {
-            cmaps[i].initSubtable(this, ttf.getNumberOfGlyphs(), data);
+            cmaps[i].initSubtable(this, numberOfGlyphs, data);
         }
         initialized = true;
     }

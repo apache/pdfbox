@@ -30,9 +30,9 @@ package org.apache.pdfbox.pdmodel.encryption;
 public abstract class ProtectionPolicy
 {
 
-    private static final int DEFAULT_KEY_LENGTH = 40;
+    private static final short DEFAULT_KEY_LENGTH = 40;
 
-    private int encryptionKeyLength = DEFAULT_KEY_LENGTH;
+    private short encryptionKeyLength = DEFAULT_KEY_LENGTH;
     private boolean preferAES = false;
 
     /**
@@ -49,7 +49,7 @@ public abstract class ProtectionPolicy
         {
             throw new IllegalArgumentException("Invalid key length '" + l + "' value must be 40, 128 or 256!");
         }
-        encryptionKeyLength = l;
+        encryptionKeyLength = (short) l;
     }
 
     /**

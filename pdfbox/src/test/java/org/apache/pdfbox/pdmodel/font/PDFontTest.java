@@ -43,9 +43,11 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -96,11 +98,7 @@ class PDFontTest
     void testPDFBox3747() throws IOException
     {
         File file = new File("c:/windows/fonts", "calibri.ttf");
-        if (!file.exists())
-        {
-            System.out.println("testPDFBox3747 skipped");
-            return;
-        }
+        Assumptions.assumeTrue(file.exists(), "testPDFBox3747 skipped");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (PDDocument doc = new PDDocument())
         {
@@ -206,12 +204,13 @@ class PDFontTest
     @Test
     void testPDFox4318() throws IOException
     {
+        PDType1Font helveticaBold = new PDType1Font(FontName.HELVETICA_BOLD);
         assertThrows(IllegalArgumentException.class,
-                () -> PDType1Font.HELVETICA_BOLD.encode("\u0080"),
+                () -> helveticaBold.encode("\u0080"),
                 "should have thrown IllegalArgumentException");
-        PDType1Font.HELVETICA_BOLD.encode("€");
+        helveticaBold.encode("€");
         assertThrows(IllegalArgumentException.class,
-                () -> PDType1Font.HELVETICA_BOLD.encode("\u0080"),
+                () -> helveticaBold.encode("\u0080"),
                 "should have thrown IllegalArgumentException");
     }
 
@@ -230,11 +229,7 @@ class PDFontTest
                 break;
             }
         }
-        if (ttc == null)
-        {
-            System.out.println("testFullEmbeddingTTC skipped, no .ttc files available");
-            return;
-        }
+        Assumptions.assumeTrue(ttc != null, "testFullEmbeddingTTC skipped, no .ttc files available");
 
         final List<String> names = new ArrayList<>();
         ttc.processAllFonts((TrueTypeFont ttf) ->
@@ -396,7 +391,7 @@ class PDFontTest
         {
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDFont font1 = PDType1Font.HELVETICA;
+            PDFont font1 = new PDType1Font(FontName.HELVETICA);
             PDFont font2 = PDType0Font.load(doc, PDFontTest.class.getResourceAsStream(
                     "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"));
 

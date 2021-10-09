@@ -21,6 +21,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 
 
@@ -100,13 +101,13 @@ public class AcroFormDefaultsProcessor extends AbstractProcessor
         }
         if (!fontDict.containsKey(COSName.HELV))
         {
-            defaultResources.put(COSName.HELV, PDType1Font.HELVETICA);
+            defaultResources.put(COSName.HELV, new PDType1Font(FontName.HELVETICA));
             defaultResources.getCOSObject().setNeedToBeUpdated(true);
             fontDict.setNeedToBeUpdated(true);
         }
         if (!fontDict.containsKey(COSName.ZA_DB))
         {
-            defaultResources.put(COSName.ZA_DB, PDType1Font.ZAPF_DINGBATS);
+            defaultResources.put(COSName.ZA_DB, new PDType1Font(FontName.ZAPF_DINGBATS));
             defaultResources.getCOSObject().setNeedToBeUpdated(true);
             fontDict.setNeedToBeUpdated(true);
         }

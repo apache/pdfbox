@@ -96,7 +96,7 @@ public class PDAnnotationInk extends PDAnnotationMarkup
                 COSBase base2 = array.getObject(i);
                 if (base2 instanceof COSArray)
                 {
-                    inkList[i] = ((COSArray) array.getObject(i)).toFloatArray();
+                    inkList[i] = ((COSArray) base2).toFloatArray();
                 }
                 else
                 {

@@ -69,7 +69,7 @@ class AdobePDFErrorsTest
     @Test
     void testBadPDFAConformanceId() throws Exception
     {
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         String conformance = "kiohiohiohiohio";
         assertThrows(BadFieldValueException.class, () -> {
 	        pdfaid.setConformance(conformance);
@@ -79,7 +79,7 @@ class AdobePDFErrorsTest
     @Test
     void testBadVersionIdValueType() throws Exception
     {
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         pdfaid.setPartValueWithString("1");
         assertThrows(IllegalArgumentException.class, () -> {    
             pdfaid.setPartValueWithString("ojoj");

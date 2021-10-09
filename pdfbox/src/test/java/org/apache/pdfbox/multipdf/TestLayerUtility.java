@@ -36,6 +36,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
@@ -48,7 +49,7 @@ import org.junit.jupiter.api.Test;
  * Tests the {@link org.apache.pdfbox.multipdf.LayerUtility} class.
  *
  */
-public class TestLayerUtility
+class TestLayerUtility
 {
     private static final File TESTRESULTSDIR = new File("target/test-output");
 
@@ -135,13 +136,13 @@ public class TestLayerUtility
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
                 //Setup page content stream and paint background/title
-                PDFont font = PDType1Font.HELVETICA_BOLD;
+                PDFont font = new PDType1Font(FontName.HELVETICA_BOLD);
                 contentStream.beginText();
                 contentStream.newLineAtOffset(50, 720);
                 contentStream.setFont(font, 14);
                 contentStream.showText("Simple test document with text.");
                 contentStream.endText();
-                font = PDType1Font.HELVETICA;
+                font = new PDType1Font(FontName.HELVETICA);
                 contentStream.beginText();
                 int fontSize = 12;
                 contentStream.setFont(font, fontSize);
@@ -177,7 +178,7 @@ public class TestLayerUtility
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
                 //Setup page content stream and paint background/title
-                PDFont font = PDType1Font.HELVETICA_BOLD;
+                PDFont font = new PDType1Font(FontName.HELVETICA_BOLD);
                 contentStream.setNonStrokingColor(Color.LIGHT_GRAY);
                 contentStream.beginText();
                 float fontSize = 96;

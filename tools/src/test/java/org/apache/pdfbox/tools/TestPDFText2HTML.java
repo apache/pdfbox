@@ -28,7 +28,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +55,8 @@ class TestPDFText2HTML
     void testEscapeTitle() throws IOException
     {
         PDFTextStripper stripper = new PDFText2HTML();
-        PDDocument doc = createDocument("<script>\u3042", PDType1Font.HELVETICA, "<foo>");
+        PDDocument doc = createDocument("<script>\u3042", new PDType1Font(FontName.HELVETICA),
+                "<foo>");
         String text = stripper.getText(doc);
        
         Matcher m = Pattern.compile("<title>(.*?)</title>").matcher(text);
@@ -68,7 +69,7 @@ class TestPDFText2HTML
     void testStyle() throws IOException
     {
         PDFTextStripper stripper = new PDFText2HTML();
-        PDDocument doc = createDocument("t", PDType1Font.HELVETICA_BOLD, "<bold>");
+        PDDocument doc = createDocument("t", new PDType1Font(FontName.HELVETICA_BOLD), "<bold>");
         String text = stripper.getText(doc);
 
         Matcher bodyMatcher = Pattern.compile("<p>(.*?)</p>").matcher(text);

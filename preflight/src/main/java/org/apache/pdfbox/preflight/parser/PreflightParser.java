@@ -284,6 +284,8 @@ public class PreflightParser extends PDFParser
         // signal start of new XRef
         xrefTrailerResolver.nextXrefObj(startByteOffset,XRefType.TABLE);
 
+        Pattern pattern = Pattern.compile("(\\d+)\\s(\\d+)(\\s*)");
+
         // Xref tables can have multiple sections. Each starts with a starting object id and a count.
         while (true)
         {
@@ -295,7 +297,6 @@ public class PreflightParser extends PDFParser
 
             long offset = source.getPosition();
             String line = readLine();
-            Pattern pattern = Pattern.compile("(\\d+)\\s(\\d+)(\\s*)");
             Matcher matcher = pattern.matcher(line);
             if (matcher.matches())
             {

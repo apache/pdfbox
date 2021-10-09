@@ -81,6 +81,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -110,6 +111,7 @@ import org.bouncycastle.tsp.TimeStampTokenInfo;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -190,12 +192,8 @@ class TestCreateSignature
         checkSignature(new File(IN_DIR, "sign_me.pdf"), new File(OUT_DIR, fileName), false);
 
         // Also test CreateEmbeddedTimeStamp if tsa URL is available
-        if (tsa == null || tsa.isEmpty())
-        {
-            System.err.println("No TSA URL defined, test skipped");
-            return;
-        }
-        
+        Assumptions.assumeTrue(tsa != null && !tsa.isEmpty(), "No TSA URL defined, test skipped");
+
         CreateEmbeddedTimeStamp tsaSigning = new CreateEmbeddedTimeStamp(tsa);
         tsaSigning.embedTimeStamp(new File(OUT_DIR, fileName), new File(OUT_DIR, fileName2));
         checkSignature(new File(OUT_DIR, fileName), new File(OUT_DIR, fileName2), true);
@@ -255,11 +253,7 @@ class TestCreateSignature
 
         mockServer.stopServer();
 
-        if (tsa == null || tsa.isEmpty())
-        {
-            System.err.println("No TSA URL defined, test skipped");
-            return;
-        }
+        Assumptions.assumeTrue(tsa != null && !tsa.isEmpty(), "No TSA URL defined, test skipped");
 
         CreateSignature signing2 = new CreateSignature(keyStore, PASSWORD.toCharArray());
         signing2.setExternalSigning(externallySign);
@@ -283,11 +277,8 @@ class TestCreateSignature
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException, OCSPException
     {
-        if (tsa == null || tsa.isEmpty())
-        {
-            System.err.println("No TSA URL defined, test skipped");
-            return;
-        }
+        Assumptions.assumeTrue(tsa != null && !tsa.isEmpty(), "No TSA URL defined, test skipped");
+
         final String fileName = "timestamped.pdf";
         CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsa);
         signing.signDetached(new File(IN_DIR + "sign_me.pdf"), new File(OUT_DIR + fileName));
@@ -473,14 +464,21 @@ class TestCreateSignature
         try (FileInputStream fis = new FileInputStream(JPEG_PATH))
         {
             signing = new CreateVisibleSignature(keyStore, PASSWORD.toCharArray());
-            signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 2);
-            signing.setVisibleSignatureProperties("name", "location", "Security", 0, 2, true);
+            signing.setVisibleSignDesigner(inPath, 200, 100, -50, fis, 1);
+            signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
             signing.setExternalSigning(externallySign);
             destFile = new File(OUT_DIR, getOutputFileName("2signed{0}_visible_signed{0}_visible.pdf", externallySign));
             signing.signPDF(new File(inPath), destFile, null);
         }
 
         checkSignature(new File(inPath), destFile, false);
+
+        // PDFBOX-5243: check that there are two annotations
+        try (PDDocument doc = Loader.loadPDF(destFile))
+        {
+            List<PDAnnotation> annotations = doc.getPage(0).getAnnotations();
+            assertEquals(2, annotations.size());
+        }
     }
 
     private String getOutputFileName(String filePattern, boolean externallySign)
@@ -761,7 +759,7 @@ class TestCreateSignature
         byte[] defaultSignedTwo = signEncrypted(null, signingTime);
         assertFalse(Arrays.equals(defaultSignedOne, defaultSignedTwo));
 
-        // a dummy value for FixedSecureRandom is used (for real use-cases a secure value should be provided)
+        // a zero placeholder value for FixedSecureRandom is used (a secure value should be provided for real use-cases )
         byte[] fixedRandomSignedOne = signEncrypted(new FixedSecureRandom(new byte[128]),
                 signingTime);
         byte[] fixedRandomSignedTwo = signEncrypted(new FixedSecureRandom(new byte[128]),

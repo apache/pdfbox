@@ -23,6 +23,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,23 +67,25 @@ public final class COSInputStream extends FilterInputStream
     static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
             DecodeOptions options) throws IOException
     {
-        List<DecodeResult> results = new ArrayList<>();
-        InputStream input = in;
-        if (!filters.isEmpty())
+        if (filters.isEmpty())
         {
-            Set<Filter> filterSet = new HashSet<>(filters);
-            if (filterSet.size() != filters.size())
-            {
-                throw new IOException("Duplicate");
-            }
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            // apply filters
-            for (int i = 0; i < filters.size(); i++)
-            {
-                output.reset();
-                results.add(filters.get(i).decode(input, output, parameters, i, options));
-                input = new ByteArrayInputStream(output.toByteArray());
-            }
+            return new COSInputStream(in, Collections.<DecodeResult>emptyList());
+        }
+
+        List<DecodeResult> results = new ArrayList<>(filters.size());
+        InputStream input = in;
+        Set<Filter> filterSet = new HashSet<>(filters);
+        if (filterSet.size() != filters.size())
+        {
+            throw new IOException("Duplicate");
+        }
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        // apply filters
+        for (int i = 0; i < filters.size(); i++)
+        {
+            output.reset();
+            results.add(filters.get(i).decode(input, output, parameters, i, options));
+            input = new ByteArrayInputStream(output.toByteArray());
         }
         return new COSInputStream(input, results);
     }

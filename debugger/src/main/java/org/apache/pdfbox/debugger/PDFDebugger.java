@@ -106,6 +106,7 @@ import org.apache.pdfbox.debugger.ui.OSXAdapter;
 import org.apache.pdfbox.debugger.ui.PDFTreeCellRenderer;
 import org.apache.pdfbox.debugger.ui.PDFTreeModel;
 import org.apache.pdfbox.debugger.ui.PageEntry;
+import org.apache.pdfbox.debugger.ui.PrintDpiMenu;
 import org.apache.pdfbox.debugger.ui.ReaderBottomPanel;
 import org.apache.pdfbox.debugger.ui.RecentFiles;
 import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
@@ -121,10 +122,10 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
+import org.apache.pdfbox.printing.Orientation;
 import org.apache.pdfbox.printing.PDFPageable;
 
 import picocli.CommandLine;
@@ -168,9 +169,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private Tree tree;
     // file menu
     private JMenuItem saveAsMenuItem;
-    private JMenuItem saveMenuItem;
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
+    private JMenu printDpiMenu;
     private JMenuItem reopenMenuItem;
 
     // edit > find menu
@@ -266,14 +267,10 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
 
             // trigger premature initializations for more accurate rendering benchmarks
             // See discussion in PDFBOX-3988
-            if (PDType1Font.COURIER.isStandard14())
-            {
-                // Yes this is always true
-                PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
-                PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
-                IIORegistry.getDefaultInstance();
-                FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
-            }
+            PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0 });
+            PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 });
+            IIORegistry.getDefaultInstance();
+            FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
 
             if (infile != null && infile.exists())
             {
@@ -425,7 +422,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                 }
                 catch (UnsupportedFlavorException e)
                 {
-                    throw new RuntimeException(e);
+                    new ErrorDialog(e).setVisible(true);
+                    return false;
                 }
                 return true;
             }
@@ -516,19 +514,16 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         reopenMenuItem.setEnabled(false);
         fileMenu.add(reopenMenuItem);
 
-        try
-        {
-            recentFiles = new RecentFiles(this.getClass(), 5);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-
+        recentFiles = new RecentFiles(this.getClass(), 5);
         recentFilesMenu = new JMenu("Open Recent");
         recentFilesMenu.setEnabled(false);
         addRecentFileItems();
         fileMenu.add(recentFilesMenu);
+
+        saveAsMenuItem = new JMenuItem("Save as...");
+        saveAsMenuItem.addActionListener(this::saveAsMenuItemActionPerformed);
+        saveAsMenuItem.setEnabled(false);        
+        fileMenu.add(saveAsMenuItem);
 
         printMenuItem = new JMenuItem("Print");
         printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutKeyMask));
@@ -537,6 +532,10 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
 
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
+
+        printDpiMenu = PrintDpiMenu.getInstance().getMenu();
+        printDpiMenu.setEnabled(false);
+        fileMenu.add(printDpiMenu);
 
         if (!IS_MAC_OS)
         {
@@ -658,7 +657,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
         catch (IOException e)
         {
-            throw new RuntimeException(e);
+            new ErrorDialog(e).setVisible(true);
         }
     }
 
@@ -668,6 +667,36 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private void osxQuit()
     {
         exitMenuItemActionPerformed(null);
+    }
+
+    private void saveAsMenuItemActionPerformed(ActionEvent evt)
+    {
+        try
+        {
+            if (IS_MAC_OS)
+            {
+                FileDialog openDialog = new FileDialog(this, "Save", FileDialog.SAVE);
+                openDialog.setFilenameFilter((dir, name) -> name.toLowerCase().endsWith(".pdf"));
+                openDialog.setVisible(true);
+                String file = openDialog.getFile();
+                if (file != null)
+                {
+                    document.setAllSecurityToBeRemoved(true);
+                    document.save(file);
+                }
+            }
+            else
+            {
+                String[] extensions = new String[] { "pdf", "PDF" };
+                FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
+                FileOpenSaveDialog saveAsDialog = new FileOpenSaveDialog(this, pdfFilter);
+                saveAsDialog.saveDocument(document, "pdf");
+            }
+        }
+        catch (IOException e)
+        {
+            new ErrorDialog(e).setVisible(true);
+        }
     }
 
     private void openMenuItemActionPerformed(ActionEvent evt)
@@ -699,7 +728,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
         catch (IOException e)
         {
-            throw new RuntimeException(e);
+            new ErrorDialog(e).setVisible(true);
         }
     }
 
@@ -1137,7 +1166,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             }
             catch( IOException e )
             {
-                throw new RuntimeException(e);
+                // no dialogbox, don't interfere with exit wish
+                e.printStackTrace();
             }
         }
         windowPrefs.setExtendedState(getExtendedState());
@@ -1173,7 +1203,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         try
         {
             PrinterJob job = PrinterJob.getPrinterJob();
-            job.setPageable(new PDFPageable(document));
+            job.setPageable(new PDFPageable(document, Orientation.AUTO, false, PrintDpiMenu.getDpiSelection()));
             PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
             PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
             if (vp != null && vp.getDuplex() != null)
@@ -1207,7 +1237,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
         catch (PrinterException e)
         {
-            throw new RuntimeException(e);
+            new ErrorDialog(e).setVisible(true);
         }
     }
 
@@ -1242,7 +1272,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         };
         document = documentOpener.parse();
         printMenuItem.setEnabled(true);
+        printDpiMenu.setEnabled(true);
         reopenMenuItem.setEnabled(true);
+        saveAsMenuItem.setEnabled(true);
         
         initTree();
         
@@ -1283,6 +1315,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         document = documentOpener.parse();
         printMenuItem.setEnabled(true);
         reopenMenuItem.setEnabled(true);
+        saveAsMenuItem.setEnabled(true);
 
         initTree();
 

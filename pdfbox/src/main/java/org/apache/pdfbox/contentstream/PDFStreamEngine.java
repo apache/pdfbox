@@ -49,6 +49,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -90,6 +91,9 @@ public abstract class PDFStreamEngine
     // used to monitor potentially recursive operations.
     private int level = 0;
 
+    // default font, used if there isn't any font available
+    private PDFont defaultFont;
+    
     /**
      * Creates a new PDFStreamEngine.
      */
@@ -126,6 +130,19 @@ public abstract class PDFStreamEngine
         initialMatrix = page.getMatrix();
     }
 
+    /**
+     * Provide standard 14 Helvetica font as default if there isn't any font available.  
+     * @return the default font
+     */
+    private PDFont getDefaultFont()
+    {
+        if (defaultFont == null)
+        {
+            defaultFont = new PDType1Font(FontName.HELVETICA);
+        }
+        return defaultFont;
+    }
+    
     /**
      * This will initialize and process the contents of the stream.
      *
@@ -492,7 +509,7 @@ public abstract class PDFStreamEngine
             if (token instanceof Operator)
             {
                 processOperator((Operator) token, arguments);
-                arguments = new ArrayList<>();
+                arguments.clear();
             }
             else
             {
@@ -548,8 +565,9 @@ public abstract class PDFStreamEngine
     {
         if (rectangle != null)
         {
-            GeneralPath clip = rectangle.transform(getGraphicsState().getCurrentTransformationMatrix());
-            getGraphicsState().intersectClippingPath(clip);
+            PDGraphicsState graphicsState = getGraphicsState();
+            GeneralPath clip = rectangle.transform(graphicsState.getCurrentTransformationMatrix());
+            graphicsState.intersectClippingPath(clip);
         }
     }
 
@@ -672,7 +690,7 @@ public abstract class PDFStreamEngine
         if (font == null)
         {
             LOG.warn("No current font, will use default");
-            font = PDType1Font.HELVETICA;
+            font = getDefaultFont();
         }
 
         float fontSize = textState.getFontSize();

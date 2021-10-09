@@ -27,7 +27,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Iterator;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -307,23 +306,21 @@ public final class JPEGFactory
     private static PDImageXObject createJPEG(PDDocument document, BufferedImage image,
                                              float quality, int dpi) throws IOException
     {
-        // extract alpha channel (if any)
         BufferedImage awtColorImage = getColorImage(image);
-        BufferedImage awtAlphaImage = getAlphaImage(image);
 
         // create XObject
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        encodeImageToJPEGStream(awtColorImage, quality, dpi, baos);
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(baos.toByteArray());
-        
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
-                COSName.DCT_DECODE, awtColorImage.getWidth(), awtColorImage.getHeight(), 
-                8,
+        byte[] encoded = encodeImageToJPEGStream(awtColorImage, quality, dpi);
+        ByteArrayInputStream encodedByteStream = new ByteArrayInputStream(encoded);
+
+        PDImageXObject pdImage = new PDImageXObject(document, encodedByteStream, COSName.DCT_DECODE,
+                awtColorImage.getWidth(), awtColorImage.getHeight(), 8,
                 getColorSpaceFromAWT(awtColorImage));
 
-        // alpha -> soft mask
+        // extract alpha channel (if any)
+        BufferedImage awtAlphaImage = getAlphaImage(image);
         if (awtAlphaImage != null)
         {
+            // alpha -> soft mask
             PDImage xAlpha = JPEGFactory.createFromImage(document, awtAlphaImage, quality);
             pdImage.getCOSObject().setItem(COSName.SMASK, xAlpha);
         }
@@ -331,6 +328,7 @@ public final class JPEGFactory
         return pdImage;
     }
 
+    // never returns null
     private static ImageWriter getJPEGImageWriter() throws IOException
     {
         Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("jpeg");
@@ -351,17 +349,13 @@ public final class JPEGFactory
         throw new IOException("No ImageWriter found for JPEG format");
     }
 
-    private static void encodeImageToJPEGStream(BufferedImage image, float quality, int dpi,
-                                                OutputStream out) throws IOException
+    private static byte[] encodeImageToJPEGStream(BufferedImage image, float quality, int dpi)
+            throws IOException
     {
-        // encode to JPEG
-        ImageOutputStream ios = null;
-        ImageWriter imageWriter = null;
-        try
+        ImageWriter imageWriter = getJPEGImageWriter(); // find JAI writer
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ImageOutputStream ios = ImageIO.createImageOutputStream(baos))
         {
-            // find JAI writer
-            imageWriter = getJPEGImageWriter();
-            ios = ImageIO.createImageOutputStream(out);
             imageWriter.setOutput(ios);
 
             // add compression
@@ -372,27 +366,21 @@ public final class JPEGFactory
             // add metadata
             ImageTypeSpecifier imageTypeSpecifier = new ImageTypeSpecifier(image);
             IIOMetadata data = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
-            Element tree = (Element)data.getAsTree("javax_imageio_jpeg_image_1.0");
-            Element jfif = (Element)tree.getElementsByTagName("app0JFIF").item(0);
-            jfif.setAttribute("Xdensity", Integer.toString(dpi));
-            jfif.setAttribute("Ydensity", Integer.toString(dpi));
+            Element tree = (Element) data.getAsTree("javax_imageio_jpeg_image_1.0");
+            Element jfif = (Element) tree.getElementsByTagName("app0JFIF").item(0);
+            String dpiString = Integer.toString(dpi);
+            jfif.setAttribute("Xdensity", dpiString);
+            jfif.setAttribute("Ydensity", dpiString);
             jfif.setAttribute("resUnits", "1"); // 1 = dots/inch
 
             // write
             imageWriter.write(data, new IIOImage(image, null, null), jpegParam);
+
+            return baos.toByteArray();
         }
         finally
         {
-            // clean up
-            IOUtils.closeQuietly(out);
-            if (ios != null)
-            {
-                ios.close();
-            }
-            if (imageWriter != null)
-            {
-                imageWriter.dispose();
-            }
+            imageWriter.dispose();
         }
     }
     

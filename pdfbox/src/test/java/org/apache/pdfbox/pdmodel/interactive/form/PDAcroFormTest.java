@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,6 +39,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.rendering.TestPDFToImage;
@@ -111,8 +111,7 @@ class PDAcroFormTest
             testPdf.save(file);
         }
         // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
-        if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        if (!TestPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             // don't fail, rendering is different on different systems, result must be viewed manually
             System.out.println("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
@@ -146,8 +145,7 @@ class PDAcroFormTest
             testPdf.save(file);
         }
         // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
-        if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        if (!TestPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             // don't fail, rendering is different on different systems, result must be viewed manually
             System.out.println("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
@@ -338,8 +336,14 @@ class PDAcroFormTest
             assertNotNull(helv);
             assertNotNull(zadb);
             // make sure that font wasn't overwritten
-            assertNotEquals(PDType1Font.HELVETICA, helv);
-            assertNotEquals(PDType1Font.ZAPF_DINGBATS, zadb);          
+            assertTrue(helv instanceof PDType1Font);
+            assertTrue(zadb instanceof PDType1Font);
+            PDType1Font helvType1 = (PDType1Font) helv;
+            PDType1Font zadbType1 = (PDType1Font) zadb;
+            assertEquals(FontName.HELVETICA.getName(), helv.getName());
+            assertEquals(FontName.ZAPF_DINGBATS.getName(), zadb.getName());
+            assertNull(helvType1.getType1Font());
+            assertNull(zadbType1.getType1Font());
         }
     }
 

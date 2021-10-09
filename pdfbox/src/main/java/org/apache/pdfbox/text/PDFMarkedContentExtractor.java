@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.text;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +47,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
     /**
      * Instantiate a new PDFTextStripper object.
      */
-    public PDFMarkedContentExtractor() throws IOException
+    public PDFMarkedContentExtractor()
     {
         this(null);
     }
@@ -58,7 +57,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
      *
      * @param encoding The encoding that the output will be written in.
      */
-    public PDFMarkedContentExtractor(String encoding) throws IOException
+    public PDFMarkedContentExtractor(String encoding)
     {
         addOperator(new BeginMarkedContentSequenceWithProperties());
         addOperator(new BeginMarkedContentSequence());
