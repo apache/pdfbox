@@ -38,9 +38,23 @@ class PDOutlineItemIterator implements Iterator<PDOutlineItem>
     @Override
     public boolean hasNext()
     {
-        return startingItem != null
-                && (currentItem == null || (currentItem.getNextSibling() != null && !startingItem
-                        .equals(currentItem.getNextSibling())));
+        if (startingItem != null)
+        {
+            if (currentItem == null)
+            {
+                return true;
+            }
+            else
+            {
+                PDOutlineItem sibling = currentItem.getNextSibling();
+
+                return sibling != null && !startingItem.equals(sibling);
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
     @Override
