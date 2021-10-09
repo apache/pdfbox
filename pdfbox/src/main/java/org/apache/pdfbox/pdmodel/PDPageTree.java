@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Stack;
 import java.util.NoSuchElementException;
+import java.util.Collections;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -137,14 +138,14 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     private List<COSDictionary> getKids(COSDictionary node)
     {
-        List<COSDictionary> result = new ArrayList<>();
-
         COSArray kids = node.getCOSArray(COSName.KIDS);
-        if (kids == null)
+        if (kids == null || kids.size() == 0)
         {
             // probably a malformed PDF
-            return result;
+            return Collections.emptyList();
         }
+
+        List<COSDictionary> result = new ArrayList<>();
 
         for (int i = 0, size = kids.size(); i < size; i++)
         {
@@ -387,8 +388,11 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
 
     private boolean findPage(SearchContext context, COSDictionary node)
     {
-        for (COSDictionary kid : getKids(node))
+        List<COSDictionary> kids = getKids(node);
+        COSDictionary kid;
+        for (int i = 0; i < kids.size(); ++i)
         {
+            kid = kids.get(i);
             if (isPageTreeNode(kid))
             {
                 if (findPage(context, kid))
