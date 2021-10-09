@@ -409,6 +409,14 @@ public class COSStream extends COSDictionary implements Closeable
         return visitor.visitFromStream(this);
     }
     
+    /**
+     * {@inheritDoc}
+     *
+     * Called by PDFBox when the PDDocument is closed, this closes the stream and removes the data.
+     * You will usually not need this.
+     *
+     * @throws IOException
+     */
     @Override
     public void close() throws IOException
     {
