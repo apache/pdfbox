@@ -121,8 +121,7 @@ public class PDActionRemoteGoTo extends PDAction
         COSBase object = getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
         if (object instanceof COSBoolean)
         {
-            COSBoolean b = (COSBoolean) object;
-            return b.getValue() ? OpenMode.NEW_WINDOW : OpenMode.SAME_WINDOW;
+            return object == COSBoolean.TRUE ? OpenMode.NEW_WINDOW : OpenMode.SAME_WINDOW;
         }
         return OpenMode.USER_PREFERENCE;
     }
