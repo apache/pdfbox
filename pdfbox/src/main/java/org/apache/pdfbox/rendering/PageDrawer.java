@@ -526,25 +526,22 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // render glyph
             Shape glyph = at.createTransformedShape(path);
 
-            if (renderingMode.isFill())
+            if (isContentRendered())
             {
-                graphics.setComposite(state.getNonStrokingJavaComposite());
-                graphics.setPaint(getNonStrokingPaint());
-                setClip();
-                if (isContentRendered())
+                if (renderingMode.isFill())
                 {
+                    graphics.setComposite(state.getNonStrokingJavaComposite());
+                    graphics.setPaint(getNonStrokingPaint());
+                    setClip();
                     graphics.fill(glyph);
                 }
-            }
 
-            if (renderingMode.isStroke())
-            {
-                graphics.setComposite(state.getStrokingJavaComposite());
-                graphics.setPaint(getStrokingPaint());
-                graphics.setStroke(getStroke());
-                setClip();
-                if (isContentRendered())
+                if (renderingMode.isStroke())
                 {
+                    graphics.setComposite(state.getStrokingJavaComposite());
+                    graphics.setPaint(getStrokingPaint());
+                    graphics.setStroke(getStroke());
+                    setClip();
                     graphics.draw(glyph);
                 }
             }
@@ -873,13 +870,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void strokePath() throws IOException
     {
-        graphics.setComposite(getGraphicsState().getStrokingJavaComposite());
-        graphics.setPaint(getStrokingPaint());
-        graphics.setStroke(getStroke());
-        setClip();
         //TODO bbox of shading pattern should be used here? (see fillPath)
         if (isContentRendered())
         {
+            graphics.setComposite(getGraphicsState().getStrokingJavaComposite());
+            graphics.setPaint(getStrokingPaint());
+            graphics.setStroke(getStroke());
+            setClip();
             graphics.draw(linePath);
         }
         linePath.reset();
@@ -1206,12 +1203,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 // draw the image
                 setClip();
                 graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
-                if (isContentRendered())
-                {
-                    graphics.drawImage(renderedPaint,
-                            AffineTransform.getTranslateInstance(bounds.getMinX(), bounds.getMinY()),
-                            null);
-                }
+                graphics.drawImage(renderedPaint,
+                        AffineTransform.getTranslateInstance(bounds.getMinX(), bounds.getMinY()),
+                        null);
             }
             else
             {
@@ -1443,6 +1437,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void shadingFill(COSName shadingName) throws IOException
     {
+        if (!isContentRendered())
+        {
+            return;
+        }
         PDShading shading = getResources().getShading(shadingName);
         if (shading == null)
         {
@@ -1484,10 +1482,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 area = getGraphicsState().getCurrentClippingPath();
             }
         }
-        if (isContentRendered())
-        {
-            graphics.fill(area);
-        }
+        graphics.fill(area);
     }
 
     @Override
@@ -1625,25 +1620,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     new Rectangle2D.Float(0, 0, image.getWidth(), image.getHeight()));
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
-            if (isContentRendered())
-            {
-                graphics.fill(
-                        new Rectangle2D.Float(0, 0, bbox.getWidth() * xScale, bbox.getHeight() * yScale));
-            }
+            graphics.fill(
+                    new Rectangle2D.Float(0, 0, bbox.getWidth() * xScale, bbox.getHeight() * yScale));
         }
         else
         {
-            if (isContentRendered())
+            try
             {
-                try
-                {
-                    graphics.drawImage(image, null, null);
-                }
-                catch (InternalError ie)
-                {
-                    LOG.error("Exception drawing image, see JDK-6689349, " +
-                              "try rendering into a BufferedImage instead", ie);
-                }
+                graphics.drawImage(image, null, null);
+            }
+            catch (InternalError ie)
+            {
+                LOG.error("Exception drawing image, see JDK-6689349, " +
+                          "try rendering into a BufferedImage instead", ie);
             }
         }
 
