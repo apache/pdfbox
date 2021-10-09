@@ -16,14 +16,9 @@
  */
 package org.apache.pdfbox.cos;
 
-import org.apache.pdfbox.cos.observer.event.COSDirectObjectEvent;
-import org.apache.pdfbox.cos.observer.event.COSEvent;
-import org.apache.pdfbox.cos.observer.COSObserver;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The base object that all objects in the PDF document will extend.
@@ -32,8 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class COSBase implements COSObjectable
 {
-
-    private final List<COSObserver> cosChangeObservers = new CopyOnWriteArrayList<>();
+    
     private boolean direct;
     private COSObjectKey key;
 
@@ -83,9 +77,6 @@ public abstract class COSBase implements COSObjectable
     public void setDirect(boolean direct)
     {
         this.direct = direct;
-        if(direct){
-            reportUpdate(new COSDirectObjectEvent<>(this));
-        }
     }
 
     /**
@@ -106,52 +97,6 @@ public abstract class COSBase implements COSObjectable
     public void setKey(COSObjectKey key)
     {
         this.key = key;
-    }
-
-    /**
-     * Register the given {@link COSObserver} to this {@link COSBase}.
-     *
-     * @param observer The {@link COSObserver} to register.
-     * @see #reportUpdate(COSEvent)
-     */
-    public void registerObserver(COSObserver observer)
-    {
-        this.cosChangeObservers.add(observer);
-    }
-
-    /**
-     * Unregister the given {@link COSObserver} from this {@link COSBase}.
-     *
-     * @param observer The {@link COSObserver} to unregister.
-     * @see #reportUpdate(COSEvent)
-     */
-    public void unregisterObserver(COSObserver observer)
-    {
-        this.cosChangeObservers.remove(observer);
-    }
-
-    /**
-     * Returns the {@link COSObserver}s registered to this {@link COSBase}.
-     *
-     * @return A list of all {@link COSObserver}s currently registered to this {@link COSBase}.
-     */
-    public List<COSObserver> getRegisteredObservers()
-    {
-        return this.cosChangeObservers;
-    }
-
-    /**
-     * Report a change to this {@link COSBase} as a {@link COSEvent} to all registered {@link COSObserver}s.
-     *
-     * @param event      The {@link COSEvent} to report.
-     * @param <COS_TYPE> The explicit {@link COSBase} type of the reporting object.
-     * @see #registerObserver(COSObserver)
-     */
-    public <COS_TYPE extends COSBase> void reportUpdate(COSEvent<COS_TYPE> event)
-    {
-        for (COSObserver observer : this.cosChangeObservers) {
-            observer.reportUpdate(event);
-        }
     }
 
 }

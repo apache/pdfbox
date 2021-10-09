@@ -137,7 +137,6 @@ public class RandomAccessReadBuffer implements RandomAccessRead
             bufferList.add(newBuffer);
         }
         currentBuffer = bufferList.get(0);
-        
     }
 
     /**

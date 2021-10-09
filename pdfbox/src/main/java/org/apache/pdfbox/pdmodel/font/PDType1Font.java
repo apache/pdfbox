@@ -382,6 +382,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         else
         {
             String name = codeToName(code);
+
             // todo: should be scaled by font matrix
             return (float) genericFont.getPath(name).getBounds().getHeight();
         }

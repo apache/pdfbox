@@ -34,12 +34,13 @@ class TestCOSUpdateInfo
     @Test
     void testIsSetNeedToBeUpdate()
     {
-        COSUpdateInfoObserver observer = new COSUpdateInfoObserver(null);
-        observer.startTrackingChanges();
-
+        COSDocumentState origin = new COSDocumentState();
+        origin.setParsing(false);
         // COSDictionary
         COSUpdateInfo testCOSDictionary = new COSDictionary();
-        observer.monitor(testCOSDictionary.getCOSObject());
+        testCOSDictionary.setNeedToBeUpdated(true);
+        assertFalse(testCOSDictionary.isNeedToBeUpdated());
+        testCOSDictionary.getUpdateState().setOriginDocumentState(origin);
         testCOSDictionary.setNeedToBeUpdated(true);
         assertTrue(testCOSDictionary.isNeedToBeUpdated());
         testCOSDictionary.setNeedToBeUpdated(false);
@@ -48,7 +49,9 @@ class TestCOSUpdateInfo
         // COSObject
         COSUpdateInfo testCOSObject;
         testCOSObject = new COSObject(null);
-        observer.monitor(testCOSObject.getCOSObject());
+        testCOSObject.setNeedToBeUpdated(true);
+        assertFalse(testCOSObject.isNeedToBeUpdated());
+        testCOSObject.getUpdateState().setOriginDocumentState(origin);
         testCOSObject.setNeedToBeUpdated(true);
         assertTrue(testCOSObject.isNeedToBeUpdated());
         testCOSObject.setNeedToBeUpdated(false);

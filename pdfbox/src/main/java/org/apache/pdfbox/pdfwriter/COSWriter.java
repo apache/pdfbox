@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -34,13 +35,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -200,7 +199,7 @@ public class COSWriter implements ICOSVisitor
     private final List<XReferenceEntry> xRefEntries = new ArrayList<>();
 
     //A list of objects to write.
-    private final Deque<COSBase> objectsToWrite = new LinkedList<>();
+    private final Deque<COSBase> objectsToWrite = new ArrayDeque<>();
 
     //a list of objects already written
     private final Set<COSBase> writtenObjects = new HashSet<>();
@@ -551,30 +550,31 @@ public class COSWriter implements ICOSVisitor
             actual = ((COSObject)actual).getObject();
         }
 
-        if (!writtenObjects.contains(object) //
-                && !objectsToWrite.contains(object) //
-                && !actualsAdded.contains(actual))
+        if (writtenObjects.contains(object) //
+                || actualsAdded.contains(actual) //
+                || objectsToWrite.contains(object))
         {
-            COSBase cosBase = null;
-            COSObjectKey cosObjectKey = null;
-            if (actual != null)
-            {
-                cosObjectKey = objectKeys.get(actual);
-            }
+            return;
+        }
+
+        COSBase cosBase = null;
+        COSObjectKey cosObjectKey = null;
+        if (actual != null)
+        {
+            cosObjectKey = objectKeys.get(actual);
             if (cosObjectKey != null)
             {
                 cosBase = keyObject.get(cosObjectKey);
+                if (!isNeedToBeUpdated(object) && !isNeedToBeUpdated(cosBase))
+                {
+                    return;
+                }
             }
-            if (actual != null && objectKeys.containsKey(actual) && !isNeedToBeUpdated(object)
-                    && !isNeedToBeUpdated(cosBase))
-            {
-                return;
-            }
-            objectsToWrite.add(object);
-            if (actual != null)
-            {
-                actualsAdded.add(actual);
-            }
+        }
+        objectsToWrite.add(object);
+        if (actual != null)
+        {
+            actualsAdded.add(actual);
         }
     }
 
@@ -1469,14 +1469,10 @@ public class COSWriter implements ICOSVisitor
     public void write(PDDocument doc, SignatureInterface signInterface) throws IOException
     {
         pdDocument = doc;
-        // Whatever the writer wishes to change, the writer itself shall keep track of it.
-        pdDocument.getDocument().getUpdateObserver().stopTrackingChanges();
-        if (incrementalUpdate)
-        {
-            for(COSUpdateInfo updatedObject : pdDocument.getDocument().getUpdateObserver())
-            {
-                addObjectToWrite(updatedObject.getCOSObject());
-            }
+        COSDocument cosDoc = pdDocument.getDocument();
+        COSDictionary trailer = cosDoc.getTrailer();
+        if(incrementalUpdate){
+            trailer.toIncrement().exclude(trailer).forEach(objectsToWrite::add);
         }
         signatureInterface = signInterface;
         number = pdDocument.getDocument().getHighestXRefObjectNumber();
@@ -1486,8 +1482,6 @@ public class COSWriter implements ICOSVisitor
         }
         Long idTime = pdDocument.getDocumentId() == null ? System.currentTimeMillis()
                 : pdDocument.getDocumentId();
-        COSDocument cosDoc = pdDocument.getDocument();
-        COSDictionary trailer = cosDoc.getTrailer();
 
         // if the document says we should remove encryption, then we shouldn't encrypt
         if (doc.isAllSecurityToBeRemoved())
@@ -1582,17 +1576,12 @@ public class COSWriter implements ICOSVisitor
     public void write(FDFDocument doc) throws IOException
     {
         fdfDocument = doc;
-        // Whatever the writer wishes to change, the writer itself shall keep track of it.
-        fdfDocument.getDocument().getUpdateObserver().stopTrackingChanges();
-        if (incrementalUpdate)
-        {
-            for(COSUpdateInfo updatedObject : pdDocument.getDocument().getUpdateObserver())
-            {
-                addObjectToWrite(updatedObject.getCOSObject());
-            }
+        COSDocument cosDoc = fdfDocument.getDocument();
+        COSDictionary trailer = cosDoc.getTrailer();
+        if(incrementalUpdate){
+            trailer.toIncrement().exclude(trailer).forEach(objectsToWrite::add);
         }
         willEncrypt = false;
-        COSDocument cosDoc = fdfDocument.getDocument();
         cosDoc.accept(this);
     }
     /**

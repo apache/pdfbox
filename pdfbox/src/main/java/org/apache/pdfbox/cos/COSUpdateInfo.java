@@ -16,11 +16,9 @@
  */
 package org.apache.pdfbox.cos;
 
-import org.apache.pdfbox.cos.observer.COSIncrementObserver;
-import org.apache.pdfbox.cos.observer.event.COSDirectUpdateEvent;
-import org.apache.pdfbox.cos.observer.COSObserver;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
-public interface COSUpdateInfo
+public interface COSUpdateInfo extends COSObjectable
 {
 
     /**
@@ -31,21 +29,7 @@ public interface COSUpdateInfo
      */
     default boolean isNeedToBeUpdated()
     {
-        COSBase instance = getCOSObject();
-        if (instance != null)
-        {
-            for (COSObserver observer : instance.getRegisteredObservers())
-            {
-                if (observer instanceof COSIncrementObserver)
-                {
-                    if (((COSIncrementObserver) observer).isNeedToBeUpdated(instance))
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return getUpdateState().isUpdated();
     }
 
     /**
@@ -56,19 +40,26 @@ public interface COSUpdateInfo
      */
     default void setNeedToBeUpdated(boolean flag)
     {
-        COSBase instance = getCOSObject();
-        if (instance != null)
-        {
-            instance.reportUpdate(new COSDirectUpdateEvent<>(instance, flag));
-        }
+        getUpdateState().update(flag);
     }
-
+    
     /**
-     * Convert this standard java object to a COS object.
+     * Uses this {@link COSUpdateInfo} as the base object of a new {@link COSIncrement}.
      *
-     * @return The cos object that matches this Java object.
-     * @see COSBase#getCOSObject()
+     * @return A {@link COSIncrement} based on this {@link COSUpdateInfo}.
+     * @see COSIncrement
      */
-    COSBase getCOSObject();
-
+    default COSIncrement toIncrement()
+    {
+        return getUpdateState().toIncrement();
+    }
+    
+    /**
+     * Returns the current {@link COSUpdateState} of this {@link COSUpdateInfo}.
+     *
+     * @return The current {@link COSUpdateState} of this {@link COSUpdateInfo}.
+     * @see COSUpdateState
+     */
+    COSUpdateState getUpdateState();
+    
 }

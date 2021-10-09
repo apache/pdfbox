@@ -46,8 +46,7 @@ public class COSDocument extends COSBase implements Closeable
      * Log instance.
      */
     private static final Log LOG = LogFactory.getLog(COSDocument.class);
-
-    private final COSUpdateInfoObserver updateObserver;
+    
     private float version = 1.4f;
 
     /**
@@ -64,7 +63,7 @@ public class COSDocument extends COSBase implements Closeable
         new HashMap<>();
 
     /**
-     * List containing all streams which are created when creating a new pdf. 
+     * List containing all streams which are created when creating a new pdf.
      */
     private final List<COSStream> streams = new ArrayList<>();
     
@@ -73,8 +72,8 @@ public class COSDocument extends COSBase implements Closeable
      */
     private COSDictionary trailer;
     
-    /** 
-     * Signal that document is already decrypted. 
+    /**
+     * Signal that document is already decrypted.
      */
     private boolean isDecrypted = false;
     
@@ -92,6 +91,8 @@ public class COSDocument extends COSBase implements Closeable
     private long highestXRefObjectNumber;
 
     private final ICOSParser parser;
+    
+    private final COSDocumentState documentState = new COSDocumentState();
 
     /**
      * Constructor. Uses main memory to buffer PDF streams.
@@ -131,7 +132,6 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(MemoryUsageSetting memUsageSetting, ICOSParser parser)
     {
-        this.updateObserver = new COSUpdateInfoObserver(this);
         try
         {
             if (memUsageSetting != null)
@@ -365,7 +365,7 @@ public class COSDocument extends COSBase implements Closeable
     public void setTrailer(COSDictionary newTrailer)
     {
         trailer = newTrailer;
-        updateObserver.monitor(newTrailer);
+        trailer.getUpdateState().setOriginDocumentState(documentState);
     }
 
     /**
@@ -542,15 +542,16 @@ public class COSDocument extends COSBase implements Closeable
     {
         isXRefStream = isXRefStreamValue;
     }
-
+    
     /**
-     * Returns the {@link COSUpdateInfoObserver}, that is keeping track of changes to this {@link COSDocument}.
+     * Returns the {@link COSDocumentState} of this {@link COSDocument}.
      *
-     * @return The {@link COSUpdateInfoObserver}, that is keeping track of changes to this {@link COSDocument}.
+     * @return The {@link COSDocumentState} of this {@link COSDocument}.
+     * @see COSDocumentState
      */
-    public COSUpdateInfoObserver getUpdateObserver()
+    public COSDocumentState getDocumentState()
     {
-        return updateObserver;
+        return documentState;
     }
-
+    
 }

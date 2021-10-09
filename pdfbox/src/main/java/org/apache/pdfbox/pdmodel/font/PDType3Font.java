@@ -180,7 +180,7 @@ public class PDType3Font extends PDSimpleFont
     public float getWidthFromFont(int code) throws IOException
     {
         PDType3CharProc charProc = getCharProc(code);
-        if (charProc == null || charProc.getContentStream().getLength() == 0)
+        if (charProc == null || charProc.getCOSObject().getLength() == 0)
         {
             return 0;
         }

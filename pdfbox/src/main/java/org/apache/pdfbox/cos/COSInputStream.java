@@ -22,7 +22,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.DecodeResult;
@@ -63,26 +67,28 @@ public final class COSInputStream extends FilterInputStream
     static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream input,
             DecodeOptions options) throws IOException
     {
-        if (!filters.isEmpty())
+        if (filters.isEmpty())
         {
-            Set<Filter> filterSet = new HashSet<>(filters);
-            if (filterSet.size() != filters.size())
-            {
-                throw new IOException("Duplicate");
-            }
-            List<DecodeResult> results = new ArrayList<>(filters.size());
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            // apply filters
-            for (int i = 0; i < filters.size(); i++)
-            {
-                output.reset();
-                results.add(filters.get(i).decode(input, output, parameters, i, options));
-                input = new ByteArrayInputStream(output.toByteArray());
-            }
-            return new COSInputStream(input, results);
+            return new COSInputStream(in, Collections.<DecodeResult>emptyList());
         }
-        else
-            return new COSInputStream(input, Collections.emptyList());
+
+        List<DecodeResult> results = new ArrayList<>(filters.size());
+        InputStream input = in;
+        Set<Filter> filterSet = new HashSet<>(filters);
+        if (filterSet.size() != filters.size())
+        {
+            throw new IOException("Duplicate");
+        }
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        // apply filters
+        for (int i = 0; i < filters.size(); i++)
+        {
+            output.reset();
+            results.add(filters.get(i).decode(input, output, parameters, i, options));
+            input = new ByteArrayInputStream(output.toByteArray());
+        }
+        
+        return new COSInputStream(input, results);
     }
 
     private final List<DecodeResult> decodeResults;

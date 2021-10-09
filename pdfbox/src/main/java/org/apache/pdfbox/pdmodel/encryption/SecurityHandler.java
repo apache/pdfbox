@@ -128,7 +128,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     protected SecurityHandler(T_POLICY protectionPolicy)
     {
         this.protectionPolicy = protectionPolicy;
-        keyLength = (short)protectionPolicy.getEncryptionKeyLength();
+        keyLength = (short) protectionPolicy.getEncryptionKeyLength();
     }
 
     /**
@@ -693,7 +693,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      */
     public void setKeyLength(int keyLen)
     {
-        this.keyLength = (short)keyLen;
+        this.keyLength = (short) keyLen;
     }
 
     /**

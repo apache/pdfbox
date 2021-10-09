@@ -86,10 +86,10 @@ public final class PDDeviceNAttributes
         }
         else
         {
-            for(COSName name : colorants.keySet())
+            for (COSName name : colorants.keySet())
             {
                 COSBase value = colorants.getDictionaryObject(name);
-                actuals.put(name.getName(), (PDSeparation)PDColorSpace.create(value));
+                actuals.put(name.getName(), (PDSeparation) PDColorSpace.create(value));
             }
         }
         return new COSDictionaryMap<>(actuals, colorants);

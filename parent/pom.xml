@@ -63,7 +63,7 @@
             <dependency>
 	            <groupId>org.junit.jupiter</groupId>
 	            <artifactId>junit-jupiter</artifactId>
-	            <version>5.8.0-RC1</version>
+	            <version>5.8.1</version>
 	            <scope>test</scope>
             </dependency>
             <dependency>
@@ -210,7 +210,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>6.3.1</version>
+                        <version>6.3.2</version>
                         <configuration>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                             <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->

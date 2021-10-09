@@ -54,10 +54,10 @@ public class PDFunctionType2 extends PDFunction
     {
         super(function);
 
-        COSArray cosArray = getCOSObject().getCOSArray(COSName.C0);
-        if (cosArray != null)
+        COSArray cosArray0 = getCOSObject().getCOSArray(COSName.C0);
+        if (cosArray0 != null)
         {
-            c0 = cosArray;
+            c0 = cosArray0;
         }
         else
         {
@@ -68,10 +68,10 @@ public class PDFunctionType2 extends PDFunction
             c0.add(new COSFloat(0));
         }
 
-        cosArray = getCOSObject().getCOSArray(COSName.C1);
-        if (cosArray != null)
+        COSArray cosArray1 = getCOSObject().getCOSArray(COSName.C1);
+        if (cosArray1 != null)
         {
-            c1 = cosArray;
+            c1 = cosArray1;
         }
         else
         {

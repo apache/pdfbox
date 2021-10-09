@@ -111,6 +111,7 @@ class PDType1FontEmbedder
                 instanceof org.apache.fontbox.encoding.BuiltInEncoding;
         BoundingBox bbox = type1.getFontBBox();
         PDFontDescriptor fd = new PDFontDescriptor();
+
         fd.setFontName(type1.getName());
         fd.setFontFamily(type1.getFamilyName());
         fd.setNonSymbolic(!isSymbolic);

@@ -39,7 +39,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     private final long size;
 
     // file channel of the file to be read
-    private FileChannel fileChannel;
+    private final FileChannel fileChannel;
 
     // function to unmap the byte buffer
     private final Consumer<? super ByteBuffer> unmapper;
@@ -78,6 +78,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
         mappedByteBuffer.rewind();
         // unmap doesn't work on duplicate, see Unsafe#invokeCleaner
         unmapper = null;
+        fileChannel = null;
     }
 
     /**
@@ -147,9 +148,9 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
             return -1;
         }
         int remainingBytes = (int)size - mappedByteBuffer.position();
-        length = Math.min(remainingBytes, length);
-        mappedByteBuffer.get(b, offset, length);
-        return length;
+        remainingBytes = Math.min(remainingBytes, length);
+        mappedByteBuffer.get(b, offset, remainingBytes);
+        return remainingBytes;
     }
 
     /**

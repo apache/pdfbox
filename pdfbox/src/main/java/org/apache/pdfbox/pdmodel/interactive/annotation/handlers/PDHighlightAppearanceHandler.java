@@ -63,6 +63,7 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationHighlight annotation = (PDAnnotationHighlight) getAnnotation();
+
         float[] pathsArray = annotation.getQuadPoints();
         if (pathsArray == null)
         {
@@ -75,6 +76,7 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
         }
         PDRectangle rect = annotation.getRectangle();
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
+        
         // Adjust rectangle even if not empty, see PLPDF.com-MarkupAnnotations.pdf
         //TODO in a class structure this should be overridable
         // this is similar to polyline but different data type

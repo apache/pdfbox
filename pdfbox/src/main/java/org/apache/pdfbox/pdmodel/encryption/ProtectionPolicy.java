@@ -49,7 +49,7 @@ public abstract class ProtectionPolicy
         {
             throw new IllegalArgumentException("Invalid key length '" + l + "' value must be 40, 128 or 256!");
         }
-        encryptionKeyLength = (short)l;
+        encryptionKeyLength = (short) l;
     }
 
     /**
