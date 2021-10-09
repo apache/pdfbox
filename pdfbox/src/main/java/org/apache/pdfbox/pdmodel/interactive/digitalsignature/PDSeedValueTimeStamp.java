@@ -20,8 +20,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * If exist, it describe where the signature handler can request a RFC3161
- * timestamp and if it is a must have for the signature.
+ * If exists, it describes where the signature handler can request a RFC3161
+ * timestamp and should it has a signature.
  *
  * @author Thomas Chojecki
  */
