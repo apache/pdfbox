@@ -69,11 +69,10 @@ public final class COSInputStream extends FilterInputStream
     {
         if (filters.isEmpty())
         {
-            return new COSInputStream(in, Collections.<DecodeResult>emptyList());
+            return new COSInputStream(input, Collections.<DecodeResult>emptyList());
         }
 
         List<DecodeResult> results = new ArrayList<>(filters.size());
-        InputStream input = in;
         Set<Filter> filterSet = new HashSet<>(filters);
         if (filterSet.size() != filters.size())
         {
