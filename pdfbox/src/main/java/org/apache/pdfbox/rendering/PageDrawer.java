@@ -921,9 +921,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 case PathIterator.SEG_CUBICTO:
                     return false;
 
-                case PathIterator.SEG_CLOSE:
-                    break;
-
                 default:
                     break;
             }
@@ -1948,12 +1945,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // support seems to be optional, and is approximated by /P and /OCGS
             LOG.info("/VE entry ignored in Optional Content Membership Dictionary");
         }
-        List<Boolean> visibles = new ArrayList<>();
         List<PDPropertyList> oCGs = ocmd.getOCGs();
         if (oCGs.isEmpty())
         {
             return false;
         }
+        List<Boolean> visibles = new ArrayList<>();
         oCGs.forEach(prop -> visibles.add(!isHiddenOCG(prop)));
         COSName visibilityPolicy = ocmd.getVisibilityPolicy();
         
