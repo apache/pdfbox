@@ -20,9 +20,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -34,10 +37,12 @@ class TestQuality
     private static final File TARGET_PDF_DIR = new File("target/pdfs");
 
     /**
-     * PDFBOX-4831: PDF with a 300 dpi bitonal scan must be bitonal when rendered PDF at 300 dpi.
+     * PDFBOX-4831: PDF with a 300 dpi bitonal scan must be bitonal when rendered at 300 dpi
+     * and identical to the scan in the PDF.
      *
-     * @throws IOException 
+     * @throws IOException
      */
+    @Disabled //TODO enable when PageDrawer.java is fixed
     @Test
     void testPDFBox4831() throws IOException
     {
@@ -45,8 +50,12 @@ class TestQuality
         try (PDDocument doc = Loader.loadPDF(file))
         {
             PDFRenderer renderer = new PDFRenderer(doc);
-            BufferedImage bim = renderer.renderImageWithDPI(0, 300);
-            Assertions.assertEquals(4, ValidateXImage.colorCount(bim)); //TODO must be 2 when fixed
+            BufferedImage renderedImage = renderer.renderImageWithDPI(0, 300);
+            Assertions.assertEquals(2, ValidateXImage.colorCount(renderedImage));
+            PDImageXObject xObjectImage =
+                    (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("I0"));
+            BufferedImage extractedImage = xObjectImage.getImage();
+            ValidateXImage.checkIdent(extractedImage, renderedImage);
         }
     }
 }
