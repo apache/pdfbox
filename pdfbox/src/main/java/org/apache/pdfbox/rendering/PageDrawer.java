@@ -1041,9 +1041,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 bim = pdImage.getImage();
             }
-            boolean isScaledUp = bim.getWidth() < Math.round(at.getScaleX()) ||
-                                 bim.getHeight() < Math.round(at.getScaleY());
-
+            Matrix xformMatrix = new Matrix(xform);
+            boolean isScaledUp =
+                    bim.getWidth() <= Math.round(ctm.getScalingFactorX() * xformMatrix.getScalingFactorX()) ||
+                    bim.getHeight() <= Math.round(ctm.getScalingFactorY() * xformMatrix.getScalingFactorY());
             if (isScaledUp)
             {
                 graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
