@@ -25,7 +25,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -42,7 +41,6 @@ class TestQuality
      *
      * @throws IOException
      */
-    @Disabled //TODO enable when PageDrawer.java is fixed
     @Test
     void testPDFBox4831() throws IOException
     {
