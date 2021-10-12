@@ -21,9 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
@@ -40,6 +44,8 @@ import org.apache.pdfbox.util.Matrix;
  */
 public final class PDType3CharProc implements COSObjectable, PDContentStream
 {
+    private static final Log LOG = LogFactory.getLog(PDType3CharProc.class);
+
     private final PDType3Font font;
     private final COSStream charStream;
 
@@ -74,6 +80,13 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
     @Override
     public PDResources getResources()
     {
+        if (charStream.containsKey(COSName.RESOURCES))
+        {
+            // PDFBOX-5294
+            LOG.warn("Using resources dictionary found in charproc entry");
+            LOG.warn("This should have been in the font or in the page dictionary");
+            return new PDResources((COSDictionary) charStream.getDictionaryObject(COSName.RESOURCES));
+        }
         return font.getResources();
     }
 
