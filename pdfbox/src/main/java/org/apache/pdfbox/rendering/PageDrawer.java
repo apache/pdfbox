@@ -1853,17 +1853,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return false;
         }
 
-        public BufferedImage getImage()
+        BufferedImage getImage()
         {
             return image;
         }
 
-        public PDRectangle getBBox()
+        PDRectangle getBBox()
         {
             return bbox;
         }
 
-        public Rectangle2D getBounds()
+        Rectangle2D getBounds()
         {
             // apply the underlying Graphics2D device's DPI transform and y-axis flip
             Rectangle2D r =
@@ -1874,7 +1874,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                             height);
             // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
             //TODO
-            // 1. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask;
+            // 1. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask,
             //    also remove use of AffineTransform here
             // 2. Is it possible to create the softmask and transparency group in the correct rotation?
             //    (needs rendering identity testing before committing!)
