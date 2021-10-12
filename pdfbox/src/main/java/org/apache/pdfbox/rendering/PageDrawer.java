@@ -697,21 +697,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         gray = adjustImage(gray);
         Rectangle2D tpgBounds = transparencyGroup.getBounds();
-        adjustRectangle(tpgBounds);
         return new SoftMask(parentPaint, gray, tpgBounds, backdropColor, softMask.getTransferFunction());
-    }
-
-    // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
-    //TODO after all transparency problems have been solved:
-    // 1. shouldn't this be done in transparencyGroup.getBounds() ?
-    // 2. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask
-    // 3. Is it possible to create the softmask and transparency group in the correct rotation?
-    //    (needs rendering identity testing before committing!)
-    private void adjustRectangle(Rectangle2D r)
-    {
-        AffineTransform adjustedTransform = new AffineTransform(xform);
-        adjustedTransform.scale(1.0 / xformScalingFactorX, 1.0 / xformScalingFactorY);
-        r.setRect(adjustedTransform.createTransformedShape(r).getBounds2D());
     }
 
     // returns the image adjusted for applySoftMaskToPaint().
@@ -1880,9 +1866,22 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         public Rectangle2D getBounds()
         {
             // apply the underlying Graphics2D device's DPI transform and y-axis flip
-            return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * xformScalingFactorX,
-                    (pageSize.getLowerLeftY() + pageSize.getHeight()) * xformScalingFactorY - minY - height,
-                    width, height);
+            Rectangle2D r =
+                    new Rectangle2D.Double(
+                            minX - pageSize.getLowerLeftX() * xformScalingFactorX,
+                            (pageSize.getLowerLeftY() + pageSize.getHeight()) * xformScalingFactorY - minY - height,
+                            width,
+                            height);
+            // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
+            //TODO
+            // 1. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask;
+            //    also remove use of AffineTransform here
+            // 2. Is it possible to create the softmask and transparency group in the correct rotation?
+            //    (needs rendering identity testing before committing!)
+            AffineTransform adjustedTransform = new AffineTransform(xform);
+            adjustedTransform.scale(1.0 / xformScalingFactorX, 1.0 / xformScalingFactorY);
+            r.setRect(adjustedTransform.createTransformedShape(r).getBounds2D());
+            return r;
         }
     }
 
