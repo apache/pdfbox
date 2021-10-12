@@ -132,6 +132,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // the graphics device to draw to, xform is the initial transform of the device (i.e. DPI)
     private Graphics2D graphics;
     private AffineTransform xform;
+    private float xformScalingFactorX;
+    private float xformScalingFactorY;
 
     // the page box to draw (usually the crop box but may be another)
     private PDRectangle pageSize;
@@ -263,6 +265,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         graphics = (Graphics2D) g;
         xform = graphics.getTransform();
+        Matrix m = new Matrix(xform);
+        xformScalingFactorX = Math.abs(m.getScalingFactorX());
+        xformScalingFactorY = Math.abs(m.getScalingFactorY());
         initialClip = graphics.getClip();
         this.pageSize = pageSize;
 
@@ -704,12 +709,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     //    (needs rendering identity testing before committing!)
     private void adjustRectangle(Rectangle2D r)
     {
-        Matrix m = new Matrix(xform);
-        float scaleX = Math.abs(m.getScalingFactorX());
-        float scaleY = Math.abs(m.getScalingFactorY());
-
         AffineTransform adjustedTransform = new AffineTransform(xform);
-        adjustedTransform.scale(1.0 / scaleX, 1.0 / scaleY);
+        adjustedTransform.scale(1.0 / xformScalingFactorX, 1.0 / xformScalingFactorY);
         r.setRect(adjustedTransform.createTransformedShape(r).getBounds2D());
     }
 
@@ -717,8 +718,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private BufferedImage adjustImage(BufferedImage gray)
     {
         AffineTransform at = new AffineTransform(xform);
-        Matrix m = new Matrix(at);
-        at.scale(1.0 / Math.abs(m.getScalingFactorX()), 1.0 / Math.abs(m.getScalingFactorY()));
+        at.scale(1.0 / xformScalingFactorX, 1.0 / xformScalingFactorY);
 
         Rectangle originalBounds = new Rectangle(gray.getWidth(), gray.getHeight());
         Rectangle2D transformedBounds = at.createTransformedShape(originalBounds).getBounds2D();
@@ -837,7 +837,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         if (JAVA_VERSION < 10)
         {
-            float scalingFactorX = new Matrix(xform).getScalingFactorX();
             for (int i = 0; i < dashArray.length; ++i)
             {
                 // apply the CTM
@@ -845,7 +844,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 // minimum line dash width avoids JVM crash,
                 // see PDFBOX-2373, PDFBOX-2929, PDFBOX-3204, PDFBOX-3813
                 // also avoid 0 in array like "[ 0 1000 ] 0 d", see PDFBOX-3724
-                if (scalingFactorX < 0.5f)
+                if (xformScalingFactorX < 0.5f)
                 {
                     // PDFBOX-4492
                     dashArray[i] = Math.max(w, 0.2f);
@@ -1585,18 +1584,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         // both the DPI xform and the CTM were already applied to the group, so all we do
         // here is draw it directly onto the Graphics2D device at the appropriate position
-        PDRectangle bbox = group.getBBox();
         AffineTransform savedTransform = graphics.getTransform();
-
-        Matrix m = new Matrix(xform);
-        float xScale = Math.abs(m.getScalingFactorX());
-        float yScale = Math.abs(m.getScalingFactorY());
-        
         AffineTransform transform = new AffineTransform(xform);
-        transform.scale(1.0 / xScale, 1.0 / yScale);
+        transform.scale(1.0 / xformScalingFactorX, 1.0 / xformScalingFactorY);
         graphics.setTransform(transform);
 
         // adjust bbox (x,y) position at the initial scale + cropbox
+        PDRectangle bbox = group.getBBox();
         float x = bbox.getLowerLeftX() - pageSize.getLowerLeftX();
         float y = pageSize.getUpperRightY() - bbox.getUpperRightY();
 
@@ -1607,7 +1601,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            graphics.translate(x * xScale, y * yScale);
+            graphics.translate(x * xformScalingFactorX, y * xformScalingFactorY);
         }
 
         PDSoftMask softMask = getGraphicsState().getSoftMask();
@@ -1618,7 +1612,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
             graphics.fill(
-                    new Rectangle2D.Float(0, 0, bbox.getWidth() * xScale, bbox.getHeight() * yScale));
+                    new Rectangle2D.Float(0, 0, bbox.getWidth() * xformScalingFactorX, bbox.getHeight() * xformScalingFactorY));
         }
         else
         {
@@ -1650,8 +1644,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         private final int maxY;
         private final int width;
         private final int height;
-        private final float scaleX;
-        private final float scaleY;
 
         /**
          * Creates a buffered image for a transparency group result.
@@ -1682,9 +1674,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Area transformed = new Area(transformedBox);
             transformed.intersect(getGraphicsState().getCurrentClippingPath());
             Rectangle2D clipRect = transformed.getBounds2D();
-            Matrix m = new Matrix(xform);
-            scaleX = Math.abs(m.getScalingFactorX());
-            scaleY = Math.abs(m.getScalingFactorY());
             if (clipRect.isEmpty())
             {
                 image = null;
@@ -1701,7 +1690,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                         (float)clipRect.getWidth(), (float)clipRect.getHeight());
 
             // apply the underlying Graphics2D device's DPI transform
-            AffineTransform dpiTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
+            AffineTransform dpiTransform = AffineTransform.getScaleInstance(xformScalingFactorX, xformScalingFactorY);
             Rectangle2D bounds = dpiTransform.createTransformedShape(clipRect).getBounds2D();
 
             minX = (int) Math.floor(bounds.getMinX());
@@ -1782,12 +1771,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             g.transform(dpiTransform);
 
             AffineTransform xformOriginal = xform;
-            xform = AffineTransform.getScaleInstance(scaleX, scaleY);
+            xform = AffineTransform.getScaleInstance(xformScalingFactorX, xformScalingFactorY);
             PDRectangle pageSizeOriginal = pageSize;
-            pageSize = new PDRectangle(minX / scaleX, 
-                                       minY / scaleY,
-                        (float) bounds.getWidth() / scaleX,
-                        (float) bounds.getHeight() / scaleY);
+            pageSize = new PDRectangle(minX / xformScalingFactorX,
+                                       minY / xformScalingFactorY,
+                                       (float) (bounds.getWidth() / xformScalingFactorX),
+                                       (float) (bounds.getHeight() / xformScalingFactorY));
             int clipWindingRuleOriginal = clipWindingRule;
             clipWindingRule = -1;
             GeneralPath linePathOriginal = linePath;
@@ -1890,13 +1879,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         public Rectangle2D getBounds()
         {
-            Point2D size = new Point2D.Double(pageSize.getWidth(), pageSize.getHeight());
             // apply the underlying Graphics2D device's DPI transform and y-axis flip
-            AffineTransform dpiTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
-            size = dpiTransform.transform(size, size);
-            // Flip y
-            return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * scaleX,
-                    size.getY() - minY - height + pageSize.getLowerLeftY() * scaleY,
+            return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * xformScalingFactorX,
+                    (pageSize.getLowerLeftY() + pageSize.getHeight()) * xformScalingFactorY - minY - height,
                     width, height);
         }
     }
