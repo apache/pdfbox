@@ -1804,8 +1804,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             //    (needs rendering identity testing before committing!)
             AffineTransform adjustedTransform = new AffineTransform(xform);
             adjustedTransform.scale(1.0 / xformScalingFactorX, 1.0 / xformScalingFactorY);
-            r.setRect(adjustedTransform.createTransformedShape(r).getBounds2D());
-            return r;
+            return adjustedTransform.createTransformedShape(r).getBounds2D();
         }
     }
 
