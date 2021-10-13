@@ -34,7 +34,6 @@ import java.util.List;
  *
  * <p>This work was originally authored by Glenn Adams (gadams@apache.org).</p>
  */
-@SuppressWarnings("unchecked") 
 public class GlyphSequence implements Cloneable {
 
     /** default character buffer capacity in case new character buffer is created */
@@ -45,7 +44,7 @@ public class GlyphSequence implements Cloneable {
     /** glyph buffer */
     private IntBuffer glyphs;
     /** association list */
-    private List associations;
+    private List<CharAssociation> associations;
     /** predications flag */
     private boolean predications;
 
@@ -60,7 +59,7 @@ public class GlyphSequence implements Cloneable {
      * @param associations a (possibly null) array of glyph to character associations
      * @param predications true if predications are enabled
      */
-    public GlyphSequence(IntBuffer characters, IntBuffer glyphs, List associations, boolean predications) {
+    public GlyphSequence(IntBuffer characters, IntBuffer glyphs, List<CharAssociation> associations, boolean predications) {
         if (characters == null) {
             characters = IntBuffer.allocate(DEFAULT_CHARS_CAPACITY);
         }
@@ -86,7 +85,7 @@ public class GlyphSequence implements Cloneable {
      * @param glyphs a (possibly null) buffer of glyphs
      * @param associations a (possibly null) array of glyph to character associations
      */
-    public GlyphSequence(IntBuffer characters, IntBuffer glyphs, List associations) {
+    public GlyphSequence(IntBuffer characters, IntBuffer glyphs, List<CharAssociation> associations) {
         this (characters, glyphs, associations, false);
     }
 
@@ -256,7 +255,7 @@ public class GlyphSequence implements Cloneable {
      * Obtain reference to underlying associations list.
      * @return associations list
      */
-    public List getAssociations() {
+    public List<CharAssociation> getAssociations() {
         return associations;
     }
 
@@ -446,7 +445,7 @@ public class GlyphSequence implements Cloneable {
      * @param laa lookahead association array
      * @return new list containing concatenated associations
      */
-    public static List concatAssociations(CharAssociation[] baa, CharAssociation[] iaa, CharAssociation[] laa) {
+    public static List<CharAssociation> concatAssociations(CharAssociation[] baa, CharAssociation[] iaa, CharAssociation[] laa) {
         int na = 0;
         if (baa != null) {
             na += baa.length;
@@ -458,7 +457,7 @@ public class GlyphSequence implements Cloneable {
             na += laa.length;
         }
         if (na > 0) {
-            List gl = new ArrayList(na);
+            List<CharAssociation> gl = new ArrayList<>(na);
             if (baa != null) {
                 for (int i = 0; i < baa.length; i++) {
                     gl.add(baa[i]);
@@ -495,7 +494,7 @@ public class GlyphSequence implements Cloneable {
             IntBuffer ga = s.getGlyphs();
             assert ga != null;
             int ng = ga.limit();
-            List al = s.getAssociations();
+            List<CharAssociation> al = s.getAssociations();
             assert al != null;
             int na = al.size();
             assert na == ng;
@@ -503,7 +502,7 @@ public class GlyphSequence implements Cloneable {
             ta += na;
         }
         IntBuffer uga = IntBuffer.allocate(tg);
-        ArrayList ual = new ArrayList(ta);
+        ArrayList<CharAssociation> ual = new ArrayList<>(ta);
         for (int i = 0, n = sa.length; i < n; i++) {
             GlyphSequence s = sa [ i ];
             uga.put(s.getGlyphs());
@@ -581,10 +580,10 @@ public class GlyphSequence implements Cloneable {
         }
     }
 
-    private static List makeIdentityAssociations(int numChars, int numGlyphs) {
+    private static List<CharAssociation> makeIdentityAssociations(int numChars, int numGlyphs) {
         int nc = numChars;
         int ng = numGlyphs;
-        List av = new ArrayList(ng);
+        List<CharAssociation> av = new ArrayList<>(ng);
         for (int i = 0, n = ng; i < n; i++) {
             int k = (i > nc) ? nc : i;
             av.add(new CharAssociation(i, (k == nc) ? 0 : 1));
@@ -604,9 +603,9 @@ public class GlyphSequence implements Cloneable {
         }
     }
 
-    private static List copyAssociations(List ca) {
+    private static List<CharAssociation> copyAssociations(List<CharAssociation> ca) {
         if (ca != null) {
-            return new ArrayList(ca);
+            return new ArrayList<>(ca);
         } else {
             return ca;
         }

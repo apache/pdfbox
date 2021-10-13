@@ -18,10 +18,11 @@
 package org.apache.fontbox.ttf.advanced;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,13 +30,16 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFDataStream;
 import org.apache.fontbox.ttf.TTFTable;
+import org.apache.fontbox.ttf.advanced.AdvancedTypographicTable.LookupSpec;
+import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.*;
+
+import static org.apache.fontbox.ttf.advanced.util.AdvancedChecker.*;
 
 /**
  * <p>OpenType Font (OTF) advanced typographic table reader.</p>
  *
  * @author Glenn Adams
  */
-@SuppressWarnings("unchecked") 
 public final class AdvancedTypographicTableReader {
 
     // logging state
@@ -45,12 +49,67 @@ public final class AdvancedTypographicTableReader {
     private TTFTable table;                                     // table being constructed
     private TTFDataStream data;                                 // data stream
     // transient parsing state
-    private transient Map/*<String,Object[3]>*/ seScripts;      // script-tag         => Object[3] : { default-language-tag, List(language-tag), seLanguages }
-    private transient Map/*<String,Object[2]>*/ seLanguages;    // language-tag       => Object[2] : { "f<required-feature-index>", List("f<feature-index>")
-    private transient Map/*<String,List<String>>*/ seFeatures;  // "f<feature-index>" => Object[2] : { feature-tag, List("lu<lookup-index>") }
+    private transient Map<String, SubtableEntryScript> seScripts;          // script-tag         => Object[3] : { default-language-tag, List(language-tag), seLanguages }
+    private transient Map<String, SubtableEntryLanguage> seLanguages;        // language-tag       => Object[2] : { "f<required-feature-index>", List("f<feature-index>")
+    private transient Map<String, SubtableEntryFeature> seFeatures;         // "f<feature-index>" => Object[2] : { feature-tag, List("lu<lookup-index>") }
     private transient GlyphMappingTable seMapping;              // subtable entry mappings
-    private transient List seEntries;                           // subtable entry entries
-    private transient List seSubtables;                         // subtable entry subtables
+    private transient List<SubtableEntry> seEntries;                           // subtable entry entries
+    private transient List<SubtableState> seSubtables;                         // subtable entry subtables
+
+    private static class SubtableEntryScript {
+        final String defaultLanguageTag;
+        final List<String> languageTags;
+        final Map<String, SubtableEntryLanguage> languages;
+
+        SubtableEntryScript(String defaultLanguageTag, List<String> languageTags, Map<String, SubtableEntryLanguage> languages) {
+            this.defaultLanguageTag = defaultLanguageTag;
+            this.languageTags = languageTags;
+            this.languages = languages;
+        }
+    }
+
+    private static class SubtableEntryLanguage {
+        final String requiredFeatureId;
+        final List<String> featureIds;
+        
+        SubtableEntryLanguage(String rfi, List<String> fl) {
+            this.requiredFeatureId = rfi;
+            this.featureIds = fl;
+        }
+    }
+
+    private static class SubtableEntryFeature {
+        final String featureTag;
+        final List<String> lookupIndexes;
+
+        SubtableEntryFeature(String featureTag, List<String> lookupIndexes) {
+            this.featureTag = featureTag;
+            this.lookupIndexes = lookupIndexes;
+        }
+    }
+
+    private static class SubtableState {
+        final int tableType;
+        final int lookupType;
+        final int lookupFlags;
+        final int lookupSequence;
+        final int subtableSequence;
+        final int subtableFormat;
+        final List<SubtableEntry> entries;
+        final GlyphMappingTable map;
+
+        SubtableState(
+            int tableType, int lookupType, int lookupFlags, int lookupSequence, int subtableSequence, int subtableFormat, GlyphMappingTable map, List<SubtableEntry> entries) {
+            this.tableType = tableType;
+            this.lookupType = lookupType;
+            this.lookupFlags = lookupFlags;
+            this.lookupSequence = lookupSequence;
+            this.subtableSequence = subtableSequence;
+            this.subtableFormat = subtableFormat;
+            this.entries = entries;
+            this.map = map;
+        }
+    }
 
     /**
      * Construct an <code>AdvancedTypographicTableReader</code> instance.
@@ -116,7 +175,7 @@ public final class AdvancedTypographicTableReader {
         }
         // read (non-required) feature indices
         int[] fia = new int[nf];
-        List fl = new java.util.ArrayList();
+        List<String> fl = new java.util.ArrayList<>();
         for (int i = 0; i < nf; i++) {
             int fi = data.readUnsignedShort();
             if (log.isDebugEnabled()) {
@@ -126,12 +185,12 @@ public final class AdvancedTypographicTableReader {
             fl.add("f" + fi);
         }
         if (seLanguages == null) {
-            seLanguages = new java.util.LinkedHashMap();
+            seLanguages = new java.util.LinkedHashMap<>();
         }
-        seLanguages.put(langSysTag, new Object[] { rfi, fl });
+        seLanguages.put(langSysTag, new SubtableEntryLanguage(rfi, fl));
     }
 
-    private static String defaultTag = "dflt";
+    private static final String defaultTag = "dflt";
 
     private void readScriptTable(String tableTag, long scriptTable, String scriptTag) throws IOException {
         data.seek(scriptTable);
@@ -149,7 +208,7 @@ public final class AdvancedTypographicTableReader {
         }
         // read language system record count
         int nl = data.readUnsignedShort();
-        List ll = new java.util.ArrayList();
+        List<String> ll = new java.util.ArrayList<>();
         if (nl > 0) {
             String[] lta = new String[nl];
             int[] loa = new int[nl];
@@ -182,7 +241,7 @@ public final class AdvancedTypographicTableReader {
                 log.debug(tableTag + " lang sys default: " + dt);
             }
         }
-        seScripts.put(scriptTag, new Object[] { dt, ll, seLanguages });
+        seScripts.put(scriptTag, new SubtableEntryScript(dt, ll, seLanguages));
         seLanguages = null;
     }
 
@@ -231,7 +290,7 @@ public final class AdvancedTypographicTableReader {
         }
         // read lookup table indices
         int[] lia = new int[nl];
-        List lul = new java.util.ArrayList();
+        List<String> lul = new java.util.ArrayList<>();
         for (int i = 0; i < nl; i++) {
             int li = data.readUnsignedShort();
             if (log.isDebugEnabled()) {
@@ -240,7 +299,8 @@ public final class AdvancedTypographicTableReader {
             lia[i] = li;
             lul.add("lu" + li);
         }
-        seFeatures.put("f" + featureIndex, new Object[] { featureTag, lul });
+
+        seFeatures.put("f" + featureIndex, new SubtableEntryFeature(featureTag, lul));
     }
 
     private void readFeatureList(String tableTag, long featureList) throws IOException {
@@ -464,7 +524,7 @@ public final class AdvancedTypographicTableReader {
         private LookupFlag() {
         }
         public static String toString(int flags) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             boolean first = true;
             if ((flags & RIGHT_TO_LEFT) != 0) {
                 if (first) {
@@ -514,7 +574,7 @@ public final class AdvancedTypographicTableReader {
     }
 
     private GlyphCoverageTable readCoverageTableFormat1(String label, long tableOffset, int coverageFormat) throws IOException {
-        List entries = new java.util.ArrayList();
+        List<SubtableEntry> entries = new ArrayList<>();
         data.seek(tableOffset);
         // skip over format (already known)
         data.skip(2);
@@ -524,7 +584,7 @@ public final class AdvancedTypographicTableReader {
         for (int i = 0, n = ng; i < n; i++) {
             int g = data.readUnsignedShort();
             ga[i] = g;
-            entries.add(Integer.valueOf(g));
+            entries.add(SEInteger.valueOf(g));
         }
         // dump info if debugging
         if (log.isDebugEnabled()) {
@@ -534,7 +594,7 @@ public final class AdvancedTypographicTableReader {
     }
 
     private GlyphCoverageTable readCoverageTableFormat2(String label, long tableOffset, int coverageFormat) throws IOException {
-        List entries = new java.util.ArrayList();
+        List<SubtableEntry> entries = new ArrayList<>();
         data.seek(tableOffset);
         // skip over format (already known)
         data.skip(2);
@@ -551,7 +611,7 @@ public final class AdvancedTypographicTableReader {
             if (log.isDebugEnabled()) {
                 log.debug(label + " range[" + i + "]: [" + s + "," + e + "]: " + m);
             }
-            entries.add(new GlyphCoverageTable.MappingRange(s, e, m));
+            entries.add(new SEMappingRange(new GlyphCoverageTable.MappingRange(s, e, m)));
         }
         return GlyphCoverageTable.createCoverageTable(entries);
     }
@@ -574,13 +634,13 @@ public final class AdvancedTypographicTableReader {
     }
 
     private GlyphClassTable readClassDefTableFormat1(String label, long tableOffset, int classFormat) throws IOException {
-        List entries = new java.util.ArrayList();
+        List<SubtableEntry> entries = new ArrayList<>();
         data.seek(tableOffset);
         // skip over format (already known)
         data.skip(2);
         // read start glyph
         int sg = data.readUnsignedShort();
-        entries.add(Integer.valueOf(sg));
+        entries.add(SEInteger.valueOf(sg));
         // read glyph count
         int ng = data.readUnsignedShort();
         // read glyph classes
@@ -588,7 +648,7 @@ public final class AdvancedTypographicTableReader {
         for (int i = 0, n = ng; i < n; i++) {
             int gc = data.readUnsignedShort();
             ca[i] = gc;
-            entries.add(Integer.valueOf(gc));
+            entries.add(SEInteger.valueOf(gc));
         }
         // dump info if debugging
         if (log.isDebugEnabled()) {
@@ -598,7 +658,7 @@ public final class AdvancedTypographicTableReader {
     }
 
     private GlyphClassTable readClassDefTableFormat2(String label, long tableOffset, int classFormat) throws IOException {
-        List entries = new java.util.ArrayList();
+        List<SubtableEntry> entries = new ArrayList<>();
         data.seek(tableOffset);
         // skip over format (already known)
         data.skip(2);
@@ -615,7 +675,7 @@ public final class AdvancedTypographicTableReader {
             if (log.isDebugEnabled()) {
                 log.debug(label + " range[" + i + "]: [" + s + "," + e + "]: " + m);
             }
-            entries.add(new GlyphClassTable.MappingRange(s, e, m));
+            entries.add(new SEMappingRange(new GlyphClassTable.MappingRange(s, e, m)));
         }
         return GlyphClassTable.createClassTable(entries);
     }
@@ -654,7 +714,7 @@ public final class AdvancedTypographicTableReader {
         }
         // read coverage table
         seMapping = readCoverageTable(tableTag + " single substitution coverage", subtableOffset + co);
-        seEntries.add(Integer.valueOf(dg));
+        seEntries.add(SEInteger.valueOf(dg));
     }
 
     private void readSingleSubTableFormat2(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -682,7 +742,7 @@ public final class AdvancedTypographicTableReader {
                 log.debug(tableTag + " single substitution glyph[" + i + "]: " + gs);
             }
             gsa[i] = gs;
-            seEntries.add(Integer.valueOf(gs));
+            seEntries.add(SEInteger.valueOf(gs));
         }
     }
 
@@ -743,7 +803,7 @@ public final class AdvancedTypographicTableReader {
             }
             gsa [ i ] = ga;
         }
-        seEntries.add(gsa);
+        seEntries.add(new SESequenceList(gsa));
     }
 
     private int readMultipleSubTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -794,7 +854,7 @@ public final class AdvancedTypographicTableReader {
             if (log.isDebugEnabled()) {
                 log.debug(tableTag + " alternate substitution alternate set[" + i + "]: " + toString(ga));
             }
-            seEntries.add(ga);
+            seEntries.add(new SEIntList(ga));
         }
     }
 
@@ -842,7 +902,7 @@ public final class AdvancedTypographicTableReader {
             for (int j = 0; j < nl; j++) {
                 loa[j] = data.readUnsignedShort();
             }
-            List ligs = new java.util.ArrayList();
+            List<GlyphSubstitutionTable.Ligature> ligs = new java.util.ArrayList<>();
             for (int j = 0; j < nl; j++) {
                 int lo = loa[j];
                 data.seek(subtableOffset + so + lo);
@@ -860,7 +920,7 @@ public final class AdvancedTypographicTableReader {
                 }
                 ligs.add(new GlyphSubstitutionTable.Ligature(lg, ca));
             }
-            seEntries.add(new GlyphSubstitutionTable.LigatureSet(ligs));
+            seEntries.add(new SELigatureSet(new GlyphSubstitutionTable.LigatureSet(ligs)));
         }
     }
 
@@ -972,7 +1032,7 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(rsa);
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private void readContextualSubTableFormat2(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -1067,9 +1127,9 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(cdt);
-        seEntries.add(Integer.valueOf(ngc));
-        seEntries.add(rsa);
+        seEntries.add(new SEGlyphClassTable(cdt));
+        seEntries.add(SEInteger.valueOf(ngc));
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private void readContextualSubTableFormat3(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -1120,7 +1180,7 @@ public final class AdvancedTypographicTableReader {
         // store results
         assert (gca != null) && (gca.length > 0);
         seMapping = gca[0];
-        seEntries.add(rsa);
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private int readContextualSubTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -1235,7 +1295,7 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(rsa);
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private void readChainedContextualSubTableFormat2(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -1361,11 +1421,11 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(icdt);
-        seEntries.add(bcdt);
-        seEntries.add(lcdt);
-        seEntries.add(Integer.valueOf(ngc));
-        seEntries.add(rsa);
+        seEntries.add(new SEGlyphClassTable(icdt));
+        seEntries.add(new SEGlyphClassTable(bcdt));
+        seEntries.add(new SEGlyphClassTable(lcdt));
+        seEntries.add(SEInteger.valueOf(ngc));
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private void readChainedContextualSubTableFormat3(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -1462,7 +1522,7 @@ public final class AdvancedTypographicTableReader {
         // store results
         assert (igca != null) && (igca.length > 0);
         seMapping = igca[0];
-        seEntries.add(rsa);
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private int readChainedContextualSubTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -1582,9 +1642,9 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(bgca);
-        seEntries.add(lgca);
-        seEntries.add(glyphs);
+        seEntries.add(new SEGlyphCoverageTableList(bgca));
+        seEntries.add(new SEGlyphCoverageTableList(lgca));
+        seEntries.add(new SEIntList(glyphs));
     }
 
     private int readReverseChainedSingleSubTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -1781,7 +1841,7 @@ public final class AdvancedTypographicTableReader {
         GlyphCoverageTable ct = readCoverageTable(tableTag + " single positioning coverage", subtableOffset + co);
         // store results
         seMapping = ct;
-        seEntries.add(v);
+        seEntries.add(new SEValue(v));
     }
 
     private void readSinglePosTableFormat2(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -1814,7 +1874,7 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(pva);
+        seEntries.add(new SEValueList(pva));
     }
 
     private int readSinglePosTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -1912,7 +1972,7 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(pvm);
+        seEntries.add(new SEPairValueMatrix(pvm));
     }
 
     private void readPairPosTableFormat2(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -1964,11 +2024,11 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(cdt1);
-        seEntries.add(cdt2);
-        seEntries.add(Integer.valueOf(nc1));
-        seEntries.add(Integer.valueOf(nc2));
-        seEntries.add(pvm);
+        seEntries.add(new SEGlyphClassTable(cdt1));
+        seEntries.add(new SEGlyphClassTable(cdt2));
+        seEntries.add(SEInteger.valueOf(nc1));
+        seEntries.add(SEInteger.valueOf(nc2));
+        seEntries.add(new SEPairValueMatrix(pvm));
     }
 
     private int readPairPosTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -2087,7 +2147,7 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(aa);
+        seEntries.add(new SEAnchorList(aa));
     }
 
     private int readCursivePosTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -2191,10 +2251,10 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = mct;
-        seEntries.add(bct);
-        seEntries.add(Integer.valueOf(nmc));
-        seEntries.add(maa);
-        seEntries.add(bam);
+        seEntries.add(new SEGlyphCoverageTable(bct));
+        seEntries.add(SEInteger.valueOf(nmc));
+        seEntries.add(new SEMarkAnchorList(maa));
+        seEntries.add(new SEAnchorMatrix(bam));
     }
 
     private int readMarkToBasePosTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -2325,11 +2385,11 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = mct;
-        seEntries.add(lct);
-        seEntries.add(Integer.valueOf(nmc));
-        seEntries.add(Integer.valueOf(mxc));
-        seEntries.add(maa);
-        seEntries.add(lam);
+        seEntries.add(new SEGlyphCoverageTable(lct));
+        seEntries.add(SEInteger.valueOf(nmc));
+        seEntries.add(SEInteger.valueOf(mxc));
+        seEntries.add(new SEMarkAnchorList(maa));
+        seEntries.add(new SEAnchorMultiMatrix(lam));
     }
 
     private int readMarkToLigaturePosTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -2432,10 +2492,10 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = mct1;
-        seEntries.add(mct2);
-        seEntries.add(Integer.valueOf(nmc));
-        seEntries.add(maa);
-        seEntries.add(mam);
+        seEntries.add(new SEGlyphCoverageTable(mct2));
+        seEntries.add(SEInteger.valueOf(nmc));
+        seEntries.add(new SEMarkAnchorList(maa));
+        seEntries.add(new SEAnchorMatrix(mam));
     }
 
     private int readMarkToMarkPosTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -2532,7 +2592,7 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(rsa);
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private void readContextualPosTableFormat2(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -2626,9 +2686,9 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(cdt);
-        seEntries.add(Integer.valueOf(ngc));
-        seEntries.add(rsa);
+        seEntries.add(new SEGlyphClassTable(cdt));
+        seEntries.add(SEInteger.valueOf(ngc));
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private void readContextualPosTableFormat3(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -2679,7 +2739,7 @@ public final class AdvancedTypographicTableReader {
         // store results
         assert (gca != null) && (gca.length > 0);
         seMapping = gca[0];
-        seEntries.add(rsa);
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private int readContextualPosTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -2794,7 +2854,7 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(rsa);
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private void readChainedContextualPosTableFormat2(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -2920,11 +2980,11 @@ public final class AdvancedTypographicTableReader {
         }
         // store results
         seMapping = ct;
-        seEntries.add(icdt);
-        seEntries.add(bcdt);
-        seEntries.add(lcdt);
-        seEntries.add(Integer.valueOf(ngc));
-        seEntries.add(rsa);
+        seEntries.add(new SEGlyphClassTable(icdt));
+        seEntries.add(new SEGlyphClassTable(bcdt));
+        seEntries.add(new SEGlyphClassTable(lcdt));
+        seEntries.add(SEInteger.valueOf(ngc));
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private void readChainedContextualPosTableFormat3(int lookupType, int lookupFlags, long subtableOffset, int subtableFormat) throws IOException {
@@ -3021,7 +3081,7 @@ public final class AdvancedTypographicTableReader {
         // store results
         assert (igca != null) && (igca.length > 0);
         seMapping = igca[0];
-        seEntries.add(rsa);
+        seEntries.add(new SERuleSetList(rsa));
     }
 
     private int readChainedContextualPosTable(int lookupType, int lookupFlags, long subtableOffset) throws IOException {
@@ -3307,7 +3367,8 @@ public final class AdvancedTypographicTableReader {
             msca[i] = readCoverageTable(tableTag + " mark set coverage[" + i + "]", subtableOffset + mso[i]);
         }
         // create combined class table from per-class coverage tables
-        GlyphClassTable ct = GlyphClassTable.createClassTable(Arrays.asList(msca));
+        List<SubtableEntry> coverageTableList = arrayMap(msca, table -> new SEGlyphCoverageTable(table));
+        GlyphClassTable ct = GlyphClassTable.createClassTable(coverageTableList);
         // store results
         seMapping = ct;
         // extract subtable
@@ -3446,7 +3507,7 @@ public final class AdvancedTypographicTableReader {
      * @returns glyph definition table or null if insufficient or invalid state
      */
     private void initializeGDEF() {
-        List subtables;
+        List<GlyphSubtable> subtables;
         if ((subtables = constructGDEFSubtables()) != null) {
             if (subtables.size() > 0) {
                 if (table instanceof GlyphDefinitionTable)
@@ -3462,9 +3523,9 @@ public final class AdvancedTypographicTableReader {
      * @returns glyph substitution table or null if insufficient or invalid state
      */
     private void initializeGSUB() throws IOException {
-        Map lookups;
+        Map<LookupSpec, List<String>> lookups;
         if ((lookups = constructLookups()) != null) {
-            List subtables;
+            List<GlyphSubtable> subtables;
             if ((subtables = constructGSUBSubtables()) != null) {
                 if ((lookups.size() > 0) && (subtables.size() > 0)) {
                     if (table instanceof GlyphSubstitutionTable)
@@ -3481,9 +3542,9 @@ public final class AdvancedTypographicTableReader {
      * @returns glyph positioning table or null if insufficient or invalid state
      */
     private void initializeGPOS() throws IOException {
-        Map lookups;
+        Map<LookupSpec, List<String>> lookups;
         if ((lookups = constructLookups()) != null) {
-            List subtables;
+            List<GlyphSubtable> subtables;
             if ((subtables = constructGPOSSubtables()) != null) {
                 if ((lookups.size() > 0) && (subtables.size() > 0)) {
                     if (table instanceof GlyphPositioningTable)
@@ -3494,12 +3555,11 @@ public final class AdvancedTypographicTableReader {
         resetATState();
     }
 
-    private void constructLookupsFeature(Map lookups, String st, String lt, String fid) {
-        Object[] fp = (Object[]) seFeatures.get(fid);
+    private void constructLookupsFeature(Map<LookupSpec, List<String>> lookups, String st, String lt, String fid) {
+        SubtableEntryFeature fp = seFeatures.get(fid);
         if (fp != null) {
-            assert fp.length == 2;
-            String ft = (String) fp[0];                 // feature tag
-            List/*<String>*/ lul = (List) fp[1];        // list of lookup table ids
+            String ft = fp.featureTag;                 // feature tag
+            List<String> lul = fp.lookupIndexes;       // list of lookup table ids
             if ((ft != null) && (lul != null) && (lul.size() > 0)) {
                 AdvancedTypographicTable.LookupSpec ls = new AdvancedTypographicTable.LookupSpec(st, lt, ft);
                 lookups.put(ls, lul);
@@ -3507,57 +3567,47 @@ public final class AdvancedTypographicTableReader {
         }
     }
 
-    private void constructLookupsFeatures(Map lookups, String st, String lt, List/*<String>*/ fids) {
-        for (Iterator fit = fids.iterator(); fit.hasNext();) {
-            String fid = (String) fit.next();
-            constructLookupsFeature(lookups, st, lt, fid);
-        }
+    private void constructLookupsFeatures(Map<LookupSpec, List<String>> lookups, String st, String lt, List<String> fids) {
+        fids.forEach(fid -> constructLookupsFeature(lookups, st, lt, fid));
     }
 
-    private void constructLookupsLanguage(Map lookups, String st, String lt, Map/*<String,Object[2]>*/ languages) {
-        Object[] lp = (Object[]) languages.get(lt);
+    private void constructLookupsLanguage(Map<LookupSpec, List<String>> lookups, String st, String lt, Map<String, SubtableEntryLanguage> languages) {
+        SubtableEntryLanguage lp = languages.get(lt);
         if (lp != null) {
-            assert lp.length == 2;
-            if (lp[0] != null) {                      // required feature id
-                constructLookupsFeature(lookups, st, lt, (String) lp[0]);
+            if (lp.requiredFeatureId != null) {                      // required feature id
+                constructLookupsFeature(lookups, st, lt, lp.requiredFeatureId);
             }
-            if (lp[1] != null) {                      // non-required features ids
-                constructLookupsFeatures(lookups, st, lt, (List) lp[1]);
+            if (lp.featureIds != null) {                      // non-required features ids
+                constructLookupsFeatures(lookups, st, lt, lp.featureIds);
             }
         }
     }
 
-    private void constructLookupsLanguages(Map lookups, String st, List/*<String>*/ ll, Map/*<String,Object[2]>*/ languages) {
-        for (Iterator lit = ll.iterator(); lit.hasNext();) {
-            String lt = (String) lit.next();
-            constructLookupsLanguage(lookups, st, lt, languages);
-        }
+    private void constructLookupsLanguages(Map<LookupSpec, List<String>> lookups, String st, List<String> ll, Map<String, SubtableEntryLanguage> languages) {
+        ll.forEach(lt -> constructLookupsLanguage(lookups, st, lt, languages));
     }
 
-    private Map constructLookups() {
-        Map/*<AdvancedTypographicTable.LookupSpec,List<String>>*/ lookups = new java.util.LinkedHashMap();
-        for (Iterator sit = seScripts.keySet().iterator(); sit.hasNext();) {
-            String st = (String) sit.next();
-            Object[] sp = (Object[]) seScripts.get(st);
+    private Map<LookupSpec, List<String>> constructLookups() {
+        Map<AdvancedTypographicTable.LookupSpec, List<String>> lookups = new java.util.LinkedHashMap<>();
+        for (Map.Entry<String, SubtableEntryScript> entry : seScripts.entrySet()) {
+            String st = entry.getKey();
+            SubtableEntryScript sp = entry.getValue();
             if (sp != null) {
-                assert sp.length == 3;
-                Map/*<String,Object[2]>*/ languages = (Map) sp[2];
-                if (sp[0] != null) {                  // default language
-                    constructLookupsLanguage(lookups, st, (String) sp[0], languages);
+                if (sp.defaultLanguageTag != null) {                  // default language
+                    constructLookupsLanguage(lookups, st, sp.defaultLanguageTag, sp.languages);
                 }
-                if (sp[1] != null) {                  // non-default languages
-                    constructLookupsLanguages(lookups, st, (List) sp[1], languages);
+                if (sp.languageTags != null) {                  // non-default languages
+                    constructLookupsLanguages(lookups, st, sp.languageTags, sp.languages);
                 }
             }
         }
         return lookups;
     }
 
-    private List constructGDEFSubtables() {
-        List/*<GlyphDefinitionSubtable>*/ subtables = new java.util.ArrayList();
+    private List<GlyphSubtable> constructGDEFSubtables() {
+        List<GlyphSubtable> subtables = new java.util.ArrayList<>();
         if (seSubtables != null) {
-            for (Iterator it = seSubtables.iterator(); it.hasNext();) {
-                Object[] stp = (Object[]) it.next();
+            for (SubtableState stp : seSubtables) {
                 GlyphSubtable st;
                 if ((st = constructGDEFSubtable(stp)) != null) {
                     subtables.add(st);
@@ -3567,17 +3617,17 @@ public final class AdvancedTypographicTableReader {
         return subtables;
     }
 
-    private GlyphSubtable constructGDEFSubtable(Object[] stp) {
+    private GlyphSubtable constructGDEFSubtable(SubtableState stp) {
         GlyphSubtable st = null;
-        assert (stp != null) && (stp.length == 8);
-        Integer tt = (Integer) stp[0];          // table type
-        Integer lt = (Integer) stp[1];          // lookup type
-        Integer ln = (Integer) stp[2];          // lookup sequence number
-        Integer lf = (Integer) stp[3];          // lookup flags
-        Integer sn = (Integer) stp[4];          // subtable sequence number
-        Integer sf = (Integer) stp[5];          // subtable format
-        GlyphMappingTable mapping = (GlyphMappingTable) stp[6];
-        List entries = (List) stp[7];
+        assert (stp != null);
+        Integer tt = (Integer) stp.tableType;          // table type
+        Integer lt = (Integer) stp.lookupType;          // lookup type
+        Integer ln = (Integer) stp.lookupSequence;          // lookup sequence number
+        Integer lf = (Integer) stp.lookupFlags;          // lookup flags
+        Integer sn = (Integer) stp.subtableSequence;          // subtable sequence number
+        Integer sf = (Integer) stp.subtableFormat;          // subtable format
+        GlyphMappingTable mapping = (GlyphMappingTable) stp.map;
+        List<SubtableEntry> entries = stp.entries;
         if (tt.intValue() == AdvancedTypographicTable.GLYPH_TABLE_TYPE_DEFINITION) {
             int type = GDEFLookupType.getSubtableType(lt.intValue());
             String lid = "lu" + ln.intValue();
@@ -3589,11 +3639,10 @@ public final class AdvancedTypographicTableReader {
         return st;
     }
 
-    private List constructGSUBSubtables() {
-        List/*<GlyphSubtable>*/ subtables = new java.util.ArrayList();
+    private List<GlyphSubtable> constructGSUBSubtables() {
+        List<GlyphSubtable> subtables = new java.util.ArrayList<>();
         if (seSubtables != null) {
-            for (Iterator it = seSubtables.iterator(); it.hasNext();) {
-                Object[] stp = (Object[]) it.next();
+            for (SubtableState stp : seSubtables) {
                 GlyphSubtable st;
                 if ((st = constructGSUBSubtable(stp)) != null) {
                     subtables.add(st);
@@ -3603,17 +3652,17 @@ public final class AdvancedTypographicTableReader {
         return subtables;
     }
 
-    private GlyphSubtable constructGSUBSubtable(Object[] stp) {
+    private GlyphSubtable constructGSUBSubtable(SubtableState stp) {
         GlyphSubtable st = null;
-        assert (stp != null) && (stp.length == 8);
-        Integer tt = (Integer) stp[0];          // table type
-        Integer lt = (Integer) stp[1];          // lookup type
-        Integer ln = (Integer) stp[2];          // lookup sequence number
-        Integer lf = (Integer) stp[3];          // lookup flags
-        Integer sn = (Integer) stp[4];          // subtable sequence number
-        Integer sf = (Integer) stp[5];          // subtable format
-        GlyphCoverageTable coverage = (GlyphCoverageTable) stp[6];
-        List entries = (List) stp[7];
+        assert (stp != null);
+        Integer tt = (Integer) stp.tableType;          // table type
+        Integer lt = (Integer) stp.lookupType;          // lookup type
+        Integer ln = (Integer) stp.lookupSequence;          // lookup sequence number
+        Integer lf = (Integer) stp.lookupFlags;          // lookup flags
+        Integer sn = (Integer) stp.subtableSequence;          // subtable sequence number
+        Integer sf = (Integer) stp.subtableFormat;          // subtable format
+        GlyphCoverageTable coverage = (GlyphCoverageTable) stp.map;
+        List<SubtableEntry> entries = stp.entries;
         if (tt.intValue() == AdvancedTypographicTable.GLYPH_TABLE_TYPE_SUBSTITUTION) {
             int type = GSUBLookupType.getSubtableType(lt.intValue());
             String lid = "lu" + ln.intValue();
@@ -3625,11 +3674,10 @@ public final class AdvancedTypographicTableReader {
         return st;
     }
 
-    private List constructGPOSSubtables() {
-        List/*<GlyphSubtable>*/ subtables = new java.util.ArrayList();
+    private List<GlyphSubtable> constructGPOSSubtables() {
+        List<GlyphSubtable> subtables = new java.util.ArrayList<>();
         if (seSubtables != null) {
-            for (Iterator it = seSubtables.iterator(); it.hasNext();) {
-                Object[] stp = (Object[]) it.next();
+            for (SubtableState stp : seSubtables) {
                 GlyphSubtable st;
                 if ((st = constructGPOSSubtable(stp)) != null) {
                     subtables.add(st);
@@ -3639,33 +3687,33 @@ public final class AdvancedTypographicTableReader {
         return subtables;
     }
 
-    private GlyphSubtable constructGPOSSubtable(Object[] stp) {
+    private GlyphSubtable constructGPOSSubtable(SubtableState stp) {
         GlyphSubtable st = null;
-        assert (stp != null) && (stp.length == 8);
-        Integer tt = (Integer) stp[0];          // table type
-        Integer lt = (Integer) stp[1];          // lookup type
-        Integer ln = (Integer) stp[2];          // lookup sequence number
-        Integer lf = (Integer) stp[3];          // lookup flags
-        Integer sn = (Integer) stp[4];          // subtable sequence number
-        Integer sf = (Integer) stp[5];          // subtable format
-        GlyphCoverageTable coverage = (GlyphCoverageTable) stp[6];
-        List entries = (List) stp[7];
-        if (tt.intValue() == AdvancedTypographicTable.GLYPH_TABLE_TYPE_POSITIONING) {
-            int type = GSUBLookupType.getSubtableType(lt.intValue());
-            String lid = "lu" + ln.intValue();
-            int sequence = sn.intValue();
-            int flags = lf.intValue();
-            int format = sf.intValue();
+        assert (stp != null);
+        int tt = stp.tableType;               // table type
+        int lt = stp.lookupType;              // lookup type
+        int ln = stp.lookupSequence;          // lookup sequence number
+        int lf = stp.lookupFlags;             // lookup flags
+        int sn = stp.lookupSequence;          // subtable sequence number
+        int sf = stp.subtableFormat;          // subtable format
+        GlyphCoverageTable coverage = (GlyphCoverageTable) stp.map;
+        List<SubtableEntry> entries = stp.entries;
+        if (tt == AdvancedTypographicTable.GLYPH_TABLE_TYPE_POSITIONING) {
+            int type = GSUBLookupType.getSubtableType(lt);
+            String lid = "lu" + ln;
+            int sequence = sn;
+            int flags = lf;
+            int format = sf;
             st = GlyphPositioningTable.createSubtable(type, lid, sequence, flags, format, coverage, entries);
         }
         return st;
     }
 
     private void initATState() {
-        seScripts = new java.util.LinkedHashMap();
-        seLanguages = new java.util.LinkedHashMap();
-        seFeatures = new java.util.LinkedHashMap();
-        seSubtables = new java.util.ArrayList();
+        seScripts = new java.util.LinkedHashMap<>();
+        seLanguages = new java.util.LinkedHashMap<>();
+        seFeatures = new java.util.LinkedHashMap<>();
+        seSubtables = new java.util.ArrayList<>();
         resetATSubState();
     }
 
@@ -3679,7 +3727,7 @@ public final class AdvancedTypographicTableReader {
 
     private void initATSubState() {
         seMapping = null;
-        seEntries = new java.util.ArrayList();
+        seEntries = new java.util.ArrayList<>();
     }
 
     private void extractSESubState(int tableType, int lookupType, int lookupFlags, int lookupSequence, int subtableSequence, int subtableFormat) {
@@ -3692,7 +3740,7 @@ public final class AdvancedTypographicTableReader {
                     Integer lf = Integer.valueOf(lookupFlags);
                     Integer sn = Integer.valueOf(subtableSequence);
                     Integer sf = Integer.valueOf(subtableFormat);
-                    seSubtables.add(new Object[] { tt, lt, ln, lf, sn, sf, seMapping, seEntries });
+                    seSubtables.add(new SubtableState(tt, lt, lf, ln, sn, sf, seMapping, seEntries));
                 }
             }
         }
@@ -3709,21 +3757,14 @@ public final class AdvancedTypographicTableReader {
 
     /** helper method for formatting an integer array for output */
     private String toString(int[] ia) {
-        StringBuffer sb = new StringBuffer();
         if ((ia == null) || (ia.length == 0)) {
-            sb.append('-');
+            return "-";
         } else {
-            boolean first = true;
-            for (int i = 0; i < ia.length; i++) {
-                if (!first) {
-                    sb.append(' ');
-                } else {
-                    first = false;
-                }
-                sb.append(ia[i]);
-            }
+            return Arrays
+              .stream(ia)
+              .mapToObj(Integer::toString)
+              .collect(Collectors.joining(" "));
         }
-        return sb.toString();
     }
 
 }

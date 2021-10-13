@@ -43,26 +43,31 @@ public abstract class GlyphPositioningSubtable extends GlyphSubtable implements 
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getTableType() {
         return AdvancedTypographicTable.GLYPH_TABLE_TYPE_POSITIONING;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getTypeName() {
         return GlyphPositioningTable.getLookupTypeName(getType());
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(GlyphSubtable subtable) {
         return subtable instanceof GlyphPositioningSubtable;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean usesReverseScan() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean position(GlyphPositioningState ps) {
         return false;
     }

@@ -29,7 +29,6 @@ import java.util.Set;
  *
  * @author Glenn Adams
  */
-@SuppressWarnings("unchecked") 
 public final class CharScript {
 
     // CSOFF: LineLength
@@ -705,14 +704,14 @@ public final class CharScript {
      * @return a (possibly empty) array of script codes
      */
     public static int[] scriptsOf(CharSequence cs) {
-        Set s = new HashSet();
+        Set<Integer> s = new HashSet<>();
         for (int i = 0, n = cs.length(); i < n; i++) {
             s.add(Integer.valueOf(scriptOf(cs.charAt(i))));
         }
         int[] sa = new int [ s.size() ];
         int ns = 0;
-        for (Iterator it = s.iterator(); it.hasNext();) {
-            sa [ ns++ ] = ((Integer) it.next()) .intValue();
+        for (Iterator<Integer> it = s.iterator(); it.hasNext();) {
+            sa [ ns++ ] = it.next().intValue();
         }
         Arrays.sort(sa);
         return sa;
@@ -724,7 +723,7 @@ public final class CharScript {
      * @return the dominant script or SCRIPT_UNDETERMINED
      */
     public static int dominantScript(CharSequence cs) {
-        Map m = new HashMap();
+        Map<Integer, Integer> m = new HashMap<>();
         for (int i = 0, n = cs.length(); i < n; i++) {
             int c = cs.charAt(i);
             int s = scriptOf(c);
@@ -738,16 +737,16 @@ public final class CharScript {
         }
         int sMax = -1;
         int cMax = -1;
-        for (Iterator it = m.entrySet().iterator(); it.hasNext();) {
-            Map.Entry e = (Map.Entry) it.next();
-            Integer k = (Integer) e.getKey();
+        for (Iterator<Map.Entry<Integer, Integer>> it = m.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<Integer, Integer> e = it.next();
+            Integer k = e.getKey();
             int s = k.intValue();
             switch (s) {
             case SCRIPT_UNDETERMINED:
             case SCRIPT_UNCODED:
                 break;
             default:
-                Integer v = (Integer) e.getValue();
+                Integer v = e.getValue();
                 assert v != null;
                 int c = v.intValue();
                 if (c > cMax) {
@@ -849,7 +848,7 @@ public final class CharScript {
     private static Map<Integer, String> scriptTagsMap;
     private static Map<String, Integer> scriptCodeMap;
 
-    private static void putScriptTag(Map tm, Map cm, int code, String tag) {
+    private static void putScriptTag(Map<Integer, String> tm, Map<String, Integer> cm, int code, String tag) {
         assert tag != null;
         assert tag.length() != 0;
         assert code >= 0;

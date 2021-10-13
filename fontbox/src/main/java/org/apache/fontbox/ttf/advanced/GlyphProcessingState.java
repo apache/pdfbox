@@ -33,8 +33,6 @@ import org.apache.fontbox.ttf.advanced.util.ScriptContextTester;
  *
  * @author Glenn Adams
  */
-
-@SuppressWarnings("unchecked") 
 public class GlyphProcessingState {
 
     /** governing glyph definition table */
@@ -885,7 +883,7 @@ public class GlyphProcessingState {
         }
         int ng = nig + gsCount - count;
         IntBuffer gb = IntBuffer.allocate(ng);
-        List al = new ArrayList(ng);
+        List<CharAssociation> al = new ArrayList<>(ng);
         for (int i = 0, n = position; i < n; i++) {
             gb.put(igs.getGlyph(i));
             al.add(igs.getAssociation(i));

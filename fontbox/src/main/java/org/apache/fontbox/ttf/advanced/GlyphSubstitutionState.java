@@ -31,8 +31,6 @@ import org.apache.fontbox.ttf.advanced.util.ScriptContextTester;
  *
  * @author Glenn Adams
  */
-
-@SuppressWarnings("unchecked") 
 public class GlyphSubstitutionState extends GlyphProcessingState {
 
     /** alternates index */
@@ -40,7 +38,7 @@ public class GlyphSubstitutionState extends GlyphProcessingState {
     /** current output glyph sequence */
     private IntBuffer ogb;
     /** current output glyph to character associations */
-    private List oal;
+    private List<CharAssociation> oal;
     /** character association predications */
     private boolean predications;
 
@@ -61,7 +59,7 @@ public class GlyphSubstitutionState extends GlyphProcessingState {
     public GlyphSubstitutionState(GlyphSequence gs, String script, String language, String feature, ScriptContextTester sct) {
         super(gs, script, language, feature, sct);
         this.ogb = IntBuffer.allocate(gs.getGlyphCount());
-        this.oal = new ArrayList(gs.getGlyphCount());
+        this.oal = new ArrayList<>(gs.getGlyphCount());
         this.predications = gs.getPredications();
     }
 
@@ -73,7 +71,7 @@ public class GlyphSubstitutionState extends GlyphProcessingState {
     public GlyphSubstitutionState(GlyphSubstitutionState ss) {
         super(ss);
         this.ogb = IntBuffer.allocate(indexLast);
-        this.oal = new ArrayList(indexLast);
+        this.oal = new ArrayList<>(indexLast);
     }
 
     /**
@@ -88,7 +86,7 @@ public class GlyphSubstitutionState extends GlyphProcessingState {
         super.reset(gs, script, language, feature, sct);
         this.alternatesIndex = null;
         this.ogb = IntBuffer.allocate(gs.getGlyphCount());
-        this.oal = new ArrayList(gs.getGlyphCount());
+        this.oal = new ArrayList<>(gs.getGlyphCount());
         this.predications = gs.getPredications();
         return this;
     }

@@ -18,18 +18,22 @@
 package org.apache.fontbox.ttf.advanced;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.SEInteger;
+import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.SEMappingRange;
+import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.SubtableEntry;
+
+import static org.apache.fontbox.ttf.advanced.util.AdvancedChecker.*;
 
 /**
  * <p>.Base class implementation of glyph coverage table.</p>
  *
  * @author Glenn Adams
  */
-@SuppressWarnings("unchecked") 
 public final class GlyphCoverageTable extends GlyphMappingTable implements GlyphCoverageMapping {
 
     /* logging instance */
@@ -53,21 +57,25 @@ public final class GlyphCoverageTable extends GlyphMappingTable implements Glyph
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getType() {
         return ((GlyphMappingTable) cm) .getType();
     }
 
     /** {@inheritDoc} */
-    public List getEntries() {
+    @Override
+    public List<SubtableEntry> getEntries() {
         return ((GlyphMappingTable) cm) .getEntries();
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getCoverageSize() {
         return cm.getCoverageSize();
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getCoverageIndex(int gid) {
         return cm.getCoverageIndex(gid);
     }
@@ -77,7 +85,7 @@ public final class GlyphCoverageTable extends GlyphMappingTable implements Glyph
      * @param entries list of mapped or ranged coverage entries, or null or empty list
      * @return a new covera table instance
      */
-    public static GlyphCoverageTable createCoverageTable(List entries) {
+    public static GlyphCoverageTable createCoverageTable(List<SubtableEntry> entries) {
         GlyphCoverageMapping cm;
         if ((entries == null) || (entries.size() == 0)) {
             cm = new EmptyCoverageTable(entries);
@@ -92,43 +100,35 @@ public final class GlyphCoverageTable extends GlyphMappingTable implements Glyph
         return new GlyphCoverageTable(cm);
     }
 
-    private static boolean isMappedCoverage(List entries) {
-        if ((entries == null) || (entries.size() == 0)) {
+    private static boolean isMappedCoverage(List<SubtableEntry> entries) {
+        if ((entries == null) || (entries.isEmpty())) {
             return false;
         } else {
-            for (Iterator it = entries.iterator(); it.hasNext();) {
-                Object o = it.next();
-                if (!(o instanceof Integer)) {
-                    return false;
-                }
-            }
-            return true;
+            return allOfType(entries, SEInteger.class);
         }
     }
 
-    private static boolean isRangeCoverage(List entries) {
-        if ((entries == null) || (entries.size() == 0)) {
+    private static boolean isRangeCoverage(List<SubtableEntry> entries) {
+        if ((entries == null) || (entries.isEmpty())) {
             return false;
         } else {
-            for (Iterator it = entries.iterator(); it.hasNext();) {
-                Object o = it.next();
-                if (!(o instanceof MappingRange)) {
-                    return false;
-                }
-            }
-            return true;
+            return allOfType(entries, SEMappingRange.class);
         }
     }
 
     private static class EmptyCoverageTable extends GlyphMappingTable.EmptyMappingTable implements GlyphCoverageMapping {
-        public EmptyCoverageTable(List entries) {
+        public EmptyCoverageTable(List<SubtableEntry> entries) {
             super(entries);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getCoverageSize() {
             return 0;
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getCoverageIndex(int gid) {
             return -1;
         }
@@ -136,23 +136,24 @@ public final class GlyphCoverageTable extends GlyphMappingTable implements Glyph
 
     private static class MappedCoverageTable extends GlyphMappingTable.MappedMappingTable implements GlyphCoverageMapping {
         private int[] map;
-        public MappedCoverageTable(List entries) {
+        public MappedCoverageTable(List<SubtableEntry> entries) {
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
-            List entries = new java.util.ArrayList();
-            if (map != null) {
-                for (int i = 0, n = map.length; i < n; i++) {
-                    entries.add(Integer.valueOf(map [ i ]));
-                }
-            }
-            return entries;
+        @Override
+        public List<SubtableEntry> getEntries() {
+            return arrayMap(map, SEInteger::valueOf);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getMappingSize() {
             return (map != null) ? map.length : 0;
         }
+
+        /** {@inheritDoc} */
+        @Override
         public int getMappedIndex(int gid) {
             int i;
             if ((i = Arrays.binarySearch(map, gid)) >= 0) {
@@ -161,70 +162,71 @@ public final class GlyphCoverageTable extends GlyphMappingTable implements Glyph
                 return -1;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getCoverageSize() {
             return getMappingSize();
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getCoverageIndex(int gid) {
             return getMappedIndex(gid);
         }
-        private void populate(List entries) {
+
+        private void populate(List<SubtableEntry> entries) {
             int i = 0;
             int skipped = 0;
             int n = entries.size();
             int gidMax = -1;
             int[] map = new int [ n ];
-            for (Iterator it = entries.iterator(); it.hasNext();) {
-                Object o = it.next();
-                if (o instanceof Integer) {
-                    int gid = ((Integer) o) .intValue();
-                    if ((gid >= 0) && (gid < 65536)) {
-                        if (gid > gidMax) {
-                            map [ i++ ] = gidMax = gid;
-                        } else {
-                            log.info("ignoring out of order or duplicate glyph index: " + gid);
-                            skipped++;
-                        }
-                    } else {
-                        throw new AdvancedTypographicTableFormatException("illegal glyph index: " + gid);
-                    }
+
+            for (int idx = 0; idx < n; idx++) {
+                int gid = checkGet(entries, idx, SEInteger.class).get();
+                checkGidRange(gid, () -> "illegal glyph index: " + gid);
+
+                if (gid > gidMax) {
+                    map [ i++ ] = gidMax = gid;
                 } else {
-                    throw new AdvancedTypographicTableFormatException("illegal coverage entry, must be Integer: " + o);
+                    log.info("ignoring out of order or duplicate glyph index: " + gid);
+                    skipped++;
                 }
             }
+
             assert (i + skipped) == n;
             assert this.map == null;
             this.map = map;
         }
+
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append('{');
-            for (int i = 0, n = map.length; i < n; i++) {
-                if (i > 0) {
-                    sb.append(',');
-                }
-                sb.append(Integer.toString(map [ i ]));
-            }
-            sb.append('}');
-            return sb.toString();
+            return Arrays.stream(map)
+              .mapToObj(Integer::toString)
+              .collect(Collectors.joining(",", "{", "}"));
         }
     }
 
     private static class RangeCoverageTable extends GlyphMappingTable.RangeMappingTable implements GlyphCoverageMapping {
-        public RangeCoverageTable(List entries) {
+        public RangeCoverageTable(List<SubtableEntry> entries) {
             super(entries);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getMappedIndex(int gid, int s, int m) {
             return m + gid - s;
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getCoverageSize() {
             return getMappingSize();
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getCoverageIndex(int gid) {
             return getMappedIndex(gid);
         }

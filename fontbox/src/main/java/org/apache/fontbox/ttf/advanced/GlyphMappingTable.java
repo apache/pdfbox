@@ -17,9 +17,16 @@
 
 package org.apache.fontbox.ttf.advanced;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.SEMappingRange;
+import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.SubtableEntry;
+
+import static org.apache.fontbox.ttf.advanced.util.AdvancedChecker.*;
 
 /**
  * <p>Base class implementation of glyph mapping table. This base
@@ -28,7 +35,6 @@ import java.util.List;
  *
  * @author Glenn Adams
  */
-@SuppressWarnings("unchecked") 
 public class GlyphMappingTable {
 
     /** empty mapping table */
@@ -52,7 +58,7 @@ public class GlyphMappingTable {
      * Obtain mapping entries.
      * @return list of mapping entries
      */
-    public List getEntries() {
+    public List<SubtableEntry> getEntries() {
         return null;
     }
 
@@ -81,27 +87,36 @@ public class GlyphMappingTable {
          * Construct empty mapping table.
          */
         public EmptyMappingTable() {
-            this ((List) null);
+            this(null);
         }
+
         /**
          * Construct empty mapping table with entries (ignored).
          * @param entries list of entries (ignored)
          */
-        public EmptyMappingTable(List entries) {
+        public EmptyMappingTable(List<SubtableEntry> entries) {
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GLYPH_MAPPING_TYPE_EMPTY;
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
-            return new java.util.ArrayList();
+        @Override
+        public List<SubtableEntry> getEntries() {
+            return new java.util.ArrayList<>();
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getMappingSize() {
             return 0;
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getMappedIndex(int gid) {
             return -1;
         }
@@ -114,7 +129,9 @@ public class GlyphMappingTable {
          */
         public MappedMappingTable() {
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GLYPH_MAPPING_TYPE_MAPPED;
         }
@@ -130,28 +147,33 @@ public class GlyphMappingTable {
          * Construct range mapping table.
          * @param entries of mapping ranges
          */
-        public RangeMappingTable(List entries) {
+        public RangeMappingTable(List<SubtableEntry> entries) {
             populate(entries);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GLYPH_MAPPING_TYPE_RANGE;
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
-            List entries = new java.util.ArrayList();
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (sa != null) {
-                for (int i = 0, n = sa.length; i < n; i++) {
-                    entries.add(new MappingRange(sa [ i ], ea [ i ], ma [ i ]));
-                }
+                return rangeMap(sa.length, (i) -> new SEMappingRange(new MappingRange(sa [ i ], ea [ i ], ma [ i ])));
             }
-            return entries;
+            return new ArrayList<>();
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getMappingSize() {
             return miMax + 1;
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getMappedIndex(int gid) {
             int i;
             int mi;
@@ -166,6 +188,7 @@ public class GlyphMappingTable {
             }
             return mi;
         }
+
         /**
          * Map glyph identifier (code) to coverge index. Returns -1 if glyph identifier is not in the domain of
          * the mapping table.
@@ -175,46 +198,38 @@ public class GlyphMappingTable {
          * @return non-negative glyph mapping index or -1 if glyph identifiers is not mapped by table
          */
         public abstract int getMappedIndex(int gid, int s, int m);
-        private void populate(List entries) {
-            int i = 0;
+
+        private void populate(List<SubtableEntry> entries) {
             int n = entries.size();
             int gidMax = -1;
             int miMax = -1;
             int[] sa = new int [ n ];
             int[] ea = new int [ n ];
             int[] ma = new int [ n ];
-            for (Iterator it = entries.iterator(); it.hasNext();) {
-                Object o = it.next();
-                if (o instanceof MappingRange) {
-                    MappingRange r = (MappingRange) o;
-                    int gs = r.getStart();
-                    int ge = r.getEnd();
-                    int mi = r.getIndex();
-                    if ((gs < 0) || (gs > 65535)) {
-                        throw new AdvancedTypographicTableFormatException("illegal glyph range: [" + gs + "," + ge + "]: bad start index");
-                    } else if ((ge < 0) || (ge > 65535)) {
-                        throw new AdvancedTypographicTableFormatException("illegal glyph range: [" + gs + "," + ge + "]: bad end index");
-                    } else if (gs > ge) {
-                        throw new AdvancedTypographicTableFormatException("illegal glyph range: [" + gs + "," + ge + "]: start index exceeds end index");
-                    } else if (gs < gidMax) {
-                        throw new AdvancedTypographicTableFormatException("out of order glyph range: [" + gs + "," + ge + "]");
-                    } else if (mi < 0) {
-                        throw new AdvancedTypographicTableFormatException("illegal mapping index: " + mi);
-                    } else {
-                        int miLast;
-                        sa [ i ] = gs;
-                        ea [ i ] = gidMax = ge;
-                        ma [ i ] = mi;
-                        if ((miLast = mi + (ge - gs)) > miMax) {
-                            miMax = miLast;
-                        }
-                        i++;
-                    }
-                } else {
-                    throw new AdvancedTypographicTableFormatException("illegal mapping entry, must be Integer: " + o);
+
+            for (int idx = 0; idx < n; idx++) {
+                MappingRange r = checkGet(entries, idx, SEMappingRange.class).get();
+
+                int gs = r.getStart();
+                int ge = r.getEnd();
+                int mi = r.getIndex();
+
+                checkGidRange(gs, () -> "illegal glyph range: [" + gs + "," + ge + "]: bad start index");
+                checkGidRange(ge, () -> "illegal glyph range: [" + gs + "," + ge + "]: bad end index");
+                checkCondition(gs, notGt(ge), () -> "illegal glyph range: [" + gs + "," + ge + "]: start index exceeds end index");
+                checkCondition(gs, notLt(gidMax), () -> "out of order glyph range: [" + gs + "," + ge + "]");
+                checkCondition(mi, notLt(0), () -> "illegal mapping index: " + mi);
+
+                int miLast;
+                sa [ idx ] = gs;
+                ea [ idx ] = gidMax = ge;
+                ma [ idx ] = mi;
+
+                if ((miLast = mi + (ge - gs)) > miMax) {
+                    miMax = miLast;
                 }
             }
-            assert i == n;
+
             assert this.sa == null;
             assert this.ea == null;
             assert this.ma == null;
@@ -223,22 +238,13 @@ public class GlyphMappingTable {
             this.ma = ma;
             this.miMax = miMax;
         }
+
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append('{');
-            for (int i = 0, n = sa.length; i < n; i++) {
-                if (i > 0) {
-                    sb.append(',');
-                }
-                sb.append('[');
-                sb.append(Integer.toString(sa [ i ]));
-                sb.append(Integer.toString(ea [ i ]));
-                sb.append("]:");
-                sb.append(Integer.toString(ma [ i ]));
-            }
-            sb.append('}');
-            return sb.toString();
+            return IntStream.range(0, sa.length)
+              .mapToObj(i -> '[' + sa [ i ] + ea [ i ] + "]:" + ma [ i ])
+              .collect(Collectors.joining(",", "{", "}"));
         }
     }
 
@@ -298,8 +304,8 @@ public class GlyphMappingTable {
         }
 
         /**
-         * Obtain interval, filled into first two elements of specified array, or returning new array.
-         * @param interval an array of length two or greater or null
+         * Obtain interval, filled into first two elements of specified array.
+         * @param interval an array of length two
          * @return interval as a pair of integers, filled into specified array
          */
         public int[] getInterval(int[] interval) {

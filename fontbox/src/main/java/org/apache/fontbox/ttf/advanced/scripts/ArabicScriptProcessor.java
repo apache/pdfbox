@@ -42,7 +42,6 @@ import org.apache.fontbox.ttf.advanced.util.ScriptContextTester;
  *
  * <p>This work was originally authored by Glenn Adams (gadams@apache.org).</p>
  */
-@SuppressWarnings("unchecked") 
 public class ArabicScriptProcessor extends DefaultScriptProcessor {
 
     /** logging instance */
@@ -71,7 +70,7 @@ public class ArabicScriptProcessor extends DefaultScriptProcessor {
     };
 
     private static class SubstitutionScriptContextTester implements ScriptContextTester {
-        private static Map/*<String,GlyphContextTester>*/ testerMap = new HashMap/*<String,GlyphContextTester>*/();
+        private static Map<String,GlyphContextTester> testerMap = new HashMap<>();
         static {
             testerMap.put("fina", new GlyphContextTester() {
                     public boolean test(String script, String language, String feature, GlyphSequence gs, int index, int flags) {
@@ -105,7 +104,7 @@ public class ArabicScriptProcessor extends DefaultScriptProcessor {
     }
 
     private static class PositioningScriptContextTester implements ScriptContextTester {
-        private static Map/*<String,GlyphContextTester>*/ testerMap = new HashMap/*<String,GlyphContextTester>*/();
+        private static Map<String, GlyphContextTester> testerMap = new HashMap<>();
         public GlyphContextTester getTester(String feature) {
             return (GlyphContextTester) testerMap.get(feature);
         }

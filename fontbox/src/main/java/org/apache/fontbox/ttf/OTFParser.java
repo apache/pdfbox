@@ -108,11 +108,11 @@ public final class OTFParser extends TTFParser
             case "JSTF":
                 return new OTLTable(font);
             case "GDEF":
-                return new org.apache.fontbox.ttf.advanced.GlyphDefinitionTable((OpenTypeFont) font);
+                return useAlternateATT ? new org.apache.fontbox.ttf.advanced.GlyphDefinitionTable((OpenTypeFont) font) : super.readTable(font, tag);
             case "GPOS":
-                return new org.apache.fontbox.ttf.advanced.GlyphPositioningTable((OpenTypeFont) font);
+                return useAlternateATT ? new org.apache.fontbox.ttf.advanced.GlyphPositioningTable((OpenTypeFont) font) : super.readTable(font, tag);
             case "GSUB":
-                return new org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable((OpenTypeFont) font);
+                return useAlternateATT ? new org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable((OpenTypeFont) font) : super.readTable(font, tag);
             case "CFF ":
                 return new CFFTable(font);
             default:

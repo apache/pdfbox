@@ -21,12 +21,15 @@ package org.apache.fontbox.ttf.advanced.scripts;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.fontbox.ttf.advanced.AdvancedTypographicTable;
 import org.apache.fontbox.ttf.advanced.GlyphDefinitionTable;
 import org.apache.fontbox.ttf.advanced.GlyphPositioningTable;
 import org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable;
+import org.apache.fontbox.ttf.advanced.AdvancedTypographicTable.LookupSpec;
+import org.apache.fontbox.ttf.advanced.AdvancedTypographicTable.LookupTable;
 import org.apache.fontbox.ttf.advanced.util.CharScript;
 import org.apache.fontbox.ttf.advanced.util.GlyphSequence;
 import org.apache.fontbox.ttf.advanced.util.ScriptContextTester;
@@ -39,12 +42,11 @@ import org.apache.fontbox.ttf.advanced.util.ScriptContextTester;
  *
  * <p>This work was originally authored by Glenn Adams (gadams@apache.org).</p>
  */
-@SuppressWarnings("unchecked") 
 public abstract class ScriptProcessor {
 
     private final String script;
 
-    private final Map/*<AssembledLookupsKey,AdvancedTypographicTable.UseSpec[]>*/ assembledLookups;
+    private final Map<AssembledLookupsKey, AdvancedTypographicTable.UseSpec[]> assembledLookups;
 
     private static Map<String, ScriptProcessor> processors = new HashMap<String, ScriptProcessor>();
 
@@ -57,7 +59,7 @@ public abstract class ScriptProcessor {
             throw new IllegalArgumentException("script must be non-empty string");
         } else {
             this.script = script;
-            this.assembledLookups = new HashMap/*<AssembledLookupsKey,AdvancedTypographicTable.UseSpec[]>*/();
+            this.assembledLookups = new HashMap<AssembledLookupsKey, AdvancedTypographicTable.UseSpec[]>();
         }
     }
 
@@ -96,7 +98,7 @@ public abstract class ScriptProcessor {
      * @return the substituted (output) glyph sequence
      */
     public final GlyphSequence
-        substitute(GlyphSubstitutionTable gsub, GlyphSequence gs, String script, String language, Object[][] features, Map/*<LookupSpec,List<LookupTable>>>*/ lookups) {
+        substitute(GlyphSubstitutionTable gsub, GlyphSequence gs, String script, String language, Object[][] features, Map<LookupSpec, List<LookupTable>> lookups) {
         return substitute(gs, script, language, assembleLookups(gsub, getSubstitutionFeatures(features), lookups), getSubstitutionContextTester());
     }
 
@@ -170,7 +172,7 @@ public abstract class ScriptProcessor {
      * with one 4-tuple for each element of glyph sequence
      * @return true if some adjustment is not zero; otherwise, false
      */
-    public final boolean position(GlyphPositioningTable gpos, GlyphSequence gs, String script, String language, Object[][] features, int fontSize, Map/*<LookupSpec,List<LookupTable>>*/ lookups, int[] widths, int[][] adjustments) {
+    public final boolean position(GlyphPositioningTable gpos, GlyphSequence gs, String script, String language, Object[][] features, int fontSize, Map<LookupSpec, List<LookupTable>> lookups, int[] widths, int[][] adjustments) {
         return position(gs, script, language, fontSize, assembleLookups(gpos, getPositioningFeatures(features), lookups), widths, adjustments, getPositioningContextTester());
     }
 
@@ -207,7 +209,7 @@ public abstract class ScriptProcessor {
      * @param lookups a mapping from lookup specifications to lists of look tables from which to select lookup tables according to the specified features
      * @return ordered array of assembled lookup table use specifications
      */
-    public final AdvancedTypographicTable.UseSpec[] assembleLookups(AdvancedTypographicTable table, String[] features, Map/*<LookupSpec,List<LookupTable>>*/ lookups) {
+    public final AdvancedTypographicTable.UseSpec[] assembleLookups(AdvancedTypographicTable table, String[] features, Map<LookupSpec, List<LookupTable>> lookups) {
         AssembledLookupsKey key = new AssembledLookupsKey(table, features, lookups);
         AdvancedTypographicTable.UseSpec[] usa;
         if ((usa = assembledLookupsGet(key)) != null) {
@@ -258,15 +260,16 @@ public abstract class ScriptProcessor {
 
         private final AdvancedTypographicTable table;
         private final String[] features;
-        private final Map/*<LookupSpec,List<LookupTable>>*/ lookups;
+        private final Map<LookupSpec, List<LookupTable>> lookups;
 
-        AssembledLookupsKey(AdvancedTypographicTable table, String[] features, Map/*<LookupSpec,List<LookupTable>>*/ lookups) {
+        AssembledLookupsKey(AdvancedTypographicTable table, String[] features, Map<LookupSpec, List<LookupTable>> lookups) {
             this.table = table;
             this.features = features;
             this.lookups = lookups;
         }
 
         /** {@inheritDoc} */
+        @Override
         public int hashCode() {
             int hc = 0;
             hc =  7 * hc + (hc ^ table.hashCode());
@@ -276,6 +279,7 @@ public abstract class ScriptProcessor {
         }
 
         /** {@inheritDoc} */
+        @Override
         public boolean equals(Object o) {
             if (o instanceof AssembledLookupsKey) {
                 AssembledLookupsKey k = (AssembledLookupsKey) o;

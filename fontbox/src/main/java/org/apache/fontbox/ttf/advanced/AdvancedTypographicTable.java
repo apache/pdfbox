@@ -20,22 +20,22 @@ package org.apache.fontbox.ttf.advanced;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.fontbox.ttf.TTFTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.ttf.advanced.util.GlyphSequence;
 import org.apache.fontbox.ttf.advanced.util.ScriptContextTester;
+
+import static org.apache.fontbox.ttf.advanced.util.AdvancedChecker.*;
 
 /**
  * <p>Base class for all advanced typographic glyph tables.</p>
@@ -44,7 +44,6 @@ import org.apache.fontbox.ttf.advanced.util.ScriptContextTester;
  *
  * @author Glenn Adams
  */
-@SuppressWarnings("unchecked") 
 public class AdvancedTypographicTable extends TTFTable {
 
     /** logging instance */
@@ -65,13 +64,13 @@ public class AdvancedTypographicTable extends TTFTable {
     private AdvancedTypographicTable gdef;
 
     // map from lookup specs to lists of strings, each of which identifies a lookup table (consisting of one or more subtables)
-    private Map/*<LookupSpec,List<String>>*/ lookups;
+    private Map<LookupSpec, List<String>> lookups;
 
     // map from lookup identifiers to lookup tables
-    private Map/*<String,LookupTable>*/ lookupTables;
+    private Map<String, LookupTable> lookupTables;
 
     // cache for lookups matching
-    private Map/*<LookupSpec,Map<LookupSpec,List<LookupTable>>>*/ matchedLookups;
+    private Map<LookupSpec, Map<LookupSpec, List<LookupTable>>> matchedLookups;
 
     // if true, then prevent further subtable addition
     private boolean frozen;
@@ -81,7 +80,7 @@ public class AdvancedTypographicTable extends TTFTable {
      * @param gdef glyph definition table that applies
      * @param lookups map from lookup specs to lookup tables
      */
-    public AdvancedTypographicTable(TrueTypeFont ttf, AdvancedTypographicTable gdef, Map/*<LookupSpec,List<String>>*/ lookups) {
+    public AdvancedTypographicTable(TrueTypeFont ttf, AdvancedTypographicTable gdef, Map<LookupSpec,List<String>> lookups) {
         super(ttf);
         if ((gdef != null) && !(gdef instanceof GlyphDefinitionTable)) {
             throw new AdvancedTypographicTableFormatException("bad glyph definition table");
@@ -90,12 +89,12 @@ public class AdvancedTypographicTable extends TTFTable {
         } else {
             this.gdef = gdef;
             this.lookups = lookups;
-            this.lookupTables = new LinkedHashMap/*<String,List<LookupTable>>*/();
-            this.matchedLookups = new HashMap/*<LookupSpec,Map<LookupSpec,List<LookupTable>>>*/();
+            this.lookupTables = new LinkedHashMap<String, LookupTable>();
+            this.matchedLookups = new HashMap<LookupSpec, Map<LookupSpec, List<LookupTable>>>();
         }
     }
 
-    protected void initialize(Map/*<LookupSpec,List<String>>*/ lookups) {
+    protected void initialize(Map<LookupSpec, List<String>> lookups) {
         this.lookups = lookups;
     }
 
@@ -111,7 +110,7 @@ public class AdvancedTypographicTable extends TTFTable {
      * Obtain list of all lookup specifications.
      * @return (possibly empty) list of all lookup specifications
      */
-    public List/*<LookupSpec>*/ getLookups() {
+    public List<LookupSpec> getLookups() {
         return matchLookupSpecs("*", "*", "*");
     }
 
@@ -120,13 +119,10 @@ public class AdvancedTypographicTable extends TTFTable {
      * lexicographic ordering follows the lookup list order.
      * @return (possibly empty) ordered list of all lookup tables
      */
-    public List/*<LookupTable>*/ getLookupTables() {
-        TreeSet/*<String>*/ lids = new TreeSet/*<String>*/(lookupTables.keySet());
-        List/*<LookupTable>*/ ltl = new ArrayList/*<LookupTable>*/(lids.size());
-        for (Iterator it = lids.iterator(); it.hasNext(); ) {
-            String lid = (String) it.next();
-            ltl.add(lookupTables.get(lid));
-        }
+    public List<LookupTable> getLookupTables() {
+        TreeSet<String> lids = new TreeSet<>(lookupTables.keySet());
+        List<LookupTable> ltl = new ArrayList<LookupTable>(lids.size());
+        lids.forEach(lid -> ltl.add(lookupTables.get(lid)));
         return ltl;
     }
 
@@ -137,7 +133,7 @@ public class AdvancedTypographicTable extends TTFTable {
      * @return table associated with lookup id or null if none
      */
     public LookupTable getLookupTable(String lid) {
-        return (LookupTable) lookupTables.get(lid);
+        return lookupTables.get(lid);
     }
 
     /**
@@ -154,7 +150,7 @@ public class AdvancedTypographicTable extends TTFTable {
         // add subtable to this table's subtable collection
         String lid = subtable.getLookupId();
         if (lookupTables.containsKey(lid)) {
-            LookupTable lt = (LookupTable) lookupTables.get(lid);
+            LookupTable lt = lookupTables.get(lid);
             lt.addSubtable(subtable);
         } else {
             LookupTable lt = new LookupTable(lid, subtable);
@@ -168,10 +164,7 @@ public class AdvancedTypographicTable extends TTFTable {
      */
     protected void freezeSubtables() {
         if (!frozen) {
-            for (Iterator it = lookupTables.values().iterator(); it.hasNext(); ) {
-                LookupTable lt = (LookupTable) it.next();
-                lt.freezeSubtables(lookupTables);
-            }
+            lookupTables.values().forEach(lt -> lt.freezeSubtables(lookupTables));
             frozen = true;
         }
     }
@@ -184,11 +177,10 @@ public class AdvancedTypographicTable extends TTFTable {
      * @param feature a feature identifier
      * @return a (possibly empty) array of matching lookup specifications
      */
-    public List/*<LookupSpec>*/ matchLookupSpecs(String script, String language, String feature) {
-        Set/*<LookupSpec>*/ keys = lookups.keySet();
-        List/*<LookupSpec>*/ matches = new ArrayList/*<LookupSpec>*/();
-        for (Iterator it = keys.iterator(); it.hasNext();) {
-            LookupSpec ls = (LookupSpec) it.next();
+    public List<LookupSpec> matchLookupSpecs(String script, String language, String feature) {
+        Set<LookupSpec> keys = lookups.keySet();
+        List<LookupSpec> matches = new ArrayList<>();
+        for (LookupSpec ls : keys) {
             if (!"*".equals(script)) {
                 if (!ls.getScript().equals(script)) {
                     continue;
@@ -217,14 +209,13 @@ public class AdvancedTypographicTable extends TTFTable {
      * @param feature a feature identifier
      * @return a (possibly empty) map from matching lookup specifications to lists of corresponding lookup tables
      */
-    public Map/*<LookupSpec,List<LookupTable>>*/ matchLookups(String script, String language, String feature) {
+    public Map<LookupSpec, List<LookupTable>> matchLookups(String script, String language, String feature) {
         LookupSpec lsm = new LookupSpec(script, language, feature, true, true);
-        Map/*<LookupSpec,List<LookupTable>>*/ lm = (Map/*<LookupSpec,List<LookupTable>>*/) matchedLookups.get(lsm);
+        Map<LookupSpec, List<LookupTable>> lm = matchedLookups.get(lsm);
         if (lm == null) {
-            lm = new LinkedHashMap();
-            List/*<LookupSpec>*/ lsl = matchLookupSpecs(script, language, feature);
-            for (Iterator it = lsl.iterator(); it.hasNext(); ) {
-                LookupSpec ls = (LookupSpec) it.next();
+            lm = new LinkedHashMap<>();
+            List<LookupSpec> lsl = matchLookupSpecs(script, language, feature);
+            for (LookupSpec ls : lsl) {
                 lm.put(ls, findLookupTables(ls));
             }
             matchedLookups.put(lsm, lm);
@@ -241,19 +232,11 @@ public class AdvancedTypographicTable extends TTFTable {
      * @param ls a (non-null) lookup specification
      * @return a (possibly empty) ordered list of lookup tables whose corresponding lookup specifications match the specified lookup spec
      */
-    public List/*<LookupTable>*/ findLookupTables(LookupSpec ls) {
-        TreeSet/*<LookupTable>*/ lts = new TreeSet/*<LookupTable>*/();
-        List/*<String>*/ ids;
-        if ((ids = (List/*<String>*/) lookups.get(ls)) != null) {
-            for (Iterator it = ids.iterator(); it.hasNext();) {
-                String lid = (String) it.next();
-                LookupTable lt;
-                if ((lt = (LookupTable) lookupTables.get(lid)) != null) {
-                    lts.add(lt);
-                }
-            }
-        }
-        return new ArrayList/*<LookupTable>*/(lts);
+    public List<LookupTable> findLookupTables(LookupSpec ls) {
+        TreeSet<LookupTable> lts = new TreeSet<>();
+        List<String> ids = lookups.get(ls);
+        transformConsume(ids, lookupTables::get, lts::add);
+        return new ArrayList<>(lts);
     }
 
     /**
@@ -263,25 +246,21 @@ public class AdvancedTypographicTable extends TTFTable {
      * @param lookups a mapping from lookup specifications to lists of look tables from which to select lookup tables according to the specified features
      * @return ordered array of assembled lookup table use specifications
      */
-    public UseSpec[] assembleLookups(String[] features, Map/*<LookupSpec,List<LookupTable>>*/ lookups) {
-        TreeSet/*<UseSpec>*/ uss = new TreeSet/*<UseSpec>*/();
+    public UseSpec[] assembleLookups(String[] features, Map<LookupSpec, List<LookupTable>> lookups) {
+        TreeSet<UseSpec> uss = new TreeSet<>();
         for (int i = 0, n = features.length; i < n; i++) {
             String feature = features[i];
-            for (Iterator it = lookups.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry/*<LookupSpec,List<LookupTable>>*/ e = (Map.Entry/*<LookupSpec,List<LookupTable>>*/) it.next();
-                LookupSpec ls = (LookupSpec) e.getKey();
+            for (Map.Entry<LookupSpec, List<LookupTable>> e : lookups.entrySet()) {
+                LookupSpec ls = e.getKey();
                 if (ls.getFeature().equals(feature)) {
-                    List/*<LookupTable>*/ ltl = (List/*<LookupTable>*/) e.getValue();
+                    List<LookupTable> ltl = e.getValue();
                     if (ltl != null) {
-                        for (Iterator ltit = ltl.iterator(); ltit.hasNext(); ) {
-                            LookupTable lt = (LookupTable) ltit.next();
-                            uss.add(new UseSpec(lt, feature));
-                        }
+                        ltl.forEach(lt -> uss.add(new UseSpec(lt, feature)));
                     }
                 }
             }
         }
-        return (UseSpec[]) uss.toArray(new UseSpec [ uss.size() ]);
+        return uss.toArray(new UseSpec [ uss.size() ]);
     }
 
     /**
@@ -298,8 +277,9 @@ public class AdvancedTypographicTable extends TTFTable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(super.toString());
+        StringBuilder sb = new StringBuilder(super.toString());
         sb.append("{");
         sb.append("lookups={");
         sb.append(lookups.toString());
@@ -312,11 +292,11 @@ public class AdvancedTypographicTable extends TTFTable {
     /**
      * Obtain glyph table type from name.
      * @param name of table type to map to type value
-     * @return glyph table type (as an integer constant)
+     * @return glyph table type (as an integer constant) or -1
      */
     public static int getTableTypeFromName(String name) {
         int t;
-        String s = name.toLowerCase();
+        String s = name.toLowerCase(Locale.ROOT);
         if ("gsub".equals(s)) {
             t = GLYPH_TABLE_TYPE_SUBSTITUTION;
         } else if ("gpos".equals(s)) {
@@ -338,7 +318,7 @@ public class AdvancedTypographicTable extends TTFTable {
      * @param rsa array of rule sets
      * @param lookupTables map from lookup table identifers, e.g. "lu4", to lookup tables
      */
-    public static void resolveLookupReferences(RuleSet[] rsa, Map/*<String,LookupTable>*/ lookupTables) {
+    public static void resolveLookupReferences(RuleSet[] rsa, Map<String, LookupTable> lookupTables) {
         if ((rsa != null) && (lookupTables != null)) {
             for (int i = 0, n = rsa.length; i < n; i++) {
                 RuleSet rs = rsa [ i ];
@@ -352,7 +332,7 @@ public class AdvancedTypographicTable extends TTFTable {
     /**
      * A structure class encapsulating a lookup specification as a &lt;script,language,feature&gt; tuple.
      */
-    public static class LookupSpec implements Comparable {
+    public static class LookupSpec implements Comparable<LookupSpec>{
 
         private final String script;
         private final String language;
@@ -411,15 +391,13 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public int hashCode() {
-            int hc = 0;
-            hc =  7 * hc + (hc ^ script.hashCode());
-            hc = 11 * hc + (hc ^ language.hashCode());
-            hc = 17 * hc + (hc ^ feature.hashCode());
-            return hc;
+            return Objects.hash(script, language, feature);
         }
 
         /** {@inheritDoc} */
+        @Override
         public boolean equals(Object o) {
             if (o instanceof LookupSpec) {
                 LookupSpec l = (LookupSpec) o;
@@ -436,26 +414,23 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
-        public int compareTo(Object o) {
+        @Override
+        public int compareTo(LookupSpec ls) {
             int d;
-            if (o instanceof LookupSpec) {
-                LookupSpec ls = (LookupSpec) o;
-                if ((d = script.compareTo(ls.script)) == 0) {
-                    if ((d = language.compareTo(ls.language)) == 0) {
-                        if ((d = feature.compareTo(ls.feature)) == 0) {
-                            d = 0;
-                        }
+            if ((d = script.compareTo(ls.script)) == 0) {
+                if ((d = language.compareTo(ls.language)) == 0) {
+                    if ((d = feature.compareTo(ls.feature)) == 0) {
+                        d = 0;
                     }
                 }
-            } else {
-                d = -1;
             }
             return d;
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer(super.toString());
+            StringBuilder sb = new StringBuilder(super.toString());
             sb.append("{");
             sb.append("<'" + script + "'");
             sb.append(",'" + language + "'");
@@ -470,17 +445,17 @@ public class AdvancedTypographicTable extends TTFTable {
      * The <code>LookupTable</code> class comprising an identifier and an ordered list
      * of glyph subtables, each of which employ the same lookup identifier.
      */
-    public static class LookupTable implements Comparable {
+    public static class LookupTable implements Comparable<LookupTable> {
 
         private final String id;                                // lookup identifier
         private final int idOrdinal;                            // parsed lookup identifier ordinal
-        private final List/*<GlyphSubtable>*/ subtables;        // list of subtables
+        private final List<GlyphSubtable> subtables;            // list of subtables
         private boolean doesSub;                                // performs substitutions
         private boolean doesPos;                                // performs positioning
         private boolean frozen;                                 // if true, then don't permit further subtable additions
         // frozen state
         private GlyphSubtable[] subtablesArray;
-        private static GlyphSubtable[] subtablesArrayEmpty       = new GlyphSubtable[0];
+        private static final GlyphSubtable[] EMPTY_SUBTABLES_ARRAY       = new GlyphSubtable[0];
 
         /**
          * Instantiate a LookupTable.
@@ -496,30 +471,27 @@ public class AdvancedTypographicTable extends TTFTable {
          * @param id the lookup table's identifier
          * @param subtables a pre-poplated list of subtables or null
          */
-        public LookupTable(String id, List/*<GlyphSubtable>*/ subtables) {
+        public LookupTable(String id, List<GlyphSubtable> subtables) {
             assert id != null;
             assert id.length() != 0;
             assert id.startsWith("lu");
             this.id = id;
             this.idOrdinal = Integer.parseInt(id.substring(2));
-            this.subtables = new LinkedList/*<GlyphSubtable>*/();
+            this.subtables = new ArrayList<GlyphSubtable>();
             if (subtables != null) {
-                for (Iterator it = subtables.iterator(); it.hasNext(); ) {
-                    GlyphSubtable st = (GlyphSubtable) it.next();
-                    addSubtable(st);
-                }
+                subtables.forEach(this::addSubtable);
             }
         }
 
         /** @return the subtables as an array */
         public GlyphSubtable[] getSubtables() {
             if (frozen) {
-                return (subtablesArray != null) ? subtablesArray : subtablesArrayEmpty;
+                return (subtablesArray != null) ? subtablesArray : EMPTY_SUBTABLES_ARRAY;
             } else {
                 if (doesSub) {
-                    return (GlyphSubtable[]) subtables.toArray(new GlyphSubstitutionSubtable [ subtables.size() ]);
+                    return subtables.toArray(new GlyphSubstitutionSubtable [ subtables.size() ]);
                 } else if (doesPos) {
-                    return (GlyphSubtable[]) subtables.toArray(new GlyphPositioningSubtable [ subtables.size() ]);
+                    return subtables.toArray(new GlyphPositioningSubtable [ subtables.size() ]);
                 } else {
                     return null;
                 }
@@ -533,33 +505,42 @@ public class AdvancedTypographicTable extends TTFTable {
          * @return true if subtable was not already present, otherwise false
          */
         public boolean addSubtable(GlyphSubtable subtable) {
-            boolean added = false;
+            boolean added;
             // ensure table is not frozen
             if (frozen) {
                 throw new IllegalStateException("glyph table is frozen, subtable addition prohibited");
             }
             // validate subtable to ensure consistency with current subtables
             validateSubtable(subtable);
+
             // insert subtable into ordered list
-            for (ListIterator/*<GlyphSubtable>*/ lit = subtables.listIterator(0); lit.hasNext(); ) {
-                GlyphSubtable st = (GlyphSubtable) lit.next();
-                int d;
-                if ((d = subtable.compareTo(st)) < 0) {
-                    // insert within list
-                    lit.set(subtable);
-                    lit.add(st);
-                    added = true;
-                } else if (d == 0) {
+            int insertIdx = -1;
+            for (int i = 0; i < subtables.size(); i++) {
+                GlyphSubtable st = subtables.get(i);
+                int compareResult = subtable.compareTo(st);
+                if (compareResult < 0) {
+                    // insert before i
+                    insertIdx = i;
+                    break;
+                } else if (compareResult == 0) {
                     // duplicate entry is ignored
-                    added = false;
-                    subtable = null;
+                    insertIdx = -2;
+                    break;
                 }
             }
-            // append at end of list
-            if (!added && (subtable != null)) {
+
+            if (insertIdx >= 0) {
+                subtables.add(insertIdx, subtable);
+                added = true;
+            } else if (insertIdx == -1) {
+                // append at end of list
                 subtables.add(subtable);
                 added = true;
+            } else {
+                // duplicate
+                added = false;
             }
+
             return added;
         }
 
@@ -581,10 +562,14 @@ public class AdvancedTypographicTable extends TTFTable {
                     doesPos = true;
                 }
             }
-            if (subtables.size() > 0) {
-                GlyphSubtable st = (GlyphSubtable) subtables.get(0);
+            if (!subtables.isEmpty()) {
+                GlyphSubtable st = subtables.get(0);
                 if (!st.isCompatible(subtable)) {
-                    throw new AdvancedTypographicTableFormatException("subtable " + subtable + " is not compatible with subtable " + st);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Adding " + st.getClass().getSimpleName() + " to existing: " + toClassString(subtables, "[", "]"));
+                    }
+                    // FIXME
+                    //throw new AdvancedTypographicTableFormatException("subtable " + subtable + " is not compatible with subtable " + st);
                 }
             }
         }
@@ -595,7 +580,7 @@ public class AdvancedTypographicTable extends TTFTable {
          * lookup tables that appear in this lookup table's subtables.
          * @param lookupTables map from lookup table identifers, e.g. "lu4", to lookup tables
          */
-        public void freezeSubtables(Map/*<String,LookupTable>*/ lookupTables) {
+        public void freezeSubtables(Map<String, LookupTable> lookupTables) {
             if (!frozen) {
                 GlyphSubtable[] sta = getSubtables();
                 resolveLookupReferences(sta, lookupTables);
@@ -604,7 +589,7 @@ public class AdvancedTypographicTable extends TTFTable {
             }
         }
 
-        private void resolveLookupReferences(GlyphSubtable[] subtables, Map/*<String,LookupTable>*/ lookupTables) {
+        private void resolveLookupReferences(GlyphSubtable[] subtables, Map<String, LookupTable> lookupTables) {
             if (subtables != null) {
                 for (int i = 0, n = subtables.length; i < n; i++) {
                     GlyphSubtable st = subtables [ i ];
@@ -698,6 +683,7 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public int hashCode() {
             return idOrdinal;
         }
@@ -707,6 +693,7 @@ public class AdvancedTypographicTable extends TTFTable {
          * @return true if identifier of the specified lookup table is the same
          * as the identifier of this lookup table
          */
+        @Override
         public boolean equals(Object o) {
             if (o instanceof LookupTable) {
                 LookupTable lt = (LookupTable) o;
@@ -723,26 +710,23 @@ public class AdvancedTypographicTable extends TTFTable {
          * "lu(DIGIT)+", with comparison based on numerical ordering of numbers expressed by
          * (DIGIT)+.
          */
-        public int compareTo(Object o) {
-            if (o instanceof LookupTable) {
-                LookupTable lt = (LookupTable) o;
-                int i = idOrdinal;
-                int j = lt.idOrdinal;
-                if (i < j) {
-                    return -1;
-                } else if (i > j) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            } else {
+        @Override
+        public int compareTo(LookupTable lt) {
+            int i = idOrdinal;
+            int j = lt.idOrdinal;
+            if (i < j) {
                 return -1;
+            } else if (i > j) {
+                return 1;
+            } else {
+                return 0;
             }
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("{ ");
             sb.append("id = " + id);
             sb.append(", subtables = " + subtables);
@@ -750,13 +734,11 @@ public class AdvancedTypographicTable extends TTFTable {
             return sb.toString();
         }
 
-        private static List/*<GlyphSubtable>*/ makeSingleton(GlyphSubtable subtable) {
+        private static List<GlyphSubtable> makeSingleton(GlyphSubtable subtable) {
             if (subtable == null) {
                 return null;
             } else {
-                List/*<GlyphSubtable>*/ stl = new ArrayList/*<GlyphSubtable>*/(1);
-                stl.add(subtable);
-                return stl;
+                return mutableSingleton(subtable);
             }
         }
 
@@ -766,7 +748,7 @@ public class AdvancedTypographicTable extends TTFTable {
      * The <code>UseSpec</code> class comprises a lookup table reference
      * and the feature that selected the lookup table.
      */
-    public static class UseSpec implements Comparable {
+    public static class UseSpec implements Comparable<UseSpec> {
 
         /** lookup table to apply */
         private final LookupTable lookupTable;
@@ -822,11 +804,13 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public int hashCode() {
             return lookupTable.hashCode();
         }
 
         /** {@inheritDoc} */
+        @Override
         public boolean equals(Object o) {
             if (o instanceof UseSpec) {
                 UseSpec u = (UseSpec) o;
@@ -837,13 +821,9 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
-        public int compareTo(Object o) {
-            if (o instanceof UseSpec) {
-                UseSpec u = (UseSpec) o;
-                return lookupTable.compareTo(u.lookupTable);
-            } else {
-                return -1;
-            }
+        @Override
+        public int compareTo(UseSpec u) {
+            return lookupTable.compareTo(u.lookupTable);
         }
 
     }
@@ -888,10 +868,10 @@ public class AdvancedTypographicTable extends TTFTable {
          * Resolve references to lookup tables.
          * @param lookupTables map from lookup table identifers, e.g. "lu4", to lookup tables
          */
-        public void resolveLookupReferences(Map/*<String,LookupTable>*/ lookupTables) {
+        public void resolveLookupReferences(Map<String, LookupTable> lookupTables) {
             if (lookupTables != null) {
                 String lid = "lu" + Integer.toString(lookupIndex);
-                LookupTable lt = (LookupTable) lookupTables.get(lid);
+                LookupTable lt = lookupTables.get(lid);
                 if (lt != null) {
                     this.lookup = lt;
                 } else {
@@ -901,6 +881,7 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return "{ sequenceIndex = " + sequenceIndex + ", lookupIndex = " + lookupIndex + " }";
         }
@@ -940,18 +921,18 @@ public class AdvancedTypographicTable extends TTFTable {
          * Resolve references to lookup tables, e.g., in RuleLookup, to the lookup tables themselves.
          * @param lookupTables map from lookup table identifers, e.g. "lu4", to lookup tables
          */
-        public void resolveLookupReferences(Map/*<String,LookupTable>*/ lookupTables) {
+        public void resolveLookupReferences(Map<String, LookupTable> lookupTables) {
             if (lookups != null) {
-                for (int i = 0, n = lookups.length; i < n; i++) {
-                    RuleLookup l = lookups [ i ];
-                    if (l != null) {
-                        l.resolveLookupReferences(lookupTables);
+                for (int i = 0; i < lookups.length; i++) {
+                    if (lookups[i] != null) {
+                        lookups[i].resolveLookupReferences(lookupTables);
                     }
                 }
             }
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return "{ lookups = " + Arrays.toString(lookups) + ", inputSequenceLength = " + inputSequenceLength + " }";
         }
@@ -1000,8 +981,9 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("{ ");
             sb.append("lookups = " + Arrays.toString(getLookups()));
             sb.append(", glyphs = " + Arrays.toString(glyphs));
@@ -1053,8 +1035,9 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("{ ");
             sb.append("lookups = " + Arrays.toString(getLookups()));
             sb.append(", classes = " + Arrays.toString(classes));
@@ -1090,8 +1073,9 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("{ ");
             sb.append("lookups = " + Arrays.toString(getLookups()));
             sb.append(", coverages = " + Arrays.toString(coverages));
@@ -1137,8 +1121,9 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("{ ");
             sb.append("lookups = " + Arrays.toString(getLookups()));
             sb.append(", glyphs = " + Arrays.toString(getGlyphs()));
@@ -1186,8 +1171,9 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("{ ");
             sb.append("lookups = " + Arrays.toString(getLookups()));
             sb.append(", classes = " + Arrays.toString(getClasses()));
@@ -1235,8 +1221,9 @@ public class AdvancedTypographicTable extends TTFTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("{ ");
             sb.append("lookups = " + Arrays.toString(getLookups()));
             sb.append(", coverages = " + Arrays.toString(getCoverages()));
@@ -1278,18 +1265,18 @@ public class AdvancedTypographicTable extends TTFTable {
          * Resolve references to lookup tables, e.g., in RuleLookup, to the lookup tables themselves.
          * @param lookupTables map from lookup table identifers, e.g. "lu4", to lookup tables
          */
-        public void resolveLookupReferences(Map/*<String,LookupTable>*/ lookupTables) {
+        public void resolveLookupReferences(Map<String, LookupTable> lookupTables) {
             if (rules != null) {
-                for (int i = 0, n = rules.length; i < n; i++) {
-                    Rule r = rules [ i ];
-                    if (r != null) {
-                        r.resolveLookupReferences(lookupTables);
+                for (int i = 0; i < rules.length; i++) {
+                    if (rules[i] != null) {
+                        rules[i].resolveLookupReferences(lookupTables);
                     }
                 }
             }
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return "{ rules = " + Arrays.toString(rules) + " }";
         }
@@ -1318,7 +1305,7 @@ public class AdvancedTypographicTable extends TTFTable {
             }
             // enforce rule instance homogeneity
             if (r0 != null) {
-                Class c = r0.getClass();
+                Class<?> c = r0.getClass();
                 for (int i = 1, n = rules.length; i < n; i++) {
                     Rule r = rules[i];
                     if ((r != null) && !c.isInstance(r)) {

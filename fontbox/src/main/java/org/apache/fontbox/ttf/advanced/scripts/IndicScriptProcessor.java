@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 
@@ -97,16 +98,16 @@ public class IndicScriptProcessor extends DefaultScriptProcessor {
     };
 
     private static class SubstitutionScriptContextTester implements ScriptContextTester {
-        private static Map/*<String,GlyphContextTester>*/ testerMap = new HashMap/*<String,GlyphContextTester>*/();
+        private static Map<String, GlyphContextTester> testerMap = new HashMap<>();
         public GlyphContextTester getTester(String feature) {
-            return (GlyphContextTester) testerMap.get(feature);
+            return testerMap.get(feature);
         }
     }
 
     private static class PositioningScriptContextTester implements ScriptContextTester {
-        private static Map/*<String,GlyphContextTester>*/ testerMap = new HashMap/*<String,GlyphContextTester>*/();
+        private static Map<String, GlyphContextTester> testerMap = new HashMap<>();
         public GlyphContextTester getTester(String feature) {
-            return (GlyphContextTester) testerMap.get(feature);
+            return testerMap.get(feature);
         }
     }
 
@@ -145,31 +146,37 @@ public class IndicScriptProcessor extends DefaultScriptProcessor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSubstitutionFeatures(Object[][] features) {
         return GSUB_REQ_FEATURES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getOptionalSubstitutionFeatures() {
         return GSUB_OPT_FEATURES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ScriptContextTester getSubstitutionContextTester() {
         return subContextTester;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getPositioningFeatures(Object[][] features) {
         return GPOS_REQ_FEATURES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getOptionalPositioningFeatures() {
         return GPOS_OPT_FEATURES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ScriptContextTester getPositioningContextTester() {
         return posContextTester;
     }
@@ -356,7 +363,7 @@ public class IndicScriptProcessor extends DefaultScriptProcessor {
     }
 
     /** Abstract syllabizer. */
-    protected abstract static class Syllabizer implements Comparable {
+    protected abstract static class Syllabizer implements Comparable<Syllabizer> {
         private String script;
         private String language;
         Syllabizer(String script, String language) {
@@ -370,14 +377,15 @@ public class IndicScriptProcessor extends DefaultScriptProcessor {
          * @return segmented syllabic glyph sequences
          */
         abstract GlyphSequence[] syllabize(GlyphSequence gs);
+
         /** {@inheritDoc} */
+        @Override
         public int hashCode() {
-            int hc = 0;
-            hc =  7 * hc + (hc ^ script.hashCode());
-            hc = 11 * hc + (hc ^ language.hashCode());
-            return hc;
+            return Objects.hash(script, language);
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean equals(Object o) {
             if (o instanceof Syllabizer) {
                 Syllabizer s = (Syllabizer) o;
@@ -390,20 +398,19 @@ public class IndicScriptProcessor extends DefaultScriptProcessor {
                 return false;
             }
         }
+
         /** {@inheritDoc} */
-        public int compareTo(Object o) {
+        @Override
+        public int compareTo(Syllabizer s) {
             int d;
-            if (o instanceof Syllabizer) {
-                Syllabizer s = (Syllabizer) o;
-                if ((d = script.compareTo(s.script)) == 0) {
-                    d = language.compareTo(s.language);
-                }
-            } else {
-                d = -1;
+            if ((d = script.compareTo(s.script)) == 0) {
+                d = language.compareTo(s.language);
             }
             return d;
         }
+
         private static Map<String, Syllabizer> syllabizers = new HashMap<String, Syllabizer>();
+
         static Syllabizer getSyllabizer(String script, String language, Class<? extends Syllabizer> syllabizerClass) {
             String sid = makeSyllabizerId(script, language);
             Syllabizer s = syllabizers.get(sid);
@@ -416,9 +423,11 @@ public class IndicScriptProcessor extends DefaultScriptProcessor {
             }
             return s;
         }
+
         static String makeSyllabizerId(String script, String language) {
             return script + ":" + language;
         }
+
         static Syllabizer makeSyllabizer(String script, String language, Class<? extends Syllabizer> syllabizerClass) {
             Syllabizer s;
             try {

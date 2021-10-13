@@ -20,7 +20,6 @@ package org.apache.fontbox.ttf.advanced;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,9 +29,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFDataStream;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.*;
 import org.apache.fontbox.ttf.advanced.scripts.ScriptProcessor;
 import org.apache.fontbox.ttf.advanced.util.GlyphSequence;
 import org.apache.fontbox.ttf.advanced.util.GlyphTester;
+
+import static org.apache.fontbox.ttf.advanced.util.AdvancedChecker.*;
 
 /**
  * <p>The <code>GlyphPositioningTable</code> class is a glyph table that implements
@@ -42,7 +44,6 @@ import org.apache.fontbox.ttf.advanced.util.GlyphTester;
  *
  * @author Glenn Adams
  */
-@SuppressWarnings("unchecked") 
 public class GlyphPositioningTable extends AdvancedTypographicTable {
 
     /** logging instance */
@@ -71,7 +72,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
     public static final int GPOS_LOOKUP_TYPE_EXTENSION_POSITIONING = 9;
 
     public GlyphPositioningTable(OpenTypeFont otf) {
-        super(otf, null, new java.util.HashMap(0));
+        super(otf, null, new java.util.HashMap<>(0));
     }
 
     /**
@@ -81,15 +82,14 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
      * @param lookups a map of lookup specifications to subtable identifier strings
      * @param subtables a list of identified subtables
      */
-    public GlyphPositioningTable initialize(GlyphDefinitionTable gdef, Map lookups, List subtables) {
+    public GlyphPositioningTable initialize(GlyphDefinitionTable gdef, Map<LookupSpec, List<String>> lookups, List<GlyphSubtable> subtables) {
         initialize(lookups);
         if ((subtables == null) || (subtables.size() == 0)) {
             throw new AdvancedTypographicTableFormatException("subtables must be non-empty");
         } else {
-            for (Iterator it = subtables.iterator(); it.hasNext();) {
-                Object o = it.next();
+            for (GlyphSubtable o : subtables) {
                 if (o instanceof GlyphPositioningSubtable) {
-                    addSubtable((GlyphSubtable) o);
+                    addSubtable(o);
                 } else {
                     throw new AdvancedTypographicTableFormatException("subtable must be a glyph positioning subtable");
                 }
@@ -193,7 +193,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
      * @param entries subtable entries
      * @return a glyph subtable instance
      */
-    public static GlyphSubtable createSubtable(int type, String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+    public static GlyphSubtable createSubtable(int type, String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
         GlyphSubtable st = null;
         switch (type) {
         case GPOS_LOOKUP_TYPE_SINGLE:
@@ -237,7 +237,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
      * @param entries subtable entries
      * @return a glyph subtable instance
      */
-    public static GlyphSubtable createSubtable(int type, String id, int sequence, int flags, int format, List coverage, List entries) {
+    public static GlyphSubtable createSubtable(int type, String id, int sequence, int flags, int format, List<SubtableEntry> coverage, List<SubtableEntry> entries) {
         return createSubtable(type, id, sequence, flags, format, GlyphCoverageTable.createCoverageTable(coverage), entries);
     }
 
@@ -253,7 +253,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
      * @return true if some adjustment is not zero; otherwise, false
      */
     public boolean position(GlyphSequence gs, String script, String language, Object[][] features, int fontSize, int[] widths, int[][] adjustments) {
-        Map/*<LookupSpec,List<LookupTable>>*/ lookups = matchLookups(script, language, "*");
+        Map<LookupSpec, List<LookupTable>> lookups = matchLookups(script, language, "*");
         if ((lookups != null) && (lookups.size() > 0)) {
             ScriptProcessor sp = ScriptProcessor.getInstance(script);
             return sp.position(this, gs, script, language, features, fontSize, lookups, widths, adjustments);
@@ -263,18 +263,24 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
     }
 
     private abstract static class SingleSubtable extends GlyphPositioningSubtable {
-        SingleSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        SingleSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GPOS_LOOKUP_TYPE_SINGLE;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof SingleSubtable;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean position(GlyphPositioningState ps) {
             int gi = ps.getGlyph();
             int ci;
@@ -291,6 +297,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
                 return true;
             }
         }
+
         /**
          * Obtain positioning value for coverage index.
          * @param ci coverage index
@@ -298,7 +305,8 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * @return positioning value or null if none applies
          */
         public abstract Value getValue(int ci, int gi);
-        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+
+        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new SingleSubtableFormat1(id, sequence, flags, format, coverage, entries);
             } else if (format == 2) {
@@ -312,21 +320,26 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
     private static class SingleSubtableFormat1 extends SingleSubtable {
         private Value value;
         private int ciMax;
-        SingleSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+
+        SingleSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (value != null) {
-                List entries = new ArrayList(1);
-                entries.add(value);
+                List<SubtableEntry> entries = new ArrayList<>(1);
+                entries.add(new SEValue(value));
                 return entries;
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public Value getValue(int ci, int gi) {
             if ((value != null) && (ci <= ciMax)) {
                 return value;
@@ -334,43 +347,33 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
                 return null;
             }
         }
-        private void populate(List entries) {
-            if ((entries == null) || (entries.size() != 1)) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null and contain exactly one entry");
-            } else {
-                Value v;
-                Object o = entries.get(0);
-                if (o instanceof Value) {
-                    v = (Value) o;
-                } else {
-                    throw new AdvancedTypographicTableFormatException("illegal entries entry, must be Value, but is: " + ((o != null) ? o.getClass() : null));
-                }
-                assert this.value == null;
-                this.value = v;
-                this.ciMax = getCoverageSize() - 1;
-            }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 1);
+            this.value = checkGet(entries, 0, SEValue.class).get();
+            this.ciMax = getCoverageSize() - 1;
         }
     }
 
     private static class SingleSubtableFormat2 extends SingleSubtable {
         private Value[] values;
-        SingleSubtableFormat2(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        SingleSubtableFormat2(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (values != null) {
-                List entries = new ArrayList(values.length);
-                for (int i = 0, n = values.length; i < n; i++) {
-                    entries.add(values[i]);
-                }
-                return entries;
+                return arrayMap(values, val -> new SEValue(val));
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public Value getValue(int ci, int gi) {
             if ((values != null) && (ci < values.length)) {
                 return values [ ci ];
@@ -378,41 +381,38 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
                 return null;
             }
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 1) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 1 entry");
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 1);
+            Value[] va = checkGet(entries, 0, SEValueList.class).get();
+            if (va.length != getCoverageSize()) {
+                throw new AdvancedTypographicTableFormatException("illegal values array, " + entries.size() + " values present, but requires " + getCoverageSize() + " values");
             } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof Value[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, single entry must be a Value[], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    Value[] va = (Value[]) o;
-                    if (va.length != getCoverageSize()) {
-                        throw new AdvancedTypographicTableFormatException("illegal values array, " + entries.size() + " values present, but requires " + getCoverageSize() + " values");
-                    } else {
-                        assert this.values == null;
-                        this.values = va;
-                    }
-                }
+                assert this.values == null;
+                this.values = va;
             }
         }
     }
 
     private abstract static class PairSubtable extends GlyphPositioningSubtable {
-        PairSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        PairSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GPOS_LOOKUP_TYPE_PAIR;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof PairSubtable;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean position(GlyphPositioningState ps) {
             boolean applied = false;
             int gi = ps.getGlyph(0);
@@ -468,6 +468,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return applied;
         }
+
         /**
          * Obtain associated pair values.
          * @param ci coverage index
@@ -476,7 +477,8 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * @return pair values or null if none applies
          */
         public abstract PairValues getPairValues(int ci, int gi1, int gi2);
-        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+
+        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new PairSubtableFormat1(id, sequence, flags, format, coverage, entries);
             } else if (format == 2) {
@@ -489,21 +491,23 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
 
     private static class PairSubtableFormat1 extends PairSubtable {
         private PairValues[][] pvm;                     // pair values matrix
-        PairSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        PairSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (pvm != null) {
-                List entries = new ArrayList(1);
-                entries.add(pvm);
-                return entries;
+                return mutableSingleton(new SEPairValueMatrix(pvm));
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public PairValues getPairValues(int ci, int gi1, int gi2) {
             if ((pvm != null) && (ci < pvm.length)) {
                 PairValues[] pvt = pvm [ ci ];
@@ -523,19 +527,10 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 1) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 1 entry");
-            } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof PairValues[][])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first (and only) entry must be a PairValues[][], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    pvm = (PairValues[][]) o;
-                }
-            }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 1);
+            pvm = checkGet(entries, 0, SEPairValueMatrix.class).get();
         }
     }
 
@@ -545,25 +540,29 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         private int nc1;                                // class 1 count
         private int nc2;                                // class 2 count
         private PairValues[][] pvm;                     // pair values matrix
-        PairSubtableFormat2(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        PairSubtableFormat2(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (pvm != null) {
-                List entries = new ArrayList(5);
-                entries.add(cdt1);
-                entries.add(cdt2);
-                entries.add(Integer.valueOf(nc1));
-                entries.add(Integer.valueOf(nc2));
-                entries.add(pvm);
+                List<SubtableEntry> entries = new ArrayList<>(5);
+                entries.add(new SEGlyphClassTable(cdt1));
+                entries.add(new SEGlyphClassTable(cdt2));
+                entries.add(SEInteger.valueOf(nc1));
+                entries.add(SEInteger.valueOf(nc2));
+                entries.add(new SEPairValueMatrix(pvm));
                 return entries;
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public PairValues getPairValues(int ci, int gi1, int gi2) {
             if (pvm != null) {
                 int c1 = cdt1.getClassIndex(gi1, 0);
@@ -579,55 +578,36 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 5) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 5 entries");
-            } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof GlyphClassTable)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first entry must be an GlyphClassTable, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    cdt1 = (GlyphClassTable) o;
-                }
-                if (((o = entries.get(1)) == null) || !(o instanceof GlyphClassTable)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, second entry must be an GlyphClassTable, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    cdt2 = (GlyphClassTable) o;
-                }
-                if (((o = entries.get(2)) == null) || !(o instanceof Integer)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, third entry must be an Integer, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    nc1 = ((Integer)(o)).intValue();
-                }
-                if (((o = entries.get(3)) == null) || !(o instanceof Integer)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, fourth entry must be an Integer, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    nc2 = ((Integer)(o)).intValue();
-                }
-                if (((o = entries.get(4)) == null) || !(o instanceof PairValues[][])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, fifth entry must be a PairValues[][], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    pvm = (PairValues[][]) o;
-                }
-            }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 5);
+            cdt1 = checkGet(entries, 0, SEGlyphClassTable.class).get();
+            cdt2 = checkGet(entries, 1, SEGlyphClassTable.class).get();
+            nc1 = checkGet(entries, 2, SEInteger.class).get();
+            nc2 = checkGet(entries, 3, SEInteger.class).get();
+            pvm = checkGet(entries, 4, SEPairValueMatrix.class).get();
         }
     }
 
     private abstract static class CursiveSubtable extends GlyphPositioningSubtable {
-        CursiveSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        CursiveSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GPOS_LOOKUP_TYPE_CURSIVE;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof CursiveSubtable;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean position(GlyphPositioningState ps) {
             boolean applied = false;
             int gi = ps.getGlyph(0);
@@ -664,6 +644,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return applied;
         }
+
         /**
          * Obtain exit anchor for first glyph with coverage index <code>ci1</code> and entry anchor for second
          * glyph with coverage index <code>ci2</code>.
@@ -674,7 +655,8 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * entry anchor of the second glyph
          */
         public abstract Anchor[] getExitEntryAnchors(int ci1, int ci2);
-        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+
+        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new CursiveSubtableFormat1(id, sequence, flags, format, coverage, entries);
             } else {
@@ -685,21 +667,22 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
 
     private static class CursiveSubtableFormat1 extends CursiveSubtable {
         private Anchor[] aa;                            // anchor array, where even entries are entry anchors, and odd entries are exit anchors
-        CursiveSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        CursiveSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (aa != null) {
-                List entries = new ArrayList(1);
-                entries.add(aa);
-                return entries;
+                return mutableSingleton(new SEAnchorList(aa));
             } else {
                 return null;
             }
         }
         /** {@inheritDoc} */
+        @Override
         public Anchor[] getExitEntryAnchors(int ci1, int ci2) {
             if ((ci1 >= 0) && (ci2 >= 0)) {
                 int ai1 = (ci1 * 2) + 1; // ci1 denotes glyph with exit anchor
@@ -714,37 +697,38 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 1) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 1 entry");
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 1);
+            Anchor[] o = checkGet(entries, 0, SEAnchorList.class).get();
+            
+            if ((o.length % 2) != 0) {
+                throw new AdvancedTypographicTableFormatException("illegal entries, Anchor[] array must have an even number of entries, but has: " + o.length);
             } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof Anchor[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first (and only) entry must be a Anchor[], but is: " + ((o != null) ? o.getClass() : null));
-                } else if ((((Anchor[]) o) .length % 2) != 0) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, Anchor[] array must have an even number of entries, but has: " + ((Anchor[]) o) .length);
-                } else {
-                    aa = (Anchor[]) o;
-                }
+                aa = o;
             }
         }
     }
 
     private abstract static class MarkToBaseSubtable extends GlyphPositioningSubtable {
-        MarkToBaseSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        MarkToBaseSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GPOS_LOOKUP_TYPE_MARK_TO_BASE;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof MarkToBaseSubtable;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean position(GlyphPositioningState ps) {
             boolean applied = false;
             int giMark = ps.getGlyph();
@@ -779,6 +763,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return applied;
         }
+
         /**
          * Obtain mark anchor associated with mark coverage index.
          * @param ciMark coverage index
@@ -786,6 +771,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * @return mark anchor or null if none applies
          */
         public abstract MarkAnchor getMarkAnchor(int ciMark, int giMark);
+
         /**
          * Obtain anchor associated with base glyph index and mark class.
          * @param giBase input glyph index of base glyph
@@ -793,7 +779,8 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * @return anchor or null if none applies
          */
         public abstract Anchor getBaseAnchor(int giBase, int markClass);
-        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+
+        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new MarkToBaseSubtableFormat1(id, sequence, flags, format, coverage, entries);
             } else {
@@ -807,24 +794,27 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         private int nmc;                                // mark class count
         private MarkAnchor[] maa;                       // mark anchor array, ordered by mark coverage index
         private Anchor[][] bam;                         // base anchor matrix, ordered by base coverage index, then by mark class
-        MarkToBaseSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        MarkToBaseSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if ((bct != null) && (maa != null) && (nmc > 0) && (bam != null)) {
-                List entries = new ArrayList(4);
-                entries.add(bct);
-                entries.add(Integer.valueOf(nmc));
-                entries.add(maa);
-                entries.add(bam);
-                return entries;
+                return new ArrayList<>(Arrays.asList(
+                    new SEGlyphCoverageTable(bct),
+                    SEInteger.valueOf(nmc),
+                    new SEMarkAnchorList(maa),
+                    new SEAnchorMatrix(bam)));
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public MarkAnchor getMarkAnchor(int ciMark, int giMark) {
             if ((maa != null) && (ciMark < maa.length)) {
                 return maa [ ciMark ];
@@ -832,7 +822,9 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public Anchor getBaseAnchor(int giBase, int markClass) {
             int ciBase;
             if ((bct != null) && ((ciBase = bct.getCoverageIndex(giBase)) >= 0)) {
@@ -845,50 +837,40 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
-        private void populate(List entries) {
+
+        private void populate(List<SubtableEntry> entries) {
             if (entries == null) {
                 throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
             } else if (entries.size() != 4) {
                 throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 4 entries");
             } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof GlyphCoverageTable)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first entry must be an GlyphCoverageTable, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    bct = (GlyphCoverageTable) o;
-                }
-                if (((o = entries.get(1)) == null) || !(o instanceof Integer)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, second entry must be an Integer, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    nmc = ((Integer)(o)).intValue();
-                }
-                if (((o = entries.get(2)) == null) || !(o instanceof MarkAnchor[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, third entry must be a MarkAnchor[], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    maa = (MarkAnchor[]) o;
-                }
-                if (((o = entries.get(3)) == null) || !(o instanceof Anchor[][])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, fourth entry must be a Anchor[][], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    bam = (Anchor[][]) o;
-                }
+                bct = checkGet(entries, 0, SEGlyphCoverageTable.class).get();
+                nmc = checkGet(entries, 1, SEInteger.class).get();
+                maa = checkGet(entries, 2, SEMarkAnchorList.class).get();
+                bam = checkGet(entries, 3, SEAnchorMatrix.class).get();
             }
         }
     }
 
     private abstract static class MarkToLigatureSubtable extends GlyphPositioningSubtable {
-        MarkToLigatureSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        MarkToLigatureSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GPOS_LOOKUP_TYPE_MARK_TO_LIGATURE;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof MarkToLigatureSubtable;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean position(GlyphPositioningState ps) {
             boolean applied = false;
             int giMark = ps.getGlyph();
@@ -917,6 +899,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return applied;
         }
+
         /**
          * Obtain mark anchor associated with mark coverage index.
          * @param ciMark coverage index
@@ -924,11 +907,13 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * @return mark anchor or null if none applies
          */
         public abstract MarkAnchor getMarkAnchor(int ciMark, int giMark);
+
         /**
          * Obtain maximum component count.
          * @return maximum component count (>=0)
          */
         public abstract int getMaxComponentCount();
+
         /**
          * Obtain anchor associated with ligature glyph index and mark class.
          * @param giLig input glyph index of ligature glyph
@@ -938,7 +923,8 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * @return anchor or null if none applies
          */
         public abstract Anchor getLigatureAnchor(int giLig, int maxComponents, int component, int markClass);
-        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+
+        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new MarkToLigatureSubtableFormat1(id, sequence, flags, format, coverage, entries);
             } else {
@@ -953,25 +939,29 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         private int mxc;                                // maximum ligature component count
         private MarkAnchor[] maa;                       // mark anchor array, ordered by mark coverage index
         private Anchor[][][] lam;                       // ligature anchor matrix, ordered by ligature coverage index, then ligature component, then mark class
-        MarkToLigatureSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        MarkToLigatureSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (lam != null) {
-                List entries = new ArrayList(5);
-                entries.add(lct);
-                entries.add(Integer.valueOf(nmc));
-                entries.add(Integer.valueOf(mxc));
-                entries.add(maa);
-                entries.add(lam);
+                List<SubtableEntry> entries = new ArrayList<>(5);
+                entries.add(new SEGlyphCoverageTable(lct));
+                entries.add(SEInteger.valueOf(nmc));
+                entries.add(SEInteger.valueOf(mxc));
+                entries.add(new SEMarkAnchorList(maa));
+                entries.add(new SEAnchorMultiMatrix(lam));
                 return entries;
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public MarkAnchor getMarkAnchor(int ciMark, int giMark) {
             if ((maa != null) && (ciMark < maa.length)) {
                 return maa [ ciMark ];
@@ -979,11 +969,15 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getMaxComponentCount() {
             return mxc;
         }
+
         /** {@inheritDoc} */
+        @Override
         public Anchor getLigatureAnchor(int giLig, int maxComponents, int component, int markClass) {
             int ciLig;
             if ((lct != null) && ((ciLig = lct.getCoverageIndex(giLig)) >= 0)) {
@@ -999,55 +993,36 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 5) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 5 entries");
-            } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof GlyphCoverageTable)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first entry must be an GlyphCoverageTable, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    lct = (GlyphCoverageTable) o;
-                }
-                if (((o = entries.get(1)) == null) || !(o instanceof Integer)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, second entry must be an Integer, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    nmc = ((Integer)(o)).intValue();
-                }
-                if (((o = entries.get(2)) == null) || !(o instanceof Integer)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, third entry must be an Integer, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    mxc = ((Integer)(o)).intValue();
-                }
-                if (((o = entries.get(3)) == null) || !(o instanceof MarkAnchor[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, fourth entry must be a MarkAnchor[], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    maa = (MarkAnchor[]) o;
-                }
-                if (((o = entries.get(4)) == null) || !(o instanceof Anchor[][][])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, fifth entry must be a Anchor[][][], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    lam = (Anchor[][][]) o;
-                }
-            }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 5);
+            lct = checkGet(entries, 0, SEGlyphCoverageTable.class).get();
+            nmc = checkGet(entries, 1, SEInteger.class).get();
+            mxc = checkGet(entries, 2, SEInteger.class).get();
+            maa = checkGet(entries, 3, SEMarkAnchorList.class).get();
+            lam = checkGet(entries, 4, SEAnchorMultiMatrix.class).get();
         }
     }
 
     private abstract static class MarkToMarkSubtable extends GlyphPositioningSubtable {
-        MarkToMarkSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        MarkToMarkSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GPOS_LOOKUP_TYPE_MARK_TO_MARK;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof MarkToMarkSubtable;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean position(GlyphPositioningState ps) {
             boolean applied = false;
             int giMark1 = ps.getGlyph();
@@ -1069,6 +1044,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return applied;
         }
+
         /**
          * Obtain mark 1 anchor associated with mark 1 coverage index.
          * @param ciMark1 mark 1 coverage index
@@ -1076,6 +1052,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * @return mark 1 anchor or null if none applies
          */
         public abstract MarkAnchor getMark1Anchor(int ciMark1, int giMark1);
+
         /**
          * Obtain anchor associated with mark 2 glyph index and mark 1 class.
          * @param giMark2 input glyph index of mark 2 glyph
@@ -1083,7 +1060,8 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * @return anchor or null if none applies
          */
         public abstract Anchor getMark2Anchor(int giBase, int markClass);
-        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+
+        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new MarkToMarkSubtableFormat1(id, sequence, flags, format, coverage, entries);
             } else {
@@ -1097,24 +1075,28 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         private int nmc;                                // mark class count
         private MarkAnchor[] maa;                       // mark1 anchor array, ordered by mark1 coverage index
         private Anchor[][] mam;                         // mark2 anchor matrix, ordered by mark2 coverage index, then by mark1 class
-        MarkToMarkSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        MarkToMarkSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if ((mct2 != null) && (maa != null) && (nmc > 0) && (mam != null)) {
-                List entries = new ArrayList(4);
-                entries.add(mct2);
-                entries.add(Integer.valueOf(nmc));
-                entries.add(maa);
-                entries.add(mam);
+                List<SubtableEntry> entries = new ArrayList<>(4);
+                entries.add(new SEGlyphCoverageTable(mct2));
+                entries.add(SEInteger.valueOf(nmc));
+                entries.add(new SEMarkAnchorList(maa));
+                entries.add(new SEAnchorMatrix(mam));
                 return entries;
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public MarkAnchor getMark1Anchor(int ciMark1, int giMark1) {
             if ((maa != null) && (ciMark1 < maa.length)) {
                 return maa [ ciMark1 ];
@@ -1122,7 +1104,9 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public Anchor getMark2Anchor(int giMark2, int markClass) {
             int ciMark2;
             if ((mct2 != null) && ((ciMark2 = mct2.getCoverageIndex(giMark2)) >= 0)) {
@@ -1135,50 +1119,35 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 4) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 4 entries");
-            } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof GlyphCoverageTable)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first entry must be an GlyphCoverageTable, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    mct2 = (GlyphCoverageTable) o;
-                }
-                if (((o = entries.get(1)) == null) || !(o instanceof Integer)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, second entry must be an Integer, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    nmc = ((Integer)(o)).intValue();
-                }
-                if (((o = entries.get(2)) == null) || !(o instanceof MarkAnchor[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, third entry must be a MarkAnchor[], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    maa = (MarkAnchor[]) o;
-                }
-                if (((o = entries.get(3)) == null) || !(o instanceof Anchor[][])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, fourth entry must be a Anchor[][], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    mam = (Anchor[][]) o;
-                }
-            }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 4);
+            mct2 = checkGet(entries, 0, SEGlyphCoverageTable.class).get();
+            nmc = checkGet(entries, 1, SEInteger.class).get();
+            maa = checkGet(entries, 2, SEMarkAnchorList.class).get();
+            mam = checkGet(entries, 3, SEAnchorMatrix.class).get();
         }
     }
 
     private abstract static class ContextualSubtable extends GlyphPositioningSubtable {
-        ContextualSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        ContextualSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GPOS_LOOKUP_TYPE_CONTEXTUAL;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof ContextualSubtable;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean position(GlyphPositioningState ps) {
             boolean applied = false;
             int gi = ps.getGlyph();
@@ -1193,6 +1162,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return applied;
         }
+
         /**
          * Obtain rule lookups set associated current input glyph context.
          * @param ci coverage index of glyph at current position
@@ -1203,7 +1173,8 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * @return array of rule lookups or null if none applies
          */
         public abstract RuleLookup[] getLookups(int ci, int gi, GlyphPositioningState ps, int[] rv);
-        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+
+        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new ContextualSubtableFormat1(id, sequence, flags, format, coverage, entries);
             } else if (format == 2) {
@@ -1218,25 +1189,29 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
 
     private static class ContextualSubtableFormat1 extends ContextualSubtable {
         private RuleSet[] rsa;                          // rule set array, ordered by glyph coverage index
-        ContextualSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        ContextualSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (rsa != null) {
-                List entries = new ArrayList(1);
-                entries.add(rsa);
-                return entries;
+                return mutableSingleton(new SERuleSetList(rsa));
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
-        public void resolveLookupReferences(Map/*<String,LookupTable>*/ lookupTables) {
+        @Override
+        public void resolveLookupReferences(Map<String, LookupTable> lookupTables) {
             AdvancedTypographicTable.resolveLookupReferences(rsa, lookupTables);
         }
+
         /** {@inheritDoc} */
+        @Override
         public RuleLookup[] getLookups(int ci, int gi, GlyphPositioningState ps, int[] rv) {
             assert ps != null;
             assert (rv != null) && (rv.length > 0);
@@ -1259,6 +1234,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
+
         static boolean matches(GlyphPositioningState ps, int[] glyphs, int offset, int[] rv) {
             if ((glyphs == null) || (glyphs.length == 0)) {
                 return true;                            // match null or empty glyph sequence
@@ -1284,19 +1260,10 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
                 }
             }
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 1) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 1 entry");
-            } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof RuleSet[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first entry must be an RuleSet[], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    rsa = (RuleSet[]) o;
-                }
-            }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 1);
+            rsa = checkGet(entries, 0, SERuleSetList.class).get();
         }
     }
 
@@ -1304,27 +1271,33 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         private GlyphClassTable cdt;                    // class def table
         private int ngc;                                // class set count
         private RuleSet[] rsa;                          // rule set array, ordered by class number [0...ngc - 1]
-        ContextualSubtableFormat2(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        ContextualSubtableFormat2(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (rsa != null) {
-                List entries = new ArrayList(3);
-                entries.add(cdt);
-                entries.add(Integer.valueOf(ngc));
-                entries.add(rsa);
+                List<SubtableEntry> entries = new ArrayList<>(3);
+                entries.add(new SEGlyphClassTable(cdt));
+                entries.add(SEInteger.valueOf(ngc));
+                entries.add(new SERuleSetList(rsa));
                 return entries;
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
-        public void resolveLookupReferences(Map/*<String,LookupTable>*/ lookupTables) {
+        @Override
+        public void resolveLookupReferences(Map<String,LookupTable> lookupTables) {
             AdvancedTypographicTable.resolveLookupReferences(rsa, lookupTables);
         }
+
         /** {@inheritDoc} */
+        @Override
         public RuleLookup[] getLookups(int ci, int gi, GlyphPositioningState ps, int[] rv) {
             assert ps != null;
             assert (rv != null) && (rv.length > 0);
@@ -1347,6 +1320,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
+
         static boolean matches(GlyphPositioningState ps, GlyphClassTable cdt, int[] classes, int offset, int[] rv) {
             if ((cdt == null) || (classes == null) || (classes.length == 0)) {
                 return true;                            // match null class definitions, null or empty class sequence
@@ -1377,56 +1351,40 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
                 }
             }
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 3) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 3 entries");
-            } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof GlyphClassTable)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first entry must be an GlyphClassTable, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    cdt = (GlyphClassTable) o;
-                }
-                if (((o = entries.get(1)) == null) || !(o instanceof Integer)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, second entry must be an Integer, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    ngc = ((Integer)(o)).intValue();
-                }
-                if (((o = entries.get(2)) == null) || !(o instanceof RuleSet[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, third entry must be an RuleSet[], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    rsa = (RuleSet[]) o;
-                    if (rsa.length != ngc) {
-                        throw new AdvancedTypographicTableFormatException("illegal entries, RuleSet[] length is " + rsa.length + ", but expected " + ngc + " glyph classes");
-                    }
-                }
-            }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 3);
+            cdt = checkGet(entries, 0, SEGlyphClassTable.class).get();
+            ngc = checkGet(entries, 1, SEInteger.class).get();
+            rsa = checkGet(entries, 2, SERuleSetList.class).get();
         }
     }
 
     private static class ContextualSubtableFormat3 extends ContextualSubtable {
         private RuleSet[] rsa;                          // rule set array, containing a single rule set
-        ContextualSubtableFormat3(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        ContextualSubtableFormat3(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (rsa != null) {
-                List entries = new ArrayList(1);
-                entries.add(rsa);
-                return entries;
+                return mutableSingleton(new SERuleSetList(rsa));
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
-        public void resolveLookupReferences(Map/*<String,LookupTable>*/ lookupTables) {
+        @Override
+        public void resolveLookupReferences(Map<String, LookupTable> lookupTables) {
             AdvancedTypographicTable.resolveLookupReferences(rsa, lookupTables);
         }
+
         /** {@inheritDoc} */
+        @Override
         public RuleLookup[] getLookups(int ci, int gi, GlyphPositioningState ps, int[] rv) {
             assert ps != null;
             assert (rv != null) && (rv.length > 0);
@@ -1449,6 +1407,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
+
         static boolean matches(GlyphPositioningState ps, GlyphCoverageTable[] gca, int offset, int[] rv) {
             if ((gca == null) || (gca.length == 0)) {
                 return true;                            // match null or empty coverage array
@@ -1477,35 +1436,32 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
                 }
             }
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 1) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 1 entry");
-            } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof RuleSet[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first entry must be an RuleSet[], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    rsa = (RuleSet[]) o;
-                }
-            }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 1);
+            rsa = checkGet(entries, 0, SERuleSetList.class).get();
         }
     }
 
     private abstract static class ChainedContextualSubtable extends GlyphPositioningSubtable {
-        ChainedContextualSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        ChainedContextualSubtable(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GPOS_LOOKUP_TYPE_CHAINED_CONTEXTUAL;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof ChainedContextualSubtable;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean position(GlyphPositioningState ps) {
             boolean applied = false;
             int gi = ps.getGlyph();
@@ -1520,6 +1476,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return applied;
         }
+
         /**
          * Obtain rule lookups set associated current input glyph context.
          * @param ci coverage index of glyph at current position
@@ -1530,7 +1487,8 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
          * @return array of rule lookups or null if none applies
          */
         public abstract RuleLookup[] getLookups(int ci, int gi, GlyphPositioningState ps, int[] rv);
-        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+
+        static GlyphPositioningSubtable create(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new ChainedContextualSubtableFormat1(id, sequence, flags, format, coverage, entries);
             } else if (format == 2) {
@@ -1545,25 +1503,29 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
 
     private static class ChainedContextualSubtableFormat1 extends ChainedContextualSubtable {
         private RuleSet[] rsa;                          // rule set array, ordered by glyph coverage index
-        ChainedContextualSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        ChainedContextualSubtableFormat1(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (rsa != null) {
-                List entries = new ArrayList(1);
-                entries.add(rsa);
-                return entries;
+                return mutableSingleton(new SERuleSetList(rsa));
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
-        public void resolveLookupReferences(Map/*<String,LookupTable>*/ lookupTables) {
+        @Override
+        public void resolveLookupReferences(Map<String, LookupTable> lookupTables) {
             AdvancedTypographicTable.resolveLookupReferences(rsa, lookupTables);
         }
+
         /** {@inheritDoc} */
+        @Override
         public RuleLookup[] getLookups(int ci, int gi, GlyphPositioningState ps, int[] rv) {
             assert ps != null;
             assert (rv != null) && (rv.length > 0);
@@ -1592,22 +1554,14 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
+
         private boolean matches(GlyphPositioningState ps, int[] glyphs, int offset, int[] rv) {
             return ContextualSubtableFormat1.matches(ps, glyphs, offset, rv);
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 1) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 1 entry");
-            } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof RuleSet[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first entry must be an RuleSet[], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    rsa = (RuleSet[]) o;
-                }
-            }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 1);
+            rsa = checkGet(entries, 0, SERuleSetList.class).get();
         }
     }
 
@@ -1617,29 +1571,35 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         private GlyphClassTable lcdt;                   // lookahead class def table
         private int ngc;                                // class set count
         private RuleSet[] rsa;                          // rule set array, ordered by class number [0...ngc - 1]
-        ChainedContextualSubtableFormat2(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        ChainedContextualSubtableFormat2(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (rsa != null) {
-                List entries = new ArrayList(5);
-                entries.add(icdt);
-                entries.add(bcdt);
-                entries.add(lcdt);
-                entries.add(Integer.valueOf(ngc));
-                entries.add(rsa);
+                List<SubtableEntry> entries = new ArrayList<>(5);
+                entries.add(new SEGlyphClassTable(icdt));
+                entries.add(new SEGlyphClassTable(bcdt));
+                entries.add(new SEGlyphClassTable(lcdt));
+                entries.add(SEInteger.valueOf(ngc));
+                entries.add(new SERuleSetList(rsa));
                 return entries;
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
-        public void resolveLookupReferences(Map/*<String,LookupTable>*/ lookupTables) {
+        @Override
+        public void resolveLookupReferences(Map<String,LookupTable> lookupTables) {
             AdvancedTypographicTable.resolveLookupReferences(rsa, lookupTables);
         }
+
         /** {@inheritDoc} */
+        @Override
         public RuleLookup[] getLookups(int ci, int gi, GlyphPositioningState ps, int[] rv) {
             assert ps != null;
             assert (rv != null) && (rv.length > 0);
@@ -1668,69 +1628,49 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
+
         private boolean matches(GlyphPositioningState ps, GlyphClassTable cdt, int[] classes, int offset, int[] rv) {
             return ContextualSubtableFormat2.matches(ps, cdt, classes, offset, rv);
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 5) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 5 entries");
-            } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof GlyphClassTable)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first entry must be an GlyphClassTable, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    icdt = (GlyphClassTable) o;
-                }
-                if (((o = entries.get(1)) != null) && !(o instanceof GlyphClassTable)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, second entry must be an GlyphClassTable, but is: " + o.getClass());
-                } else {
-                    bcdt = (GlyphClassTable) o;
-                }
-                if (((o = entries.get(2)) != null) && !(o instanceof GlyphClassTable)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, third entry must be an GlyphClassTable, but is: " + o.getClass());
-                } else {
-                    lcdt = (GlyphClassTable) o;
-                }
-                if (((o = entries.get(3)) == null) || !(o instanceof Integer)) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, fourth entry must be an Integer, but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    ngc = ((Integer)(o)).intValue();
-                }
-                if (((o = entries.get(4)) == null) || !(o instanceof RuleSet[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, fifth entry must be an RuleSet[], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    rsa = (RuleSet[]) o;
-                    if (rsa.length != ngc) {
-                        throw new AdvancedTypographicTableFormatException("illegal entries, RuleSet[] length is " + rsa.length + ", but expected " + ngc + " glyph classes");
-                    }
-                }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 5);
+            icdt = checkGet(entries, 0, SEGlyphClassTable.class).get();
+            bcdt = checkGet(entries, 1, SEGlyphClassTable.class).get();
+            lcdt = checkGet(entries, 2, SEGlyphClassTable.class).get();
+            ngc = checkGet(entries, 3, SEInteger.class).get();
+            rsa = checkGet(entries, 4, SERuleSetList.class).get();
+            if (rsa.length != ngc) {
+                throw new AdvancedTypographicTableFormatException("illegal entries, RuleSet[] length is " + rsa.length + ", but expected " + ngc + " glyph classes");
             }
         }
     }
 
     private static class ChainedContextualSubtableFormat3 extends ChainedContextualSubtable {
         private RuleSet[] rsa;                          // rule set array, containing a single rule set
-        ChainedContextualSubtableFormat3(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List entries) {
+        ChainedContextualSubtableFormat3(String id, int sequence, int flags, int format, GlyphCoverageTable coverage, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, coverage, entries);
             populate(entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             if (rsa != null) {
-                List entries = new ArrayList(1);
-                entries.add(rsa);
-                return entries;
+                return mutableSingleton(new SERuleSetList(rsa));
             } else {
                 return null;
             }
         }
+
         /** {@inheritDoc} */
-        public void resolveLookupReferences(Map/*<String,LookupTable>*/ lookupTables) {
+        @Override
+        public void resolveLookupReferences(Map<String,LookupTable> lookupTables) {
             AdvancedTypographicTable.resolveLookupReferences(rsa, lookupTables);
         }
+
         /** {@inheritDoc} */
+        @Override
         public RuleLookup[] getLookups(int ci, int gi, GlyphPositioningState ps, int[] rv) {
             assert ps != null;
             assert (rv != null) && (rv.length > 0);
@@ -1759,22 +1699,14 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
             }
             return null;
         }
+
         private boolean matches(GlyphPositioningState ps, GlyphCoverageTable[] gca, int offset, int[] rv) {
             return ContextualSubtableFormat3.matches(ps, gca, offset, rv);
         }
-        private void populate(List entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 1) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 1 entry");
-            } else {
-                Object o;
-                if (((o = entries.get(0)) == null) || !(o instanceof RuleSet[])) {
-                    throw new AdvancedTypographicTableFormatException("illegal entries, first entry must be an RuleSet[], but is: " + ((o != null) ? o.getClass() : null));
-                } else {
-                    rsa = (RuleSet[]) o;
-                }
-            }
+
+        private void populate(List<SubtableEntry> entries) {
+            checkSize(entries, 1);
+            rsa = checkGet(entries, 0, SERuleSetList.class).get();
         }
     }
 
@@ -1837,6 +1769,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return "{ start = " + startSize + ", end = " + endSize + ", deltas = " + Arrays.toString(deltas) + "}";
         }
@@ -2017,8 +1950,9 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             boolean first = true;
             sb.append("{ ");
             if (xPlacement != 0) {
@@ -2130,8 +2064,9 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             boolean first = true;
             sb.append("{ ");
             if (glyph != 0) {
@@ -2262,8 +2197,9 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("{ [" + x + "," + y + "]");
             if (anchorPoint != -1) {
                 sb.append(", anchorPoint = " + anchorPoint);
@@ -2304,6 +2240,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return "{ markClass = " + markClass + ", anchor = " + super.toString() + " }";
         }

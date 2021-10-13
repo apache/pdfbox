@@ -38,6 +38,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.GlyphVector;
+import org.apache.fontbox.ttf.advanced.GlyphVectorAdvanced;
+import org.apache.fontbox.ttf.advanced.GlyphVectorSimple;
 import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
 import org.apache.fontbox.ttf.gsub.GsubWorker;
 import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
@@ -263,6 +266,113 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
+     * TODO
+     * @param vector
+     * @param matrix
+     * @return
+     * @throws IOException
+     */
+    public void showGlyphVector(GlyphVector vector, Matrix textMatrix) throws IOException
+    {
+        // TODO: Check in text mode
+        PDType0Font font = (PDType0Font) fontStack.peek();
+
+        if (vector instanceof GlyphVectorAdvanced) {
+            GlyphVectorAdvanced vec = (GlyphVectorAdvanced) vector;
+
+            int[] gids = vec.getGlyphArray();
+            int[][] adjustments = vec.getAdjustments();
+
+            if (gids.length == 0) {
+                return;
+            }
+
+            // TODO: Text extraction of result PDF.
+            font.addGlyphsToSubset(vec.getGlyphs());
+
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+            if (adjustments == null) {
+                setTextMatrix(textMatrix);
+
+                for (int i = 0; i < gids.length; i++) {
+                    os.write(font.encodeGlyphId(gids[i]));
+                }
+
+                COSWriter.writeString(os.toByteArray(), outputStream);
+                write(" ");
+                writeOperator(OperatorName.SHOW_TEXT);
+            } else {
+                int adjustedY = 0;
+                int fixupX = 0;
+                Matrix tm = new Matrix(textMatrix.createAffineTransform());
+
+                for (int i = 0; i < gids.length; i++) {
+                    boolean haveXAdjust = adjustments != null &&
+                        (adjustments[i][0] != 0 || adjustments[i][2] != 0);
+                    boolean haveYAdjust = adjustments != null &&
+                        (adjustments[i][1] != 0 || adjustments[i][3] != 0);
+
+                    if (i == 0) {
+                        if (haveXAdjust || haveYAdjust) {
+                            if (haveYAdjust) {
+                                adjustedY = adjustments[i][1] + adjustments[i][3];
+                                int adjustedX = adjustments[i][0] + adjustments[i][2];
+                                tm.translate(-adjustedX, -adjustedY);
+                            } else {
+                                int adjustedX = adjustments[i][0] + adjustments[i][2];
+                                tm.translate(-adjustedX, 0);
+                            }
+                        }
+                        setTextMatrix(tm);
+                        write("[");
+                    }
+
+                    if (!haveXAdjust && !haveYAdjust) {
+                        if (fixupX != 0) {
+                            writeOperand(fixupX);
+                        }
+                        os.write(font.encodeGlyphId(gids[i]));
+                    } else if (haveXAdjust && !haveYAdjust) {
+                        if (os.size() > 0) {
+                            COSWriter.writeString(os.toByteArray(), outputStream);
+                            os.reset();
+                            writeOperand(adjustments[i][0] + adjustments[i][2]);
+                        } else if (fixupX != 0) {
+                            writeOperand(adjustments[i][0] + adjustments[i][2] + fixupX);
+                        } else {
+                            writeOperand(adjustments[i][0] + adjustments[i][2]);
+                        }
+
+                        if (adjustments[i][0] != 0) {
+                            COSWriter.writeString(font.encodeGlyphId(gids[i]), outputStream);
+                            fixupX = -adjustments[i][0];
+                        }
+                    } else if (!haveXAdjust && haveYAdjust) { 
+                        // TODO
+                    } else {
+                        // TODO
+                    }
+                }
+
+                if (os.size() > 0) {
+                    COSWriter.writeString(os.toByteArray(), outputStream);
+                    write("] ");
+                    writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
+                } else if (fixupX != 0) {
+                    write("] ");
+                    writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
+                }
+            }
+        } else if (vector instanceof GlyphVectorSimple) {
+            // TODO
+
+        } else {
+            throw new IllegalArgumentException("Invalid glyph vector provided: " + vector.getClass().getCanonicalName());
+        }
+    }
+
+    /**
      * Outputs a string using the correct encoding and subsetting as required.
      *
      * @param text The Unicode text to show.
@@ -287,7 +397,6 @@ abstract class PDAbstractContentStream implements Closeable
         byte[] encodedText = null;
         if (font instanceof PDType0Font)
         {
-
             GsubWorker gsubWorker = gsubWorkers.get(font);
             if (gsubWorker != null)
             {

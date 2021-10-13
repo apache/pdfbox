@@ -43,26 +43,31 @@ public abstract class GlyphSubstitutionSubtable extends GlyphSubtable implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getTableType() {
         return AdvancedTypographicTable.GLYPH_TABLE_TYPE_SUBSTITUTION;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getTypeName() {
         return GlyphSubstitutionTable.getLookupTypeName(getType());
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(GlyphSubtable subtable) {
         return subtable instanceof GlyphSubstitutionSubtable;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean usesReverseScan() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean substitute(GlyphSubstitutionState ss) {
         return false;
     }

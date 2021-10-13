@@ -18,8 +18,6 @@
 package org.apache.fontbox.ttf.advanced;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -28,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFDataStream;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.SubtableEntry;
 import org.apache.fontbox.ttf.advanced.scripts.ScriptProcessor;
 import org.apache.fontbox.ttf.advanced.util.GlyphSequence;
 
@@ -75,25 +74,25 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
     private MarkAttachmentSubtable mat;
 
     public GlyphDefinitionTable(OpenTypeFont otf) {
-        super(otf, null, new java.util.HashMap(0));
+        super(otf, null, new java.util.HashMap<>(0));
     }
 
     /**
      * Initialize a <code>GlyphDefinitionTable</code> object using the specified subtables.
      * @param subtables a list of identified subtables
      */
-    public GlyphDefinitionTable initialize(List subtables) {
-        if ((subtables == null) || (subtables.size() == 0)) {
+    public GlyphDefinitionTable initialize(List<GlyphSubtable> subtables) {
+        if ((subtables == null) || (subtables.isEmpty())) {
             throw new AdvancedTypographicTableFormatException("subtables must be non-empty");
         } else {
-            for (Iterator it = subtables.iterator(); it.hasNext();) {
-                Object o = it.next();
+            for (GlyphSubtable o : subtables) {
                 if (o instanceof GlyphDefinitionSubtable) {
-                    addSubtable((GlyphSubtable) o);
+                    addSubtable(o);
                 } else {
                     throw new AdvancedTypographicTableFormatException("subtable must be a glyph definition subtable");
                 }
             }
+
             freezeSubtables();
             return this;
         }
@@ -126,6 +125,7 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void addSubtable(GlyphSubtable subtable) {
         if (subtable instanceof GlyphClassSubtable) {
             this.gct = (GlyphClassSubtable) subtable;
@@ -256,7 +256,7 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
      * @param entries subtable entries
      * @return a glyph subtable instance
      */
-    public static GlyphSubtable createSubtable(int type, String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+    public static GlyphSubtable createSubtable(int type, String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
         GlyphSubtable st = null;
         switch (type) {
         case GDEF_LOOKUP_TYPE_GLYPH_CLASS:
@@ -278,13 +278,16 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
     }
 
     private abstract static class GlyphClassSubtable extends GlyphDefinitionSubtable {
-        GlyphClassSubtable(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+        GlyphClassSubtable(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, mapping);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GDEF_LOOKUP_TYPE_GLYPH_CLASS;
         }
+
         /**
          * Determine if glyph belongs to pre-defined glyph class.
          * @param gid a glyph identifier (index)
@@ -292,13 +295,15 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
          * @return true if glyph belongs to specified glyph class
          */
         public abstract boolean isGlyphClass(int gid, int gc);
+
         /**
          * Determine glyph class.
          * @param gid a glyph identifier (index)
          * @return a pre-defined glyph class (GLYPH_CLASS_BASE|GLYPH_CLASS_LIGATURE|GLYPH_CLASS_MARK|GLYPH_CLASS_COMPONENT).
          */
         public abstract int getGlyphClass(int gid);
-        static GlyphDefinitionSubtable create(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+
+        static GlyphDefinitionSubtable create(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new GlyphClassSubtableFormat1(id, sequence, flags, format, mapping, entries);
             } else {
@@ -308,18 +313,24 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
     }
 
     private static class GlyphClassSubtableFormat1 extends GlyphClassSubtable {
-        GlyphClassSubtableFormat1(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+        GlyphClassSubtableFormat1(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, mapping, entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             return null;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof GlyphClassSubtable;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isGlyphClass(int gid, int gc) {
             GlyphClassMapping cm = getClasses();
             if (cm != null) {
@@ -328,7 +339,9 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
                 return false;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getGlyphClass(int gid) {
             GlyphClassMapping cm = getClasses();
             if (cm != null) {
@@ -340,14 +353,17 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
     }
 
     private abstract static class AttachmentPointSubtable extends GlyphDefinitionSubtable {
-        AttachmentPointSubtable(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+        AttachmentPointSubtable(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, mapping);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GDEF_LOOKUP_TYPE_ATTACHMENT_POINT;
         }
-        static GlyphDefinitionSubtable create(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+
+        static GlyphDefinitionSubtable create(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new AttachmentPointSubtableFormat1(id, sequence, flags, format, mapping, entries);
             } else {
@@ -357,28 +373,35 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
     }
 
     private static class AttachmentPointSubtableFormat1 extends AttachmentPointSubtable {
-        AttachmentPointSubtableFormat1(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+        AttachmentPointSubtableFormat1(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, mapping, entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             return null;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof AttachmentPointSubtable;
         }
     }
 
     private abstract static class LigatureCaretSubtable extends GlyphDefinitionSubtable {
-        LigatureCaretSubtable(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+        LigatureCaretSubtable(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, mapping);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GDEF_LOOKUP_TYPE_LIGATURE_CARET;
         }
-        static GlyphDefinitionSubtable create(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+
+        static GlyphDefinitionSubtable create(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new LigatureCaretSubtableFormat1(id, sequence, flags, format, mapping, entries);
             } else {
@@ -388,27 +411,34 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
     }
 
     private static class LigatureCaretSubtableFormat1 extends LigatureCaretSubtable {
-        LigatureCaretSubtableFormat1(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+        LigatureCaretSubtableFormat1(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, mapping, entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             return null;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof LigatureCaretSubtable;
         }
     }
 
     private abstract static class MarkAttachmentSubtable extends GlyphDefinitionSubtable {
-        MarkAttachmentSubtable(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+        MarkAttachmentSubtable(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, mapping);
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getType() {
             return GDEF_LOOKUP_TYPE_MARK_ATTACHMENT;
         }
+
         /**
          * Determine if glyph belongs to (font specific) mark attachment class.
          * @param gid a glyph identifier (index)
@@ -422,7 +452,8 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
          * @return a non-negative mark attachment class, or -1 if no class defined
          */
         public abstract int getMarkAttachClass(int gid);
-        static GlyphDefinitionSubtable create(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+
+        static GlyphDefinitionSubtable create(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             if (format == 1) {
                 return new MarkAttachmentSubtableFormat1(id, sequence, flags, format, mapping, entries);
             } else {
@@ -432,18 +463,24 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
     }
 
     private static class MarkAttachmentSubtableFormat1 extends MarkAttachmentSubtable {
-        MarkAttachmentSubtableFormat1(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List entries) {
+        MarkAttachmentSubtableFormat1(String id, int sequence, int flags, int format, GlyphMappingTable mapping, List<SubtableEntry> entries) {
             super(id, sequence, flags, format, mapping, entries);
         }
+
         /** {@inheritDoc} */
-        public List getEntries() {
+        @Override
+        public List<SubtableEntry> getEntries() {
             return null;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isCompatible(GlyphSubtable subtable) {
             return subtable instanceof MarkAttachmentSubtable;
         }
+
         /** {@inheritDoc} */
+        @Override
         public boolean isMarkAttachClass(int gid, int mac) {
             GlyphClassMapping cm = getClasses();
             if (cm != null) {
@@ -452,7 +489,9 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
                 return false;
             }
         }
+
         /** {@inheritDoc} */
+        @Override
         public int getMarkAttachClass(int gid) {
             GlyphClassMapping cm = getClasses();
             if (cm != null) {

@@ -21,14 +21,15 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.SubtableEntry;
+
 /**
  * <p>The <code>GlyphSubtable</code> implements an abstract glyph subtable that
  * encapsulates identification, type, format, and coverage information.</p>
  *
  * @author Glenn Adams
  */
-@SuppressWarnings("unchecked") 
-public abstract class GlyphSubtable implements Comparable {
+public abstract class GlyphSubtable implements Comparable<GlyphSubtable> {
 
     /** lookup flag - right to left */
     public static final int LF_RIGHT_TO_LEFT = 0x0001;
@@ -58,7 +59,7 @@ public abstract class GlyphSubtable implements Comparable {
     /** subtable mapping table */
     private GlyphMappingTable mapping;
     /** weak reference to parent (gsub or gpos) table */
-    private WeakReference table;
+    private WeakReference<AdvancedTypographicTable> table;
 
     /**
      * Instantiate this glyph subtable.
@@ -155,11 +156,11 @@ public abstract class GlyphSubtable implements Comparable {
     }
 
     /** @return this subtable's lookup entries */
-    public abstract List getEntries();
+    public abstract List<SubtableEntry> getEntries();
 
     /** @return this subtable's parent table (or null if undefined) */
     public synchronized AdvancedTypographicTable getTable() {
-        WeakReference r = this.table;
+        WeakReference<AdvancedTypographicTable> r = this.table;
         return (r != null) ? (AdvancedTypographicTable) r.get() : null;
     }
 
@@ -171,14 +172,14 @@ public abstract class GlyphSubtable implements Comparable {
      * @throws IllegalStateException if table is already set to non-null
      */
     public synchronized void setTable(AdvancedTypographicTable table) throws IllegalStateException {
-        WeakReference r = this.table;
+        WeakReference<AdvancedTypographicTable> r = this.table;
         if (table == null) {
             this.table = null;
             if (r != null) {
                 r.clear();
             }
         } else if (r == null) {
-            this.table = new WeakReference(table);
+            this.table = new WeakReference<>(table);
         } else {
             throw new IllegalStateException("table already set");
         }
@@ -188,7 +189,7 @@ public abstract class GlyphSubtable implements Comparable {
      * Resolve references to lookup tables, e.g., in RuleLookup, to the lookup tables themselves.
      * @param lookupTables map from lookup table identifers, e.g. "lu4", to lookup tables
      */
-    public void resolveLookupReferences(Map/*<String,AdvancedTypographicTable.LookupTable>*/ lookupTables) {
+    public void resolveLookupReferences(Map<String, AdvancedTypographicTable.LookupTable> lookupTables) {
     }
 
     /**
@@ -217,6 +218,7 @@ public abstract class GlyphSubtable implements Comparable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode() {
         int hc = sequence;
         hc = (hc * 3) + (lookupId.hashCode() ^ hc);
@@ -228,6 +230,7 @@ public abstract class GlyphSubtable implements Comparable {
      * @return true if the lookup identifier and the sequence number of the specified subtable is the same
      * as the lookup identifier and sequence number of this subtable
      */
+    @Override
     public boolean equals(Object o) {
         if (o instanceof GlyphSubtable) {
             GlyphSubtable st = (GlyphSubtable) o;
@@ -237,24 +240,26 @@ public abstract class GlyphSubtable implements Comparable {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return '{' + getSequence() + "=" + getClass().getSimpleName() + '}';
+    }
+
     /**
      * {@inheritDoc}
      * @return the result of comparing the lookup identifier and the sequence number of the specified subtable with
      * the lookup identifier and sequence number of this subtable
      */
-    public int compareTo(Object o) {
+    @Override
+    public int compareTo(GlyphSubtable st) {
         int d;
-        if (o instanceof GlyphSubtable) {
-            GlyphSubtable st = (GlyphSubtable) o;
-            if ((d = lookupId.compareTo(st.lookupId)) == 0) {
-                if (sequence < st.sequence) {
-                    d = -1;
-                } else if (sequence > st.sequence) {
-                    d = 1;
-                }
+        if ((d = lookupId.compareTo(st.lookupId)) == 0) {
+            if (sequence < st.sequence) {
+                d = -1;
+            } else if (sequence > st.sequence) {
+                d = 1;
             }
-        } else {
-            d = -1;
         }
         return d;
     }
