@@ -1880,7 +1880,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
             //TODO
             // 1. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask,
-            //    also remove use of AffineTransform here
             // 2. Is it possible to create the softmask and transparency group in the correct rotation?
             //    (needs rendering identity testing before committing!)
             AffineTransform adjustedTransform = new AffineTransform(xform);
