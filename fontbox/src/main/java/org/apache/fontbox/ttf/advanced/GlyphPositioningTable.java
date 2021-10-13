@@ -839,16 +839,11 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
         }
 
         private void populate(List<SubtableEntry> entries) {
-            if (entries == null) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, must be non-null");
-            } else if (entries.size() != 4) {
-                throw new AdvancedTypographicTableFormatException("illegal entries, " + entries.size() + " entries present, but requires 4 entries");
-            } else {
-                bct = checkGet(entries, 0, SEGlyphCoverageTable.class).get();
-                nmc = checkGet(entries, 1, SEInteger.class).get();
-                maa = checkGet(entries, 2, SEMarkAnchorList.class).get();
-                bam = checkGet(entries, 3, SEAnchorMatrix.class).get();
-            }
+            checkSize(entries, 4);
+            bct = checkGet(entries, 0, SEGlyphCoverageTable.class).get();
+            nmc = checkGet(entries, 1, SEInteger.class).get();
+            maa = checkGet(entries, 2, SEMarkAnchorList.class).get();
+            bam = checkGet(entries, 3, SEAnchorMatrix.class).get();
         }
     }
 

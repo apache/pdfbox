@@ -78,16 +78,23 @@ public final class AdvancedTextLayout
                 stream.showGlyphVector(vector, createMatrix(x, 200));
                 x = getAdvance(10, vector, fontSize);
 
-                vector = otFont.createGlyphVector("|AFTER");
+                vector = otFont.createGlyphVector("|AFTER (SIMPLE)");
                 stream.showGlyphVector(vector, createMatrix(x, 200));
                 x = 10;
 
-                vector = otFont.createGlyphVector("A̋L̦        N̂N̦B   N̂N̦B ўўўў");
+                String complex = "A̋L̦        N̂N̦B   N̂N̦B ўўўў";
+
+                vector = otFont.createGlyphVector(complex);
                 stream.showGlyphVector(vector, createMatrix(x, 100));
                 x = getAdvance(10, vector, fontSize);
 
-                vector = otFont.createGlyphVector("|AFTER");
-                stream.showGlyphVector(vector, createMatrix(x + 0, 130));
+                vector = otFont.createGlyphVector("|AFTER (COMPLEX)");
+                stream.showGlyphVector(vector, createMatrix(x, 100));
+
+                stream.setTextMatrix(Matrix.getTranslateInstance(10, 160));
+                stream.showText(complex);
+                stream.setTextMatrix(Matrix.getTranslateInstance(10 + (font.getStringWidth(complex) / 1000f * fontSize), 160));
+                stream.showText("|AFTER (BAD)");
 
                 stream.endText();
             }

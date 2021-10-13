@@ -175,11 +175,14 @@ public class OpenTypeFont extends TrueTypeFont
         int[] codePoints = text.codePoints().toArray();
         int[] originalGlyphs = new int[codePoints.length];
 
+        // TODO: What if cmap is null?
+        // TODO: What if glyph for character does not exist?
         CmapLookup cmapLookup = getUnicodeCmapLookup();
 
         for (int i = 0; i < codePoints.length; i++) {
             originalGlyphs[i] = cmapLookup.getGlyphId(codePoints[i]);
         }
+//System.out.println("original glyphs = " + Arrays.toString(originalGlyphs));
 
         IntBuffer characters = IntBuffer.wrap(codePoints);
         IntBuffer glyphs = IntBuffer.wrap(originalGlyphs);
@@ -192,51 +195,72 @@ public class OpenTypeFont extends TrueTypeFont
         org.apache.fontbox.ttf.advanced.GlyphPositioningTable positioningTable =
           (org.apache.fontbox.ttf.advanced.GlyphPositioningTable) getGPOS();
 
-        // TODO: Correct script and language
-        GlyphSequence substituted = substitutionTable != null ? 
-             substitutionTable.substitute(sequence, "latn", "en", null) : sequence;
+        // org.apache.fontbox.ttf.advanced.GlyphDefinitionTable gdefTable =
+        //   (org.apache.fontbox.ttf.advanced.GlyphDefinitionTable) getGDEF();
 
-        int[][] adjustments = new int[substituted.getGlyphCount()][4];
-        int[] widths = new int[substituted.getGlyphCount()];
-        int[] workingGlyphs = substituted.getGlyphArray(false);
-
-        // for (int i = 0; i < widths.length; i++) {
-        //     widths[i] = (int) (getAdvanceWidth(workingGlyphs[i]) * 20);
+        // if (gdefTable != null) {
+        //     sequence = gdefTable.reorderCombiningMarks(sequence, widths, gpa, script, language, features);
         // }
 
-        // TODO: Correct script, language and font size
-        // TODO: widths?
-        boolean positioned = positioningTable.position(
-            substituted, "latn", "en", null, 20, widths, adjustments);
-//System.out.println(Arrays.toString(widths));
-        int[] outGlyphs = substituted.getGlyphArray(true);
+        // TODO: Correct script and language
+        GlyphSequence substituted = substitutionTable != null ? 
+             substitutionTable.substitute(sequence, "latn", "dflt", null) : sequence;
 
-        float width = 0f;
-        for (int i = 0; i < outGlyphs.length; i++) {
-            int[] glyphAdjust = adjustments[i];
+        int[][] adjustments = null;
+        int[] widths = null;
+        boolean positioned = false;
 
-            int placementX = glyphAdjust[0];
-            int placementY = glyphAdjust[1];
-            int advanceX = glyphAdjust[2];
-            int advanceY = glyphAdjust[3];
+        if (positioningTable != null) {
+            int size = substituted.getGlyphCount();
+            adjustments = new int[size][4];
+            widths = new int[size];
+            int[] workingGlyphs = substituted.getGlyphArray(false);
 
-            int xAdjust = 0;
-            if (placementX != 0 || advanceX != 0) {
-                xAdjust = advanceX + (placementX);
+            for (int i = 0; i < size; i++) {
+                widths[i] = getAdvanceWidth(workingGlyphs[i]);
             }
 
-            // System.out.println("xAdjust = " + Arrays.toString(glyphAdjust));
-            // System.out.println("advance = " + getAdvanceWidth(outGlyphs[i]));
+            // TODO: Correct script, language and font size
+            // TODO: widths?
+            positioned = positioningTable != null ? positioningTable.position(
+                substituted, "latn", "dflt", null, 20, widths, adjustments) : false;
+        }
+
+//System.out.println("widths = " + Arrays.toString(widths));
+        int[] outGlyphs = substituted.getGlyphArray(false);
+//System.out.println("outGlyphs = " + Arrays.toString(outGlyphs));
+        int outSize = substituted.getGlyphCount();
+
+        float width = 0f;
+        for (int i = 0; i < outSize; i++) {
+            int xAdjust = 0;
+
+            if (positioned) {
+                int[] glyphAdjust = adjustments[i];
+//System.out.println("xAdjust = " + Arrays.toString(glyphAdjust));
+
+                int placementX = glyphAdjust[0];
+                int placementY = glyphAdjust[1];
+                int advanceX = glyphAdjust[2];
+                int advanceY = glyphAdjust[3];
+
+                if (placementX != 0 || advanceX != 0) {
+                    xAdjust = advanceX; // + placementX;
+                }
+            }
+
+
+//System.out.println("advance = " + getAdvanceWidth(outGlyphs[i]));
 
             // TODO: Something with yAdjust
             // TODO: Debug width
 
-            width += getNormalizedWidth(getAdvanceWidth(outGlyphs[i]) + (xAdjust));
+            width += getAdvanceWidth(outGlyphs[i]) + xAdjust;
         }
 
         //System.out.println("w = " + width);
 
-        return new GlyphVectorAdvanced(outGlyphs, width, positioned ? adjustments : null);
+        return new GlyphVectorAdvanced(outGlyphs, getNormalizedWidth(width), positioned ? adjustments : null);
     }
 
 }

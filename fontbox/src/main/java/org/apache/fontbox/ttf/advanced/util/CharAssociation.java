@@ -221,6 +221,7 @@ public class CharAssociation implements Cloneable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object clone() {
         try {
             CharAssociation ca = (CharAssociation) super.clone();
@@ -476,7 +477,7 @@ public class CharAssociation implements Cloneable {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append('[');
         sb.append(offset);
         sb.append(',');

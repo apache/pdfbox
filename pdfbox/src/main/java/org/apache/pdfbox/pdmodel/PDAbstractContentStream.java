@@ -274,7 +274,16 @@ abstract class PDAbstractContentStream implements Closeable
      */
     public void showGlyphVector(GlyphVector vector, Matrix textMatrix) throws IOException
     {
-        // TODO: Check in text mode
+        if (!inTextMode)
+        {
+            throw new IllegalStateException("Must call beginText() before showText()");
+        }
+
+        if (fontStack.isEmpty())
+        {
+            throw new IllegalStateException("Must call setFont() before showText()");
+        }
+
         PDType0Font font = (PDType0Font) fontStack.peek();
 
         if (vector instanceof GlyphVectorAdvanced) {
@@ -304,54 +313,75 @@ abstract class PDAbstractContentStream implements Closeable
                 writeOperator(OperatorName.SHOW_TEXT);
             } else {
                 int adjustedY = 0;
+                // fixupX records the move back we have to perform after altering the placement of a glyph
                 int fixupX = 0;
                 Matrix tm = new Matrix(textMatrix.createAffineTransform());
 
                 for (int i = 0; i < gids.length; i++) {
-                    boolean haveXAdjust = adjustments != null &&
-                        (adjustments[i][0] != 0 || adjustments[i][2] != 0);
-                    boolean haveYAdjust = adjustments != null &&
-                        (adjustments[i][1] != 0 || adjustments[i][3] != 0);
+                    int placementX = 0;
+                    int placementY = 0;
+                    int advanceX = 0;
+                    int advanceY = 0;
+
+                    if (adjustments != null) {
+                        placementX = adjustments[i][0];
+                        placementY = adjustments[i][1];
+                        advanceX = adjustments[i][2];
+                        advanceY = adjustments[i][3];
+                    }
+
+                    boolean haveXAdjust = placementX != 0 || advanceX != 0;
+                    boolean haveYAdjust = placementY != 0 || advanceY != 0;
 
                     if (i == 0) {
                         if (haveXAdjust || haveYAdjust) {
+                            // If the first glyph has adjustments adjust the text matrix.
                             if (haveYAdjust) {
-                                adjustedY = adjustments[i][1] + adjustments[i][3];
-                                int adjustedX = adjustments[i][0] + adjustments[i][2];
+                                adjustedY = placementY + advanceY;
+                                int adjustedX = placementX + advanceX;
                                 tm.translate(-adjustedX, -adjustedY);
                             } else {
-                                int adjustedX = adjustments[i][0] + adjustments[i][2];
+                                int adjustedX = placementX + advanceX;
                                 tm.translate(-adjustedX, 0);
+                                fixupX = placementX;
                             }
                         }
+
+                        haveXAdjust = false;
+                        haveYAdjust = false;
+
                         setTextMatrix(tm);
                         write("[");
-                    }
 
-                    if (!haveXAdjust && !haveYAdjust) {
-                        if (fixupX != 0) {
-                            writeOperand(fixupX);
-                        }
                         os.write(font.encodeGlyphId(gids[i]));
-                    } else if (haveXAdjust && !haveYAdjust) {
-                        if (os.size() > 0) {
-                            COSWriter.writeString(os.toByteArray(), outputStream);
-                            os.reset();
-                            writeOperand(adjustments[i][0] + adjustments[i][2]);
-                        } else if (fixupX != 0) {
-                            writeOperand(adjustments[i][0] + adjustments[i][2] + fixupX);
-                        } else {
-                            writeOperand(adjustments[i][0] + adjustments[i][2]);
-                        }
-
-                        if (adjustments[i][0] != 0) {
-                            COSWriter.writeString(font.encodeGlyphId(gids[i]), outputStream);
-                            fixupX = -adjustments[i][0];
-                        }
-                    } else if (!haveXAdjust && haveYAdjust) { 
-                        // TODO
                     } else {
-                        // TODO
+                        if (!haveXAdjust && !haveYAdjust) {
+                            if (fixupX != 0) {
+                                writeOperand(fixupX);
+                                fixupX = 0;
+                            }
+                            os.write(font.encodeGlyphId(gids[i]));
+                        } else if (haveXAdjust && !haveYAdjust) {
+                            if (os.size() > 0) {
+                                COSWriter.writeString(os.toByteArray(), outputStream);
+                                os.reset();
+                                writeOperand(placementX + advanceX);
+                            } else if (fixupX != 0) {
+                                writeOperand(placementX + advanceX + fixupX);
+                                fixupX = 0;
+                            } else {
+                                writeOperand(placementX + advanceX);
+                            }
+
+                            if (placementX != 0) {
+                                COSWriter.writeString(font.encodeGlyphId(gids[i]), outputStream);
+                                fixupX = -placementX;
+                            }
+                        } else if (!haveXAdjust && haveYAdjust) { 
+                            // TODO
+                        } else {
+                            // TODO
+                        }
                     }
                 }
 
@@ -359,7 +389,7 @@ abstract class PDAbstractContentStream implements Closeable
                     COSWriter.writeString(os.toByteArray(), outputStream);
                     write("] ");
                     writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
-                } else if (fixupX != 0) {
+                } else {
                     write("] ");
                     writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
                 }
@@ -368,7 +398,7 @@ abstract class PDAbstractContentStream implements Closeable
             // TODO
 
         } else {
-            throw new IllegalArgumentException("Invalid glyph vector provided: " + vector.getClass().getCanonicalName());
+            throw new IllegalArgumentException("Invalid glyph vector provided: " + vector.getClass().getName());
         }
     }
 
