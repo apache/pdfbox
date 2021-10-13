@@ -32,7 +32,7 @@ package org.apache.pdfbox.pdmodel.encryption;
 public class StandardDecryptionMaterial extends DecryptionMaterial
 {
 
-    private String password = null;
+    private final String password;
 
     /**
      * Create a new standard decryption material with the given password.

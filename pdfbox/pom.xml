@@ -78,7 +78,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.12.4</version>
+            <version>4.0.0</version>
             <scope>test</scope>
         </dependency>
         <!-- For legal reasons (incompatible license), these three dependencies below
@@ -704,6 +704,19 @@
                             <outputDirectory>${project.build.directory}/imgs</outputDirectory>
                             <outputFileName>PDFBOX-5196-lotus.jpg</outputFileName>
                             <sha512>37c73b41d1e00d66717c3715e6c45724c3f163d3d5b045c67e90c3713746d39eef96b4f0e6f368d0679d4c73d02ca01cfe5141d8a526e46ea15a4579ea1e75a2</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-4831</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13002695/13._Korona_szallo_vegzes_13.09.26.eredeti.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-4831.pdf</outputFileName>
+                            <sha512>cb13ce2ca64fa446b9d840444f6d363f0d826a55e4dae1c2de094aaee4dd92df192ec375ff6ca0ee50c5cdd52b634b9b838431d7aa6b852de02504c3fd95531a</sha512>
                         </configuration>
                     </execution>
                 </executions>
