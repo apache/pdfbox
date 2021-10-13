@@ -1041,6 +1041,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
         }
 
+        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
+        setClip();
+
         if (pdImage.isStencil())
         {
             if (getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDPattern)
@@ -1112,8 +1115,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
                 
                 // draw the image
-                setClip();
-                graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
                 graphics.drawImage(renderedPaint,
                         AffineTransform.getTranslateInstance(bounds.getMinX(), bounds.getMinY()),
                         null);
@@ -1184,8 +1185,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private void drawBufferedImage(BufferedImage image, AffineTransform at) throws IOException
     {
-        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
-        setClip();
         AffineTransform imageTransform = new AffineTransform(at);
         int width = image.getWidth();
         int height = image.getHeight();
