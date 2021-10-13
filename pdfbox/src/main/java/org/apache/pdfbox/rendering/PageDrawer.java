@@ -644,8 +644,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         
         int width = (int) Math.ceil(transformedBounds.getWidth());
         int height = (int) Math.ceil(transformedBounds.getHeight());
-        BufferedImage transformedGray = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY); 
-        
+        BufferedImage transformedGray = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+
+        if (width == gray.getWidth() && height == gray.getHeight() && at.isIdentity())
+        {
+            return gray;
+        }
+
         Graphics2D g2 = (Graphics2D) transformedGray.getGraphics();
         g2.drawImage(gray, at, null);
         g2.dispose();
