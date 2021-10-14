@@ -1601,8 +1601,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                         (float)clipRect.getWidth(), (float)clipRect.getHeight());
 
             // apply the underlying Graphics2D device's DPI transform
-            AffineTransform dpiTransform = AffineTransform.getScaleInstance(xformScalingFactorX, xformScalingFactorY);
-            Rectangle2D bounds = dpiTransform.createTransformedShape(clipRect).getBounds2D();
+            AffineTransform xformOriginal = xform;
+            xform = AffineTransform.getScaleInstance(xformScalingFactorX, xformScalingFactorY);
+            Rectangle2D bounds = xform.createTransformedShape(clipRect).getBounds2D();
 
             minX = (int) Math.floor(bounds.getMinX());
             minY = (int) Math.floor(bounds.getMinY());
@@ -1679,10 +1680,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             // apply device transform (DPI)
             // the initial translation is ignored, because we're not writing into the initial graphics device
-            g.transform(dpiTransform);
+            g.transform(xform);
 
-            AffineTransform xformOriginal = xform;
-            xform = AffineTransform.getScaleInstance(xformScalingFactorX, xformScalingFactorY);
             PDRectangle pageSizeOriginal = pageSize;
             pageSize = new PDRectangle(minX / xformScalingFactorX,
                                        minY / xformScalingFactorY,
