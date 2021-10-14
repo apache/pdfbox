@@ -1712,6 +1712,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         transparencyGroupStack.pop();
                     }
                 }
+
+                if (needsBackdrop)
+                {
+                    ((GroupGraphics) graphics).removeBackdrop(backdropImage, backdropX, backdropY);
+                }
             }
             finally 
             {
@@ -1724,11 +1729,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 linePath = linePathOriginal;
                 pageSize = pageSizeOriginal;
                 xform = xformOriginal;
-            }
-
-            if (needsBackdrop)
-            {
-                ((GroupGraphics) g).removeBackdrop(backdropImage, backdropX, backdropY);
             }
         }
 
