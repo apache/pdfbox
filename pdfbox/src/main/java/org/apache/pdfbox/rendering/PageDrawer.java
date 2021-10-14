@@ -580,7 +580,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         linePath.closePath();
     }
 
-    //TODO: move soft mask apply to getPaint()?
     private Paint applySoftMaskToPaint(Paint parentPaint, PDSoftMask softMask) throws IOException
     {
         if (softMask == null || softMask.getGroup() == null)
@@ -784,7 +783,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void strokePath() throws IOException
     {
-        //TODO bbox of shading pattern should be used here? (see fillPath)
         if (isContentRendered())
         {
             graphics.setComposite(getGraphicsState().getStrokingJavaComposite());
