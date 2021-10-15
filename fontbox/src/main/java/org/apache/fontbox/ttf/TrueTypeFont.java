@@ -31,6 +31,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
+import org.apache.fontbox.ttf.advanced.api.AdvancedOpenTypeFont;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.util.BoundingBox;
 
@@ -55,8 +56,6 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     private final Object lockPSNames = new Object();
     private final List<String> enabledGsubFeatures = new ArrayList<>();
 
-    protected boolean useAlternateATT;
-
     /**
      * Constructor.  Clients should use the TTFParser to create a new TrueTypeFont object.
      * 
@@ -64,19 +63,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      */
     TrueTypeFont(TTFDataStream fontData)
     {
-        this(fontData, false);
-    }
-    
-    /**
-     * Constructor.  Clients should use the TTFParser to create a new TrueTypeFont object.
-     * 
-     * @param fontData The font data.
-     * @param useAlternateATT true if using alternate ATT (advanced typograph tables) implementation.
-     */
-    TrueTypeFont(TTFDataStream fontData, boolean useAlternateATT)
-    {
         this.data = fontData;
-        this.useAlternateATT = useAlternateATT;
     }
     
     @Override
@@ -349,10 +336,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      */
     public GlyphSubstitutionTable getGsub() throws IOException
     {
-        if (!useAlternateATT)
-            return (GlyphSubstitutionTable) getTable(GlyphSubstitutionTable.TAG);
-        else
-            return null;
+        return (GlyphSubstitutionTable) getTable(GlyphSubstitutionTable.TAG);
     }
 
     /**
@@ -381,13 +365,13 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     }
 
     /**
-     * Read the given table if necessary. Package-private, used by TTFParser only.
+     * Read the given table if necessary. Protected, used by TTFParser and subclasses only.
      * 
      * @param table the table to be initialized
      * 
      * @throws IOException if there was an error reading the table.
      */
-    void readTable(TTFTable table) throws IOException
+    protected void readTable(TTFTable table) throws IOException
     {
         // PDFBOX-4219: synchronize on data because it is accessed by several threads
         // when PDFBox is accessing a standard 14 font for the first time

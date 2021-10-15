@@ -29,7 +29,6 @@ public class TTFParser
 {
     private boolean isEmbedded = false;
     private boolean parseOnDemandOnly = false;
-    protected boolean useAlternateATT = false;
 
     /**
      * Constructor.
@@ -57,21 +56,8 @@ public class TTFParser
      */
     public TTFParser(boolean isEmbedded, boolean parseOnDemand)
     {
-        this(isEmbedded, parseOnDemand, false);
-    }
-
-    /**
-     *  Constructor.
-     *  
-     * @param isEmbedded true if the font is embedded in PDF
-     * @param parseOnDemand true if the tables of the font should be parsed on demand
-     * @param useAlternateATT true if using alternate ATT (advanced typograph tables) implementation
-     */
-    public TTFParser(boolean isEmbedded, boolean parseOnDemand, boolean useAlternateATT)
-    {
         this.isEmbedded = isEmbedded;
         this.parseOnDemandOnly = parseOnDemand;
-        this.useAlternateATT = useAlternateATT;
     }
 
     /**
@@ -169,7 +155,7 @@ public class TTFParser
 
     TrueTypeFont newFont(TTFDataStream raf)
     {
-        return new TrueTypeFont(raf, useAlternateATT);
+        return new TrueTypeFont(raf);
     }
 
     /**
@@ -250,10 +236,31 @@ public class TTFParser
         return false;
     }
 
-    private TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
+    protected TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
+    {
+        String tag = raf.readString(4);
+
+        TTFTable table = createTable(font, tag);
+        
+        if (table == null)
+            table = readTable(font, tag);
+        table.setTag(tag);
+        table.setCheckSum(raf.readUnsignedInt());
+        table.setOffset(raf.readUnsignedInt());
+        table.setLength(raf.readUnsignedInt());
+        
+        // skip tables with zero length (except glyf)
+        if (table.getLength() == 0 && !tag.equals(GlyphTable.TAG))
+        {
+            return null;
+        }
+
+        return table;
+    }
+
+    protected TTFTable createTable(TrueTypeFont font, String tag)
     {
         TTFTable table = null;
-        String tag = raf.readString(4);
         switch (tag)
         {
             case CmapTable.TAG:
@@ -302,25 +309,11 @@ public class TTFParser
                 table = new VerticalOriginTable(font);
                 break;
             case GlyphSubstitutionTable.TAG:
-                if (!useAlternateATT)
-                    table = new GlyphSubstitutionTable(font);
+                table = new GlyphSubstitutionTable(font);
                 break;
             default:
                 break;
         }
-        if (table == null)
-            table = readTable(font, tag);
-        table.setTag(tag);
-        table.setCheckSum(raf.readUnsignedInt());
-        table.setOffset(raf.readUnsignedInt());
-        table.setLength(raf.readUnsignedInt());
-        
-        // skip tables with zero length (except glyf)
-        if (table.getLength() == 0 && !tag.equals(GlyphTable.TAG))
-        {
-            return null;
-        }
-
         return table;
     }
 

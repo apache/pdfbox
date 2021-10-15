@@ -27,6 +27,7 @@ import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFDataStream;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.SubtableEntry;
+import org.apache.fontbox.ttf.advanced.api.AdvancedOpenTypeFont;
 import org.apache.fontbox.ttf.advanced.scripts.ScriptProcessor;
 import org.apache.fontbox.ttf.advanced.util.GlyphSequence;
 
@@ -101,8 +102,8 @@ public class GlyphDefinitionTable extends AdvancedTypographicTable {
     @Override
     protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
-        if (ttf instanceof OpenTypeFont) {
-            new AdvancedTypographicTableReader((OpenTypeFont) ttf, this, data).read();
+        if (ttf instanceof AdvancedOpenTypeFont) {
+            new AdvancedTypographicTableReader((AdvancedOpenTypeFont) ttf, this, data).read();
             this.initialized = true;
         }
     }

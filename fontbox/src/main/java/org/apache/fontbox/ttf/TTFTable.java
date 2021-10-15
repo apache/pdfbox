@@ -61,7 +61,7 @@ public class TTFTable
     /**
      * @param checkSumValue The checkSum to set.
      */
-    void setCheckSum(long checkSumValue) 
+    public void setCheckSum(long checkSumValue) 
     {
         this.checkSum = checkSumValue;
     }
@@ -77,7 +77,7 @@ public class TTFTable
     /**
      * @param lengthValue The length to set.
      */
-    void setLength(long lengthValue) 
+    public void setLength(long lengthValue) 
     {
         this.length = lengthValue;
     }
@@ -93,7 +93,7 @@ public class TTFTable
     /**
      * @param offsetValue The offset to set.
      */
-    void setOffset(long offsetValue) 
+    public void setOffset(long offsetValue) 
     {
         this.offset = offsetValue;
     }
@@ -109,7 +109,7 @@ public class TTFTable
     /**
      * @param tagValue The tag to set.
      */
-    void setTag(String tagValue) 
+    public void setTag(String tagValue) 
     {
         this.tag = tagValue;
     }

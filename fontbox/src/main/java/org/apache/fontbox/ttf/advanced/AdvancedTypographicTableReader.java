@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFDataStream;
 import org.apache.fontbox.ttf.TTFTable;
 import org.apache.fontbox.ttf.advanced.AdvancedTypographicTable.LookupSpec;
 import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.*;
+import org.apache.fontbox.ttf.advanced.api.AdvancedOpenTypeFont;
 
 import static org.apache.fontbox.ttf.advanced.util.AdvancedChecker.*;
 
@@ -45,7 +45,7 @@ public final class AdvancedTypographicTableReader {
     // logging state
     private static Log log = LogFactory.getLog(AdvancedTypographicTableReader.class);
     // instance state
-    private OpenTypeFont otf;                                   // enclosing font instance
+    private AdvancedOpenTypeFont otf;                           // enclosing font instance
     private TTFTable table;                                     // table being constructed
     private TTFDataStream data;                                 // data stream
     // transient parsing state
@@ -117,7 +117,7 @@ public final class AdvancedTypographicTableReader {
      * @param table table instance being constructed, will be one of Glyph{Definition,Substitution,Positioning}Table
      * @param data font file reader (must be non-null)
      */
-    public AdvancedTypographicTableReader(OpenTypeFont otf, TTFTable table, TTFDataStream data) {
+    public AdvancedTypographicTableReader(AdvancedOpenTypeFont otf, TTFTable table, TTFDataStream data) {
         assert otf != null;
         assert table != null;
         assert data != null;

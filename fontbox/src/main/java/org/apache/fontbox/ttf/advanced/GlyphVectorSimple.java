@@ -1,6 +1,6 @@
 package org.apache.fontbox.ttf.advanced;
 
-import org.apache.fontbox.ttf.GlyphVector;
+import org.apache.fontbox.ttf.advanced.api.GlyphVector;
 
 /**
  * TODO

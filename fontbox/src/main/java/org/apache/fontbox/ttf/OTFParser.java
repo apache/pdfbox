@@ -24,7 +24,7 @@ import java.io.InputStream;
 /**
  * OpenType font file parser.
  */
-public final class OTFParser extends TTFParser
+public class OTFParser extends TTFParser
 {
     /**
      * Constructor.
@@ -52,19 +52,7 @@ public final class OTFParser extends TTFParser
      */
     public OTFParser(boolean isEmbedded, boolean parseOnDemand)
     {
-        this(isEmbedded, parseOnDemand, false);
-    }
-
-    /**
-     *  Constructor.
-     *  
-     * @param isEmbedded true if the font is embedded in PDF
-     * @param parseOnDemand true if the tables of the font should be parsed on demand
-     * @param useAlternateATT true if using alternate ATT (advanced typograph tables) implementation
-     */
-    public OTFParser(boolean isEmbedded, boolean parseOnDemand, boolean useAlternateATT)
-    {
-        super(isEmbedded, parseOnDemand, useAlternateATT);
+        super(isEmbedded, parseOnDemand);
     }
 
     @Override
@@ -86,15 +74,15 @@ public final class OTFParser extends TTFParser
     }
 
     @Override
-    OpenTypeFont parse(TTFDataStream raf) throws IOException
+    protected OpenTypeFont parse(TTFDataStream raf) throws IOException
     {
         return (OpenTypeFont)super.parse(raf);
     }
     
     @Override
-    OpenTypeFont newFont(TTFDataStream raf)
+    protected OpenTypeFont newFont(TTFDataStream raf)
     {
-        return new OpenTypeFont(raf, useAlternateATT);
+        return new OpenTypeFont(raf);
     }
 
     @Override
@@ -107,12 +95,6 @@ public final class OTFParser extends TTFParser
             case "BASE":
             case "JSTF":
                 return new OTLTable(font);
-            case "GDEF":
-                return useAlternateATT ? new org.apache.fontbox.ttf.advanced.GlyphDefinitionTable((OpenTypeFont) font) : super.readTable(font, tag);
-            case "GPOS":
-                return useAlternateATT ? new org.apache.fontbox.ttf.advanced.GlyphPositioningTable((OpenTypeFont) font) : super.readTable(font, tag);
-            case "GSUB":
-                return useAlternateATT ? new org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable((OpenTypeFont) font) : super.readTable(font, tag);
             case "CFF ":
                 return new CFFTable(font);
             default:

@@ -33,7 +33,10 @@ public class CFFTable extends TTFTable
 
     private CFFFont cffFont;
 
-    CFFTable(TrueTypeFont font)
+    /**
+     * Constructs and reads the CFF table.
+     */
+    public CFFTable(TrueTypeFont font)
     {
         super(font);
     }

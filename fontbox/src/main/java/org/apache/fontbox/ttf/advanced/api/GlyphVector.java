@@ -1,4 +1,4 @@
-package org.apache.fontbox.ttf;
+package org.apache.fontbox.ttf.advanced.api;
 
 /**
  * TODO
