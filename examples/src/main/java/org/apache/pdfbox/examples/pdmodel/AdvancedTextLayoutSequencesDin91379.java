@@ -67,7 +67,10 @@ public final class AdvancedTextLayoutSequencesDin91379
         try {
             String dir = args[0];
 
-            String fontFileName = "/NotoSans-Regular.ttf";
+            //String fontFileName = "/NotoSans-Regular.ttf";
+            //String fontFileName = "/LiberationSans-Regular.ttf";
+            String fontFileName = "/DejaVuSans.ttf";
+
             testJava2D(dir, fontFileName, sequencesDin91379);
             testAdvancedLayout(dir, fontFileName, sequencesDin91379);
         } catch (Exception e) {
@@ -179,8 +182,12 @@ public final class AdvancedTextLayoutSequencesDin91379
         System.out.println(line);
         for (int i=0; i<gids.length; i++) {
             System.out.printf("%d %d ", i, gids[i]);
-            for (int j=0; j<adjustments[i].length; j++) {
-                System.out.printf("%d ", adjustments[i][j]);
+            if(adjustments!=null && adjustments[i]!=null) {
+                for (int j = 0; j < adjustments[i].length; j++) {
+                    System.out.printf("%d ", adjustments[i][j]);
+                }
+            } else {
+                System.out.printf("no adjustments ");
             }
             System.out.println();
         }
