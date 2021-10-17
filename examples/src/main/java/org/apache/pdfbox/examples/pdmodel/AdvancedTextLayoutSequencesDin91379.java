@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* XXXXXXXXXXxx
+/* XXXXXXXXXXxxy
 volker@volker-LIFEBOOK-E556:~/work$ hb-shape --font-file SourceSans3-Regular.ttf  --output-format json <a_double_acute_accent.txt
 [{"g":"A","cl":0,"dx":0,"dy":0,"ax":544,"ay":0},
 {"g":"uni030B.c","cl":0,"dx":-273,"dy":0,"ax":0,"ay":0}]
