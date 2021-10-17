@@ -35,6 +35,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
+import java.text.AttributedString;
+import java.text.Bidi;
 
 /**
  * An example of using an embedded OpenType font with advanced glyph layout for
@@ -101,7 +103,6 @@ public final class AdvancedTextLayoutSequencesDin91379
             testSequences2D(cs, font, fontSize, awtFont, x, y, s);
             cs.close();
             pdDocument.save(String.format("%s/TestDin91379Java2D-%s-.pdf", dir, fontFileName));
-            pdDocument.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -147,9 +148,13 @@ public final class AdvancedTextLayoutSequencesDin91379
                                           float fontSize, Font awtFont, String line, float x, float y) throws IOException {
         char[] chars = line.toCharArray();
         // Use Java2D to compute positioning of glyphs
+
         FontRenderContext fontRenderContext = new FontRenderContext(new AffineTransform(), false, true);
-        java.awt.font.GlyphVector glyphVector = awtFont.layoutGlyphVector(fontRenderContext, chars, 0, chars.length,
-                Font.LAYOUT_LEFT_TO_RIGHT);
+        // specify fractional metrics to compute accurate positions
+        AttributedString as = new AttributedString(line);
+        Bidi bidi = new Bidi(as.getIterator());
+        int localFlags = bidi.isLeftToRight() ? java.awt.Font.LAYOUT_LEFT_TO_RIGHT : java.awt.Font.LAYOUT_RIGHT_TO_LEFT;
+        java.awt.font.GlyphVector glyphVector = awtFont.layoutGlyphVector(fontRenderContext, chars, 0, chars.length, localFlags);
         printAdjustmentsAdvancedLayout(line, glyphVector);
 
         cs.beginText();
@@ -192,7 +197,7 @@ public final class AdvancedTextLayoutSequencesDin91379
                     System.out.printf("%d ", adjustments[i][j]);
                 }
             } else {
-                System.out.printf("no adjustments ");
+                System.out.print("no adjustments ");
             }
             System.out.println();
         }
@@ -233,7 +238,6 @@ public final class AdvancedTextLayoutSequencesDin91379
                 stream.endText();
             }
             document.save(String.format("%s/TestDin91379AdvancedLayout-%s-.pdf", dir, fontFileName));
-            document.close();
         }
     }
 }
