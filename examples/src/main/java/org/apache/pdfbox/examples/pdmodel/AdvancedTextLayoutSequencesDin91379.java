@@ -17,8 +17,6 @@
 
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.apache.fontbox.ttf.OTFParser;
-import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.advanced.api.GlyphVector;
 import org.apache.fontbox.ttf.advanced.GlyphVectorAdvanced;
 import org.apache.fontbox.ttf.advanced.api.AdvancedOTFParser;
@@ -49,14 +47,14 @@ import java.io.IOException;
  */
 public final class AdvancedTextLayoutSequencesDin91379
 {
-    public static String sequencesDin91379 = "Sequences\n"
-            + "A̋ C̀ C̄ C̆ C̈ C̕ C̣ C̦ C̨̆ D̂ F̀ F̄ G̀ H̄ H̦ H̱ J́ J̌ K̀ K̂ K̄ K̇ K̕ K̛ K̦ K͟H n"
-            + "K͟h L̂ L̥ L̥̄ L̦ M̀ M̂ M̆ M̐ N̂ N̄ N̆ N̦ P̀ P̄ P̕ P̣ R̆ R̥ R̥̄ S̀ S̄ S̛̄ S̱ T̀ T̄ \n"
+    public static String sequencesDin91379 =
+             "A̋ C̀ C̄ C̆ C̈ C̕ C̣ C̦ C̨̆ D̂ F̀ F̄ G̀ H̄ H̦ H̱ J́ J̌ K̀ K̂ K̄ K̇ K̕ K̛ K̦ K͟H \n";
+/*            + "K͟h L̂ L̥ L̥̄ L̦ M̀ M̂ M̆ M̐ N̂ N̄ N̆ N̦ P̀ P̄ P̕ P̣ R̆ R̥ R̥̄ S̀ S̄ S̛̄ S̱ T̀ T̄ \n"
             + "T̈ T̕ T̛ U̇ Z̀ Z̄ Z̆ Z̈ Z̧ a̋ c̀ c̄ c̆ c̈ c̕ c̣ c̦ c̨̆ d̂ f̀ f̄ g̀ h̄ h̦ j́ k̀ \n"
             + "k̂ k̄ k̇ k̕ k̛ k̦ k͟h l̂ l̥ l̥̄ l̦ m̀ m̂ m̆ m̐ n̂ n̄ n̆ n̦ p̀ p̄ p̕ p̣ r̆ r̥ r̥̄ \n"
             + "s̀ s̄ s̛̄ s̱ t̀ t̄ t̕ t̛ u̇ z̀ z̄ z̆ z̈ z̧ Ç̆ Û̄ ç̆ û̄ ÿ́ Č̕ Č̣ č̕ č̣ Ī́ ī́ Ž̦ \n"
             + "Ž̧ ž̦ ž̧ Ḳ̄ ḳ̄ Ṣ̄ ṣ̄ Ṭ̄ ṭ̄ Ạ̈ ạ̈ Ọ̈ ọ̈ Ụ̄ Ụ̈ ụ̄ ụ̈ \n";
-
+*/
     private AdvancedTextLayoutSequencesDin91379()
     {
     }
@@ -99,7 +97,7 @@ public final class AdvancedTextLayoutSequencesDin91379
             float fontSize = 12;
             Font awtFont = Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(fontSize);
             float x = blankPage.getBBox().getLowerLeftX();
-            float y = blankPage.getBBox().getUpperRightY();
+            float y = blankPage.getBBox().getUpperRightY() - awtFont.getSize2D();
             testSequences2D(cs, font, fontSize, awtFont, x, y, s);
             cs.close();
             pdDocument.save(String.format("%s/TestDin91379Java2D-%s-.pdf", dir, fontFileName));
