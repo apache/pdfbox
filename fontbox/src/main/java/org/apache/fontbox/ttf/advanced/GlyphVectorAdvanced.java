@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.fontbox.ttf.GlyphVector;
+import org.apache.fontbox.ttf.advanced.api.GlyphVector;
 
 /**
  * TODO

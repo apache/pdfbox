@@ -19,9 +19,11 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
 
-import org.apache.fontbox.ttf.GlyphVector;
 import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
+import org.apache.fontbox.ttf.advanced.api.AdvancedOTFParser;
+import org.apache.fontbox.ttf.advanced.api.AdvancedOpenTypeFont;
+import org.apache.fontbox.ttf.advanced.api.GlyphVector;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -61,8 +63,8 @@ public final class AdvancedTextLayout
             //String fontFile = dir + "IndieFlower-Regular.ttf";
             String fontFile = dir + "SourceSansPro-Regular.ttf";
 
-            OTFParser fontParser = new OTFParser(true, false, true);
-            OpenTypeFont otFont = fontParser.parse(fontFile);
+            AdvancedOTFParser fontParser = new AdvancedOTFParser();
+            AdvancedOpenTypeFont otFont = fontParser.parse(fontFile);
             PDFont font = PDType0Font.load(document, otFont, true);
 
             GlyphVector vector = null;
@@ -78,16 +80,23 @@ public final class AdvancedTextLayout
                 stream.showGlyphVector(vector, createMatrix(x, 200));
                 x = getAdvance(10, vector, fontSize);
 
-                vector = otFont.createGlyphVector("|AFTER");
+                vector = otFont.createGlyphVector("|AFTER (SIMPLE)");
                 stream.showGlyphVector(vector, createMatrix(x, 200));
                 x = 10;
 
-                vector = otFont.createGlyphVector("A̋L̦        N̂N̦B   N̂N̦B ўўўў");
+                String complex = "A̋L̦    a̋   N̂N̦B ўў 1/2";
+
+                vector = otFont.createGlyphVector(complex);
                 stream.showGlyphVector(vector, createMatrix(x, 100));
                 x = getAdvance(10, vector, fontSize);
 
-                vector = otFont.createGlyphVector("|AFTER");
-                stream.showGlyphVector(vector, createMatrix(x + 0, 130));
+                vector = otFont.createGlyphVector("|AFTER (COMPLEX)");
+                stream.showGlyphVector(vector, createMatrix(x, 100));
+
+                stream.setTextMatrix(Matrix.getTranslateInstance(10, 160));
+                stream.showText(complex);
+                stream.setTextMatrix(Matrix.getTranslateInstance(10 + (font.getStringWidth(complex) / 1000f * fontSize), 160));
+                stream.showText("|AFTER (BAD)");
 
                 stream.endText();
             }

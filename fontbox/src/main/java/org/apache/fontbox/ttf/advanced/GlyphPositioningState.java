@@ -204,6 +204,7 @@ public class GlyphPositioningState extends GlyphProcessingState {
     /**
      * Apply default application semantices; namely, consume one input glyph.
      */
+    @Override
     public void applyDefault() {
         super.applyDefault();
     }
