@@ -64,17 +64,22 @@ public final class AdvancedTextLayoutSequencesDin91379
         if (args.length < 1) {
             throw new RuntimeException("Usage AdvancedTextLayoutSequencesDin91379 directory");
         }
-        try {
-            String dir = args[0];
-
-            //String fontFileName = "/NotoSans-Regular.ttf";
-            //String fontFileName = "/LiberationSans-Regular.ttf";
-            String fontFileName = "/DejaVuSans.ttf";
-
-            testJava2D(dir, fontFileName, sequencesDin91379);
-            testAdvancedLayout(dir, fontFileName, sequencesDin91379);
-        } catch (Exception e) {
-            e.printStackTrace();
+        String dir = args[0];
+        String[] fontFileNames = new String[] {
+                "NotoSans-Regular.ttf",
+                "LiberationSans-Regular.ttf",
+                "DejaVuSans.ttf",
+                "IBMPlexSans-Regular.ttf",
+                "SourceSans3-Regular.ttf",
+        };
+        for (String fontFileName : fontFileNames) {
+            try {
+                System.out.printf("--font:%s%n", fontFileName);
+                testJava2D(dir, fontFileName, sequencesDin91379);
+                testAdvancedLayout(dir, fontFileName, sequencesDin91379);
+            } catch (Exception ee) {
+                ee.printStackTrace();
+            }
         }
     }
 
@@ -95,7 +100,7 @@ public final class AdvancedTextLayoutSequencesDin91379
             float y = blankPage.getBBox().getUpperRightY();
             testSequences2D(cs, font, fontSize, awtFont, x, y, s);
             cs.close();
-            pdDocument.save(dir + "/TestDin91379Java2D.pdf");
+            pdDocument.save(String.format("%s/TestDin91379Java2D-%s-.pdf", dir, fontFileName));
             pdDocument.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -227,7 +232,7 @@ public final class AdvancedTextLayoutSequencesDin91379
                 }
                 stream.endText();
             }
-            document.save("TestDin91379AdvancedLayout.pdf");
+            document.save(String.format("%s/TestDin91379AdvancedLayout-%s-.pdf", dir, fontFileName));
             document.close();
         }
     }
