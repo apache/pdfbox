@@ -17,10 +17,12 @@
 
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.apache.fontbox.ttf.GlyphVector;
 import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
+import org.apache.fontbox.ttf.advanced.api.GlyphVector;
 import org.apache.fontbox.ttf.advanced.GlyphVectorAdvanced;
+import org.apache.fontbox.ttf.advanced.api.AdvancedOTFParser;
+import org.apache.fontbox.ttf.advanced.api.AdvancedOpenTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -207,8 +209,8 @@ public final class AdvancedTextLayoutSequencesDin91379
 
             String fontFile = dir + "/" + fontFileName;
 
-            OTFParser fontParser = new OTFParser(true, false, true);
-            OpenTypeFont otFont = fontParser.parse(fontFile);
+            AdvancedOTFParser fontParser = new AdvancedOTFParser();
+            AdvancedOpenTypeFont otFont = fontParser.parse(fontFile);
             PDFont font = PDType0Font.load(document, otFont, true);
 
             GlyphVector vector;
