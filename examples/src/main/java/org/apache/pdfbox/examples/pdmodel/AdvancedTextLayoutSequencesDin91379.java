@@ -49,9 +49,9 @@ import java.text.Bidi;
  */
 public final class AdvancedTextLayoutSequencesDin91379
 {
-    public static String sequencesDin91379 =
-             "A̋ C̀ C̄ C̆ C̈ C̕ C̣ C̦ C̨̆ D̂ F̀ F̄ G̀ H̄ H̦ H̱ J́ J̌ K̀ K̂ K̄ K̇ K̕ K̛ K̦ K͟H \n";
-/*            + "K͟h L̂ L̥ L̥̄ L̦ M̀ M̂ M̆ M̐ N̂ N̄ N̆ N̦ P̀ P̄ P̕ P̣ R̆ R̥ R̥̄ S̀ S̄ S̛̄ S̱ T̀ T̄ \n"
+    public static String sequencesDin91379 = "A̋";
+/*             "A̋ C̀ C̄ C̆ C̈ C̕ C̣ C̦ C̨̆ D̂ F̀ F̄ G̀ H̄ H̦ H̱ J́ J̌ K̀ K̂ K̄ K̇ K̕ K̛ K̦ K͟H \n";
+            + "K͟h L̂ L̥ L̥̄ L̦ M̀ M̂ M̆ M̐ N̂ N̄ N̆ N̦ P̀ P̄ P̕ P̣ R̆ R̥ R̥̄ S̀ S̄ S̛̄ S̱ T̀ T̄ \n"
             + "T̈ T̕ T̛ U̇ Z̀ Z̄ Z̆ Z̈ Z̧ a̋ c̀ c̄ c̆ c̈ c̕ c̣ c̦ c̨̆ d̂ f̀ f̄ g̀ h̄ h̦ j́ k̀ \n"
             + "k̂ k̄ k̇ k̕ k̛ k̦ k͟h l̂ l̥ l̥̄ l̦ m̀ m̂ m̆ m̐ n̂ n̄ n̆ n̦ p̀ p̄ p̕ p̣ r̆ r̥ r̥̄ \n"
             + "s̀ s̄ s̛̄ s̱ t̀ t̄ t̕ t̛ u̇ z̀ z̄ z̆ z̈ z̧ Ç̆ Û̄ ç̆ û̄ ÿ́ Č̕ Č̣ č̕ č̣ Ī́ ī́ Ž̦ \n"
@@ -74,18 +74,20 @@ public final class AdvancedTextLayoutSequencesDin91379
                 "IBMPlexSans-Regular.ttf",
                 "SourceSans3-Regular.ttf",
         };
+        float fontSize = 20f;
+
         for (String fontFileName : fontFileNames) {
             try {
                 System.out.printf("--font:%s%n", fontFileName);
-                testJava2D(dir, fontFileName, sequencesDin91379);
-                testAdvancedLayout(dir, fontFileName, sequencesDin91379);
+                testJava2D(dir, fontFileName, fontSize, sequencesDin91379);
+                testAdvancedLayout(dir, fontFileName, fontSize, sequencesDin91379);
             } catch (Exception ee) {
                 ee.printStackTrace();
             }
         }
     }
 
-    public static void testJava2D(String dir, String fontFileName, String s) {
+    public static void testJava2D(String dir, String fontFileName, float fontSize, String s) {
 
         try {
             PDDocument pdDocument = new PDDocument();
@@ -96,7 +98,6 @@ public final class AdvancedTextLayoutSequencesDin91379
 
             File fontFile = new File(dir + "/" + fontFileName );
             PDType0Font font = PDType0Font.load(pdDocument, fontFile);
-            float fontSize = 12;
             Font awtFont = Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(fontSize);
             float x = blankPage.getBBox().getLowerLeftX();
             float y = blankPage.getBBox().getUpperRightY() - awtFont.getSize2D();
@@ -135,8 +136,9 @@ public final class AdvancedTextLayoutSequencesDin91379
             float dy = (float) p.getY() - lastY;
             float ax = (i == 0) ? 0.0f : awtGlyphVector.getGlyphMetrics(i - 1).getAdvanceX();
             float ay = (i == 0) ? 0.0f : awtGlyphVector.getGlyphMetrics(i - 1).getAdvanceY();
-            System.out.printf("%f %f %f ", dx, ax, dx-ax);
-            System.out.printf("%f %f %f\n", dy, ay, dy-ay);
+            float factor=50; // ???
+            System.out.printf("px=%f py=%f ", p.getX()*factor, p.getY()*factor);
+            System.out.printf("ax=%f ay=%f dx=%f dy=%f\n", ax*factor, ay*factor, dx*factor, dy*factor);
             System.out.println();
             lastX = (float) p.getX();
             lastY = (float) p.getY();
@@ -193,9 +195,9 @@ public final class AdvancedTextLayoutSequencesDin91379
         for (int i=0; i<gids.length; i++) {
             System.out.printf("%d %d ", i, gids[i]);
             if(adjustments!=null && adjustments[i]!=null) {
-                for (int j = 0; j < adjustments[i].length; j++) {
-                    System.out.printf("%d ", adjustments[i][j]);
-                }
+                System.out.printf("px=%d py=%d ax=%d ay=%d%n",
+                        adjustments[i][0], adjustments[i][1],
+                        adjustments[i][2], adjustments[i][3]);
             } else {
                 System.out.print("no adjustments ");
             }
@@ -203,7 +205,7 @@ public final class AdvancedTextLayoutSequencesDin91379
         }
     }
 
-    public static void testAdvancedLayout(String dir, String fontFileName, String s) throws IOException
+    public static void testAdvancedLayout(String dir, String fontFileName, float fontSize, String s) throws IOException
     {
         try (PDDocument document = new PDDocument())
         {
@@ -221,7 +223,6 @@ public final class AdvancedTextLayoutSequencesDin91379
 
             try (PDPageContentStream stream = new PDPageContentStream(document, page))
             {
-                float fontSize = 20;
                 stream.beginText();
                 stream.setFont(font, fontSize);
 
