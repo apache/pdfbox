@@ -30,7 +30,8 @@ volker@volker-LIFEBOOK-E556:~/work$ hb-shape --font-file NotoSans-Regular.ttf  -
 
 ?????
 
-Im Vergleich zu AdvancedLayout: Faktor 50, y anderes Vorzeichen
+Im Vergleich zu AdvancedLayout: Faktor 50 = 1000/(20=fontSize), y anderes Vorzeichen
+kleine Abweichungen, da awt.Glyphlayout float  und bei AdvancedLayout integer
 
 Vergleich von AWT Glyphvektor zu hb-shape ???
 hb_position_t x_advance; how much the line advances after drawing this glyph when setting text in horizontal direction.
@@ -147,7 +148,7 @@ public final class AdvancedTextLayoutSequencesDin91379
         }
     }
 
-    public static void printAdjustmentsAdvancedLayout(String line, java.awt.font.GlyphVector awtGlyphVector) {
+    public static void printAdjustmentsAdvancedLayout(String line, java.awt.font.GlyphVector awtGlyphVector, float fontSize) {
         int[] gids = awtGlyphVector.getGlyphCodes(0, awtGlyphVector.getNumGlyphs(), null);
         System.out.println("--Java2D--");
         System.out.println(line);
@@ -158,13 +159,12 @@ public final class AdvancedTextLayoutSequencesDin91379
         for (int i=0; i<gids.length; i++) {
             System.out.printf("%d %d ", i, gids[i]);
             Point2D p = awtGlyphVector.getGlyphPosition(i);
-            float dx = (float) p.getX() - lastX;
-            float dy = (float) p.getY() - lastY;
             float ax =  awtGlyphVector.getGlyphMetrics(i).getAdvanceX();
             float ay =  awtGlyphVector.getGlyphMetrics(i).getAdvanceY();
-            System.out.printf("px=%f py=%f ", p.getX(), p.getY());
-            System.out.printf("ax=%f ay=%f ", ax, ay);
-            System.out.printf("dx=%f dy=%f %n", p.getX() - lastX -lastAx, p.getY() - lastY -lastAy);
+            float factor = 1000f/fontSize;
+            System.out.printf("px=%f py=%f ", p.getX()*factor, p.getY()*factor);
+            System.out.printf("ax=%f ay=%f ", ax*factor, ay*factor);
+            System.out.printf("dx=%f dy=%f %n", (p.getX() - lastX -lastAx)*factor, (p.getY() - lastY -lastAy)*factor);
             System.out.println();
             lastX = (float) p.getX();
             lastY = (float) p.getY();
@@ -185,7 +185,7 @@ public final class AdvancedTextLayoutSequencesDin91379
         Bidi bidi = new Bidi(as.getIterator());
         int localFlags = bidi.isLeftToRight() ? java.awt.Font.LAYOUT_LEFT_TO_RIGHT : java.awt.Font.LAYOUT_RIGHT_TO_LEFT;
         java.awt.font.GlyphVector glyphVector = awtFont.layoutGlyphVector(fontRenderContext, chars, 0, chars.length, localFlags);
-        printAdjustmentsAdvancedLayout(line, glyphVector);
+        printAdjustmentsAdvancedLayout(line, glyphVector, fontSize);
 
         cs.beginText();
         cs.setFont(font, fontSize);
