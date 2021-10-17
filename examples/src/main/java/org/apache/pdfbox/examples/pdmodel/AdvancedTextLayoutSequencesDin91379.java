@@ -15,6 +15,30 @@
  * limitations under the License.
  */
 
+/* XXXXXXXXXXxx
+volker@volker-LIFEBOOK-E556:~/work$ hb-shape --font-file SourceSans3-Regular.ttf  --output-format json <a_double_acute_accent.txt
+[{"g":"A","cl":0,"dx":0,"dy":0,"ax":544,"ay":0},
+{"g":"uni030B.c","cl":0,"dx":-273,"dy":0,"ax":0,"ay":0}]
+
+hb-shape --font-file NotoSans-Regular.ttf --font-size 20 --output-format json <a_double_acute_accent.txt
+[{"g":"A","cl":0,"dx":0,"dy":0,"ax":41,"ay":0},
+ {"g":"uni030B","cl":0,"dx":-36,"dy":4,"ax":0,"ay":0}]
+
+volker@volker-LIFEBOOK-E556:~/work$ hb-shape --font-file NotoSans-Regular.ttf  --output-format json <a_double_acute_accent.txt
+[{"g":"A","cl":0,"dx":0,"dy":0,"ax":639,"ay":0},
+ {"g":"uni030B","cl":0,"dx":-375,"dy":178,"ax":0,"ay":0}]
+
+?????
+
+Im Vergleich zu AdvancedLayout: Faktor 50, y anderes Vorzeichen
+
+Vergleich von AWT Glyphvektor zu hb-shape ???
+hb_position_t x_advance; how much the line advances after drawing this glyph when setting text in horizontal direction.
+hb_position_t y_advance; how much the line advances after drawing this glyph when setting text in vertical direction.
+hb_position_t x_offset;  how much the glyph moves on the X-axis before drawing it, this should not affect how much the line advances.
+hb_position_t y_offset;  how much the glyph moves on the Y-axis before drawing it, this should not affect how much the line advances.
+
+ XXXXXXXXXXXXXXXXXXX */
 package org.apache.pdfbox.examples.pdmodel;
 
 import org.apache.fontbox.ttf.advanced.api.GlyphVector;
@@ -129,19 +153,23 @@ public final class AdvancedTextLayoutSequencesDin91379
         System.out.println(line);
         float lastX = 0f;
         float lastY = 0f;
+        float lastAx = 0f;
+        float lastAy = 0f;
         for (int i=0; i<gids.length; i++) {
             System.out.printf("%d %d ", i, gids[i]);
             Point2D p = awtGlyphVector.getGlyphPosition(i);
             float dx = (float) p.getX() - lastX;
             float dy = (float) p.getY() - lastY;
-            float ax = (i == 0) ? 0.0f : awtGlyphVector.getGlyphMetrics(i - 1).getAdvanceX();
-            float ay = (i == 0) ? 0.0f : awtGlyphVector.getGlyphMetrics(i - 1).getAdvanceY();
-            float factor=50; // ???
-            System.out.printf("px=%f py=%f ", p.getX()*factor, p.getY()*factor);
-            System.out.printf("ax=%f ay=%f dx=%f dy=%f\n", ax*factor, ay*factor, dx*factor, dy*factor);
+            float ax =  awtGlyphVector.getGlyphMetrics(i).getAdvanceX();
+            float ay =  awtGlyphVector.getGlyphMetrics(i).getAdvanceY();
+            System.out.printf("px=%f py=%f ", p.getX(), p.getY());
+            System.out.printf("ax=%f ay=%f ", ax, ay);
+            System.out.printf("dx=%f dy=%f %n", p.getX() - lastX -lastAx, p.getY() - lastY -lastAy);
             System.out.println();
             lastX = (float) p.getX();
             lastY = (float) p.getY();
+            lastAx = ax;
+            lastAy = ay;
         }
     }
 
