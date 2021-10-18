@@ -15,31 +15,16 @@
  * limitations under the License.
  */
 
-/* XXXXXXXXXXxxy
-volker@volker-LIFEBOOK-E556:~/work$ hb-shape --font-file SourceSans3-Regular.ttf  --output-format json <a_double_acute_accent.txt
-[{"g":"A","cl":0,"dx":0,"dy":0,"ax":544,"ay":0},
-{"g":"uni030B.c","cl":0,"dx":-273,"dy":0,"ax":0,"ay":0}]
+/*XXX
+Comaring Java AWT layout vector and AdvancedLayout: factor 50 = 1000/(20=fontSize), y different sign
+Small diffenences, awt.Glyphlayout has data type float, AdvancedLayout integer
 
-hb-shape --font-file NotoSans-Regular.ttf --font-size 20 --output-format json <a_double_acute_accent.txt
-[{"g":"A","cl":0,"dx":0,"dy":0,"ax":41,"ay":0},
- {"g":"uni030B","cl":0,"dx":-36,"dy":4,"ax":0,"ay":0}]
-
-volker@volker-LIFEBOOK-E556:~/work$ hb-shape --font-file NotoSans-Regular.ttf  --output-format json <a_double_acute_accent.txt
-[{"g":"A","cl":0,"dx":0,"dy":0,"ax":639,"ay":0},
- {"g":"uni030B","cl":0,"dx":-375,"dy":178,"ax":0,"ay":0}]
-
-?????
-
-Im Vergleich zu AdvancedLayout: Faktor 50 = 1000/(20=fontSize), y anderes Vorzeichen
-kleine Abweichungen, da awt.Glyphlayout float  und bei AdvancedLayout integer
-
-Vergleich von AWT Glyphvektor zu hb-shape ???
+Comparison of AWT glyph vector to hb-shape
 hb_position_t x_advance; how much the line advances after drawing this glyph when setting text in horizontal direction.
 hb_position_t y_advance; how much the line advances after drawing this glyph when setting text in vertical direction.
 hb_position_t x_offset;  how much the glyph moves on the X-axis before drawing it, this should not affect how much the line advances.
 hb_position_t y_offset;  how much the glyph moves on the Y-axis before drawing it, this should not affect how much the line advances.
-
- XXXXXXXXXXXXXXXXXXX */
+*/
 package org.apache.pdfbox.examples.pdmodel;
 
 import org.apache.fontbox.ttf.advanced.api.GlyphVector;
