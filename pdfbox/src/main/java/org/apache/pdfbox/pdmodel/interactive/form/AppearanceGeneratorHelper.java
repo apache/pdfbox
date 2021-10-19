@@ -506,8 +506,8 @@ class AppearanceGeneratorHelper {
         float fontScaleY = fontSize / FONTSCALE;
         float fontBoundingBoxAtSize = font.getBoundingBox().getHeight() * fontScaleY;
 
-        float fontCapAtSize = 0;
-        float fontDescentAtSize = 0;
+        float fontCapAtSize;
+        float fontDescentAtSize;
 
         if (font.getFontDescriptor() != null) {
             fontCapAtSize = font.getFontDescriptor().getCapHeight() * fontScaleY;
@@ -639,7 +639,7 @@ class AppearanceGeneratorHelper {
     private void insertGeneratedCombAppearance(PDPageContentStream contents, PDAppearanceStream appearanceStream,
             PDFont font, float fontSize) throws IOException {
         int maxLen = ((PDTextField) field).getMaxLen();
-        int quadding = ((PDTextField) field).getQ();
+        int quadding = field.getQ();
         int numChars = Math.min(value.length(), maxLen);
 
         PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
