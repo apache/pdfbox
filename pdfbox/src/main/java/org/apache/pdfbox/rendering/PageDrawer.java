@@ -640,16 +640,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         Rectangle2D transformedBounds = at.createTransformedShape(originalBounds).getBounds2D();
         at.preConcatenate(AffineTransform.getTranslateInstance(-transformedBounds.getMinX(), 
                 -transformedBounds.getMinY()));
-        
+
         int width = (int) Math.ceil(transformedBounds.getWidth());
         int height = (int) Math.ceil(transformedBounds.getHeight());
-        BufferedImage transformedGray = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
 
         if (width == gray.getWidth() && height == gray.getHeight() && at.isIdentity())
         {
             return gray;
         }
 
+        BufferedImage transformedGray = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g2 = (Graphics2D) transformedGray.getGraphics();
         g2.drawImage(gray, at, null);
         g2.dispose();
