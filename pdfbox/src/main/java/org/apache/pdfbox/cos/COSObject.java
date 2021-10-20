@@ -30,8 +30,6 @@ import org.apache.commons.logging.LogFactory;
 public class COSObject extends COSBase implements COSUpdateInfo
 {
     private COSBase baseObject;
-    private long objectNumber;
-    private int generationNumber;
     private ICOSParser parser;
     private boolean isDereferenced = false;
     private final COSUpdateState updateState;
@@ -90,8 +88,6 @@ public class COSObject extends COSBase implements COSUpdateInfo
     {
         updateState = new COSUpdateState(this);
         this.parser = parser;
-        objectNumber = key.getNumber();
-        generationNumber = key.getGeneration();
         setKey(key);
     }
 
@@ -152,7 +148,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     @Override
     public String toString()
     {
-        return "COSObject{" + objectNumber + ", " + generationNumber + "}";
+        return "COSObject{" + getObjectNumber() + ", " + getGenerationNumber() + "}";
     }
 
     /** 
@@ -161,7 +157,8 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public long getObjectNumber()
     {
-        return objectNumber;
+        COSObjectKey key = getKey();
+        return key != null ? key.getNumber() : 0L;
     }
 
     /** 
@@ -170,7 +167,8 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public int getGenerationNumber()
     {
-        return generationNumber;
+        COSObjectKey key = getKey();
+        return key != null ? key.getGeneration() : 0;
     }
 
     /**
