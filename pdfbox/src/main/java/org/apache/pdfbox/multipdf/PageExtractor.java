@@ -32,7 +32,7 @@ public class PageExtractor
     
     // first page to extract is page 1 (by default)
     private int startPage = 1;
-    
+    private PDPageTree pages = null;
     private int endPage;
     
     /** 
@@ -42,7 +42,8 @@ public class PageExtractor
     public PageExtractor(PDDocument sourceDocument)
     {
         this.sourceDocument = sourceDocument;
-        endPage = sourceDocument.getNumberOfPages();
+        pages = sourceDocument.getPages();
+        endPage = pages.getCount();
     }
     
     /** 
@@ -76,7 +77,11 @@ public class PageExtractor
         extractedDocument.setDocumentInformation(sourceDocument.getDocumentInformation());
         extractedDocument.getDocumentCatalog().setViewerPreferences(
                 sourceDocument.getDocumentCatalog().getViewerPreferences());
-        PDPageTree pages = sourceDocument.getPages();
+
+        if (pages == null)
+        {
+            pages = sourceDocument.getPages();
+        }
         for (int i = startPage; i <= endPage; i++)
         {
             PDPage page = pages.get(i - 1);
