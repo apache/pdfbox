@@ -242,17 +242,18 @@ class AppearanceGeneratorHelper
                 appearanceDict.setNormalAppearance(appearanceStream);
                 // TODO support appearances other than "normal"
             }
-
-            PDAppearanceCharacteristicsDictionary characteristicsDictionary = widget.getAppearanceCharacteristics();
+            PDAppearanceCharacteristicsDictionary appearanceCharacteristics =
+                    widget.getAppearanceCharacteristics();
+                
             /*
              * Adobe Acrobat always recreates the complete appearance stream if there is an appearance characteristics
              * entry (the widget dictionaries MK entry). In addition, if there is no content yet also create the appearance
              * stream from the entries.
              * 
              */
-            if (characteristicsDictionary != null || appearanceStream.getContentStream().getLength() == 0)
+            if (appearanceCharacteristics != null || appearanceStream.getContentStream().getLength() == 0)
             {
-                initializeAppearanceContent(widget, characteristicsDictionary, appearanceStream);
+                initializeAppearanceContent(widget, appearanceCharacteristics, appearanceStream);
             }
                 
             setAppearanceContent(widget, appearanceStream);
@@ -280,10 +281,8 @@ class AppearanceGeneratorHelper
                 ScriptingHandler scriptingHandler = field.getAcroForm().getScriptingHandler();
                 return scriptingHandler.format((PDActionJavaScript) actionF, apValue);
             }
-            else
-            {
-                LOG.info("Field contains a formatting action but no ScriptingHandler has been supplied - formatted value might be incorrect");
-            }
+            LOG.info("Field contains a formatting action but no ScriptingHandler " +
+                     "has been supplied - formatted value might be incorrect");
         }
         return apValue;
     }
@@ -355,18 +354,18 @@ class AppearanceGeneratorHelper
      * around the widget
      * 
      * @param widget the field widget
-     * @param characteristicsDictionary the appearance characteristics dictionary from widget instance or null
+     * @param appearanceCharacteristics the appearance characteristics dictionary from the widget or
+     * null
      * @param appearanceStream the appearance stream to be used
      * @throws IOException in case we can't write to the appearance stream
      */
-    private void initializeAppearanceContent(PDAnnotationWidget widget, PDAppearanceCharacteristicsDictionary characteristicsDictionary,
-                                             PDAppearanceStream appearanceStream) throws IOException
+    private void initializeAppearanceContent(PDAnnotationWidget widget,
+            PDAppearanceCharacteristicsDictionary appearanceCharacteristics,
+            PDAppearanceStream appearanceStream) throws IOException
     {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream();
-                PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output))
+             PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output))
         {
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics = characteristicsDictionary;
-            
             // TODO: support more entries like patterns, etc.
             if (appearanceCharacteristics != null)
             {
@@ -534,8 +533,8 @@ class AppearanceGeneratorHelper
             float fontScaleY = fontSize / FONTSCALE;
             float fontBoundingBoxAtSize = font.getBoundingBox().getHeight() * fontScaleY;
 
-            float fontCapAtSize = 0;
-            float fontDescentAtSize = 0;
+            float fontCapAtSize;
+            float fontDescentAtSize;
     
             if (font.getFontDescriptor() != null) {
                 fontCapAtSize = font.getFontDescriptor().getCapHeight() * fontScaleY;
@@ -693,7 +692,7 @@ class AppearanceGeneratorHelper
             PDFont font, float fontSize) throws IOException
     {
         int maxLen = ((PDTextField) field).getMaxLen();
-        int quadding = ((PDTextField) field).getQ();
+        int quadding = field.getQ();
         int numChars = Math.min(value.length(), maxLen);
         PDRectangle bbox = appearanceStream.getBBox();
         PDRectangle paddingEdge = applyPadding(bbox, 1);
