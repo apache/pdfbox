@@ -119,7 +119,7 @@ public class PDDocument implements Closeable
     // the COSDocument will not have an "Encrypt" dictionary anymore and this object must be used
     private PDEncryption encryption;
 
-    // holds a flag which tells us if we should remove all security from this documents.
+    // holds a flag which tells us if we should remove all security from this document.
     private boolean allSecurityToBeRemoved;
 
     // keep tracking customized documentId for the trailer. If null, a new id will be generated
@@ -216,7 +216,7 @@ public class PDDocument implements Closeable
      * 
      * @param doc The COSDocument that this document wraps.
      * @param source input representing the pdf
-     * @param permission he access permissions of the pdf
+     * @param permission The access permissions of the pdf
      * 
      */
     public PDDocument(COSDocument doc, RandomAccessRead source, AccessPermission permission)
