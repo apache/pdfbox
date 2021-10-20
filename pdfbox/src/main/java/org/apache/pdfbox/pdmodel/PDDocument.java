@@ -571,13 +571,13 @@ public class PDDocument implements Closeable
 
     private void assignSignatureRectangle(PDSignatureField signatureField, COSDictionary annotDict)
     {
-        // Read and set the rectangle for visual signature
-        COSArray rectArray = annotDict.getCOSArray(COSName.RECT);
         PDRectangle existingRectangle = signatureField.getWidgets().get(0).getRectangle();
 
         //in case of an existing field keep the original rect
         if (existingRectangle == null || existingRectangle.getCOSArray().size() != 4)
         {
+            // Read and set the rectangle for visual signature
+            COSArray rectArray = annotDict.getCOSArray(COSName.RECT);
             PDRectangle rect = new PDRectangle(rectArray);
             signatureField.getWidgets().get(0).setRectangle(rect);
         }
