@@ -557,14 +557,12 @@ public class COSWriter implements ICOSVisitor
             return;
         }
 
-        COSBase cosBase = null;
-        COSObjectKey cosObjectKey = null;
         if (actual != null)
         {
-            cosObjectKey = objectKeys.get(actual);
+            COSObjectKey cosObjectKey = objectKeys.get(actual);
             if (cosObjectKey != null)
             {
-                cosBase = keyObject.get(cosObjectKey);
+                COSBase cosBase = keyObject.get(cosObjectKey);
                 if (!isNeedToBeUpdated(object) && !isNeedToBeUpdated(cosBase))
                 {
                     return;
