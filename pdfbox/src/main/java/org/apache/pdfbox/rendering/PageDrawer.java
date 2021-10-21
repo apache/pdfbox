@@ -1466,7 +1466,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         if (isContentRendered())
         {
+            GeneralPath savedLinePath = linePath;
+            linePath = new GeneralPath();
             super.showForm(form);
+            linePath = savedLinePath;
         }
     }
 
