@@ -761,7 +761,8 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected COSBase parseObjectStreamObject(int objstmObjNr, COSObjectKey key) throws IOException
     {
-        final COSBase objstmBaseObj = parseObjectDynamically(objstmObjNr, 0, true);
+        final COSObjectKey objKey = new COSObjectKey(objstmObjNr, 0);
+        final COSBase objstmBaseObj = document.getObjectFromPool(objKey).getObject();
         COSBase objectStreamObject = null;
         if (objstmBaseObj instanceof COSStream)
         {
