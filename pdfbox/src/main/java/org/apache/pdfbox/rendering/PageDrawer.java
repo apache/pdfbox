@@ -1008,7 +1008,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void fillAndStrokePath(int windingRule) throws IOException
     {
-        // TODO can we avoid cloning the path?
+        // Cloning needed because fillPath() resets linePath
         GeneralPath path = (GeneralPath)linePath.clone();
         fillPath(windingRule);
         linePath = path;
