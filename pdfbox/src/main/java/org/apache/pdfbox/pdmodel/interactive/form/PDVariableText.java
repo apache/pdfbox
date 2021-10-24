@@ -72,7 +72,13 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public String getDefaultAppearance()
     {
-        COSString defaultAppearance = (COSString) getInheritableAttribute(COSName.DA);
+        COSBase base = getInheritableAttribute(COSName.DA);
+        COSString defaultAppearance;
+        if (!(base instanceof COSString))
+        {
+            return null;
+        }
+        defaultAppearance = (COSString) base;
         return defaultAppearance.getString();
     }
 
