@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.ObjIntConsumer;
 
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -254,7 +255,11 @@ public class Splitter
         createNewDocumentIfNecessary();
         
         PDPage imported = getDestinationDocument().importPage(page);
-        imported.setResources(page.getResources());
+        if (page.getResources() != null && !page.getCOSObject().containsKey(COSName.RESOURCES))
+        {
+            imported.setResources(page.getResources());
+            //LOG.info("Resources imported in PageExtractor"); // follow-up to warning in importPage
+        }
         // remove page links to avoid copying not needed resources 
         processAnnotations(imported);
         documentConsumer.accept(currentDestinationDocument, currentPageNumber + 1);
