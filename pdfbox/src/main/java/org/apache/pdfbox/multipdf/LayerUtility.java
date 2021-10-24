@@ -175,7 +175,7 @@ public class LayerUtility
         form.setResources(formRes);
 
         //Transfer some values from page to form
-        transferDict(page.getCOSObject(), form.getCOSObject(), PAGE_TO_FORM_FILTER, true);
+        transferDict(page.getCOSObject(), form.getCOSObject(), PAGE_TO_FORM_FILTER);
 
         Matrix matrix = form.getMatrix();
         AffineTransform at = matrix.createAffineTransform();
@@ -285,22 +285,17 @@ public class LayerUtility
         return layer;
     }
 
-    private void transferDict(COSDictionary orgDict, COSDictionary targetDict,
-            Set<String> filter, boolean inclusive) throws IOException
+    private void transferDict(COSDictionary orgDict, COSDictionary targetDict, Set<String> filter)
+            throws IOException
     {
         for (Map.Entry<COSName, COSBase> entry : orgDict.entrySet())
         {
             COSName key = entry.getKey();
-            if (inclusive && !filter.contains(key.getName()))
+            if (!filter.contains(key.getName()))
             {
                 continue;
             }
-            else if (!inclusive && filter.contains(key.getName()))
-            {
-                continue;
-            }
-            targetDict.setItem(key,
-                    cloner.cloneForNewDocument(entry.getValue()));
+            targetDict.setItem(key, cloner.cloneForNewDocument(entry.getValue()));
         }
     }
 
