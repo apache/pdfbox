@@ -911,7 +911,7 @@ public class COSWriter implements ICOSVisitor
             byte[] signatureBytes = signatureInterface.sign(dataToSign);
             writeExternalSignature(signatureBytes);
         }
-        // else signature should created externally and set via writeSignature()
+        // else signature should be created externally and set via writeSignature()
     }
 
     /**
