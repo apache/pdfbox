@@ -539,13 +539,14 @@ public abstract class PDFStreamEngine
         else
         {
             resources = currentPage.getResources();
+
+            // resources are required in PDF
+            if (resources == null)
+            {
+                resources = new PDResources();
+            }
         }
 
-        // resources are required in PDF
-        if (resources == null)
-        {
-            resources = new PDResources();
-        }
         return parentResources;
     }
 
@@ -832,7 +833,7 @@ public abstract class PDFStreamEngine
     }
 
     /**
-     * Called when a a marked content group ends
+     * Called when a marked content group ends
      */
     public void endMarkedContentSequence()
     {
