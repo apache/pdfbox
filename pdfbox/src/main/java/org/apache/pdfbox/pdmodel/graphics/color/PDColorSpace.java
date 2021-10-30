@@ -44,6 +44,8 @@ import org.apache.pdfbox.pdmodel.ResourceCache;
  */
 public abstract class PDColorSpace implements COSObjectable
 {
+   private final ColorConvertOp colorConvertOp = new ColorConvertOp(null);
+
     /**
      * Creates a color space given a name or array.
      * @param colorSpace the color space COS object
@@ -361,8 +363,7 @@ public abstract class PDColorSpace implements COSObjectable
             g2d.dispose();
             return dest;
         }
-        ColorConvertOp op = new ColorConvertOp(null);
-        op.filter(src, dest);
+        colorConvertOp.filter(src, dest);
         return dest;
     }
 
