@@ -164,6 +164,28 @@ public final class StandardSecurityHandler extends SecurityHandler
         int dicPermissions = encryption.getPermissions();
         int dicRevision = encryption.getRevision();
         int dicLength = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
+        
+        if (encryption.getVersion() == 4 || encryption.getVersion() == 5)
+        {
+            // detect whether AES encryption is used. This assumes that the encryption algo is 
+            // stored in the PDCryptFilterDictionary
+            // However, crypt filters are used only when V is 4 or 5.
+            PDCryptFilterDictionary stdCryptFilterDictionary = encryption.getStdCryptFilterDictionary();
+            if (stdCryptFilterDictionary != null)
+            {
+                COSName cryptFilterMethod = stdCryptFilterDictionary.getCryptFilterMethod();
+                if (COSName.AESV2.equals(cryptFilterMethod))
+                {
+                    dicLength = 128 / 8;
+                    setAES(true);
+                }
+                if (COSName.AESV3.equals(cryptFilterMethod))
+                {
+                    dicLength = 256 / 8;
+                    setAES(true);
+                }
+            }
+        }
 
         byte[] documentIDBytes = getDocumentIDBytes(documentIDArray);
 
@@ -243,21 +265,6 @@ public final class StandardSecurityHandler extends SecurityHandler
         if (dicRevision == 6 || dicRevision == 5)
         {
             validatePerms(encryption, dicPermissions, encryptMetadata);
-        }
-
-        if (encryption.getVersion() == 4 || encryption.getVersion() == 5)
-        {
-            // detect whether AES encryption is used. This assumes that the encryption algo is 
-            // stored in the PDCryptFilterDictionary
-            // However, crypt filters are used only when V is 4 or 5.
-            PDCryptFilterDictionary stdCryptFilterDictionary = encryption.getStdCryptFilterDictionary();
-
-            if (stdCryptFilterDictionary != null)
-            {
-                COSName cryptFilterMethod = stdCryptFilterDictionary.getCryptFilterMethod();
-                setAES(COSName.AESV2.equals(cryptFilterMethod) || 
-                       COSName.AESV3.equals(cryptFilterMethod));
-            }
         }
     }
 
