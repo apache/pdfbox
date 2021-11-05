@@ -820,6 +820,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             // apply clip to path to avoid oversized device bounds in shading contexts (PDFBOX-2901)
             Area area = new Area(linePath);
+            Shape clip = graphics.getClip();
+            if (clip != null)
+            {
+                area.intersect(new Area(clip));
+            }
             area.intersect(new Area(graphics.getClip()));
             intersectShadingBBox(getGraphicsState().getNonStrokingColor(), area);
             shape = area;
@@ -1361,6 +1366,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         graphics.setPaint(paint);
+        Shape savedClip = graphics.getClip();
         graphics.setClip(null);
         lastClips = null;
 
@@ -1391,6 +1397,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
         }
         graphics.fill(area);
+        graphics.setClip(savedClip);
     }
 
     @Override
