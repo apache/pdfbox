@@ -913,7 +913,7 @@ public class COSWriter implements ICOSVisitor
             byte[] signatureBytes = signatureInterface.sign(dataToSign);
             writeExternalSignature(signatureBytes);
         }
-        // else signature should created externally and set via writeSignature()
+        // else signature should be created externally and set via writeSignature()
     }
 
     /**
@@ -1577,8 +1577,9 @@ public class COSWriter implements ICOSVisitor
     {
         fdfDocument = doc;
         COSDocument cosDoc = fdfDocument.getDocument();
-        COSDictionary trailer = cosDoc.getTrailer();
-        if(incrementalUpdate){
+        if (incrementalUpdate)
+        {
+            COSDictionary trailer = cosDoc.getTrailer();
             trailer.toIncrement().exclude(trailer).forEach(objectsToWrite::add);
         }
         willEncrypt = false;
