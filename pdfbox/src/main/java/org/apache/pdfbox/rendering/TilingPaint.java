@@ -36,6 +36,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
+import org.apache.pdfbox.printing.BigBufferedImage;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -140,8 +141,10 @@ class TilingPaint implements Paint
         int rasterWidth = Math.max(1, ceiling(width));
         int rasterHeight = Math.max(1, ceiling(height));
 
-        BufferedImage image = new BufferedImage(rasterWidth, rasterHeight, BufferedImage.TYPE_INT_ARGB);
 
+        //BufferedImage image = new BufferedImage(rasterWidth, rasterHeight, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = BigBufferedImage.create(rasterWidth, rasterHeight, BufferedImage.TYPE_INT_ARGB);
+        
         Graphics2D graphics = image.createGraphics();
 
         // flip a -ve YStep around its own axis (see gs-bugzilla694385.pdf)
