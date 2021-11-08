@@ -77,7 +77,13 @@ public class SimplifiedPdfBoxPdfPrinter {
 
 
 	public static void main(String[] args) throws Exception {
+		long start = System.currentTimeMillis();
+		
 		SimplifiedPdfBoxPdfPrinter svc = new SimplifiedPdfBoxPdfPrinter("\\\\Moby\\Cust Suc Dell C2660dn");
-		svc.print(new File("S:\\ClientData\\ClientData\\XPRIA-TPT100892\\JrachvUniverse_H21.pdf"));
+		//svc.print(new File("S:\\ClientData\\ClientData\\XPRIA-TPT100892\\JrachvUniverse_H21.pdf"));
+
+		svc.print(new File("C:\\Users\\kevin\\Downloads\\gs-bugzilla692158-schleuse-veryslow.pdf"));
+		
+		System.out.println("Elapsed: " + (System.currentTimeMillis() - start)/1000L + " secs");
 	}
 }

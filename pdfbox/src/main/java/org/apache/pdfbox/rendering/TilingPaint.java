@@ -142,9 +142,9 @@ class TilingPaint implements Paint
         int rasterHeight = Math.max(1, ceiling(height));
 
 
-        //BufferedImage image = new BufferedImage(rasterWidth, rasterHeight, BufferedImage.TYPE_INT_ARGB);
-        BufferedImage image = BigBufferedImage.create(rasterWidth, rasterHeight, BufferedImage.TYPE_INT_ARGB);
-        
+        BufferedImage image = new BufferedImage(rasterWidth, rasterHeight, BufferedImage.TYPE_INT_ARGB);
+        //BufferedImage image = BigBufferedImage.create(rasterWidth, rasterHeight, BufferedImage.TYPE_INT_ARGB);
+System.out.println("New BufferedImage in TilingPaint");        
         Graphics2D graphics = image.createGraphics();
 
         // flip a -ve YStep around its own axis (see gs-bugzilla694385.pdf)
