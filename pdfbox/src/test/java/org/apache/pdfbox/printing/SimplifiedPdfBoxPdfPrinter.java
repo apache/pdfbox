@@ -57,7 +57,7 @@ public class SimplifiedPdfBoxPdfPrinter {
 	    
 	    try(PDDocument doc = Loader.loadPDF(pdf, MemoryUsageSetting.setupMixed(5000000L))){
 	    	PDFPageable pageable = new PDFPageable(doc);
-
+	    	
 	    	job.setPageable(pageable);
 	
 		    // create a new HashPrintRequestAttributeSet and initialize it with the printer's default attributes
@@ -80,9 +80,9 @@ public class SimplifiedPdfBoxPdfPrinter {
 		long start = System.currentTimeMillis();
 		
 		SimplifiedPdfBoxPdfPrinter svc = new SimplifiedPdfBoxPdfPrinter("\\\\Moby\\Cust Suc Dell C2660dn");
-		//svc.print(new File("S:\\ClientData\\ClientData\\XPRIA-TPT100892\\JrachvUniverse_H21.pdf"));
+		svc.print(new File("S:\\ClientData\\ClientData\\XPRIA-TPT100892\\JrachvUniverse_H21.pdf"));
 
-		svc.print(new File("C:\\Users\\kevin\\Downloads\\gs-bugzilla692158-schleuse-veryslow.pdf"));
+		//svc.print(new File("C:\\Users\\kevin\\Downloads\\gs-bugzilla692158-schleuse-veryslow.pdf"));
 		
 		System.out.println("Elapsed: " + (System.currentTimeMillis() - start)/1000L + " secs");
 	}
