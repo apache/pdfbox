@@ -226,7 +226,14 @@ public abstract class PDColorSpace implements COSObjectable
                 ((COSDictionary) colorSpace).containsKey(COSName.COLORSPACE))
         {
             // PDFBOX-4833: dictionary with /ColorSpace entry
-            return create(((COSDictionary) colorSpace).getDictionaryObject(COSName.COLORSPACE), resources, wasDefault);
+            COSBase base = ((COSDictionary) colorSpace).getDictionaryObject(COSName.COLORSPACE);
+            if (base == colorSpace)
+            {
+                // PDFBOX-5315
+                throw new IOException("Recursion in colorspace: " +
+                        ((COSDictionary) colorSpace).getItem(COSName.COLORSPACE) + " points to itself");
+            }
+            return create(base, resources, wasDefault);
         }
         else
         {
