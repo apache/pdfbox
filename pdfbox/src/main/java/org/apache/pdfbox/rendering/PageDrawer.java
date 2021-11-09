@@ -1483,6 +1483,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void showTransparencyGroup(PDTransparencyGroup form) throws IOException
     {
+        showTransparencyGroupOnGraphics(form, graphics);
+    }
+
+    /**
+     * For advanced users, to extract the transparency group into a separate graphics device.
+     * 
+     * @param form
+     * @param graphics
+     * @throws IOException 
+     */
+    protected void showTransparencyGroupOnGraphics(PDTransparencyGroup form, Graphics2D graphics)
+        throws IOException
+    {
         if (isHiddenOCG(form.getOptionalContent()))
         {
             return;
