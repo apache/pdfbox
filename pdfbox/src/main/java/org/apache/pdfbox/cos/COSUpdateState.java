@@ -132,11 +132,10 @@ public class COSUpdateState
             COSDictionary dictionary = (COSDictionary) updateInfo;
             for(COSBase entry : dictionary.getValues())
             {
-                if(!(entry instanceof COSUpdateInfo))
+                if(entry instanceof COSUpdateInfo)
                 {
-                    continue;
+                    ((COSUpdateInfo) entry).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
                 }
-                ((COSUpdateInfo) entry).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
             }
         }
         else if(updateInfo instanceof COSArray)
@@ -144,11 +143,10 @@ public class COSUpdateState
             COSArray array = (COSArray) updateInfo;
             for(COSBase entry : array)
             {
-                if(!(entry instanceof COSUpdateInfo))
+                if(entry instanceof COSUpdateInfo)
                 {
-                    continue;
+                    ((COSUpdateInfo) entry).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
                 }
-                ((COSUpdateInfo) entry).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
             }
         }
         else if(updateInfo instanceof COSObject)
@@ -259,7 +257,7 @@ public class COSUpdateState
             ((COSUpdateInfo) child).getUpdateState().setOriginDocumentState(originDocumentState);
         }
     }
-    
+
     /**
      * <p>
      * Shall call {@link #update()} for this {@link COSUpdateState} and shall
