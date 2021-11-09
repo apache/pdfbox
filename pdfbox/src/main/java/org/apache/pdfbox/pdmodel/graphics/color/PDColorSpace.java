@@ -44,6 +44,8 @@ import org.apache.pdfbox.pdmodel.ResourceCache;
  */
 public abstract class PDColorSpace implements COSObjectable
 {
+    private final ColorConvertOp colorConvertOp = new ColorConvertOp(null);
+
     /**
      * Creates a color space given a name or array.
      * @param colorSpace the color space COS object
@@ -224,7 +226,14 @@ public abstract class PDColorSpace implements COSObjectable
                 ((COSDictionary) colorSpace).containsKey(COSName.COLORSPACE))
         {
             // PDFBOX-4833: dictionary with /ColorSpace entry
-            return create(((COSDictionary) colorSpace).getDictionaryObject(COSName.COLORSPACE), resources, wasDefault);
+            COSBase base = ((COSDictionary) colorSpace).getDictionaryObject(COSName.COLORSPACE);
+            if (base == colorSpace)
+            {
+                // PDFBOX-5315
+                throw new IOException("Recursion in colorspace: " +
+                        ((COSDictionary) colorSpace).getItem(COSName.COLORSPACE) + " points to itself");
+            }
+            return create(base, resources, wasDefault);
         }
         else
         {
@@ -361,8 +370,7 @@ public abstract class PDColorSpace implements COSObjectable
             g2d.dispose();
             return dest;
         }
-        ColorConvertOp op = new ColorConvertOp(null);
-        op.filter(src, dest);
+        colorConvertOp.filter(src, dest);
         return dest;
     }
 

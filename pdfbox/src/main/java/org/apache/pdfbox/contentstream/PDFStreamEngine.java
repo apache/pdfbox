@@ -546,6 +546,7 @@ public abstract class PDFStreamEngine
                 resources = new PDResources();
             }
         }
+
         return parentResources;
     }
 

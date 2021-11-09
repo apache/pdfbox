@@ -1575,7 +1575,8 @@ public class COSWriter implements ICOSVisitor
     {
         fdfDocument = doc;
         COSDocument cosDoc = fdfDocument.getDocument();
-        if(incrementalUpdate){
+        if (incrementalUpdate)
+        {
             COSDictionary trailer = cosDoc.getTrailer();
             trailer.toIncrement().exclude(trailer).forEach(objectsToWrite::add);
         }

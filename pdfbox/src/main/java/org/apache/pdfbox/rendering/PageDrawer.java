@@ -820,7 +820,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             // apply clip to path to avoid oversized device bounds in shading contexts (PDFBOX-2901)
             Area area = new Area(linePath);
-            area.intersect(new Area(graphics.getClip()));
+            Shape clip = graphics.getClip();
+            if (clip != null)
+            {
+                area.intersect(new Area(clip));
+            }
             intersectShadingBBox(getGraphicsState().getNonStrokingColor(), area);
             shape = area;
         }
@@ -1361,6 +1365,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         graphics.setPaint(paint);
+        Shape savedClip = graphics.getClip();
         graphics.setClip(null);
         lastClips = null;
 
@@ -1391,6 +1396,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
         }
         graphics.fill(area);
+        graphics.setClip(savedClip);
     }
 
     @Override
@@ -1475,6 +1481,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     @Override
     public void showTransparencyGroup(PDTransparencyGroup form) throws IOException
+    {
+        showTransparencyGroupOnGraphics(form, graphics);
+    }
+
+    /**
+     * For advanced users, to extract the transparency group into a separate graphics device.
+     * 
+     * @param form
+     * @param graphics
+     * @throws IOException 
+     */
+    protected void showTransparencyGroupOnGraphics(PDTransparencyGroup form, Graphics2D graphics)
+        throws IOException
     {
         if (isHiddenOCG(form.getOptionalContent()))
         {
