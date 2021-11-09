@@ -58,7 +58,7 @@ public class COSIncrement implements Iterable<COSBase>
     
     /**
      * Creates a new {@link COSIncrement} for the given {@link COSUpdateInfo}, the increment will use it´s
-     * {@link COSDocumentState} as it´s own origin and shall conllect all updates contained in the given
+     * {@link COSDocumentState} as it´s own origin and shall collect all updates contained in the given
      * {@link COSUpdateInfo}.<br>
      * Should the given object be {@code null}, the resulting increment shall be empty.
      *
@@ -312,7 +312,24 @@ public class COSIncrement implements Iterable<COSBase>
         }
         return this;
     }
-    
+
+    /**
+     * The given {@link COSBase} is not fit for inclusion in an increment and shall be added to {@link #excluded}.<br>
+     * {@code null} values shall be ignored.
+     *
+     * @param base The {@link COSBase} to add to {@link #excluded}.
+     * @return The {@link COSIncrement} itself, to allow method chaining.
+     * @see #excluded
+     */
+    public COSIncrement exclude(COSBase base)
+    {
+        if (base != null)
+        {
+            excluded.add(base);
+        }
+        return this;
+    }
+
     /**
      * Returns {@code true}, if the given {@link COSBase} has been excluded from the increment, and hence is contained
      * in {@link #excluded}.
