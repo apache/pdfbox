@@ -139,7 +139,7 @@ public final class COSBoolean extends COSBase
      */
     public boolean equals(Object obj) {
         if (obj instanceof COSBoolean) {
-            return value == ((COSBoolean)obj).getValue();
+            return this == obj;
         }
         return false;
     }
