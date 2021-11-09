@@ -100,7 +100,7 @@ public final class COSString extends COSBase
     }
 
     /**
-     * This will create a COS string from a string of hex characters.
+     * This will create a COS string from a string of hexadecimal characters.
      *
      * @param hex A hex string.
      * @return A cos string with the hex characters converted to their actual bytes.
@@ -152,7 +152,7 @@ public final class COSString extends COSBase
     }
 
     /**
-     * Sets whether or not to force the string is to be written in hex form.
+     * Sets whether to force the string is to be written in hexadecimal form.
      * This is needed when signing PDF files.
      *
      * @param value True to force hex.

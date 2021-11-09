@@ -674,7 +674,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will take an list of integer objects and return a COSArray of COSInteger objects.
+     * This will take a list of integer objects and return a COSArray of COSInteger objects.
      *
      * @param integer A list of integers
      *
@@ -688,7 +688,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will take an list of string objects and return a COSArray of COSName objects.
+     * This will take a list of string objects and return a COSArray of COSName objects.
      *
      * @param strings A list of strings
      *
@@ -702,7 +702,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will take an list of string objects and return a COSArray of COSName objects.
+     * This will take a list of string objects and return a COSArray of COSName objects.
      *
      * @param strings A list of strings
      *
