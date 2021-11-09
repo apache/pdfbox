@@ -825,7 +825,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 area.intersect(new Area(clip));
             }
-            area.intersect(new Area(graphics.getClip()));
             intersectShadingBBox(getGraphicsState().getNonStrokingColor(), area);
             shape = area;
         }
