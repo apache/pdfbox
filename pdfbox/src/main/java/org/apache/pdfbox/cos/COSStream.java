@@ -198,10 +198,13 @@ public class COSStream extends COSDictionary implements Closeable
         }
         else
         {
-            Set<Filter> filterSet = new HashSet<>(filterList);
-            if (filterSet.size() != filterList.size())
+            if (filterList.size() > 1)
             {
-                throw new IOException("Duplicate");
+                Set<Filter> filterSet = new HashSet<>(filterList);
+                if (filterSet.size() != filterList.size())
+                {
+                    throw new IOException("Duplicate");
+                }
             }
             InputStream input = createRawInputStream();
             ByteArrayOutputStream output = new ByteArrayOutputStream(input.available());
