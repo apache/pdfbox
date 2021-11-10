@@ -798,7 +798,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void fillPath(int windingRule) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
-        graphics.setPaint(getNonStrokingPaint());
         setClip();
         linePath.setWindingRule(windingRule);
 
@@ -832,8 +831,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             shape = linePath;
         }
-        if (isContentRendered())
+        if (isContentRendered() && !shape.getPathIterator(null).isDone())
         {
+            // creating Paint is sometimes a costly operation, so avoid if possible
+            graphics.setPaint(getNonStrokingPaint());
             graphics.fill(shape);
         }
         
@@ -1360,11 +1361,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return;
         }
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
-        Paint paint = shading.toPaint(ctm);
-        paint = applySoftMaskToPaint(paint, getGraphicsState().getSoftMask());
 
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
-        graphics.setPaint(paint);
         Shape savedClip = graphics.getClip();
         graphics.setClip(null);
         lastClips = null;
@@ -1395,7 +1393,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 area = getGraphicsState().getCurrentClippingPath();
             }
         }
-        graphics.fill(area);
+        if (!area.isEmpty())
+        {
+            // creating Paint is sometimes a costly operation, so avoid if possible
+            Paint paint = shading.toPaint(ctm);
+            paint = applySoftMaskToPaint(paint, getGraphicsState().getSoftMask());
+            graphics.setPaint(paint);
+            graphics.fill(area);
+        }
         graphics.setClip(savedClip);
     }
 
