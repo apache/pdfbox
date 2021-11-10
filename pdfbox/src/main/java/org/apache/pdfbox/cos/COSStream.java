@@ -423,21 +423,33 @@ public class COSStream extends COSDictionary implements Closeable
     @Override
     public void close() throws IOException
     {
-        if (closeScratchFile && scratchFile != null)
+        try
         {
-            scratchFile.close();
-            scratchFile = null;
+            if (closeScratchFile && scratchFile != null)
+            {
+                scratchFile.close();
+                scratchFile = null;
+            }
         }
-        // marks the scratch file pages as free
-        if (randomAccess != null)
+        finally
         {
-            randomAccess.close();
-            randomAccess = null;
-        }
-        if (randomAccessReadView != null)
-        {
-            randomAccessReadView.close();
-            randomAccessReadView = null;
+            try
+            {
+                // marks the scratch file pages as free
+                if (randomAccess != null)
+                {
+                    randomAccess.close();
+                    randomAccess = null;
+                }
+            }
+            finally
+            {
+                if (randomAccessReadView != null)
+                {
+                    randomAccessReadView.close();
+                    randomAccessReadView = null;
+                }
+            }
         }
     }
 
