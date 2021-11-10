@@ -1277,7 +1277,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             @Override
             PDDocument open() throws IOException
             {
-                return Loader.loadPDF(file, password);
+                long t0 = System.nanoTime();
+                PDDocument doc = Loader.loadPDF(file, password);
+                long t1 = System.nanoTime();
+                long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+                LOG.info("Parsed in " + ms + " ms");
+                return doc;
             }
         };
         document = documentOpener.parse();
@@ -1319,7 +1324,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             @Override
             PDDocument open() throws IOException
             {
-                return Loader.loadPDF(new URL(urlString).openStream(), password);
+                long t0 = System.nanoTime();
+                PDDocument doc = Loader.loadPDF(new URL(urlString).openStream(), password);
+                long t1 = System.nanoTime();
+                long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+                LOG.info("Parsed in " + ms + " ms");
+                return doc;
             }
         };
         document = documentOpener.parse();
