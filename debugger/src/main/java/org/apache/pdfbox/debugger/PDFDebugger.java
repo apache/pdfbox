@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import javax.imageio.spi.IIORegistry;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
@@ -69,6 +70,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreePath;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -134,6 +137,8 @@ import org.apache.pdfbox.printing.PDFPageable;
 @SuppressWarnings({"serial","squid:MaximumInheritanceDepth","squid:S1948"})
 public class PDFDebugger extends JFrame
 {
+    private static Log LOG; // needs late initialization
+
     private static final Set<COSName> SPECIALCOLORSPACES =
             new HashSet<COSName>(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
@@ -1228,7 +1233,11 @@ public class PDFDebugger extends JFrame
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 try
                 {
+                    long t0 = System.nanoTime();
                     job.print(pras);
+                    long t1 = System.nanoTime();
+                    long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+                    LOG.info("Printed in " + ms + " ms");
                 }
                 finally
                 {
@@ -1295,11 +1304,12 @@ public class PDFDebugger extends JFrame
         final PDFDebugger viewer = new PDFDebugger(viewPages);
 
         // use our custom logger
-        // this works only if there is no "LogFactory.getLog()" in this class,
+        // this works only if there is no earlier "LogFactory.getLog()" in this class,
         // and if there are no methods that call logging, even invisible
         // use reduced file from PDFBOX-3653 to see logging
         LogDialog.init(viewer, viewer.statusBar.getLogLabel());
         System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
+        LOG = LogFactory.getLog(PDFDebugger.class);
 
         // trigger premature initializations for more accurate rendering benchmarks
         // See discussion in PDFBOX-3988
