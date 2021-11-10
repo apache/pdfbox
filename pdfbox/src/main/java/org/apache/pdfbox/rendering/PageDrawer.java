@@ -874,6 +874,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void fillPath(int windingRule) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
+        graphics.setPaint(getNonStrokingPaint());
         setClip();
         linePath.setWindingRule(windingRule);
 
@@ -909,8 +910,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         if (isContentRendered() && !shape.getPathIterator(null).isDone())
         {
-            // creating Paint is sometimes a costly operation, so avoid if possible
-            graphics.setPaint(getNonStrokingPaint());
             graphics.fill(shape);
         }
         
