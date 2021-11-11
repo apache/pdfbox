@@ -797,8 +797,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void fillPath(int windingRule) throws IOException
     {
-        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
-        graphics.setPaint(getNonStrokingPaint());
+        PDGraphicsState graphicsState = getGraphicsState();
+        graphics.setComposite(graphicsState.getNonStrokingJavaComposite());
         setClip();
         linePath.setWindingRule(windingRule);
 
@@ -816,7 +816,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
 
         Shape shape;
-        if (!(graphics.getPaint() instanceof Color))
+        if (graphicsState.getNonStrokingColorSpace() instanceof PDPattern)
         {
             // apply clip to path to avoid oversized device bounds in shading contexts (PDFBOX-2901)
             Area area = new Area(linePath);
@@ -825,7 +825,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 area.intersect(new Area(clip));
             }
-            intersectShadingBBox(getGraphicsState().getNonStrokingColor(), area);
+            intersectShadingBBox(graphicsState.getNonStrokingColor(), area);
             shape = area;
         }
         else
@@ -834,6 +834,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         if (isContentRendered() && !shape.getPathIterator(null).isDone())
         {
+            // creating Paint is sometimes a costly operation, so avoid if possible
+            graphics.setPaint(getNonStrokingPaint());
             graphics.fill(shape);
         }
         
