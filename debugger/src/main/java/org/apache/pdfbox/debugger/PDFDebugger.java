@@ -1053,6 +1053,33 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private void replaceRightComponent(Component pane)
     {
         int div = jSplitPane.getDividerLocation();
+        
+        // Avoid memory leak with the display image
+        // if anyone knows a better way to do this, please tell
+        Component rightComponent = jSplitPane.getRightComponent();
+        if (rightComponent instanceof JScrollPane)
+        {
+            JScrollPane scrollPane = (JScrollPane) rightComponent;
+            Component view = scrollPane.getViewport().getView();
+            if (view instanceof JPanel)
+            {
+                JPanel panel = (JPanel) view;
+                for (Component component : panel.getComponents())
+                {
+                    if (component instanceof JLabel)
+                    {
+                        ((JLabel) component).setIcon(null);
+                    }
+                }
+                panel.removeAll();
+                scrollPane.getViewport().setView(null);
+                scrollPane.getViewport().removeAll();
+                scrollPane.setViewport(null);
+                scrollPane.removeAll();
+                // still leaks but it's really the image that bothers; listeners still active
+            }
+        }
+
         jSplitPane.setRightComponent(pane);
         jSplitPane.setDividerLocation(div);
     }
