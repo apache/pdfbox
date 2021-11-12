@@ -1265,6 +1265,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private void drawBufferedImage(BufferedImage image, AffineTransform at) throws IOException
     {
+        AffineTransform originalTransform = graphics.getTransform();
         AffineTransform imageTransform = new AffineTransform(at);
         int width = image.getWidth();
         int height = image.getHeight();
@@ -1278,8 +1279,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Paint awtPaint = new TexturePaint(image, rectangle);
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
-
-            AffineTransform originalTransform = graphics.getTransform();
             graphics.transform(imageTransform);
             graphics.fill(rectangle);
             graphics.setTransform(originalTransform);
@@ -1302,8 +1301,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // will trigger the workaround. Because of the slowness we only do it if the user
             // expects quality rendering and interpolation.
             Matrix imageTransformMatrix = new Matrix(imageTransform);
-            AffineTransform graphicsTransformA = graphics.getTransform();
-            Matrix graphicsTransformMatrix = new Matrix(graphicsTransformA);    
+            Matrix graphicsTransformMatrix = new Matrix(originalTransform);    
             float scaleX = Math.abs(imageTransformMatrix.getScalingFactorX() * graphicsTransformMatrix.getScalingFactorX());
             float scaleY = Math.abs(imageTransformMatrix.getScalingFactorY() * graphicsTransformMatrix.getScalingFactorY());
 
@@ -1323,10 +1321,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 // hoping to reverse the rounding: without this, we get an horizontal line
                 // when rendering PDFJS-8860-Pattern-Size1.pdf at 100% )
                 imageTransform.scale(1f / w * image.getWidth(), 1f / h * image.getHeight());
-                imageTransform.preConcatenate(graphicsTransformA);
+                imageTransform.preConcatenate(originalTransform);
                 graphics.setTransform(new AffineTransform());
                 graphics.drawImage(imageToDraw, imageTransform, null);
-                graphics.setTransform(graphicsTransformA);
+                graphics.setTransform(originalTransform);
             }
             else
             {
