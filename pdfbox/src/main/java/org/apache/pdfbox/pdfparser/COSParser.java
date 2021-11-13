@@ -142,6 +142,12 @@ public class COSParser extends BaseParser implements ICOSParser
     private PDEncryption encryption = null;
 
     /**
+     * Intermediate cache. Contains all objects of already read compressed object streams. Objects are removed after
+     * dereferencing them.
+     */
+    private final Map<Integer, Map<Long, COSBase>> decompressedObjects = new HashMap<>();
+
+    /**
      * The security handler.
      */
     protected SecurityHandler<? extends ProtectionPolicy> securityHandler = null;
@@ -761,20 +767,33 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected COSBase parseObjectStreamObject(int objstmObjNr, COSObjectKey key) throws IOException
     {
+        Map<Long, COSBase> streamObjects = decompressedObjects.computeIfAbsent(objstmObjNr,
+                n -> new HashMap<>());
+        // did we already read the compressed object stream?
+        COSBase objectStreamObject = streamObjects.remove(key.getNumber());
+        if (objectStreamObject != null)
+        {
+            return objectStreamObject;
+        }
         final COSObjectKey objKey = new COSObjectKey(objstmObjNr, 0);
         final COSBase objstmBaseObj = document.getObjectFromPool(objKey).getObject();
-        COSBase objectStreamObject = null;
         if (objstmBaseObj instanceof COSStream)
         {
-            // parse object stream
-            PDFObjectStreamParser parser = null;
             try
             {
-                parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
-                objectStreamObject = parser.parseObject(key.getNumber());
-                if (objectStreamObject != null)
+                PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj,
+                        document);
+                for (Entry<Long, COSBase> entry : parser.parseAllObjects().entrySet())
                 {
-                    objectStreamObject.setKey(key);
+                    Long stmObjNumber = entry.getKey();
+                    if (key.getNumber() == stmObjNumber)
+                    {
+                        objectStreamObject = entry.getValue();
+                    }
+                    else
+                    {
+                        streamObjects.putIfAbsent(stmObjNumber, entry.getValue());
+                    }
                 }
             }
             catch (IOException ex)
@@ -792,7 +811,7 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         return objectStreamObject;
     }
-    
+
     /** 
      * Returns length value referred to or defined in given object. 
      */
