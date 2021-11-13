@@ -405,13 +405,13 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
             if (!encoding.contains(name))
             {
                 throw new IllegalArgumentException(
-                        String.format("U+%04X ('%s') is not available in this font %s encoding: %s",
+                        String.format("U+%04X ('%s') is not available in the font %s, encoding: %s",
                                 unicode, name, getName(), encoding.getEncodingName()));
             }
             if (".notdef".equals(name))
             {
                 throw new IllegalArgumentException(
-                        String.format("No glyph for U+%04X in font %s", unicode, getName()));
+                        String.format("No glyph for U+%04X in the font %s", unicode, getName()));
             }
         }
         else
@@ -419,7 +419,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
             if (!encoding.contains(name))
             {
                 throw new IllegalArgumentException(
-                        String.format("U+%04X ('%s') is not available in this font %s (generic: %s) encoding: %s",
+                        String.format("U+%04X ('%s') is not available in the font %s (generic: %s), encoding: %s",
                                 unicode, name, getName(), genericFont.getName(), encoding.getEncodingName()));
             }
 
@@ -428,12 +428,18 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
             if (".notdef".equals(nameInFont) || !genericFont.hasGlyph(nameInFont))
             {
                 throw new IllegalArgumentException(
-                        String.format("No glyph for U+%04X in font %s (generic: %s)", unicode, getName(), genericFont.getName()));
+                        String.format("No glyph for U+%04X in the font %s (generic: %s)", unicode, getName(), genericFont.getName()));
             }
         }
 
         Map<String, Integer> inverted = encoding.getNameToCodeMap();
         int code = inverted.get(name);
+        if (code < 0)
+        {
+            throw new IllegalArgumentException(
+                    String.format("U+%04X ('%s') is not available in this font %s (generic: %s), encoding: %s",
+                            unicode, name, getName(), genericFont.getName(), encoding.getEncodingName()));
+        }
         bytes = new byte[] { (byte)code };
         codeToBytesMap.put(unicode, bytes);
         return bytes;
