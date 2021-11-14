@@ -43,9 +43,13 @@ import java.util.ListIterator;
  * @see https://en.wikipedia.org/wiki/Merge_sort
  *
  */
-public class IterativeMergeSort
+public final class IterativeMergeSort
 {
-
+    private IterativeMergeSort()
+    {
+        // utility class
+    }
+    
     /**
      * Sorts this list according to the order induced by the specified
      * {@link Comparator}.
@@ -95,7 +99,6 @@ public class IterativeMergeSort
                 merge(arr, aux, start, start + blockSize, start + (blockSize << 1), cmp);
             }
         }
-        return;
     }
 
     /**
@@ -121,7 +124,8 @@ public class IterativeMergeSort
         {
             to = arr.length;
         }
-        int i = from, j = mid;
+        int i = from;
+        int j = mid;
         for (int k = from; k < to; k++)
         {
             if (i == mid)
