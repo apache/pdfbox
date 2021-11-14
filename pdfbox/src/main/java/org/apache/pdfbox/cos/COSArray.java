@@ -140,7 +140,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     /**
      * This will add all objects to this array.
      *
-     * @param objectList The objects to add.
+     * @param objectList The list of objects to add.
      */
     public void addAll( COSArray objectList )
     {
@@ -546,7 +546,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * visitor pattern double dispatch method.
+     * Visitor pattern double dispatch method.
      *
      * @param visitor The object to notify when visiting this object.
      * @return any object, depending on the visitor implementation, or null
@@ -670,7 +670,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will take an list of integer objects and return a COSArray of COSInteger objects.
+     * This will take a list of integer objects and return a COSArray of COSInteger objects.
      *
      * @param integer A list of integers
      *
@@ -684,7 +684,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will take an list of string objects and return a COSArray of COSName objects.
+     * This will take a list of string objects and return a COSArray of COSName objects.
      *
      * @param strings A list of strings
      *
@@ -698,7 +698,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will take an list of string objects and return a COSArray of COSName objects.
+     * This will take a list of string objects and return a COSArray of COSName objects.
      *
      * @param strings A list of strings
      *
