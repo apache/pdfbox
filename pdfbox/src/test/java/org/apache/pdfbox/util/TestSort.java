@@ -31,11 +31,7 @@ public class TestSort extends TestCase
 
     <T extends Comparable<T>> void doTest(T[] input, T[] expected)
     {
-        List<T> list = Arrays.asList(input.clone());
-        QuickSort.sort(list);
-        assertTrue(Arrays.equals(list.toArray(new Object[input.length]), expected));
-
-        list = Arrays.asList(input.clone());
+        List<T> list = Arrays.asList(input);
         IterativeMergeSort.sort(list, new Comparator<T>()
         {
             @Override
