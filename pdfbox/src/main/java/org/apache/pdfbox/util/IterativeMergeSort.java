@@ -21,9 +21,10 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * This class provides an iterative (bottom-up) implementation of the MergeSort algorithm 
- * for any generic Java object which implements a {@link Comparator}.
- * 
+ * This class provides an iterative (bottom-up) implementation of the
+ * <a href="https://en.wikipedia.org/wiki/Merge_sort">MergeSort</a> algorithm for any generic Java
+ * object which implements a {@link Comparator}.
+ *
  * <p>
  * This implementation uses an iterative implementation approach over the more 
  * classical recursive approach in order to save the auxiliary space required 
@@ -39,8 +40,6 @@ import java.util.ListIterator;
  * </ul>
  * 
  * @author Alistair Oldfield
- * 
- * @see https://en.wikipedia.org/wiki/Merge_sort
  *
  */
 public final class IterativeMergeSort
@@ -57,8 +56,6 @@ public final class IterativeMergeSort
      * @param  <T> the class of the objects in the list
      * @param  list the list to be sorted.
      * @param  cmp the comparator to determine the order of the list.
-     * 
-     * @see java.util.Collections.sort(List<T>, Comparator<? super T>)
      * 
      */
     @SuppressWarnings({ "unchecked", "rawtypes"})
