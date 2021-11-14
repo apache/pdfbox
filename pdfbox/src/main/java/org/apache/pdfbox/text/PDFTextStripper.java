@@ -26,6 +26,7 @@ import java.io.Writer;
 import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -499,7 +500,14 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 // because the TextPositionComparator is not transitive, but
                 // JDK7+ enforces transitivity on comparators, we need to use
                 // a custom quicksort implementation (which is slower, unfortunately).
-                QuickSort.sort(textList, comparator);
+                try
+                {
+                    Collections.sort(textList, comparator);
+                }
+                catch (IllegalArgumentException e)
+                {
+                    QuickSort.sort(textList, comparator);
+                }
             }
 
             startArticle();
@@ -526,6 +534,9 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 TextPosition position = textIter.next();
                 PositionWrapper current = new PositionWrapper(position);
                 String characterValue = position.getUnicode();
+
+//                if (" ".equals(characterValue))
+//                    continue;
 
                 // Resets the average character width when we see a change in font
                 // or a change in the font size
