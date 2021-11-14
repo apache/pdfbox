@@ -40,15 +40,16 @@ class PDFObjectStreamParserTest
         stream.setItem(COSName.N, COSInteger.TWO);
         stream.setItem(COSName.FIRST, COSInteger.get(8));
         OutputStream outputStream = stream.createOutputStream();
-        outputStream.write("1 0 2 5 true false".getBytes());
+        outputStream.write("4 0 6 5 true false".getBytes());
         outputStream.close();
         PDFObjectStreamParser objectStreamParser = new PDFObjectStreamParser(stream, null);
         Map<Long, Integer> objectNumbers = objectStreamParser.readObjectNumbers();
         assertEquals(2, objectNumbers.size());
-        Long[] numbers = objectNumbers.keySet().toArray(new Long[0]);
+        assertEquals(0, objectNumbers.get(4L));
+        assertEquals(5, objectNumbers.get(6L));
         objectStreamParser = new PDFObjectStreamParser(stream, null);
-        assertEquals(COSBoolean.TRUE, objectStreamParser.parseObject(numbers[0]));
+        assertEquals(COSBoolean.TRUE, objectStreamParser.parseObject(4));
         objectStreamParser = new PDFObjectStreamParser(stream, null);
-        assertEquals(COSBoolean.FALSE, objectStreamParser.parseObject(numbers[1]));
+        assertEquals(COSBoolean.FALSE, objectStreamParser.parseObject(6));
     }
 }
