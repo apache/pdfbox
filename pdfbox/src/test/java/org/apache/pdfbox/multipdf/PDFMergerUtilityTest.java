@@ -688,8 +688,7 @@ public class PDFMergerUtilityTest extends TestCase
     /**
      * Check that there is a top level Document and Parts below in a merge of 2 documents.
      *
-     * @param file
-     * @throws IOException 
+     * @throws IOException
      */
     public void testPDFBox5198_2() throws IOException
     {
@@ -705,8 +704,7 @@ public class PDFMergerUtilityTest extends TestCase
     /**
      * Check that there is a top level Document and Parts below in a merge of 3 documents.
      *
-     * @param file
-     * @throws IOException 
+     * @throws IOException
      */
     public void testPDFBox5198_3() throws IOException
     {

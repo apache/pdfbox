@@ -45,7 +45,7 @@ public final class COSNull extends COSBase
     }
 
     /**
-     * visitor pattern double dispatch method.
+     * Visitor pattern double dispatch method.
      *
      * @param visitor The object to notify when visiting this object.
      * @return any object, depending on the visitor implementation, or null
