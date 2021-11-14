@@ -535,9 +535,6 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 PositionWrapper current = new PositionWrapper(position);
                 String characterValue = position.getUnicode();
 
-//                if (" ".equals(characterValue))
-//                    continue;
-
                 // Resets the average character width when we see a change in font
                 // or a change in the font size
                 if (lastPosition != null &&
