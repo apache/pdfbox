@@ -47,7 +47,7 @@ import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
-import org.apache.pdfbox.util.QuickSort;
+import org.apache.pdfbox.util.IterativeMergeSort;
 
 /**
  * This class will take a pdf document and strip out all of the text and ignore the formatting and such. Please note; it
@@ -507,7 +507,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 }
                 catch (IllegalArgumentException e)
                 {
-                    QuickSort.sort(textList, comparator);
+                    IterativeMergeSort.sort(textList, comparator);
                 }
             }
 

@@ -17,6 +17,7 @@
 package org.apache.pdfbox.util;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
@@ -25,17 +26,25 @@ import junit.framework.TestCase;
  *
  * @author Uwe Pachler
  */
-public class TestQuickSort extends TestCase
+public class TestSort extends TestCase
 {
 
     <T extends Comparable<T>> void doTest(T[] input, T[] expected)
     {
-        List<T> list = Arrays.asList(input);
+        List<T> list = Arrays.asList(input.clone());
         QuickSort.sort(list);
+        assertTrue(Arrays.equals(list.toArray(new Object[input.length]), expected));
 
-        boolean equal = Arrays.equals(list.toArray(new Object[input.length]), expected);
-
-        assertTrue(equal);
+        list = Arrays.asList(input.clone());
+        IterativeMergeSort.sort(list, new Comparator<T>()
+        {
+            @Override
+            public int compare(T comparable, T o)
+            {
+                return comparable.compareTo(o);
+            }
+        });
+        assertTrue(Arrays.equals(list.toArray(new Object[input.length]), expected));
     }
 
     /**
