@@ -437,7 +437,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         if (code < 0)
         {
             throw new IllegalArgumentException(
-                    String.format("U+%04X ('%s') is not available in this font %s (generic: %s), encoding: %s",
+                    String.format("U+%04X ('%s') is not available in the font %s (generic: %s), encoding: %s",
                             unicode, name, getName(), genericFont.getName(), encoding.getEncodingName()));
         }
         bytes = new byte[] { (byte)code };
