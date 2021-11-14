@@ -499,7 +499,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
                 // because the TextPositionComparator is not transitive, but
                 // JDK7+ enforces transitivity on comparators, we need to use
-                // a custom quicksort implementation (which is slower, unfortunately).
+                // a custom mergesort implementation (which is slower, unfortunately).
                 try
                 {
                     Collections.sort(textList, comparator);
