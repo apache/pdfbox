@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdfparser;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -155,7 +156,7 @@ public class PDFObjectStreamParser extends BaseParser
     private Map<Long, Integer> privateReadObjectNumbers() throws IOException
     {
         // don't initialize map using numberOfObjects as there might by less object numbers than expected
-        Map<Long, Integer> objectNumbers = new HashMap<>();
+        Map<Long, Integer> objectNumbers = new LinkedHashMap<>();
         long firstObjectPosition = source.getPosition() + firstObject - 1;
         for (int i = 0; i < numberOfObjects; i++)
         {
