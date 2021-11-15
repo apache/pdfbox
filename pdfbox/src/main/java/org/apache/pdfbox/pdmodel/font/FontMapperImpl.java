@@ -104,13 +104,13 @@ final class FontMapperImpl implements FontMapper
         // these include names such as "Arial" and "TimesNewRoman"
         for (String baseName : Standard14Fonts.getNames())
         {
-            if (!substitutes.containsKey(baseName))
+            substitutes.computeIfAbsent(baseName, key ->
             {
-                FontName mappedName = Standard14Fonts.getMappedFontName(baseName);
-                substitutes.put(baseName, copySubstitutes(mappedName));
-            }
+                FontName mappedName = Standard14Fonts.getMappedFontName(key);
+                return new ArrayList<>(substitutes.get(mappedName.getName()));
+            });
         }
-        
+
         // -------------------------
 
         try
@@ -197,14 +197,6 @@ final class FontMapperImpl implements FontMapper
     }
 
     /**
-     * Copies a list of font substitutes, adding the original font at the start of the list.
-     */
-    private List<String> copySubstitutes(FontName postScriptName)
-    {
-        return new ArrayList<>(substitutes.get(postScriptName.getName()));
-    }
-
-    /**
      * Adds a top-priority substitute for the given font.
      *
      * @param match PostScript name of the font to match
@@ -212,11 +204,7 @@ final class FontMapperImpl implements FontMapper
      */
     public void addSubstitute(String match, String replace)
     {
-        if (!substitutes.containsKey(match))
-        {
-            substitutes.put(match, new ArrayList<>());
-        }
-        substitutes.get(match).add(replace);
+        substitutes.computeIfAbsent(match, key -> new ArrayList<>()).add(replace);
     }
 
     /**
