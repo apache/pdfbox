@@ -897,7 +897,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             // apply clip to path to avoid oversized device bounds in shading contexts (PDFBOX-2901)
             Area area = new Area(linePath);
-            area.intersect(new Area(graphics.getClip()));
+            if (graphics.getClip() != null)
+            {
+                area.intersect(new Area(graphics.getClip()));
+            }
             intersectShadingBBox(getGraphicsState().getNonStrokingColor(), area);
             shape = area;
         }
@@ -1556,6 +1559,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     @Override
     public void showTransparencyGroup(PDTransparencyGroup form) throws IOException
+    {
+        showTransparencyGroupOnGraphics(form, graphics);
+    }
+
+    protected void showTransparencyGroupOnGraphics(PDTransparencyGroup form, Graphics2D graphics)
+            throws IOException
     {
         if (isHiddenOCG(form.getOptionalContent()))
         {
