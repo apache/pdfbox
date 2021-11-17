@@ -20,6 +20,12 @@ import java.awt.BasicStroke;
 import java.awt.Composite;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.pdfbox.cos.COSBase;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -39,7 +45,8 @@ import org.apache.pdfbox.util.Matrix;
 public class PDGraphicsState implements Cloneable
 {
     private boolean isClippingPathDirty;
-    private Area clippingPath;
+    private List<Path2D> clippingPaths = new ArrayList<Path2D>();
+    private Map<Path2D, Area> clippingCache = new IdentityHashMap<Path2D, Area>();
     private Matrix currentTransformationMatrix = new Matrix();
     private PDColor strokingColor = PDDeviceGray.INSTANCE.getInitialColor();
     private PDColor nonStrokingColor = PDDeviceGray.INSTANCE.getInitialColor();
@@ -76,7 +83,7 @@ public class PDGraphicsState implements Cloneable
      */
     public PDGraphicsState(PDRectangle page)
     {
-        clippingPath = new Area(page.toGeneralPath());
+        clippingPaths.add(new Path2D.Double(page.toGeneralPath()));
     }
 
     /**
@@ -497,7 +504,8 @@ public class PDGraphicsState implements Cloneable
             clone.strokingColor = strokingColor; // immutable
             clone.nonStrokingColor = nonStrokingColor; // immutable
             clone.lineDashPattern = lineDashPattern; // immutable
-            clone.clippingPath = clippingPath; // not cloned, see intersectClippingPath
+            clone.clippingPaths = clippingPaths; // not cloned, see intersectClippingPath
+            clone.clippingCache = clippingCache;
             clone.isClippingPathDirty = false;
             return clone;
         }
@@ -594,7 +602,22 @@ public class PDGraphicsState implements Cloneable
      */
     public void intersectClippingPath(GeneralPath path)
     {
-        intersectClippingPath(new Area(path));
+        intersectClippingPath(new Path2D.Double(path), true);
+    }
+
+    private void intersectClippingPath(Path2D path, boolean clonePath)
+    {
+        // lazy cloning of clipping path for performance
+        if (!isClippingPathDirty)
+        {
+            // shallow copy
+            clippingPaths = new ArrayList<Path2D>(clippingPaths);
+
+            isClippingPathDirty = true;
+        }
+
+        // add path to current clipping paths, combined later (see getCurrentClippingPath)
+        clippingPaths.add(clonePath ? (Path2D) path.clone() : path);
     }
 
     /**
@@ -603,19 +626,7 @@ public class PDGraphicsState implements Cloneable
      */
     public void intersectClippingPath(Area area)
     {
-        // lazy cloning of clipping path for performance
-        if (!isClippingPathDirty)
-        {
-            // deep copy (can't use clone() as it performs only a shallow copy)
-            Area cloned = new Area();
-            cloned.add(clippingPath);
-            clippingPath = cloned;
-
-            isClippingPathDirty = true;
-        }
-
-        // intersection as usual
-        clippingPath.intersect(area);
+        intersectClippingPath(new Path2D.Double(area), false);
     }
 
     /**
@@ -625,7 +636,40 @@ public class PDGraphicsState implements Cloneable
      */
     public Area getCurrentClippingPath()
     {
-        return clippingPath;
+        if (clippingPaths.size() == 1)
+        {
+            // If there is just a single clipping path, no intersections are needed.
+            Path2D path = clippingPaths.get(0);
+            Area cached = clippingCache.get(path);
+            if (cached == null) {
+                cached = new Area(path);
+                clippingCache.put(path, cached);
+            }
+            return cached;
+        }
+        // If there are multiple clipping paths, combine them to a single area.
+        Area clippingArea = new Area();
+        clippingArea.add(new Area(clippingPaths.get(0)));
+        for (int i = 1; i < clippingPaths.size(); i++)
+        {
+            clippingArea.intersect(new Area(clippingPaths.get(i)));
+        }
+        // Replace the list of individual clipping paths with the intersection, and add it to the cache.
+        Path2D newPath = new Path2D.Double(clippingArea);
+        clippingPaths = new ArrayList<Path2D>();
+        clippingPaths.add(newPath);
+        clippingCache.put(newPath, clippingArea);
+        return clippingArea;
+    }
+
+    /**
+     * This will get the current clipping path, as one or more individual paths. Do not modify the list or the paths!
+     *
+     * @return The current clipping paths.
+     */
+    public List<Path2D> getCurrentClippingPaths()
+    {
+        return clippingPaths;
     }
 
     public Composite getStrokingJavaComposite()
