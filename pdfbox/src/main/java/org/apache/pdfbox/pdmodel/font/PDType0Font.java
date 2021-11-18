@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -520,18 +521,42 @@ public class PDType0Font extends PDFont implements PDVectorFont
             // e) Map the CID according to the CMap from step d), producing a Unicode value
             return cMapUCS2.toUnicode(cid);
         }
-        else
+
+        // PDFBOX-5324: try to get unicode from font cmap
+        if (descendantFont instanceof PDCIDFontType2 && descendantFont.isEmbedded())
         {
-            if (LOG.isWarnEnabled() && !noUnicode.contains(code))
+            TrueTypeFont font = ((PDCIDFontType2) descendantFont).getTrueTypeFont();
+            if (font != null)
             {
-                // if no value has been produced, there is no way to obtain Unicode for the character.
-                String cid = "CID+" + codeToCID(code);
-                LOG.warn("No Unicode mapping for " + cid + " (" + code + ") in font " + getName());
-                // we keep track of which warnings have been issued, so we don't log multiple times
-                noUnicode.add(code);
+                try
+                {
+                    CmapLookup cmap = font.getUnicodeCmapLookup(false);
+                    if (cmap != null)
+                    {
+                        int gid = descendantFont.codeToGID(code);
+                        List<Integer> codes = cmap.getCharCodes(gid);
+                        if (codes != null && codes.size() > 0)
+                        {
+                            return Character.toString((char) (int) codes.get(0));
+                        }
+                    }
+                }
+                catch (IOException e)
+                {
+                    LOG.warn("get unicode from font cmap fail", e);
+                }
             }
-            return null;
         }
+
+        if (LOG.isWarnEnabled() && !noUnicode.contains(code))
+        {
+            // if no value has been produced, there is no way to obtain Unicode for the character.
+            String cid = "CID+" + codeToCID(code);
+            LOG.warn("No Unicode mapping for " + cid + " (" + code + ") in font " + getName());
+            // we keep track of which warnings have been issued, so we don't log multiple times
+            noUnicode.add(code);
+        }
+        return null;
     }
 
     @Override
