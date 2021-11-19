@@ -1100,7 +1100,7 @@ public final class TTFSubsetter
 
     private int log2(int num)
     {
-        return (int)Math.round(Math.log(num) / Math.log(2));
+        return (int) Math.floor(Math.log(num) / Math.log(2));
     }
 
     public void addGlyphIds(Set<Integer> allGlyphIds)
