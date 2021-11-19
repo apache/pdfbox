@@ -535,7 +535,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
                     {
                         int gid = descendantFont.codeToGID(code);
                         List<Integer> codes = cmap.getCharCodes(gid);
-                        if (codes != null && codes.size() > 0)
+                        if (codes != null && !codes.isEmpty())
                         {
                             return Character.toString((char) (int) codes.get(0));
                         }
