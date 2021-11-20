@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
  */
 public final class COSInteger extends COSNumber
 {
-
     /**
      * The lowest integer to be kept in the {@link #STATIC} array.
      */
@@ -71,12 +70,12 @@ public final class COSInteger extends COSNumber
     /**
      * Constant for an out of range value which is bigger than Log.MAX_VALUE.
      */
-    protected static final COSInteger OUT_OF_RANGE_MAX = getInvalid(true);
+    protected static final COSInteger OUT_OF_RANGE_MAX = new COSInteger(Long.MAX_VALUE);
 
     /**
      * Constant for an out of range value which is smaller than Log.MIN_VALUE.
      */
-    protected static final COSInteger OUT_OF_RANGE_MIN = getInvalid(false);
+    protected static final COSInteger OUT_OF_RANGE_MIN = new COSInteger(Long.MIN_VALUE);
 
     /**
      * Returns a COSInteger instance with the given value.
@@ -92,32 +91,23 @@ public final class COSInteger extends COSNumber
             // no synchronization needed
             if (STATIC[index] == null)
             {
-                STATIC[index] = new COSInteger(val, true);
+                STATIC[index] = new COSInteger(val);
             }
             return STATIC[index];
         }
-        return new COSInteger(val, true);
-    }
-
-    private static COSInteger getInvalid(boolean maxValue)
-    {
-        return maxValue ? new COSInteger(Long.MAX_VALUE, false)
-                : new COSInteger(Long.MIN_VALUE, false);
+        return new COSInteger(val);
     }
 
     private final long value;
-    private final boolean isValid;
 
     /**
      * constructor.
      *
      * @param val The integer value of this object.
-     * @param valid indicates if the value is valid.
      */
-    private COSInteger(long val, boolean valid)
+    private COSInteger(long val)
     {
         value = val;
-        isValid = valid;
     }
 
     /**
@@ -190,7 +180,7 @@ public final class COSInteger extends COSNumber
      */
     public boolean isValid()
     {
-        return isValid;
+        return this != OUT_OF_RANGE_MIN && this != OUT_OF_RANGE_MAX;
     }
 
     /**
