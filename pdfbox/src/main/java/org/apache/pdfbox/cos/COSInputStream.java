@@ -73,7 +73,6 @@ public final class COSInputStream extends FilterInputStream
         }
 
         List<DecodeResult> results = new ArrayList<>(filters.size());
-        InputStream input = in;
         if (filters.size() > 1)
         {
             Set<Filter> filterSet = new HashSet<>(filters);
