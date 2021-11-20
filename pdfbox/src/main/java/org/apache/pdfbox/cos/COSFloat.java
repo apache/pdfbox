@@ -199,7 +199,7 @@ public class COSFloat extends COSNumber
     }
 
     /**
-     * Builds, if needed, and returns a string representation of the current value.
+     * Builds, if needed, and returns the string representation of the current value.
      * @return current value as string.
      */
     private String formatString()

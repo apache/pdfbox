@@ -797,8 +797,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void fillPath(int windingRule) throws IOException
     {
-        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
-        graphics.setPaint(getNonStrokingPaint());
+        PDGraphicsState graphicsState = getGraphicsState();
+        graphics.setComposite(graphicsState.getNonStrokingJavaComposite());
         setClip();
         linePath.setWindingRule(windingRule);
 
@@ -816,7 +816,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
 
         Shape shape;
-        if (!(graphics.getPaint() instanceof Color))
+        if (graphicsState.getNonStrokingColorSpace() instanceof PDPattern)
         {
             // apply clip to path to avoid oversized device bounds in shading contexts (PDFBOX-2901)
             Area area = new Area(linePath);
@@ -825,15 +825,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 area.intersect(new Area(clip));
             }
-            intersectShadingBBox(getGraphicsState().getNonStrokingColor(), area);
+            intersectShadingBBox(graphicsState.getNonStrokingColor(), area);
             shape = area;
         }
         else
         {
             shape = linePath;
         }
-        if (isContentRendered())
+        if (isContentRendered() && !shape.getPathIterator(null).isDone())
         {
+            // creating Paint is sometimes a costly operation, so avoid if possible
+            graphics.setPaint(getNonStrokingPaint());
             graphics.fill(shape);
         }
         
@@ -1187,6 +1189,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private void drawBufferedImage(BufferedImage image, AffineTransform at) throws IOException
     {
+        AffineTransform originalTransform = graphics.getTransform();
         AffineTransform imageTransform = new AffineTransform(at);
         int width = image.getWidth();
         int height = image.getHeight();
@@ -1200,8 +1203,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Paint awtPaint = new TexturePaint(image, rectangle);
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
-
-            AffineTransform originalTransform = graphics.getTransform();
             graphics.transform(imageTransform);
             graphics.fill(rectangle);
             graphics.setTransform(originalTransform);
@@ -1224,8 +1225,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // will trigger the workaround. Because of the slowness we only do it if the user
             // expects quality rendering and interpolation.
             Matrix imageTransformMatrix = new Matrix(imageTransform);
-            AffineTransform graphicsTransformA = graphics.getTransform();
-            Matrix graphicsTransformMatrix = new Matrix(graphicsTransformA);    
+            Matrix graphicsTransformMatrix = new Matrix(originalTransform);    
             float scaleX = Math.abs(imageTransformMatrix.getScalingFactorX() * graphicsTransformMatrix.getScalingFactorX());
             float scaleY = Math.abs(imageTransformMatrix.getScalingFactorY() * graphicsTransformMatrix.getScalingFactorY());
 
@@ -1245,10 +1245,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 // hoping to reverse the rounding: without this, we get an horizontal line
                 // when rendering PDFJS-8860-Pattern-Size1.pdf at 100% )
                 imageTransform.scale(1f / w * image.getWidth(), 1f / h * image.getHeight());
-                imageTransform.preConcatenate(graphicsTransformA);
+                imageTransform.preConcatenate(originalTransform);
                 graphics.setTransform(new AffineTransform());
                 graphics.drawImage(imageToDraw, imageTransform, null);
-                graphics.setTransform(graphicsTransformA);
+                graphics.setTransform(originalTransform);
             }
             else
             {
@@ -1360,11 +1360,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return;
         }
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
-        Paint paint = shading.toPaint(ctm);
-        paint = applySoftMaskToPaint(paint, getGraphicsState().getSoftMask());
 
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
-        graphics.setPaint(paint);
         Shape savedClip = graphics.getClip();
         graphics.setClip(null);
         lastClips = null;
@@ -1395,7 +1392,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 area = getGraphicsState().getCurrentClippingPath();
             }
         }
-        graphics.fill(area);
+        if (!area.isEmpty())
+        {
+            // creating Paint is sometimes a costly operation, so avoid if possible
+            Paint paint = shading.toPaint(ctm);
+            paint = applySoftMaskToPaint(paint, getGraphicsState().getSoftMask());
+            graphics.setPaint(paint);
+            graphics.fill(area);
+        }
         graphics.setClip(savedClip);
     }
 

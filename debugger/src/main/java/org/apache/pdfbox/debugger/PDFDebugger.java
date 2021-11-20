@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.spi.IIORegistry;
 
@@ -70,6 +71,8 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreePath;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -146,6 +149,8 @@ import picocli.CommandLine.Model.CommandSpec;
 @Command(name = "pdfdebugger", description = "Analyzes and inspects the internal structure of a PDF document")
 public class PDFDebugger extends JFrame implements Callable<Integer>
 {
+    private static Log LOG; // needs late initialization
+
     private static final Set<COSName> SPECIALCOLORSPACES = new HashSet<>(
             Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
@@ -257,11 +262,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             initComponents();
 
             // use our custom logger
-            // this works only if there is no "LogFactory.getLog()" in this class,
+            // this works only if there is no earlier "LogFactory.getLog()" in this class,
             // and if there are no methods that call logging, even invisible
             // use reduced file from PDFBOX-3653 to see logging
             LogDialog.init(this,statusBar.getLogLabel());
             System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
+            LOG = LogFactory.getLog(PDFDebugger.class);
 
             TextDialog.init(this);
 
@@ -1047,6 +1053,33 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private void replaceRightComponent(Component pane)
     {
         int div = jSplitPane.getDividerLocation();
+        
+        // Avoid memory leak with the display image
+        // if anyone knows a better way to do this, please tell
+        Component rightComponent = jSplitPane.getRightComponent();
+        if (rightComponent instanceof JScrollPane)
+        {
+            JScrollPane scrollPane = (JScrollPane) rightComponent;
+            Component view = scrollPane.getViewport().getView();
+            if (view instanceof JPanel)
+            {
+                JPanel panel = (JPanel) view;
+                for (Component component : panel.getComponents())
+                {
+                    if (component instanceof JLabel)
+                    {
+                        ((JLabel) component).setIcon(null);
+                    }
+                }
+                panel.removeAll();
+                scrollPane.getViewport().setView(null);
+                scrollPane.getViewport().removeAll();
+                scrollPane.setViewport(null);
+                scrollPane.removeAll();
+                // still leaks but it's really the image that bothers; listeners still active
+            }
+        }
+
         jSplitPane.setRightComponent(pane);
         jSplitPane.setDividerLocation(div);
     }
@@ -1227,7 +1260,11 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 try
                 {
+                    long t0 = System.nanoTime();
                     job.print(pras);
+                    long t1 = System.nanoTime();
+                    long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+                    LOG.info("Printed in " + ms + " ms");
                 }
                 finally
                 {
@@ -1267,7 +1304,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             @Override
             PDDocument open() throws IOException
             {
-                return Loader.loadPDF(file, password);
+                long t0 = System.nanoTime();
+                PDDocument doc = Loader.loadPDF(file, password);
+                long t1 = System.nanoTime();
+                long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+                LOG.info("Parsed in " + ms + " ms");
+                return doc;
             }
         };
         document = documentOpener.parse();
@@ -1309,7 +1351,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             @Override
             PDDocument open() throws IOException
             {
-                return Loader.loadPDF(new URL(urlString).openStream(), password);
+                long t0 = System.nanoTime();
+                PDDocument doc = Loader.loadPDF(new URL(urlString).openStream(), password);
+                long t1 = System.nanoTime();
+                long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+                LOG.info("Parsed in " + ms + " ms");
+                return doc;
             }
         };
         document = documentOpener.parse();

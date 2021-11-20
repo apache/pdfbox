@@ -73,10 +73,14 @@ public final class COSInputStream extends FilterInputStream
         }
 
         List<DecodeResult> results = new ArrayList<>(filters.size());
-        Set<Filter> filterSet = new HashSet<>(filters);
-        if (filterSet.size() != filters.size())
+        InputStream input = in;
+        if (filters.size() > 1)
         {
-            throw new IOException("Duplicate");
+            Set<Filter> filterSet = new HashSet<>(filters);
+            if (filterSet.size() != filters.size())
+            {
+                throw new IOException("Duplicate");
+            }
         }
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         // apply filters

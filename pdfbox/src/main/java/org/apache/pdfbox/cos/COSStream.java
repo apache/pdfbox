@@ -198,10 +198,11 @@ public class COSStream extends COSDictionary implements Closeable
         }
         else
         {
-            //remove filterSet from memory immediately
+            if (filterList.size() > 1)
             {
                 Set<Filter> filterSet = new HashSet<>(filterList);
-                if (filterSet.size() != filterList.size()) {
+                if (filterSet.size() != filterList.size())
+                {
                     throw new IOException("Duplicate");
                 }
             }
@@ -424,7 +425,8 @@ public class COSStream extends COSDictionary implements Closeable
     @Override
     public void close() throws IOException
     {
-        try {
+        try
+        {
             if (closeScratchFile && scratchFile != null)
             {
                 scratchFile.close();
@@ -433,7 +435,8 @@ public class COSStream extends COSDictionary implements Closeable
         }
         finally
         {
-            try {
+            try
+            {
                 // marks the scratch file pages as free
                 if (randomAccess != null)
                 {

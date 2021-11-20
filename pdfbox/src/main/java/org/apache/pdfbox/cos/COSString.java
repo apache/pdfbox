@@ -152,7 +152,7 @@ public final class COSString extends COSBase
     }
 
     /**
-     * Sets whether to force the string is to be written in hexadecimal form.
+     * Sets whether to force the string is to be written in hex form.
      * This is needed when signing PDF files.
      *
      * @param value True to force hex.

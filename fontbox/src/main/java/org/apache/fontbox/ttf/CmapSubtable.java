@@ -237,6 +237,7 @@ public class CmapSubtable implements CmapLookup
      */
     void processSubtype12(TTFDataStream data, int numGlyphs) throws IOException
     {
+        int maxGlyphId = 0;
         long nbGroups = data.readUnsignedInt();
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         characterCodeToGlyphId = new HashMap<>(numGlyphs);
@@ -278,10 +279,11 @@ public class CmapSubtable implements CmapLookup
                     LOG.warn("Format 12 cmap contains character beyond UCS-4");
                 }
 
-                glyphIdToCharacterCode[(int) glyphIndex] = (int) (firstCode + j);
+                maxGlyphId = Math.max(maxGlyphId, (int) glyphIndex);
                 characterCodeToGlyphId.put((int) (firstCode + j), (int) glyphIndex);
             }
         }
+        buildGlyphIdToCharacterCodeLookup(maxGlyphId);
     }
 
     /**

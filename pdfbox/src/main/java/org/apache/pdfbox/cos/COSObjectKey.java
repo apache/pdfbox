@@ -72,7 +72,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
     }
 
     /**
-     * This will get the generation number.
+     * This will get the object generation number.
      *
      * @return The object generation number.
      */
@@ -82,9 +82,9 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
     }
 
     /**
-     * This will get the object id.
+     * This will get the object number.
      *
-     * @return The object's id.
+     * @return The object number.
      */
     public long getNumber()
     {

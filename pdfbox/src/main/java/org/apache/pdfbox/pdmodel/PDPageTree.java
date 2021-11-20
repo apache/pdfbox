@@ -303,7 +303,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     private COSDictionary get(int pageNum, COSDictionary node, int encountered)
     {
-        if (pageNum < 0)
+        if (pageNum < 1)
         {
             throw new IndexOutOfBoundsException("Index out of bounds: " + pageNum);
         }
