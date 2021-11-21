@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
@@ -86,11 +87,11 @@ final class JBIG2Filter extends Filter
             COSStream globals = params.getCOSStream(COSName.JBIG2_GLOBALS);
             if (globals != null)
             {
-                source = new SequenceInputStream(globals.createInputStream(), encoded);
+                source = new SequenceInputStream(Collections.enumeration(Arrays.asList(globals.createInputStream(), encoded)));
             }
         }
 
-        try (ImageInputStream iis = ImageIO.createImageInputStream(Collections.enumeration(Collections.singletonList(source))))
+        try (ImageInputStream iis = ImageIO.createImageInputStream(source))
         {
             reader.setInput(iis);
 
