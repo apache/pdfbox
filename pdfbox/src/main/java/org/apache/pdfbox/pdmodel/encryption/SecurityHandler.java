@@ -77,7 +77,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     /** The RC4 implementation used for cryptographic functions. */
     private final RC4Cipher rc4 = new RC4Cipher();
 
-    /** indicates if the Metadata have to be decrypted of not. */
+    /** Indicates if the Metadata have to be decrypted of not. */
     private boolean decryptMetadata;
 
     /** Can be used to allow stateless AES encryption */
@@ -452,10 +452,6 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      */
     public void decrypt(COSBase obj, long objNum, long genNum) throws IOException
     {
-        if (!(obj instanceof COSString || obj instanceof COSDictionary || obj instanceof COSArray))
-        {
-            return;
-        }
         // PDFBOX-4477: only cache strings and streams, this improves speed and memory footprint
         if (obj instanceof COSString)
         {
