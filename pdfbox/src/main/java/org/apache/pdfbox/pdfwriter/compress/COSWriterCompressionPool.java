@@ -181,8 +181,8 @@ public class COSWriterCompressionPool
     {
         for (COSBase value : array)
         {
-            if (value instanceof COSArray //
-                    || ((value instanceof COSDictionary || value instanceof COSObject)
+            if (value instanceof COSArray || value instanceof COSDictionary //
+                    || (value instanceof COSObject
                             && !traversedObject.getAllTraversedObjects().contains(value)))
             {
                 addStructure(traversedObject.appendTraversedElement(value));
