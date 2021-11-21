@@ -181,9 +181,9 @@ public class COSWriterCompressionPool
     {
         for (COSBase value : array)
         {
-            if ((value instanceof COSDictionary || value instanceof COSObject
-                    || value instanceof COSArray)
-                    && !traversedObject.getAllTraversedObjects().contains(value))
+            if ((value instanceof COSDictionary || value instanceof COSArray
+                    || (value instanceof COSObject)
+                            && !traversedObject.getAllTraversedObjects().contains(value)))
             {
                 addStructure(traversedObject.appendTraversedElement(value));
             }
@@ -196,9 +196,9 @@ public class COSWriterCompressionPool
         for (Entry<COSName, COSBase> entry : dictionary.entrySet())
         {
             COSBase value = entry.getValue();
-            if ((value instanceof COSDictionary || value instanceof COSObject
-                    || value instanceof COSArray)
-                    && !traversedObject.getAllTraversedObjects().contains(value))
+            if ((value instanceof COSDictionary || value instanceof COSArray
+                    || (value instanceof COSObject)
+                            && !traversedObject.getAllTraversedObjects().contains(value)))
             {
                 addStructure(traversedObject.appendTraversedElement(value));
             }
