@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
+import java.util.Collections;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
@@ -89,7 +90,7 @@ final class JBIG2Filter extends Filter
             }
         }
 
-        try (ImageInputStream iis = ImageIO.createImageInputStream(source))
+        try (ImageInputStream iis = ImageIO.createImageInputStream(Collections.enumeration(Collections.singletonList(source))))
         {
             reader.setInput(iis);
 

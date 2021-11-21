@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -943,8 +944,10 @@ public class COSWriter implements ICOSVisitor
         };
 
         return new SequenceInputStream(
-                new RandomAccessInputStream(incrementalInput),
-                new COSFilterInputStream(incrementPart, range));
+                Collections.enumeration(Arrays.asList(
+                        new RandomAccessInputStream(incrementalInput),
+                        new COSFilterInputStream(incrementPart, range)))
+                );
     }
 
     /**
@@ -1008,7 +1011,7 @@ public class COSWriter implements ICOSVisitor
      * <p>
      * example: 0 1 2 5 6 7 8 10
      * <p>
-     * will create a array with follow ranges
+     * will create an array with follow ranges
      * <p>
      * 0 3 5 4 10 1
      * <p>
@@ -1017,7 +1020,7 @@ public class COSWriter implements ICOSVisitor
      * related numbers and create a cluster of size 4. etc.
      * 
      * @param xRefEntriesList list with the xRef entries that was written
-     * @return a integer array with the ranges
+     * @return an integer array with the ranges
      */
     protected Long[] getXRefRanges(List<XReferenceEntry> xRefEntriesList)
     {
