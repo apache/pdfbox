@@ -213,32 +213,29 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
     public T getValue( String name ) throws IOException
     {
         Map<String, T> names = getNames();
-        if( names != null )
+        if (names != null)
         {
-            return names.get( name );
+            return names.get(name);
+        }
+        List<PDNameTreeNode<T>> kids = getKids();
+        if (kids != null)
+        {
+            for (int i = 0; i < kids.size(); i++)
+            {
+                PDNameTreeNode<T> childNode = kids.get(i);
+                String upperLimit = childNode.getUpperLimit();
+                String lowerLimit = childNode.getLowerLimit();
+                if (upperLimit == null || lowerLimit == null || 
+                    upperLimit.compareTo(lowerLimit) < 0 ||
+                    (lowerLimit.compareTo(name) <= 0 && upperLimit.compareTo(name) >= 0))
+                {
+                    return childNode.getValue(name);
+                }
+            }
         }
         else
         {
-            List<PDNameTreeNode<T>> kids = getKids();
-            if (kids != null)
-            {
-                for( int i=0; i<kids.size(); i++ )
-                {
-                    PDNameTreeNode<T> childNode = kids.get( i );
-                    String upperLimit = childNode.getUpperLimit();
-                    String lowerLimit = childNode.getLowerLimit();
-                    if (upperLimit == null || lowerLimit == null || 
-                        upperLimit.compareTo(lowerLimit) < 0 ||
-                        (lowerLimit.compareTo(name) <= 0 && upperLimit.compareTo(name) >= 0))
-                    {
-                        return childNode.getValue( name );
-                    }
-                }
-            }
-            else
-            {
-                LOG.warn("NameTreeNode does not have \"names\" nor \"kids\" objects.");
-            }
+            LOG.warn("NameTreeNode does not have \"names\" nor \"kids\" objects.");
         }
         return null;
     }
