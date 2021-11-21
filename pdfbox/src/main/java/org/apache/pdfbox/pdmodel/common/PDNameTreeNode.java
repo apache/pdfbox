@@ -117,7 +117,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
         COSArray kids = node.getCOSArray(COSName.KIDS);
         if( kids != null )
         {
-            List<PDNameTreeNode<T>> pdObjects = new ArrayList<>();
+            List<PDNameTreeNode<T>> pdObjects = new ArrayList<>(kids.size());
             for( int i=0; i<kids.size(); i++ )
             {
                 pdObjects.add( createChildNode( (COSDictionary)kids.getObject(i) ) );
@@ -208,7 +208,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
      *
      * @param name The name in the tree.
      * @return The value of the name in the tree.
-     * @throws IOException If an there is a problem creating the destinations.
+     * @throws IOException If there is a problem creating the destinations.
      */
     public T getValue( String name ) throws IOException
     {
