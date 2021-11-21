@@ -41,7 +41,6 @@ public final class Hex
      */
     private static final byte[] HEX_BYTES = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
     private static final char[] HEX_CHARS = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-    private static final byte[] hexBuffer = new byte[2];
 
     private Hex() {}
 
@@ -141,9 +140,8 @@ public final class Hex
      */
     public static void writeHexByte(byte b, OutputStream output) throws IOException
     {
-        hexBuffer[0] = HEX_BYTES[getHighNibble(b)];
-        hexBuffer[1] = HEX_BYTES[getLowNibble(b)];
-        output.write(hexBuffer);
+        output.write(HEX_BYTES[getHighNibble(b)]);
+        output.write(HEX_BYTES[getLowNibble(b)]);
     }
 
     /** 
