@@ -212,7 +212,6 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
      */
     public T getValue( String name ) throws IOException
     {
-        T retval = null;
         Map<String, T> names = getNames();
         if (names != null)
         {
