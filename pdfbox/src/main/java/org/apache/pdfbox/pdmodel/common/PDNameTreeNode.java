@@ -215,7 +215,6 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
      */
     public T getValue( String name ) throws IOException
     {
-        T retval = null;
         Map<String, T> names = getNames();
         if (names != null)
         {
@@ -233,7 +232,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
                     upperLimit.compareTo(lowerLimit) < 0 ||
                     (lowerLimit.compareTo(name) <= 0 && upperLimit.compareTo(name) >= 0))
                 {
-                    retval = childNode.getValue( name );
+                    return childNode.getValue( name );
                 }
             }
         }
@@ -241,7 +240,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
         {
             LOG.warn("NameTreeNode does not have \"names\" nor \"kids\" objects.");
         }
-        return retval;
+        return null;
     }
 
     /**
