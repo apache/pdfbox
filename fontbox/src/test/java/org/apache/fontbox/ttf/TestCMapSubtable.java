@@ -27,7 +27,7 @@ import org.junit.Test;
  *
  * @author Tilman Hausherr
  */
-class CMapSubtabletest
+class TestCMapSubtable
 {
     /**
      * Test that we get multiple encodings from cmap table
