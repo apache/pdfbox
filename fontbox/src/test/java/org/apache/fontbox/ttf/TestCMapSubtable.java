@@ -27,13 +27,13 @@ import org.junit.Test;
  *
  * @author Tilman Hausherr
  */
-class TestCMapSubtable
+public class TestCMapSubtable
 {
     /**
      * Test that we get multiple encodings from cmap table
      */
     @Test
-    void testPDFBox5328() throws IOException
+    public void testPDFBox5328() throws IOException
     {
         List<Integer> expectedCharCodes = Arrays.asList(19981, 63847);
         int gid = 8712;
