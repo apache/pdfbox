@@ -19,6 +19,8 @@ package org.apache.fontbox.ttf;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * TrueType font file parser.
@@ -27,6 +29,8 @@ import java.io.InputStream;
  */
 public class TTFParser
 {
+    private static final Log LOG = LogFactory.getLog(TTFParser.class);
+
     private boolean isEmbedded = false;
     private boolean parseOnDemandOnly = false;
 
@@ -141,7 +145,18 @@ public class TTFParser
             // skip tables with zero length
             if (table != null)
             {
-                font.addTable(table);
+                if (table.getOffset() + table.getLength() > font.getOriginalDataSize())
+                {
+                    // PDFBOX-5285 if we're lucky, this is an "unimportant" table, e.g. vmtx
+                    LOG.warn("Skip table '" + table.getTag() + 
+                            "' which goes past the file size; offset: " + table.getOffset() + 
+                            ", size: " + table.getLength() + 
+                            ", font size: " + font.getOriginalDataSize());
+                }
+                else
+                {
+                    font.addTable(table);
+                }
             }
         }
         // parse tables if wanted
