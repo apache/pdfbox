@@ -503,7 +503,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
         }
 
         // PDFBOX-5324: try to get unicode from font cmap
-        if (descendantFont instanceof PDCIDFontType2 && descendantFont.isEmbedded())
+        if (descendantFont instanceof PDCIDFontType2)
         {
             TrueTypeFont font = ((PDCIDFontType2) descendantFont).getTrueTypeFont();
             if (font != null)
@@ -513,7 +513,18 @@ public class PDType0Font extends PDFont implements PDVectorFont
                     CmapLookup cmap = font.getUnicodeCmapLookup(false);
                     if (cmap != null)
                     {
-                        int gid = descendantFont.codeToGID(code);
+                        int gid;
+                        if (descendantFont.isEmbedded())
+                        {
+                            // original PDFBOX-5324 supported only embedded fonts
+                            gid = descendantFont.codeToGID(code);
+                        }
+                        else
+                        {
+                            // PDFBOX-5331: this bypasses the fallback attempt in
+                            // PDCIDFontType2.codeToGID() which would bring a stackoverflow
+                            gid = descendantFont.codeToCID(code);
+                        }
                         List<Integer> codes = cmap.getCharCodes(gid);
                         if (codes != null && !codes.isEmpty())
                         {
