@@ -133,7 +133,7 @@ public final class AdvancedTextLayoutSequencesDin91379
         }
     }
 
-    public static void printAdjustmentsAdvancedLayout(String line, java.awt.font.GlyphVector awtGlyphVector, float fontSize) {
+    public static void printAdjustments2D(String line, java.awt.font.GlyphVector awtGlyphVector, float fontSize) {
         int[] gids = awtGlyphVector.getGlyphCodes(0, awtGlyphVector.getNumGlyphs(), null);
         System.out.println("--Java2D--");
         System.out.println(line);
@@ -170,7 +170,7 @@ public final class AdvancedTextLayoutSequencesDin91379
         Bidi bidi = new Bidi(as.getIterator());
         int localFlags = bidi.isLeftToRight() ? java.awt.Font.LAYOUT_LEFT_TO_RIGHT : java.awt.Font.LAYOUT_RIGHT_TO_LEFT;
         java.awt.font.GlyphVector glyphVector = awtFont.layoutGlyphVector(fontRenderContext, chars, 0, chars.length, localFlags);
-        printAdjustmentsAdvancedLayout(line, glyphVector, fontSize);
+        printAdjustments2D(line, glyphVector, fontSize);
 
         cs.beginText();
         cs.setFont(font, fontSize);
