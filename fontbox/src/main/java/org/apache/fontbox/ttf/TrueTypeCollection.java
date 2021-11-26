@@ -74,6 +74,10 @@ public class TrueTypeCollection implements Closeable
         }
         float version = stream.read32Fixed();
         numFonts = (int)stream.readUnsignedInt();
+        if (numFonts <= 0 || numFonts > 1024)
+        {
+            throw new IOException("Invalid number of fonts " + numFonts);
+        }
         fontOffsets = new long[numFonts];
         for (int i = 0; i < numFonts; i++)
         {
