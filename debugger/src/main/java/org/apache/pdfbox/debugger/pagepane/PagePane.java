@@ -376,6 +376,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 }
             }
         }
+
+        // this avoids memory leaks with the display image; other memory leaks may still exist
+        label.removeMouseMotionListener(this);
+        label.removeMouseListener(this);
+        label.setIcon(null);
+        panel.removeAncestorListener(this);
+        panel.removeAll();
     }
 
     @Override
