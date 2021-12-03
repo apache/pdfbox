@@ -16,9 +16,11 @@
 package org.apache.fontbox.ttf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -54,6 +56,56 @@ class TestTTFParser
         target.set(2010, 5, 18, 10, 23, 22);
         target.set(Calendar.MILLISECOND, 0);
         assertEquals(target, created);
+    }
+
+    /**
+     * Test the post table parser.
+     * 
+     * @throws IOException if an error occurs.
+     */
+    @Test
+    void testPostTable() throws IOException
+    {
+        InputStream input = TestTTFParser.class.getResourceAsStream(
+                "/ttf/LiberationSans-Regular.ttf");
+        assertNotNull(input);
+
+        TTFParser parser = new TTFParser();
+        TrueTypeFont font = parser.parse(input);
+
+        CmapTable cmapTable = font.getCmap();
+        assertNotNull(cmapTable);
+
+        CmapSubtable[] cmaps = cmapTable.getCmaps();
+        assertNotNull(cmaps);
+
+        CmapSubtable cmap = null;
+
+        for (CmapSubtable e : cmaps)
+        {
+            if (e.getPlatformId() == NameRecord.PLATFORM_WINDOWS
+                    && e.getPlatformEncodingId() == NameRecord.ENCODING_WINDOWS_UNICODE_BMP)
+            {
+                cmap = e;
+                break;
+            }
+        }
+
+        assertNotNull(cmap);
+
+        PostScriptTable post = font.getPostScript();
+        assertNotNull(post);
+
+        String[] glyphNames = font.getPostScript().getGlyphNames();
+        assertNotNull(glyphNames);
+
+        // test a WGL4 (Macintosh standard) name
+        int gid = cmap.getGlyphId(0x2122); // TRADE MARK SIGN
+        assertEquals("trademark", glyphNames[gid]);
+
+        // test an additional name
+        gid = cmap.getGlyphId(0x20AC); // EURO SIGN
+        assertEquals("Euro", glyphNames[gid]);
     }
 
 }
