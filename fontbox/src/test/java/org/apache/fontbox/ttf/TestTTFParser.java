@@ -51,7 +51,7 @@ class TestTTFParser
         assertEquals(created.getTimeZone(), utc);
 
         Calendar target = Calendar.getInstance(utc);
-        target.set(2012, 9, 4, 11, 2, 31);
+        target.set(2010, 5, 18, 10, 23, 22);
         target.set(Calendar.MILLISECOND, 0);
         assertEquals(target, created);
     }
