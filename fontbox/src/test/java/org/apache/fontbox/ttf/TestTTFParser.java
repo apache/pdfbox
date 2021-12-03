@@ -17,17 +17,19 @@ package org.apache.fontbox.ttf;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * This will test the TTFParser implementation.
  *
  * @author Tim Allison
  */
-public class TestTTFParser extends TestCase
+public class TestTTFParser
 {
 
     /**
@@ -35,6 +37,7 @@ public class TestTTFParser extends TestCase
      *
      * @throws IOException If something went wrong
      */
+    @Test
     public void testUTCDate() throws IOException
     {
         final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
@@ -45,12 +48,61 @@ public class TestTTFParser extends TestCase
         TTFParser parser = new TTFParser();
         TrueTypeFont ttf = parser.parse(testFile);
         Calendar created = ttf.getHeader().getCreated();
-        assertEquals(created.getTimeZone(), utc);
+        Assert.assertEquals(created.getTimeZone(), utc);
 
         Calendar target = Calendar.getInstance(utc);
         target.set(2010, 5, 18, 10, 23, 22);
         target.set(Calendar.MILLISECOND, 0);
-        assertEquals(target, created);
+        Assert.assertEquals(target, created);
     }
 
+    /**
+     * Test the post table parser.
+     * 
+     * @throws IOException if an error occurs.
+     */
+    @Test
+    public void testPostTable() throws IOException
+    {
+        InputStream input = TestTTFParser.class.getResourceAsStream(
+                "/ttf/LiberationSans-Regular.ttf");
+        Assert.assertNotNull(input);
+
+        TTFParser parser = new TTFParser();
+        TrueTypeFont font = parser.parse(input);
+
+        CmapTable cmapTable = font.getCmap();
+        Assert.assertNotNull(cmapTable);
+
+        CmapSubtable[] cmaps = cmapTable.getCmaps();
+        Assert.assertNotNull(cmaps);
+
+        CmapSubtable cmap = null;
+
+        for (CmapSubtable e : cmaps)
+        {
+            if (e.getPlatformId() == NameRecord.PLATFORM_WINDOWS
+                    && e.getPlatformEncodingId() == NameRecord.ENCODING_WINDOWS_UNICODE_BMP)
+            {
+                cmap = e;
+                break;
+            }
+        }
+
+        Assert.assertNotNull(cmap);
+
+        PostScriptTable post = font.getPostScript();
+        Assert.assertNotNull(post);
+
+        String[] glyphNames = font.getPostScript().getGlyphNames();
+        Assert.assertNotNull(glyphNames);
+
+        // test a WGL4 (Macintosh standard) name
+        int gid = cmap.getGlyphId(0x2122); // TRADE MARK SIGN
+        Assert.assertEquals("trademark", glyphNames[gid]);
+
+        // test an additional name
+        gid = cmap.getGlyphId(0x20AC); // EURO SIGN
+        Assert.assertEquals("Euro", glyphNames[gid]);
+    }
 }
