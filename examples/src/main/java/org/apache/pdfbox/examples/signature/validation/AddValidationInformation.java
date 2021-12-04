@@ -351,17 +351,17 @@ public class AddValidationInformation
         }
         catch (OCSPException e)
         {
-            LOG.warn("Failed fetching Ocsp", e);
+            LOG.error("Failed fetching OCSP at " + certInfo.getOcspUrl(), e);
             return false;
         }
         catch (CertificateProccessingException e)
         {
-            LOG.warn("Failed fetching Ocsp", e);
+            LOG.error("Failed fetching OCSP at " + certInfo.getOcspUrl(), e);
             return false;
         }
         catch (IOException e)
         {
-            LOG.warn("Failed fetching Ocsp", e);
+            LOG.error("Failed fetching OCSP at " + certInfo.getOcspUrl(), e);
             return false;
         }
         catch (RevokedCertificateException e)
@@ -656,6 +656,7 @@ public class AddValidationInformation
 
     public static void main(String[] args) throws IOException, GeneralSecurityException
     {
+//args = new String[]{"C:\\Users\\Tilman\\Downloads\\SO67171648.pdf"};
         if (args.length != 1)
         {
             usage();
