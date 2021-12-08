@@ -658,7 +658,7 @@ public abstract class SecurityHandler
 
     /**
      * Getter of the property <tt>keyLength</tt>.
-     * @return  Returns the keyLength.
+     * @return Returns the key length in bits.
      */
     public int getKeyLength()
     {
@@ -668,7 +668,7 @@ public abstract class SecurityHandler
     /**
      * Setter of the property <tt>keyLength</tt>.
      *
-     * @param keyLen  The keyLength to set.
+     * @param keyLen The key length to set in bits.
      */
     public void setKeyLength(int keyLen)
     {
