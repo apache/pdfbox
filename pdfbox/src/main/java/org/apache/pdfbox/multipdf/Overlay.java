@@ -122,8 +122,8 @@ public class Overlay implements Closeable
                 doc = loadPDF(e.getValue());
                 loadedDocuments.put(e.getValue(), doc);
                 layouts.put(doc, getLayoutPage(doc));
+                openDocuments.add(doc);
             }
-            openDocuments.add(doc);
             specificPageOverlayPage.put(e.getKey(), layouts.get(doc));
         }
         processPages(inputPDFDocument);
@@ -277,9 +277,9 @@ public class Overlay implements Closeable
         private final PDRectangle overlayMediaBox;
         private final COSStream overlayContentStream;
         private final COSDictionary overlayResources;
-        private final int overlayRotation;
+        private final short overlayRotation;
 
-        private LayoutPage(PDRectangle mediaBox, COSStream contentStream, COSDictionary resources, int rotation)
+        private LayoutPage(PDRectangle mediaBox, COSStream contentStream, COSDictionary resources, short rotation)
         {
             overlayMediaBox = mediaBox;
             overlayContentStream = contentStream;
@@ -290,7 +290,11 @@ public class Overlay implements Closeable
 
     private LayoutPage getLayoutPage(PDDocument doc) throws IOException
     {
-        PDPage page = doc.getPage(0);
+        return createLayoutPage(doc.getPage(0));
+    }
+
+    private LayoutPage createLayoutPage(PDPage page) throws IOException
+    {
         COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
         PDResources resources = page.getResources();
         if (resources == null)
@@ -298,7 +302,7 @@ public class Overlay implements Closeable
             resources = new PDResources();
         }
         return new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents),
-                resources.getCOSObject(), page.getRotation());
+                resources.getCOSObject(), (short) page.getRotation());
     }
     
     private Map<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
@@ -307,14 +311,7 @@ public class Overlay implements Closeable
         Map<Integer, LayoutPage> layoutPages = new HashMap<>();
         for (PDPage page : doc.getPages())
         {
-            COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
-            PDResources resources = page.getResources();
-            if (resources == null)
-            {
-                resources = new PDResources();
-            }
-            layoutPages.put(i, new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents), 
-                    resources.getCOSObject(), page.getRotation()));
+            layoutPages.put(i, createLayoutPage(page));
             i++;
         }
         return layoutPages;
