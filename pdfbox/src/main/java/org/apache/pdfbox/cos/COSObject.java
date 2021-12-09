@@ -177,14 +177,20 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * visitor pattern double dispatch method.
      *
      * @param visitor The object to notify when visiting this object.
-     * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept( ICOSVisitor visitor ) throws IOException
+    public void accept( ICOSVisitor visitor ) throws IOException
     {
         COSBase object = getObject();
-        return object != null ? object.accept(visitor) : COSNull.NULL.accept(visitor);
+        if (object != null)
+        {
+            object.accept(visitor);
+        }
+        else
+        {
+            COSNull.NULL.accept(visitor);
+        }
     }
 
     /**
