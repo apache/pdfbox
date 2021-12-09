@@ -1085,7 +1085,7 @@ public class COSWriter implements ICOSVisitor
     }
 
     @Override
-    public Object visitFromArray( COSArray obj ) throws IOException
+    public void visitFromArray(COSArray obj) throws IOException
     {
         int count = 0;
         getStandardOutput().write(ARRAY_OPEN);
@@ -1147,18 +1147,16 @@ public class COSWriter implements ICOSVisitor
         }
         getStandardOutput().write(ARRAY_CLOSE);
         getStandardOutput().writeEOL();
-        return null;
     }
 
     @Override
-    public Object visitFromBoolean(COSBoolean obj) throws IOException
+    public void visitFromBoolean(COSBoolean obj) throws IOException
     {
         obj.writePDF( getStandardOutput() );
-        return null;
     }
 
     @Override
-    public Object visitFromDictionary(COSDictionary obj) throws IOException
+    public void visitFromDictionary(COSDictionary obj) throws IOException
     {
         if (!reachedSignature)
         {
@@ -1265,11 +1263,10 @@ public class COSWriter implements ICOSVisitor
         }
         getStandardOutput().write(DICT_CLOSE);
         getStandardOutput().writeEOL();
-        return null;
     }
 
     @Override
-    public Object visitFromDocument(COSDocument doc) throws IOException
+    public void visitFromDocument(COSDocument doc) throws IOException
     {
         if(!incrementalUpdate)
         {
@@ -1332,35 +1329,30 @@ public class COSWriter implements ICOSVisitor
             }
         }
 
-        return null;
     }
 
     @Override
-    public Object visitFromFloat(COSFloat obj) throws IOException
+    public void visitFromFloat(COSFloat obj) throws IOException
     {
         obj.writePDF( getStandardOutput() );
-        return null;
     }
 
     @Override
-    public Object visitFromInt(COSInteger obj) throws IOException
+    public void visitFromInt(COSInteger obj) throws IOException
     {
         obj.writePDF( getStandardOutput() );
-        return null;
     }
 
     @Override
-    public Object visitFromName(COSName obj) throws IOException
+    public void visitFromName(COSName obj) throws IOException
     {
         obj.writePDF( getStandardOutput() );
-        return null;
     }
 
     @Override
-    public Object visitFromNull(COSNull obj) throws IOException
+    public void visitFromNull(COSNull obj) throws IOException
     {
         obj.writePDF(getStandardOutput());
-        return null;
     }
 
     /**
@@ -1381,7 +1373,7 @@ public class COSWriter implements ICOSVisitor
     }
 
     @Override
-    public Object visitFromStream(COSStream obj) throws IOException
+    public void visitFromStream(COSStream obj) throws IOException
     {
         if (willEncrypt)
         {
@@ -1404,7 +1396,6 @@ public class COSWriter implements ICOSVisitor
             getStandardOutput().writeCRLF();
             getStandardOutput().write(ENDSTREAM);
             getStandardOutput().writeEOL();
-            return null;
         }
         finally
         {
@@ -1416,7 +1407,7 @@ public class COSWriter implements ICOSVisitor
     }
 
     @Override
-    public Object visitFromString(COSString obj) throws IOException
+    public void visitFromString(COSString obj) throws IOException
     {
         if (willEncrypt)
         {
@@ -1426,7 +1417,6 @@ public class COSWriter implements ICOSVisitor
                     currentObjectKey.getGeneration());
         }
         COSWriter.writeString(obj, getStandardOutput());
-        return null;
     }
 
     /**
