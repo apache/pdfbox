@@ -123,20 +123,6 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
 
     }
 
-    /**
-     * Creates a CCITTFaxDecoderStream.
-     *
-     * @param stream the compressed CCITT stream.
-     * @param columns the number of columns in the stream.
-     * @param type the type of stream, must be one of {@code COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE},
-     *             {@code COMPRESSION_CCITT_T4} or {@code COMPRESSION_CCITT_T6}.
-     * @param options CCITT T.4 or T.6 options.
-     */
-    public CCITTFaxDecoderStream(final InputStream stream, final int columns, final int type,
-                                 final long options) {
-        this(stream, columns, type, options, type == TIFFExtension.COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE);
-    }
-
     private void fetch() throws IOException {
         if (decodedPos >= decodedLength) {
             decodedLength = 0;
