@@ -274,8 +274,12 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
      * @return the font bounding box
      */
     @Override
-    public BoundingBox getFontBBox()
+    public BoundingBox getFontBBox() throws IOException
     {
+        if (fontBBox.size() < 4)
+        {
+            throw new IOException("FontBBox must have 4 numbers, but is " + fontBBox);
+        }
         return new BoundingBox(fontBBox);
     }
 
