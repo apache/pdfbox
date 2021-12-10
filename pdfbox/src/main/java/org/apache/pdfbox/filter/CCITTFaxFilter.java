@@ -107,7 +107,7 @@ final class CCITTFaxFilter extends Filter
             // Group 4
             type = TIFFExtension.COMPRESSION_CCITT_T6;
         }
-        s = new CCITTFaxDecoderStream(encoded, cols, type, TIFFExtension.FILL_LEFT_TO_RIGHT, tiffOptions, encodedByteAlign);
+        s = new CCITTFaxDecoderStream(encoded, cols, type, tiffOptions, encodedByteAlign);
         readFromDecoderStream(s, decompressed);
 
         // invert bitmap
