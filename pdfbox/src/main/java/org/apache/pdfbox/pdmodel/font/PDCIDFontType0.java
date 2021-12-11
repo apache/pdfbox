@@ -167,7 +167,7 @@ public class PDCIDFontType0 extends PDCIDFont
     }
     
     @Override
-    public final Matrix getFontMatrix() throws IOException
+    public final Matrix getFontMatrix()
     {
         if (fontMatrix == null)
         {
