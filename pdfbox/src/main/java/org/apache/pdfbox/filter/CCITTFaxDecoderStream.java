@@ -130,6 +130,10 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
             try {
                 decodeRow();
             }
+            catch (ArrayIndexOutOfBoundsException e) {
+                // Mask the AIOOBE as an IOException
+                throw new IOException("Malformed CCITT stream", e);
+            }
             catch (EOFException e) {
                 // TODO: Rewrite to avoid throw/catch for normal flow...
                 if (decodedLength != 0) {
