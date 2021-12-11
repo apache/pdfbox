@@ -373,6 +373,7 @@
                     <configuration>
                         <excludes>
                             <exclude>release.properties</exclude>
+                            <exclude>.github/workflows/codeql-analysis.yml</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
