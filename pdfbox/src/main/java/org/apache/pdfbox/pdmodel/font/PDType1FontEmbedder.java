@@ -104,8 +104,10 @@ class PDType1FontEmbedder
 
     /**
      * Returns a PDFontDescriptor for the given PFB.
+     * 
+     * @throws IOException if the font bounding box isn't available
      */
-    static PDFontDescriptor buildFontDescriptor(Type1Font type1)
+    static PDFontDescriptor buildFontDescriptor(Type1Font type1) throws IOException
     {
         boolean isSymbolic = type1.getEncoding()
                 instanceof org.apache.fontbox.encoding.BuiltInEncoding;
@@ -124,7 +126,6 @@ class PDType1FontEmbedder
         fd.setStemV(0); // for PDF/A
         return fd;
     }
-
 
     /**
      * Returns a PDFontDescriptor for the given AFM. Used only for Standard 14 fonts.
