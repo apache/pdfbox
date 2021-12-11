@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.fontbox.afm.FontMetrics;
+import org.apache.fontbox.encoding.BuiltInEncoding;
 import org.apache.fontbox.pfb.PfbParser;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.BoundingBox;
@@ -109,8 +110,7 @@ class PDType1FontEmbedder
      */
     static PDFontDescriptor buildFontDescriptor(Type1Font type1) throws IOException
     {
-        boolean isSymbolic = type1.getEncoding()
-                instanceof org.apache.fontbox.encoding.BuiltInEncoding;
+        boolean isSymbolic = type1.getEncoding() instanceof BuiltInEncoding;
         BoundingBox bbox = type1.getFontBBox();
         PDFontDescriptor fd = new PDFontDescriptor();
 
