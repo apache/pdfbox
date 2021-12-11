@@ -442,6 +442,10 @@ public class CFFParser
         {
             CFFCIDFont cffCIDFont = new CFFCIDFont();
             DictData.Entry rosEntry = topDict.getEntry("ROS");
+            if (rosEntry == null || rosEntry.size() < 3)
+            {
+                throw new IOException("ROS entry must have 3 elements");
+            }
             cffCIDFont.setRegistry(readString(rosEntry.getNumber(0).intValue()));
             cffCIDFont.setOrdering(readString(rosEntry.getNumber(1).intValue()));
             cffCIDFont.setSupplement(rosEntry.getNumber(2).intValue());
@@ -481,6 +485,10 @@ public class CFFParser
 
         // charstrings index
         DictData.Entry charStringsEntry = topDict.getEntry("CharStrings");
+        if (charStringsEntry == null || !charStringsEntry.hasOperands())
+        {
+            throw new IOException("CharStrings is missing or empty");
+        }
         int charStringsOffset = charStringsEntry.getNumber(0).intValue();
         input.setPosition(charStringsOffset);
         byte[][] charStringsIndex = readIndexData(input);
@@ -488,7 +496,7 @@ public class CFFParser
         // charset
         DictData.Entry charsetEntry = topDict.getEntry("charset");
         CFFCharset charset;
-        if (charsetEntry != null)
+        if (charsetEntry != null && charsetEntry.hasOperands())
         {
             int charsetId = charsetEntry.getNumber(0).intValue();
             if (!isCIDFont && charsetId == 0)
@@ -607,7 +615,7 @@ public class CFFParser
         // In a CIDKeyed Font, the Private dictionary isn't in the Top Dict but in the Font dict
         // which can be accessed by a lookup using FDArray and FDSelect
         DictData.Entry fdArrayEntry = topDict.getEntry("FDArray");
-        if (fdArrayEntry == null)
+        if (fdArrayEntry == null || !fdArrayEntry.hasOperands())
         {
             throw new IOException("FDArray is missing for a CIDKeyed Font.");
         }
@@ -631,7 +639,7 @@ public class CFFParser
 
             // read private dict
             DictData.Entry privateEntry = fontDict.getEntry("Private");
-            if (privateEntry == null)
+            if (privateEntry == null || privateEntry.size() < 2)
             {
                 throw new IOException("Font DICT invalid without \"Private\" entry");
             }
@@ -665,6 +673,10 @@ public class CFFParser
 
         // font-dict (FD) select
         DictData.Entry fdSelectEntry = topDict.getEntry("FDSelect");
+        if (fdSelectEntry == null || !fdSelectEntry.hasOperands())
+        {
+            throw new IOException("FDSelect is missing or empty");
+        }
         int fdSelectPos = fdSelectEntry.getNumber(0).intValue();
         input.setPosition(fdSelectPos);
         FDSelect fdSelect = readFDSelect(input, nrOfcharStrings, font);
@@ -710,7 +722,8 @@ public class CFFParser
         // encoding
         DictData.Entry encodingEntry = topDict.getEntry("Encoding");
         CFFEncoding encoding;
-        int encodingId = encodingEntry != null ? encodingEntry.getNumber(0).intValue() : 0;
+        int encodingId = encodingEntry != null && encodingEntry.hasOperands() ?
+                encodingEntry.getNumber(0).intValue() : 0;
         switch (encodingId)
         {
             case 0:
@@ -728,7 +741,7 @@ public class CFFParser
 
         // read private dict
         DictData.Entry privateEntry = topDict.getEntry("Private");
-        if (privateEntry == null)
+        if (privateEntry == null || privateEntry.size() < 2)
         {
             throw new IOException("Private dictionary entry missing for font " + font.fontName);
         }
@@ -773,7 +786,7 @@ public class CFFParser
     private String getString(DictData dict, String name)
     {
         DictData.Entry entry = dict.getEntry(name);
-        return entry != null ? readString(entry.getNumber(0).intValue()) : null;
+        return entry != null && entry.hasOperands() ? readString(entry.getNumber(0).intValue()) : null;
     }
 
     private CFFEncoding readEncoding(CFFDataInput dataInput, CFFCharset charset) throws IOException
@@ -1229,6 +1242,11 @@ public class CFFParser
                 return operands.get(index);
             }
 
+            public int size()
+            {
+                return operands.size();
+            }
+
             public Boolean getBoolean(int index)
             {
                 Number operand = operands.get(index);
@@ -1245,6 +1263,11 @@ public class CFFParser
                     }
                 }
                 throw new IllegalArgumentException();
+            }
+
+            public boolean hasOperands()
+            {
+                return !operands.isEmpty();
             }
 
             public List<Number> getArray()
