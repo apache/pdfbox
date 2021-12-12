@@ -399,8 +399,7 @@ public class Type1CharString
         }
         else
         {
-            // indicates a PDFBox bug
-            throw new IllegalArgumentException("Unexpected other subroutine: " + num);
+            LOG.warn("Invalid callothersubr parameter: " + num);
         }
     }
 
