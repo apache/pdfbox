@@ -309,8 +309,9 @@ public class Type1CharString
             // end
             break;
         case RET:
+        case CALLSUBR:
             // indicates an invalid charstring
-            LOG.warn("Unexpected charstring command: RET in glyph " + glyphName + " of font "
+            LOG.warn("Unexpected charstring command: " + type1KeyWord + " in glyph " + glyphName + " of font "
                     + fontName);
             break;
         default:
