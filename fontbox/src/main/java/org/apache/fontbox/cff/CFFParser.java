@@ -683,10 +683,10 @@ public class CFFParser
             privateDictionaries.add(privDict);
 
             // local subrs
-            int localSubrOffset = (Integer) privateDict.getNumber("Subrs", 0);
-            if (localSubrOffset > 0)
+            Number localSubrOffset = privateDict.getNumber("Subrs", 0);
+            if (localSubrOffset instanceof Integer && ((int) localSubrOffset) > 0)
             {
-                input.setPosition(privateOffset + localSubrOffset);
+                input.setPosition(privateOffset + (int) localSubrOffset);
                 privDict.put("Subrs", readIndexData(input));
             }
         }
@@ -774,10 +774,10 @@ public class CFFParser
         privDict.forEach(font::addToPrivateDict);
 
         // local subrs
-        int localSubrOffset = (Integer) privateDict.getNumber("Subrs", 0);
-        if (localSubrOffset > 0)
+        Number localSubrOffset = privateDict.getNumber("Subrs", 0);
+        if (localSubrOffset instanceof Integer && ((int) localSubrOffset) > 0)
         {
-            input.setPosition(privateOffset + localSubrOffset);
+            input.setPosition(privateOffset + (int) localSubrOffset);
             font.addToPrivateDict("Subrs", readIndexData(input));
         }
     }
