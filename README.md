@@ -15,6 +15,8 @@
   limitations under the License.
 --->
 
+[![codeql java](https://github.com/apache/pdfbox/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apache/pdfbox/actions/workflows/codeql-analysis.yml/badge.svg)
+ 
 Apache PDFBox <https://pdfbox.apache.org/>
 ===================================================
 
