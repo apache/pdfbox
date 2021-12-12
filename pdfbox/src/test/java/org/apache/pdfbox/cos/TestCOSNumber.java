@@ -17,16 +17,12 @@
 
 package org.apache.pdfbox.cos;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.IOException;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test class for {@link COSNumber}
@@ -56,7 +52,13 @@ abstract class TestCOSNumber extends TestCOSBase
     {
         try
         {
-            
+
+            // Unit tests covering lines 67 & 70
+            assertEquals(COSInteger.ZERO, COSNumber.get("-"));
+            assertEquals(COSInteger.ZERO, COSNumber.get("."));
+            // Unit test covering IOException on line 72
+            assertThrows(IOException.class, () -> COSNumber.get("a"));
+
             // Ensure the basic static numbers are recognized
             assertEquals(COSInteger.ZERO, COSNumber.get("0"));
             assertEquals(COSInteger.ONE, COSNumber.get("1"));
