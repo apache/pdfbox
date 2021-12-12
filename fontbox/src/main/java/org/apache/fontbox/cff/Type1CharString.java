@@ -321,10 +321,10 @@ public class Type1CharString
         {
             // end
         }
-        else if ("return".equals(name))
+        else if ("return".equals(name) || "callsubr".equals(name))
         {
             // indicates an invalid charstring
-            LOG.warn("Unexpected charstring command: " + command.getKey() + " in glyph " +
+            LOG.warn("Unexpected charstring command: " + name + " in glyph " +
                     glyphName + " of font " + fontName);
         }
         else if (name != null)
