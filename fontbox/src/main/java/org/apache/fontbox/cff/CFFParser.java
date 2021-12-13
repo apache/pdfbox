@@ -444,6 +444,10 @@ public class CFFParser
         {
             CFFCIDFont cffCIDFont = new CFFCIDFont();
             DictData.Entry rosEntry = topDict.getEntry("ROS");
+            if (rosEntry == null || rosEntry.size() < 3)
+            {
+                throw new IOException("ROS entry must have 3 elements");
+            }
             cffCIDFont.setRegistry(readString(rosEntry.getNumber(0).intValue()));
             cffCIDFont.setOrdering(readString(rosEntry.getNumber(1).intValue()));
             cffCIDFont.setSupplement(rosEntry.getNumber(2).intValue());
@@ -472,26 +476,21 @@ public class CFFParser
         font.addValueToTopDict("UnderlineThickness", topDict.getNumber("UnderlineThickness", 50));
         font.addValueToTopDict("PaintType", topDict.getNumber("PaintType", 0));
         font.addValueToTopDict("CharstringType", topDict.getNumber("CharstringType", 2));
-        List<Number> defaultDoubles = new ArrayList<>(6);
-        defaultDoubles.add(0.001);
-        defaultDoubles.add(0d);
-        defaultDoubles.add(0d);
-        defaultDoubles.add(0.001);
-        defaultDoubles.add(0d);
-        defaultDoubles.add(0d);
-        font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix", defaultDoubles));
+        font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix", Arrays.<Number>asList(
+                                                      0.001, (double) 0, (double) 0, 0.001,
+                                                      (double) 0, (double) 0)));
         font.addValueToTopDict("UniqueID", topDict.getNumber("UniqueID", null));
-        List<Number> defaultNumbers = new ArrayList<>(4);
-        defaultNumbers.add(0);
-        defaultNumbers.add(0);
-        defaultNumbers.add(0);
-        defaultNumbers.add(0);
-        font.addValueToTopDict("FontBBox", topDict.getArray("FontBBox", defaultNumbers));
+        font.addValueToTopDict("FontBBox", topDict.getArray("FontBBox",
+                                                    Arrays.<Number> asList(0, 0, 0, 0)));
         font.addValueToTopDict("StrokeWidth", topDict.getNumber("StrokeWidth", 0));
         font.addValueToTopDict("XUID", topDict.getArray("XUID", null));
 
         // charstrings index
         DictData.Entry charStringsEntry = topDict.getEntry("CharStrings");
+        if (charStringsEntry == null || !charStringsEntry.hasOperands())
+        {
+            throw new IOException("CharStrings is missing or empty");
+        }
         int charStringsOffset = charStringsEntry.getNumber(0).intValue();
         input.setPosition(charStringsOffset);
         byte[][] charStringsIndex = readIndexData(input);
@@ -499,7 +498,7 @@ public class CFFParser
         // charset
         DictData.Entry charsetEntry = topDict.getEntry("charset");
         CFFCharset charset;
-        if (charsetEntry != null)
+        if (charsetEntry != null && charsetEntry.hasOperands())
         {
             int charsetId = charsetEntry.getNumber(0).intValue();
             if (!isCIDFont && charsetId == 0)
@@ -524,8 +523,7 @@ public class CFFParser
             {
                 LOG.debug("Couldn't read CharStrings index - returning empty charset instead");
                 charset = new EmptyCharset(0);
-            }
-            
+            }            
         }
         else
         {
@@ -579,16 +577,9 @@ public class CFFParser
                 }
                 else
                 {
-                    List<Number> defaultDoubles1 = new ArrayList<>(6);
-                    defaultDoubles1.add(0.001);
-                    defaultDoubles1.add(0d);
-                    defaultDoubles1.add(0d);
-                    defaultDoubles1.add(0.001);
-                    defaultDoubles1.add(0d);
-                    defaultDoubles1.add(0d);
                     // default
                     font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix",
-                            defaultDoubles1));
+                            Arrays.<Number> asList(0.001, 0.0, 0.0, 0.001, 0.0, 0.0)));
                 }
             }
             else if (privMatrix != null)
@@ -645,7 +636,7 @@ public class CFFParser
         // In a CIDKeyed Font, the Private dictionary isn't in the Top Dict but in the Font dict
         // which can be accessed by a lookup using FDArray and FDSelect
         DictData.Entry fdArrayEntry = topDict.getEntry("FDArray");
-        if (fdArrayEntry == null)
+        if (fdArrayEntry == null || !fdArrayEntry.hasOperands())
         {
             throw new IOException("FDArray is missing for a CIDKeyed Font.");
         }
@@ -669,7 +660,7 @@ public class CFFParser
 
             // read private dict
             DictData.Entry privateEntry = fontDict.getEntry("Private");
-            if (privateEntry == null)
+            if (privateEntry == null || privateEntry.size() < 2)
             {
                 throw new IOException("Font DICT invalid without \"Private\" entry");
             }
@@ -692,16 +683,20 @@ public class CFFParser
             privateDictionaries.add(privDict);
 
             // local subrs
-            int localSubrOffset = (Integer) privateDict.getNumber("Subrs", 0);
-            if (localSubrOffset > 0)
+            Number localSubrOffset = privateDict.getNumber("Subrs", 0);
+            if (localSubrOffset instanceof Integer && ((int) localSubrOffset) > 0)
             {
-                input.setPosition(privateOffset + localSubrOffset);
+                input.setPosition(privateOffset + (int) localSubrOffset);
                 privDict.put("Subrs", readIndexData(input));
             }
         }
 
         // font-dict (FD) select
         DictData.Entry fdSelectEntry = topDict.getEntry("FDSelect");
+        if (fdSelectEntry == null || !fdSelectEntry.hasOperands())
+        {
+            throw new IOException("FDSelect is missing or empty");
+        }
         int fdSelectPos = fdSelectEntry.getNumber(0).intValue();
         input.setPosition(fdSelectPos);
         FDSelect fdSelect = readFDSelect(input, nrOfcharStrings);
@@ -747,7 +742,8 @@ public class CFFParser
         // encoding
         DictData.Entry encodingEntry = topDict.getEntry("Encoding");
         CFFEncoding encoding;
-        int encodingId = encodingEntry != null ? encodingEntry.getNumber(0).intValue() : 0;
+        int encodingId = encodingEntry != null && encodingEntry.hasOperands() ?
+                encodingEntry.getNumber(0).intValue() : 0;
         switch (encodingId)
         {
             case 0:
@@ -765,7 +761,7 @@ public class CFFParser
 
         // read private dict
         DictData.Entry privateEntry = topDict.getEntry("Private");
-        if (privateEntry == null)
+        if (privateEntry == null || privateEntry.size() < 2)
         {
             throw new IOException("Private dictionary entry missing for font " + font.getName());
         }
@@ -778,10 +774,10 @@ public class CFFParser
         privDict.forEach(font::addToPrivateDict);
 
         // local subrs
-        int localSubrOffset = (Integer) privateDict.getNumber("Subrs", 0);
-        if (localSubrOffset > 0)
+        Number localSubrOffset = privateDict.getNumber("Subrs", 0);
+        if (localSubrOffset instanceof Integer && ((int) localSubrOffset) > 0)
         {
-            input.setPosition(privateOffset + localSubrOffset);
+            input.setPosition(privateOffset + (int) localSubrOffset);
             font.addToPrivateDict("Subrs", readIndexData(input));
         }
     }
@@ -806,7 +802,7 @@ public class CFFParser
     private String getString(DictData dict, String name)
     {
         DictData.Entry entry = dict.getEntry(name);
-        return entry != null ? readString(entry.getNumber(0).intValue()) : null;
+        return entry != null && entry.hasOperands() ? readString(entry.getNumber(0).intValue()) : null;
     }
 
     private CFFEncoding readEncoding(CFFDataInput dataInput, CFFCharset charset) throws IOException
@@ -1243,6 +1239,11 @@ public class CFFParser
             public Number getNumber(int index)
             {
                 return operands.get(index);
+            }
+
+            public int size()
+            {
+                return operands.size();
             }
 
             public Boolean getBoolean(int index)

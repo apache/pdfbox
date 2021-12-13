@@ -96,11 +96,17 @@ public abstract class CFFFont implements FontBoxFont
 
     /**
      * Returns the FontBBox.
+     * 
+     * @throws IOException if there are less than 4 numbers
      */
     @Override
-    public BoundingBox getFontBBox()
+    public BoundingBox getFontBBox() throws IOException
     {
-        List<Number> numbers = (List<Number>)topDict.get("FontBBox");
+        List<Number> numbers = (List<Number>) topDict.get("FontBBox");
+        if (numbers.size() < 4)
+        {
+            throw new IOException("FontBBox must have 4 numbers, but is " + numbers);
+        }
         return new BoundingBox(numbers);
     }
 

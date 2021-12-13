@@ -124,7 +124,6 @@ public class Overlay implements Closeable
                 layouts.put(doc, getLayoutPage(doc));
                 openDocuments.add(doc);
             }
-
             specificPageOverlayPage.put(e.getKey(), layouts.get(doc));
         }
         processPages(inputPDFDocument);
@@ -294,6 +293,18 @@ public class Overlay implements Closeable
         return createLayoutPage(doc.getPage(0));
     }
 
+    private LayoutPage createLayoutPage(PDPage page) throws IOException
+    {
+        COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
+        PDResources resources = page.getResources();
+        if (resources == null)
+        {
+            resources = new PDResources();
+        }
+        return new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents),
+                resources.getCOSObject(), (short) page.getRotation());
+    }
+
     private Map<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
     {
         int i = 0;
@@ -304,17 +315,6 @@ public class Overlay implements Closeable
             i++;
         }
         return layoutPages;
-    }
-
-    private LayoutPage createLayoutPage(PDPage page) throws IOException {
-        COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
-        PDResources resources = page.getResources();
-        if (resources == null)
-        {
-            resources = new PDResources();
-        }
-        return new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents),
-                resources.getCOSObject(), (short) page.getRotation());
     }
 
     private COSStream createCombinedContentStream(COSBase contents) throws IOException

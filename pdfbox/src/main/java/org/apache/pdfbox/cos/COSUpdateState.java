@@ -132,7 +132,7 @@ public class COSUpdateState
             COSDictionary dictionary = (COSDictionary) updateInfo;
             for(COSBase entry : dictionary.getValues())
             {
-                if(entry instanceof COSUpdateInfo)
+                if (entry instanceof COSUpdateInfo)
                 {
                     ((COSUpdateInfo) entry).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
                 }
@@ -143,7 +143,7 @@ public class COSUpdateState
             COSArray array = (COSArray) updateInfo;
             for(COSBase entry : array)
             {
-                if(entry instanceof COSUpdateInfo)
+                if (entry instanceof COSUpdateInfo)
                 {
                     ((COSUpdateInfo) entry).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
                 }
