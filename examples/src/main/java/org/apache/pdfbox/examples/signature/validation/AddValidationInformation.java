@@ -322,7 +322,7 @@ public class AddValidationInformation
         }
         catch (OCSPException | CertificateProccessingException | IOException e)
         {
-            LOG.warn("Failed fetching Ocsp", e);
+            LOG.error("Failed fetching OCSP at " + certInfo.getOcspUrl(), e);
             return false;
         }
         catch (RevokedCertificateException e)

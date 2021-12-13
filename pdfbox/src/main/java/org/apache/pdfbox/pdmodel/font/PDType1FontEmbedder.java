@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.fontbox.afm.FontMetrics;
+import org.apache.fontbox.encoding.BuiltInEncoding;
 import org.apache.fontbox.pfb.PfbParser;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.BoundingBox;
@@ -104,11 +105,12 @@ class PDType1FontEmbedder
 
     /**
      * Returns a PDFontDescriptor for the given PFB.
+     * 
+     * @throws IOException if the font bounding box isn't available
      */
-    static PDFontDescriptor buildFontDescriptor(Type1Font type1)
+    static PDFontDescriptor buildFontDescriptor(Type1Font type1) throws IOException
     {
-        boolean isSymbolic = type1.getEncoding()
-                instanceof org.apache.fontbox.encoding.BuiltInEncoding;
+        boolean isSymbolic = type1.getEncoding() instanceof BuiltInEncoding;
         BoundingBox bbox = type1.getFontBBox();
         PDFontDescriptor fd = new PDFontDescriptor();
 
@@ -124,7 +126,6 @@ class PDType1FontEmbedder
         fd.setStemV(0); // for PDF/A
         return fd;
     }
-
 
     /**
      * Returns a PDFontDescriptor for the given AFM. Used only for Standard 14 fonts.

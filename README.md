@@ -15,16 +15,18 @@
   limitations under the License.
 --->
 
-Apache PDFBox <https://pdfbox.apache.org/>
+[![codeql java](https://github.com/apache/pdfbox/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apache/pdfbox/actions/workflows/codeql-analysis.yml/badge.svg)
+ 
+Apache PDFBox
 ===================================================
 
-The Apache PDFBox library is an open source Java tool for working with PDF 
+The [Apache PDFBox](https://pdfbox.apache.org/) library is an open source Java tool for working with PDF 
 documents. This project allows creation of new PDF documents, manipulation 
 of existing documents and the ability to extract content from documents.
 PDFBox also includes several command line utilities. PDFBox is published
 under the Apache License, Version 2.0.
 
-PDFBox is a project of the Apache Software Foundation <https://www.apache.org/>.
+PDFBox is a project of the [Apache Software Foundation](https://www.apache.org/).
 
 Binary Downloads
 ----------------
@@ -35,7 +37,7 @@ releases from our [Download Page](https://pdfbox.apache.org/download.cgi).
 Build
 -----
 
-You need Java 8 (or higher) and Maven 3 <https://maven.apache.org/> to
+You need Java 8 (or higher) and [Maven 3](https://maven.apache.org/) to
 build PDFBox. The recommended build command is:
 
     mvn clean install
@@ -75,7 +77,7 @@ If you are sure you have found a bug the please report the issue in our
 Known Limitations and Problems
 ------------------------------
 
-See the issue tracker at https://issues.apache.org/jira/browse/PDFBOX for
+See the [Issue Tracker](https://issues.apache.org/jira/browse/PDFBOX) for
 the full list of known issues and requested features. Some of the more
 common issues are:
 

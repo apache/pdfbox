@@ -226,21 +226,14 @@ public class PDCIDFontType0 extends PDCIDFont
                                           bbox.getUpperRightX(), bbox.getUpperRightY());
             }
         }
-        if (cidFont != null)
+        try
         {
-            return cidFont.getFontBBox();
+            return cidFont != null ? cidFont.getFontBBox() : t1Font.getFontBBox();
         }
-        else
+        catch (IOException e)
         {
-            try
-            {
-                return t1Font.getFontBBox();
-            }
-            catch (IOException e)
-            {
-                LOG.debug("Couldn't get font bounding box - returning default value", e);
-                return new BoundingBox();
-            }
+            LOG.debug("Couldn't get font bounding box - returning default value", e);
+            return new BoundingBox();
         }
     }
 

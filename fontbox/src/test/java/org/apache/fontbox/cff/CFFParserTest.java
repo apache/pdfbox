@@ -53,7 +53,7 @@ class CFFParserTest
     }
 
     @Test
-    void testFontBBox()
+    void testFontBBox() throws IOException
     {
         BoundingBox fontBBox = testCFFType1Font.getFontBBox();
         assertNotNull(fontBBox, "FontBBox must not be null");
