@@ -222,8 +222,12 @@ public class LayerUtility
             form.setMatrix(at);
         }
 
-        form.setBBox(new PDRectangle(
-                viewBox.getLowerLeftX(), viewBox.getLowerLeftY(), viewBox.getUpperRightX(), viewBox.getUpperRightY()));
+        BoundingBox bbox = new BoundingBox();
+        bbox.setLowerLeftX(viewBox.getLowerLeftX());
+        bbox.setLowerLeftY(viewBox.getLowerLeftY());
+        bbox.setUpperRightX(viewBox.getUpperRightX());
+        bbox.setUpperRightY(viewBox.getUpperRightY());
+        form.setBBox(new PDRectangle(bbox));
 
         return form;
     }
