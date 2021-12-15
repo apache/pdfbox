@@ -42,6 +42,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.debugger.PDFDebugger;
 import org.apache.pdfbox.debugger.treestatus.TreeStatus;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -66,6 +67,9 @@ public class Tree extends JTree
         treePopupMenu = new JPopupMenu();
         setComponentPopupMenu(treePopupMenu);
         rootNode = getModel().getRoot();
+        int treeRowHeight = Integer.parseInt(PDFDebugger.configuration.getProperty(
+                                    "treeRowHeight", Integer.toString(getRowHeight())));
+        setRowHeight(treeRowHeight);
     }
 
     @Override

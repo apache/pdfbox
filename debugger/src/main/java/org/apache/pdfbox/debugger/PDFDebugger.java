@@ -34,6 +34,7 @@ import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +43,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.imageio.spi.IIORegistry;
@@ -190,6 +192,9 @@ public class PDFDebugger extends JFrame
     public static JCheckBoxMenuItem allowSubsampling;
     public static JCheckBoxMenuItem repairAcroFormMenuItem;
 
+    // configuration
+    public static final Properties configuration = new Properties();
+
     /**
      * Constructor.
      */
@@ -204,7 +209,29 @@ public class PDFDebugger extends JFrame
     public PDFDebugger(boolean viewPages)
     {
         isPageMode = viewPages;
+        loadConfiguration();
         initComponents();
+    }
+
+    /**
+     * Loads the local configuration file, if any.
+     */
+    private void loadConfiguration()
+    {
+        File file = new File("config.properties");
+        if (file.exists())
+        {
+            try
+            {
+                InputStream is = new FileInputStream(file);
+                configuration.load(is);
+                is.close();
+            }
+            catch(IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
@@ -266,7 +293,13 @@ public class PDFDebugger extends JFrame
 
         statusPane = new TreeStatusPane(tree);
         statusPane.getPanel().setBorder(new BevelBorder(BevelBorder.RAISED));
-        statusPane.getPanel().setPreferredSize(new Dimension(300, 25));
+        Dimension preferredTreePathSize = statusPane.getPanel().getPreferredSize();
+        int treePathHeight = (int) Math.round(preferredTreePathSize.getHeight());
+        treePathHeight = Integer.parseInt(
+                configuration.getProperty("treePathHeight", Integer.toString(treePathHeight)));
+        preferredTreePathSize.height = treePathHeight;
+        System.out.println(preferredTreePathSize);
+        statusPane.getPanel().setPreferredSize(preferredTreePathSize);
         getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
         getContentPane().add(jSplitPane, BorderLayout.CENTER);
