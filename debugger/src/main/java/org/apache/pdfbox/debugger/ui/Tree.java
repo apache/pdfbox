@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.pdfbox.debugger.PDFDebugger;
 
 /**
  * @author Khyrul Bashar
@@ -63,6 +64,9 @@ public class Tree extends JTree
         treePopupMenu = new JPopupMenu();
         setComponentPopupMenu(treePopupMenu);
         rootNode = getModel().getRoot();
+        int treeRowHeight = Integer.parseInt(PDFDebugger.configuration.getProperty(
+                                    "treeRowHeight", Integer.toString(getRowHeight())));
+        setRowHeight(treeRowHeight);
     }
 
     @Override
