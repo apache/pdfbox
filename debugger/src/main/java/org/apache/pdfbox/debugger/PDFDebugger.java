@@ -298,7 +298,6 @@ public class PDFDebugger extends JFrame
         treePathHeight = Integer.parseInt(
                 configuration.getProperty("treePathHeight", Integer.toString(treePathHeight)));
         preferredTreePathSize.height = treePathHeight;
-        System.out.println(preferredTreePathSize);
         statusPane.getPanel().setPreferredSize(preferredTreePathSize);
         getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
