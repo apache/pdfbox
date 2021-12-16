@@ -178,11 +178,21 @@ public final class StandardSecurityHandler extends SecurityHandler
                 {
                     dicLength = 128 / 8;
                     setAES(true);
+                    if (stdCryptFilterDictionary.getCOSObject().containsKey(COSName.LENGTH))
+                    {
+                        // PDFBOX-5345
+                        dicLength = stdCryptFilterDictionary.getLength();
+                    }
                 }
                 if (COSName.AESV3.equals(cryptFilterMethod))
                 {
                     dicLength = 256 / 8;
                     setAES(true);
+                    if (stdCryptFilterDictionary.getCOSObject().containsKey(COSName.LENGTH))
+                    {
+                        // PDFBOX-5345
+                        dicLength = stdCryptFilterDictionary.getLength();
+                    }
                 }
             }
         }
