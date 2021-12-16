@@ -53,6 +53,8 @@ public abstract class TestCOSNumber extends TestCOSBase
         {
             // Ensure the basic static numbers are recognized
             assertEquals(COSInteger.ZERO, COSNumber.get("0"));
+            assertEquals(COSInteger.ZERO, COSNumber.get("-"));
+            assertEquals(COSInteger.ZERO, COSNumber.get("."));
             assertEquals(COSInteger.ONE, COSNumber.get("1"));
             assertEquals(COSInteger.TWO, COSNumber.get("2"));
             assertEquals(COSInteger.THREE, COSNumber.get("3"));
@@ -75,6 +77,15 @@ public abstract class TestCOSNumber extends TestCOSBase
                 fail("Failed to throw a NullPointerException");
             }
             catch (NullPointerException e)
+            {
+                // PASS
+            }
+            try
+            {
+                assertEquals(0, COSNumber.get("a"));
+                fail("Failed to throw an IOException");
+            }
+            catch (IOException e)
             {
                 // PASS
             }
