@@ -178,15 +178,26 @@ public final class StandardSecurityHandler extends SecurityHandler
                 {
                     dicLength = 128 / 8;
                     setAES(true);
+                    if (encryption.getCOSObject().containsKey(COSName.LENGTH))
+                    {
+                        // PDFBOX-5345
+                        int newLength = encryption.getLength() / 8;
+                        if (newLength < dicLength)
+                        {
+                            LOG.warn("Using " + newLength + " bytes key length instead of " +
+                                    dicLength + " in AESV2 encryption?!");
+                            dicLength = newLength;
+                        }
+                    }
                 }
                 if (COSName.AESV3.equals(cryptFilterMethod))
                 {
                     dicLength = 256 / 8;
                     setAES(true);
-                    if (stdCryptFilterDictionary.getCOSObject().containsKey(COSName.LENGTH))
+                    if (encryption.getCOSObject().containsKey(COSName.LENGTH))
                     {
                         // PDFBOX-5345
-                        int newLength = stdCryptFilterDictionary.getLength();
+                        int newLength = encryption.getLength() / 8;
                         if (newLength < dicLength)
                         {
                             LOG.warn("Using " + newLength + " bytes key length instead of " +
