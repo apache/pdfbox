@@ -114,7 +114,7 @@ public abstract class BaseParser
     private static final byte ASCII_ZERO = 48;
     private static final byte ASCII_NINE = 57;
     private static final byte ASCII_SPACE = 32;
-    
+
     /**
      * This is the stream that will be read from.
      */
@@ -124,6 +124,11 @@ public abstract class BaseParser
      * This is the document that will be parsed.
      */
     protected COSDocument document;
+
+    /**
+     * Buffer for reading characters.
+     */
+    private final StringBuilder buffer = new StringBuilder( 11 );
 
     /**
      * Default constructor.
@@ -136,8 +141,8 @@ public abstract class BaseParser
     private static boolean isHexDigit(char ch)
     {
         return isDigit(ch) ||
-        (ch >= 'a' && ch <= 'f') ||
-        (ch >= 'A' && ch <= 'F');
+                (ch >= 'a' && ch <= 'f') ||
+                (ch >= 'A' && ch <= 'F');
     }
 
     /**
@@ -210,7 +215,7 @@ public abstract class BaseParser
             char c = (char) source.peek();
             if (c == '>')
             {
-                break;
+                break;//done
             }
             else if (c == '/')
             {
@@ -403,7 +408,7 @@ public abstract class BaseParser
             throw new IOException( "parseCOSString string should start with '(' or '<' and not '" +
                     nextChar + "' at offset " + source.getPosition());
         }
-        
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         // This is the number of braces read
@@ -452,7 +457,7 @@ public abstract class BaseParser
                         break;
                     case ')':
                         // PDFBox 276 /Title (c:\)
-                    braces = checkForEndOfString(braces);
+                        braces = checkForEndOfString(braces);
                         if( braces != 0 )
                         {
                             out.write(next);
@@ -506,7 +511,7 @@ public abstract class BaseParser
                         {
                             nextc = c;
                         }
-    
+
                         int character = 0;
                         try
                         {
@@ -551,26 +556,26 @@ public abstract class BaseParser
      * be able to skip to next object start.
      *
      * We assume starting '&lt;' was already read.
-     * 
+     *
      * @return The parsed PDF string.
      *
      * @throws IOException If there is an error reading from the stream.
      */
     private COSString parseCOSHexString() throws IOException
     {
-        final StringBuilder sBuf = new StringBuilder();
+        buffer.setLength(0);
         while( true )
         {
             int c = source.read();
             if ( isHexDigit((char)c) )
             {
-                sBuf.append( (char) c );
+                buffer.append( (char) c );
             }
             else if ( c == '>' )
             {
                 break;
             }
-            else if ( c < 0 ) 
+            else if ( c < 0 )
             {
                 throw new IOException( "Missing closing bracket for hex string. Reached EOS." );
             }
@@ -584,33 +589,33 @@ public abstract class BaseParser
             {
                 // if invalid chars was found: discard last
                 // hex character if it is not part of a pair
-                if (sBuf.length()%2!=0)
+                if (buffer.length()%2!=0)
                 {
-                    sBuf.deleteCharAt(sBuf.length()-1);
+                    buffer.deleteCharAt(buffer.length()-1);
                 }
-                
+
                 // read till the closing bracket was found
-                do 
+                do
                 {
                     c = source.read();
-                } 
+                }
                 while ( c != '>' && c >= 0 );
-                
+
                 // might have reached EOF while looking for the closing bracket
                 // this can happen for malformed PDFs only. Make sure that there is
                 // no endless loop.
-                if ( c < 0 ) 
+                if ( c < 0 )
                 {
                     throw new IOException( "Missing closing bracket for hex string. Reached EOS." );
                 }
-                
+
                 // exit loop
                 break;
             }
         }
-        return COSString.parseHex(sBuf.toString());
+        return COSString.parseHex(buffer.toString());
     }
-   
+
     /**
      * This will parse a PDF array object.
      *
@@ -693,8 +698,8 @@ public abstract class BaseParser
     protected boolean isEndOfName(int ch)
     {
         return ch == ASCII_SPACE || ch == ASCII_CR || ch == ASCII_LF || ch == 9 || ch == '>' ||
-               ch == '<' || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(' || 
-               ch == 0 || ch == '\f' || ch == '%';
+                ch == '<' || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(' ||
+                ch == 0 || ch == '\f' || ch == '%';
     }
 
     /**
@@ -793,7 +798,7 @@ public abstract class BaseParser
             return false;
         }
     }
-    
+
     /**
      * This will parse a directory object from the stream.
      *
@@ -807,85 +812,83 @@ public abstract class BaseParser
         char c = (char) source.peek();
         switch(c)
         {
-        case '<':
-            // pull off first left bracket
-            source.read();
-            // check for second left bracket
-            c = (char) source.peek();
-            source.rewind(1);
-            return c == '<' ? parseCOSDictionary(true) : parseCOSString();
-        case '[':
-            // array
-            return parseCOSArray();
-        case '(':
-            return parseCOSString();
-        case '/':   
-            // name
-            return parseCOSName();
-        case 'n':   
-            // null
-            readExpectedString(NULL, false);
-            return COSNull.NULL;
-        case 't':
-            readExpectedString(TRUE, false);
-            return COSBoolean.TRUE;
-        case 'f':
-            readExpectedString(FALSE, false);
-            return COSBoolean.FALSE;
-        case 'R':
-            source.read();
-            return new COSObject(null);
-        case (char)-1:
-            return null;
-        default:
-            if( Character.isDigit(c) || c == '-' || c == '+' || c == '.')
-            {
-                return parseCOSNumber();
-            }
-            // This is not suppose to happen, but we will allow for it
-            // so we are more compatible with POS writers that don't
-            // follow the spec
-            long startOffset = source.getPosition();
-            String badString = readString();
-            if (badString.isEmpty())
-            {
-                int peek = source.peek();
-                // we can end up in an infinite loop otherwise
-                throw new IOException("Unknown dir object c='" + c + "' cInt=" + (int) c + " peek='"
-                        + (char) peek + "' peekInt=" + peek + " at offset " + source.getPosition()
-                        + " (start offset: " + startOffset + ")");
-            }
+            case '<':
+                // pull off first left bracket
+                source.read();
+                // check for second left bracket
+                c = (char) source.peek();
+                source.rewind(1);
+                return c == '<' ? parseCOSDictionary(true) : parseCOSString();
+            case '[':
+                // array
+                return parseCOSArray();
+            case '(':
+                return parseCOSString();
+            case '/':
+                // name
+                return parseCOSName();
+            case 'n':
+                // null
+                readExpectedString(NULL, false);
+                return COSNull.NULL;
+            case 't':
+                readExpectedString(TRUE, false);
+                return COSBoolean.TRUE;
+            case 'f':
+                readExpectedString(FALSE, false);
+                return COSBoolean.FALSE;
+            case 'R':
+                source.read();
+                return new COSObject(null);
+            case (char)-1:
+                return null;
+            default:
+                if( Character.isDigit(c) || c == '-' || c == '+' || c == '.')
+                {
+                    return parseCOSNumber();
+                }
+                // This is not suppose to happen, but we will allow for it
+                // so we are more compatible with POS writers that don't
+                // follow the spec
+                long startOffset = source.getPosition();
+                String badString = readString();
+                if (badString.isEmpty())
+                {
+                    int peek = source.peek();
+                    // we can end up in an infinite loop otherwise
+                    throw new IOException("Unknown dir object c='" + c + "' cInt=" + (int) c + " peek='"
+                            + (char) peek + "' peekInt=" + peek + " at offset " + source.getPosition()
+                            + " (start offset: " + startOffset + ")");
+                }
 
-            // if it's an endstream/endobj, we want to put it back so the caller will see it
-            if (ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
-            {
-                source.rewind(badString.getBytes(StandardCharsets.ISO_8859_1).length);
-            }
-            else
-            {
-                LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
-                        + source.getPosition() + " (start offset: " + startOffset + ")");
-            }
+                // if it's an endstream/endobj, we want to put it back so the caller will see it
+                if (ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
+                {
+                    source.rewind(badString.getBytes(StandardCharsets.ISO_8859_1).length);
+                }
+                else
+                {
+                    LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
+                            + source.getPosition() + " (start offset: " + startOffset + ")");
+                }
         }
         return null;
     }
 
     private COSNumber parseCOSNumber() throws IOException
     {
-        StringBuilder buf = new StringBuilder();
-        int ic = source.read();
-        char c = (char) ic;
+        buffer.setLength(0);
+        char c = (char)source.read();
         while (Character.isDigit(c) || c == '-' || c == '+' || c == '.' || c == 'E' || c == 'e')
         {
-            buf.append(c);
-            ic = source.read();
-            c = (char) ic;
+            buffer.append(c);
+            c = (char)source.read();
         }
-        if (ic != -1)
+        if (c != -1)
         {
             source.rewind(1);
         }
-        return COSNumber.get(buf.toString());
+        return COSNumber.get(buffer.toString());
     }
 
     /**
@@ -898,7 +901,7 @@ public abstract class BaseParser
     protected String readString() throws IOException
     {
         skipSpaces();
-        StringBuilder buffer = new StringBuilder();
+        buffer.setLength(0);
         int c = source.read();
         while( !isEndOfName((char)c) && c != -1 )
         {
@@ -911,10 +914,10 @@ public abstract class BaseParser
         }
         return buffer.toString();
     }
-    
+
     /**
      * Reads given pattern from {@link #source}. Skipping whitespace at start and end if wanted.
-     * 
+     *
      * @param expectedString pattern to be skipped
      * @param skipSpaces if set to true spaces before and after the string will be skipped
      * @throws IOException if pattern could not be read
@@ -950,7 +953,7 @@ public abstract class BaseParser
                     "expected='" + ec + "' actual='" + c + "' at offset " + source.getPosition());
         }
     }
-    
+
     /**
      * This will read the next string from the stream up to a certain length.
      *
@@ -965,10 +968,7 @@ public abstract class BaseParser
         skipSpaces();
 
         int c = source.read();
-
-        //average string size is around 2 and the normal string buffer size is
-        //about 16 so lets save some space.
-        StringBuilder buffer = new StringBuilder(length);
+        buffer.setLength(0);
         while( !isWhitespace(c) && !isClosing(c) && c != -1 && buffer.length() < length &&
                 c != '[' &&
                 c != '<' &&
@@ -1024,7 +1024,7 @@ public abstract class BaseParser
             throw new IOException( "Error: End-of-File, expected line");
         }
 
-        StringBuilder buffer = new StringBuilder( 11 );
+        buffer.setLength(0);
 
         int c;
         while ((c = source.read()) != -1)
@@ -1036,7 +1036,7 @@ public abstract class BaseParser
             }
             buffer.append( (char)c );
         }
-        // CR+LF is also a valid EOL 
+        // CR+LF is also a valid EOL
         if (isCR(c) && isLF(source.peek()))
         {
             source.read();
@@ -1058,7 +1058,7 @@ public abstract class BaseParser
 
     /**
      * This will tell if the end of the data is reached.
-     * 
+     *
      * @return true if the end of the data is reached.
      * @throws IOException If there is an error reading from the stream.
      */
@@ -1087,7 +1087,7 @@ public abstract class BaseParser
     {
         return ASCII_CR == c;
     }
-    
+
     /**
      * This will tell if the next byte is whitespace or not.
      *
@@ -1109,7 +1109,7 @@ public abstract class BaseParser
     protected boolean isWhitespace( int c )
     {
         return c == 0 || c == 9 || c == 12  || c == ASCII_LF
-        || c == ASCII_CR || c == ASCII_SPACE;
+                || c == ASCII_CR || c == ASCII_SPACE;
     }
 
     /**
@@ -1123,10 +1123,10 @@ public abstract class BaseParser
     {
         return isSpace(source.peek());
     }
-    
+
     /**
      * This will tell if the given value is a space or not.
-     * 
+     *
      * @param c The character to check against space
      * @return true if the next byte in the stream is a space character.
      */
@@ -1149,7 +1149,7 @@ public abstract class BaseParser
 
     /**
      * This will tell if the given value is a digit or not.
-     * 
+     *
      * @param c The character to be checked
      * @return true if the next byte in the stream is a digit.
      */
@@ -1222,7 +1222,7 @@ public abstract class BaseParser
         }
         return retval;
     }
-    
+
     /**
      * This will read an integer from the stream.
      *
@@ -1235,22 +1235,22 @@ public abstract class BaseParser
         skipSpaces();
         int retval = 0;
 
-        StringBuilder intBuffer = readStringNumber();
+        String intBuffer = readStringNumber();
 
         try
         {
-            retval = Integer.parseInt( intBuffer.toString() );
+            retval = Integer.parseInt( intBuffer );
         }
         catch( NumberFormatException e )
         {
-            source.rewind(intBuffer.toString().getBytes(StandardCharsets.ISO_8859_1).length);
+            source.rewind(intBuffer.getBytes(StandardCharsets.ISO_8859_1).length);
             throw new IOException("Error: Expected an integer type at offset " +
                     source.getPosition() +
-                                  ", instead got '" + intBuffer + "'", e);
+                    ", instead got '" + intBuffer + "'", e);
         }
         return retval;
     }
-    
+
 
     /**
      * This will read an long from the stream.
@@ -1264,15 +1264,15 @@ public abstract class BaseParser
         skipSpaces();
         long retval = 0;
 
-        StringBuilder longBuffer = readStringNumber();
+        String longBuffer = readStringNumber();
 
         try
         {
-            retval = Long.parseLong( longBuffer.toString() );
+            retval = Long.parseLong( longBuffer );
         }
         catch( NumberFormatException e )
         {
-            source.rewind(longBuffer.toString().getBytes(StandardCharsets.ISO_8859_1).length);
+            source.rewind(longBuffer.getBytes(StandardCharsets.ISO_8859_1).length);
             throw new IOException( "Error: Expected a long type at offset "
                     + source.getPosition() + ", instead got '" + longBuffer + "'", e);
         }
@@ -1286,16 +1286,16 @@ public abstract class BaseParser
      * @return the token to parse as integer or long by the calling method.
      * @throws IOException throws by the {@link #source} methods.
      */
-    protected final StringBuilder readStringNumber() throws IOException
+    protected final String readStringNumber() throws IOException
     {
         int lastByte;
-        StringBuilder buffer = new StringBuilder();
+        buffer.setLength(0);
         while ((lastByte = source.read()) >= '0' && lastByte <= '9')
         {
             buffer.append( (char)lastByte );
             if (buffer.length() > MAX_LENGTH_LONG)
             {
-                throw new IOException("Number '" + buffer + 
+                throw new IOException("Number '" + buffer +
                         "' is getting too long, stop reading at offset " + source.getPosition());
             }
         }
@@ -1303,6 +1303,6 @@ public abstract class BaseParser
         {
             source.rewind(1);
         }
-        return buffer;
+        return buffer.toString();
     }
 }
