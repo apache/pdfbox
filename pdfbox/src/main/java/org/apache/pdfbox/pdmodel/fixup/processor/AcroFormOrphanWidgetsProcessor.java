@@ -96,12 +96,13 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
         acroForm.setFields(fields);
 
+        PDResources resources = acroForm.getDefaultResources();
         // ensure that PDVariableText fields have the necessary resources
         for (PDField field : acroForm.getFieldTree())
         {
             if (field instanceof PDVariableText)
             {
-                ensureFontResources(acroForm.getDefaultResources(), (PDVariableText) field);
+                ensureFontResources(resources, (PDVariableText) field);
             }
         }
     }
@@ -119,7 +120,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                 COSDictionary parent = annot.getCOSObject().getCOSDictionary(COSName.PARENT);
                 if (parent != null)
                 {
-                    PDField resolvedField = resolveNonRootField(acroForm, (PDAnnotationWidget) annot, nonTerminalFieldsMap);
+                    PDField resolvedField = resolveNonRootField(acroForm, parent, nonTerminalFieldsMap);
                     if (resolvedField != null)
                     {
                         fields.add(resolvedField);
@@ -175,9 +176,8 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
      *  Widgets having a /Parent entry are non root fields. Go up until the root node is found
      *  and handle from there.
      */
-    private PDField resolveNonRootField(PDAcroForm acroForm, PDAnnotationWidget widget, Map<String, PDField> nonTerminalFieldsMap)
+    private PDField resolveNonRootField(PDAcroForm acroForm, COSDictionary parent, Map<String, PDField> nonTerminalFieldsMap)
     {
-        COSDictionary parent = widget.getCOSObject().getCOSDictionary(COSName.PARENT);
         while (parent.containsKey(COSName.PARENT))
         {
             parent = parent.getCOSDictionary(COSName.PARENT);
