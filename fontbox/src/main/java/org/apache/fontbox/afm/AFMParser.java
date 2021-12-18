@@ -285,8 +285,9 @@ public class AFMParser
 
     private static final int BITS_IN_HEX = 16;
 
-
     private final InputStream input;
+
+    private final StringBuilder buf = new StringBuilder(60);
 
     /**
      * Constructor.
@@ -842,8 +843,8 @@ public class AFMParser
     private String readLine() throws IOException
     {
         //First skip the whitespace
-        StringBuilder buf = new StringBuilder(60);
-        int nextByte = input.read();
+        buf.setLength(0);
+        int nextByte = input.read();//todo skip the whitespace to method?
         while( isWhitespace( nextByte ) )
         {
             nextByte = input.read();
@@ -871,7 +872,7 @@ public class AFMParser
     private String readString() throws IOException
     {
         //First skip the whitespace
-        StringBuilder buf = new StringBuilder(24);
+        buf.setLength(0);
         int nextByte = input.read();
         while( isWhitespace( nextByte ) )
         {
