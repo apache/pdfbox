@@ -40,6 +40,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
+import org.apache.pdfbox.pdmodel.interactive.form.PDPushButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -243,6 +244,19 @@ class TestCreateSimpleForms
             assertEquals(1, radioButton.getSelectedExportValues().size());
             assertEquals("b", radioButton.getSelectedExportValues().get(0));
             assertEquals(3, radioButton.getExportValues().size());
+        }
+    }
+    
+    @Test
+    void testCreatePushButton() throws IOException
+    {
+        CreatePushButton.main(null);
+        try (PDDocument doc = Loader.loadPDF(new File("target/PushButtonSample.pdf")))
+        {
+            new PDFRenderer(doc).renderImage(0);
+            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            PDPushButton pushButton = (PDPushButton) acroForm.getField("push");
+            assertTrue(pushButton != null);
         }
     }
 
