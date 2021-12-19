@@ -19,6 +19,7 @@ package org.apache.pdfbox.examples.interactive.form;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -256,7 +257,7 @@ class TestCreateSimpleForms
             new PDFRenderer(doc).renderImage(0);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDPushButton pushButton = (PDPushButton) acroForm.getField("push");
-            assertTrue(pushButton != null);
+            assertNotNull(pushButton);
         }
     }
 
