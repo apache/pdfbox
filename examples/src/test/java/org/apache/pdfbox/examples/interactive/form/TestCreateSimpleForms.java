@@ -242,7 +242,7 @@ public class TestCreateSimpleForms
         new PDFRenderer(doc).renderImage(0);
         PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
         PDPushButton pushButton = (PDPushButton) acroForm.getField("push");
-        Assert.assertTrue(pushButton != null);
+        Assert.assertNotNull(pushButton);
         doc.close();
     }
 
