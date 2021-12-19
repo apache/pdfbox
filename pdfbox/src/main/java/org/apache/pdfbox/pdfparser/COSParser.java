@@ -783,10 +783,11 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj,
                         document);
+                long generationNumber = key.getNumber();
                 for (Entry<Long, COSBase> entry : parser.parseAllObjects().entrySet())
                 {
                     Long stmObjNumber = entry.getKey();
-                    if (key.getNumber() == stmObjNumber)
+                    if (generationNumber == stmObjNumber)
                     {
                         objectStreamObject = entry.getValue();
                     }
