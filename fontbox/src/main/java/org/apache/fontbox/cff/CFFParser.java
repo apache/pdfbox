@@ -772,7 +772,7 @@ public class CFFParser
         {
             return CFFStandardString.getName(index);
         }
-        if (index - 391 < stringIndex.length)
+        if (stringIndex != null && index - 391 < stringIndex.length)
         {
             return stringIndex[index - 391];
         }
