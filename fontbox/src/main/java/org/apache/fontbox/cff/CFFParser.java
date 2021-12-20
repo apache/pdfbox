@@ -1051,7 +1051,8 @@ public class CFFParser
             case 2:
                 return readFormat2Charset(dataInput, nGlyphs, isCIDFont);
             default:
-                throw new IllegalArgumentException();
+                // we can't return new EmptyCharset(0), because this will bring more mayhem
+                throw new IOException("Incorrect charset format " + format);
         }
     }
 
