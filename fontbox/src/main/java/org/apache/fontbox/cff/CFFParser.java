@@ -801,7 +801,7 @@ public class CFFParser
             case 1:
                 return readFormat1Encoding(dataInput, charset, format);
             default:
-                throw new IllegalArgumentException();
+                throw new IOException("Invalid encoding base format " + baseFormat);
         }
     }
 
