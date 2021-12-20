@@ -1199,7 +1199,7 @@ public class CFFParser
         public Boolean getBoolean(String name, boolean defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null && !entry.getArray().isEmpty() ? entry.getBoolean(0) : defaultValue;
+            return entry != null && !entry.getArray().isEmpty() ? entry.getBoolean(0, defaultValue) : defaultValue;
         }
 
         public List<Number> getArray(String name, List<Number> defaultValue)
@@ -1247,23 +1247,30 @@ public class CFFParser
                 return operands.size();
             }
 
-            public Boolean getBoolean(int index)
+            public Boolean getBoolean(int index, Boolean defaultValue)
             {
                 Number operand = operands.get(index);
                 if (operand instanceof Integer)
                 {
                     switch (operand.intValue())
                     {
-                    case 0:
-                        return Boolean.FALSE;
-                    case 1:
-                        return Boolean.TRUE;
-                    default:
-                        break;
+                        case 0:
+                            return Boolean.FALSE;
+                        case 1:
+                            return Boolean.TRUE;
+                        default:
+                            break;
                     }
                 }
-                throw new IllegalArgumentException();
+                LOG.warn("Expected boolean, got " + operand + ", returning default " + defaultValue);
+                return defaultValue;
             }
+
+            @Deprecated
+            public Boolean getBoolean(int index)
+            {
+                return getBoolean(index, Boolean.FALSE);
+            }                
 
             public boolean hasOperands()
             {
