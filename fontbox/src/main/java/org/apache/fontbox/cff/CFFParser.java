@@ -1053,7 +1053,7 @@ public class CFFParser
             case 2:
                 return readFormat2Charset(dataInput, format, nGlyphs, isCIDFont);
             default:
-                throw new IllegalArgumentException();
+                throw new IOException("Incorrect charset format " + format);
         }
     }
 
