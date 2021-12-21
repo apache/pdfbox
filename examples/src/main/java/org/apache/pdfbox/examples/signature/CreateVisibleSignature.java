@@ -248,15 +248,12 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // subfilter for basic and PAdES Part 2 signatures
         signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
         
-        if (visibleSignatureProperties != null)
-        {
-            // this builds the signature structures in a separate document
-            visibleSignatureProperties.buildSignature();
+        // this builds the signature structures in a separate document
+        visibleSignatureProperties.buildSignature();
 
-            signature.setName(visibleSignatureProperties.getSignerName());
-            signature.setLocation(visibleSignatureProperties.getSignerLocation());
-            signature.setReason(visibleSignatureProperties.getSignatureReason());
-        }
+        signature.setName(visibleSignatureProperties.getSignerName());
+        signature.setLocation(visibleSignatureProperties.getSignerLocation());
+        signature.setReason(visibleSignatureProperties.getSignatureReason());
 
         // the signing date, needed for valid signature
         signature.setSignDate(Calendar.getInstance());
@@ -265,7 +262,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         SignatureInterface signatureInterface = isExternalSigning() ? null : this;
 
         // register signature dictionary and sign interface
-        if (visibleSignatureProperties != null && visibleSignatureProperties.isVisualSignEnabled())
+        if (visibleSignatureProperties.isVisualSignEnabled())
         {
             signatureOptions = new SignatureOptions();
             signatureOptions.setVisualSignature(visibleSignatureProperties.getVisibleSignature());
