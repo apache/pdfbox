@@ -1470,7 +1470,7 @@ public class COSWriter implements ICOSVisitor
         {
             prepareIncrement();
         }
-        Long idTime = pdDocument.getDocumentId() == null ? System.currentTimeMillis()
+        long idTime = pdDocument.getDocumentId() == null ? System.currentTimeMillis()
                 : pdDocument.getDocumentId();
 
         // if the document says we should remove encryption, then we shouldn't encrypt
