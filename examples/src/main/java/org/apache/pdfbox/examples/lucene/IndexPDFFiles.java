@@ -66,12 +66,12 @@ public final class IndexPDFFiles
         boolean create = true;
         for (int i = 0; i < args.length; i++)
         {
-            if ("-index".equals(args[i]))
+            if ("-index".equals(args[i]) && i + 1 < args.length)
             {
                 indexPath = args[i + 1];
                 i++;
             }
-            else if ("-docs".equals(args[i]))
+            else if ("-docs".equals(args[i]) && i + 1 < args.length)
             {
                 docsPath = args[i + 1];
                 i++;
