@@ -250,7 +250,9 @@ public class FDFDocument implements Closeable
      */
     public void save(File fileName) throws IOException
     {
-        save(new FileOutputStream(fileName));
+        FileOutputStream fos = new FileOutputStream(fileName);
+        save(fos);
+        fos.close();
     }
 
     /**
@@ -262,7 +264,7 @@ public class FDFDocument implements Closeable
      */
     public void save(String fileName) throws IOException
     {
-        save(new FileOutputStream(fileName));
+        save(new File(fileName));
     }
 
     /**
@@ -299,8 +301,10 @@ public class FDFDocument implements Closeable
      */
     public void saveXFDF(File fileName) throws IOException
     {
-        saveXFDF(new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")));
+        BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8"));
+        saveXFDF(writer);
+        writer.close();
     }
 
     /**
@@ -312,8 +316,7 @@ public class FDFDocument implements Closeable
      */
     public void saveXFDF(String fileName) throws IOException
     {
-        saveXFDF(new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")));
+        saveXFDF(new File(fileName));
     }
 
     /**
