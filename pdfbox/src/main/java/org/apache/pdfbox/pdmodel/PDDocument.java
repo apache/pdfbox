@@ -468,7 +468,8 @@ public class PDDocument implements Closeable
         // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
         if (!(annotations instanceof COSArrayList &&
               acroFormFields instanceof COSArrayList &&
-              ((COSArrayList<?>) annotations).toList().equals(((COSArrayList<?>) acroFormFields).toList()) &&
+              ((COSArrayList<PDAnnotation>) annotations).toList().
+                      equals(((COSArrayList<PDField>) acroFormFields).toList()) &&
               checkFields))
         {
             PDAnnotationWidget widget = signatureField.getWidgets().get(0);
