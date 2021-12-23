@@ -477,6 +477,13 @@ public class Type1CharString
         try
         {
             Type1CharString accent = font.getType1CharString(accentName);
+            if (path == accent.getPath())
+            {
+                // PDFBOX-5339: avoid ArrayIndexOutOfBoundsException 
+                // reproducable with poc file crash-4698e0dc7833a3f959d06707e01d03cda52a83f4
+                LOG.warn("Path for " + baseName + " and for accent " + accentName + " are same, ignored");
+                return;
+            }
             AffineTransform at = AffineTransform.getTranslateInstance(
                     leftSideBearing.getX() + adx.floatValue() - asb.floatValue(),
                     leftSideBearing.getY() + ady.floatValue());
