@@ -85,6 +85,12 @@ public class PDSeparation extends PDSpecialColorSpace
         array = separation;
         alternateColorSpace = PDColorSpace.create(array.getObject(ALTERNATE_CS));
         tintTransform = PDFunction.create(array.getObject(TINT_TRANSFORM));
+        if (tintTransform.getNumberOfOutputParameters() < alternateColorSpace.getNumberOfComponents())
+        {
+            throw new IOException("The tint transform function has less output parameters (" +
+                    tintTransform.getNumberOfOutputParameters() + ") than the alternate colorspace " +
+                    alternateColorSpace + " (" + alternateColorSpace.getNumberOfComponents() + ")");
+        }
     }
 
     @Override
