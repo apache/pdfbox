@@ -426,6 +426,10 @@ final class Type1Parser
 
     private void readPostScriptWrapper(List<Token> value) throws IOException
     {
+        if (lexer.peekToken() == null)
+        {
+            throw new IOException("Missing start token for the system dictionary");
+        }
         // postscript wrapper (not in the Type 1 spec)
         if (lexer.peekToken().getText().equals("systemdict"))
         {
@@ -462,6 +466,11 @@ final class Type1Parser
         int openProc = 1;
         while (true)
         {
+            if (lexer.peekToken() == null)
+            {
+                throw new IOException("Malformed procedure: missing token");
+            }
+
             if (lexer.peekToken().getKind() == Token.START_PROC)
             {
                 openProc++;
@@ -496,6 +505,10 @@ final class Type1Parser
         int openProc = 1;
         while (true)
         {
+            if (lexer.peekToken() == null)
+            {
+                throw new IOException("Malformed procedure: missing token");
+            }
             if (lexer.peekToken().getKind() == Token.START_PROC)
             {
                 openProc++;
@@ -733,6 +746,10 @@ final class Type1Parser
     // OtherSubrs are embedded PostScript procedures which we can safely ignore
     private void readOtherSubrs() throws IOException
     {
+        if (lexer.peekToken() == null)
+        {
+            throw new IOException("Missing start token of OtherSubrs procedure");
+        }
         if (lexer.peekToken().getKind() == Token.START_ARRAY)
         {
             readValue();
@@ -865,7 +882,7 @@ final class Type1Parser
     private void read(Token.Kind kind, String name) throws IOException
     {
         Token token = read(kind);
-        if (!token.getText().equals(name))
+        if (token == null || token.getText() == null || !token.getText().equals(name))
         {
             throw new IOException("Found " + token + " but expected " + name);
         }
