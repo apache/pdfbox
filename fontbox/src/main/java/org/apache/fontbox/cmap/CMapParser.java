@@ -386,7 +386,13 @@ public class CMapParser
                 break;
             }
             byte[] startCode = (byte[]) nextToken;
-            byte[] endCode = (byte[]) parseNextToken(cmapStream);
+            nextToken = parseNextToken(cmapStream);
+            if (nextToken instanceof Operator)
+            {
+                checkExpectedOperator((Operator) nextToken, "endbfrange", "bfrange");
+                break;
+            }
+            byte[] endCode = (byte[]) nextToken;
             int start = CMap.toInt(startCode, startCode.length);
             int end = CMap.toInt(endCode, endCode.length);
             // end has to be bigger than start or equal
