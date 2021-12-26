@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.EncodedFont;
 import org.apache.fontbox.FontBoxFont;
+import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.util.BoundingBox;
@@ -98,7 +99,16 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
             {
                 // note: this could be an OpenType file, fortunately CFFParser can handle that
                 CFFParser cffParser = new CFFParser();
-                cffEmbedded = (CFFType1Font)cffParser.parse(bytes, new FF3ByteSource()).get(0);
+                CFFFont parsedCffFont = cffParser.parse(bytes, new FF3ByteSource()).get(0);
+                if (parsedCffFont instanceof CFFType1Font)
+                {
+                    cffEmbedded = (CFFType1Font) parsedCffFont;
+                }
+                else
+                {
+                    LOG.error("Expected CFFType1Font, got " + parsedCffFont.getClass().getSimpleName());
+                    fontIsDamaged = true;
+                }
             }
         }
         catch (IOException e)
