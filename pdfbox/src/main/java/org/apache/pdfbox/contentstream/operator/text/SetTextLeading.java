@@ -34,7 +34,12 @@ public class SetTextLeading extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments)
     {
-        COSNumber leading = (COSNumber)arguments.get( 0 );
+        COSBase base = arguments.get(0);
+        if (!(base instanceof COSNumber))
+        {
+            return;
+        }
+        COSNumber leading = (COSNumber) base;
         context.getGraphicsState().getTextState().setLeading( leading.floatValue() );
     }
 
