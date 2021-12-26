@@ -336,14 +336,14 @@ public class PDFDebugger extends JFrame
                             DataFlavor.javaFileListFlavor);
                     readPDFFile(files.get(0), "");
                 }
-                catch (IOException e)
-                {
-                    new ErrorDialog(e).setVisible(true);
-                }
                 catch (UnsupportedFlavorException e)
                 {
                     new ErrorDialog(e).setVisible(true);
                     return false;
+                }
+                catch (Exception e)
+                {
+                    new ErrorDialog(e).setVisible(true);
                 }
                 return true;
             }
