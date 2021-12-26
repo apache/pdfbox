@@ -61,6 +61,7 @@ public class PDFXrefStreamParser extends BaseParser
         catch (IOException exception)
         {
             close();
+            throw exception;
         }
     }
 
