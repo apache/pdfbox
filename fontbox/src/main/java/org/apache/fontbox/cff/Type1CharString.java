@@ -301,16 +301,19 @@ public class Type1CharString
         }
         else if ("div".equals(name))
         {
-            float b = numbers.get(numbers.size() -1).floatValue();
-            float a = numbers.get(numbers.size() -2).floatValue();
+            if (numbers.size() >= 2)
+            {
+                float b = numbers.get(numbers.size() - 1).floatValue();
+                float a = numbers.get(numbers.size() - 2).floatValue();
 
-            float result = a / b;
+                float result = a / b;
 
-            List<Number> list = new ArrayList<Number>(numbers);
-            list.remove(list.size() - 1);
-            list.remove(list.size() - 1);
-            list.add(result);
-            return list;
+                List<Number> list = new ArrayList<Number>(numbers);
+                list.remove(list.size() - 1);
+                list.remove(list.size() - 1);
+                list.add(result);
+                return list;
+            }
         }
         else if ("hstem".equals(name) || "vstem".equals(name) ||
                  "hstem3".equals(name) || "vstem3".equals(name) || "dotsection".equals(name))
