@@ -199,7 +199,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
             PDStream fontFile3 = fd.getFontFile3();
             if (fontFile3 != null)
             {
-                throw new IllegalArgumentException("Use PDType1CFont for FontFile3");
+                throw new IOException("/FontFile3 for Type1 font not supported");
             }
 
             // or it may contain a PFB
