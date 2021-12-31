@@ -59,6 +59,8 @@ abstract class TestCOSNumber extends TestCOSBase
             
             // Ensure the basic static numbers are recognized
             assertEquals(COSInteger.ZERO, COSNumber.get("0"));
+            assertEquals(COSInteger.ZERO, COSNumber.get("-"));
+            assertEquals(COSInteger.ZERO, COSNumber.get("."));
             assertEquals(COSInteger.ONE, COSNumber.get("1"));
             assertEquals(COSInteger.TWO, COSNumber.get("2"));
             assertEquals(COSInteger.THREE, COSNumber.get("3"));
@@ -76,9 +78,8 @@ abstract class TestCOSNumber extends TestCOSBase
             assertNotNull(COSNumber.get("-2e-006"));
             assertNotNull(COSNumber.get("-8e+05"));
 
-            assertThrows(NullPointerException.class, () -> {
-                    COSNumber.get(null);
-            });
+            assertThrows(NullPointerException.class, () -> COSNumber.get(null));
+            assertThrows(IOException.class, () -> COSNumber.get("a"));
         }
         catch (IOException e)
         {

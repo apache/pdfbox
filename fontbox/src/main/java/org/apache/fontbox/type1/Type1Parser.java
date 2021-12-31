@@ -419,6 +419,10 @@ final class Type1Parser
 
     private void readPostScriptWrapper(List<Token> value) throws IOException
     {
+        if (lexer.peekToken() == null)
+        {
+            throw new IOException("Missing start token for the system dictionary");
+        }
         // postscript wrapper (not in the Type 1 spec)
         if (lexer.peekToken().getText().equals("systemdict"))
         {
@@ -455,6 +459,11 @@ final class Type1Parser
         int openProc = 1;
         while (true)
         {
+            if (lexer.peekToken() == null)
+            {
+                throw new IOException("Malformed procedure: missing token");
+            }
+
             if (lexer.peekToken().getKind() == Token.START_PROC)
             {
                 openProc++;
@@ -489,6 +498,10 @@ final class Type1Parser
         int openProc = 1;
         while (true)
         {
+            if (lexer.peekToken() == null)
+            {
+                throw new IOException("Malformed procedure: missing token");
+            }
             if (lexer.peekToken().getKind() == Token.START_PROC)
             {
                 openProc++;
@@ -714,6 +727,10 @@ final class Type1Parser
     // OtherSubrs are embedded PostScript procedures which we can safely ignore
     private void readOtherSubrs() throws IOException
     {
+        if (lexer.peekToken() == null)
+        {
+            throw new IOException("Missing start token of OtherSubrs procedure");
+        }
         if (lexer.peekToken().getKind() == Token.START_ARRAY)
         {
             readValue();
@@ -833,7 +850,9 @@ final class Type1Parser
     }
 
     /**
-     * Reads the next token and throws an error if it is not of the given kind.
+     * Reads the next token and throws an exception if it is not of the given kind.
+     * 
+     * @return token, never null
      */
     private Token read(Token.Kind kind) throws IOException
     {
@@ -851,13 +870,15 @@ final class Type1Parser
     }
 
     /**
-     * Reads the next token and throws an error if it is not of the given kind
+     * Reads the next token and throws an exception if it is not of the given kind
      * and does not have the given value.
+     * 
+     * @return token, never null
      */
     private void read(Token.Kind kind, String name) throws IOException
     {
         Token token = read(kind);
-        if (!token.getText().equals(name))
+        if (token.getText() == null || !token.getText().equals(name))
         {
             throw new IOException("Found " + token + " but expected " + name);
         }
@@ -866,6 +887,8 @@ final class Type1Parser
     /**
      * Reads the next token if and only if it is of the given kind and
      * has the given value.
+     * 
+     * @return token or null if not the expected one
      */
     private Token readMaybe(Token.Kind kind, String name) throws IOException
     {

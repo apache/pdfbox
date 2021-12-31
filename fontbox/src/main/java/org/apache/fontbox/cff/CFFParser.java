@@ -788,7 +788,7 @@ public class CFFParser
         {
             return CFFStandardString.getName(index);
         }
-        if (index - 391 < stringIndex.length)
+        if (stringIndex != null && index - 391 < stringIndex.length)
         {
             return stringIndex[index - 391];
         }
@@ -817,7 +817,7 @@ public class CFFParser
             case 1:
                 return readFormat1Encoding(dataInput, charset, format);
             default:
-                throw new IllegalArgumentException();
+                throw new IOException("Invalid encoding base format " + baseFormat);
         }
     }
 
@@ -1051,7 +1051,8 @@ public class CFFParser
             case 2:
                 return readFormat2Charset(dataInput, nGlyphs, isCIDFont);
             default:
-                throw new IllegalArgumentException();
+                // we can't return new EmptyCharset(0), because this will bring more mayhem
+                throw new IOException("Incorrect charset format " + format);
         }
     }
 
@@ -1198,7 +1199,7 @@ public class CFFParser
         public Boolean getBoolean(String name, boolean defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null && entry.hasOperands() ? entry.getBoolean(0) : defaultValue;
+            return entry != null && entry.hasOperands() ? entry.getBoolean(0, defaultValue) : defaultValue;
         }
 
         public List<Number> getArray(String name, List<Number> defaultValue)
@@ -1246,22 +1247,23 @@ public class CFFParser
                 return operands.size();
             }
 
-            public Boolean getBoolean(int index)
+            public Boolean getBoolean(int index, Boolean defaultValue)
             {
                 Number operand = operands.get(index);
                 if (operand instanceof Integer)
                 {
                     switch (operand.intValue())
                     {
-                    case 0:
-                        return Boolean.FALSE;
-                    case 1:
-                        return Boolean.TRUE;
-                    default:
-                        break;
+                        case 0:
+                            return Boolean.FALSE;
+                        case 1:
+                            return Boolean.TRUE;
+                        default:
+                            break;
                     }
                 }
-                throw new IllegalArgumentException();
+                LOG.warn("Expected boolean, got " + operand + ", returning default " + defaultValue);
+                return defaultValue;
             }
 
             public void addOperand(Number operand)

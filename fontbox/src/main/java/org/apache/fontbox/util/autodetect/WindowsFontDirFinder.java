@@ -153,6 +153,26 @@ public class WindowsFontDirFinder implements FontDirFinder
                 }
             }
         }
+
+        try
+        {
+            String localAppData = System.getenv("LOCALAPPDATA");
+            if (localAppData != null && !localAppData.isEmpty())
+            {
+                File localFontDir = new File(localAppData + File.separator + "Microsoft" +
+                        File.separator + "Windows" + File.separator + "Fonts");
+                if (localFontDir.exists() && localFontDir.canRead())
+                {
+                    fontDirList.add(localFontDir);
+                }
+            }
+        }
+        catch (SecurityException e)
+        {
+            LOG.debug("Couldn't get LOCALAPPDATA directory - ignoring", e);
+            // should continue if this fails
+        }
+
         return fontDirList;
     }
 }

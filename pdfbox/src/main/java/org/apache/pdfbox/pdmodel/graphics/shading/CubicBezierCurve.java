@@ -32,8 +32,8 @@ class CubicBezierCurve
     /**
      * Constructor of CubicBezierCurve
      *
-     * @param ctrlPnts, 4 control points [p0, p1, p2, p3]
-     * @param l, dividing level, if l = 0, one cubic Bezier curve is divided
+     * @param ctrlPnts 4 control points [p0, p1, p2, p3]
+     * @param l dividing level, if l = 0, one cubic Bezier curve is divided
      * into 2^0 = 1 segments, if l = n, one cubic Bezier curve is divided into
      * 2^n segments
      */

@@ -2502,15 +2502,15 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             return;
         }
-        COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
-        if (trailerEncryptItem == null || trailerEncryptItem == COSNull.NULL)
+        COSDictionary encryptionDictionary = document.getEncryptionDictionary();
+        if (encryptionDictionary == null)
         {
             return;
         }
 
         try
         {
-            encryption = new PDEncryption(document.getEncryptionDictionary());
+            encryption = new PDEncryption(encryptionDictionary);
             DecryptionMaterial decryptionMaterial;
             if (keyStoreInputStream != null)
             {

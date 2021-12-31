@@ -371,6 +371,10 @@ public class PDType3Font extends PDSimpleFont
      */
     public PDType3CharProc getCharProc(int code)
     {
+        if (getEncoding() == null)
+        {
+            return null;
+        }
         String name = getEncoding().getName(code);
         if (getCharProcs() == null)
         {
