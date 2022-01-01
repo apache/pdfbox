@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -168,9 +169,12 @@ public class CMap
         for (int i = minCodeLength-1; i < maxCodeLength; i++)
         {
             final int byteCount = i + 1;
-            if (codespaceRanges.stream().anyMatch(r -> r.isFullMatch(bytes, byteCount)))
+            try(Stream<CodespaceRange> stream = codespaceRanges.stream())
             {
-                return toInt(bytes, byteCount);
+                if (stream.anyMatch(r -> r.isFullMatch(bytes, byteCount)))
+                {
+                    return toInt(bytes, byteCount);
+                }
             }
             if (byteCount < maxCodeLength)
             {
