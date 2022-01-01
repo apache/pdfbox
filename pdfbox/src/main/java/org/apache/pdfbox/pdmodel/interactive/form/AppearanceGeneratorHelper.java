@@ -772,13 +772,12 @@ class AppearanceGeneratorHelper
         }
         contents.setNonStrokingColor(0f);
     }
-    
-    
+
     private void insertGeneratedListboxAppearance(PDAppearanceContentStream contents, PDAppearanceStream appearanceStream,
-            PDRectangle contentRect, PDFont font, float fontSize) throws IOException
+                                                  PDRectangle contentRect, PDFont font, float fontSize) throws IOException
     {
         contents.setNonStrokingColor(0f);
-        
+
         int q = field.getQ();
 
         if (q == PDVariableText.QUADDING_CENTERED || q == PDVariableText.QUADDING_RIGHT)
@@ -805,17 +804,19 @@ class AppearanceGeneratorHelper
         float yTextPos = contentRect.getUpperRightY();
 
         int topIndex = ((PDListBox) field).getTopIndex();
-        
+        float accent = font.getFontDescriptor().getAscent();
+        float fontHeight = font.getBoundingBox().getHeight();
+
         for (int i = topIndex; i < numOptions; i++)
         {
-           
+
             if (i == topIndex)
             {
-                yTextPos = yTextPos - font.getFontDescriptor().getAscent() / FONTSCALE * fontSize;
+                yTextPos = yTextPos - accent / FONTSCALE * fontSize;
             }
             else
             {
-                yTextPos = yTextPos - font.getBoundingBox().getHeight() / FONTSCALE * fontSize;
+                yTextPos = yTextPos - fontHeight / FONTSCALE * fontSize;
                 contents.beginText();
             }
 
