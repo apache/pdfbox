@@ -628,7 +628,7 @@ public class PDGraphicsState implements Cloneable
         }
         // Replace the list of individual clipping paths with the intersection, and add it to the cache.
         Path2D newPath = new Path2D.Double(clippingArea);
-        clippingPaths = new ArrayList<>();
+        clippingPaths = new ArrayList<>(1);
         clippingPaths.add(newPath);
         clippingCache.put(newPath, clippingArea);
         return clippingArea;
