@@ -95,7 +95,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
         acroForm.setFields(fields);
 
-        // ensure that PDVariableText fields have the neccesary resources
+        // ensure that PDVariableText fields have the necessary resources
         PDResources resources = acroForm.getDefaultResources();
         for (PDField field : acroForm.getFieldTree())
         {
@@ -152,7 +152,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                         if (acroFormResources.getFont(fontName) == null)
                         {
                             acroFormResources.put(fontName, widgetResources.getFont(fontName));
-                            LOG.debug("qdded font resource to AcroForm from widget for font name " + fontName.getName());
+                            LOG.debug("added font resource to AcroForm from widget for font name " + fontName.getName());
                         }
                     }
                     catch (IOException ioe)
