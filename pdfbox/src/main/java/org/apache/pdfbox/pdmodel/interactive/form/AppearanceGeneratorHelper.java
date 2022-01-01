@@ -731,18 +731,19 @@ class AppearanceGeneratorHelper
             xOffset = combWidth;
         }
     }
-    
+
     private void insertGeneratedListboxSelectionHighlight(PDAppearanceContentStream contents, PDAppearanceStream appearanceStream,
             PDFont font, float fontSize) throws IOException
     {
-        List<Integer> indexEntries = ((PDListBox) field).getSelectedOptionsIndex();
-        List<String> values = ((PDListBox) field).getValue();
-        List<String> options = ((PDListBox) field).getOptionsExportValues();
-        
+        PDListBox pdListBox = (PDListBox) field;
+        List<Integer> indexEntries = pdListBox.getSelectedOptionsIndex();
+        List<String> values = pdListBox.getValue();
+        List<String> options = pdListBox.getOptionsExportValues();
+
         if (!values.isEmpty() && !options.isEmpty() && indexEntries.isEmpty())
         {
             // create indexEntries from options
-            indexEntries = new ArrayList<>();
+            indexEntries = new ArrayList<>(values.size());
             for (String v : values)
             {
                 indexEntries.add(options.indexOf(v));
@@ -752,9 +753,9 @@ class AppearanceGeneratorHelper
         // The first entry which shall be presented might be adjusted by the optional TI key
         // If this entry is present the first entry to be displayed is the keys value otherwise
         // display starts with the first entry in Opt.
-        int topIndex = ((PDListBox) field).getTopIndex();
-        
-        float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / FONTSCALE;       
+        int topIndex = pdListBox.getTopIndex();
+
+        float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / FONTSCALE;
 
         // the padding area 
         PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
