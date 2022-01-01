@@ -357,7 +357,7 @@ public class PDFRenderer
         }
         g.clearRect(0, 0, image.getWidth(), image.getHeight());
         
-        transform(g, page, scale, scale);
+        transform(g, page, cropbBox, scale, scale);
 
         // the end-user may provide a custom PageDrawer
         RenderingHints actualRenderingHints =
@@ -366,7 +366,7 @@ public class PDFRenderer
                 new PageDrawerParameters(this, page, subsamplingAllowed, destination,
                         actualRenderingHints, imageDownscalingOptimizationThreshold);
         PageDrawer drawer = createPageDrawer(parameters);
-        drawer.drawPage(g, page.getCropBox());       
+        drawer.drawPage(g, cropbBox);
         
         g.dispose();
 
@@ -465,9 +465,10 @@ public class PDFRenderer
         PDPage page = pageTree.get(pageIndex);
         // TODO need width/height calculations? should these be in PageDrawer?
 
-        transform(graphics, page, scaleX, scaleY);
-
         PDRectangle cropBox = page.getCropBox();
+
+        transform(graphics, page, cropBox, scaleX, scaleY);
+
         graphics.clearRect(0, 0, (int) cropBox.getWidth(), (int) cropBox.getHeight());
 
         // the end-user may provide a custom PageDrawer
@@ -492,7 +493,7 @@ public class PDFRenderer
     }
 
     // scale rotate translate
-    private void transform(Graphics2D graphics, PDPage page, float scaleX, float scaleY)
+    private void transform(Graphics2D graphics, PDPage page, PDRectangle cropBox, float scaleX, float scaleY)
     {
         graphics.scale(scaleX, scaleY);
 
@@ -500,7 +501,6 @@ public class PDFRenderer
         int rotationAngle = page.getRotation();
         if (rotationAngle != 0)
         {
-            PDRectangle cropBox = page.getCropBox();
             float translateX = 0;
             float translateY = 0;
             switch (rotationAngle)
