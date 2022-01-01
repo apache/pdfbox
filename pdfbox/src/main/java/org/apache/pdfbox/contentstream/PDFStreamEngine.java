@@ -381,11 +381,11 @@ public abstract class PDFStreamEngine
 
         // save the original graphics state
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
-
+        PDRectangle bbox = tilingPattern.getBBox();
         // save a clean state (new clipping path, line path, etc.)
-        Rectangle2D bbox = tilingPattern.getBBox().transform(patternMatrix).getBounds2D();
-        PDRectangle rect = new PDRectangle((float)bbox.getX(), (float)bbox.getY(),
-                (float)bbox.getWidth(), (float)bbox.getHeight());
+        Rectangle2D bboxTransformed = bbox.transform(patternMatrix).getBounds2D();
+        PDRectangle rect = new PDRectangle((float)bboxTransformed.getX(), (float)bboxTransformed.getY(),
+                (float)bboxTransformed.getWidth(), (float)bboxTransformed.getHeight());
         graphicsStack.push(new PDGraphicsState(rect));
         PDGraphicsState graphicsState = getGraphicsState();
 
@@ -403,7 +403,7 @@ public abstract class PDFStreamEngine
         graphicsState.getCurrentTransformationMatrix().concatenate(patternMatrix);
 
         // clip to bounding box
-        clipToRect(tilingPattern.getBBox());
+        clipToRect(bbox);
 
         // save text matrices (pattern stream may contain BT/ET, see PDFBOX-4896)
         Matrix textMatrixSave = textMatrix;
