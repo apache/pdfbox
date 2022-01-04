@@ -76,4 +76,24 @@ class Type1LexerTest
         Assertions.assertEquals(Token.NAME, tokens.get(10).getKind());
     }
 
+    @Test
+    void testEmptyName() throws IOException
+    {
+        String s = "dup 127 / put";
+        Type1Lexer t1l = new Type1Lexer(s.getBytes(StandardCharsets.US_ASCII));
+        Token nextToken;
+        try
+        {
+            do
+            {
+                nextToken = t1l.nextToken();
+            }
+            while (nextToken != null);
+            Assertions.fail("IOException expected");
+        }
+        catch (DamagedFontException ex)
+        {
+            Assertions.assertEquals("Could not read token at position 9", ex.getMessage());
+        }
+    }
 }
