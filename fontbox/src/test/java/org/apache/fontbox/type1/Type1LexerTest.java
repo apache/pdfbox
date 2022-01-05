@@ -44,7 +44,7 @@ public class Type1LexerTest
     @Test
     public void testRealNumbers() throws IOException
     {
-        String s = "/FontMatrix [1e-3 0e-3 0e-3 1E-3 0 0] readonly def";
+        String s = "/FontMatrix [1e-3 0e-3 0e-3 1E-3 0 0 1.23 -1.23 ] readonly def";
         Type1Lexer t1l = new Type1Lexer(s.getBytes(Charsets.US_ASCII));
         Token nextToken;
         List<Token> tokens = new ArrayList<Token>();
@@ -66,15 +66,19 @@ public class Type1LexerTest
         Assert.assertEquals(Token.REAL, tokens.get(5).getKind());
         Assert.assertEquals(Token.INTEGER, tokens.get(6).getKind());
         Assert.assertEquals(Token.INTEGER, tokens.get(7).getKind());
+        Assert.assertEquals(Token.REAL, tokens.get(8).getKind());
+        Assert.assertEquals(Token.REAL, tokens.get(9).getKind());
         Assert.assertEquals("1e-3", tokens.get(2).getText());
         Assert.assertEquals("0e-3", tokens.get(3).getText());
         Assert.assertEquals("0e-3", tokens.get(4).getText());
         Assert.assertEquals("1E-3", tokens.get(5).getText());
         Assert.assertEquals("0", tokens.get(6).getText());
         Assert.assertEquals("0", tokens.get(7).getText());
-        Assert.assertEquals(Token.END_ARRAY, tokens.get(8).getKind());
-        Assert.assertEquals(Token.NAME, tokens.get(9).getKind());
-        Assert.assertEquals(Token.NAME, tokens.get(10).getKind());
+        Assert.assertEquals("1.23", tokens.get(8).getText());
+        Assert.assertEquals("-1.23", tokens.get(9).getText());
+        Assert.assertEquals(Token.END_ARRAY, tokens.get(10).getKind());
+        Assert.assertEquals(Token.NAME, tokens.get(11).getKind());
+        Assert.assertEquals(Token.NAME, tokens.get(12).getKind());
     }
 
     @Test
