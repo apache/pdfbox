@@ -183,12 +183,13 @@ public class CMap
         }
         if (LOG.isWarnEnabled())
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder("Invalid character code sequence ");
             for (int i = 0; i < maxCodeLength; ++i)
             {
                 sb.append(String.format("0x%02X (%04o) ", bytes[i], bytes[i]));
             }
-            LOG.warn("Invalid character code sequence " + sb + "in CMap " + cmapName);
+            sb.append("in CMap ").append(cmapName);
+            LOG.warn(sb.toString());
         }
         // PDFBOX-4811 reposition to where we were after initial read
         if (in.markSupported())
