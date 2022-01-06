@@ -94,7 +94,7 @@ class AppearanceGeneratorHelper
      * The minimum/maximum font sizes used for multiline text auto sizing
      */
     private static final float MINIMUM_FONT_SIZE = 4;
-    private static final float MAXIMUM_FONT_SIZE = 300;
+    //private static final float MAXIMUM_FONT_SIZE = 300;
     
     /**
      * The default padding applied by Acrobat to the fields bbox.
