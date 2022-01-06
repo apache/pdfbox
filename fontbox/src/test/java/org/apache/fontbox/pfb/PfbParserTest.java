@@ -46,6 +46,20 @@ public class PfbParserTest
         Assert.assertEquals("1.10", font.getVersion());
         Assert.assertEquals("OpenSans-Regular", font.getFontName());
         Assert.assertEquals("Open Sans Regular", font.getFullName());
+        Assert.assertEquals("Open Sans", font.getFamilyName());
+        Assert.assertEquals("Digitized data copyright (c) 2010-2011, Google Corporation.", font.getNotice());
+        Assert.assertEquals(false, font.isFixedPitch());
+        Assert.assertEquals(false, font.isForceBold());
+        Assert.assertEquals(0, font.getItalicAngle(), 0);
+        Assert.assertEquals("Book", font.getWeight());
         Assert.assertTrue(font.getEncoding() instanceof BuiltInEncoding);
+        Assert.assertEquals(4498, font.getASCIISegment().length);
+        Assert.assertEquals(95911, font.getBinarySegment().length);
+        Assert.assertEquals(938, font.getCharStringsDict().size());
+        for (String s : font.getCharStringsDict().keySet())
+        {
+            Assert.assertNotNull(font.getPath(s));
+            Assert.assertTrue(font.hasGlyph(s));
+        }
     }
 }
