@@ -871,7 +871,7 @@ class AppearanceGeneratorHelper
                         int numLines = 0;
                         for (PlainText.Paragraph paragraph : textContent.getParagraphs())
                         {
-                            numLines += paragraph.getLines(font, fs, width).size();
+                            numLines += paragraph.getLinesCount(font, fs, width);
                         }
                         // calculate the height required for this font size
                         float fontScaleY = fs / FONTSCALE;

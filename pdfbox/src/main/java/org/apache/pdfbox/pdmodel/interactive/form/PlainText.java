@@ -237,6 +237,87 @@ class PlainText
             textLines.add(textLine);
             return textLines;
         }
+
+        /**
+         * Returns the number of individual lines in the paragraph.
+         *
+         * @param font the font used for rendering the text.
+         * @param fontSize the fontSize used for rendering the text.
+         * @param width the width of the box holding the content.
+         * @return the number of individual lines.
+         * @throws IOException
+         */
+        int getLinesCount(PDFont font, float fontSize, float width) throws IOException
+        {
+            int linesCount = 0;
+            int wordsCount = 0;
+            BreakIterator iterator = BreakIterator.getLineInstance();
+            iterator.setText(textContent);
+
+            final float scale = fontSize/FONTSCALE;
+
+            int start = iterator.first();
+            int end = iterator.next();
+            float lineWidth = 0;
+
+            while (end != BreakIterator.DONE)
+            {
+                String word = textContent.substring(start,end);
+                float wordWidth = font.getStringWidth(word) * scale;
+
+                boolean wordNeedsSplit = false;
+                int splitOffset = end - start;
+
+                lineWidth = lineWidth + wordWidth;
+
+                // check if the last word would fit without the whitespace ending it
+                if (lineWidth >= width && Character.isWhitespace(word.charAt(word.length()-1)))
+                {
+                    float whitespaceWidth = font.getStringWidth(word.substring(word.length()-1)) * scale;
+                    lineWidth = lineWidth - whitespaceWidth;
+                }
+
+                if (lineWidth >= width && wordsCount > 0)
+                {
+                    ++linesCount;
+                    wordsCount = 0;
+                    lineWidth = font.getStringWidth(word) * scale;
+                }
+
+                if (wordWidth > width && wordsCount == 0)
+                {
+                    // single word does not fit into width
+                    wordNeedsSplit = true;
+                    while (true)
+                    {
+                        splitOffset--;
+
+                        String substring = word.substring(0, splitOffset);
+                        float substringWidth = font.getStringWidth(substring) * scale;
+                        if (substringWidth < width)
+                        {
+                            word = substring;
+                            wordWidth = font.getStringWidth(word) * scale;
+                            lineWidth = wordWidth;
+                            break;
+                        }
+                    }
+                }
+
+                ++wordsCount;
+
+                if (wordNeedsSplit)
+                {
+                    start = start + splitOffset;
+                }
+                else
+                {
+                    start = end;
+                    end = iterator.next();
+                }
+            }
+            return linesCount + 1;
+        }
     }
 
     /**
