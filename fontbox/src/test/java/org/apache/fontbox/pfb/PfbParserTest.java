@@ -40,12 +40,28 @@ class PfbParserTest
     @Test
     void testPfb() throws IOException
     {
-        InputStream is = new FileInputStream("target/fonts/OpenSans-Regular.pfb");
-        Type1Font font = Type1Font.createWithPFB(is);
-        is.close();
+        Type1Font font;
+        try (InputStream is = new FileInputStream("target/fonts/OpenSans-Regular.pfb"))
+        {
+            font = Type1Font.createWithPFB(is);
+        }
         Assertions.assertEquals("1.10", font.getVersion());
         Assertions.assertEquals("OpenSans-Regular", font.getFontName());
         Assertions.assertEquals("Open Sans Regular", font.getFullName());
+        Assertions.assertEquals("Open Sans", font.getFamilyName());
+        Assertions.assertEquals("Digitized data copyright (c) 2010-2011, Google Corporation.", font.getNotice());
+        Assertions.assertEquals(false, font.isFixedPitch());
+        Assertions.assertEquals(false, font.isForceBold());
+        Assertions.assertEquals(0, font.getItalicAngle());
+        Assertions.assertEquals("Book", font.getWeight());
         Assertions.assertTrue(font.getEncoding() instanceof BuiltInEncoding);
+        Assertions.assertEquals(4498, font.getASCIISegment().length);
+        Assertions.assertEquals(95911, font.getBinarySegment().length);
+        Assertions.assertEquals(938, font.getCharStringsDict().size());
+        for (String s : font.getCharStringsDict().keySet())
+        {
+            Assertions.assertNotNull(font.getPath(s));
+            Assertions.assertTrue(font.hasGlyph(s));
+        }
     }
 }
