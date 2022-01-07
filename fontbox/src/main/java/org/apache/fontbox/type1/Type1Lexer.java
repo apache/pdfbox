@@ -140,7 +140,14 @@ class Type1Lexer
                 }
                 else if (c == '/')
                 {
-                    return new Token(readRegular(), Token.LITERAL);
+                    String regular = readRegular();
+                    if (regular == null)
+                    {
+                        // the stream is corrupt
+                        throw new DamagedFontException("Could not read token at position " +
+                                                        buffer.position());
+                    }
+                    return new Token(regular, Token.LITERAL);
                 }
                 else if (c == '<')
                 {

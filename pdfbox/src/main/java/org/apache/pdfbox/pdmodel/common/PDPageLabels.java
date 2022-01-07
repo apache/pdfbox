@@ -277,7 +277,7 @@ public class PDPageLabels implements COSObjectable
             }
             lastEntry = entry;
         }
-        LabelGenerator gen = new LabelGenerator(lastEntry.getValue(),
+        LabelGenerator gen = new LabelGenerator(lastEntry.getValue(), 
                 numberOfPages - lastEntry.getKey());
         while (gen.hasNext())
         {
