@@ -97,7 +97,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
         acroForm.setFields(fields);
 
-        // ensure that PDVariableText fields have the neccesary resources
+        // ensure that PDVariableText fields have the necessary resources
         PDResources resources = acroForm.getDefaultResources();
         for (PDField field : acroForm.getFieldTree())
         {
