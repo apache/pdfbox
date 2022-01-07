@@ -212,17 +212,20 @@ public class PDType3Font extends PDSimpleFont
             if (Float.compare(retval, 0) == 0)
             {
                 retval = desc.getCapHeight();
-            }
-            if (Float.compare(retval, 0) == 0)
-            {
-                retval = desc.getAscent();
-            }
-            if (Float.compare(retval, 0) == 0)
-            {
-                retval = desc.getXHeight();
-                if (retval > 0)
+
+                if (Float.compare(retval, 0) == 0)
                 {
-                    retval -= desc.getDescent();
+                    retval = desc.getAscent();
+
+                    if (Float.compare(retval, 0) == 0)
+                    {
+                        retval = desc.getXHeight();
+
+                        if (retval > 0)
+                        {
+                            retval -= desc.getDescent();
+                        }
+                    }
                 }
             }
             return retval;
@@ -376,11 +379,12 @@ public class PDType3Font extends PDSimpleFont
             return null;
         }
         String name = getEncoding().getName(code);
-        if (getCharProcs() == null)
+        COSDictionary charProcs = getCharProcs();
+        if (charProcs == null)
         {
             return null;
         }
-        COSStream stream = getCharProcs().getCOSStream(COSName.getPDFName(name));
+        COSStream stream = charProcs.getCOSStream(COSName.getPDFName(name));
         if (stream != null)
         {
             return new PDType3CharProc(this, stream);
