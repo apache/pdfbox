@@ -45,7 +45,7 @@ import org.apache.pdfbox.util.Matrix;
 public class PDGraphicsState implements Cloneable
 {
     private boolean isClippingPathDirty;
-    private List<Path2D> clippingPaths = new ArrayList<>();
+    private List<Path2D> clippingPaths = new ArrayList<>(1);
     private Map<Path2D, Area> clippingCache = new IdentityHashMap<>();
     private Matrix currentTransformationMatrix = new Matrix();
     private PDColor strokingColor = PDDeviceGray.INSTANCE.getInitialColor();
@@ -628,7 +628,7 @@ public class PDGraphicsState implements Cloneable
         }
         // Replace the list of individual clipping paths with the intersection, and add it to the cache.
         Path2D newPath = new Path2D.Double(clippingArea);
-        clippingPaths = new ArrayList<>();
+        clippingPaths = new ArrayList<>(1);
         clippingPaths.add(newPath);
         clippingCache.put(newPath, clippingArea);
         return clippingArea;
