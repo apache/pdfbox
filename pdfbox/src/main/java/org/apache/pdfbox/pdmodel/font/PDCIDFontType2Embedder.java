@@ -548,9 +548,9 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
     private COSArray getVerticalMetrics(int[] values) throws IOException
     {
-        if (values.length == 0)
+        if (values.length < 4)
         {
-            throw new IllegalArgumentException("length of values must be > 0");
+            throw new IllegalArgumentException("length of values must be >= 4");
         }
 
         float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
@@ -566,7 +566,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
         State state = State.FIRST;
 
-        for (int i = 4; i < values.length; i += 4)
+        for (int i = 4; i < values.length - 3; i += 4)
         {
             long cid = values[i];
             if (cid == Integer.MIN_VALUE)
