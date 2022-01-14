@@ -69,7 +69,7 @@ public class PDGraphicsState implements Cloneable
     // DEVICE-DEPENDENT parameters
     private boolean overprint = false;
     private boolean nonStrokingOverprint = false;
-    private double overprintMode = 0;
+    private int overprintMode = 0;
     //black generation
     //undercolor removal
     private COSBase transfer = null;
@@ -352,7 +352,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @return The value of the overprint mode parameter.
      */
-    public double getOverprintMode()
+    public int getOverprintMode()
     {
         return overprintMode;
     }
@@ -362,7 +362,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @param value The value of the overprint mode parameter.
      */
-    public void setOverprintMode(double value)
+    public void setOverprintMode(int value)
     {
         overprintMode = value;
     }
