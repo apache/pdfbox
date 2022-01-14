@@ -349,7 +349,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the overprint control(OP).
+     * This will set the overprint control(OP).
      *
      * @param op The overprint control.
      */
@@ -370,7 +370,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the overprint control(OP).
+     * This will set the overprint control(OP).
      *
      * @param op The overprint control.
      */
@@ -389,14 +389,22 @@ public class PDExtendedGraphicsState implements COSObjectable
         return getFloatItem(COSName.OPM);
     }
 
-    /**
-     * This will get the overprint mode(OPM).
+   /**
+     * This will set the overprint mode(OPM).
      *
-     * @param overprintMode The overprint mode
+     * @param overprintMode The overprint mode. It will be truncated to an integer. This parameter
+     * will be an integer in version 3.
      */
-    public void setOverprintMode( Float overprintMode )
+    public void setOverprintMode(Float overprintMode)
     {
-        setFloatItem(COSName.OPM, overprintMode);
+        if (overprintMode == null)
+        {
+            dict.removeItem(COSName.OPM);
+        }
+        else
+        {
+            dict.setInt(COSName.OPM, overprintMode.intValue());
+        }
     }
 
     /**
@@ -437,7 +445,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the flatness tolerance.
+     * This will set the flatness tolerance.
      *
      * @param flatness The new flatness tolerance
      */
@@ -457,7 +465,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the smoothness tolerance.
+     * This will set the smoothness tolerance.
      *
      * @param smoothness The new smoothness tolerance
      */
@@ -477,7 +485,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the automatic stroke adjustment flag.
+     * This will set the automatic stroke adjustment flag.
      *
      * @param sa The new automatic stroke adjustment flag.
      */
@@ -497,7 +505,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the stroking alpha constant.
+     * This will set the stroking alpha constant.
      *
      * @param alpha The new stroking alpha constant.
      */
@@ -517,7 +525,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the non stroking alpha constant.
+     * This will set the non stroking alpha constant.
      *
      * @param alpha The new non stroking alpha constant.
      */
@@ -539,7 +547,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the alpha source flag (“alpha is shape”), that specifies whether the current
+     * This will set the alpha source flag (“alpha is shape”), that specifies whether the current
      * soft mask and alpha constant shall be interpreted as shape values (true) or opacity values
      * (false).
      *
@@ -597,7 +605,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the text knockout flag.
+     * This will set the text knockout flag.
      *
      * @param tk The text knockout flag.
      */
