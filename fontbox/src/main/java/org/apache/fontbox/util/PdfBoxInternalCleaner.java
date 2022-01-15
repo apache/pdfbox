@@ -1,15 +1,17 @@
 package org.apache.fontbox.util;
 
-import java.awt.geom.Line2D;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
  * *INTERNAL* class to avoid finalizers. When running on JDK <= 8 it will still use finalizers, from JDK 9+ it will use
  * java.lang.Cleaner
- * 
- * Do not use, ALWAYS use java.lang.ref.Cleaner.Cleanable directly.
- * 
+ * <p>
+ * Do not use, PDFBox internal use only! ALWAYS use java.lang.ref.Cleaner.Cleanable directly.
+ * <p>
  * Note: You have to store a reference to the Cleanable object in the class which had a finalizer. Otherwise, this won't
  * work.
  */
@@ -29,32 +31,49 @@ public class PdfBoxInternalCleaner
         Cleanable register(Object obj, CleaningRunnable action);
     }
 
+    /**
+     * @see java.lang.ref.Cleaner.Cleanable
+     */
     public interface CleaningRunnable
     {
+        /**
+         * Perform the cleanup action. It is ensured that this method will run only once.
+         */
         void run() throws Throwable;
     }
 
     private CleanerImpl impl;
 
     /**
-     * Simple implementation for JDK <= 8
+     * Simple implementation for JDK <= 8 using finalizers.
      */
     private static class CleanerImplJDK8 implements CleanerImpl
     {
 
         static class ObjectFinalizer implements Cleanable
         {
+            final String simpleClassName;
             final CleaningRunnable action;
             boolean didRun;
 
-            ObjectFinalizer(CleaningRunnable action)
+            ObjectFinalizer(String simpleClassName, CleaningRunnable action)
             {
+                this.simpleClassName = simpleClassName;
                 this.action = action;
             }
+
+            static final Log LOG = LogFactory.getLog(PdfBoxInternalCleaner.class);
 
             @Override
             protected void finalize() throws Throwable
             {
+                synchronized (this)
+                {
+                    if (!didRun)
+                    {
+                        LOG.debug(simpleClassName + " not closed!");
+                    }
+                }
                 clean();
             }
 
@@ -81,7 +100,7 @@ public class PdfBoxInternalCleaner
         @Override
         public Cleanable register(Object obj, CleaningRunnable action)
         {
-            return new ObjectFinalizer(action);
+            return new ObjectFinalizer(obj.getClass().getSimpleName(), action);
         }
     }
 
@@ -94,8 +113,9 @@ public class PdfBoxInternalCleaner
         private final Method register;
         private final Method clean;
 
-        CleanerImplJDK9() throws ClassNotFoundException, InvocationTargetException,
-                IllegalAccessException, NoSuchMethodException
+        CleanerImplJDK9()
+                throws ClassNotFoundException, InvocationTargetException, IllegalAccessException,
+                NoSuchMethodException
         {
             Class<?> cleaner = getClass().getClassLoader().loadClass("java.lang.ref.Cleaner");
             Class<?> cleanable = getClass().getClassLoader()
@@ -156,11 +176,24 @@ public class PdfBoxInternalCleaner
         }
     }
 
+    /**
+     * Register a cleanup action for the given object. You have to store the returned Cleanable instance in
+     * the object to have this all work correctly.
+     *
+     * @param obj    the object which will trigger the cleanup action after it is GCed.
+     * @param action the cleanup action to perform
+     * @return a Cleanable instance. Call cleanup() on it if possible.
+     */
     public Cleanable register(Object obj, CleaningRunnable action)
     {
         return impl.register(obj, action);
     }
 
+    /**
+     * Create a new cleaner instance.
+     *
+     * @return a new cleaner instance
+     */
     public static PdfBoxInternalCleaner create()
     {
         return new PdfBoxInternalCleaner();
