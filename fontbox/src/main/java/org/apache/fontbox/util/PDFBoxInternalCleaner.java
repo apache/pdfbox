@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
  * Note: You have to store a reference to the Cleanable object in the class which had a finalizer. Otherwise, this won't
  * work.
  */
-public class PdfBoxInternalCleaner
+public class PDFBoxInternalCleaner
 {
 
     /**
@@ -62,7 +62,7 @@ public class PdfBoxInternalCleaner
                 this.action = action;
             }
 
-            static final Log LOG = LogFactory.getLog(PdfBoxInternalCleaner.class);
+            static final Log LOG = LogFactory.getLog(PDFBoxInternalCleaner.class);
 
             @Override
             protected void finalize() throws Throwable
@@ -161,7 +161,7 @@ public class PdfBoxInternalCleaner
 
     private static final boolean TRY_USING_JDK9_CLEANER = true;
 
-    private PdfBoxInternalCleaner()
+    private PDFBoxInternalCleaner()
     {
         try
         {
@@ -194,9 +194,9 @@ public class PdfBoxInternalCleaner
      *
      * @return a new cleaner instance
      */
-    public static PdfBoxInternalCleaner create()
+    public static PDFBoxInternalCleaner create()
     {
-        return new PdfBoxInternalCleaner();
+        return new PDFBoxInternalCleaner();
     }
 
 }

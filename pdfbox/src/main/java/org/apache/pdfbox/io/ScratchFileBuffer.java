@@ -16,7 +16,7 @@
  */
 package org.apache.pdfbox.io;
 
-import org.apache.fontbox.util.PdfBoxInternalCleaner;
+import org.apache.fontbox.util.PDFBoxInternalCleaner;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -62,11 +62,11 @@ class ScratchFileBuffer implements RandomAccess
     /** number of pages held by this buffer */
     private int pageCount = 0;
     
-    private final static PdfBoxInternalCleaner CLEANER = PdfBoxInternalCleaner.create();
-    private final PdfBoxInternalCleaner.Cleanable cleanable;
+    private final static PDFBoxInternalCleaner CLEANER = PDFBoxInternalCleaner.create();
+    private final PDFBoxInternalCleaner.Cleanable cleanable;
     private final ScratchFileBufferCleaner scratchFileBufferCleaner;
 
-    private static class ScratchFileBufferCleaner implements PdfBoxInternalCleaner.CleaningRunnable
+    private static class ScratchFileBufferCleaner implements PDFBoxInternalCleaner.CleaningRunnable
     {
         private final ScratchFile pageHandler;
         private int[] pageIndexes;

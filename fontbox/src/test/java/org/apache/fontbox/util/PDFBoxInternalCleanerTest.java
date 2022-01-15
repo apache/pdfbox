@@ -6,12 +6,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
-public class PdfBoxInternalCleanerTest
+public class PDFBoxInternalCleanerTest
 {
 
     private static class ToCleanObject
     {
-        private final static PdfBoxInternalCleaner cleaner = PdfBoxInternalCleaner.create();
+        private final static PDFBoxInternalCleaner cleaner = PDFBoxInternalCleaner.create();
         private final static AtomicInteger cleanups = new AtomicInteger(0);
         private final static AtomicInteger created = new AtomicInteger(0);
 

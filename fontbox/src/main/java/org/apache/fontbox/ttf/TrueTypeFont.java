@@ -33,9 +33,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.util.BoundingBox;
-import org.apache.fontbox.util.PdfBoxInternalCleaner;
-import org.apache.fontbox.util.PdfBoxInternalCleaner.Cleanable;
-import org.apache.fontbox.util.PdfBoxInternalCleaner.CleaningRunnable;
+import org.apache.fontbox.util.PDFBoxInternalCleaner;
+import org.apache.fontbox.util.PDFBoxInternalCleaner.Cleanable;
+import org.apache.fontbox.util.PDFBoxInternalCleaner.CleaningRunnable;
 
 /**
  * A TrueType font file.
@@ -58,7 +58,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     private final Object lockPSNames = new Object();
     private final List<String> enabledGsubFeatures = new ArrayList<>();
 
-    private final static PdfBoxInternalCleaner CLEANER = PdfBoxInternalCleaner.create();
+    private final static PDFBoxInternalCleaner CLEANER = PDFBoxInternalCleaner.create();
     private final Cleanable cleanable;
     private static class TTFCleaner implements CleaningRunnable {
         TTFDataStream data;
