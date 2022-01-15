@@ -1521,6 +1521,7 @@ public class COSWriter implements ICOSVisitor
         }
         if( missingID || incrementalUpdate)
         {
+            @SuppressWarnings({"squid:S5542","lgtm [java/weak-cryptographic-algorithm]"})
             MessageDigest md5;
             try
             {
