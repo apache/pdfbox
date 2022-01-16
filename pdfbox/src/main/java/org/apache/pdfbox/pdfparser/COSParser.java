@@ -842,7 +842,14 @@ public class COSParser extends BaseParser
                 throw new IOException("Object must be defined and must not be compressed object: "
                         + objKey.getNumber() + ":" + objKey.getGeneration());
             }
-
+            // check if some dereferencing is already in progress
+            if (pdfObject.derefencingInProgress())
+            {
+                throw new IOException("Possible recursion detected when dereferencing object "
+                        + objNr + " " + objGenNr);
+            }
+            // change status of COSObject
+            pdfObject.dereferencingStarted();
             // maybe something is wrong with the xref table -> perform brute force search for all objects
             if (offsetOrObjstmObNr == null && isLenient && bfSearchCOSObjectKeyOffsets == null)
             {
@@ -881,6 +888,8 @@ public class COSParser extends BaseParser
                 // since our object was not found it means object stream was not parsed so far
                 parseObjectStream((int) -offsetOrObjstmObNr);
             }
+            // change status of COSObject
+            pdfObject.dereferencingFinished();
         }
         return pdfObject.getObject();
     }

@@ -30,7 +30,8 @@ public class COSObject extends COSBase implements COSUpdateInfo
     private long objectNumber;
     private int generationNumber;
     private boolean needToBeUpdated;
-
+    private boolean dereferencingInProgress = false;
+    
     /**
      * Constructor.
      *
@@ -98,6 +99,33 @@ public class COSObject extends COSBase implements COSUpdateInfo
     public final void setObject( COSBase object ) throws IOException
     {
         baseObject = object;
+    }
+
+    /**
+     * Indicates that the dereferencing of the represented indirect object is in progress. It is used to detect a
+     * possible recursion which most likely ends up in a stack overflow.
+     * 
+     * @return true if dereferencing is in progress.
+     */
+    public boolean derefencingInProgress()
+    {
+        return dereferencingInProgress;
+    }
+
+    /**
+     * Start dereferencing the represented indirect object.
+     */
+    public void dereferencingStarted()
+    {
+        dereferencingInProgress = true;
+    }
+
+    /**
+     * Dereferencing of the represented indirect object is finished.
+     */
+    public void dereferencingFinished()
+    {
+        dereferencingInProgress = false;
     }
 
     /**
