@@ -347,11 +347,17 @@ final class FileSystemFontProvider extends FontProvider
             }
             else
             {
-                LOG.warn("Building on-disk font cache, this may take a while");
-                scanFonts(files);
+                if (!files.isEmpty())
+                {
+                    LOG.warn("Building on-disk font cache, this may take a while");
+                    scanFonts(files);
+                }
                 saveDiskCache();
-                LOG.warn("Finished building on-disk font cache, found " +
-                        fontInfoList.size() + " fonts");
+                if (!files.isEmpty())
+                {
+                    LOG.warn("Finished building on-disk font cache, found " +
+                            fontInfoList.size() + " fonts");
+                }
             }
         }
         catch (AccessControlException e)
