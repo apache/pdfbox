@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.ResourceCache;
@@ -244,17 +245,25 @@ public class PDType3Font extends PDSimpleFont
     {
         if (fontMatrix == null)
         {
-            COSBase base = dict.getDictionaryObject(COSName.FONT_MATRIX);
-            if (base instanceof COSArray)
-            {
-                fontMatrix = new Matrix((COSArray) base);
-            }
-            else
-            {
-                return super.getFontMatrix();
-            }
+            COSArray matrix = dict.getCOSArray(COSName.FONT_MATRIX);
+            fontMatrix = checkFontMatrixValues(matrix) ? Matrix.createMatrix(matrix)
+                    : super.getFontMatrix();
         }
         return fontMatrix;
+    }
+
+    private boolean checkFontMatrixValues(COSArray matrix)
+    {
+        if (matrix == null || matrix.size() != 6)
+        {
+            return false;
+        }
+        for (COSBase element : matrix.toList())
+        {
+            if (!(element instanceof COSNumber))
+                return false;
+        }
+        return true;
     }
 
     @Override

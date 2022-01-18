@@ -64,6 +64,8 @@ public final class Matrix implements Cloneable
      * Creates a matrix from a 6-element (a b c d e f) COS array.
      *
      * @param array source array, elements must be or extend COSNumber
+     * 
+     * @deprecated use {@link Matrix#createMatrix(COSBase)} instead
      */
     public Matrix(COSArray array)
     {
