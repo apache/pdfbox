@@ -285,6 +285,11 @@ public abstract class BaseParser
     private boolean parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException
     {
         COSName key = parseCOSName();
+        if (key == null || key.getName().isEmpty())
+        {
+            LOG.error("Empty COSName at offset " + seqSource.getPosition());
+            return false;
+        }
         COSBase value = parseCOSDictionaryValue();
         skipSpaces();
         if (value == null)
