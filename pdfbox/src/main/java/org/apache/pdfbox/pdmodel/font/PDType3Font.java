@@ -20,6 +20,7 @@ import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -246,16 +247,16 @@ public class PDType3Font extends PDSimpleFont
         if (fontMatrix == null)
         {
             COSArray matrix = dict.getCOSArray(COSName.FONT_MATRIX);
-            if (matrix != null)
-            {
-                fontMatrix = new Matrix(matrix);
-            }
-            else
-            {
-                return super.getFontMatrix();
-            }
+            fontMatrix = checkFontMatrixValues(matrix) ? Matrix.createMatrix(matrix)
+                    : super.getFontMatrix();
         }
         return fontMatrix;
+    }
+
+    private boolean checkFontMatrixValues(COSArray matrix)
+    {
+        return matrix != null && matrix.size() == 6
+                && matrix.toCOSNumberFloatList().stream().allMatch(Objects::nonNull);
     }
 
     @Override
