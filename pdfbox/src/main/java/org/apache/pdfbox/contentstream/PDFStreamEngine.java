@@ -489,11 +489,16 @@ public abstract class PDFStreamEngine
         PDRectangle bbox = contentStream.getBBox();
         clipToRect(bbox);
 
-        processStreamOperators(contentStream);
-
-        initialMatrix = parentMatrix;
-        restoreGraphicsStack(savedStack);
-        popResources(parent);
+        try
+        {
+            processStreamOperators(contentStream);
+        }
+        finally
+        {
+            initialMatrix = parentMatrix;
+            restoreGraphicsStack(savedStack);
+            popResources(parent);
+        }
     }
 
     /**
