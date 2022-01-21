@@ -302,7 +302,7 @@ public final class CCITTFactory
             }
 
             // Relocate to the first set of tags
-            int address = readlong(endianess, reader);
+            long address = readlong(endianess, reader);
             reader.seek(address);
     
             // If some higher page number is required, skip this page's tags, 
