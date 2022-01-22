@@ -314,7 +314,7 @@ public final class CCITTFactory
                 {
                     throw new IOException("Not a valid tiff file");
                 }
-                reader.seek(address + 2 + numtags * 12);
+                reader.seek(address + 2 + numtags * 12L);
                 address = readlong(endianess, reader);
                 if (address == 0)
                 {
