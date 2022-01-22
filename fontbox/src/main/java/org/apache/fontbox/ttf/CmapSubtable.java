@@ -416,7 +416,7 @@ public class CmapSubtable implements CmapLookup
             int end = endCount[i];
             int delta = idDelta[i];
             int rangeOffset = idRangeOffset[i];
-            long segmentRangeOffset = idRangeOffsetPosition + (i * 2) + rangeOffset;
+            long segmentRangeOffset = idRangeOffsetPosition + (i * 2L) + rangeOffset;
             if (start != 65535 && end != 65535)
             {
                 for (int j = start; j <= end; j++)
@@ -429,7 +429,7 @@ public class CmapSubtable implements CmapLookup
                     }
                     else
                     {
-                        long glyphOffset = segmentRangeOffset + ((j - start) * 2);
+                        long glyphOffset = segmentRangeOffset + ((j - start) * 2L);
                         data.seek(glyphOffset);
                         int glyphIndex = data.readUnsignedShort();
                         if (glyphIndex != 0)
