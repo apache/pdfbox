@@ -241,12 +241,17 @@ public abstract class PDFStreamEngine
         // clip to bounding box
         clipToRect(group.getBBox());
 
-        processStreamOperators(group);
-        
-        initialMatrix = parentMatrix;
+        try
+        {
+            processStreamOperators(group);
+        }
+        finally
+        {
+            initialMatrix = parentMatrix;
 
-        restoreGraphicsStack(savedStack);
-        popResources(parent);
+            restoreGraphicsStack(savedStack);
+            popResources(parent);
+        }
     }
 
     /**
@@ -282,14 +287,19 @@ public abstract class PDFStreamEngine
         Matrix textLineMatrixOld = textLineMatrix;
         textLineMatrix = new Matrix();
 
-        processStreamOperators(charProc);
+        try
+        {
+            processStreamOperators(charProc);
+        }
+        finally
+        {
+            // restore text matrices
+            textMatrix = textMatrixOld;
+            textLineMatrix = textLineMatrixOld;
 
-        // restore text matrices
-        textMatrix = textMatrixOld;
-        textLineMatrix = textLineMatrixOld;
-
-        restoreGraphicsStack(savedStack);
-        popResources(parent);
+            restoreGraphicsStack(savedStack);
+            popResources(parent);
+        }
     }
 
     /**
@@ -302,9 +312,6 @@ public abstract class PDFStreamEngine
     protected void processAnnotation(PDAnnotation annotation, PDAppearanceStream appearance)
             throws IOException
     {
-        PDResources parent = pushResources(appearance);
-        Deque<PDGraphicsState> savedStack = saveGraphicsStack();
-
         PDRectangle bbox = appearance.getBBox();
         PDRectangle rect = annotation.getRectangle();
 
@@ -312,6 +319,9 @@ public abstract class PDFStreamEngine
         if (rect != null && rect.getWidth() > 0 && rect.getHeight() > 0 &&
             bbox != null && bbox.getWidth() > 0 && bbox.getHeight() > 0)
         {
+            PDResources parent = pushResources(appearance);
+            Deque<PDGraphicsState> savedStack = saveGraphicsStack();
+
             Matrix matrix = appearance.getMatrix();
 
             // transformed appearance box  fixme: may be an arbitrary shape
@@ -341,11 +351,16 @@ public abstract class PDFStreamEngine
             // needed for patterns in appearance streams, e.g. PDFBOX-2182
             initialMatrix = aa.clone();
 
-            processStreamOperators(appearance);
+            try
+            {
+                processStreamOperators(appearance);
+            }
+            finally
+            {
+                restoreGraphicsStack(savedStack);
+                popResources(parent);
+            }
         }
-        
-        restoreGraphicsStack(savedStack);
-        popResources(parent);
     }
 
     /**
@@ -385,6 +400,7 @@ public abstract class PDFStreamEngine
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
 
         // save a clean state (new clipping path, line path, etc.)
+        PDRectangle tilingBBox = tilingPattern.getBBox();
         Rectangle2D bbox = tilingPattern.getBBox().transform(patternMatrix).getBounds2D();
         PDRectangle rect = new PDRectangle((float)bbox.getX(), (float)bbox.getY(),
                 (float)bbox.getWidth(), (float)bbox.getHeight());
@@ -405,18 +421,24 @@ public abstract class PDFStreamEngine
         graphicsState.getCurrentTransformationMatrix().concatenate(patternMatrix);
 
         // clip to bounding box
-        clipToRect(tilingPattern.getBBox());
+        clipToRect(tilingBBox);
 
         // save text matrices (pattern stream may contain BT/ET, see PDFBOX-4896)
         Matrix textMatrixSave = textMatrix;
         Matrix textLineMatrixSave = textLineMatrix;
-        processStreamOperators(tilingPattern);
-        textMatrix = textMatrixSave;
-        textLineMatrix = textLineMatrixSave;
-        
-        initialMatrix = parentMatrix;
-        restoreGraphicsStack(savedStack);
-        popResources(parent);
+
+        try
+        {
+            processStreamOperators(tilingPattern);
+        }
+        finally
+        {
+            textMatrix = textMatrixSave;
+            textLineMatrix = textLineMatrixSave;
+            initialMatrix = parentMatrix;
+            restoreGraphicsStack(savedStack);
+            popResources(parent);
+        }
     }
 
     /**
