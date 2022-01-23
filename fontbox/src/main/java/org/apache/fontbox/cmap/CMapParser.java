@@ -368,6 +368,10 @@ public class CMapParser
         for (int j = 0; j < cosCount.intValue(); j++)
         {
             Object nextToken = parseNextToken(cmapStream);
+            if (nextToken == null)
+            {
+                throw new IOException("start code missing");
+            }
             if (nextToken instanceof Operator)
             {
                 checkExpectedOperator((Operator) nextToken, "endbfrange", "bfrange");
@@ -375,6 +379,10 @@ public class CMapParser
             }
             byte[] startCode = (byte[]) nextToken;
             nextToken = parseNextToken(cmapStream);
+            if (nextToken == null)
+            {
+                throw new IOException("end code missing");
+            }
             if (nextToken instanceof Operator)
             {
                 checkExpectedOperator((Operator) nextToken, "endbfrange", "bfrange");
