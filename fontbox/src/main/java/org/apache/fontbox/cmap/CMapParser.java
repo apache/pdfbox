@@ -670,13 +670,20 @@ public class CMapParser
             }
             is.unread(nextByte);
             String value = buffer.toString();
-            if (value.indexOf('.') >= 0)
+            try
             {
-                retval = Double.valueOf(value);
+                if (value.indexOf('.') >= 0)
+                {
+                    retval = Double.valueOf(value);
+                }
+                else
+                {
+                    retval = Integer.valueOf(value);
+                }
             }
-            else
+            catch (NumberFormatException ex)
             {
-                retval = Integer.valueOf(value);
+                throw new IOException("Invalid number '" + value + "'", ex);
             }
             break;
         }
