@@ -234,7 +234,7 @@ class Type1Lexer
     /**
      * Reads a number or returns null.
      */
-    private Token tryReadNumber()
+    private Token tryReadNumber() throws IOException
     {
         buffer.mark();
 
@@ -341,8 +341,16 @@ class Type1Lexer
         buffer.position(buffer.position() - 1);
         if (radix != null)
         {
-            Integer val = Integer.parseInt(sb.toString(), Integer.parseInt(radix.toString()));
-            return new Token(val.toString(), Token.INTEGER);
+            int val;
+            try
+            {
+                val = Integer.parseInt(sb.toString(), Integer.parseInt(radix.toString()));
+            }
+            catch (NumberFormatException ex)
+            {
+                throw new IOException("Invalid number '" + sb.toString() + "'", ex);
+            }
+            return new Token(Integer.toString(val), Token.INTEGER);
         }
         return new Token(sb.toString(), Token.REAL);
     }
