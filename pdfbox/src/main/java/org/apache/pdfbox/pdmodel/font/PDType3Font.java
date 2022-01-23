@@ -314,6 +314,11 @@ public class PDType3Font extends PDSimpleFont
     private BoundingBox generateBoundingBox()
     {
         PDRectangle rect = getFontBBox();
+        if (rect == null)
+        {
+            LOG.warn("FontBBox missing, returning empty rectangle");
+            return new BoundingBox();
+        }
         if (!isNonZeroBoundingBox(rect))
         {
             // Plan B: get the max bounding box of the glyphs
