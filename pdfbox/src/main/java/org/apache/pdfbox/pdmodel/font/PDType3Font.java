@@ -326,6 +326,11 @@ public class PDType3Font extends PDSimpleFont
     private BoundingBox generateBoundingBox()
     {
         PDRectangle rect = getFontBBox();
+        if (rect == null)
+        {
+            LOG.warn("FontBBox missing, returning empty rectangle");
+            return new BoundingBox();
+        }
         if (rect.getLowerLeftX() == 0 && rect.getLowerLeftY() == 0
                 && rect.getUpperRightX() == 0 && rect.getUpperRightY() == 0)
         {
