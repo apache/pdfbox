@@ -131,7 +131,8 @@ public class PDType3Font extends PDSimpleFont
     @Override
     public boolean hasGlyph(String name) throws IOException
     {
-        return getCharProcs().getCOSStream(COSName.getPDFName(name)) != null;
+        return getCharProcs() == null ? false
+                : getCharProcs().getCOSStream(COSName.getPDFName(name)) != null;
     }
 
     @Override
@@ -323,28 +324,37 @@ public class PDType3Font extends PDSimpleFont
         {
             // Plan B: get the max bounding box of the glyphs
             COSDictionary cp = getCharProcs();
-            for (COSName name : cp.keySet())
+            if (cp != null)
             {
-                COSStream typ3CharProcStream = cp.getCOSStream(name);
-                if (typ3CharProcStream != null)
+                for (COSName name : cp.keySet())
                 {
-                    PDType3CharProc charProc = new PDType3CharProc(this, typ3CharProcStream);
-                    try
+                    COSStream typ3CharProcStream = cp.getCOSStream(name);
+                    if (typ3CharProcStream != null)
                     {
-                        PDRectangle glyphBBox = charProc.getGlyphBBox();
-                        if (glyphBBox == null)
+                        PDType3CharProc charProc = new PDType3CharProc(this, typ3CharProcStream);
+                        try
                         {
-                            continue;
+                            PDRectangle glyphBBox = charProc.getGlyphBBox();
+                            if (glyphBBox == null)
+                            {
+                                continue;
+                            }
+                            rect.setLowerLeftX(
+                                    Math.min(rect.getLowerLeftX(), glyphBBox.getLowerLeftX()));
+                            rect.setLowerLeftY(
+                                    Math.min(rect.getLowerLeftY(), glyphBBox.getLowerLeftY()));
+                            rect.setUpperRightX(
+                                    Math.max(rect.getUpperRightX(), glyphBBox.getUpperRightX()));
+                            rect.setUpperRightY(
+                                    Math.max(rect.getUpperRightY(), glyphBBox.getUpperRightY()));
                         }
-                        rect.setLowerLeftX(Math.min(rect.getLowerLeftX(), glyphBBox.getLowerLeftX()));
-                        rect.setLowerLeftY(Math.min(rect.getLowerLeftY(), glyphBBox.getLowerLeftY()));
-                        rect.setUpperRightX(Math.max(rect.getUpperRightX(), glyphBBox.getUpperRightX()));
-                        rect.setUpperRightY(Math.max(rect.getUpperRightY(), glyphBBox.getUpperRightY()));
-                    }
-                    catch (IOException ex)
-                    {
-                        // ignore
-                        LOG.debug("error getting the glyph bounding box - font bounding box will be used", ex);
+                        catch (IOException ex)
+                        {
+                            // ignore
+                            LOG.debug(
+                                    "error getting the glyph bounding box - font bounding box will be used",
+                                    ex);
+                        }
                     }
                 }
             }
@@ -375,20 +385,12 @@ public class PDType3Font extends PDSimpleFont
      */
     public PDType3CharProc getCharProc(int code)
     {
-        if (getEncoding() == null)
+        if (getEncoding() == null || getCharProcs() == null)
         {
             return null;
         }
         String name = getEncoding().getName(code);
-        if (getCharProcs() == null)
-        {
-            return null;
-        }
         COSStream stream = getCharProcs().getCOSStream(COSName.getPDFName(name));
-        if (stream != null)
-        {
-            return new PDType3CharProc(this, stream);
-        }
-        return null;
+        return stream != null ? new PDType3CharProc(this, stream) : null;
     }
 }
