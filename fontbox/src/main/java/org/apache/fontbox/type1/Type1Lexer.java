@@ -100,6 +100,7 @@ class Type1Lexer
     private Token readToken(Token prevToken) throws IOException
     {
         boolean skip;
+        StringBuilder sb = new StringBuilder();
         do
         {
             skip = false;
@@ -111,11 +112,11 @@ class Type1Lexer
                 if (c == '%')
                 {
                     // comment
-                    readComment();
+                    readComment(sb);
                 }
                 else if (c == '(')
                 {
-                    return readString();
+                    return readString(sb);
                 }
                 else if (c == ')')
                 {
@@ -140,7 +141,7 @@ class Type1Lexer
                 }
                 else if (c == '/')
                 {
-                    String regular = readRegular();
+                    String regular = readRegular(sb);
                     if (regular == null)
                     {
                         // the stream is corrupt
@@ -191,7 +192,7 @@ class Type1Lexer
                     buffer.position(buffer.position() -1);
 
                     // regular character: try parse as number
-                    Token number = tryReadNumber();
+                    Token number = tryReadNumber(sb);
                     if (number != null)
                     {
                         return number;
@@ -199,7 +200,7 @@ class Type1Lexer
                     else
                     {
                         // otherwise this must be a name
-                        String name = readRegular();
+                        String name = readRegular(sb);
                         if (name == null)
                         {
                             // the stream is corrupt
@@ -234,11 +235,11 @@ class Type1Lexer
     /**
      * Reads a number or returns null.
      */
-    private Token tryReadNumber()
+    private Token tryReadNumber(StringBuilder sb)
     {
         buffer.mark();
+        sb.setLength(0);
 
-        StringBuilder sb = new StringBuilder();
         String radix = null;
         char c = getChar();
         boolean hasDigit = false;
@@ -351,9 +352,9 @@ class Type1Lexer
      * Reads a sequence of regular characters, i.e. not delimiters
      * or whitespace
      */
-    private String readRegular()
+    private String readRegular(StringBuilder sb)
     {
-        StringBuilder sb = new StringBuilder();
+        sb.setLength(0);
         while (buffer.hasRemaining())
         {
             buffer.mark();
@@ -383,9 +384,9 @@ class Type1Lexer
     /**
      * Reads a line comment.
      */
-    private String readComment()
+    private String readComment(StringBuilder sb)
     {
-        StringBuilder sb = new StringBuilder();
+        sb.setLength(0);
         while (buffer.hasRemaining())
         {
             char c = getChar();
@@ -404,10 +405,9 @@ class Type1Lexer
     /**
      * Reads a (string).
      */
-    private Token readString() throws IOException
+    private Token readString(StringBuilder sb) throws IOException
     {
-        StringBuilder sb = new StringBuilder();
-
+        sb.setLength(0);
         while (buffer.hasRemaining())
         {
             char c = getChar();
