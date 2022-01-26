@@ -396,7 +396,7 @@ public abstract class PDFStreamEngine
 
         // save the original graphics state
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
-        PDRectangle bbox = tilingPattern.getBBox();
+
         // save a clean state (new clipping path, line path, etc.)
         PDRectangle tilingBBox = tilingPattern.getBBox();
         Rectangle2D bbox = tilingBBox.transform(patternMatrix).getBounds2D();

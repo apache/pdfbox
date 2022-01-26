@@ -17,6 +17,7 @@
 package org.apache.fontbox.cff;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -147,6 +148,7 @@ public class Type2CharString extends Type1CharString
                         numbers.get(3), 0);
                 List<Number> second = Arrays.asList(numbers.get(4), 0, numbers.get(5),
                         -(numbers.get(2).floatValue()), numbers.get(6), 0);
+                CharStringCommand command8 = new CharStringCommand(8);
                 addCommand(first, command8);
                 addCommand(second, command8);
             }
@@ -167,6 +169,7 @@ public class Type2CharString extends Type1CharString
                         numbers.get(3), numbers.get(4), 0);
                 List<Number> second = Arrays.asList(numbers.get(5), 0, numbers.get(6), numbers.get(7),
                         numbers.get(8), 0);
+                CharStringCommand command8 = new CharStringCommand(8);
                 addCommand(first, command8);
                 addCommand(second, command8);
             }
