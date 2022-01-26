@@ -392,7 +392,8 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
 
     private Cipher createCipher(byte[] key, byte[] iv, boolean decrypt) throws GeneralSecurityException
     {
-        @SuppressWarnings({"squid:S5542"}) // PKCS#5 padding is requested by PDF specification
+        // PKCS#5 padding is requested by PDF specification
+        @SuppressWarnings({"squid:S5542","lgtm [java/weak-cryptographic-algorithm]"})
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         Key keySpec = new SecretKeySpec(key, "AES");
         IvParameterSpec ips = new IvParameterSpec(iv);
