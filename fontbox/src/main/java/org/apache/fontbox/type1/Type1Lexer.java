@@ -20,6 +20,7 @@
 package org.apache.fontbox.type1;
 
 import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -88,9 +89,16 @@ class Type1Lexer
     /**
      * Reads an ASCII char from the buffer.
      */
-    private char getChar()
+    private char getChar() throws IOException
     {
-        return (char) buffer.get();
+        try
+        {
+            return (char) buffer.get();
+        }
+        catch (BufferUnderflowException exception)
+        {
+            throw new IOException("Premature end of buffer reached");
+        }
     }
 
     /**
@@ -235,7 +243,7 @@ class Type1Lexer
     /**
      * Reads a number or returns null.
      */
-    private Token tryReadNumber(StringBuilder sb)
+    private Token tryReadNumber(StringBuilder sb) throws IOException
     {
         buffer.mark();
         sb.setLength(0);
@@ -342,8 +350,16 @@ class Type1Lexer
         buffer.position(buffer.position() - 1);
         if (radix != null)
         {
-            Integer val = Integer.parseInt(sb.toString(), Integer.parseInt(radix));
-            return new Token(val.toString(), Token.INTEGER);
+            int val;
+            try
+            {
+                val = Integer.parseInt(sb.toString(), Integer.parseInt(radix.toString()));
+            }
+            catch (NumberFormatException ex)
+            {
+                throw new IOException("Invalid number '" + sb.toString() + "'", ex);
+            }
+            return new Token(Integer.toString(val), Token.INTEGER);
         }
         return new Token(sb.toString(), Token.REAL);
     }
@@ -352,7 +368,7 @@ class Type1Lexer
      * Reads a sequence of regular characters, i.e. not delimiters
      * or whitespace
      */
-    private String readRegular(StringBuilder sb)
+    private String readRegular(StringBuilder sb) throws IOException
     {
         sb.setLength(0);
         while (buffer.hasRemaining())
@@ -384,7 +400,7 @@ class Type1Lexer
     /**
      * Reads a line comment.
      */
-    private String readComment(StringBuilder sb)
+    private String readComment(StringBuilder sb) throws IOException
     {
         sb.setLength(0);
         while (buffer.hasRemaining())
@@ -474,11 +490,18 @@ class Type1Lexer
     /**
      * Reads a binary CharString.
      */
-    private Token readCharString(int length)
+    private Token readCharString(int length) throws IOException
     {
-        buffer.get(); // space
-        byte[] data = new byte[length];
-        buffer.get(data);
-        return new Token(data, Token.CHARSTRING);
+        try
+        {
+            buffer.get(); // space
+            byte[] data = new byte[length];
+            buffer.get(data);
+            return new Token(data, Token.CHARSTRING);
+        }
+        catch (BufferUnderflowException exception)
+        {
+            throw new IOException("Premature end of buffer reached");
+        }
     }
 }

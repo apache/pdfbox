@@ -141,16 +141,16 @@ public class Type2CharString extends Type1CharString
             drawAlternatingCurve(numbers, true);
             break;
         case HFLEX:
-        {
-            Number[] first = new Number[]{numbers.get(0), 0, numbers.get(1), numbers.get(2),
-                    numbers.get(3), 0};
-            Number[] second = new Number[]{numbers.get(4), 0, numbers.get(5),
-                    -numbers.get(2).floatValue(), numbers.get(6), 0};
-            CharStringCommand command8 = new CharStringCommand(8);
-            addCommand(first, command8);
-            addCommand(second, command8);
+            if (numbers.size() >= 7)
+            {
+                List<Number> first = Arrays.asList(numbers.get(0), 0, numbers.get(1), numbers.get(2),
+                        numbers.get(3), 0);
+                List<Number> second = Arrays.asList(numbers.get(4), 0, numbers.get(5),
+                        -(numbers.get(2).floatValue()), numbers.get(6), 0);
+                addCommand(first, command8);
+                addCommand(second, command8);
+            }
             break;
-        }
         case FLEX:
         {
             Number[] first = subArray(numbers,0, 6);
@@ -161,16 +161,16 @@ public class Type2CharString extends Type1CharString
             break;
         }
         case HFLEX1:
-        {
-            Number[] first = new Number[]{numbers.get(0), numbers.get(1), numbers.get(2),
-                    numbers.get(3), numbers.get(4), 0};
-            Number[] second = new Number[]{numbers.get(5), 0, numbers.get(6), numbers.get(7),
-                    numbers.get(8), 0};
-            CharStringCommand command8 = new CharStringCommand(8);
-            addCommand(first, command8);
-            addCommand(second, command8);
+            if (numbers.size() >= 9)
+            {
+                List<Number> first = Arrays.asList(numbers.get(0), numbers.get(1), numbers.get(2),
+                        numbers.get(3), numbers.get(4), 0);
+                List<Number> second = Arrays.asList(numbers.get(5), 0, numbers.get(6), numbers.get(7),
+                        numbers.get(8), 0);
+                addCommand(first, command8);
+                addCommand(second, command8);
+            }
             break;
-        }
         case FLEX1:
         {
             int dx = 0;

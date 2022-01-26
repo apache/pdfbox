@@ -45,7 +45,7 @@ import org.apache.pdfbox.util.Matrix;
 public class PDGraphicsState implements Cloneable
 {
     private boolean isClippingPathDirty;
-    private List<Path2D> clippingPaths = new ArrayList<>();
+    private List<Path2D> clippingPaths = new ArrayList<>(1);
     private Map<Path2D, Area> clippingCache = new IdentityHashMap<>();
     private Matrix currentTransformationMatrix = new Matrix();
     private PDColor strokingColor = PDDeviceGray.INSTANCE.getInitialColor();
@@ -69,7 +69,7 @@ public class PDGraphicsState implements Cloneable
     // DEVICE-DEPENDENT parameters
     private boolean overprint = false;
     private boolean nonStrokingOverprint = false;
-    private double overprintMode = 0;
+    private int overprintMode = 0;
     //black generation
     //undercolor removal
     private COSBase transfer = null;
@@ -352,7 +352,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @return The value of the overprint mode parameter.
      */
-    public double getOverprintMode()
+    public int getOverprintMode()
     {
         return overprintMode;
     }
@@ -362,7 +362,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @param value The value of the overprint mode parameter.
      */
-    public void setOverprintMode(double value)
+    public void setOverprintMode(int value)
     {
         overprintMode = value;
     }
