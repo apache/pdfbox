@@ -18,8 +18,8 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
@@ -31,6 +31,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
@@ -113,22 +114,19 @@ public class PDInlineImageTest extends TestCase
         assertEquals(height, image2.getHeight());
 
         // write and read
-        boolean writeOk = ImageIO.write(image1, "png",
-                new FileOutputStream(new File(testResultsDir + "/inline-grid1.png")));
+        boolean writeOk = ImageIO.write(image1, "png", new File(testResultsDir + "/inline-grid1.png"));
         assertTrue(writeOk);
         BufferedImage bim1 = ImageIO.read(new File(testResultsDir + "/inline-grid1.png"));
         assertNotNull(bim1);
         assertEquals(width, bim1.getWidth());
         assertEquals(height, bim1.getHeight());
         
-        writeOk = ImageIO.write(image2, "png",
-                new FileOutputStream(new File(testResultsDir + "/inline-grid2.png")));
+        writeOk = ImageIO.write(image2, "png", new File(testResultsDir + "/inline-grid2.png"));
         assertTrue(writeOk);
         BufferedImage bim2 = ImageIO.read(new File(testResultsDir + "/inline-grid2.png"));
         assertNotNull(bim2);
         assertEquals(width, bim2.getWidth());
-        assertEquals(height, bim2.getHeight());
-        
+        assertEquals(height, bim2.getHeight());        
 
         // compare: pixels with even coordinates are white (FF), all others are black (0)
         for (int x = 0; x < width; ++x)
@@ -183,5 +181,63 @@ public class PDInlineImageTest extends TestCase
         document.close();
 
     }
-}
 
+    // 3 Tests for PDFBOX-5360 with very small images (the last one based on a comment 
+    // by Oliver Schmidtmer at the end of PDFBOX-5340). All images are fully black bars.
+
+    public void testShortCCITT1() throws IOException
+    {
+        byte ba[] = new byte [] { 8, 0x10, 0x20, 0x40, (byte) 0x81, 2, 4, 8, 0x10, 0, 0x40, 4, 0, 0x40, 4, 0, 0x40, 4 };
+        doInlineCcittImage(23, 10, ba);
+    }
+
+    public void testShortCCITT2() throws IOException
+    {
+        byte ba[] = new byte [] { 8, 0x10, 0x20, 0x40, (byte) 0x81, 2, 0, 8, 0, (byte) 0x80, 8, 8, (byte) 0x80, 8, 0, (byte) 0x80};
+        doInlineCcittImage(23, 7, ba);
+    }
+
+    public void testShortCCITT3() throws IOException
+    {
+        byte ba[] = new byte [] { 103, 44, 103, 44, 103, 44, 103, 44, 0, 16, 1, 0, 16, 1, 0, 16, 1, 10};
+        doInlineCcittImage(683, 4, ba);
+    }
+
+    private void doInlineCcittImage(int width, int height, byte[] ba) throws IOException
+    {
+        COSDictionary dict = new COSDictionary();
+        dict.setInt(COSName.W, width);
+        dict.setInt(COSName.H, height);
+        dict.setInt(COSName.BPC, 1);
+        COSArray array = new COSArray();
+        array.add(COSInteger.ONE);
+        array.add(COSInteger.ZERO);
+        dict.setItem(COSName.D, array);
+        dict.setBoolean(COSName.IM, true);
+        dict.setItem(COSName.F, COSName.CCITTFAX_DECODE_ABBREVIATION);
+        COSDictionary dict2 = new COSDictionary();
+        dict2.setInt(COSName.COLUMNS, dict.getInt(COSName.W));
+        dict.setItem(COSName.DP, dict2);
+        PDInlineImage inlineImage = new PDInlineImage(dict, ba, null);
+        assertEquals(true, inlineImage.isStencil());
+        assertEquals(false, inlineImage.isEmpty());
+        assertEquals(false, inlineImage.getInterpolate());
+        assertEquals(dict, inlineImage.getCOSObject());
+        assertEquals(PDDeviceGray.INSTANCE, inlineImage.getColorSpace());
+        assertEquals(1, inlineImage.getBitsPerComponent());
+        assertEquals("tiff", inlineImage.getSuffix());
+        BufferedImage bim = inlineImage.getImage();
+        assertEquals(width, bim.getWidth());
+        assertEquals(height, bim.getHeight());
+        assertEquals(inlineImage.getWidth(), bim.getWidth());
+        assertEquals(inlineImage.getHeight(), bim.getHeight());
+        assertEquals(BufferedImage.TYPE_BYTE_GRAY, bim.getType());
+        DataBufferByte dbb = (DataBufferByte) bim.getRaster().getDataBuffer();
+        assertEquals(bim.getWidth() * bim.getHeight(), dbb.getSize());
+        byte[] data = dbb.getData();
+        for (int i = 0; i < data.length; ++i)
+        {
+            assertEquals(0, data[i]);
+        }
+    }
+}
