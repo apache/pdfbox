@@ -86,7 +86,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
         {
             throw new IOException("Missing descendant font dictionary");
         }
-        if (!COSName.FONT.equals(((COSDictionary) descendantFontDictBase).getCOSName(COSName.TYPE)))
+        if (!COSName.FONT.equals(
+                ((COSDictionary) descendantFontDictBase).getCOSName(COSName.TYPE, COSName.FONT)))
         {
             throw new IOException("Missing or wrong type in descendant font dictionary");
         }
