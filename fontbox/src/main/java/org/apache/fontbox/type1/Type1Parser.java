@@ -93,7 +93,7 @@ final class Type1Parser
         lexer = new Type1Lexer(bytes);
 
         // (corrupt?) synthetic font
-        if (lexer.peekToken().getText().equals("FontDirectory"))
+        if ("FontDirectory".equals(lexer.peekToken().getText()))
         {
             read(Token.NAME, "FontDirectory");
             read(Token.LITERAL); // font name
@@ -431,7 +431,7 @@ final class Type1Parser
             throw new IOException("Missing start token for the system dictionary");
         }
         // postscript wrapper (not in the Type 1 spec)
-        if (lexer.peekToken().getText().equals("systemdict"))
+        if ("systemdict".equals(lexer.peekToken().getText()))
         {
             read(Token.NAME, "systemdict");
             read(Token.LITERAL, "internaldict");
@@ -547,7 +547,7 @@ final class Type1Parser
 
         // find /Private dict
         Token peekToken = lexer.peekToken();
-        while (peekToken != null && !peekToken.getText().equals("Private"))
+        while (peekToken != null && !"Private".equals(peekToken.getText()))
         {
             // for a more thorough validation, the presence of "begin" before Private
             // determines how code before and following charstrings should look
