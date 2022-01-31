@@ -70,6 +70,7 @@ import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.logging.Log;
@@ -101,7 +102,6 @@ import org.apache.pdfbox.debugger.treestatus.TreeStatusPane;
 import org.apache.pdfbox.debugger.ui.ArrayEntry;
 import org.apache.pdfbox.debugger.ui.DocumentEntry;
 import org.apache.pdfbox.debugger.ui.ErrorDialog;
-import org.apache.pdfbox.debugger.ui.ExtensionFileFilter;
 import org.apache.pdfbox.debugger.ui.FileOpenSaveDialog;
 import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
 import org.apache.pdfbox.debugger.ui.LogDialog;
@@ -157,6 +157,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
 
     private static final Set<COSName> OTHERCOLORSPACES = new HashSet<>(
             Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY, COSName.CALRGB, COSName.LAB));
+
+    private static final FileFilter PDF_FILTER = new FileNameExtensionFilter("PDF Files (*.pdf)", "pdf", "PDF");
 
     private int shortcutKeyMask;
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
@@ -699,9 +701,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             }
             else
             {
-                String[] extensions = new String[] { "pdf", "PDF" };
-                FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
-                FileOpenSaveDialog saveAsDialog = new FileOpenSaveDialog(this, pdfFilter);
+                FileOpenSaveDialog saveAsDialog = new FileOpenSaveDialog(this, PDF_FILTER);
                 saveAsDialog.saveDocument(document, "pdf");
             }
         }
@@ -727,9 +727,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             }
             else
             {
-                String[] extensions = new String[] {"pdf", "PDF"};
-                FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
-                FileOpenSaveDialog openDialog = new FileOpenSaveDialog(this, pdfFilter);
+                FileOpenSaveDialog openDialog = new FileOpenSaveDialog(this, PDF_FILTER);
 
                 File file = openDialog.openFile();
                 if (file != null)
