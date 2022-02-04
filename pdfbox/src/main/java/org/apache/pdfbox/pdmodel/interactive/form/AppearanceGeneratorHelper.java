@@ -744,13 +744,15 @@ class AppearanceGeneratorHelper {
         float yTextPos = contentRect.getUpperRightY();
 
         int topIndex = ((PDListBox) field).getTopIndex();
+        float ascent = font.getFontDescriptor().getAscent();
+        float height = font.getBoundingBox().getHeight();
 
         for (int i = topIndex; i < numOptions; i++) {
 
             if (i == topIndex) {
-                yTextPos = yTextPos - font.getFontDescriptor().getAscent() / FONTSCALE * fontSize;
+                yTextPos = yTextPos - ascent / FONTSCALE * fontSize;
             } else {
-                yTextPos = yTextPos - font.getBoundingBox().getHeight() / FONTSCALE * fontSize;
+                yTextPos = yTextPos - height / FONTSCALE * fontSize;
                 contents.beginText();
             }
 
