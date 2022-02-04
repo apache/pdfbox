@@ -551,16 +551,15 @@ public class PDFRenderer
         for (COSName name : resources.getExtGStateNames())
         {
             PDExtendedGraphicsState extGState = resources.getExtGState(name);
-            if (extGState == null)
+            if (extGState != null)
             {
-                // can happen if key exists but no value 
+                // extGState null can happen if key exists but no value 
                 // see PDFBOX-3950-23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf
-                continue;
-            }
-            BlendMode blendMode = extGState.getBlendMode();
-            if (blendMode != BlendMode.NORMAL)
-            {
-                return true;
+                BlendMode blendMode = extGState.getBlendMode();
+                if (blendMode != BlendMode.NORMAL)
+                {
+                    return true;
+                }
             }
         }
         return false;
