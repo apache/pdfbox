@@ -93,7 +93,8 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
         }
         PDRange rangeX = getDecodeForParameter(0);
         PDRange rangeY = getDecodeForParameter(1);
-        if (Float.compare(rangeX.getMin(), rangeX.getMax()) == 0 ||
+        if (rangeX == null || rangeY == null ||
+            Float.compare(rangeX.getMin(), rangeX.getMax()) == 0 ||
             Float.compare(rangeY.getMin(), rangeY.getMax()) == 0)
         {
             return Collections.emptyList();
@@ -103,6 +104,10 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
         for (int i = 0; i < colRange.length; ++i)
         {
             colRange[i] = getDecodeForParameter(2 + i);
+            if (colRange[i] == null)
+            {
+                throw new IOException("Range missing in shading /Decode entry");
+            }
         }
         List<Vertex> vlist = new ArrayList<>();
         long maxSrcCoord = (long) Math.pow(2, getBitsPerCoordinate()) - 1;
