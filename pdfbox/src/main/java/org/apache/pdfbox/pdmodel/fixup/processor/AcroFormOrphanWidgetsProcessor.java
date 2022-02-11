@@ -102,7 +102,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             {
                 if (resources == null)
                 {
-                    // ensure that PDVariableText fields have the neccessary resources
+                    // ensure that PDVariableText fields have the necessary resources
                     resources = acroForm.getDefaultResources();
                 }
                 ensureFontResources(resources, (PDVariableText) field);
