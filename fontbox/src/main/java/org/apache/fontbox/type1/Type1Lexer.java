@@ -87,6 +87,16 @@ class Type1Lexer
     }
 
     /**
+     * Checks if the kind of the next token equals the given one without consuming it.
+     * 
+     * @return true if the kind of the next token equals the given one
+     */
+    public boolean peekKind(Token.Kind kind)
+    {
+        return aheadToken != null & aheadToken.getKind() == kind;
+    }
+
+    /**
      * Reads an ASCII char from the buffer.
      */
     private char getChar() throws IOException
