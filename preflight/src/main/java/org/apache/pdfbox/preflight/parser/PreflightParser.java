@@ -725,7 +725,7 @@ public class PreflightParser extends PDFParser
             // ---- read offset or object stream object number from xref table
             Long offsetOrObjstmObNr = xrefTrailerResolver.getXrefTable().get(objKey);
 
-            // sanity test to circumvent loops with broken documents
+            // test to circumvent loops with broken documents
             if (requireExistingNotCompressedObj && ((offsetOrObjstmObNr == null)))
             {
                 addValidationError(new ValidationError(ERROR_SYNTAX_MISSING_OFFSET,

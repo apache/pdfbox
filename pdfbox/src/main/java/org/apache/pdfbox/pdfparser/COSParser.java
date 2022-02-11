@@ -835,7 +835,7 @@ public class COSParser extends BaseParser
                 }
             }
 
-            // sanity test to circumvent loops with broken documents
+            // test to circumvent loops with broken documents
             if (requireExistingNotCompressedObj
                     && ((offsetOrObjstmObNr == null) || (offsetOrObjstmObNr <= 0)))
             {
