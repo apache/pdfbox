@@ -369,7 +369,7 @@ public class PDCIDFontType2 extends PDCIDFont
         else
         {
             // a non-embedded font always has a cmap (otherwise it we wouldn't load it)
-            cid = cmap.getGlyphId(unicode);
+            cid = cmap.getGlyphId(unicode); // lgtm[java/dereferenced-value-may-be-null]
         }
 
         if (cid == 0)
