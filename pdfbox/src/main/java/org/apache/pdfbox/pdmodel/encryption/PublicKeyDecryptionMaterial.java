@@ -42,9 +42,9 @@ import java.util.Enumeration;
 
 public class PublicKeyDecryptionMaterial extends DecryptionMaterial
 {
-    private String password = null;
-    private KeyStore keyStore = null;
-    private String alias = null;
+    private final String password;
+    private final KeyStore keyStore;
+    private final String alias;
 
     /**
      * Create a new public key decryption material.
