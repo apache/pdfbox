@@ -132,8 +132,8 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
      * Set the children of this named tree.
      *
      * @param kids The children of this named tree. These have to be in sorted order. Because of
-     * that, it is usually easier to call {@link setNames} with a map and pass a single element list
-     * here.
+     * that, it is usually easier to call {@link #setNames(Map)} with a map and pass a single
+     * element list here.
      */
     public void setKids( List<? extends PDNameTreeNode<T>> kids )
     {
