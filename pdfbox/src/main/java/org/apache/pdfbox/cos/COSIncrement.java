@@ -58,7 +58,7 @@ public class COSIncrement implements Iterable<COSBase>
     
     /**
      * Creates a new {@link COSIncrement} for the given {@link COSUpdateInfo}, the increment will use it´s
-     * {@link COSDocumentState} as it´s own origin and shall conllect all updates contained in the given
+     * {@link COSDocumentState} as it´s own origin and shall collect all updates contained in the given
      * {@link COSUpdateInfo}.<br>
      * Should the given object be {@code null}, the resulting increment shall be empty.
      *
