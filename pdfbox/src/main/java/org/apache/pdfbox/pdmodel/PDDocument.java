@@ -367,14 +367,15 @@ public class PDDocument implements Closeable
         // Create SignatureForm for signature and append it to the document
 
         // Get the first valid page
-        int pageCount = getNumberOfPages();
+        PDPageTree pageTree = getPages();
+        int pageCount = pageTree.getCount();
         if (pageCount == 0)
         {
             throw new IllegalStateException("Cannot sign an empty document");
         }
 
         int startIndex = Math.min(Math.max(options.getPage(), 0), pageCount - 1);
-        PDPage page = getPage(startIndex);
+        PDPage page = pageTree.get(startIndex);
 
         // Get the AcroForm from the Root-Dictionary and append the annotation
         PDDocumentCatalog catalog = getDocumentCatalog();
@@ -599,12 +600,12 @@ public class PDDocument implements Closeable
     private void assignSignatureRectangle(PDSignatureField signatureField, COSDictionary annotDict)
     {
         // Read and set the rectangle for visual signature
-        COSArray rectArray = (COSArray) annotDict.getDictionaryObject(COSName.RECT);
         PDRectangle existingRectangle = signatureField.getWidgets().get(0).getRectangle();
 
         //in case of an existing field keep the original rect
         if (existingRectangle == null || existingRectangle.getCOSArray().size() != 4)
         {
+            COSArray rectArray = (COSArray) annotDict.getDictionaryObject(COSName.RECT);
             PDRectangle rect = new PDRectangle(rectArray);
             signatureField.getWidgets().get(0).setRectangle(rect);
         }
