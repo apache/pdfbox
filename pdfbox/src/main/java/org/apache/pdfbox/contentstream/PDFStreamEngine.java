@@ -276,7 +276,7 @@ public abstract class PDFStreamEngine
         getGraphicsState().setCurrentTransformationMatrix(textRenderingMatrix);
 
         // transform the CTM using the stream's matrix (this is the FontMatrix)
-        getGraphicsState().getCurrentTransformationMatrix().concatenate(charProc.getMatrix());
+        textRenderingMatrix.concatenate(charProc.getMatrix());
 
         // note: we don't clip to the BBox as it is often wrong, see PDFBOX-1917
 
@@ -975,7 +975,7 @@ public abstract class PDFStreamEngine
     protected final Deque<PDGraphicsState> saveGraphicsStack()
     {
         Deque<PDGraphicsState> savedStack = graphicsStack;
-        graphicsStack = new ArrayDeque<>();
+        graphicsStack = new ArrayDeque<>(1);
         graphicsStack.add(savedStack.peek().clone());
         return savedStack;
     }
