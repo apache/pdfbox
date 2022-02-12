@@ -106,8 +106,8 @@ public class PDNumberTreeNode implements COSObjectable
      * Set the children of this number tree.
      *
      * @param kids The children of this number tree. These have to be in sorted order. Because of
-     * that, it is usually easier to call {@link setNumbers} with a map and pass a single element
-     * list here.
+     * that, it is usually easier to call {@link #setNumbers(Map)} with a map and pass a single
+     * element list here.
      */
     public void setKids( List<? extends PDNumberTreeNode> kids )
     {
