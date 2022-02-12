@@ -132,13 +132,12 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
             }
         }
         int rowNum = vlist.size() / numPerRow;
-        Vertex[][] latticeArray = new Vertex[rowNum][numPerRow];
-        List<ShadedTriangle> list = new ArrayList<>();
         if (rowNum < 2)
         {
             // must have at least two rows; if not, return empty list
-            return list;
+            return Collections.emptyList();
         }
+        Vertex[][] latticeArray = new Vertex[rowNum][numPerRow];
         for (int i = 0; i < rowNum; i++)
         {
             for (int j = 0; j < numPerRow; j++)
@@ -147,8 +146,14 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
             }
         }
 
+        return createShadedTriangleList(rowNum, numPerRow, latticeArray);
+    }
+
+    private List<ShadedTriangle> createShadedTriangleList(int rowNum, int numPerRow, Vertex[][] latticeArray)
+    {
         Point2D[] ps = new Point2D[3]; // array will be shallow-cloned in ShadedTriangle constructor
         float[][] cs = new float[3][];
+        List<ShadedTriangle> list = new ArrayList<>();
         for (int i = 0; i < rowNum - 1; i++)
         {
             for (int j = 0; j < numPerRow - 1; j++)
