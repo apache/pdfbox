@@ -93,7 +93,7 @@ class Type1Lexer
      */
     public boolean peekKind(Token.Kind kind)
     {
-        return aheadToken != null & aheadToken.getKind() == kind;
+        return aheadToken != null && aheadToken.getKind() == kind;
     }
 
     /**
