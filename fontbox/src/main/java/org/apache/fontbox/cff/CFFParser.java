@@ -782,9 +782,13 @@ public class CFFParser
         }
     }
 
-    private String readString(int index)
+    private String readString(int index) throws IOException
     {
-        if (index >= 0 && index <= 390)
+        if (index < 0)
+        {
+            throw new IOException("Invalid negative index when reading a string");
+        }
+        if (index <= 390)
         {
             return CFFStandardString.getName(index);
         }
@@ -792,14 +796,11 @@ public class CFFParser
         {
             return stringIndex[index - 391];
         }
-        else
-        {
-            // technically this maps to .notdef, but we need a unique sid name
-            return "SID" + index;
-        }
+        // technically this maps to .notdef, but we need a unique sid name
+        return "SID" + index;
     }
 
-    private String getString(DictData dict, String name)
+    private String getString(DictData dict, String name) throws IOException
     {
         DictData.Entry entry = dict.getEntry(name);
         return entry != null && entry.hasOperands() ? readString(entry.getNumber(0).intValue()) : null;
