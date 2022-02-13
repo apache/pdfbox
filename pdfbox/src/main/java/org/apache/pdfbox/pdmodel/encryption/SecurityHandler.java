@@ -71,7 +71,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     /** The length in bits of the secret key used to encrypt the document. */
     private short keyLength = DEFAULT_KEY_LENGTH;
 
-    /** The encryption key that will used to encrypt / decrypt.*/
+    /** The encryption key that will be used to encrypt / decrypt.*/
     private byte[] encryptionKey;
 
     /** The RC4 implementation used for cryptographic functions. */
