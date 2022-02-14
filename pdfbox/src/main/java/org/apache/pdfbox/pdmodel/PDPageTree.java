@@ -199,7 +199,15 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
             }
             else
             {
-                queue.add(node);
+                if (COSName.PAGE.equals(node.getCOSName(COSName.TYPE)))
+                {
+                    queue.add(node);
+                }
+                else
+                {
+                    LOG.error("Page skipped due to an invalid or missing type "
+                            + node.getCOSName(COSName.TYPE));
+                }
             }
         }
 
