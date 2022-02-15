@@ -1111,8 +1111,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 bim = pdImage.getImage();
             }
-            boolean isScaledUp = bim.getWidth() < Math.abs(Math.round(at.getScaleX())) ||
-                                 bim.getHeight() < Math.abs(Math.round(at.getScaleY()));
+            Matrix m = new Matrix(at);
+            boolean isScaledUp = bim.getWidth() < Math.abs(Math.round(m.getScalingFactorX())) ||
+                                 bim.getHeight() < Math.abs(Math.round(m.getScalingFactorY()));
 
             if (isScaledUp)
             {
