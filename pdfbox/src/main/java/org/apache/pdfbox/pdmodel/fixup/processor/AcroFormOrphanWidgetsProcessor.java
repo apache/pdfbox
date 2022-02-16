@@ -97,7 +97,6 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
         acroForm.setFields(fields);
 
-        // ensure that PDVariableText fields have the neccesary resources
         PDResources resources = null;
         for (PDField field : acroForm.getFieldTree())
         {
@@ -105,6 +104,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             {
                 if (resources == null)
                 {
+                    // ensure that PDVariableText fields have the necessary resources
                     resources = acroForm.getDefaultResources();
                 }
                 ensureFontResources(resources, (PDVariableText) field);

@@ -1036,8 +1036,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 bim = pdImage.getImage();
             }
             boolean isScaledUp =
-                    bim.getWidth() <= Math.round(ctm.getScalingFactorX() * xformScalingFactorX) ||
-                    bim.getHeight() <= Math.round(ctm.getScalingFactorY() * xformScalingFactorY);
+                    bim.getWidth() <= Math.abs(Math.round(ctm.getScalingFactorX() * xformScalingFactorX)) ||
+                    bim.getHeight() <= Math.abs(Math.round(ctm.getScalingFactorY() * xformScalingFactorY));
             if (isScaledUp)
             {
                 graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,

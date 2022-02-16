@@ -191,7 +191,7 @@ final class Type1Parser
 
     private void readEncoding() throws IOException
     {
-        if (lexer.peekToken().getKind() == Token.NAME)
+        if (lexer.peekKind(Token.NAME))
         {
             String name = lexer.nextToken().getText();
             
@@ -214,16 +214,16 @@ final class Type1Parser
             // 0 1 255 {1 index exch /.notdef put } for
             // we have to check "readonly" and "def" too
             // as some fonts don't provide any dup-values, see PDFBOX-2134
-            while (!(lexer.peekToken().getKind() == Token.NAME &&
-                    (lexer.peekToken().getText().equals("dup") ||
-                    lexer.peekToken().getText().equals("readonly") ||
-                    lexer.peekToken().getText().equals("def"))))
+            while (!(lexer.peekKind(Token.NAME)
+                    && (lexer.peekToken().getText().equals("dup")
+                            || lexer.peekToken().getText().equals("readonly")
+                            || lexer.peekToken().getText().equals("def"))))
             {
                 lexer.nextToken();
             }
             
             Map<Integer, String> codeToName = new HashMap<>();
-            while (lexer.peekToken().getKind() == Token.NAME &&
+            while (lexer.peekKind(Token.NAME) &&
                     lexer.peekToken().getText().equals("dup"))
             {
                 read(Token.NAME, "dup");
@@ -328,7 +328,7 @@ final class Type1Parser
             {
                 break;
             }
-            if (lexer.peekToken().getKind() == Token.NAME &&
+            if (lexer.peekKind(Token.NAME) &&
                !lexer.peekToken().getText().equals("end"))
             {
                 read(Token.NAME);
@@ -338,7 +338,7 @@ final class Type1Parser
             {
                 break;
             }
-            if (lexer.peekToken().getKind() == Token.NAME &&
+            if (lexer.peekKind(Token.NAME) &&
                 lexer.peekToken().getText().equals("end"))
             {
                 break;
@@ -391,7 +391,7 @@ final class Type1Parser
                 {
                     return value;
                 }
-                if (lexer.peekToken().getKind() == Token.START_ARRAY)
+                if (lexer.peekKind(Token.START_ARRAY))
                 {
                     openArray++;
                 }
@@ -471,7 +471,7 @@ final class Type1Parser
                 throw new IOException("Malformed procedure: missing token");
             }
 
-            if (lexer.peekToken().getKind() == Token.START_PROC)
+            if (lexer.peekKind(Token.START_PROC))
             {
                 openProc++;
             }
@@ -509,7 +509,7 @@ final class Type1Parser
             {
                 throw new IOException("Malformed procedure: missing token");
             }
-            if (lexer.peekToken().getKind() == Token.START_PROC)
+            if (lexer.peekKind(Token.START_PROC))
             {
                 openProc++;
             }
@@ -574,7 +574,7 @@ final class Type1Parser
         for (int i = 0; i < length; i++)
         {
             // premature end
-            if (lexer.peekToken() == null || lexer.peekToken().getKind() != Token.LITERAL)
+            if (!lexer.peekKind(Token.LITERAL))
             {
                 break;
             }
@@ -630,8 +630,8 @@ final class Type1Parser
         // some fonts have "2 index" here, others have "end noaccess put"
         // sometimes followed by "put". Either way, we just skip until
         // the /CharStrings dict is found
-        while (!(lexer.peekToken().getKind() == Token.LITERAL &&
-                 lexer.peekToken().getText().equals("CharStrings")))
+        while (!(lexer.peekKind(Token.LITERAL)
+                && lexer.peekToken().getText().equals("CharStrings")))
         {
             lexer.nextToken();
         }
@@ -713,7 +713,7 @@ final class Type1Parser
             {
                 break;
             }
-            if (!(lexer.peekToken().getKind() == Token.NAME &&
+            if (!(lexer.peekKind(Token.NAME) &&
                   lexer.peekToken().getText().equals("dup")))
             {
                 break;
@@ -738,7 +738,7 @@ final class Type1Parser
         {
             throw new IOException("Missing start token of OtherSubrs procedure");
         }
-        if (lexer.peekToken().getKind() == Token.START_ARRAY)
+        if (lexer.peekKind(Token.START_ARRAY))
         {
             readValue();
             readDef();
@@ -779,7 +779,7 @@ final class Type1Parser
             {
                 break;
             }
-            if (lexer.peekToken().getKind() == Token.NAME &&
+            if (lexer.peekKind(Token.NAME) &&
                 lexer.peekToken().getText().equals("end"))
             {
                 break;
@@ -899,8 +899,7 @@ final class Type1Parser
      */
     private Token readMaybe(Token.Kind kind, String name) throws IOException
     {
-        Token token = lexer.peekToken();
-        if (token != null && token.getKind() == kind && token.getText().equals(name))
+        if (lexer.peekKind(kind) && lexer.peekToken().getText().equals(name))
         {
             return lexer.nextToken();
         }

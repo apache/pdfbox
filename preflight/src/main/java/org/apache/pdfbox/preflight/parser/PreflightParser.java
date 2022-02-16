@@ -640,7 +640,7 @@ public class PreflightParser extends PDFParser
         // read offset or object stream object number from xref table
         Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
 
-        // sanity test to circumvent loops with broken documents
+        // test to circumvent loops with broken documents
         if (requireExistingNotCompressedObj && offsetOrObjstmObNr == null)
         {
             String message = "Object must be defined and must not be compressed object: "

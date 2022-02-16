@@ -97,11 +97,11 @@ public final class PDFontFactory
         }
         else if (COSName.CID_FONT_TYPE0.equals(subType))
         {
-            throw new IllegalArgumentException("Type 0 descendant font not allowed");
+            throw new IOException("Type 0 descendant font not allowed");
         }
         else if (COSName.CID_FONT_TYPE2.equals(subType))
         {
-            throw new IllegalArgumentException("Type 2 descendant font not allowed");
+            throw new IOException("Type 2 descendant font not allowed");
         }
         else
         {
@@ -125,7 +125,7 @@ public final class PDFontFactory
         COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
         if (!COSName.FONT.equals(type))
         {
-            throw new IllegalArgumentException("Expected 'Font' dictionary but found '" + type.getName() + "'");
+            throw new IOException("Expected 'Font' dictionary but found '" + type.getName() + "'");
         }
 
         COSName subType = dictionary.getCOSName(COSName.SUBTYPE);

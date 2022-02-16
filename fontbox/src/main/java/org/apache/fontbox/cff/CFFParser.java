@@ -522,7 +522,7 @@ public class CFFParser
             else
             {
                 LOG.debug("Couldn't read CharStrings index - returning empty charset instead");
-                charset = new EmptyCharset(0);
+                charset = new EmptyCharsetType1();
             }            
         }
         else
@@ -532,7 +532,7 @@ public class CFFParser
                 // CharStrings index could be null if the index data couldnÄt be read
                 int numEntries = charStringsIndex == null ? 0 :  charStringsIndex.length;
                 // a CID font with no charset does not default to any predefined charset
-                charset = new EmptyCharset(numEntries);
+                charset = new EmptyCharsetCID(numEntries);
             }
             else
             {
@@ -782,9 +782,13 @@ public class CFFParser
         }
     }
 
-    private String readString(int index)
+    private String readString(int index) throws IOException
     {
-        if (index >= 0 && index <= 390)
+        if (index < 0)
+        {
+            throw new IOException("Invalid negative index when reading a string");
+        }
+        if (index <= 390)
         {
             return CFFStandardString.getName(index);
         }
@@ -792,14 +796,11 @@ public class CFFParser
         {
             return stringIndex[index - 391];
         }
-        else
-        {
-            // technically this maps to .notdef, but we need a unique sid name
-            return "SID" + index;
-        }
+        // technically this maps to .notdef, but we need a unique sid name
+        return "SID" + index;
     }
 
-    private String getString(DictData dict, String name)
+    private String getString(DictData dict, String name) throws IOException
     {
         DictData.Entry entry = dict.getEntry(name);
         return entry != null && entry.hasOperands() ? readString(entry.getNumber(0).intValue()) : null;
@@ -1382,9 +1383,9 @@ public class CFFParser
     /**
      * An empty charset in a malformed CID font.
      */
-    private static class EmptyCharset extends CFFCharsetCID
+    private static class EmptyCharsetCID extends CFFCharsetCID
     {
-        private EmptyCharset(int numCharStrings)
+        private EmptyCharsetCID(int numCharStrings)
         {
             addCID(0, 0); // .notdef
             
@@ -1403,7 +1404,24 @@ public class CFFParser
     }
 
     /**
-     * Inner class representing a Format0 charset. 
+     * An empty charset in a malformed Type1 font.
+     */
+    private static class EmptyCharsetType1 extends CFFCharsetType1
+    {
+        private EmptyCharsetType1()
+        {
+            addSID(0, 0, ".notdef");
+        }
+
+        @Override
+        public String toString()
+        {
+            return getClass().getName();
+        }
+    }
+
+    /**
+     * Inner class representing a Format0 charset.
      */
     private static class Format0Charset extends EmbeddedCharset
     {
