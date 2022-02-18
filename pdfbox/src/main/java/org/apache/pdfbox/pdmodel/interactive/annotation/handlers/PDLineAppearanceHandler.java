@@ -62,6 +62,10 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
     {
         PDAnnotationLine annotation = (PDAnnotationLine) getAnnotation();
         PDRectangle rect = annotation.getRectangle();
+        if (rect == null)
+        {
+            return;
+        }
         float[] pathsArray = annotation.getLine();
         if (pathsArray == null)
         {

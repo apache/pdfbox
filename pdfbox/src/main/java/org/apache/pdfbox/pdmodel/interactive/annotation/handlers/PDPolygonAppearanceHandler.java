@@ -66,6 +66,10 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
         PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
         float lineWidth = getLineWidth();
         PDRectangle rect = annotation.getRectangle();
+        if (rect == null)
+        {
+            return;
+        }
 
         // Adjust rectangle even if not empty
         // CTAN-example-Annotations.pdf p2
