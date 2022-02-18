@@ -239,19 +239,17 @@ public abstract class PDField implements COSObjectable
         
         if (fieldValue != null && this instanceof PDTerminalField)
         {
-            PDTerminalField currentField = (PDTerminalField) this;
-            
             if (fieldValue instanceof COSName)
             {
-                currentField.setValue(((COSName) fieldValue).getName());
+                setValue(((COSName) fieldValue).getName());
             }
             else if (fieldValue instanceof COSString)
             {
-                currentField.setValue(((COSString) fieldValue).getString());
+                setValue(((COSString) fieldValue).getString());
             }
             else if (fieldValue instanceof COSStream)
             {
-                currentField.setValue(((COSStream) fieldValue).toTextString());
+                setValue(((COSStream) fieldValue).toTextString());
             }
             else if (fieldValue instanceof COSArray && this instanceof PDChoice)
             {
