@@ -56,6 +56,10 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
     {
         PDAnnotationUnderline annotation = (PDAnnotationUnderline) getAnnotation();
         PDRectangle rect = annotation.getRectangle();
+        if (rect == null)
+        {
+            return;
+        }
         float[] pathsArray = annotation.getQuadPoints();
         if (pathsArray == null)
         {

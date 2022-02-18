@@ -67,6 +67,10 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
     {
         PDAnnotationSquiggly annotation = (PDAnnotationSquiggly) getAnnotation();
         PDRectangle rect = annotation.getRectangle();
+        if (rect == null)
+        {
+            return;
+        }
         float[] pathsArray = annotation.getQuadPoints();
         if (pathsArray == null)
         {

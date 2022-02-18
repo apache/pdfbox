@@ -56,6 +56,10 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
     {
         PDAnnotationStrikeout annotation = (PDAnnotationStrikeout) getAnnotation();
         PDRectangle rect = annotation.getRectangle();
+        if (rect == null)
+        {
+            return;
+        }
         float[] pathsArray = annotation.getQuadPoints();
         if (pathsArray == null)
         {
