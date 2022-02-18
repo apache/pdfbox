@@ -472,7 +472,7 @@ public abstract class PDChoice extends PDVariableText
     private void updateSelectedOptionsIndex(List<String> values)
     {
         List<String> options = getOptions();
-        List<Integer> indices = new ArrayList<>();
+        List<Integer> indices = new ArrayList<>(values.size());
 
         for (String value : values)
         {
