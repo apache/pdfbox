@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -163,15 +164,15 @@ public abstract class PDTerminalField extends PDField
     @Override
     public List<PDAnnotationWidget> getWidgets()
     {
-        List<PDAnnotationWidget> widgets = new ArrayList<>();
         COSArray kids = getCOSObject().getCOSArray(COSName.KIDS);
         if (kids == null)
         {
             // the field itself is a widget
-            widgets.add(new PDAnnotationWidget(getCOSObject()));
+            return Collections.singletonList(new PDAnnotationWidget(getCOSObject()));
         }
         else if (kids.size() > 0)
         {
+            List<PDAnnotationWidget> widgets = new ArrayList<>();
             // there are multiple widgets
             for (int i = 0; i < kids.size(); i++)
             {
@@ -181,8 +182,9 @@ public abstract class PDTerminalField extends PDField
                     widgets.add(new PDAnnotationWidget((COSDictionary)kid));
                 }
             }
+            return widgets;
         }
-        return widgets;
+        return Collections.emptyList();
     }
 
     /**
