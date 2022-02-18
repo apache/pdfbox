@@ -384,7 +384,7 @@ public final class PDInlineImage implements PDImage
     {
         List<String> filters = getFilters();
 
-        if (filters == null || filters.isEmpty())
+        if (filters.isEmpty())
         {
             return "png";
         }
