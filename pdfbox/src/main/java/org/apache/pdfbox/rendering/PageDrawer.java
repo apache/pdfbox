@@ -1836,12 +1836,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private boolean hasBlendMode(PDTransparencyGroup group, Set<COSBase> groupsDone)
     {
-        if (groupsDone.contains(group.getCOSObject()))
+        if (!groupsDone.add(group.getCOSObject()))
         {
             // The group was already processed. Avoid endless recursion.
             return false;
         }
-        groupsDone.add(group.getCOSObject());
 
         PDResources resources = group.getResources();
         if (resources == null)
