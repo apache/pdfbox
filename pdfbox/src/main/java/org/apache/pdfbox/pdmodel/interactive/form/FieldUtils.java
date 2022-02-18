@@ -139,9 +139,7 @@ public final class FieldUtils
         
         if (items instanceof COSString)
         {
-            List<String> array = new ArrayList<>(1);
-            array.add(((COSString) items).getString());
-            return array;
+            return Collections.singletonList(((COSString) items).getString());
         }
         else if (items instanceof COSArray)
         {
