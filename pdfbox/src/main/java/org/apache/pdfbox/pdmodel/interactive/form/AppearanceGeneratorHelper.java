@@ -207,10 +207,12 @@ class AppearanceGeneratorHelper
             // some fields have the /Da at the widget level if the 
             // widgets differ in layout.
             PDDefaultAppearanceString acroFormAppearance = defaultAppearance;
-            
-            if (widget.getCOSObject().getDictionaryObject(COSName.DA) != null)
+
+            COSString da = (COSString) widget.getCOSObject().getDictionaryObject(COSName.DA);
+            if (da != null)
             {
-                defaultAppearance = getWidgetDefaultAppearanceString(widget);
+                PDResources dr = field.getAcroForm().getDefaultResources();
+                defaultAppearance = new PDDefaultAppearanceString(da, dr);
             }
 
             PDRectangle rect = widget.getRectangle();
@@ -327,13 +329,6 @@ class AppearanceGeneratorHelper
         appearanceStream.setFormType(1);
         appearanceStream.setResources(new PDResources());
         return appearanceStream;
-    }
-    
-    private PDDefaultAppearanceString getWidgetDefaultAppearanceString(PDAnnotationWidget widget) throws IOException
-    {
-        COSString da = (COSString) widget.getCOSObject().getDictionaryObject(COSName.DA);
-        PDResources dr = field.getAcroForm().getDefaultResources();
-        return new PDDefaultAppearanceString(da, dr);
     }
     
     private int resolveRotation(PDAnnotationWidget widget)
