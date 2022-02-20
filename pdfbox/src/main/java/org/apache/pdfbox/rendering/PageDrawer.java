@@ -249,9 +249,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * @param pageSize The size of the page to draw.
      * @throws IOException If there is an IO error while drawing the page.
      */
-    public void drawPage(Graphics g, PDRectangle pageSize) throws IOException
+    public void drawPage(Graphics2D g, PDRectangle pageSize) throws IOException
     {
-        graphics = (Graphics2D) g;
+        graphics = g;
         xform = graphics.getTransform();
         Matrix m = new Matrix(xform);
         xformScalingFactorX = Math.abs(m.getScalingFactorX());

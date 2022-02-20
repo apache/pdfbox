@@ -55,6 +55,11 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationUnderline annotation = (PDAnnotationUnderline) getAnnotation();
+        PDRectangle rect = annotation.getRectangle();
+        if (rect == null)
+        {
+            return;
+        }
         float[] pathsArray = annotation.getQuadPoints();
         if (pathsArray == null)
         {
@@ -72,7 +77,6 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
             ab.width = 1.5f;
         }
 
-        PDRectangle rect = annotation.getRectangle();
         // Adjust rectangle even if not empty, see PLPDF.com-MarkupAnnotations.pdf
         //TODO in a class structure this should be overridable
         // this is similar to polyline but different data type
