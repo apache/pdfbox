@@ -55,6 +55,11 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationStrikeout annotation = (PDAnnotationStrikeout) getAnnotation();
+        PDRectangle rect = annotation.getRectangle();
+        if (rect == null)
+        {
+            return;
+        }
         float[] pathsArray = annotation.getQuadPoints();
         if (pathsArray == null)
         {
@@ -71,7 +76,7 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
             // value found in adobe reader
             ab.width = 1.5f;
         }
-        PDRectangle rect = annotation.getRectangle();
+
         // Adjust rectangle even if not empty, see PLPDF.com-MarkupAnnotations.pdf
         //TODO in a class structure this should be overridable
         // this is similar to polyline but different data type

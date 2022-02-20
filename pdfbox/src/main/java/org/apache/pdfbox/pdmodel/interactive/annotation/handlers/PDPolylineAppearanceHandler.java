@@ -64,6 +64,11 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationPolyline annotation = (PDAnnotationPolyline) getAnnotation();
+        PDRectangle rect = annotation.getRectangle();
+        if (rect == null)
+        {
+            return;
+        }
         float[] pathsArray = annotation.getVertices();
         if (pathsArray == null || pathsArray.length < 4)
         {
@@ -79,7 +84,6 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
         {
             return;
         }
-        PDRectangle rect = annotation.getRectangle();
         // Adjust rectangle even if not empty
         // CTAN-example-Annotations.pdf and pdf_commenting_new.pdf p11
         //TODO in a class structure this should be overridable
