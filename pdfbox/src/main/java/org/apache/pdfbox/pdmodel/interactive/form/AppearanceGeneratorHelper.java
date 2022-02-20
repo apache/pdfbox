@@ -737,16 +737,20 @@ class AppearanceGeneratorHelper
     {
         PDListBox listBox = (PDListBox) field;
         List<Integer> indexEntries = listBox.getSelectedOptionsIndex();
-        List<String> values = listBox.getValue();
-        List<String> options = listBox.getOptionsExportValues();
 
-        if (!values.isEmpty() && !options.isEmpty() && indexEntries.isEmpty())
+        if (indexEntries.isEmpty())
         {
-            // create indexEntries from options
-            indexEntries = new ArrayList<>(values.size());
-            for (String v : values)
+            List<String> values = listBox.getValue();
+            List<String> options = listBox.getOptionsExportValues();
+
+            if (!values.isEmpty() && !options.isEmpty())
             {
-                indexEntries.add(options.indexOf(v));
+                // create indexEntries from options
+                indexEntries = new ArrayList<>(values.size());
+                for (String v : values)
+                {
+                    indexEntries.add(options.indexOf(v));
+                }
             }
         }
 
@@ -754,10 +758,10 @@ class AppearanceGeneratorHelper
         // If this entry is present, the first entry to be displayed is the keys value,
         // otherwise display starts with the first entry in Opt.
         int topIndex = listBox.getTopIndex();
-        
-        float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / FONTSCALE;       
 
-        // the padding area 
+        float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / FONTSCALE;
+
+        // the padding area
         PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
 
         for (int selectedIndex : indexEntries)
