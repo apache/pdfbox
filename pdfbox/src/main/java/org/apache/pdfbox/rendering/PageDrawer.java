@@ -1359,9 +1359,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             LOG.error("shading " + shadingName + " does not exist in resources dictionary");
             return;
         }
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        PDGraphicsState graphicsState = getGraphicsState();
+        Matrix ctm = graphicsState.getCurrentTransformationMatrix();
 
-        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
+        graphics.setComposite(graphicsState.getNonStrokingJavaComposite());
         Shape savedClip = graphics.getClip();
         graphics.setClip(null);
         lastClips = null;
@@ -1373,7 +1374,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (bbox != null)
         {
             area = new Area(bbox.transform(ctm));
-            area.intersect(getGraphicsState().getCurrentClippingPath());
+            area.intersect(graphicsState.getCurrentClippingPath());
         }
         else
         {
@@ -1385,18 +1386,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 bounds.add(new Point2D.Double(Math.ceil(bounds.getMaxX() + 1),
                         Math.ceil(bounds.getMaxY() + 1)));
                 area = new Area(bounds);
-                area.intersect(getGraphicsState().getCurrentClippingPath());
+                area.intersect(graphicsState.getCurrentClippingPath());
             }
             else
             {
-                area = getGraphicsState().getCurrentClippingPath();
+                area = graphicsState.getCurrentClippingPath();
             }
         }
         if (!area.isEmpty())
         {
             // creating Paint is sometimes a costly operation, so avoid if possible
             Paint paint = shading.toPaint(ctm);
-            paint = applySoftMaskToPaint(paint, getGraphicsState().getSoftMask());
+            paint = applySoftMaskToPaint(paint, graphicsState.getSoftMask());
             graphics.setPaint(paint);
             graphics.fill(area);
         }
