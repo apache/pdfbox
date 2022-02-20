@@ -232,13 +232,19 @@ class AppearanceGeneratorHelper
 
             PDAppearanceEntry appearance = appearanceDict.getNormalAppearance();
             // TODO support appearances other than "normal"
-                
-            PDAppearanceStream appearanceStream;
-            if (isValidAppearanceStream(appearance))
+
+            PDAppearanceStream appearanceStream = null;
+            boolean isValidAppearanceStream = false;
+            if (isAppearanceStream(appearance))
             {
-                appearanceStream = appearance.getAppearanceStream();
+                PDAppearanceStream stream = appearance.getAppearanceStream();
+                if (isValidAppearanceStream(stream))
+                {
+                    appearanceStream = stream;
+                    isValidAppearanceStream = true;
+                }
             }
-            else
+            if (!isValidAppearanceStream)
             {
                 appearanceStream = prepareNormalAppearanceStream(widget);
                 appearanceDict.setNormalAppearance(appearanceStream);
@@ -289,22 +295,22 @@ class AppearanceGeneratorHelper
         return apValue;
     }
 
-    private static boolean isValidAppearanceStream(PDAppearanceEntry appearance)
+    private boolean isAppearanceStream(PDAppearanceEntry appearance)
     {
-        if (appearance == null)
-        {
-            return false;
-        }
-        if (!appearance.isStream())
-        {
-            return false;
-        }
-        PDRectangle bbox = appearance.getAppearanceStream().getBBox();
+        return appearance != null && appearance.isStream();
+    }
+
+    private boolean isValidAppearanceStream(PDAppearanceStream stream)
+    {
+        PDRectangle bbox = stream.getBBox();
         if (bbox == null)
         {
             return false;
         }
-        return Math.abs(bbox.getWidth()) > 0 && Math.abs(bbox.getHeight()) > 0;
+        else
+        {
+            return Math.abs(bbox.getWidth()) > 0 && Math.abs(bbox.getHeight()) > 0;
+        }
     }
 
     private PDAppearanceStream prepareNormalAppearanceStream(PDAnnotationWidget widget)
