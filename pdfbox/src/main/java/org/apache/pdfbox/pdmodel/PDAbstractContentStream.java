@@ -818,7 +818,7 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
-     * Set the non-stroking color in the DeviceRGB color space. Range is 0..255.
+     * Set the non-stroking color in the DeviceRGB color space. Range is 0..1.
      *
      * @param r The red value.
      * @param g The green value.
