@@ -1461,8 +1461,19 @@ public class COSWriter implements ICOSVisitor
         pdDocument = doc;
         COSDocument cosDoc = pdDocument.getDocument();
         COSDictionary trailer = cosDoc.getTrailer();
-        if(incrementalUpdate){
-            trailer.toIncrement().exclude(trailer).forEach(objectsToWrite::add);
+        if (incrementalUpdate)
+        {
+            trailer.toIncrement().exclude(trailer).forEach(base -> {
+                objectsToWrite.add(base);
+                if (base instanceof COSObject)
+                {
+                    actualsAdded.add(((COSObject) base).getObject());
+                }
+                else
+                {
+                    actualsAdded.add(base);
+                }
+            });
         }
         signatureInterface = signInterface;
         number = pdDocument.getDocument().getHighestXRefObjectNumber();
