@@ -124,6 +124,8 @@ public class CreateSignature extends CreateSignatureBase
     public void signDetached(PDDocument document, OutputStream output)
             throws IOException
     {
+        SigUtils.checkCrossReferenceTable(document);
+
         int accessPermissions = SigUtils.getMDPPermission(document);
         if (accessPermissions == 1)
         {

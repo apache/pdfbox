@@ -193,6 +193,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // load document
         PDDocument doc = PDDocument.load(inputFile);
 
+        SigUtils.checkCrossReferenceTable(doc);
+
         int accessPermissions = SigUtils.getMDPPermission(doc);
         if (accessPermissions == 1)
         {

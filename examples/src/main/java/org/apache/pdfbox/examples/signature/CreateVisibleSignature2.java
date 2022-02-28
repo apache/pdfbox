@@ -164,6 +164,9 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         FileOutputStream fos = new FileOutputStream(signedFile);
 
         PDDocument doc = PDDocument.load(inputFile);
+        
+        SigUtils.checkCrossReferenceTable(doc);
+
         int accessPermissions = SigUtils.getMDPPermission(doc);
         if (accessPermissions == 1)
         {
