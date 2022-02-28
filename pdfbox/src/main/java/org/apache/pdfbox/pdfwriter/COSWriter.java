@@ -1106,23 +1106,8 @@ public class COSWriter implements ICOSVisitor
             }
             else if( current instanceof COSObject )
             {
-                COSBase subValue = ((COSObject)current).getObject();
-                if (willEncrypt || incrementalUpdate //
-                        || subValue instanceof COSDictionary //
-                        || subValue instanceof COSArray //
-                        || subValue == null)
-                {
-                    // PDFBOX-4308: added willEncrypt to prevent an object
-                    // that is referenced several times from being written
-                    // direct and indirect, thus getting encrypted
-                    // with wrong object number or getting encrypted twice
-                    addObjectToWrite( current );
-                    writeReference( current );
-                }
-                else
-                {
-                    subValue.accept( this );
-                }
+                addObjectToWrite(current);
+                writeReference(current);
             }
             else if( current == null )
             {
@@ -1209,23 +1194,8 @@ public class COSWriter implements ICOSVisitor
                 }
                 else if( value instanceof COSObject )
                 {
-                    COSBase subValue = ((COSObject)value).getObject();
-                    if (willEncrypt || incrementalUpdate //
-                            || subValue instanceof COSDictionary //
-                            || subValue instanceof COSArray //
-                            || subValue == null)
-                    {
-                        // PDFBOX-4308: added willEncrypt to prevent an object
-                        // that is referenced several times from being written
-                        // direct and indirect, thus getting encrypted
-                        // with wrong object number or getting encrypted twice
-                        addObjectToWrite( value );
-                        writeReference( value );
-                    }
-                    else
-                    {
-                        subValue.accept( this );
-                    }
+                    addObjectToWrite(value);
+                    writeReference(value);
                 }
                 else
                 {
