@@ -27,12 +27,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -343,5 +345,30 @@ public class SigUtils
         // For the EU, get a list here:
         // https://ec.europa.eu/digital-single-market/en/eu-trusted-lists-trust-service-providers
         // ( getRootCertificates() is not helpful because these are SSL certificates)
+    }
+
+    /**
+     * Look for gaps in the cross reference table and display warnings if any found. See also
+     * <a href="https://stackoverflow.com/questions/71267471/">here</a>.
+     *
+     * @param doc document.
+     */
+    public void checkCrossReferenceTable(PDDocument doc)
+    {
+        TreeSet<COSObjectKey> set = new TreeSet<COSObjectKey>(doc.getDocument().getXrefTable().keySet());
+        if (set.size() != set.last().getNumber())
+        {
+            long n = 0;
+            for (COSObjectKey key : set)
+            {
+                ++n;
+                while (n < key.getNumber())
+                {
+                    LOG.warn("Object " + n + " missing, signature verification may fail in " +
+                             "Adobe Reader, see https://stackoverflow.com/questions/71267471/");
+                    ++n;
+                }
+            }
+        }
     }
 }
