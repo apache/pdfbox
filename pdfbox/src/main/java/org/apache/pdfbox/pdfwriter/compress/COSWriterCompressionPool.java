@@ -109,10 +109,10 @@ public class COSWriterCompressionPool
         // It shall never contain the document's root dictionary. (relevant for document encryption)
         // It shall never contain other streams.
         if ((key != null && key.getGeneration() != 0)
+                || base instanceof COSStream
                 || (document.getEncryption() != null
                         && base == document.getEncryption().getCOSObject())
-                || base == this.document.getDocument().getTrailer().getCOSDictionary(COSName.ROOT)
-                || base instanceof COSStream)
+                || base == this.document.getDocument().getTrailer().getCOSDictionary(COSName.ROOT))
         {
             COSObjectKey actualKey = objectPool.put(key, base);
             if (actualKey == null)
@@ -141,28 +141,21 @@ public class COSWriterCompressionPool
      * @param traversedObject A Collection of all objects, that have already been traversed, to avoid cycles.
      * @throws IOException Shall be thrown, if compressing the object failed.
      */
-    private COSBase addStructure(TraversedCOSElement traversedObject) throws IOException
+    private void addStructure(TraversedCOSElement traversedObject) throws IOException
     {
         COSBase current = traversedObject.getCurrentObject();
         COSBase base = current;
-        COSBase retVal = current;
-
         if (current instanceof COSStream
                 || (current instanceof COSDictionary && !current.isDirect()))
         {
             base = addObjectToPool(base.getKey(), traversedObject);
-            retVal = base;
         }
         else if (current instanceof COSObject)
         {
             base = ((COSObject) current).getObject();
-            if (base instanceof COSDictionary || base instanceof COSArray)
+            if (base != null)
             {
                 base = addObjectToPool(current.getKey(), traversedObject);
-            }
-            else
-            {
-                retVal = base;
             }
         }
 
@@ -174,7 +167,6 @@ public class COSWriterCompressionPool
         {
             addCOSDictionary(traversedObject, (COSDictionary) base);
         }
-        return retVal;
     }
 
     private void addCOSArray(TraversedCOSElement traversedObject, COSArray array) throws IOException
