@@ -393,7 +393,7 @@ public class SigUtils
      *
      * @param doc document.
      */
-    public void checkCrossReferenceTable(PDDocument doc)
+    public static void checkCrossReferenceTable(PDDocument doc)
     {
         TreeSet<COSObjectKey> set = new TreeSet<>(doc.getDocument().getXrefTable().keySet());
         if (set.size() != set.last().getNumber())

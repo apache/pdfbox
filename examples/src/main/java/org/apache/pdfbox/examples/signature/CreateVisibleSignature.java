@@ -218,6 +218,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
         {
             doc = Loader.loadPDF(inputFile, memoryUsageSetting);
         }
+
+        SigUtils.checkCrossReferenceTable(doc);
         
         try (FileOutputStream fos = new FileOutputStream(signedFile))
         {
