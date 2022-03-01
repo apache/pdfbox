@@ -109,11 +109,11 @@ class CreatePDFATest
             if (line.equals("%%EOF"))
             {
                 isIncrementalArea = true;
-            }
-            if (line.equals("%%EOF"))
-            {
-                isIncrementalArea = true;
                 set.clear(); // for cases with several revisions
+            }
+            if (!isIncrementalArea)
+            {
+                continue;
             }
             if (line.matches("^\\d+ 0 obj$"))
             {
