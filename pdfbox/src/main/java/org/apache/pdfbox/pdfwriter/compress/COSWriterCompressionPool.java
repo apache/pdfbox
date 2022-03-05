@@ -98,7 +98,13 @@ public class COSWriterCompressionPool
         // Drop hollow objects.
         COSBase base = element.getCurrentObject();
         base = base instanceof COSObject ? ((COSObject) base).getObject() : base;
-        if (base == null || objectPool.contains(base))
+        // to avoid to mixup indirect COSInteger objects holding the same value we have to check
+        // if the given key is the same than the key which is stored for the "same" base object wihtin the object pool
+        // the same is always true for COSFloat, COSBoolean and COSName and under certain circumstances for the remainig
+        // types as well
+        if (base == null //
+                || (key != null && objectPool.contains(key)) //
+                || (key == null && objectPool.contains(base)))
         {
             return base;
         }

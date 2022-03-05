@@ -58,7 +58,11 @@ public class COSObjectPool
      */
     public COSObjectKey put(COSObjectKey key, COSBase object)
     {
-        if (object == null || contains(object))
+        // to avoid to mixup indirect COSInteger objects holding the same value we have to check
+        // if the given key is the same than the key which is stored for the "same" base object wihtin the object pool
+        // the same is always true for COSFloat, COSBoolean and COSName and under certain circumstances for the remainig
+        // types as well
+        if (object == null || (contains(object) && getKey(object).equals(key)))
         {
             return null;
         }
