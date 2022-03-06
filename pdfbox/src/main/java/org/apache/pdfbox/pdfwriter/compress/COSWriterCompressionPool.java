@@ -179,11 +179,21 @@ public class COSWriterCompressionPool
     {
         for (COSBase value : array)
         {
-            if (value instanceof COSArray || value instanceof COSDictionary //
-                    || (value instanceof COSObject
-                            && !traversedObject.getAllTraversedObjects().contains(value)))
+            if (value instanceof COSArray || value instanceof COSDictionary)
             {
                 addStructure(traversedObject.appendTraversedElement(value));
+            }
+            else if (value instanceof COSObject)
+            {
+                COSObject cosObject = (COSObject) value;
+                if (cosObject.getKey() != null && objectPool.contains(cosObject.getKey()))
+                {
+                    continue;
+                }
+                if (!traversedObject.getAllTraversedObjects().contains(value))
+                {
+                    addStructure(traversedObject.appendTraversedElement(value));
+                }
             }
         }
     }
@@ -194,12 +204,24 @@ public class COSWriterCompressionPool
         for (Entry<COSName, COSBase> entry : dictionary.entrySet())
         {
             COSBase value = entry.getValue();
-            if (value instanceof COSArray //
-                    || ((value instanceof COSDictionary || (value instanceof COSObject)) //
-                            && !traversedObject.getAllTraversedObjects().contains(value)))
+            if (value instanceof COSArray || (value instanceof COSDictionary
+                    && !traversedObject.getAllTraversedObjects().contains(value)))
             {
                 addStructure(traversedObject.appendTraversedElement(value));
             }
+            else if (value instanceof COSObject)
+            {
+                COSObject cosObject = (COSObject) value;
+                if (cosObject.getKey() != null && objectPool.contains(cosObject.getKey()))
+                {
+                    continue;
+                }
+                if (!traversedObject.getAllTraversedObjects().contains(value))
+                {
+                    addStructure(traversedObject.appendTraversedElement(value));
+                }
+            }
+
         }
     }
 
