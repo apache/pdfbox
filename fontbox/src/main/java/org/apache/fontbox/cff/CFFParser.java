@@ -1274,7 +1274,7 @@ public class CFFParser
 
             public boolean hasOperands()
             {
-                return !operands.isEmpty();
+                return operands.size() > 0;
             }
 
             public List<Number> getOperands()
