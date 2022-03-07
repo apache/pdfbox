@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.optionalcontent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -60,15 +61,16 @@ public class PDOptionalContentMembershipDictionary extends PDPropertyList
      */
     public List<PDPropertyList> getOCGs()
     {
-        List<PDPropertyList> list = new ArrayList<>();
+        List<PDPropertyList> list;
         COSBase base = dict.getDictionaryObject(COSName.OCGS);
         if (base instanceof COSDictionary)
         {
-            list.add(PDPropertyList.create((COSDictionary) base));
+            list = Collections.singletonList(PDPropertyList.create((COSDictionary) base));
         }
         else if (base instanceof COSArray)
         {
             COSArray ar = (COSArray) base;
+            list = new ArrayList<>();
             for (int i = 0; i < ar.size(); ++i)
             {
                 COSBase elem = ar.getObject(i);
@@ -78,6 +80,11 @@ public class PDOptionalContentMembershipDictionary extends PDPropertyList
                 }
             }
         }
+        else
+        {
+            list = Collections.emptyList();
+        }
+
         return list;
     }
 
