@@ -250,9 +250,10 @@ public final class PDAcroForm implements COSObjectable
             // indicates if the original content stream
             // has been wrapped in a q...Q pair.
             boolean isContentStreamWrapped = false;
-            List<PDAnnotation> annotations = new ArrayList<>();
+            List<PDAnnotation> pdAnnotations = page.getAnnotations();
+            List<PDAnnotation> annotations = new ArrayList<>(pdAnnotations.size());
                        
-            for (PDAnnotation annotation: page.getAnnotations())
+            for (PDAnnotation annotation: pdAnnotations)
             {                
                 if (widgetsForPageMap == null || !widgetsForPageMap.contains(annotation.getCOSObject()))
                 {
