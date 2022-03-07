@@ -149,8 +149,8 @@ public final class PDAcroForm implements COSObjectable
         FDFDictionary fdfDict = new FDFDictionary();
         catalog.setFDF(fdfDict);
 
-        List<FDFField> fdfFields = new ArrayList<>();
         List<PDField> fields = getFields();
+        List<FDFField> fdfFields = new ArrayList<>(fields.size());
         for (PDField field : fields)
         {
             fdfFields.add(field.exportFDF());
@@ -250,7 +250,6 @@ public final class PDAcroForm implements COSObjectable
             // indicates if the original content stream
             // has been wrapped in a q...Q pair.
             boolean isContentStreamWrapped = false;
-
             List<PDAnnotation> annotations = new ArrayList<>();
                        
             for (PDAnnotation annotation: page.getAnnotations())
