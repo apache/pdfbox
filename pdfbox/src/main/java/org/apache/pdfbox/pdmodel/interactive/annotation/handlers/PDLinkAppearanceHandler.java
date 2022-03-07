@@ -115,11 +115,11 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                 pathsArray[0] = borderEdge.getLowerLeftX();
                 pathsArray[1] = borderEdge.getLowerLeftY();
                 pathsArray[2] = borderEdge.getUpperRightX();
-                pathsArray[3] = borderEdge.getLowerLeftY();
-                pathsArray[4] = borderEdge.getUpperRightX();
+                pathsArray[3] = pathsArray[1];
+                pathsArray[4] = pathsArray[2];
                 pathsArray[5] = borderEdge.getUpperRightY();
-                pathsArray[6] = borderEdge.getLowerLeftX();
-                pathsArray[7] = borderEdge.getUpperRightY();
+                pathsArray[6] = pathsArray[0];
+                pathsArray[7] = pathsArray[5];
             }
 
             boolean underlined = false;
