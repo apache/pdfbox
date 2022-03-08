@@ -19,6 +19,8 @@ package org.apache.pdfbox.examples.signature;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -42,6 +44,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
+import org.apache.pdfbox.examples.util.ConnectedInputStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -410,5 +413,42 @@ public class SigUtils
                 }
             }
         }
+    }
+
+    /**
+     * Like {@link URL#openStream()} but will follow redirection from http to https.
+     *
+     * @param urlString
+     * @return
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
+    public static InputStream openURL(String urlString) throws MalformedURLException, IOException
+    {
+        URL url = new URL(urlString);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        int responseCode = con.getResponseCode();
+        LOG.info(responseCode + " " + con.getResponseMessage());
+        if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP ||
+            responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
+            responseCode == HttpURLConnection.HTTP_SEE_OTHER)
+        {
+            String location = con.getHeaderField("Location");
+            if (urlString.startsWith("http://") &&
+                location.startsWith("https://") &&
+                urlString.substring(7).equals(location.substring(8)))
+            {
+                // redirection from http:// to https://
+                // change this code if you want to be more flexible (but think about security!)
+                LOG.info("redirection to " + location + " followed");
+                con.disconnect();
+                con = (HttpURLConnection) new URL(location).openConnection();
+            }
+            else
+            {
+                LOG.info("redirection to " + location + " ignored");
+            }
+        }
+        return new ConnectedInputStream(con, con.getInputStream());
     }
 }
