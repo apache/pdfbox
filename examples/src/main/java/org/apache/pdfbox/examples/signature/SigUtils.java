@@ -426,6 +426,11 @@ public class SigUtils
     public static InputStream openURL(String urlString) throws MalformedURLException, IOException
     {
         URL url = new URL(urlString);
+        if (!urlString.startsWith("http"))
+        {
+            // so that ftp is still supported
+            return url.openStream();
+        }
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         int responseCode = con.getResponseCode();
         LOG.info(responseCode + " " + con.getResponseMessage());
