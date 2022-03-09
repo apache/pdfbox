@@ -190,7 +190,7 @@ public class COSWriterCompressionPool
                 {
                     continue;
                 }
-                if (!traversedObject.getAllTraversedObjects().contains(value))
+                if (cosObject.getObject() != null)
                 {
                     addStructure(traversedObject.appendTraversedElement(value));
                 }
@@ -216,7 +216,7 @@ public class COSWriterCompressionPool
                 {
                     continue;
                 }
-                if (!traversedObject.getAllTraversedObjects().contains(value))
+                if (cosObject.getObject() != null)
                 {
                     addStructure(traversedObject.appendTraversedElement(value));
                 }
