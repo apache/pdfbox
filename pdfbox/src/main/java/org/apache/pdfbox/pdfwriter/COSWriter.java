@@ -79,7 +79,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface
 import org.apache.pdfbox.util.Hex;
 
 /**
- * This class acts on a in-memory representation of a PDF document.
+ * This class acts on an in-memory representation of a PDF document.
  *
  * @author Michael Traut
  * @author Ben Litchfield
@@ -782,16 +782,16 @@ public class COSWriter implements ICOSVisitor
         // write start object number and object count for this x ref section
         // we assume starting from scratch
 
-        Long[] xRefRanges = getXRefRanges(tmpXRefEntries);
-        int xRefLength = xRefRanges.length;
+        List<Long> xRefRanges = getXRefRanges(tmpXRefEntries);
+        int xRefLength = xRefRanges.size();
         int x = 0;
         int j = 0;
         if ((xRefLength % 2) == 0)
         {
             while (x < xRefLength)
             {
-                long xRefRangeX1 = xRefRanges[x + 1];
-                writeXrefRange(xRefRanges[x], xRefRangeX1);
+                long xRefRangeX1 = xRefRanges.get(x + 1);
+                writeXrefRange(xRefRanges.get(x), xRefRangeX1);
 
                 for (int i = 0; i < xRefRangeX1; ++i)
                 {
@@ -814,7 +814,7 @@ public class COSWriter implements ICOSVisitor
         for (NormalXReference entry : normalXReferences)
         {
             long nr = entry.getReferencedKey().getNumber();
-            if (nr != last)
+            if (nr > last)
             {
                 for (long i = last; i < nr; i++)
                 {
@@ -1020,9 +1020,9 @@ public class COSWriter implements ICOSVisitor
      * related numbers and create a cluster of size 4. etc.
      * 
      * @param xRefEntriesList list with the xRef entries that was written
-     * @return an integer array with the ranges
+     * @return an integer collection with the ranges
      */
-    protected Long[] getXRefRanges(List<XReferenceEntry> xRefEntriesList)
+    protected List<Long> getXRefRanges(List<XReferenceEntry> xRefEntriesList)
     {
         long last = -2;
         long count = 1;
@@ -1054,7 +1054,7 @@ public class COSWriter implements ICOSVisitor
             list.add(last - count + 1);
             list.add(count);
         }
-        return list.toArray(new Long[list.size()]);
+        return list;
     }
     
     /**
