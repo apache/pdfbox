@@ -461,6 +461,7 @@ public class OcspHelper
         {
             httpConnection.setRequestProperty("Content-Type", "application/ocsp-request");
             httpConnection.setRequestProperty("Accept", "application/ocsp-response");
+            httpConnection.setRequestMethod("POST");
             httpConnection.setDoOutput(true);
             try (OutputStream out = httpConnection.getOutputStream())
             {
