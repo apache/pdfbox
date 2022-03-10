@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -420,10 +419,9 @@ public class SigUtils
      *
      * @param urlString
      * @return
-     * @throws MalformedURLException
      * @throws IOException 
      */
-    public static InputStream openURL(String urlString) throws MalformedURLException, IOException
+    public static InputStream openURL(String urlString) throws IOException
     {
         URL url = new URL(urlString);
         if (!urlString.startsWith("http"))
