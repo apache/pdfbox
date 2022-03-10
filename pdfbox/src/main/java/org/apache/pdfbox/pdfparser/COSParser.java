@@ -1184,13 +1184,19 @@ public class COSParser extends BaseParser implements ICOSParser
                 }
             }
         }
-        for (Entry<COSObjectKey, COSObjectKey> correctedKeyEntry : correctedKeys.entrySet())
-        {
-            if(!validKeys.contains(correctedKeyEntry.getValue())) {
-                // Only replacy entries, if the original entry does not point to a valid object
-                xrefOffset.put(correctedKeyEntry.getValue(),
-                        xrefOffset.remove(correctedKeyEntry.getKey()));
+        Map<COSObjectKey, Long> correctedPointers = new HashMap<COSObjectKey, Long>();
+        for (Entry<COSObjectKey, COSObjectKey> correctedKeyEntry : correctedKeys.entrySet()) {
+            if (!validKeys.contains(correctedKeyEntry.getValue())) {
+                // Only replace entries, if the original entry does not point to a valid object
+                correctedPointers.put(correctedKeyEntry.getValue(), xrefOffset.get(correctedKeyEntry.getKey()));
             }
+        }
+        for (Entry<COSObjectKey, COSObjectKey> correctedKeyEntry : correctedKeys.entrySet()) {
+            // remove old invalid, as some might not be replaced
+            xrefOffset.remove(correctedKeyEntry.getKey());
+        }
+        for (Entry<COSObjectKey, Long> pointer : correctedPointers.entrySet()) {
+            xrefOffset.put(pointer.getKey(), pointer.getValue());
         }
         return true;
     }
