@@ -45,6 +45,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -292,7 +293,7 @@ public final class CRLVerifier
     public static X509CRL downloadCRLFromWeb(String crlURL)
             throws IOException, CertificateException, CRLException
     {
-        InputStream crlStream = new URL(crlURL).openStream();
+        InputStream crlStream = SigUtils.openURL(crlURL);
         try
         {
             return (X509CRL) CertificateFactory.getInstance("X.509").generateCRL(crlStream);
