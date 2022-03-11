@@ -54,6 +54,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Hex;
+import org.bouncycastle.asn1.BEROctetString;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
@@ -436,7 +437,11 @@ public class AddValidationInformation
         byte[] signatureHash;
         try
         {
-            signatureHash = MessageDigest.getInstance("SHA-1").digest(basicResponse.getSignature());
+            // https://www.etsi.org/deliver/etsi_ts/102700_102799/10277804/01.01.02_60/ts_10277804v010102p.pdf
+            // "For the signatures of the CRL and OCSP response, it is the respective signature
+            // object represented as a BER-encoded OCTET STRING encoded with primitive encoding"
+            BEROctetString encodedSignature = new BEROctetString(basicResponse.getSignature());
+            signatureHash = MessageDigest.getInstance("SHA-1").digest(encodedSignature.getEncoded());
         }
         catch (NoSuchAlgorithmException ex)
         {
@@ -506,7 +511,11 @@ public class AddValidationInformation
             byte[] signatureHash;
             try
             {
-                signatureHash = MessageDigest.getInstance("SHA-1").digest(crl.getSignature());
+                // https://www.etsi.org/deliver/etsi_ts/102700_102799/10277804/01.01.02_60/ts_10277804v010102p.pdf
+                // "For the signatures of the CRL and OCSP response, it is the respective signature
+                // object represented as a BER-encoded OCTET STRING encoded with primitive encoding"
+                BEROctetString berEncodedSignature = new BEROctetString(crl.getSignature());
+                signatureHash = MessageDigest.getInstance("SHA-1").digest(berEncodedSignature.getEncoded());
             }
             catch (NoSuchAlgorithmException ex)
             {
