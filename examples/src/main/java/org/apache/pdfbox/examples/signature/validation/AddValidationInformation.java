@@ -386,6 +386,7 @@ public class AddValidationInformation
             // https://www.etsi.org/deliver/etsi_ts/102700_102799/10277804/01.01.02_60/ts_10277804v010102p.pdf
             // "For the signatures of the CRL and OCSP response, it is the respective signature
             // object represented as a BER-encoded OCTET STRING encoded with primitive encoding"
+            @SuppressWarnings("java:S4790")
             BEROctetString encodedSignature = new BEROctetString(basicResponse.getSignature());
             signatureHash = MessageDigest.getInstance("SHA-1").digest(encodedSignature.getEncoded());
         }
@@ -460,6 +461,7 @@ public class AddValidationInformation
                 // https://www.etsi.org/deliver/etsi_ts/102700_102799/10277804/01.01.02_60/ts_10277804v010102p.pdf
                 // "For the signatures of the CRL and OCSP response, it is the respective signature
                 // object represented as a BER-encoded OCTET STRING encoded with primitive encoding"
+                @SuppressWarnings("java:S4790")
                 BEROctetString berEncodedSignature = new BEROctetString(crl.getSignature());
                 signatureHash = MessageDigest.getInstance("SHA-1").digest(berEncodedSignature.getEncoded());
             }
