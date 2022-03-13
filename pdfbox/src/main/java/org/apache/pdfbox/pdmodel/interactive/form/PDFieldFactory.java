@@ -47,8 +47,6 @@ public final class PDFieldFactory
      */
     public static PDField createField(PDAcroForm form, COSDictionary field, PDNonTerminalField parent)
     {
-        String fieldType = findFieldType(field);
-        
         // Test if we have a non terminal field first as it might have
         // properties which do apply to other fields
         // A non terminal fields has Kids entries which do have
@@ -68,7 +66,9 @@ public final class PDFieldFactory
                 }
             }
         } 
-        
+
+        String fieldType = findFieldType(field);
+
         if (FIELD_TYPE_CHOICE.equals(fieldType))
         {
             return createChoiceSubType(form, field, parent);
