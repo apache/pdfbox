@@ -30,7 +30,9 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -85,6 +87,7 @@ public class AddValidationInformation
     private COSArray ocsps;
     private COSArray crls;
     private COSArray certs;
+    private final Map<X509Certificate,COSStream> certMap = new HashMap<>();
     private PDDocument document;
     private final Set<X509Certificate> foundRevocationInformation = new HashSet<>();
     private Calendar signDate;
@@ -522,7 +525,7 @@ public class AddValidationInformation
             {
                 COSStream certStream = writeDataToStream(cert.getEncoded());
                 correspondingCerts.add(certStream);
-                certs.add(certStream); // may lead to duplicate certificates. Important?
+                certMap.put(cert, certStream);
             }
             catch (CertificateEncodingException ex)
             {
@@ -543,25 +546,29 @@ public class AddValidationInformation
     }
 
     /**
-     * Adds all certs to the certs-array. Make sure, all certificates are inside the
-     * certificateStore of certInformationHelper
+     * Adds all certs to the certs-array. Make sure that all certificates are inside the
+     * certificateStore of certInformationHelper. This should be the only call to fill certs.
      *
      * @throws IOException
      */
     private void addAllCertsToCertArray() throws IOException
     {
-        try
+        for (X509Certificate cert : certInformationHelper.getCertificateSet())
         {
-            for (X509Certificate cert : certInformationHelper.getCertificateSet())
+            if (!certMap.containsKey(cert))
             {
-                COSStream stream = writeDataToStream(cert.getEncoded());
-                certs.add(stream);
+                try
+                {
+                    COSStream certStream = writeDataToStream(cert.getEncoded());
+                    certMap.put(cert, certStream);
+                }
+                catch (CertificateEncodingException ex)
+                {
+                    throw new IOException(ex);
+                }
             }
         }
-        catch (CertificateEncodingException e)
-        {
-            throw new IOException(e);
-        }
+        certMap.values().forEach(certStream -> certs.add(certStream));
     }
 
     /**
