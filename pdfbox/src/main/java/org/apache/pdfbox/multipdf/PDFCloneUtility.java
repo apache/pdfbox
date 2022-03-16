@@ -115,7 +115,7 @@ public class PDFCloneUtility
               for( int i=0; i<array.size(); i++ )
               {
                   COSBase value = array.get(i);
-                  checkForRecursion((COSBase) base, value);
+                  checkForRecursion(base, value);
                   newArray.add(cloneForNewDocument(value));
               }
               retval = newArray;
@@ -133,7 +133,7 @@ public class PDFCloneUtility
               for( Map.Entry<COSName, COSBase> entry :  originalStream.entrySet() )
               {
                   COSBase value = entry.getValue();
-                  checkForRecursion((COSBase) base, value);
+                  checkForRecursion(base, value);
                   stream.setItem(entry.getKey(), cloneForNewDocument(value));
               }
               retval = stream;
@@ -146,7 +146,7 @@ public class PDFCloneUtility
               for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
               {
                   COSBase value = entry.getValue();
-                  checkForRecursion((COSBase) base, value);
+                  checkForRecursion(base, value);
                   ((COSDictionary) retval).setItem(entry.getKey(), cloneForNewDocument(value));
               }
           }
@@ -267,7 +267,7 @@ public class PDFCloneUtility
      * @param value an element
      * @throws IOException if value is an object reference to the parent
      */
-    private void checkForRecursion(COSBase parent, COSBase value) throws IOException
+    private void checkForRecursion(Object parent, COSBase value) throws IOException
     {
         if (value instanceof COSObject)
         {
