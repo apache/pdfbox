@@ -170,8 +170,11 @@ public class TextToPDF
                         // word1 can also be empty without ff, if a line has many spaces
                         if (word1.length() > 0 || !ff)
                         {
+                            if (nextLineToDraw.length() > 0)
+                            {
+                                nextLineToDraw.append(" ");
+                            }
                             nextLineToDraw.append(word1);
-                            nextLineToDraw.append(" ");
                         }
                         if (!ff || word2.length() == 0)
                         {
