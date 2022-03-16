@@ -16,12 +16,16 @@
  */
 package org.apache.pdfbox.tools;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringReader;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -33,7 +37,7 @@ class TestTextToPdf
      * This test ensures that a PDF created from an empty String is still readable by Adobe Reader
      */
     @Test
-    void testCreateEmptyPdf() throws Exception
+    void testCreateEmptyPdf() throws IOException
     {
         TextToPDF pdfCreator = new TextToPDF();
         PDDocument pdfDoc;
@@ -49,4 +53,45 @@ class TestTextToPdf
         assertEquals(1, pageCount, "Wrong number of pages.");
         pdfDoc.close();
     }
+    
+    @Test
+    void testWrap() throws IOException
+    {
+        TextToPDF pdfCreator = new TextToPDF();
+        // single line
+        StringReader reader = new StringReader("Lorem ipsum dolor sit amet, consetetur "
+                + "sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore "
+                + "magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo "
+                + "dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est "
+                + "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing "
+                + "elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
+                + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
+                + "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
+                + "dolor sit amet.");
+        String expectedText = 
+                  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy "
+                + "eirmod tempor invidunt ut labore et dolore\n"
+                + "magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo "
+                + "dolores et ea rebum. Stet clita kasd\n"
+                + "gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum "
+                + "dolor sit amet, consetetur sadipscing\n"
+                + "elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
+                + "erat, sed diam voluptua. At vero eos\n"
+                + "et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, "
+                + "no sea takimata sanctus est Lorem ipsum dolor\n"
+                + "sit amet.";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument doc = pdfCreator.createPDFFromText(reader))
+        {
+            doc.save(baos);
+        }
+        try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setLineSeparator("\n");
+            String text = stripper.getText(doc);
+            assertEquals(expectedText, text.trim());
+        }
+    }
+    
 }
