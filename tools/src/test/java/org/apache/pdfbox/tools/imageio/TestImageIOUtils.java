@@ -326,9 +326,9 @@ public class TestImageIOUtils extends TestCase
             checkBmpResolution(filename, expectedResolution);
             return;
         }
-        Iterator readers = ImageIO.getImageReadersBySuffix(suffix);
+        Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix(suffix);
         assertTrue("No image reader found for suffix " + suffix, readers.hasNext());
-        ImageReader reader = (ImageReader) readers.next();
+        ImageReader reader = readers.next();
         ImageInputStream iis = ImageIO.createImageInputStream(new File(filename));
         assertNotNull("No ImageInputStream created for file " + filename, iis);
         reader.setInput(iis);
@@ -394,8 +394,8 @@ public class TestImageIOUtils extends TestCase
      */
     void checkTiffCompression(String filename, String expectedCompression) throws IOException
     {
-        Iterator readers = ImageIO.getImageReadersBySuffix("tiff");
-        ImageReader reader = (ImageReader) readers.next();
+        Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tiff");
+        ImageReader reader = readers.next();
         ImageInputStream iis = ImageIO.createImageInputStream(new File(filename));
         reader.setInput(iis);
         IIOMetadata imageMetadata = reader.getImageMetadata(0);
