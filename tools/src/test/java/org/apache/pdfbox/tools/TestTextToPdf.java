@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 /**
@@ -62,41 +63,127 @@ public class TestTextToPdf extends TestCase
         pdfDoc.close();
     }
     
-    public void testWrap() throws IOException
+    /**
+     * Tests that the form feed is properly processed.
+     * 
+     * @throws IOException 
+     */
+    public void testFormFeed() throws IOException
     {
         TextToPDF pdfCreator = new TextToPDF();
-        // single line
-        StringReader reader = new StringReader("Lorem ipsum dolor sit amet, consetetur "
-                + "sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore "
-                + "magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo "
-                + "dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est "
-                + "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing "
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        StringReader reader = new StringReader("First page\fSecond page");
+        PDDocument doc = pdfCreator.createPDFFromText(reader);
+        doc.save(baos);
+        doc.close();
+        doc = PDDocument.load(baos.toByteArray());
+        assertEquals(2, doc.getNumberOfPages());
+        PDFTextStripper stripper = new PDFTextStripper();
+        stripper.setStartPage(1);
+        stripper.setEndPage(1);
+        assertEquals("First page", stripper.getText(doc).trim());
+        stripper.setStartPage(2);
+        stripper.setEndPage(2);
+        assertEquals("Second page", stripper.getText(doc).trim());
+        doc.close();
+    }
+
+    /**
+     * Tests x overflow so that new line is used, and overflow on the y axis so new page must be
+     * created.
+     *
+     * @throws IOException
+     */
+    public void testOverflow() throws IOException
+    {
+        TextToPDF pdfCreator = new TextToPDF();
+        pdfCreator.setMediaBox(PDRectangle.A6);
+        StringReader reader = new StringReader("Lorem ipsum dolor sit amet, consetetur sadipscing "
                 + "elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
-                + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
-                + "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
-                + "dolor sit amet.");
-        String expectedText = 
-                  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy "
-                + "eirmod tempor invidunt ut labore et dolore\n"
-                + "magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo "
-                + "dolores et ea rebum. Stet clita kasd\n"
-                + "gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum "
-                + "dolor sit amet, consetetur sadipscing\n"
-                + "elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
-                + "erat, sed diam voluptua. At vero eos\n"
-                + "et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, "
-                + "no sea takimata sanctus est Lorem ipsum dolor\n"
-                + "sit amet.";
+                + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. "
+                + "Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. "
+                + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod "
+                + "tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. "
+                + "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd "
+                + "gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem "
+                + "ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod "
+                + "tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. "
+                + "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd "
+                + "gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n"
+                + "\n"
+                + "Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie "
+                + "consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan "
+                + "et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue "
+                + "duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, "
+                + "consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut "
+                + "laoreet dolore magna aliquam erat volutpat.\n"
+                + "\n"
+                + "Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper "
+                + "suscipit lobortis nisl ut aliquip ex ea commodo consequat. "
+                + "Duis autem vel eum iriure dolor in hendrerit in vulputate "
+                + "velit esse molestie consequat, vel illum dolore eu feugiat nulla "
+                + "facilisis at vero eros et accumsan et iusto odio dignissim qui blandit "
+                + "praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.\n"
+                + "\n"
+                + "Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming "
+                + "id quod mazim placerat facer.");
+        String expectedPage1Text
+                = "Lorem ipsum dolor sit amet, consetetur\n"
+                + "sadipscing elitr, sed diam nonumy eirmod\n"
+                + "tempor invidunt ut labore et dolore magna\n"
+                + "aliquyam erat, sed diam voluptua. At vero eos et\n"
+                + "accusam et justo duo dolores et ea rebum. Stet\n"
+                + "clita kasd gubergren, no sea takimata sanctus\n"
+                + "est Lorem ipsum dolor sit amet. Lorem ipsum\n"
+                + "dolor sit amet, consetetur sadipscing elitr, sed\n"
+                + "diam nonumy eirmod tempor invidunt ut labore et\n"
+                + "dolore magna aliquyam erat, sed diam voluptua.\n"
+                + "At vero eos et accusam et justo duo dolores et\n"
+                + "ea rebum. Stet clita kasd gubergren, no sea\n"
+                + "takimata sanctus est Lorem ipsum dolor sit amet.\n"
+                + "Lorem ipsum dolor sit amet, consetetur\n"
+                + "sadipscing elitr, sed diam nonumy eirmod\n"
+                + "tempor invidunt ut labore et dolore magna\n"
+                + "aliquyam erat, sed diam voluptua. At vero eos et\n"
+                + "accusam et justo duo dolores et ea rebum. Stet\n"
+                + "clita kasd gubergren, no sea takimata sanctus\n"
+                + "est Lorem ipsum dolor sit amet.\n"
+                + "Duis autem vel eum iriure dolor in hendrerit in\n"
+                + "vulputate velit esse molestie consequat, vel illum\n"
+                + "dolore eu feugiat nulla facilisis at vero eros et\n"
+                + "accumsan et iusto odio dignissim qui blandit\n"
+                + "praesent luptatum zzril delenit augue duis dolore\n"
+                + "te feugait nulla facilisi. Lorem ipsum dolor sit\n"
+                + "amet, consectetuer adipiscing elit, sed diam\n"
+                + "nonummy nibh euismod tincidunt ut laoreet";
+        String expectedPage2Text
+                = "dolore magna aliquam erat volutpat.\n"
+                + "Ut wisi enim ad minim veniam, quis nostrud\n"
+                + "exerci tation ullamcorper suscipit lobortis nisl ut\n"
+                + "aliquip ex ea commodo consequat. Duis autem\n"
+                + "vel eum iriure dolor in hendrerit in vulputate velit\n"
+                + "esse molestie consequat, vel illum dolore eu\n"
+                + "feugiat nulla facilisis at vero eros et accumsan et\n"
+                + "iusto odio dignissim qui blandit praesent\n"
+                + "luptatum zzril delenit augue duis dolore te feugait\n"
+                + "nulla facilisi.\n"
+                + "Nam liber tempor cum soluta nobis eleifend\n"
+                + "option congue nihil imperdiet doming id quod\n"
+                + "mazim placerat facer.";
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PDDocument doc = pdfCreator.createPDFFromText(reader);
         doc.save(baos);
         doc.close();
-
         doc = PDDocument.load(baos.toByteArray());
+        assertEquals(2, doc.getNumberOfPages());
         PDFTextStripper stripper = new PDFTextStripper();
         stripper.setLineSeparator("\n");
-        String text = stripper.getText(doc);
-        assertEquals(expectedText, text.trim());
+        stripper.setStartPage(1);
+        stripper.setEndPage(1);
+        assertEquals(expectedPage1Text, stripper.getText(doc).trim());
+        stripper.setStartPage(2);
+        stripper.setEndPage(2);
+        assertEquals(expectedPage2Text, stripper.getText(doc).trim());
         doc.close();
     }
 
