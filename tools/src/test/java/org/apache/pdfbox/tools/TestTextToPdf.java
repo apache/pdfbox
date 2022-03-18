@@ -65,14 +65,14 @@ class TestTextToPdf
     {
         TextToPDF pdfCreator = new TextToPDF();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        StringReader reader = new StringReader("First page\fSecond page");
+        StringReader reader = new StringReader("First page\fSecond page\f\nThird page");
         try (PDDocument doc = pdfCreator.createPDFFromText(reader))
         {
             doc.save(baos);
         }
         try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
         {
-            assertEquals(2, doc.getNumberOfPages());
+            assertEquals(3, doc.getNumberOfPages());
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setStartPage(1);
             stripper.setEndPage(1);
@@ -80,6 +80,9 @@ class TestTextToPdf
             stripper.setStartPage(2);
             stripper.setEndPage(2);
             assertEquals("Second page", stripper.getText(doc).trim());
+            stripper.setStartPage(3);
+            stripper.setEndPage(3);
+            assertEquals("Third page", stripper.getText(doc).trim());
         }
     }
 
