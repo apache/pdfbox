@@ -120,34 +120,23 @@ final class ToUnicodeWriter
         List<Integer> srcTo = new ArrayList<>();
         List<String> dstString = new ArrayList<>();
 
-        int srcPrev = -1;
-        String dstPrev = "";
+        Map.Entry<Integer, String> prev = null;
 
-        int srcCode1 = -1;
-
-        for (Map.Entry<Integer, String> entry : cidToUnicode.entrySet())
+        for (Map.Entry<Integer, String> next : cidToUnicode.entrySet())
         {
-            int cid = entry.getKey();
-            String text = entry.getValue();
-
-            if (cid == srcPrev + 1 &&                                 // CID must be last CID + 1
-                dstPrev.codePointCount(0, dstPrev.length()) == 1 &&   // no UTF-16 surrogates
-                text.codePointAt(0) == dstPrev.codePointAt(0) + 1 &&  // dstString must be prev + 1
-                dstPrev.codePointAt(0) + 1 <= 255 - (cid - srcCode1)) // increment last byte only
+            if (allowCIDToUnicodeRange(prev, next))
             {
                 // extend range
-                srcTo.set(srcTo.size() - 1, cid);
+                srcTo.set(srcTo.size() - 1, next.getKey());
             }
             else
             {
                 // begin range
-                srcCode1 = cid;
-                srcFrom.add(cid);
-                srcTo.add(cid);
-                dstString.add(text);
+                srcFrom.add(next.getKey());
+                srcTo.add(next.getKey());
+                dstString.add(next.getValue());
             }
-            srcPrev = cid;
-            dstPrev = text;
+            prev = next;
         }
 
         // limit entries per operator
@@ -190,5 +179,50 @@ final class ToUnicodeWriter
     {
         writer.write(text);
         writer.write('\n');
+    }
+
+    // allowCIDToUnicodeRange returns true if the CID and Unicode destination string are allowed to follow one another
+    // according to the Adobe 1.7 specification as described in Section 5.9, Example 5.16.
+    static boolean allowCIDToUnicodeRange(Map.Entry<Integer, String> prev,
+            Map.Entry<Integer, String> next)
+    {
+        if (prev == null || next == null)
+        {
+            return false;
+        }
+        return allowCodeRange(prev.getKey(), next.getKey())
+                && allowDestinationRange(prev.getValue(), next.getValue());
+    }
+
+    // allowCodeRange returns true if the 16-bit values are sequential and differ only in the low-order byte.
+    static boolean allowCodeRange(int prev, int next)
+    {
+        if ((prev + 1) != next)
+        {
+            return false;
+        }
+        int prevH = (prev >> 8) & 0xFF;
+        int prevL = prev & 0xFF;
+        int nextH = (next >> 8) & 0xFF;
+        int nextL = next & 0xFF;
+
+        return prevH == nextH && prevL < nextL;
+    }
+
+    // allowDestinationRange returns true if the code points represented by the strings are sequential and differ
+    // only in the low-order byte.
+    static boolean allowDestinationRange(String prev, String next)
+    {
+        if (prev.isEmpty() || next.isEmpty())
+        {
+            return false;
+        }
+        int prevCode = prev.codePointAt(0);
+        int nextCode = next.codePointAt(0);
+
+        // Allow the new destination string if:
+        // 1. It is sequential with the previous one and differs only in the low-order byte
+        // 2. The previous string does not contain any UTF-16 surrogates
+        return allowCodeRange(prevCode, nextCode) && prev.codePointCount(0, prev.length()) == 1;
     }
 }
