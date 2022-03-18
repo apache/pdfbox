@@ -232,7 +232,18 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         if ("tif".equals(ext) || "tiff".equals(ext))
         {
-            return CCITTFactory.createFromFile(doc, file);
+            try
+            {
+                return CCITTFactory.createFromFile(doc, file);
+            }
+            catch (IOException ex)
+            {
+                LOG.debug("Reading as TIFF failed, setting fileType to PNG", ex);
+                // Plan B: try reading with ImageIO
+                // common exception:
+                // First image in tiff is not CCITT T4 or T6 compressed
+                ext = "png";
+            }
         }
         if ("gif".equals(ext) || "bmp".equals(ext) || "png".equals(ext))
         {
