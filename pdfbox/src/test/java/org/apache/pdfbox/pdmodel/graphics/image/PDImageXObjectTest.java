@@ -59,6 +59,7 @@ class PDImageXObjectTest
         testCompareCreatedFileByExtensionWithCreatedByLosslessFactory("gif-1bit-transparent.gif");
         testCompareCreatedFileByExtensionWithCreatedByLosslessFactory("png_indexed_8bit_alpha.png");
         testCompareCreatedFileByExtensionWithCreatedByLosslessFactory("png.png");
+        testCompareCreatedFileByExtensionWithCreatedByLosslessFactory("lzw.tif");
     }
 
     /**
@@ -77,7 +78,8 @@ class PDImageXObjectTest
         testCompareCreatedFileWithCreatedByLosslessFactory("gif.gif");
         testCompareCreatedFileWithCreatedByLosslessFactory("gif-1bit-transparent.gif");
         testCompareCreatedFileWithCreatedByLosslessFactory("png_indexed_8bit_alpha.png");
-        testCompareCreatedFileWithCreatedByLosslessFactory("png.png");
+        testCompareCreatedFileWithCreatedByLosslessFactory("png.png");        
+        testCompareCreatedFileWithCreatedByLosslessFactory("lzw.tif");
     }
 
 
@@ -98,6 +100,7 @@ class PDImageXObjectTest
         testCompareCreatedByContentWithCreatedByLosslessFactory("gif-1bit-transparent.gif");
         testCompareCreatedByContentWithCreatedByLosslessFactory("png_indexed_8bit_alpha.png");
         testCompareCreatedByContentWithCreatedByLosslessFactory("png.png");
+        testCompareCreatedByContentWithCreatedByLosslessFactory("lzw.tif");
     }
 
 
@@ -118,6 +121,7 @@ class PDImageXObjectTest
         testCompareCreatedFromByteArrayWithCreatedByLosslessFactory("gif-1bit-transparent.gif");
         testCompareCreatedFromByteArrayWithCreatedByLosslessFactory("png_indexed_8bit_alpha.png");
         testCompareCreatedFromByteArrayWithCreatedByLosslessFactory("png.png");
+        testCompareCreatedFromByteArrayWithCreatedByLosslessFactory("lzw.tif");
     }
 
     private void testCompareCreatedFileByExtensionWithCreatedByLosslessFactory(String filename)
