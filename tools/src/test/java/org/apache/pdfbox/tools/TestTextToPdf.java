@@ -144,6 +144,7 @@ class TestTextToPdf
                 + "accusam et justo duo dolores et ea rebum. Stet\n"
                 + "clita kasd gubergren, no sea takimata sanctus\n"
                 + "est Lorem ipsum dolor sit amet.\n"
+                + "\n"
                 + "Duis autem vel eum iriure dolor in hendrerit in\n"
                 + "vulputate velit esse molestie consequat, vel illum\n"
                 + "dolore eu feugiat nulla facilisis at vero eros et\n"
@@ -154,6 +155,7 @@ class TestTextToPdf
                 + "nonummy nibh euismod tincidunt ut laoreet";
         String expectedPage2Text
                 = "dolore magna aliquam erat volutpat.\n"
+                + "\n"
                 + "Ut wisi enim ad minim veniam, quis nostrud\n"
                 + "exerci tation ullamcorper suscipit lobortis nisl ut\n"
                 + "aliquip ex ea commodo consequat. Duis autem\n"
@@ -163,6 +165,7 @@ class TestTextToPdf
                 + "iusto odio dignissim qui blandit praesent\n"
                 + "luptatum zzril delenit augue duis dolore te feugait\n"
                 + "nulla facilisi.\n"
+                + "\n"
                 + "Nam liber tempor cum soluta nobis eleifend\n"
                 + "option congue nihil imperdiet doming id quod\n"
                 + "mazim placerat facer.";
@@ -176,12 +179,42 @@ class TestTextToPdf
             assertEquals(2, doc.getNumberOfPages());
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setLineSeparator("\n");
+            stripper.setParagraphStart("\n");
             stripper.setStartPage(1);
             stripper.setEndPage(1);
             assertEquals(expectedPage1Text, stripper.getText(doc).trim());
             stripper.setStartPage(2);
             stripper.setEndPage(2);
             assertEquals(expectedPage2Text, stripper.getText(doc).trim());
+        }
+    }
+
+    /**
+     * Test that leading and trailing spaces and newlines are preserved.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    void testLeadingTrailingSpaces() throws IOException
+    {
+        TextToPDF pdfCreator = new TextToPDF();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        String text = "Lorem ipsum dolor sit amet,\n"
+                + "    consectetur adipiscing \n"
+                + "\n"
+                + "elit. sed do eiusmod";
+        StringReader reader = new StringReader(text);
+        try (PDDocument doc = pdfCreator.createPDFFromText(reader))
+        {
+            doc.save(baos);
+        }
+        try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
+        {
+            assertEquals(1, doc.getNumberOfPages());
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setLineSeparator("\n");
+            stripper.setParagraphStart("\n");
+            assertEquals(text, stripper.getText(doc).trim());
         }
     }
 }
