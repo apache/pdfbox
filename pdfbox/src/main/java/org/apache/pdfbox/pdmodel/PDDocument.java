@@ -338,7 +338,6 @@ public class PDDocument implements Closeable
 
         // Create SignatureForm for signature and append it to the document
 
-        PDPageTree pages = getPages();
         // Get the first valid page
         PDPageTree pageTree = getPages();
         int pageCount = pageTree.getCount();
