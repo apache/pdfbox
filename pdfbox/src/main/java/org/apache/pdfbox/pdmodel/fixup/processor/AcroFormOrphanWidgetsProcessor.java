@@ -77,45 +77,44 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
     private void resolveFieldsFromWidgets(PDAcroForm acroForm)
     {
-        Map<String, PDField> nonTerminalFieldsMap = new HashMap<>();
-
         LOG.debug("rebuilding fields from widgets");
 
         List<PDField> fields = new ArrayList<>();
+        PDResources resources = acroForm.getDefaultResources();
 
-        for (PDPage page : document.getPages())
+        if (resources != null)
         {
-            try
+            Map<String, PDField> nonTerminalFieldsMap = new HashMap<>();
+            for (PDPage page : document.getPages())
             {
-                handleAnnotations(acroForm, fields, page.getAnnotations(), nonTerminalFieldsMap);
-            }
-            catch (IOException ioe)
-            {
-                LOG.debug("couldn't read annotations for page " + ioe.getMessage());
+                try
+                {
+                    handleAnnotations(acroForm, resources, fields, page.getAnnotations(), nonTerminalFieldsMap);
+                }
+                catch (IOException ioe)
+                {
+                    LOG.debug("couldn't read annotations for page " + ioe.getMessage());
+                }
             }
         }
 
         acroForm.setFields(fields);
 
-        PDResources resources = null;
-        for (PDField field : acroForm.getFieldTree())
+        if (resources != null)
         {
-            if (field instanceof PDVariableText)
+            for (PDField field : acroForm.getFieldTree())
             {
-                if (resources == null)
+                if (field instanceof PDVariableText)
                 {
                     // ensure that PDVariableText fields have the necessary resources
-                    resources = acroForm.getDefaultResources();
+                    ensureFontResources(resources, (PDVariableText) field);
                 }
-                ensureFontResources(resources, (PDVariableText) field);
             }
         }
     }
 
-    private void handleAnnotations(PDAcroForm acroForm, List<PDField> fields, List<PDAnnotation> annotations, Map<String, PDField> nonTerminalFieldsMap)
+    private void handleAnnotations(PDAcroForm acroForm, PDResources acroFormResources, List<PDField> fields, List<PDAnnotation> annotations, Map<String, PDField> nonTerminalFieldsMap)
     {
-        PDResources acroFormResources = acroForm.getDefaultResources();
-
         for (PDAnnotation annot : annotations)
         {
             if (annot instanceof PDAnnotationWidget)
@@ -150,16 +149,21 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
     private void addFontFromWidget(PDResources acroFormResources, PDAnnotation annotation)
     {
         PDAppearanceStream normalAppearanceStream = annotation.getNormalAppearanceStream();
-        if (normalAppearanceStream != null && normalAppearanceStream.getResources() != null)    
+        if (normalAppearanceStream != null)
         {
             PDResources widgetResources = normalAppearanceStream.getResources();
+            if (widgetResources == null)
+            {
+                return;
+            }
+
             widgetResources.getFontNames().forEach(fontName ->
             {
                 if (!fontName.getName().startsWith("+"))
                 {
                     try
                     {
-                        if (acroFormResources.getFont(fontName) == null)
+                        if (acroFormResources.getFont(fontName) == null)//todo vb can acroFormResources be null here or they cannot be null for resolveFieldsFromWidgets method?
                         {
                             acroFormResources.put(fontName, widgetResources.getFont(fontName));
                             LOG.debug("added font resource to AcroForm from widget for font name " + fontName.getName());
@@ -225,7 +229,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             COSName fontName = COSName.getPDFName(daString.substring(1, daString.indexOf(" ")));
             try
             {
-                if (defaultResources != null && defaultResources.getFont(fontName) == null)
+                if (defaultResources.getFont(fontName) == null)
                 {
                     LOG.debug("trying to add missing font resource for field " + field.getFullyQualifiedName());
                     FontMapper mapper = FontMappers.instance();
