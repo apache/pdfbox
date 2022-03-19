@@ -119,7 +119,10 @@ public class PfbParser
      */
     private void parsePfb(final byte[] pfb) throws IOException 
     {
-
+        if (pfb.length < PFB_HEADER_LENGTH)
+        {
+            throw new IOException("PFB header missing");
+        }
         ByteArrayInputStream in = new ByteArrayInputStream(pfb);
         pfbdata = new byte[pfb.length - PFB_HEADER_LENGTH];
         lengths = new int[PFB_RECORDS.length];
