@@ -19,8 +19,8 @@ package org.apache.pdfbox.io;
 import java.io.IOException;
 
 /**
- * This class provides a view of a part of a random access read. It clips the section starting at the given start
- * position with the given length into a new random access read.
+ * This class provides a view of a part of random access read. It clips the section starting at the given start
+ * position with the given length into new random access read.
  * 
  */
 public class RandomAccessReadView implements RandomAccessRead
