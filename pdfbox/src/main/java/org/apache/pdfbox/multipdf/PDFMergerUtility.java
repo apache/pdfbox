@@ -366,6 +366,7 @@ public class PDFMergerUtility
         try (PDDocument destination = new PDDocument(memUsageSetting))
         {
             PDFCloneUtility cloner = new PDFCloneUtility(destination);
+            PDPageTree destinationPages = destination.getPages();
             for (Object sourceObject : sources)
             {
                 PDDocument sourceDoc = null;
@@ -398,7 +399,7 @@ public class PDFMergerUtility
                         {
                             newPage.setResources(new PDResources());
                         }
-                        destination.addPage(newPage);
+                        destinationPages.add(newPage);
                     }
                 }
                 finally
@@ -769,8 +770,6 @@ public class PDFMergerUtility
                 }
             }
         }
-        //reduce memory usage by clearing destPageTree value
-        destPageTree = null;
 
         if (destStructTree != null)
         {
@@ -808,6 +807,10 @@ public class PDFMergerUtility
         if (srcPageTree == null)
         {
             srcPageTree = srcCatalog.getPages();
+        }
+        if (destPageTree == null)
+        {
+            destPageTree = destCatalog.getPages();
         }
         Map<COSDictionary, COSDictionary> objMapping = new HashMap<>();
         int pageIndex = 0;
@@ -850,7 +853,7 @@ public class PDFMergerUtility
                 }
                 // TODO update mapping for XObjects
             }
-            destination.addPage(newPage);
+            destPageTree.add(newPage);
 
             if (pageIndex == pageIndexOpenActionDest)
             {
@@ -870,6 +873,8 @@ public class PDFMergerUtility
             }
             ++pageIndex;
         }
+        //reduce memory usage by clearing destPageTree value
+        destPageTree = null;
         //reset src tree to reduce memory usage
         srcPageTree = null;
         if (mergeStructTree)
