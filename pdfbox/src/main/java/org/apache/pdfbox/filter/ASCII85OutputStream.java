@@ -20,6 +20,8 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static org.apache.pdfbox.filter.ASCII85InputStream.*;
+
 /**
  * This class represents an ASCII85 output stream.
  *
@@ -42,9 +44,6 @@ final class ASCII85OutputStream extends FilterOutputStream
     private int maxline;
     private boolean flushed;
     private char terminator;
-    private static final char OFFSET = '!';
-    private static final char NEWLINE = '\n';
-    private static final char Z = 'z';
 
     /**
      * Constructor.
@@ -60,7 +59,7 @@ final class ASCII85OutputStream extends FilterOutputStream
         indata = new byte[4];
         outdata = new byte[5];
         flushed = true;
-        terminator = '~';
+        terminator = TERMINATOR;
     }
 
     /**

@@ -35,13 +35,13 @@ final class ASCII85InputStream extends FilterInputStream
     private byte[] ascii;
     private byte[] b;
 
-    private static final char TERMINATOR = '~';
-    private static final char OFFSET = '!';
-    private static final char NEWLINE = '\n';
     private static final char RETURN = '\r';
     private static final char SPACE = ' ';
     private static final char PADDING_U = 'u';
-    private static final char Z = 'z';
+    static final char TERMINATOR = '~';
+    static final char OFFSET = '!';
+    static final char NEWLINE = '\n';
+    static final char Z = 'z';
 
     /**
      * Constructor.
