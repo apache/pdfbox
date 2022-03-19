@@ -31,6 +31,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
@@ -170,6 +171,20 @@ public class PDVisibleSignDesigner
     }
 
     /**
+     * Constructor.
+     *
+     * @param pageTree Already created DPPageTree of your PDF document.
+     * @param image
+     * @param page The 1-based page number for which the page size should be calculated.
+     * @see PDDocument#getPages()
+     */
+    public PDVisibleSignDesigner(PDPageTree pageTree, BufferedImage image, int page)
+    {
+        setImage(image);
+        calculatePageSize(pageTree, page);
+    }
+
+    /**
      * Constructor usable for signing existing signature fields.
      *
      * @param imageStream image as a stream
@@ -204,6 +219,29 @@ public class PDVisibleSignDesigner
             // calculate height and width of document page
             calculatePageSize(document, page);
         }
+    }
+
+    /**
+     * Each page of document can be different sizes. This method calculates the page size based on
+     * the page media box.
+     *
+     * @param pageTree
+     * @param page The 1-based page number for which the page size should be calculated.
+     * @throws IllegalArgumentException if the page argument is lower than 1.
+     */
+    private void calculatePageSize(PDPageTree pageTree, int page)
+    {
+        if (page < 1)
+        {
+            throw new IllegalArgumentException("First page of pdf is 1, not " + page);
+        }
+
+        PDPage firstPage = pageTree.get(page - 1);
+        PDRectangle mediaBox = firstPage.getMediaBox();
+        pageHeight(mediaBox.getHeight());
+        pageWidth = mediaBox.getWidth();
+        imageSizeInPercents = 100;
+        rotation = firstPage.getRotation() % 360;
     }
 
     /**
