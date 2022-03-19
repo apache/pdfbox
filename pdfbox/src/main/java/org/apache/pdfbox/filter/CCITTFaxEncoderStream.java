@@ -131,8 +131,9 @@ final class CCITTFaxEncoderStream extends OutputStream {
         encode2D();
     }
 
-    private int[] getNextChanges(int pos, boolean white) {
-        int[] result = new int[] {columns, columns};
+    private void getNextChanges(int pos, boolean white, /* out */ int[] result) {
+        result[0] = columns;
+        result[1] = columns;
         for (int i = 0; i < changesCurrentRowLength; i++) {
             if (pos < changesCurrentRow[i] || (pos == 0 && white)) {
                 result[0] = changesCurrentRow[i];
@@ -142,8 +143,6 @@ final class CCITTFaxEncoderStream extends OutputStream {
                 break;
             }
         }
-
-        return result;
     }
 
     private void writeRun(int runLength, boolean white) throws IOException {
@@ -167,10 +166,12 @@ final class CCITTFaxEncoderStream extends OutputStream {
     private void encode2D() throws IOException {
         boolean white = true;
         int index = 0; // a0
+        int[] nextChanges = new int[2];
+        int[] nextRefs = new int[2];
         while (index < columns) {
-            int[] nextChanges = getNextChanges(index, white); // a1, a2
+            getNextChanges(index, white, nextChanges); // a1, a2, result buffer
 
-            int[] nextRefs = getNextRefChanges(index, white); // b1, b2
+            getNextRefChanges(index, white, nextRefs); // b1, b2, result buffer
 
             int difference = nextChanges[0] - nextRefs[0];
             if (nextChanges[0] > nextRefs[1]) {
@@ -219,8 +220,9 @@ final class CCITTFaxEncoderStream extends OutputStream {
         }
     }
 
-    private int[] getNextRefChanges(int a0, boolean white) {
-        int[] result = new int[] {columns, columns};
+    private void getNextRefChanges(int a0, boolean white, /* out */int[] result) {
+        result[0] = columns;
+        result[1] = columns;
         for (int i = (white ? 0 : 1); i < changesReferenceRowLength; i += 2) {
             if (changesReferenceRow[i] > a0 || (a0 == 0 && i == 0)) {
                 result[0] = changesReferenceRow[i];
@@ -230,7 +232,6 @@ final class CCITTFaxEncoderStream extends OutputStream {
                 break;
             }
         }
-        return result;
     }
 
     private void write(int code, int codeLength) throws IOException {
