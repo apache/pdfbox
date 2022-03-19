@@ -47,7 +47,7 @@ import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentPrope
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This class allows to import pages as Form XObjects into a document and use them to create layers
+ * This class allows import pages as Form XObjects into a document and use them to create layers
  * (optional content groups). It should be used only on loaded documents, not on generated documents
  * because these can contain unfinished parts, e.g. font subset information.
  */
@@ -297,11 +297,10 @@ public class LayerUtility
         for (Map.Entry<COSName, COSBase> entry : orgDict.entrySet())
         {
             COSName key = entry.getKey();
-            if (!filter.contains(key.getName()))
+            if (filter.contains(key.getName()))
             {
-                continue;
+                targetDict.setItem(key, cloner.cloneForNewDocument(entry.getValue()));
             }
-            targetDict.setItem(key, cloner.cloneForNewDocument(entry.getValue()));
         }
     }
 
