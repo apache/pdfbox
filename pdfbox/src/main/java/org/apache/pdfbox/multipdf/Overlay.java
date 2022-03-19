@@ -24,12 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -339,29 +334,35 @@ public class Overlay implements Closeable
     // get the content streams as a list
     private List<COSStream> createContentStreamList(COSBase contents) throws IOException
     {
-        List<COSStream> contentStreams = new ArrayList<>();
         if (contents == null)
         {
-            return contentStreams;
+            return Collections.emptyList();
         }
-        else if (contents instanceof COSStream)
+
+        List<COSStream> contentStreams;
+        if (contents instanceof COSStream)
         {
-            contentStreams.add((COSStream) contents);
-        }
-        else if (contents instanceof COSArray)
-        {
-            for (COSBase item : (COSArray) contents)
-            {
-                contentStreams.addAll(createContentStreamList(item));
-            }
-        }
-        else if (contents instanceof COSObject)
-        {
-            contentStreams.addAll(createContentStreamList(((COSObject) contents).getObject()));
+            contentStreams = Collections.singletonList((COSStream) contents);
         }
         else
         {
-            throw new IOException("Unknown content type: " + contents.getClass().getName());
+            contentStreams = new ArrayList<>();
+
+            if (contents instanceof COSArray)
+            {
+                for (COSBase item : (COSArray) contents)
+                {
+                    contentStreams.addAll(createContentStreamList(item));
+                }
+            }
+            else if (contents instanceof COSObject)
+            {
+                contentStreams.addAll(createContentStreamList(((COSObject) contents).getObject()));
+            }
+            else
+            {
+                throw new IOException("Unknown content type: " + contents.getClass().getName());
+            }
         }
         return contentStreams;
     }
