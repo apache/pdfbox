@@ -167,7 +167,9 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         try (FileOutputStream fos = new FileOutputStream(signedFile);
                 PDDocument doc = Loader.loadPDF(inputFile))
         {
-            SigUtils.checkCrossReferenceTable(doc);
+            // call SigUtils.checkCrossReferenceTable(doc) if Adobe complains
+            // and read https://stackoverflow.com/a/71293901/535646
+            // and https://issues.apache.org/jira/browse/PDFBOX-5382
 
             int accessPermissions = SigUtils.getMDPPermission(doc);
             if (accessPermissions == 1)
