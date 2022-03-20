@@ -32,6 +32,26 @@ import java.util.Map;
 public class TestToUnicodeWriter extends TestCase
 {
     @Test
+    public void testCMapLigatures() throws IOException
+    {
+        ToUnicodeWriter toUnicodeWriter = new ToUnicodeWriter();
+
+        toUnicodeWriter.add(0x400, "a");
+        toUnicodeWriter.add(0x401, "b");
+        toUnicodeWriter.add(0x402, "ff");
+        toUnicodeWriter.add(0x403, "fi");
+        toUnicodeWriter.add(0x404, "ffl");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        toUnicodeWriter.writeTo(baos);
+        String output = baos.toString("ISO-8859-1");
+        assertTrue(output.contains("4 beginbfrange"));
+        assertTrue(output.contains("<0402> <0402> <00660066>"));
+        assertTrue(output.contains("<0403> <0403> <00660069>"));
+        assertTrue(output.contains("<0404> <0404> <00660066006C>"));
+    }
+
+    @Test
     public void testCMapCIDOverflow() throws IOException
     {
         ToUnicodeWriter toUnicodeWriter = new ToUnicodeWriter();
@@ -180,7 +200,7 @@ public class TestToUnicodeWriter extends TestCase
         StringBuilder cjk3 = new StringBuilder();
         cjk3.appendCodePoint(0x2F886);
 
-        // Denied overflow
+        // Denied (overflow)
         assertFalse(
                 ToUnicodeWriter.allowDestinationRange(endOfBMP.toString(), beyondBMP.toString()));
         // Allowed (sequential surrogates)
@@ -197,5 +217,8 @@ public class TestToUnicodeWriter extends TestCase
         assertTrue(ToUnicodeWriter.allowDestinationRange("A", "B"));
         assertTrue(ToUnicodeWriter.allowDestinationRange("À", "Á"));
         assertTrue(ToUnicodeWriter.allowDestinationRange("þ", "ÿ"));
+
+        // Denied (ligatures)
+        assertFalse(ToUnicodeWriter.allowDestinationRange("ff", "fi"));
     }
 }
