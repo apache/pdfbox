@@ -127,7 +127,7 @@ class TestToUnicodeWriter
     }
 
     @Test
-    public void testAllowCodeRange()
+    void testAllowCodeRange()
     {
         // Denied progressions (negative)
         assertFalse(ToUnicodeWriter.allowCodeRange(0x000F, 0x0007));
@@ -185,6 +185,22 @@ class TestToUnicodeWriter
         // Denied (overflow)
         assertFalse(ToUnicodeWriter.allowDestinationRange("ÿ", "Ā"));
 
+        // Allowed (sequential w/o surrogate)
+        assertTrue(ToUnicodeWriter.allowDestinationRange(" ", "!"));
+        assertTrue(ToUnicodeWriter.allowDestinationRange("(", ")"));
+        assertTrue(ToUnicodeWriter.allowDestinationRange("0", "1"));
+        assertTrue(ToUnicodeWriter.allowDestinationRange("a", "b"));
+        assertTrue(ToUnicodeWriter.allowDestinationRange("A", "B"));
+        assertTrue(ToUnicodeWriter.allowDestinationRange("À", "Á"));
+        assertTrue(ToUnicodeWriter.allowDestinationRange("þ", "ÿ"));
+
+        // Denied (ligatures)
+        assertFalse(ToUnicodeWriter.allowDestinationRange("ff", "fi"));
+    }
+
+    @Test
+    void testAllowDestinationRangeSurrogates()
+    {
         // Check surrogates
         StringBuilder endOfBMP = new StringBuilder();
         endOfBMP.appendCodePoint(0xFFFF);
@@ -209,17 +225,6 @@ class TestToUnicodeWriter
         assertTrue(ToUnicodeWriter.allowDestinationRange(cjk2.toString(), cjk3.toString()));
         // Denied (non sequential surrogates)
         assertFalse(ToUnicodeWriter.allowDestinationRange(cjk1.toString(), cjk3.toString()));
-
-        // Allowed (sequential w/o surrogate)
-        assertTrue(ToUnicodeWriter.allowDestinationRange(" ", "!"));
-        assertTrue(ToUnicodeWriter.allowDestinationRange("(", ")"));
-        assertTrue(ToUnicodeWriter.allowDestinationRange("0", "1"));
-        assertTrue(ToUnicodeWriter.allowDestinationRange("a", "b"));
-        assertTrue(ToUnicodeWriter.allowDestinationRange("A", "B"));
-        assertTrue(ToUnicodeWriter.allowDestinationRange("À", "Á"));
-        assertTrue(ToUnicodeWriter.allowDestinationRange("þ", "ÿ"));
-
-        // Denied (ligatures)
-        assertFalse(ToUnicodeWriter.allowDestinationRange("ff", "fi"));
     }
+
 }
