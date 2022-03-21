@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.apache.pdfbox.io.IOUtils;
 
@@ -105,6 +106,11 @@ public class COSFilterInputStream extends FilterInputStream
             while (this.position < this.ranges[this.range][0])
             {
                 long skipped = super.skip(this.ranges[this.range][0] - this.position);
+                if (skipped == 0)
+                {
+                    throw new IOException("FilterInputStream.skip() returns 0, range: " +
+                            Arrays.toString(this.ranges[this.range]));
+                }
                 this.position += skipped;
             }
             return true;
