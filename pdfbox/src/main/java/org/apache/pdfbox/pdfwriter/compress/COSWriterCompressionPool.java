@@ -167,16 +167,15 @@ public class COSWriterCompressionPool
         }
         if (base instanceof COSArray)
         {
-            addElements(current, ((COSArray) base).iterator());
+            addElements(((COSArray) base).iterator());
         }
         else if (base instanceof COSDictionary)
         {
-            addElements(current, ((COSDictionary) base).getValues().iterator());
+            addElements(((COSDictionary) base).getValues().iterator());
         }
     }
 
-    private void addElements(COSBase current, Iterator<COSBase> elements)
-            throws IOException
+    private void addElements(Iterator<COSBase> elements) throws IOException
     {
         while (elements.hasNext())
         {
