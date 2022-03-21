@@ -31,6 +31,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDCaretAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDFileAttachmentAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDFreeTextAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDInkAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDPolygonAppearanceHandler;
@@ -890,6 +891,10 @@ public class PDAnnotationMarkup extends PDAnnotation
             else if (SUB_TYPE_SOUND.equals(getSubtype()))
             {
                 appearanceHandler = new PDSoundAppearanceHandler(this, document);
+            }
+            else if (PDAnnotationFileAttachment.SUB_TYPE.equals(getSubtype()))
+            {
+                appearanceHandler = new PDFileAttachmentAppearanceHandler(this, document);
             }
 
             if (appearanceHandler != null)
