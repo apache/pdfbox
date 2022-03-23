@@ -70,7 +70,7 @@ public class PDFileAttachmentAppearanceHandler extends PDAbstractAppearanceHandl
             annotation.getNormalAppearanceStream().setBBox(new PDRectangle(size, size));
 
             //TODO support Graph, PushPin, Paperclip, Tag
-            drawPaperclip(annotation, contentStream);
+            drawPaperclip(contentStream);
         }
         catch (IOException e)
         {
@@ -83,12 +83,10 @@ public class PDFileAttachmentAppearanceHandler extends PDAbstractAppearanceHandl
      * <a href="https://raw.githubusercontent.com/Iconscout/unicons/master/svg/line/paperclip.svg>Iconscout</a>
      * (Apache licensed).
      *
-     * @param annotation
      * @param contentStream
      * @throws IOException
      */
-    private void drawPaperclip(PDAnnotationFileAttachment annotation, final PDAppearanceContentStream contentStream)
-                 throws IOException
+    private void drawPaperclip(final PDAppearanceContentStream contentStream) throws IOException
     {
         contentStream.moveTo(13.574f, 9.301f);
         contentStream.lineTo(8.926f, 13.949f);
