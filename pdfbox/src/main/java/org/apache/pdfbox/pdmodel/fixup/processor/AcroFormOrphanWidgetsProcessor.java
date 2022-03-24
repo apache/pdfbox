@@ -79,41 +79,43 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
     {
         LOG.debug("rebuilding fields from widgets");
 
-        List<PDField> fields = new ArrayList<>();
         PDResources resources = acroForm.getDefaultResources();
 
-        if (resources != null)
+        if (resources == null)
         {
-            Map<String, PDField> nonTerminalFieldsMap = new HashMap<>();
-            for (PDPage page : document.getPages())
+            // failsafe. Currently resources is never null because defaultfixup is called first.
+            LOG.debug("AcroForm default resources is null");
+            return;
+        }
+
+        List<PDField> fields = new ArrayList<>();
+        Map<String, PDField> nonTerminalFieldsMap = new HashMap<>();
+        for (PDPage page : document.getPages())
+        {
+            try
             {
-                try
-                {
-                    handleAnnotations(acroForm, resources, fields, page.getAnnotations(), nonTerminalFieldsMap);
-                }
-                catch (IOException ioe)
-                {
-                    LOG.debug("couldn't read annotations for page " + ioe.getMessage());
-                }
+                handleAnnotations(acroForm, resources, fields, page.getAnnotations(), nonTerminalFieldsMap);
+            }
+            catch (IOException ioe)
+            {
+                LOG.debug("couldn't read annotations for page " + ioe.getMessage());
             }
         }
 
         acroForm.setFields(fields);
 
-        if (resources != null)
+        for (PDField field : acroForm.getFieldTree())
         {
-            for (PDField field : acroForm.getFieldTree())
+            if (field instanceof PDVariableText)
             {
-                if (field instanceof PDVariableText)
-                {
-                    // ensure that PDVariableText fields have the necessary resources
-                    ensureFontResources(resources, (PDVariableText) field);
-                }
+                ensureFontResources(resources, (PDVariableText) field);
             }
         }
     }
 
-    private void handleAnnotations(PDAcroForm acroForm, PDResources acroFormResources, List<PDField> fields, List<PDAnnotation> annotations, Map<String, PDField> nonTerminalFieldsMap)
+    private void handleAnnotations(PDAcroForm acroForm, PDResources acroFormResources,
+            List<PDField> fields, List<PDAnnotation> annotations,
+            Map<String, PDField> nonTerminalFieldsMap)
     {
         for (PDAnnotation annot : annotations)
         {
@@ -142,44 +144,47 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         }
     }
 
-    /*
-     *  Add font resources from the widget to the AcroForm to make sure embedded fonts are being
-     *  used and not added by ensureFontResources potentially using a fallback font
+    /**
+     * Add font resources from the widget to the AcroForm to make sure embedded fonts are being used
+     * and not added by ensureFontResources potentially using a fallback font.
+     *
+     * @param acroFormResources AcroForm default resources, should not be null.
+     * @param annotation annotation, should not be null.
      */
     private void addFontFromWidget(PDResources acroFormResources, PDAnnotation annotation)
     {
         PDAppearanceStream normalAppearanceStream = annotation.getNormalAppearanceStream();
-        if (normalAppearanceStream != null)
+        if (normalAppearanceStream == null)
         {
-            PDResources widgetResources = normalAppearanceStream.getResources();
-            if (widgetResources == null)
-            {
-                return;
-            }
-
-            widgetResources.getFontNames().forEach(fontName ->
-            {
-                if (!fontName.getName().startsWith("+"))
-                {
-                    try
-                    {
-                        if (acroFormResources.getFont(fontName) == null)//todo vb can acroFormResources be null here or they cannot be null for resolveFieldsFromWidgets method?
-                        {
-                            acroFormResources.put(fontName, widgetResources.getFont(fontName));
-                            LOG.debug("added font resource to AcroForm from widget for font name " + fontName.getName());
-                        }
-                    }
-                    catch (IOException ioe)
-                    {
-                        LOG.debug("unable to add font to AcroForm for font name " + fontName.getName());
-                    }
-                }
-                else
-                {
-                    LOG.debug("font resource for widget was a subsetted font - ignored: " + fontName.getName());
-                }
-            });
+            return;
         }
+        PDResources widgetResources = normalAppearanceStream.getResources();
+        if (widgetResources == null)
+        {
+            return;
+        }
+        widgetResources.getFontNames().forEach(fontName ->
+        {
+            if (!fontName.getName().startsWith("+"))
+            {
+                try
+                {
+                    if (acroFormResources.getFont(fontName) == null)
+                    {
+                        acroFormResources.put(fontName, widgetResources.getFont(fontName));
+                        LOG.debug("added font resource to AcroForm from widget for font name " + fontName.getName());
+                    }
+                }
+                catch (IOException ioe)
+                {
+                    LOG.debug("unable to add font to AcroForm for font name " + fontName.getName());
+                }
+            }
+            else
+            {
+                LOG.debug("font resource for widget was a subsetted font - ignored: " + fontName.getName());
+            }
+        });
     }
 
     /*

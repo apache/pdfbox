@@ -322,7 +322,7 @@ public class PDFRenderer
         if (imageType != ImageType.ARGB && hasBlendMode(page))
         {
             // PDFBOX-4095: if the PDF has blending on the top level, draw on transparent background
-            // Inpired from PDF.js: if a PDF page uses any blend modes other than Normal, 
+            // Inspired from PDF.js: if a PDF page uses any blend modes other than Normal,
             // PDF.js renders everything on a fully transparent RGBA canvas. 
             // Finally when the page has been rendered, PDF.js draws the RGBA canvas on a white canvas.
             bimType = BufferedImage.TYPE_INT_ARGB;

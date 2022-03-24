@@ -133,7 +133,9 @@ class PDFCloneUtility
                           COSArray array = (COSArray) base;
                           for (int i = 0; i < array.size(); i++)
                           {
-                              newArray.add(cloneForNewDocument(array.get(i)));
+                              COSBase value = array.get(i);
+                              checkForRecursion(base, value);
+                              newArray.add(cloneForNewDocument(value));
                           }
                           retval = newArray;
                       }
@@ -149,7 +151,9 @@ class PDFCloneUtility
                           clonedVersion.put(base, stream);
                           for (Map.Entry<COSName, COSBase> entry : originalStream.entrySet())
                           {
-                              stream.setItem(entry.getKey(), cloneForNewDocument(entry.getValue()));
+                              COSBase value = entry.getValue();
+                              checkForRecursion(base, value);
+                              stream.setItem(entry.getKey(), cloneForNewDocument(entry));
                           }
                           retval = stream;
                       }
@@ -161,9 +165,9 @@ class PDFCloneUtility
                           clonedVersion.put(base, retval);
                           for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
                           {
-                              retvalDic.setItem(
-                                      entry.getKey(),
-                                      cloneForNewDocument(entry.getValue()));
+                              COSBase value = entry.getValue();
+                              checkForRecursion(base, value);
+                              retvalDic.setItem(entry.getKey(), cloneForNewDocument(value));
                           }
                       }
                       else
@@ -296,4 +300,23 @@ class PDFCloneUtility
           clonedVersion.put( base, retval );
           clonedValues.add(retval);
       }
+
+    /**
+     * Check whether an element (of an array or a dictionary) points to its parent.
+     *
+     * @param parent COSArray or COSDictionary
+     * @param value an element
+     * @throws IOException if value is an object reference to the parent
+     */
+    private void checkForRecursion(Object parent, COSBase value) throws IOException
+    {
+        if (value instanceof COSObject)
+        {
+            COSBase actual = ((COSObject) value).getObject();
+            if (actual == parent)
+            {
+                throw new IOException("Loop within object " + value);
+            }
+        }
+    }
 }
