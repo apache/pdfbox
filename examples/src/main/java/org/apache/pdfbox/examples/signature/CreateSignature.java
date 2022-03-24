@@ -116,6 +116,10 @@ public class CreateSignature extends CreateSignatureBase
     public void signDetached(PDDocument document, OutputStream output)
             throws IOException
     {
+        // call SigUtils.checkCrossReferenceTable(document) if Adobe complains
+        // and read https://stackoverflow.com/a/71293901/535646
+        // and https://issues.apache.org/jira/browse/PDFBOX-5382
+
         int accessPermissions = SigUtils.getMDPPermission(document);
         if (accessPermissions == 1)
         {

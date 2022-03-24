@@ -89,6 +89,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.Hex;
 import org.apache.wink.client.MockHttpServer;
+import org.bouncycastle.asn1.BEROctetString;
 import org.bouncycastle.asn1.ocsp.OCSPResponseStatus;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -960,7 +961,8 @@ class TestCreateSignature
                 }
                 assertTrue(crlVerified, "issuer of CRL not found in Certs array");
                 
-                byte[] crlSignatureHash = MessageDigest.getInstance("SHA-1").digest(crl.getSignature());
+                BEROctetString encodedSignature = new BEROctetString(crl.getSignature());
+                byte[] crlSignatureHash = MessageDigest.getInstance("SHA-1").digest(encodedSignature.getEncoded());
                 String hexCrlSignatureHash = Hex.getString(crlSignatureHash);
                 System.out.println("hexCrlSignatureHash: " + hexCrlSignatureHash);
                 
@@ -993,7 +995,8 @@ class TestCreateSignature
                 BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
                 assertEquals(OCSPResponseStatus.SUCCESSFUL, ocspResp.getStatus());
                 assertTrue(basicResponse.getCerts().length >= 1, "OCSP should have at least 1 certificate");
-                byte[] ocspSignatureHash = MessageDigest.getInstance("SHA-1").digest(basicResponse.getSignature());
+                BEROctetString encodedSignature = new BEROctetString(basicResponse.getSignature());
+                byte[] ocspSignatureHash = MessageDigest.getInstance("SHA-1").digest(encodedSignature.getEncoded());
                 String hexOcspSignatureHash = Hex.getString(ocspSignatureHash);
                 System.out.println("ocspSignatureHash: " + hexOcspSignatureHash);
                 long secondsOld = (System.currentTimeMillis() - basicResponse.getProducedAt().getTime()) / 1000;

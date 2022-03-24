@@ -330,7 +330,7 @@ class TestImageIOUtils
         }
         Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix(suffix);
         assertTrue(readers.hasNext(), "No image reader found for suffix " + suffix);
-        ImageReader reader = (ImageReader) readers.next();
+        ImageReader reader = readers.next();
         try (ImageInputStream iis = ImageIO.createImageInputStream(new File(filename)))
         {
             assertNotNull(iis, "No ImageInputStream created for file " + filename);
@@ -396,7 +396,7 @@ class TestImageIOUtils
     void checkTiffCompression(String filename, String expectedCompression) throws IOException
     {
         Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tiff");
-        ImageReader reader = (ImageReader) readers.next();
+        ImageReader reader = readers.next();
         try (ImageInputStream iis = ImageIO.createImageInputStream(new File(filename)))
         {
             reader.setInput(iis);

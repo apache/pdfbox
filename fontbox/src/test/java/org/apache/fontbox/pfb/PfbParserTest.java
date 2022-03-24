@@ -64,4 +64,13 @@ class PfbParserTest
             Assertions.assertTrue(font.hasGlyph(s));
         }
     }
+
+    /**
+     * Test 0 length font.
+     */
+    @Test
+    void testEmpty()
+    {
+        Assertions.assertThrows(IOException.class, () -> Type1Font.createWithPFB(new byte[0]));
+    }
 }

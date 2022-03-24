@@ -80,7 +80,6 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         LOG.debug("rebuilding fields from widgets");
 
         PDResources resources = acroForm.getDefaultResources();
-
         if (resources == null)
         {
             // failsafe. Currently resources is never null because defaultfixup is called first.
@@ -147,7 +146,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
     /**
      * Add font resources from the widget to the AcroForm to make sure embedded fonts are being used
      * and not added by ensureFontResources potentially using a fallback font.
-     *
+     * 
      * @param acroFormResources AcroForm default resources, should not be null.
      * @param annotation annotation, should not be null.
      */

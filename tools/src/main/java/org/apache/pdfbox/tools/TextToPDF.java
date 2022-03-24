@@ -224,12 +224,13 @@ public class TextToPDF implements Callable<Integer>
                 // the text.
                 textIsEmpty = false;
 
-                String[] lineWords = nextLine.replaceAll("[\\n\\r]+$", "").split(" ");
+                String[] lineWords = nextLine.replaceAll("[\\n\\r]+$", "").split(" ", -1);
                 int lineIndex = 0;
 
                 while( lineIndex < lineWords.length )
                 {
                     nextLineToDraw.setLength(0);
+                    boolean addSpace = false;
                     float lengthIfUsingNextWord = 0;
                     boolean ff = false;
                     do
@@ -255,8 +256,15 @@ public class TextToPDF implements Callable<Integer>
                         // word1 can also be empty without ff, if a line has many spaces
                         if (word1.length() > 0 || !ff)
                         {
+                            if (addSpace)
+                            {
+                                nextLineToDraw.append(" ");
+                            }
+                            else
+                            {
+                                addSpace = true;
+                            }
                             nextLineToDraw.append(word1);
-                            nextLineToDraw.append(" ");
                         }
                         if (!ff || word2.length() == 0)
                         {

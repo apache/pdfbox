@@ -1180,6 +1180,7 @@ public class COSParser extends BaseParser implements ICOSParser
             return true;
         }
         Map<COSObjectKey, COSObjectKey> correctedKeys = new HashMap<>();
+        HashSet<COSObjectKey> validKeys = new HashSet<>();
         for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
         {
             COSObjectKey objectKey = objectEntry.getKey();
@@ -1200,13 +1201,26 @@ public class COSParser extends BaseParser implements ICOSParser
                     // Generation was fixed - need to update map later, after iteration
                     correctedKeys.put(objectKey, foundObjectKey);
                 }
+                else
+                {
+                    validKeys.add(objectKey);
+                }
             }
         }
+        Map<COSObjectKey, Long> correctedPointers = new HashMap<>();
         for (Entry<COSObjectKey, COSObjectKey> correctedKeyEntry : correctedKeys.entrySet())
         {
-            xrefOffset.put(correctedKeyEntry.getValue(),
-                    xrefOffset.remove(correctedKeyEntry.getKey()));
+            if (!validKeys.contains(correctedKeyEntry.getValue()))
+            {
+                // Only replace entries, if the original entry does not point to a valid object
+                correctedPointers.put(correctedKeyEntry.getValue(), xrefOffset.get(correctedKeyEntry.getKey()));
+            }
         }
+        correctedKeys.entrySet().forEach(
+                // remove old invalid, as some might not be replaced
+                correctedKeyEntry -> xrefOffset.remove(correctedKeyEntry.getKey()));
+        correctedPointers.entrySet().forEach(
+                pointer -> xrefOffset.put(pointer.getKey(), pointer.getValue()));
         return true;
     }
 
@@ -1256,19 +1270,30 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             source.seek(offset);
             // try to read the given object/generation number
-            if (objectKey.getNumber() == readObjectNumber())
+            long foundObjectNumber = readObjectNumber();
+            if (objectKey.getNumber() != foundObjectNumber)
             {
-                int genNumber = readGenerationNumber();
-                // finally try to read the object marker
-                readExpectedString(OBJ_MARKER, true);
-                if (genNumber == objectKey.getGeneration())
+                LOG.warn("found wrong object number. expected [" + objectKey.getNumber() + "] found [" + foundObjectNumber + "]");
+                if (!isLenient)
                 {
-                    return objectKey;
+                    return null;
                 }
-                else if (isLenient && genNumber > objectKey.getGeneration())
+                else
                 {
-                    return new COSObjectKey(objectKey.getNumber(), genNumber);
+                    objectKey = new COSObjectKey(foundObjectNumber, objectKey.getGeneration());
                 }
+            }
+
+            int genNumber = readGenerationNumber();
+            // finally try to read the object marker
+            readExpectedString(OBJ_MARKER, true);
+            if (genNumber == objectKey.getGeneration())
+            {
+                return objectKey;
+            }
+            else if (isLenient && genNumber > objectKey.getGeneration())
+            {
+                return new COSObjectKey(objectKey.getNumber(), genNumber);
             }
         }
         catch (IOException exception)
