@@ -35,11 +35,8 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
-import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -61,13 +58,13 @@ import org.apache.pdfbox.util.Matrix;
 public final class PDAcroForm implements COSObjectable
 {
     private static final Log LOG = LogFactory.getLog(PDAcroForm.class);
-        
+
     private static final int FLAG_SIGNATURES_EXIST = 1;
     private static final int FLAG_APPEND_ONLY = 1 << 1;
 
     private final PDDocument document;
     private final COSDictionary dictionary;
-    
+
     private Map<String, PDField> fieldCache;
 
     private ScriptingHandler scriptingHandler;
@@ -105,7 +102,7 @@ public final class PDAcroForm implements COSObjectable
     {
         return document;
     }
-    
+
     @Override
     public COSDictionary getCOSObject()
     {
@@ -155,9 +152,9 @@ public final class PDAcroForm implements COSObjectable
         {
             fdfFields.add(field.exportFDF());
         }
-        
+
         fdfDict.setID(document.getDocument().getDocumentID());
-        
+
         if (!fdfFields.isEmpty())
         {
             fdfDict.setFields(fdfFields);
@@ -167,16 +164,16 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * This will flatten all form fields.
-     * 
+     *
      * <p>Flattening a form field will take the current appearance and make that part
      * of the pages content stream. All form fields and annotations associated are removed.</p>
-     * 
+     *
      * <p>Invisible and hidden fields will be skipped and will not become part of the
      * page content stream</p>
-     * 
+     *
      * <p>The appearances for the form fields widgets will <strong>not</strong> be generated<p>
-     * 
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void flatten() throws IOException
     {
@@ -187,7 +184,7 @@ public final class PDAcroForm implements COSObjectable
             LOG.warn("Flatten for a dynamix XFA form is not supported");
             return;
         }
-        
+
         List<PDField> fields = new ArrayList<>();
         for (PDField field: getFieldTree())
         {
@@ -195,20 +192,20 @@ public final class PDAcroForm implements COSObjectable
         }
         flatten(fields, false);
     }
-    
-    
+
+
     /**
      * This will flatten the specified form fields.
-     * 
+     *
      * <p>Flattening a form field will take the current appearance and make that part
      * of the pages content stream. All form fields and annotations associated are removed.</p>
-     * 
+     *
      * <p>Invisible and hidden fields will be skipped and will not become part of the
      * page content stream</p>
-     * 
+     *
      * @param fields
      * @param refreshAppearances if set to true the appearances for the form field widgets will be updated
-     * @throws IOException 
+     * @throws IOException
      */
     public void flatten(List<PDField> fields, boolean refreshAppearances) throws IOException
     {
@@ -217,15 +214,15 @@ public final class PDAcroForm implements COSObjectable
         {
             return;
         }
-        
+
         if (!refreshAppearances && getNeedAppearances())
         {
             LOG.warn("acroForm.getNeedAppearances() returns true, " +
-                     "visual field appearances may not have been set");
+                    "visual field appearances may not have been set");
             LOG.warn("call acroForm.refreshAppearances() or " +
-                     "use the flatten() method with refreshAppearances parameter");
+                    "use the flatten() method with refreshAppearances parameter");
         }
-        
+
         // for dynamic XFA forms there is no flatten as this would mean to do a rendering
         // from the XFA content into a static PDF.
         if (xfaIsDynamic())
@@ -233,17 +230,18 @@ public final class PDAcroForm implements COSObjectable
             LOG.warn("Flatten for a dynamix XFA form is not supported");
             return;
         }
-        
+
         // refresh the appearances if set
         if (refreshAppearances)
         {
             refreshAppearances(fields);
         }
 
-        Map<COSDictionary,Set<COSDictionary>> pagesWidgetsMap = buildPagesWidgetsMap(fields);
-        
+        PDPageTree pages = document.getPages();
+        Map<COSDictionary,Set<COSDictionary>> pagesWidgetsMap = buildPagesWidgetsMap(fields, pages);
+
         // preserve all non widget annotations
-        for (PDPage page : document.getPages())
+        for (PDPage page : pages)
         {
             Set<COSDictionary> widgetsForPageMap = pagesWidgetsMap.get(page.getCOSObject());
 
@@ -252,12 +250,12 @@ public final class PDAcroForm implements COSObjectable
             boolean isContentStreamWrapped = false;
             List<PDAnnotation> pdAnnotations = page.getAnnotations();
             List<PDAnnotation> annotations = new ArrayList<>(pdAnnotations.size());
-                       
+
             for (PDAnnotation annotation: pdAnnotations)
-            {                
+            {
                 if (widgetsForPageMap == null || !widgetsForPageMap.contains(annotation.getCOSObject()))
                 {
-                    annotations.add(annotation);                 
+                    annotations.add(annotation);
                 }
                 else if (isVisibleAnnotation(annotation))
                 {
@@ -265,31 +263,31 @@ public final class PDAcroForm implements COSObjectable
                             document, page, AppendMode.APPEND, true, !isContentStreamWrapped))
                     {
                         isContentStreamWrapped = true;
-                        
+
                         PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
-                        
+
                         PDFormXObject fieldObject = new PDFormXObject(appearanceStream.getCOSObject());
-                        
+
                         contentStream.saveGraphicsState();
-                        
+
                         // see https://stackoverflow.com/a/54091766/1729265 for an explanation
                         // of the steps required
                         // this will transform the appearance stream form object into the rectangle of the
                         // annotation bbox and map the coordinate systems
                         Matrix transformationMatrix = resolveTransformationMatrix(annotation, appearanceStream);
-                        
+
                         contentStream.transform(transformationMatrix);
                         contentStream.drawForm(fieldObject);
                         contentStream.restoreGraphicsState();
                     }
-                }    
+                }
             }
             page.setAnnotations(annotations);
         }
-        
+
         // remove the fields
         removeFields(fields);
-        
+
         // remove XFA for hybrid forms
         dictionary.removeItem(COSName.XFA);
 
@@ -316,9 +314,9 @@ public final class PDAcroForm implements COSObjectable
     }
 
     /**
-     * Refreshes the appearance streams and appearance dictionaries for 
+     * Refreshes the appearance streams and appearance dictionaries for
      * the widget annotations of all fields.
-     * 
+     *
      * @throws IOException if the appearance couldn't be generated
      */
     public void refreshAppearances() throws IOException
@@ -333,9 +331,9 @@ public final class PDAcroForm implements COSObjectable
     }
 
     /**
-     * Refreshes the appearance streams and appearance dictionaries for 
+     * Refreshes the appearance streams and appearance dictionaries for
      * the widget annotations of the specified fields.
-     * 
+     *
      * @param fields List of PDField instances.
      * @throws IOException if the appearance couldn't be generated
      */
@@ -349,18 +347,18 @@ public final class PDAcroForm implements COSObjectable
             }
         }
     }
-    
-    
+
+
     /**
      * This will return all of the documents root fields.
-     * 
+     *
      * A field might have children that are fields (non-terminal field) or does not
      * have children which are fields (terminal fields).
-     * 
-     * The fields within an AcroForm are organized in a tree structure. The documents root fields 
+     *
+     * The fields within an AcroForm are organized in a tree structure. The documents root fields
      * might either be terminal fields, non-terminal fields or a mixture of both. Non-terminal fields
      * mark branches which contents can be retrieved using {@link PDNonTerminalField#getChildren()}.
-     * 
+     *
      * @return A list of the documents root fields, never null. If there are no fields then this
      * method returns an empty list.
      */
@@ -396,7 +394,7 @@ public final class PDAcroForm implements COSObjectable
     {
         dictionary.setItem(COSName.FIELDS, new COSArray(fields));
     }
-    
+
     /**
      * Returns an iterator which walks all fields in the field tree, in order.
      */
@@ -411,8 +409,8 @@ public final class PDAcroForm implements COSObjectable
     public PDFieldTree getFieldTree()
     {
         return new PDFieldTree(this);
-    }    
-    
+    }
+
     /**
      * This will tell this form to cache the fields into a Map structure
      * for fast access via the getField method.  The default is false.  You would
@@ -470,13 +468,13 @@ public final class PDAcroForm implements COSObjectable
                 return field;
             }
         }
-        
+
         return null;
     }
 
     /**
      * Get the default appearance.
-     * 
+     *
      * @return the DA element of the dictionary object
      */
     public String getDefaultAppearance()
@@ -486,7 +484,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Set the default appearance.
-     * 
+     *
      * @param daValue a string describing the default appearance
      */
     public void setDefaultAppearance(String daValue)
@@ -497,7 +495,7 @@ public final class PDAcroForm implements COSObjectable
     /**
      * True if the viewing application should construct the appearances of all field widgets.
      * The default value is false.
-     * 
+     *
      * @return the value of NeedAppearances, false if the value isn't set
      */
     public boolean getNeedAppearances()
@@ -508,14 +506,14 @@ public final class PDAcroForm implements COSObjectable
     /**
      * Set the NeedAppearances value. If this is false, PDFBox will create appearances for all field
      * widget.
-     * 
+     *
      * @param value the value for NeedAppearances
      */
     public void setNeedAppearances(Boolean value)
     {
         dictionary.setBoolean(COSName.NEED_APPEARANCES, value);
     }
-    
+
     /**
      * This will get the default resources for the AcroForm.
      *
@@ -556,7 +554,7 @@ public final class PDAcroForm implements COSObjectable
     {
         return hasXFA() && getFields().isEmpty();
     }
-    
+
     /**
      * Get the XFA resource, the XFA resource is only used for PDF 1.5+ forms.
      *
@@ -577,10 +575,10 @@ public final class PDAcroForm implements COSObjectable
     {
         dictionary.setItem(COSName.XFA, xfa);
     }
-    
+
     /**
      * This will get the document-wide default value for the quadding/justification of variable text
-     * fields. 
+     * fields.
      * <p>
      * 0 - Left(default)<br>
      * 1 - Centered<br>
@@ -607,7 +605,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Determines if SignaturesExist is set.
-     * 
+     *
      * @return true if the document contains at least one signature.
      */
     public boolean isSignaturesExist()
@@ -627,7 +625,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Determines if AppendOnly is set.
-     * 
+     *
      * @return true if the document contains signatures that may be invalidated if the file is saved.
      */
     public boolean isAppendOnly()
@@ -637,7 +635,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Set a handler to support JavaScript actions in the form.
-     * 
+     *
      * @return scriptingHandler
      */
     public ScriptingHandler getScriptingHandler()
@@ -647,7 +645,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Set a handler to support JavaScript actions in the form.
-     * 
+     *
      * @param scriptingHandler
      */
     public void setScriptingHandler(ScriptingHandler scriptingHandler)
@@ -680,26 +678,26 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Calculate the transformed appearance box.
-     * 
+     *
      * Apply the Matrix (or an identity transform) to the BBox of
      * the appearance stream
-     * 
+     *
      * @param appearanceStream
      * @return the transformed rectangle
      */
     private Rectangle2D getTransformedAppearanceBBox(PDAppearanceStream appearanceStream)
     {
         Matrix appearanceStreamMatrix = appearanceStream.getMatrix();
-        PDRectangle appearanceStreamBBox = appearanceStream.getBBox();        
+        PDRectangle appearanceStreamBBox = appearanceStream.getBBox();
         GeneralPath transformedAppearanceBox = appearanceStreamBBox.transform(appearanceStreamMatrix);
         return transformedAppearanceBox.getBounds2D();
     }
-    
-    private Map<COSDictionary,Set<COSDictionary>> buildPagesWidgetsMap(List<PDField> fields) throws IOException
+
+    private Map<COSDictionary,Set<COSDictionary>> buildPagesWidgetsMap(List<PDField> fields, PDPageTree pages) throws IOException
     {
         Map<COSDictionary,Set<COSDictionary>> pagesAnnotationsMap = new HashMap<>();
         boolean hasMissingPageRef = false;
-        
+
         for (PDField field : fields)
         {
             List<PDAnnotationWidget> widgets = field.getWidgets();
@@ -722,10 +720,10 @@ public final class PDAcroForm implements COSObjectable
             return pagesAnnotationsMap;
         }
 
-        // If there is a widget with a missing page reference we need to build the map reverse i.e. 
+        // If there is a widget with a missing page reference we need to build the map reverse i.e.
         // from the annotations to the widget.
         LOG.warn("There has been a widget with a missing page reference, will check all page annotations");
-        for (PDPage page : document.getPages())
+        for (PDPage page : pages)
         {
             for (PDAnnotation annotation : page.getAnnotations())
             {
@@ -740,7 +738,7 @@ public final class PDAcroForm implements COSObjectable
     }
 
     private void fillPagesAnnotationMap(Map<COSDictionary, Set<COSDictionary>> pagesAnnotationsMap,
-            PDPage page, PDAnnotationWidget widget)
+                                        PDPage page, PDAnnotationWidget widget)
     {
         if (pagesAnnotationsMap.get(page.getCOSObject()) == null)
         {
