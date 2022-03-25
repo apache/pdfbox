@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
  * @author Ben Litchfield
  * @author Panagiotis Toumasis
  */
-public class PDActionGoTo extends PDAction
+public class PDActionGoTo extends PDActionDestination
 {
     /**
      * This type of action this object represents.
@@ -65,32 +65,20 @@ public class PDActionGoTo extends PDAction
      */
     public PDDestination getDestination() throws IOException
     {
-        return PDDestination.create(getCOSObject().getDictionaryObject(COSName.D));
+     return super.getDestination();
     }
 
     /**
      * This will set the destination to jump to.
      *
      * @param d The destination.
-     * 
+     *
      * @throws IllegalArgumentException if the destination is not a page dictionary object.
      */
     public void setDestination( PDDestination d )
     {
-        if (d instanceof PDPageDestination)
-        {
-            PDPageDestination pageDest = (PDPageDestination) d;
-            COSArray destArray = pageDest.getCOSObject();
-            if (destArray.size() >= 1)
-            {
-                COSBase page = destArray.getObject(0);
-                if (!(page instanceof COSDictionary))
-                {
-                    throw new IllegalArgumentException("Destination of a GoTo action must be "
-                            + "a page dictionary object");
-                }
-            }
-        }
-        getCOSObject().setItem(COSName.D, d);
+        super.setDestination(d, SUB_TYPE);
     }
+
+
 }

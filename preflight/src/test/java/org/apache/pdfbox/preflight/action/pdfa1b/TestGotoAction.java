@@ -42,7 +42,7 @@ class TestGotoAction extends AbstractTestAction
             {
                 return COSName.getPDFName("ADest");
             }
-        });
+        }, gotoAction.SUB_TYPE);
 
         valid(gotoAction, true);
     }
@@ -58,7 +58,7 @@ class TestGotoAction extends AbstractTestAction
             {
                 return new COSDictionary();
             }
-        });
+        }, gotoAction.SUB_TYPE);
 
         valid(gotoAction, false, PreflightConstants.ERROR_SYNTAX_DICT_INVALID);
     }

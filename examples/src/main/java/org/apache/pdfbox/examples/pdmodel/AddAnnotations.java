@@ -242,7 +242,7 @@ public final class AddAnnotations
             PDPageDestination dest = new PDPageFitWidthDestination();
             // do not use setPageNumber(), this is for external destinations only
             dest.setPage(page3);
-            actionGoto.setDestination(dest);
+            actionGoto.setDestination(dest, actionGoto.SUB_TYPE);
             pageLink.setAction(actionGoto);
             annotations.add(pageLink);
 
