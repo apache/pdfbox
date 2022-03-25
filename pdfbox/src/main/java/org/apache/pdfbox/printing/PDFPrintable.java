@@ -48,7 +48,7 @@ public final class PDFPrintable implements Printable
     
     private final boolean showPageBorder;
     private final Scaling scaling;
-    private final float dpi;
+    private final float dotsPerInch;
     private final boolean center;
     private boolean subsamplingAllowed = false;
     private RenderingHints renderingHints = null;
@@ -93,11 +93,11 @@ public final class PDFPrintable implements Printable
      * @param document the document to print
      * @param scaling page scaling policy
      * @param showPageBorder true if page borders are to be printed
-     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @param dotsPerInch if non-zero then the image will be rasterized at the given DPI
      */
-    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi)
+    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dotsPerInch)
     {
-        this(document, scaling, showPageBorder, dpi, true);
+        this(document, scaling, showPageBorder, dotsPerInch, true);
     }
     
     /**
@@ -107,13 +107,13 @@ public final class PDFPrintable implements Printable
      * @param document the document to print
      * @param scaling page scaling policy
      * @param showPageBorder true if page borders are to be printed
-     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @param dotsPerInch if non-zero then the image will be rasterized at the given DPI
      * @param center true if the content is to be centered on the page (otherwise top-left).
      */
-    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi,
+    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dotsPerInch,
                         boolean center)
     {
-        this(document, scaling, showPageBorder, dpi, center, new PDFRenderer(document));
+        this(document, scaling, showPageBorder, dotsPerInch, center, new PDFRenderer(document));
     }
 
     /**
@@ -123,18 +123,18 @@ public final class PDFPrintable implements Printable
      * @param document the document to print
      * @param scaling page scaling policy
      * @param showPageBorder true if page borders are to be printed
-     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @param dotsPerInch if non-zero then the image will be rasterized at the given DPI
      * @param center true if the content is to be centered on the page (otherwise top-left).
      * @param renderer the document renderer. Useful if {@link PDFRenderer} has been subclassed.
      */
-    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi,
+    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dotsPerInch,
                         boolean center, PDFRenderer renderer)
     {
         this.pageTree = document.getPages();
         this.renderer = renderer;
         this.scaling = scaling;
         this.showPageBorder = showPageBorder;
-        this.dpi = dpi;
+        this.dotsPerInch = dotsPerInch;
         this.center = center;
     }
 
@@ -241,9 +241,9 @@ public final class PDFPrintable implements Printable
             // rasterize to bitmap (optional)
             Graphics2D printerGraphics = null;
             BufferedImage image = null;
-            if (dpi > 0)
+            if (dotsPerInch > 0)
             {
-                float dpiScale = dpi / 72;
+                float dpiScale = dotsPerInch / 72;
                 image = new BufferedImage((int)(imageableWidth * dpiScale / scale),
                                           (int)(imageableHeight * dpiScale / scale),
                                           BufferedImage.TYPE_INT_ARGB);
