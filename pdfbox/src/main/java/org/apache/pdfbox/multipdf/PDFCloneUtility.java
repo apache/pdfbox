@@ -81,123 +81,84 @@ class PDFCloneUtility
           {
               return null;
           }
-
-          COSBase retval;
-          Stack<Object> stack = new Stack<>();
-          boolean saveClonned;
-
-          do
+          COSBase retval = clonedVersion.get(base);
+          if( retval != null )
           {
-              if (base != null)
+              //we are done, it has already been converted.
+              return retval;
+          }
+          if (base instanceof COSBase && clonedValues.contains(base))
+          {
+              // Don't clone a clone
+              return (COSBase) base;
+          }
+          if (base instanceof List)
+          {
+              COSArray array = new COSArray();
+              List<?> list = (List<?>) base;
+              for (Object obj : list)
               {
-                  retval = clonedVersion.get(base);
-                  if (retval != null)
-                  {
-                      //we are done, it has already been converted.
-                  }
-                  else
-                  {
-                      saveClonned = true;
-
-                      if (base instanceof COSBase && clonedValues.contains(base))
-                      {
-                          // Don't clone a clone
-                          retval = (COSBase) base;
-                          saveClonned = false;
-                      }
-                      else
-                      if (base instanceof List)
-                      {
-                          COSArray array = new COSArray();
-                          List<?> list = (List<?>) base;
-                          for (Object obj : list)
-                          {
-                              array.add(cloneForNewDocument(obj));
-                          }
-                          retval = array;
-                      }
-                      else if (base instanceof COSObjectable && !(base instanceof COSBase))
-                      {
-                          stack.push(((COSObjectable) base).getCOSObject());
-                          saveClonned = false;
-                      }
-                      else if (base instanceof COSObject)
-                      {
-                          COSObject object = (COSObject) base;
-                          stack.push(object.getObject());
-                          saveClonned = false;
-                      }
-                      else if (base instanceof COSArray)
-                      {
-                          COSArray newArray = new COSArray();
-                          COSArray array = (COSArray) base;
-                          for (int i = 0; i < array.size(); i++)
-                          {
-                              COSBase value = array.get(i);
-                              checkForRecursion(base, value);
-                              newArray.add(cloneForNewDocument(value));
-                          }
-                          retval = newArray;
-                      }
-                      else if (base instanceof COSStream)
-                      {
-                          COSStream originalStream = (COSStream) base;
-                          COSStream stream = destination.getDocument().createCOSStream();
-                          try (OutputStream output = stream.createRawOutputStream();
-                               InputStream input = originalStream.createRawInputStream())
-                          {
-                              IOUtils.copy(input, output);
-                          }
-                          clonedVersion.put(base, stream);
-                          for (Map.Entry<COSName, COSBase> entry : originalStream.entrySet())
-                          {
-                              COSBase value = entry.getValue();
-                              checkForRecursion(base, value);
-                              stream.setItem(entry.getKey(), cloneForNewDocument(entry));
-                          }
-                          retval = stream;
-                      }
-                      else if (base instanceof COSDictionary)
-                      {
-                          COSDictionary dic = (COSDictionary) base;
-                          COSDictionary retvalDic = new COSDictionary();
-                          retval = retvalDic;
-                          clonedVersion.put(base, retval);
-                          for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
-                          {
-                              COSBase value = entry.getValue();
-                              checkForRecursion(base, value);
-                              retvalDic.setItem(entry.getKey(), cloneForNewDocument(value));
-                          }
-                      }
-                      else
-                      {
-                          retval = (COSBase) base;
-                      }
-
-                      if (saveClonned)
-                      {
-                          clonedVersion.put(base, retval);
-                          clonedValues.add(retval);
-                      }
-                  }
+                  array.add(cloneForNewDocument(obj));
               }
-              else
+              retval = array;
+          }
+          else if( base instanceof COSObjectable && !(base instanceof COSBase) )
+          {
+              retval = cloneForNewDocument( ((COSObjectable)base).getCOSObject() );
+          }
+          else if( base instanceof COSObject )
+          {
+              COSObject object = (COSObject)base;
+              retval = cloneForNewDocument( object.getObject() );
+          }
+          else if( base instanceof COSArray )
+          {
+              COSArray newArray = new COSArray();
+              COSArray array = (COSArray)base;
+              for( int i=0; i<array.size(); i++ )
               {
-                  retval = null;
+                  COSBase value = array.get(i);
+                  checkForRecursion(base, value);
+                  newArray.add(cloneForNewDocument(value));
               }
-
-              if (stack.isEmpty())
+              retval = newArray;
+          }
+          else if( base instanceof COSStream )
+          {
+              COSStream originalStream = (COSStream)base;
+              COSStream stream = destination.getDocument().createCOSStream();
+              try (OutputStream output = stream.createRawOutputStream();
+                   InputStream input = originalStream.createRawInputStream())
               {
-                  break;
+                  IOUtils.copy(input, output);
               }
-              else
+              clonedVersion.put( base, stream );
+              for( Map.Entry<COSName, COSBase> entry :  originalStream.entrySet() )
               {
-                  base = stack.pop();
+                  COSBase value = entry.getValue();
+                  checkForRecursion(base, value);
+                  stream.setItem(entry.getKey(), cloneForNewDocument(value));
+              }
+              retval = stream;
+          }
+          else if( base instanceof COSDictionary )
+          {
+              COSDictionary dic = (COSDictionary)base;
+              retval = new COSDictionary();
+              clonedVersion.put( base, retval );
+              for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
+              {
+                  COSBase value = entry.getValue();
+                  checkForRecursion(base, value);
+                  ((COSDictionary) retval).setItem(entry.getKey(), cloneForNewDocument(value));
               }
           }
-          while(true);
-
+          else
+          {
+              retval = (COSBase)base;
+          }
+          clonedVersion.put( base, retval );
+          clonedValues.add(retval);
           return retval;
       }
 
