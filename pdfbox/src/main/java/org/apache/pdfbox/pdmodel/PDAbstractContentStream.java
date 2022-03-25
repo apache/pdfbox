@@ -1477,10 +1477,12 @@ abstract class PDAbstractContentStream implements Closeable
     {
         double[] values = new double[6];
         transform.getMatrix(values);
-        for (double v : values)
-        {
-            writeOperand((float) v);
-        }
+        writeOperand((float) values[0]);
+        writeOperand((float) values[1]);
+        writeOperand((float) values[2]);
+        writeOperand((float) values[3]);
+        writeOperand((float) values[4]);
+        writeOperand((float) values[5]);
     }
 
     /**
@@ -1633,11 +1635,12 @@ abstract class PDAbstractContentStream implements Closeable
 
     private List<Integer> applyGSUBRules(GsubWorker gsubWorker, ByteArrayOutputStream out, PDType0Font font, String word) throws IOException
     {
-        List<Integer> originalGlyphIds = new ArrayList<>();
+        char[] charArray = word.toCharArray();
+        List<Integer> originalGlyphIds = new ArrayList<>(charArray.length);
         CmapLookup cmapLookup = font.getCmapLookup();
 
         // convert characters into glyphIds
-        for (char unicodeChar : word.toCharArray())
+        for (char unicodeChar : charArray)
         {
             int glyphId = cmapLookup.getGlyphId(unicodeChar);
             if (glyphId <= 0)
