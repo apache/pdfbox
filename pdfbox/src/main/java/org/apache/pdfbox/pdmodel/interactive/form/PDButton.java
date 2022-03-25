@@ -49,13 +49,7 @@ public abstract class PDButton extends PDTerminalField
      * A Ff flag. If set, the field is a pushbutton.
      */
     static final int FLAG_PUSHBUTTON = 1 << 16;
-    
-    /**
-     * A Ff flag. If set, radio buttons individual fields, using the same
-     * value for the on state will turn on and off in unison.
-     */
-    static final int FLAG_RADIOS_IN_UNISON = 1 << 25;
-    
+
     /**
      * @see PDField#PDField(PDAcroForm)
      *
