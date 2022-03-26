@@ -25,10 +25,6 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 /**
@@ -88,28 +84,6 @@ public final class XMLUtil
         {
             throw new IOException(e.getMessage(), e);
         }
-    }
-
-    /**
-     * This will get the text value of an element.
-     *
-     * @param node The node to get the text value for.
-     * @return The text of the node.
-     */
-    public static String getNodeValue(Element node)
-    {
-        StringBuilder sb = new StringBuilder();
-        NodeList children = node.getChildNodes();
-        int numNodes = children.getLength();
-        for (int i = 0; i < numNodes; i++)
-        {
-            Node next = children.item(i);
-            if (next instanceof Text)
-            {
-                sb.append(next.getNodeValue());
-            }
-        }
-        return sb.toString();
     }
 
 }

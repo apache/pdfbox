@@ -34,10 +34,10 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
-import org.apache.pdfbox.util.XMLUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 /**
  * This represents an FDF field that is part of the FDF document.
@@ -87,10 +87,10 @@ public class FDFField implements COSObjectable
                 switch (child.getTagName())
                 {
                     case "value":
-                        setValue(XMLUtil.getNodeValue(child));
+                        setValue(getNodeValue(child));
                         break;
                     case "value-richtext":
-                        setRichText(new COSString(XMLUtil.getNodeValue(child)));
+                        setRichText(new COSString(getNodeValue(child)));
                         break;
                     case "field":
                         kids.add(new FDFField(child));
@@ -105,6 +105,28 @@ public class FDFField implements COSObjectable
             setKids(kids);
         }
 
+    }
+
+    /**
+     * This will get the text value of an element.
+     *
+     * @param node The node to get the text value for.
+     * @return The text of the node.
+     */
+    public static String getNodeValue(Element node)
+    {
+        StringBuilder sb = new StringBuilder();
+        NodeList children = node.getChildNodes();
+        int numNodes = children.getLength();
+        for (int i = 0; i < numNodes; i++)
+        {
+            Node next = children.item(i);
+            if (next instanceof Text)
+            {
+                sb.append(next.getNodeValue());
+            }
+        }
+        return sb.toString();
     }
 
     /**
