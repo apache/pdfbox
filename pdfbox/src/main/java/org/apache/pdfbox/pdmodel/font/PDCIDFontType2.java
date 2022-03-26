@@ -356,10 +356,13 @@ public class PDCIDFontType2 extends PDCIDFont
             if (cid == -1)
             {
                 CMap toUnicodeCMap = parent.getToUnicodeCMap();
-                byte[] codes = toUnicodeCMap.getCodesFromUnicode(Character.toString((char) unicode));
-                if (codes != null)
+                if (toUnicodeCMap != null)
                 {
-                    return codes;
+                    byte[] codes = toUnicodeCMap.getCodesFromUnicode(Character.toString((char) unicode));
+                    if (codes != null)
+                    {
+                        return codes;
+                    }
                 }
                 cid = 0;
             }
