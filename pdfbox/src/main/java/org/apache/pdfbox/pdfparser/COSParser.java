@@ -1264,7 +1264,14 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         try 
         {
-            source.seek(offset);
+            source.seek(offset - 1);
+            skipSpaces();
+            // ensure that at least one whitespace is skipped in front of the object number
+            if (source.getPosition() < offset)
+            {
+                LOG.debug("No valid object at given location " + offset + " - ignoring");
+                return null;
+            }
             // try to read the given object/generation number
             long foundObjectNumber = readObjectNumber();
             if (objectKey.getNumber() != foundObjectNumber)
