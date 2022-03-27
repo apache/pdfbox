@@ -145,7 +145,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * Intermediate cache. Contains all objects of already read compressed object streams. Objects are removed after
      * dereferencing them.
      */
-    private final Map<Integer, Map<Long, COSBase>> decompressedObjects = new HashMap<>();
+    private final Map<Long, Map<Long, COSBase>> decompressedObjects = new HashMap<>();
 
     /**
      * The security handler.
@@ -579,8 +579,7 @@ public class COSParser extends BaseParser implements ICOSParser
     public COSBase dereferenceCOSObject(COSObject obj) throws IOException
     {
         long currentPos = source.getPosition();
-        COSBase parsedObj = parseObjectDynamically(obj.getObjectNumber(), obj.getGenerationNumber(),
-                false);
+        COSBase parsedObj = parseObjectDynamically(obj.getKey(), false);
         if (currentPos > 0)
         {
             source.seek(currentPos);
@@ -596,10 +595,9 @@ public class COSParser extends BaseParser implements ICOSParser
     }
 
     /**
-     * Parse the object for the given object number.  
+     * Parse the object for the given object key.
      * 
-     * @param objNr object number of object to be parsed
-     * @param objGenNr object generation number of object to be parsed
+     * @param objKey key of object to be parsed
      * @param requireExistingNotCompressedObj if <code>true</code> the object to be parsed must be defined in xref
      * (comment: null objects may be missing from xref) and it must not be a compressed object within object stream
      * (this is used to circumvent being stuck in a loop in a malicious PDF)
@@ -608,10 +606,9 @@ public class COSParser extends BaseParser implements ICOSParser
      * 
      * @throws IOException If an IO error occurs.
      */
-    protected synchronized COSBase parseObjectDynamically(long objNr, int objGenNr,
+    protected synchronized COSBase parseObjectDynamically(COSObjectKey objKey,
             boolean requireExistingNotCompressedObj) throws IOException
     {
-        final COSObjectKey objKey = new COSObjectKey(objNr, objGenNr);
         COSObject pdfObject = document.getObjectFromPool(objKey);
         if (!pdfObject.isObjectNull())
         {
@@ -630,7 +627,7 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 // xref value is object nr of object stream containing object to be parsed
                 // since our object was not found it means object stream was not parsed so far
-                referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
+                referencedObject = parseObjectStreamObject(-offsetOrObjstmObNr, objKey);
             }
         }
         if (referencedObject == null || referencedObject instanceof COSNull)
@@ -765,7 +762,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return the parsed object
      * @throws IOException if something went wrong when parsing the object
      */
-    protected COSBase parseObjectStreamObject(int objstmObjNr, COSObjectKey key) throws IOException
+    protected COSBase parseObjectStreamObject(long objstmObjNr, COSObjectKey key) throws IOException
     {
         Map<Long, COSBase> streamObjects = decompressedObjects.computeIfAbsent(objstmObjNr,
                 n -> new HashMap<>());
@@ -1267,7 +1264,14 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         try 
         {
-            source.seek(offset);
+            source.seek(offset - 1);
+            skipSpaces();
+            // ensure that at least one whitespace is skipped in front of the object number
+            if (source.getPosition() < offset)
+            {
+                LOG.debug("No valid object at given location " + offset + " - ignoring");
+                return null;
+            }
             // try to read the given object/generation number
             long foundObjectNumber = readObjectNumber();
             if (objectKey.getNumber() != foundObjectNumber)
