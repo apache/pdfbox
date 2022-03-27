@@ -1265,7 +1265,7 @@ public class COSParser extends BaseParser implements ICOSParser
         try 
         {
             source.seek(offset - 1);
-            skipSpaces();
+            skipWhiteSpaces();
             // ensure that at least one whitespace is skipped in front of the object number
             if (source.getPosition() < offset)
             {
