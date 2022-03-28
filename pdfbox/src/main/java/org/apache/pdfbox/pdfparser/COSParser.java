@@ -315,11 +315,13 @@ public class COSParser extends BaseParser
         COSDictionary trailer = null;
         while (prev > 0)
         {
+            // save expected position for loop detection
+            prevSet.add(prev);
             // seek to xref table
             source.seek(prev);
             // skip white spaces
             skipSpaces();
-            // save current position instead of prev due to skipped spaces
+            // save current position as well due to skipped spaces
             prevSet.add(source.getPosition());
             // -- parse xref
             if (source.peek() == X)
