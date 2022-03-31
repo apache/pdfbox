@@ -968,7 +968,8 @@ public class COSWriter implements ICOSVisitor
         // subtract 2 bytes because of the enclosing "<>"
         if (signatureBytes.length > signatureLength - 2)
         {
-            throw new IOException("Can't write signature, not enough space");
+            throw new IOException("Can't write signature, not enough space; "
+                    + "adjust it with SignatureOptions.setPreferredSignatureSize");
         }
 
         // overwrite the signature Contents in the buffer
