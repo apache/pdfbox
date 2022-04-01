@@ -665,8 +665,9 @@ public class COSParser extends BaseParser
                     if (!parsedObjects.contains(objId))
                     {
                         Long fileOffset = document.getXrefTable().get(objKey);
-                        if (fileOffset == null && isLenient && bfSearchCOSObjectKeyOffsets != null)
+                        if (fileOffset == null && isLenient)
                         {
+                            bfSearchForObjects();
                             fileOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
                             if (fileOffset != null)
                             {
@@ -691,8 +692,9 @@ public class COSParser extends BaseParser
                                 fileOffset = document.getXrefTable().get(key);
                                 if (fileOffset == null || fileOffset <= 0)
                                 {
-                                    if (isLenient && bfSearchCOSObjectKeyOffsets != null)
+                                    if (isLenient)
                                     {
+                                        bfSearchForObjects();
                                         fileOffset = bfSearchCOSObjectKeyOffsets.get(key);
                                         if (fileOffset != null)
                                         {
@@ -827,8 +829,9 @@ public class COSParser extends BaseParser
             Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
 
             // maybe something is wrong with the xref table -> perform brute force search for all objects
-            if (offsetOrObjstmObNr == null && isLenient && bfSearchCOSObjectKeyOffsets != null)
+            if (offsetOrObjstmObNr == null && isLenient)
             {
+                bfSearchForObjects();
                 offsetOrObjstmObNr = bfSearchCOSObjectKeyOffsets.get(objKey);
                 if (offsetOrObjstmObNr != null)
                 {
@@ -856,7 +859,7 @@ public class COSParser extends BaseParser
             if (offsetOrObjstmObNr == null && isLenient && bfSearchCOSObjectKeyOffsets == null)
             {
                 bfSearchForObjects();
-                if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
+                if (!bfSearchCOSObjectKeyOffsets.isEmpty())
                 {
                     LOG.debug("Add all new read objects from brute force search to the xref table");
                     Map<COSObjectKey, Long> xrefOffset = document.getXrefTable();
@@ -1522,7 +1525,7 @@ public class COSParser extends BaseParser
         if (!validateXrefOffsets(xrefOffset))
         {
             bfSearchForObjects();
-            if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
+            if (!bfSearchCOSObjectKeyOffsets.isEmpty())
             {
                 LOG.debug("Replaced read xref table with the results of a brute force search");
                 xrefOffset.clear();
