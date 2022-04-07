@@ -340,6 +340,10 @@
                                             Java versions higher than 11 cannot
                                             build Java 6 bytecode</message>
                                     </requireJavaVersion>
+                                    <requireEnvironmentVariable>
+                                        <variableName>JAVA_HOME</variableName>
+                                        <message>The JAVA_HOME environment variable must be set!</message>
+                                    </requireEnvironmentVariable>
                                   </rules>
                             </configuration>
                         </execution>
