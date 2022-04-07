@@ -302,7 +302,6 @@ public abstract class BaseParser
         if (key == null || key.getName().isEmpty())
         {
             LOG.warn("Empty COSName at offset " + source.getPosition());
-            return false;
         }
         COSBase value = parseCOSDictionaryValue();
         skipSpaces();
