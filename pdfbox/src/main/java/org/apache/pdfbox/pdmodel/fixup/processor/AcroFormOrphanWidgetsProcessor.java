@@ -77,11 +77,8 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
     private void resolveFieldsFromWidgets(PDAcroForm acroForm)
     {
-        Map<String, PDField> nonTerminalFieldsMap = new HashMap<String, PDField>();
-
         LOG.debug("rebuilding fields from widgets");
 
-        List<PDField> fields = new ArrayList<PDField>();
         PDResources resources = acroForm.getDefaultResources();
         if (resources == null)
         {
@@ -90,6 +87,8 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             return;
         }
 
+        List<PDField> fields = new ArrayList<PDField>();
+        Map<String, PDField> nonTerminalFieldsMap = new HashMap<String, PDField>();
         for (PDPage page : document.getPages())
         {
             try
