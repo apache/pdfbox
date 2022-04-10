@@ -1470,7 +1470,7 @@ public class COSParser extends BaseParser
             // see type 2 entry in xref stream
             if (objectOffset != null && objectOffset >= 0)
             {
-                COSObjectKey foundObjectKey = findObjectKey(objectKey, objectOffset);
+                COSObjectKey foundObjectKey = findObjectKey(objectKey, objectOffset, xrefOffset);
                 if (foundObjectKey == null)
                 {
                     LOG.debug("Stop checking xref offsets as at least one (" + objectKey
@@ -1540,11 +1540,12 @@ public class COSParser extends BaseParser
      * 
      * @param objectKey the key of object we are looking for
      * @param offset the offset where to look
+     * @param xrefOffset a map with with all known xref entries
      * @return returns the found/fixed object key
      * 
      * @throws IOException if something went wrong
      */
-    private COSObjectKey findObjectKey(COSObjectKey objectKey, long offset) throws IOException
+    private COSObjectKey findObjectKey(COSObjectKey objectKey, long offset, Map<COSObjectKey, Long> xrefOffset) throws IOException
     {
         // there can't be any object at the very beginning of a pdf
         if (offset < MINIMUM_SEARCH_OFFSET)
@@ -1565,8 +1566,23 @@ public class COSParser extends BaseParser
                 }
                 else
                 {
-                    LOG.debug("No valid object at given location " + offset + " - ignoring");
-                    return null;
+                    long current = source.getPosition();
+                    source.seek(--current);
+                    while (isDigit())
+                        source.seek(--current);
+                    long newObjNr = readObjectNumber();
+                    int newGenNr = readGenerationNumber();
+                    COSObjectKey newObjKey = new COSObjectKey(newObjNr, newGenNr);
+                    // the found object number belongs to another uncompressed object, something has to be wrong
+                    if (xrefOffset.containsKey(newObjKey) && xrefOffset.get(newObjKey) > 0)
+                    {
+                        LOG.debug("Found the object " + newObjKey + " instead of " //
+                                + objectKey + " at offset " + offset //
+                                + " - ignoring");
+                        return null;
+                    }
+                    // something seems to be wrong but it's hard to determine what exactly -> simply continue
+                    source.seek(offset);
                 }
             }
             // try to read the given object/generation number
