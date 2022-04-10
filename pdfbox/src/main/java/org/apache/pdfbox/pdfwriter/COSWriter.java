@@ -331,14 +331,17 @@ public class COSWriter implements ICOSVisitor
         Set<COSObjectKey> keySet = cosDoc.getXrefTable().keySet();
         for (COSObjectKey cosObjectKey : keySet)
         {
-            COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
-            if (object != null && cosObjectKey != null && !(object instanceof COSNumber))
+            if (cosObjectKey != null)
             {
-                // FIXME see PDFBOX-4997: objectKeys is (theoretically) risky because a COSName in
-                // different objects would appear only once. Rev 1092855 considered this
-                // but only for COSNumber.
-                objectKeys.put(object, cosObjectKey);
-                keyObject.put(cosObjectKey, object);
+                COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
+                if (object != null && !(object instanceof COSNumber))
+                {
+                    // FIXME see PDFBOX-4997: objectKeys is (theoretically) risky because a COSName in
+                    // different objects would appear only once. Rev 1092855 considered this
+                    // but only for COSNumber.
+                    objectKeys.put(object, cosObjectKey);
+                    keyObject.put(cosObjectKey, object);
+                }
             }
         }
     }
