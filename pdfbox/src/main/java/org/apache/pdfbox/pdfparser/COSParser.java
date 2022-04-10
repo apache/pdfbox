@@ -1558,8 +1558,16 @@ public class COSParser extends BaseParser
             // ensure that at least one whitespace is skipped in front of the object number
             if (source.getPosition() < offset)
             {
-                LOG.debug("No valid object at given location " + offset + " - ignoring");
-                return null;
+                if (!isDigit())
+                {
+                    // anything else but a digit may be some garbage of the previous object -> just ignore it
+                    source.read();
+                }
+                else
+                {
+                    LOG.debug("No valid object at given location " + offset + " - ignoring");
+                    return null;
+                }
             }
             // try to read the given object/generation number
             long foundObjectNumber = readObjectNumber();
