@@ -304,21 +304,20 @@ public class COSWriter implements ICOSVisitor, Closeable
           long highestNumber = doc.getDocument().getHighestXRefObjectNumber();
           for ( COSObjectKey cosObjectKey : keySet ) 
           {
-            COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
-            if (object != null && cosObjectKey!= null && !(object instanceof COSNumber))
-            {
-                objectKeys.put(object, cosObjectKey);
-                keyObject.put(cosObjectKey,object);
-            }
-            
-            if (cosObjectKey != null)
-            {
-                long num = cosObjectKey.getNumber();
-                if (num > highestNumber)
-                {
-                    highestNumber = num;
-                }
-            }
+              if (cosObjectKey != null)
+              {
+                  COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
+                  if (object != null && !(object instanceof COSNumber))
+                  {
+                      objectKeys.put(object, cosObjectKey);
+                      keyObject.put(cosObjectKey, object);
+                  }
+                  long num = cosObjectKey.getNumber();
+                  if (num > highestNumber)
+                  {
+                      highestNumber = num;
+                  }
+              }
           }
           setNumber(highestNumber);
         }
