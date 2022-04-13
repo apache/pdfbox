@@ -94,21 +94,21 @@ public abstract class CFFCharset
     /**
      * Returns the SID for a given GID. SIDs are internal to the font and are not public.
      *
-     * @param sid SID
-     * @return GID
+     * @param gid GID
+     * @return SID
      */
-    int getSIDForGID(int sid)
+    int getSIDForGID(int gid)
     {
         if (isCIDFont)
         {
             throw new IllegalStateException("Not a Type 1-equivalent font");
         }
-        Integer gid = gidToSid.get(sid);
-        if (gid == null)
+        Integer sid = gidToSid.get(gid);
+        if (sid == null)
         {
             return 0;
         }
-        return gid;
+        return sid;
     }
 
     /**
