@@ -1286,8 +1286,11 @@ public class COSParser extends BaseParser implements ICOSParser
                     long newObjNr = readObjectNumber();
                     int newGenNr = readGenerationNumber();
                     COSObjectKey newObjKey = new COSObjectKey(newObjNr, newGenNr);
-                    // the found object number belongs to another uncompressed object, something has to be wrong
-                    if (xrefOffset.containsKey(newObjKey) && xrefOffset.get(newObjKey) > 0)
+                    Long existingOffset = xrefOffset.get(newObjKey);
+                    // the found object number belongs to another uncompressed object at the same or nearby offset
+                    // something has to be wrong
+                    if (existingOffset != null && existingOffset > 0
+                            && Math.abs(offset - existingOffset) < 10)
                     {
                         LOG.debug("Found the object " + newObjKey + " instead of " //
                                 + objectKey + " at offset " + offset //
