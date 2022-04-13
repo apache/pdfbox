@@ -313,27 +313,29 @@ public class SmallMap<K, V> implements Map<K, V>
         return Collections.unmodifiableList( values );
     }
 
-    private class SmallMapEntry implements Entry<K, V>
+    private static class SmallMapEntry<K, V> implements Entry<K, V>
     {
         private final int keyIdx;
-        
-        SmallMapEntry(int keyInMapIdx)
+        private final SmallMap<K, V> map;
+
+        SmallMapEntry(int keyInMapIdx, SmallMap<K, V> map)
         {
             keyIdx = keyInMapIdx;
+            this.map = map;
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public K getKey()
         {
-            return (K)mapArr[keyIdx];
+            return (K)map.mapArr[keyIdx];
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public V getValue()
         {
-            return (V)mapArr[keyIdx+1];
+            return (V)map.mapArr[keyIdx+1];
         }
 
         @Override
@@ -345,7 +347,7 @@ public class SmallMap<K, V> implements Map<K, V>
             }
 
             V oldValue = getValue();
-            mapArr[keyIdx+1] = value;
+            map.mapArr[keyIdx+1] = value;
             return oldValue;
         }
         
@@ -380,7 +382,7 @@ public class SmallMap<K, V> implements Map<K, V>
         Set<java.util.Map.Entry<K, V>> entries = new LinkedHashSet<>();
         for (int kIdx = 0; kIdx < mapArr.length; kIdx+=2)
         {
-            entries.add(new SmallMapEntry(kIdx));
+            entries.add(new SmallMapEntry(kIdx,this));
         }
         return Collections.unmodifiableSet( entries );
     }
