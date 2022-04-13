@@ -57,14 +57,14 @@ class CFFCharsetType1 implements CFFCharset
     }
 
     @Override
-    public int getSIDForGID(int sid)
+    public int getSIDForGID(int gid)
     {
-        Integer gid = gidToSid.get(sid);
-        if (gid == null)
+        Integer sid = gidToSid.get(gid);
+        if (sid == null)
         {
             return 0;
         }
-        return gid;
+        return sid;
     }
 
     @Override
