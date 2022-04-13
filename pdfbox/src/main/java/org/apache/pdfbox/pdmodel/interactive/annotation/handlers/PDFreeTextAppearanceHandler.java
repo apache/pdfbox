@@ -45,6 +45,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary
 import org.apache.pdfbox.pdmodel.interactive.annotation.layout.AppearanceStyle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText;
 import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainTextFormatter;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.util.Matrix;
 
 public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
@@ -241,17 +242,21 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             float clipHeight = rotation == 90 || rotation == 270 ? 
                                 borderBox.getWidth() - ab.width * 4 : borderBox.getHeight() - ab.width * 4;
             extractFontDetails(annotation);
-            if (document != null && document.getDocumentCatalog().getAcroForm() != null)
+            if (document != null)
             {
-                // Try to get font from AcroForm default resources
-                // Sample file: https://gitlab.freedesktop.org/poppler/poppler/issues/6
-                PDResources defaultResources = document.getDocumentCatalog().getAcroForm().getDefaultResources();
-                if (defaultResources != null)
+                PDAcroForm pdAcroForm = document.getDocumentCatalog().getAcroForm();
+                if (pdAcroForm != null)
                 {
-                    PDFont defaultResourcesFont = defaultResources.getFont(fontName);
-                    if (defaultResourcesFont != null)
+                    // Try to get font from AcroForm default resources
+                    // Sample file: https://gitlab.freedesktop.org/poppler/poppler/issues/6
+                    PDResources defaultResources = pdAcroForm.getDefaultResources();
+                    if (defaultResources != null)
                     {
-                        font = defaultResourcesFont;
+                        PDFont defaultResourcesFont = defaultResources.getFont(fontName);
+                        if (defaultResourcesFont != null)
+                        {
+                            font = defaultResourcesFont;
+                        }
                     }
                 }
             }
@@ -435,10 +440,13 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
     private void extractFontDetails(PDAnnotationFreeText annotation)
     {
         String defaultAppearance = annotation.getDefaultAppearance();
-        if (defaultAppearance == null && document != null &&
-            document.getDocumentCatalog().getAcroForm() != null)
+        if (defaultAppearance == null && document != null)
         {
-            defaultAppearance = document.getDocumentCatalog().getAcroForm().getDefaultAppearance();
+            PDAcroForm pdAcroForm = document.getDocumentCatalog().getAcroForm();
+            if (pdAcroForm != null)
+            {
+                defaultAppearance = pdAcroForm.getDefaultAppearance();
+            }
         }
         if (defaultAppearance == null)
         {
