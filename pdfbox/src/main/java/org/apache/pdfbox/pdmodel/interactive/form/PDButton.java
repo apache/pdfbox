@@ -322,10 +322,10 @@ public abstract class PDButton extends PDTerminalField
     {
         // we need a set as the field can appear multiple times
         Set<String> onValues = new LinkedHashSet<>();
-        
-        if (!getExportValues().isEmpty())
+        List<String> exportValues = getExportValues();
+        if (!exportValues.isEmpty())
         {
-            onValues.addAll(getExportValues());
+            onValues.addAll(exportValues);
             return onValues;
         }
         
@@ -397,11 +397,12 @@ public abstract class PDButton extends PDTerminalField
         // update the appearance state (AS)
         for (PDAnnotationWidget widget : getWidgets())
         {
-            if (widget.getAppearance() == null)
+            PDAppearanceDictionary appearance = widget.getAppearance();
+            if (appearance == null)
             {
                 continue;
             }
-            PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
+            PDAppearanceEntry appearanceEntry = appearance.getNormalAppearance();
             if (appearanceEntry.getCOSObject().containsKey(value))
             {
                 widget.setAppearanceState(value);
