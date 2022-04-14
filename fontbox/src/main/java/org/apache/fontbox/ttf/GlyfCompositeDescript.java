@@ -232,7 +232,16 @@ public class GlyfCompositeDescript extends GlyfDescript
         if (contourCount < 0)
         {
             GlyfCompositeComp c = components.get(components.size() - 1);
-            contourCount = c.getFirstContour() + descriptions.get(c.getGlyphIndex()).getContourCount();
+            GlyphDescription gd = descriptions.get(c.getGlyphIndex());
+            if (gd == null)
+            {
+                LOG.error("missing glyph description for index " + c.getGlyphIndex());
+                contourCount = 0;
+            }
+            else
+            {
+                contourCount = c.getFirstContour() + gd.getContourCount();
+            }
         }
         return contourCount;
     }
