@@ -624,12 +624,10 @@ public class PreflightParser extends PDFParser
     }
 
     @Override
-    protected synchronized COSBase parseObjectDynamically(long objNr, int objGenNr,
+    protected synchronized COSBase parseObjectDynamically(COSObjectKey objKey,
             boolean requireExistingNotCompressedObj)
             throws IOException
     {
-        // ---- create object key and get object (container) from pool
-        final COSObjectKey objKey = new COSObjectKey(objNr, objGenNr);
         COSObject pdfObject = document.getObjectFromPool(objKey);
         if (!pdfObject.isObjectNull())
         {
@@ -666,7 +664,7 @@ public class PreflightParser extends PDFParser
             {
                 // xref value is object nr of object stream containing object to be parsed
                 // since our object was not found it means object stream was not parsed so far
-                referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
+                referencedObject = parseObjectStreamObject(-offsetOrObjstmObNr, objKey);
             }
         }
         if (referencedObject == null || referencedObject == COSNull.NULL)
