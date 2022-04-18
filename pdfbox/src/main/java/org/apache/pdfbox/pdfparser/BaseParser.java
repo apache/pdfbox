@@ -366,7 +366,7 @@ public abstract class BaseParser
      * This is really a bug in the Document creators code, but it caused a crash in PDFBox, the first bug was in this
      * format: /Title ( (5) /Creator which was patched in 1 place.
      *
-     * However it missed the case where the number of opening and closing parenthesis isn't balanced
+     * However, it missed the case where the number of opening and closing parenthesis isn't balanced
      *
      * The second bug was in this format /Title (c:\) /Producer
      *
@@ -377,10 +377,9 @@ public abstract class BaseParser
      * @return the corrected value of the brace counter
      * @throws IOException
      */
-    private int checkForEndOfString(final int bracesParameter) throws IOException
+    private int checkForEndOfString(final int bracesParameter, byte[] nextThreeBytes) throws IOException
     {
         int braces = bracesParameter;
-        byte[] nextThreeBytes = new byte[3];
         int amountRead = source.read(nextThreeBytes);
 
         // Check the next 3 bytes if available
@@ -425,7 +424,7 @@ public abstract class BaseParser
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-
+        byte[] nextThreeBytes = new byte[3];
         // This is the number of braces read
         int braces = 1;
         int c = source.read();
@@ -438,7 +437,7 @@ public abstract class BaseParser
             {
 
                 braces--;
-                braces = checkForEndOfString(braces);
+                braces = checkForEndOfString(braces, nextThreeBytes);
                 if( braces != 0 )
                 {
                     out.write(ch);
@@ -472,7 +471,7 @@ public abstract class BaseParser
                         break;
                     case ')':
                         // PDFBox 276 /Title (c:\)
-                        braces = checkForEndOfString(braces);
+                        braces = checkForEndOfString(braces, nextThreeBytes);
                         if( braces != 0 )
                         {
                             out.write(next);
@@ -481,10 +480,6 @@ public abstract class BaseParser
                         {
                             out.write('\\');
                         }
-                        break;
-                    case '(':
-                    case '\\':
-                        out.write(next);
                         break;
                     case ASCII_LF:
                     case ASCII_CR:
@@ -538,6 +533,8 @@ public abstract class BaseParser
                         }
                         out.write(character);
                         break;
+//                    case '(':
+//                    case '\\':
                     default:
                         // dropping the backslash
                         // see 7.3.4.2 Literal Strings for further information
