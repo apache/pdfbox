@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -48,8 +49,9 @@ public class PDSignatureField extends PDTerminalField
     {
         super(acroForm);
         getCOSObject().setItem(COSName.FT, COSName.SIG);
-        getWidgets().get(0).setLocked(true);
-        getWidgets().get(0).setPrinted(true);
+        List<PDAnnotationWidget> widgets = getWidgets();
+        widgets.get(0).setLocked(true);
+        widgets.get(0).setPrinted(true);
         setPartialName(generatePartialName());
     }
     
