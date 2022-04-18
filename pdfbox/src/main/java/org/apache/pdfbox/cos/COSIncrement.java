@@ -127,7 +127,7 @@ public class COSIncrement implements Iterable<COSBase>
                 continue;
             }
             COSUpdateInfo updatableEntry = (COSUpdateInfo) entry;
-            COSUpdateState entryUpdateState = ((COSUpdateInfo) entry).getUpdateState();
+            COSUpdateState entryUpdateState = updatableEntry.getUpdateState();
             // Entries with different document origin must be part of the increment!
             updateDifferentOrigin(entryUpdateState);
             // Always attempt to write COSArrays as direct objects.
