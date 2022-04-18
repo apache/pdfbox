@@ -179,7 +179,7 @@ public class FDFField implements COSObjectable
         COSArray kids = field.getCOSArray(COSName.KIDS);
         if (kids != null)
         {
-            List<FDFField> actuals = new ArrayList<>();
+            List<FDFField> actuals = new ArrayList<>(kids.size());
             for (int i = 0; i < kids.size(); i++)
             {
                 actuals.add(new FDFField((COSDictionary) kids.getObject(i)));
