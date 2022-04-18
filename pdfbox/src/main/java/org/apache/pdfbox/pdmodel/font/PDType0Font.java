@@ -331,11 +331,12 @@ public class PDType0Font extends PDFont implements PDVectorFont
         PDCIDSystemInfo ros = descendantFont.getCIDSystemInfo();
         if (ros != null)
         {
+            String ordering = ros.getOrdering();
             isDescendantCJK = "Adobe".equals(ros.getRegistry()) &&
-                    ("GB1".equals(ros.getOrdering()) || 
-                     "CNS1".equals(ros.getOrdering()) ||
-                     "Japan1".equals(ros.getOrdering()) ||
-                     "Korea1".equals(ros.getOrdering()));
+                    ("GB1".equals(ordering) ||
+                     "CNS1".equals(ordering) ||
+                     "Japan1".equals(ordering) ||
+                     "Korea1".equals(ordering));
         }
     }
 
@@ -361,9 +362,10 @@ public class PDType0Font extends PDFont implements PDVectorFont
             String strName = null;
             if (isDescendantCJK)
             {
-                strName = descendantFont.getCIDSystemInfo().getRegistry() + "-" +
-                          descendantFont.getCIDSystemInfo().getOrdering() + "-" +
-                          descendantFont.getCIDSystemInfo().getSupplement();
+                PDCIDSystemInfo pdCIDSystemInfo = descendantFont.getCIDSystemInfo();//Can't pdCIDSystemInfo be null here? See: readEncoding
+                strName = pdCIDSystemInfo.getRegistry() + "-" +
+                          pdCIDSystemInfo.getOrdering() + "-" +
+                          pdCIDSystemInfo.getSupplement();
             }
             else if (name != null)
             {
