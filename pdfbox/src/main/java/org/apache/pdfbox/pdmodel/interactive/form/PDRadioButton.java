@@ -122,7 +122,6 @@ public final class PDRadioButton extends PDButton
      */
     public List<String> getSelectedExportValues()
     {
-        Set<String> onValues = getOnValues();
         List<String> exportValues = getExportValues();
         List<String> selectedExportValues = new ArrayList<>();
         if (exportValues.isEmpty())
@@ -132,6 +131,7 @@ public final class PDRadioButton extends PDButton
         }
         else
         {
+            Set<String> onValues = getOnValues();
             String fieldValue = getValue();
             int idx = 0;
             for (String onValue : onValues)
