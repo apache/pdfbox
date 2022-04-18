@@ -1289,7 +1289,7 @@ public class CFFParser
                 {
                     Number previous = result.get(i - 1);
                     Number current = result.get(i);
-                    Integer sum = previous.intValue() + current.intValue();
+                    int sum = previous.intValue() + current.intValue();
                     result.set(i, sum);
                 }
                 return result;
