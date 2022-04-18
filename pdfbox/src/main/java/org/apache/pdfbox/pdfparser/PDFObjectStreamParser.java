@@ -121,7 +121,7 @@ public class PDFObjectStreamParser extends BaseParser
         Map<Long, COSBase> allObjects = new HashMap<>();
         try
         {
-            Map<Integer, Long> objectNumbers = privateReadObjectOffets();
+            Map<Integer, Long> objectNumbers = privateReadObjectOffsets();
             long currentPosition = source.getPosition();
             if (firstObject > 0 && currentPosition < firstObject)
             {
@@ -171,7 +171,7 @@ public class PDFObjectStreamParser extends BaseParser
         return objectNumbers;
     }
 
-    private Map<Integer, Long> privateReadObjectOffets() throws IOException
+    private Map<Integer, Long> privateReadObjectOffsets() throws IOException
     {
         // according to the pdf spec the offsets shall be sorted ascending
         // but we can't rely on that, so that we have to sort the offsets
