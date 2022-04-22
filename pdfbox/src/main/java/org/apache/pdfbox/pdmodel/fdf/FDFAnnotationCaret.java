@@ -72,7 +72,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
         String symbol = element.getAttribute("symbol");
         if (symbol != null && !symbol.isEmpty())
         {
-            setSymbol(element.getAttribute("symbol"));
+            setSymbol(symbol);
         }
     }
 
