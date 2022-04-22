@@ -512,22 +512,18 @@ public class PDStream implements COSObjectable
     {
         PDMetadata retval = null;
         COSBase mdStream = stream.getDictionaryObject(COSName.METADATA);
-        if (mdStream != null)
+        if (mdStream instanceof COSStream)
         {
-            if (mdStream instanceof COSStream)
-            {
-                retval = new PDMetadata((COSStream) mdStream);
-            } 
-            else if (mdStream instanceof COSNull)
-            {
-                // null is authorized
-            } 
-            else
-            {
-                throw new IllegalStateException(
-                        "Expected a COSStream but was a "
-                                + mdStream.getClass().getSimpleName());
-            }
+            retval = new PDMetadata((COSStream) mdStream);
+        } 
+        else if (mdStream instanceof COSNull)
+        {
+            // null is authorized
+        } 
+        else if (mdStream != null)
+        {
+            throw new IllegalStateException("Expected a COSStream but was a "
+                            + mdStream.getClass().getSimpleName());
         }
         return retval;
     }
