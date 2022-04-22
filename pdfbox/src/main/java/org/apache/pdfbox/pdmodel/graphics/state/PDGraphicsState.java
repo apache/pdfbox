@@ -60,7 +60,7 @@ public class PDGraphicsState implements Cloneable
     private PDLineDashPattern lineDashPattern = new PDLineDashPattern();
     private RenderingIntent renderingIntent;
     private boolean strokeAdjustment = false;
-    private BlendMode blendMode = BlendMode.COMPATIBLE;
+    private BlendMode blendMode = BlendMode.NORMAL;
     private PDSoftMask softMask;
     private double alphaConstant = 1.0;
     private double nonStrokingAlphaConstant = 1.0;
