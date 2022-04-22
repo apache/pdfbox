@@ -193,7 +193,7 @@ final class DCTFilter extends Filter
                 // match
                 a = 0;
                 long afterAdobePos = iis.getStreamPosition();
-                iis.seek(iis.getStreamPosition() - 9);
+                iis.seek(afterAdobePos - 9);
                 int tag = iis.readUnsignedShort();
                 if (tag != 0xFFEE)
                 {
