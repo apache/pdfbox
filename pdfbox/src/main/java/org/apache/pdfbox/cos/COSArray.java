@@ -407,8 +407,11 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public boolean remove( COSBase o )
     {
-        boolean removed = objects.remove( o );
-        getUpdateState().update();
+        boolean removed = objects.remove(o);
+        if (removed)
+        {
+            getUpdateState().update();
+        }
         return removed;
     }
 
