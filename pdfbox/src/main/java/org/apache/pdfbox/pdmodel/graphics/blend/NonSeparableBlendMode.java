@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.blend;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.pdfbox.cos.COSName;
 
 /**
@@ -25,7 +28,8 @@ import org.apache.pdfbox.cos.COSName;
  */
 public abstract class NonSeparableBlendMode extends BlendMode
 {
-    protected static final NonSeparableBlendMode HUE = new NonSeparableBlendMode()
+
+    public static final NonSeparableBlendMode HUE = new NonSeparableBlendMode()
     {
         @Override
         public void blend(float[] srcValues, float[] dstValues, float[] result)
@@ -42,7 +46,7 @@ public abstract class NonSeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final NonSeparableBlendMode SATURATION = new NonSeparableBlendMode()
+    public static final NonSeparableBlendMode SATURATION = new NonSeparableBlendMode()
     {
         @Override
         public void blend(float[] srcValues, float[] dstValues, float[] result)
@@ -57,7 +61,7 @@ public abstract class NonSeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final NonSeparableBlendMode COLOR = new NonSeparableBlendMode()
+    public static final NonSeparableBlendMode COLOR = new NonSeparableBlendMode()
     {
         @Override
         public void blend(float[] srcValues, float[] dstValues, float[] result)
@@ -72,7 +76,7 @@ public abstract class NonSeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final NonSeparableBlendMode LUMINOSITY = new NonSeparableBlendMode()
+    public static final NonSeparableBlendMode LUMINOSITY = new NonSeparableBlendMode()
     {
         @Override
         public void blend(float[] srcValues, float[] dstValues, float[] result)
@@ -86,6 +90,23 @@ public abstract class NonSeparableBlendMode extends BlendMode
         	return COSName.LUMINOSITY;
         }
     };
+
+    private static Map<COSName, BlendMode> createBlendModeMap()
+    {
+        Map<COSName, BlendMode> map = new HashMap<>(4);
+        map.put(COSName.HUE, HUE);
+        map.put(COSName.SATURATION, SATURATION);
+        map.put(COSName.LUMINOSITY, LUMINOSITY);
+        map.put(COSName.COLOR, COLOR);
+        return map;
+    }
+
+    private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
+
+    protected static final BlendMode getBlendMode(COSName cosBlendMode)
+    {
+    	return BLEND_MODES.get(cosBlendMode);
+    }
 
     NonSeparableBlendMode()
     {

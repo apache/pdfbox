@@ -59,7 +59,7 @@ public final class BlendComposite implements Composite
             LOG.warn("using 1 instead of incorrect Alpha " + constantAlpha);
             constantAlpha = 1;
         }
-        if (blendMode == BlendMode.NORMAL)
+        if (blendMode == SeparableBlendMode.NORMAL)
         {
             return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, constantAlpha);
         }

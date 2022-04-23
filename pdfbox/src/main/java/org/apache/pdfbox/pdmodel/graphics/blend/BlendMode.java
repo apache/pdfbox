@@ -20,9 +20,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Blend mode.
  *
@@ -51,8 +48,6 @@ public abstract class BlendMode
 	public static final BlendMode COLOR = NonSeparableBlendMode.COLOR;
 	public static final BlendMode LUMINOSITY = NonSeparableBlendMode.LUMINOSITY;
 
-    private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
-
     BlendMode()
     {
     }
@@ -64,6 +59,7 @@ public abstract class BlendMode
      */
     public abstract COSName getCOSName();
 
+    
     /**
      * Determines the blend mode from the BM entry in the COS ExtGState.
      *
@@ -75,50 +71,34 @@ public abstract class BlendMode
         BlendMode result = null;
         if (cosBlendMode instanceof COSName)
         {
-            result = BLEND_MODES.get(cosBlendMode);
+            result = getBlendMode((COSName)cosBlendMode);
         }
         else if (cosBlendMode instanceof COSArray)
         {
             COSArray cosBlendModeArray = (COSArray) cosBlendMode;
             for (int i = 0; i < cosBlendModeArray.size(); i++)
             {
-                result = BLEND_MODES.get(cosBlendModeArray.getObject(i));
-                if (result != null)
-                {
-                    break;
-                }
+            	COSBase cosBase = cosBlendModeArray.getObject(i);
+            	if (cosBase instanceof COSName)
+            	{
+	                result = getBlendMode((COSName)cosBase);
+	                if (result != null)
+	                {
+	                    break;
+	                }
+            	}
             }
         }
-
-        if (result != null)
-        {
-            return result;
-        }
-        return BlendMode.NORMAL;
+        return result != null ? result : SeparableBlendMode.NORMAL;
     }
     
-    private static Map<COSName, BlendMode> createBlendModeMap()
+    private static BlendMode getBlendMode(COSName cosBlendMode)
     {
-        Map<COSName, BlendMode> map = new HashMap<>(13);
-        map.put(COSName.NORMAL, BlendMode.NORMAL);
-        // BlendMode.COMPATIBLE should not be used
-        map.put(COSName.COMPATIBLE, BlendMode.NORMAL);
-        map.put(COSName.MULTIPLY, BlendMode.MULTIPLY);
-        map.put(COSName.SCREEN, BlendMode.SCREEN);
-        map.put(COSName.OVERLAY, BlendMode.OVERLAY);
-        map.put(COSName.DARKEN, BlendMode.DARKEN);
-        map.put(COSName.LIGHTEN, BlendMode.LIGHTEN);
-        map.put(COSName.COLOR_DODGE, BlendMode.COLOR_DODGE);
-        map.put(COSName.COLOR_BURN, BlendMode.COLOR_BURN);
-        map.put(COSName.HARD_LIGHT, BlendMode.HARD_LIGHT);
-        map.put(COSName.SOFT_LIGHT, BlendMode.SOFT_LIGHT);
-        map.put(COSName.DIFFERENCE, BlendMode.DIFFERENCE);
-        map.put(COSName.EXCLUSION, BlendMode.EXCLUSION);
-        map.put(COSName.HUE, BlendMode.HUE);
-        map.put(COSName.SATURATION, BlendMode.SATURATION);
-        map.put(COSName.LUMINOSITY, BlendMode.LUMINOSITY);
-        map.put(COSName.COLOR, BlendMode.COLOR);
-        return map;
+    	BlendMode result = SeparableBlendMode.getBlendMode((COSName)cosBlendMode);
+        if (result == null)
+        {
+            result = NonSeparableBlendMode.getBlendMode((COSName)cosBlendMode);
+        }
+    	return result;
     }
-
 }

@@ -35,23 +35,23 @@ class BlendModeTest
     @Test
     void testInstances()
     {
-        assertEquals(BlendMode.NORMAL, BlendMode.getInstance(COSName.NORMAL));
-        assertEquals(BlendMode.NORMAL, BlendMode.getInstance(COSName.COMPATIBLE));
-        assertEquals(BlendMode.MULTIPLY, BlendMode.getInstance(COSName.MULTIPLY));
-        assertEquals(BlendMode.SCREEN, BlendMode.getInstance(COSName.SCREEN));
-        assertEquals(BlendMode.OVERLAY, BlendMode.getInstance(COSName.OVERLAY));
-        assertEquals(BlendMode.DARKEN, BlendMode.getInstance(COSName.DARKEN));
-        assertEquals(BlendMode.LIGHTEN, BlendMode.getInstance(COSName.LIGHTEN));
-        assertEquals(BlendMode.COLOR_DODGE, BlendMode.getInstance(COSName.COLOR_DODGE));
-        assertEquals(BlendMode.COLOR_BURN, BlendMode.getInstance(COSName.COLOR_BURN));
-        assertEquals(BlendMode.HARD_LIGHT, BlendMode.getInstance(COSName.HARD_LIGHT));
-        assertEquals(BlendMode.SOFT_LIGHT, BlendMode.getInstance(COSName.SOFT_LIGHT));
-        assertEquals(BlendMode.DIFFERENCE, BlendMode.getInstance(COSName.DIFFERENCE));
-        assertEquals(BlendMode.EXCLUSION, BlendMode.getInstance(COSName.EXCLUSION));
-        assertEquals(BlendMode.HUE, BlendMode.getInstance(COSName.HUE));
-        assertEquals(BlendMode.SATURATION, BlendMode.getInstance(COSName.SATURATION));
-        assertEquals(BlendMode.LUMINOSITY, BlendMode.getInstance(COSName.LUMINOSITY));
-        assertEquals(BlendMode.COLOR, BlendMode.getInstance(COSName.COLOR));
+        assertEquals(SeparableBlendMode.NORMAL, BlendMode.getInstance(COSName.NORMAL));
+        assertEquals(SeparableBlendMode.NORMAL, BlendMode.getInstance(COSName.COMPATIBLE));
+        assertEquals(SeparableBlendMode.MULTIPLY, BlendMode.getInstance(COSName.MULTIPLY));
+        assertEquals(SeparableBlendMode.SCREEN, BlendMode.getInstance(COSName.SCREEN));
+        assertEquals(SeparableBlendMode.OVERLAY, BlendMode.getInstance(COSName.OVERLAY));
+        assertEquals(SeparableBlendMode.DARKEN, BlendMode.getInstance(COSName.DARKEN));
+        assertEquals(SeparableBlendMode.LIGHTEN, BlendMode.getInstance(COSName.LIGHTEN));
+        assertEquals(SeparableBlendMode.COLOR_DODGE, BlendMode.getInstance(COSName.COLOR_DODGE));
+        assertEquals(SeparableBlendMode.COLOR_BURN, BlendMode.getInstance(COSName.COLOR_BURN));
+        assertEquals(SeparableBlendMode.HARD_LIGHT, BlendMode.getInstance(COSName.HARD_LIGHT));
+        assertEquals(SeparableBlendMode.SOFT_LIGHT, BlendMode.getInstance(COSName.SOFT_LIGHT));
+        assertEquals(SeparableBlendMode.DIFFERENCE, BlendMode.getInstance(COSName.DIFFERENCE));
+        assertEquals(SeparableBlendMode.EXCLUSION, BlendMode.getInstance(COSName.EXCLUSION));
+        assertEquals(NonSeparableBlendMode.HUE, BlendMode.getInstance(COSName.HUE));
+        assertEquals(NonSeparableBlendMode.SATURATION, BlendMode.getInstance(COSName.SATURATION));
+        assertEquals(NonSeparableBlendMode.LUMINOSITY, BlendMode.getInstance(COSName.LUMINOSITY));
+        assertEquals(NonSeparableBlendMode.COLOR, BlendMode.getInstance(COSName.COLOR));
     }
 
     /**
@@ -61,22 +61,22 @@ class BlendModeTest
     @Test
     void testCOSNames()
     {
-        assertEquals(COSName.NORMAL, BlendMode.NORMAL.getCOSName());
-        assertEquals(COSName.NORMAL, BlendMode.COMPATIBLE.getCOSName());
-        assertEquals(COSName.MULTIPLY, BlendMode.MULTIPLY.getCOSName());
-        assertEquals(COSName.SCREEN, BlendMode.SCREEN.getCOSName());
-        assertEquals(COSName.OVERLAY, BlendMode.OVERLAY.getCOSName());
-        assertEquals(COSName.DARKEN, BlendMode.DARKEN.getCOSName());
-        assertEquals(COSName.LIGHTEN, BlendMode.LIGHTEN.getCOSName());
-        assertEquals(COSName.COLOR_DODGE, BlendMode.COLOR_DODGE.getCOSName());
-        assertEquals(COSName.COLOR_BURN, BlendMode.COLOR_BURN.getCOSName());
-        assertEquals(COSName.HARD_LIGHT, BlendMode.HARD_LIGHT.getCOSName());
-        assertEquals(COSName.SOFT_LIGHT, BlendMode.SOFT_LIGHT.getCOSName());
-        assertEquals(COSName.DIFFERENCE, BlendMode.DIFFERENCE.getCOSName());
-        assertEquals(COSName.EXCLUSION, BlendMode.EXCLUSION.getCOSName());
-        assertEquals(COSName.HUE, BlendMode.HUE.getCOSName());
-        assertEquals(COSName.SATURATION, BlendMode.SATURATION.getCOSName());
-        assertEquals(COSName.LUMINOSITY, BlendMode.LUMINOSITY.getCOSName());
-        assertEquals(COSName.COLOR, BlendMode.COLOR.getCOSName());
+        assertEquals(COSName.NORMAL, SeparableBlendMode.NORMAL.getCOSName());
+        assertEquals(COSName.NORMAL, SeparableBlendMode.COMPATIBLE.getCOSName());
+        assertEquals(COSName.MULTIPLY, SeparableBlendMode.MULTIPLY.getCOSName());
+        assertEquals(COSName.SCREEN, SeparableBlendMode.SCREEN.getCOSName());
+        assertEquals(COSName.OVERLAY, SeparableBlendMode.OVERLAY.getCOSName());
+        assertEquals(COSName.DARKEN, SeparableBlendMode.DARKEN.getCOSName());
+        assertEquals(COSName.LIGHTEN, SeparableBlendMode.LIGHTEN.getCOSName());
+        assertEquals(COSName.COLOR_DODGE, SeparableBlendMode.COLOR_DODGE.getCOSName());
+        assertEquals(COSName.COLOR_BURN, SeparableBlendMode.COLOR_BURN.getCOSName());
+        assertEquals(COSName.HARD_LIGHT, SeparableBlendMode.HARD_LIGHT.getCOSName());
+        assertEquals(COSName.SOFT_LIGHT, SeparableBlendMode.SOFT_LIGHT.getCOSName());
+        assertEquals(COSName.DIFFERENCE, SeparableBlendMode.DIFFERENCE.getCOSName());
+        assertEquals(COSName.EXCLUSION, SeparableBlendMode.EXCLUSION.getCOSName());
+        assertEquals(COSName.HUE, NonSeparableBlendMode.HUE.getCOSName());
+        assertEquals(COSName.SATURATION, NonSeparableBlendMode.SATURATION.getCOSName());
+        assertEquals(COSName.LUMINOSITY, NonSeparableBlendMode.LUMINOSITY.getCOSName());
+        assertEquals(COSName.COLOR, NonSeparableBlendMode.COLOR.getCOSName());
     }
 }

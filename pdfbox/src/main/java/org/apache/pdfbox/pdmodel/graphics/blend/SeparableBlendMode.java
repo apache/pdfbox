@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.blend;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.pdfbox.cos.COSName;
 
 /**
@@ -25,7 +28,8 @@ import org.apache.pdfbox.cos.COSName;
  */
 public abstract class SeparableBlendMode extends BlendMode
 {
-	protected static final SeparableBlendMode NORMAL = new SeparableBlendMode()
+	
+	public static final SeparableBlendMode NORMAL = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -40,7 +44,9 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 	
-    protected static final SeparableBlendMode MULTIPLY = new SeparableBlendMode()
+    public static final SeparableBlendMode COMPATIBLE = NORMAL;
+
+    public static final SeparableBlendMode MULTIPLY = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -55,7 +61,7 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final SeparableBlendMode SCREEN = new SeparableBlendMode()
+    public static final SeparableBlendMode SCREEN = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -70,7 +76,7 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final SeparableBlendMode OVERLAY = new SeparableBlendMode()
+    public static final SeparableBlendMode OVERLAY = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -86,7 +92,7 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final SeparableBlendMode DARKEN = new SeparableBlendMode()
+    public static final SeparableBlendMode DARKEN = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -101,7 +107,7 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final SeparableBlendMode LIGHTEN = new SeparableBlendMode()
+    public static final SeparableBlendMode LIGHTEN = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -116,7 +122,7 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final SeparableBlendMode COLOR_DODGE = new SeparableBlendMode()
+    public static final SeparableBlendMode COLOR_DODGE = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -140,7 +146,7 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final SeparableBlendMode COLOR_BURN = new SeparableBlendMode()
+    public static final SeparableBlendMode COLOR_BURN = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -164,7 +170,7 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final SeparableBlendMode HARD_LIGHT = new SeparableBlendMode()
+    public static final SeparableBlendMode HARD_LIGHT = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -180,7 +186,7 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final SeparableBlendMode SOFT_LIGHT = new SeparableBlendMode()
+    public static final SeparableBlendMode SOFT_LIGHT = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -204,7 +210,7 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final SeparableBlendMode DIFFERENCE = new SeparableBlendMode()
+    public static final SeparableBlendMode DIFFERENCE = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -219,7 +225,7 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
-    protected static final SeparableBlendMode EXCLUSION = new SeparableBlendMode()
+    public static final SeparableBlendMode EXCLUSION = new SeparableBlendMode()
     {
         @Override
         public float blendChannel(float srcValue, float dstValue)
@@ -234,6 +240,32 @@ public abstract class SeparableBlendMode extends BlendMode
         }
     };
 
+    private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
+
+    private static Map<COSName, BlendMode> createBlendModeMap()
+    {
+        Map<COSName, BlendMode> map = new HashMap<>(13);
+        map.put(COSName.NORMAL, NORMAL);
+        // BlendMode.COMPATIBLE should not be used
+        map.put(COSName.COMPATIBLE, NORMAL);
+        map.put(COSName.MULTIPLY, MULTIPLY);
+        map.put(COSName.SCREEN, SCREEN);
+        map.put(COSName.OVERLAY, OVERLAY);
+        map.put(COSName.DARKEN, DARKEN);
+        map.put(COSName.LIGHTEN, LIGHTEN);
+        map.put(COSName.COLOR_DODGE, COLOR_DODGE);
+        map.put(COSName.COLOR_BURN, COLOR_BURN);
+        map.put(COSName.HARD_LIGHT, HARD_LIGHT);
+        map.put(COSName.SOFT_LIGHT, SOFT_LIGHT);
+        map.put(COSName.DIFFERENCE, DIFFERENCE);
+        map.put(COSName.EXCLUSION, EXCLUSION);
+        return map;
+    }
+
+    protected static final BlendMode getBlendMode(COSName cosBlendMode)
+    {
+    	return BLEND_MODES.get(cosBlendMode);
+    }
 
     SeparableBlendMode()
     {
