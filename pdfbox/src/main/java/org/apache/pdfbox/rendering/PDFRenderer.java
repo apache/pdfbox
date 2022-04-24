@@ -528,12 +528,13 @@ public class PDFRenderer
 
     private RenderingHints createDefaultRenderingHints(Graphics2D graphics)
     {
+        boolean isBitonal = isBitonal(graphics);
         RenderingHints r = new RenderingHints(null);
-        r.put(RenderingHints.KEY_INTERPOLATION, isBitonal(graphics) ?
+        r.put(RenderingHints.KEY_INTERPOLATION, isBitonal ?
                 RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR :
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         r.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        r.put(RenderingHints.KEY_ANTIALIASING, isBitonal(graphics) ?
+        r.put(RenderingHints.KEY_ANTIALIASING, isBitonal ?
                                         RenderingHints.VALUE_ANTIALIAS_OFF :
                                         RenderingHints.VALUE_ANTIALIAS_ON);
         return r;
