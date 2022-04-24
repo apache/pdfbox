@@ -467,11 +467,11 @@ public class PDDocument implements Closeable
 
         // Get the annotations of the page and append the signature-annotation to it
         // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
-        if (!(annotations instanceof COSArrayList &&
+        if (!(checkFields &&
+              annotations instanceof COSArrayList &&
               acroFormFields instanceof COSArrayList &&
               ((COSArrayList<PDAnnotation>) annotations).toList().
-                      equals(((COSArrayList<PDField>) acroFormFields).toList()) &&
-              checkFields))
+                      equals(((COSArrayList<PDField>) acroFormFields).toList())))
         {
             PDAnnotationWidget widget = signatureField.getWidgets().get(0);
             // use check to prevent the annotation widget from appearing twice
