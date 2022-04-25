@@ -304,6 +304,10 @@ public class PDGraphicsState implements Cloneable
      */
     public void setBlendMode(BlendMode blendMode)
     {
+        if (blendMode == null)
+        {
+            new IllegalArgumentException("setBlendMode() called with null BlendMode").printStackTrace();
+        }
         this.blendMode = blendMode;
     }
 
