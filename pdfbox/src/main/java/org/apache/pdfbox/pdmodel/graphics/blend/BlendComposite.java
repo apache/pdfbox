@@ -82,16 +82,18 @@ public final class BlendComposite implements Composite
     public CompositeContext createContext(ColorModel srcColorModel, ColorModel dstColorModel,
             RenderingHints hints)
     {
-        return new BlendCompositeContext(srcColorModel, dstColorModel);
+        return new BlendCompositeContext(srcColorModel, dstColorModel, this);
     }
 
-    class BlendCompositeContext implements CompositeContext
+    static class BlendCompositeContext implements CompositeContext
     {
+        private final BlendComposite parent;
         private final ColorModel srcColorModel;
         private final ColorModel dstColorModel;
 
-        BlendCompositeContext(ColorModel srcColorModel, ColorModel dstColorModel)
+        BlendCompositeContext(ColorModel srcColorModel, ColorModel dstColorModel, BlendComposite parent)
         {
+            this.parent = parent;
             this.srcColorModel = srcColorModel;
             this.dstColorModel = dstColorModel;
         }
@@ -130,11 +132,11 @@ public final class BlendComposite implements Composite
             boolean subtractive = (dstColorSpaceType != ColorSpace.TYPE_RGB)
                     && (dstColorSpaceType != ColorSpace.TYPE_GRAY);
 
-            boolean blendModeIsSeparable = blendMode instanceof SeparableBlendMode;
+            boolean blendModeIsSeparable = parent.blendMode instanceof SeparableBlendMode;
             SeparableBlendMode separableBlendMode = blendModeIsSeparable ?
-                    (SeparableBlendMode) blendMode : null;
+                    (SeparableBlendMode) parent.blendMode : null;
             NonSeparableBlendMode nonSeparableBlendMode = !blendModeIsSeparable ?
-                    (NonSeparableBlendMode) blendMode : null;
+                    (NonSeparableBlendMode) parent.blendMode : null;
 
             boolean needsColorConversion = !srcColorSpace.equals(dstColorSpace);
 
@@ -165,7 +167,7 @@ public final class BlendComposite implements Composite
                     float srcAlpha = srcHasAlpha ? srcComponents[numSrcColorComponents] : 1.0f;
                     float dstAlpha = dstHasAlpha ? dstComponents[numDstColorComponents] : 1.0f;
 
-                    srcAlpha = srcAlpha * constantAlpha;
+                    srcAlpha = srcAlpha * parent.constantAlpha;
 
                     float resultAlpha = dstAlpha + srcAlpha - srcAlpha * dstAlpha;
                     float srcAlphaRatio = (resultAlpha > 0) ? srcAlpha / resultAlpha : 0;
