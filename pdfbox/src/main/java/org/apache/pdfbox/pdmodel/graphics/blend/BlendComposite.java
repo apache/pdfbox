@@ -236,15 +236,6 @@ public final class BlendComposite implements Composite
                             dstConverted = dstColorSpace.toRGB(dstComponents);
                         }
                         
-                        if (nonSeparableBlendMode == null)
-                        {
-                            LOG.error("nonSeparableBlendMode == null, NPE will follow");
-                            LOG.error("separableBlendMode: " + separableBlendMode);
-                            LOG.error("blendModeIsSeparable: " + blendModeIsSeparable);
-                            LOG.error("blendMode: " + blendMode);
-                            LOG.error("blendMode class: " + ((blendMode == null) ? null : blendMode.getClass()));
-                        }
-                        
                         nonSeparableBlendMode.blend(srcConverted, dstConverted, rgbResult);
 
                         for (int k = 0; k < 3; k++)
