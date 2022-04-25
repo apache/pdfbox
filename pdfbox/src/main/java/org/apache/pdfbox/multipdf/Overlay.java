@@ -106,20 +106,20 @@ public class Overlay implements Closeable
      */
     public PDDocument overlay(Map<Integer, String> specificPageOverlayFile) throws IOException
     {
-        Map<String, PDDocument> loadedDocuments = new HashMap<>();
-        Map<PDDocument, LayoutPage> layouts = new HashMap<>();
+        Map<String, LayoutPage> layouts = new HashMap<>();
+        String path;
         loadPDFs();
         for (Map.Entry<Integer, String> e : specificPageOverlayFile.entrySet())
         {
-            PDDocument doc = loadedDocuments.get(e.getValue());
-            if (doc == null)
+            path = e.getValue();
+            LayoutPage layoutPage = layouts.get(path);
+            if (layoutPage == null)
             {
-                doc = loadPDF(e.getValue());
-                loadedDocuments.put(e.getValue(), doc);
-                layouts.put(doc, getLayoutPage(doc));
+                PDDocument doc = loadPDF(path);
+                layouts.put(path, getLayoutPage(doc));
                 openDocuments.add(doc);
             }
-            specificPageOverlayPage.put(e.getKey(), layouts.get(doc));
+            specificPageOverlayPage.put(e.getKey(), layoutPage);
         }
         processPages(inputPDFDocument);
         return inputPDFDocument;
