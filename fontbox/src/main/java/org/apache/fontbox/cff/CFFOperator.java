@@ -28,7 +28,6 @@ public final class CFFOperator
 
     private CFFOperator()
     {
-        throw new IllegalStateException("Utility class");
     }
 
     private static void register(int b0, String name)

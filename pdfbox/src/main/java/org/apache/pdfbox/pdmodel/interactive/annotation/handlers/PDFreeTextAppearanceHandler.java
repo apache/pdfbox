@@ -244,12 +244,12 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             extractFontDetails(annotation);
             if (document != null)
             {
-                PDAcroForm pdAcroForm = document.getDocumentCatalog().getAcroForm();
-                if (pdAcroForm != null)
+                PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+                if (acroForm != null)
                 {
                     // Try to get font from AcroForm default resources
                     // Sample file: https://gitlab.freedesktop.org/poppler/poppler/issues/6
-                    PDResources defaultResources = pdAcroForm.getDefaultResources();
+                    PDResources defaultResources = acroForm.getDefaultResources();
                     if (defaultResources != null)
                     {
                         PDFont defaultResourcesFont = defaultResources.getFont(fontName);
