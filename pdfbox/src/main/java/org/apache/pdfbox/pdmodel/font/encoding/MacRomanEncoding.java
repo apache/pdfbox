@@ -251,7 +251,7 @@ public class MacRomanEncoding extends Encoding
     /**
      * Constructor.
      */
-    public MacRomanEncoding()
+    protected MacRomanEncoding()
     {
         for (Object[] encodingEntry : MAC_ROMAN_ENCODING_TABLE)
         {
