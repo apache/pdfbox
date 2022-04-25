@@ -46,6 +46,7 @@ public final class BlendComposite implements Composite
      * @param constantAlpha Constant alpha, must be in the inclusive range
      * [0.0...1.0] or it will be clipped.
      * @return a blend composite.
+     * @throws IllegalArgumentException if blendMode is null.
      */
     public static Composite getInstance(BlendMode blendMode, float constantAlpha)
     {
@@ -58,6 +59,10 @@ public final class BlendComposite implements Composite
         {
             LOG.warn("using 1 instead of incorrect Alpha " + constantAlpha);
             constantAlpha = 1;
+        }
+        if (blendMode == null)
+        {
+            throw new IllegalArgumentException("blendMode parameter cannot be null");
         }
         if (blendMode == SeparableBlendMode.NORMAL)
         {
