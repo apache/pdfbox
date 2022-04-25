@@ -576,7 +576,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setBlendMode(BlendMode bm)
     {
-        dict.setItem(COSName.BM, BlendMode.getCOSName(bm));
+        dict.setItem(COSName.BM, bm.getCOSName());
     }
 
     /**

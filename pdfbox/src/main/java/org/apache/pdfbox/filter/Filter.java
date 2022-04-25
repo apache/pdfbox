@@ -126,7 +126,7 @@ public abstract class Filter
                 COSBase objAtIndex = array.getObject(index);
                 if (objAtIndex instanceof COSDictionary)
                 {
-                    return (COSDictionary)objAtIndex;
+                    return (COSDictionary) objAtIndex;
                 }
             }
         }

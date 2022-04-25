@@ -433,15 +433,14 @@ public class PDStream implements COSObjectable
         if (mdStream instanceof COSStream)
         {
             retval = new PDMetadata((COSStream) mdStream);
-        }
-        else if (mdStream == COSNull.NULL)
+        } 
+        else if (mdStream instanceof COSNull)
         {
             // null is authorized
-        }
+        } 
         else if (mdStream != null)
         {
-            throw new IllegalStateException(
-                    "Expected a COSStream but was a "
+            throw new IllegalStateException("Expected a COSStream but was a "
                             + mdStream.getClass().getSimpleName());
         }
         return retval;

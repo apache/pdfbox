@@ -153,7 +153,8 @@ public abstract class PDButton extends PDTerminalField
         
         // if there are export values/an Opt entry there is a different 
         // approach to setting the value
-        if (!getExportValues().isEmpty()) {
+        if (!getExportValues().isEmpty())
+        {
             updateByOption(value);
         }
         else

@@ -59,7 +59,7 @@ public final class BlendComposite implements Composite
             LOG.warn("using 1 instead of incorrect Alpha " + constantAlpha);
             constantAlpha = 1;
         }
-        if (blendMode == BlendMode.NORMAL)
+        if (blendMode == SeparableBlendMode.NORMAL)
         {
             return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, constantAlpha);
         }
@@ -229,6 +229,15 @@ public final class BlendComposite implements Composite
                         else
                         {
                             dstConverted = dstColorSpace.toRGB(dstComponents);
+                        }
+                        
+                        if (nonSeparableBlendMode == null)
+                        {
+                            LOG.error("nonSeparableBlendMode == null, NPE will follow");
+                            LOG.error("separableBlendMode: " + separableBlendMode);
+                            LOG.error("blendModeIsSeparable: " + blendModeIsSeparable);
+                            LOG.error("blendMode: " + blendMode);
+                            LOG.error("blendMode class: " + ((blendMode == null) ? null : blendMode.getClass()));
                         }
                         
                         nonSeparableBlendMode.blend(srcConverted, dstConverted, rgbResult);
