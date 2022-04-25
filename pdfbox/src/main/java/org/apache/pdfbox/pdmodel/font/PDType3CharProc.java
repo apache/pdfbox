@@ -128,11 +128,13 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
                             return null;
                         }
                     }
+                    float x = ((COSNumber) arguments.get(2)).floatValue();
+                    float y = ((COSNumber) arguments.get(3)).floatValue();
                     return new PDRectangle(
-                            ((COSNumber) arguments.get(2)).floatValue(),
-                            ((COSNumber) arguments.get(3)).floatValue(),
-                            ((COSNumber) arguments.get(4)).floatValue() - ((COSNumber) arguments.get(2)).floatValue(),
-                            ((COSNumber) arguments.get(5)).floatValue() - ((COSNumber) arguments.get(3)).floatValue());
+                            x,
+                            y,
+                            ((COSNumber) arguments.get(4)).floatValue() - x,
+                            ((COSNumber) arguments.get(5)).floatValue() - y);
                 }
                 else
                 {
