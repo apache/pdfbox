@@ -238,8 +238,8 @@ public final class BlendComposite implements Composite
                             LOG.error("nonSeparableBlendMode == null, NPE will follow");
                             LOG.error("separableBlendMode: " + separableBlendMode);
                             LOG.error("blendModeIsSeparable: " + blendModeIsSeparable);
-                            LOG.error("blendMode: " + blendMode);
-                            LOG.error("blendMode class: " + ((blendMode == null) ? null : blendMode.getClass()));
+                            LOG.error("blendMode: " + parent.blendMode);
+                            LOG.error("blendMode class: " + ((parent.blendMode == null) ? null : parent.blendMode.getClass()));
                         }
                         
                         nonSeparableBlendMode.blend(srcConverted, dstConverted, rgbResult);
