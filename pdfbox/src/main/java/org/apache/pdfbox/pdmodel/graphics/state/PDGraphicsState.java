@@ -301,12 +301,13 @@ public class PDGraphicsState implements Cloneable
      * Sets the blend mode in the current graphics state
      *
      * @param blendMode
+     * @throws IllegalArgumentException if blendMode is null.
      */
     public void setBlendMode(BlendMode blendMode)
     {
         if (blendMode == null)
         {
-            new IllegalArgumentException("setBlendMode() called with null BlendMode").printStackTrace();
+            throw new IllegalArgumentException("blendMode parameter cannot be null");
         }
         this.blendMode = blendMode;
     }
