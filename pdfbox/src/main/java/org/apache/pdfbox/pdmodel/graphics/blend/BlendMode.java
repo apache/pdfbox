@@ -56,29 +56,18 @@ public class BlendMode
         void blend(float[] src, float[] dest, float[] result);
     }
 
-    private static BlendChannelFunction normal = (src, dest) -> {
-        return src;
-    };
+    private static BlendChannelFunction normal = (src, dest) -> src;
 
-    private static BlendChannelFunction multiply = (src, dest) -> {
-        return src * dest;
-    };
+    private static BlendChannelFunction multiply = (src, dest) -> src * dest;
 
-    private static BlendChannelFunction screen = (src, dest) -> {
-        return src + dest - src * dest;
-    };
+    private static BlendChannelFunction screen = (src, dest) -> src + dest - src * dest;
 
-    private static BlendChannelFunction overlay = (src, dest) -> {
-        return (dest <= 0.5) ? 2 * dest * src : 2 * (src + dest - src * dest) - 1;
-    };
+    private static BlendChannelFunction overlay = (src, dest) -> (dest <= 0.5) ? 2 * dest * src
+            : 2 * (src + dest - src * dest) - 1;
 
-    private static BlendChannelFunction darken = (src, dest) -> {
-        return Math.min(src, dest);
-    };
+    private static BlendChannelFunction darken = (src, dest) -> Math.min(src, dest);
 
-    private static BlendChannelFunction lighten = (src, dest) -> {
-        return Math.max(src, dest);
-    };
+    private static BlendChannelFunction lighten = (src, dest) -> Math.max(src, dest);
 
     private static BlendChannelFunction colorDodge = (src, dest) -> {
         // See PDF 2.0 specification
@@ -123,13 +112,9 @@ public class BlendMode
         }
     };
 
-    private static BlendChannelFunction difference = (src, dest) -> {
-        return Math.abs(dest - src);
-    };
+    private static BlendChannelFunction difference = (src, dest) -> Math.abs(dest - src);
 
-    private static BlendChannelFunction exclusion = (src, dest) -> {
-        return dest + src - 2 * dest * src;
-    };
+    private static BlendChannelFunction exclusion = (src, dest) -> dest + src - 2 * dest * src;
 
     private static BlendFunction hue = (src, dest, result) -> {
         float[] temp = new float[3];
@@ -137,17 +122,11 @@ public class BlendMode
         getLuminosityRGB(dest, temp, result);
     };
 
-    private static BlendFunction saturation = (src, dest, result) -> {
-        getSaturationRGB(src, dest, result);
-    };
+    private static BlendFunction saturation = BlendMode::getSaturationRGB;
 
-    private static BlendFunction color = (src, dest, result) -> {
-        getLuminosityRGB(dest, src, result);
-    };
+    private static BlendFunction color = (src, dest, result) -> getLuminosityRGB(dest, src, result);
 
-    private static BlendFunction luminosity = (src, dest, result) -> {
-        getLuminosityRGB(src, dest, result);
-    };
+    private static BlendFunction luminosity = BlendMode::getLuminosityRGB;
 
     // Separable blend modes
 	public static final BlendMode NORMAL = new BlendMode(COSName.NORMAL, normal, null);
@@ -260,7 +239,7 @@ public class BlendMode
         BlendMode result = null;
         if (cosBlendMode instanceof COSName)
         {
-            result = BLEND_MODES.get((COSName) cosBlendMode);
+            result = BLEND_MODES.get(cosBlendMode);
         }
         else if (cosBlendMode instanceof COSArray)
         {
@@ -270,7 +249,7 @@ public class BlendMode
             	COSBase cosBase = cosBlendModeArray.getObject(i);
             	if (cosBase instanceof COSName)
             	{
-                    result = BLEND_MODES.get((COSName) cosBase);
+                    result = BLEND_MODES.get(cosBase);
 	                if (result != null)
 	                {
 	                    break;
