@@ -148,6 +148,12 @@ public class PfbParser
             {
                 throw new EOFException("attempted to read past EOF");
             }
+            if (size > pfbdata.length - pointer)
+            {
+                throw new EOFException("attempted to read " + size + " bytes at position " + pointer +
+                        " into array of size " + pfbdata.length + ", but only space for " + 
+                        (pfbdata.length - pointer) + " bytes left");
+            }
             int got = in.read(pfbdata, pointer, size);
             if (got < 0) 
             {
