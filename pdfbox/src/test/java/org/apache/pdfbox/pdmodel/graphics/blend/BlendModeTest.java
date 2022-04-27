@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.junit.jupiter.api.Test;
 
@@ -55,6 +56,15 @@ class BlendModeTest
         assertEquals(BlendMode.SATURATION, BlendMode.getInstance(COSName.SATURATION));
         assertEquals(BlendMode.LUMINOSITY, BlendMode.getInstance(COSName.LUMINOSITY));
         assertEquals(BlendMode.COLOR, BlendMode.getInstance(COSName.COLOR));
+
+        COSArray cosArrayOverlay = new COSArray();
+        cosArrayOverlay.add(COSName.OVERLAY);
+        assertEquals(BlendMode.OVERLAY, BlendMode.getInstance(cosArrayOverlay));
+
+        COSArray cosArrayPage = new COSArray();
+        cosArrayPage.add(COSName.PAGE);
+        assertEquals(BlendMode.NORMAL, BlendMode.getInstance(cosArrayPage));
+
     }
 
     @Test
@@ -67,7 +77,6 @@ class BlendModeTest
         assertEquals(3f, BlendMode.NORMAL.getBlendChannelFunction().blendChannel(3f, 5f));
 
         assertEquals(COSName.NORMAL, BlendMode.COMPATIBLE.getCOSName());
-
     }
 
     @Test
@@ -126,6 +135,8 @@ class BlendModeTest
         assertNull(BlendMode.COLOR_DODGE.getBlendFunction());
         assertNotNull(BlendMode.COLOR_DODGE.getBlendChannelFunction());
         assertEquals(COSName.COLOR_DODGE, BlendMode.COLOR_DODGE.getCOSName());
+        assertEquals(0f, BlendMode.COLOR_DODGE.getBlendChannelFunction().blendChannel(1f, 0f));
+        assertEquals(1f, BlendMode.COLOR_DODGE.getBlendChannelFunction().blendChannel(0.3f, 0.7f));
     }
 
     @Test
@@ -135,6 +146,8 @@ class BlendModeTest
         assertNull(BlendMode.COLOR_BURN.getBlendFunction());
         assertNotNull(BlendMode.COLOR_BURN.getBlendChannelFunction());
         assertEquals(COSName.COLOR_BURN, BlendMode.COLOR_BURN.getCOSName());
+        assertEquals(1f, BlendMode.COLOR_BURN.getBlendChannelFunction().blendChannel(0f, 1f));
+        assertEquals(0f, BlendMode.COLOR_BURN.getBlendChannelFunction().blendChannel(0.7f, 0.3f));
     }
 
     @Test
@@ -144,6 +157,10 @@ class BlendModeTest
         assertNull(BlendMode.HARD_LIGHT.getBlendFunction());
         assertNotNull(BlendMode.HARD_LIGHT.getBlendChannelFunction());
         assertEquals(COSName.HARD_LIGHT, BlendMode.HARD_LIGHT.getCOSName());
+        assertEquals(0f, BlendMode.HARD_LIGHT.getBlendChannelFunction().blendChannel(0f, 0.5f));
+        assertEquals(0.2f, BlendMode.HARD_LIGHT.getBlendChannelFunction().blendChannel(0.2f, 0.5f));
+        assertEquals(0.52f,
+                BlendMode.HARD_LIGHT.getBlendChannelFunction().blendChannel(0.6f, 0.4f));
     }
 
     @Test
@@ -153,6 +170,11 @@ class BlendModeTest
         assertNull(BlendMode.SOFT_LIGHT.getBlendFunction());
         assertNotNull(BlendMode.SOFT_LIGHT.getBlendChannelFunction());
         assertEquals(COSName.SOFT_LIGHT, BlendMode.SOFT_LIGHT.getCOSName());
+        assertEquals(0.25f, BlendMode.SOFT_LIGHT.getBlendChannelFunction().blendChannel(0f, 0.5f));
+        assertEquals(0.35f,
+                BlendMode.SOFT_LIGHT.getBlendChannelFunction().blendChannel(0.2f, 0.5f));
+        assertEquals(0.2f,
+                BlendMode.SOFT_LIGHT.getBlendChannelFunction().blendChannel(0.5f, 0.2f));
     }
 
     @Test

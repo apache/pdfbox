@@ -56,20 +56,20 @@ public class BlendMode
         void blend(float[] src, float[] dest, float[] result);
     }
 
-    private static BlendChannelFunction normal = (src, dest) -> src;
+    private static BlendChannelFunction fNormal = (src, dest) -> src;
 
-    private static BlendChannelFunction multiply = (src, dest) -> src * dest;
+    private static BlendChannelFunction fMultiply = (src, dest) -> src * dest;
 
-    private static BlendChannelFunction screen = (src, dest) -> src + dest - src * dest;
+    private static BlendChannelFunction fScreen = (src, dest) -> src + dest - src * dest;
 
-    private static BlendChannelFunction overlay = (src, dest) -> (dest <= 0.5) ? 2 * dest * src
+    private static BlendChannelFunction fOverlay = (src, dest) -> (dest <= 0.5) ? 2 * dest * src
             : 2 * (src + dest - src * dest) - 1;
 
-    private static BlendChannelFunction darken = Math::min;
+    private static BlendChannelFunction fDarken = Math::min;
 
-    private static BlendChannelFunction lighten = Math::max;
+    private static BlendChannelFunction fLighten = Math::max;
 
-    private static BlendChannelFunction colorDodge = (src, dest) -> {
+    private static BlendChannelFunction fColorDodge = (src, dest) -> {
         // See PDF 2.0 specification
         if (Float.compare(dest, 0) == 0)
         {
@@ -82,7 +82,7 @@ public class BlendMode
         return dest / (1 - src);
     };
 
-    private static BlendChannelFunction colorBurn = (src, dest) -> {
+    private static BlendChannelFunction fColorBurn = (src, dest) -> {
         // See PDF 2.0 specification
         if (Float.compare(dest, 1) == 0)
         {
@@ -95,10 +95,10 @@ public class BlendMode
         return 1 - (1 - dest) / src;
     };
 
-    private static BlendChannelFunction hardLight = (src, dest) -> (src <= 0.5) ? 2 * dest * src
+    private static BlendChannelFunction fHardLight = (src, dest) -> (src <= 0.5) ? 2 * dest * src
             : 2 * (src + dest - src * dest) - 1;
 
-    private static BlendChannelFunction softLight = (src, dest) -> {
+    private static BlendChannelFunction fSoftLight = (src, dest) -> {
         if (src <= 0.5)
         {
             return dest - (1 - 2 * src) * dest * (1 - dest);
@@ -111,42 +111,44 @@ public class BlendMode
         }
     };
 
-    private static BlendChannelFunction difference = (src, dest) -> Math.abs(dest - src);
+    private static BlendChannelFunction fDifference = (src, dest) -> Math.abs(dest - src);
 
-    private static BlendChannelFunction exclusion = (src, dest) -> dest + src - 2 * dest * src;
+    private static BlendChannelFunction fExclusion = (src, dest) -> dest + src - 2 * dest * src;
 
-    private static BlendFunction hue = (src, dest, result) -> {
+    private static BlendFunction fHue = (src, dest, result) -> {
         float[] temp = new float[3];
         getSaturationRGB(dest, src, temp);
         getLuminosityRGB(dest, temp, result);
     };
 
-    private static BlendFunction saturation = BlendMode::getSaturationRGB;
+    private static BlendFunction fSaturation = BlendMode::getSaturationRGB;
 
-    private static BlendFunction color = (src, dest, result) -> getLuminosityRGB(dest, src, result);
+    private static BlendFunction fColor = (src, dest, result) -> getLuminosityRGB(dest, src,
+            result);
 
-    private static BlendFunction luminosity = BlendMode::getLuminosityRGB;
+    private static BlendFunction fLuminosity = BlendMode::getLuminosityRGB;
 
     // Separable blend modes
-	public static final BlendMode NORMAL = new BlendMode(COSName.NORMAL, normal, null);
-	public static final BlendMode COMPATIBLE = BlendMode.NORMAL;
-	public static final BlendMode MULTIPLY = new BlendMode(COSName.MULTIPLY, multiply, null);
-	public static final BlendMode SCREEN = new BlendMode(COSName.SCREEN, screen, null);
-	public static final BlendMode OVERLAY = new BlendMode(COSName.OVERLAY, overlay, null);
-	public static final BlendMode DARKEN = new BlendMode(COSName.DARKEN, darken, null);
-	public static final BlendMode LIGHTEN =new BlendMode(COSName.LIGHTEN, lighten, null);
-	public static final BlendMode COLOR_DODGE = new BlendMode(COSName.COLOR_DODGE, colorDodge, null);
-	public static final BlendMode COLOR_BURN = new BlendMode(COSName.COLOR_BURN, colorBurn, null);
-	public static final BlendMode HARD_LIGHT = new BlendMode(COSName.HARD_LIGHT, hardLight, null);
-	public static final BlendMode SOFT_LIGHT = new BlendMode(COSName.SOFT_LIGHT, softLight, null);
-	public static final BlendMode DIFFERENCE = new BlendMode(COSName.DIFFERENCE, difference, null);
-	public static final BlendMode EXCLUSION = new BlendMode(COSName.EXCLUSION, exclusion, null);
+    public static final BlendMode NORMAL = new BlendMode(COSName.NORMAL, fNormal, null);
+    public static final BlendMode COMPATIBLE = BlendMode.NORMAL;
+    public static final BlendMode MULTIPLY = new BlendMode(COSName.MULTIPLY, fMultiply, null);
+    public static final BlendMode SCREEN = new BlendMode(COSName.SCREEN, fScreen, null);
+    public static final BlendMode OVERLAY = new BlendMode(COSName.OVERLAY, fOverlay, null);
+    public static final BlendMode DARKEN = new BlendMode(COSName.DARKEN, fDarken, null);
+    public static final BlendMode LIGHTEN = new BlendMode(COSName.LIGHTEN, fLighten, null);
+    public static final BlendMode COLOR_DODGE = new BlendMode(COSName.COLOR_DODGE, fColorDodge,
+            null);
+    public static final BlendMode COLOR_BURN = new BlendMode(COSName.COLOR_BURN, fColorBurn, null);
+    public static final BlendMode HARD_LIGHT = new BlendMode(COSName.HARD_LIGHT, fHardLight, null);
+    public static final BlendMode SOFT_LIGHT = new BlendMode(COSName.SOFT_LIGHT, fSoftLight, null);
+    public static final BlendMode DIFFERENCE = new BlendMode(COSName.DIFFERENCE, fDifference, null);
+    public static final BlendMode EXCLUSION = new BlendMode(COSName.EXCLUSION, fExclusion, null);
 
-	// non-separable blend modes
-    public static final BlendMode HUE = new BlendMode(COSName.HUE, null, hue);
-    public static final BlendMode SATURATION = new BlendMode(COSName.SATURATION, null, saturation);
-    public static final BlendMode COLOR = new BlendMode(COSName.COLOR, null, color);
-    public static final BlendMode LUMINOSITY = new BlendMode(COSName.LUMINOSITY, null, luminosity);
+    // non-separable blend modes
+    public static final BlendMode HUE = new BlendMode(COSName.HUE, null, fHue);
+    public static final BlendMode SATURATION = new BlendMode(COSName.SATURATION, null, fSaturation);
+    public static final BlendMode COLOR = new BlendMode(COSName.COLOR, null, fColor);
+    public static final BlendMode LUMINOSITY = new BlendMode(COSName.LUMINOSITY, null, fLuminosity);
 
     private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
 
