@@ -65,9 +65,9 @@ public class BlendMode
     private static BlendChannelFunction overlay = (src, dest) -> (dest <= 0.5) ? 2 * dest * src
             : 2 * (src + dest - src * dest) - 1;
 
-    private static BlendChannelFunction darken = (src, dest) -> Math.min(src, dest);
+    private static BlendChannelFunction darken = Math::min;
 
-    private static BlendChannelFunction lighten = (src, dest) -> Math.max(src, dest);
+    private static BlendChannelFunction lighten = Math::max;
 
     private static BlendChannelFunction colorDodge = (src, dest) -> {
         // See PDF 2.0 specification
@@ -95,9 +95,8 @@ public class BlendMode
         return 1 - (1 - dest) / src;
     };
 
-    private static BlendChannelFunction hardLight = (src, dest) -> {
-        return (src <= 0.5) ? 2 * dest * src : 2 * (src + dest - src * dest) - 1;
-    };
+    private static BlendChannelFunction hardLight = (src, dest) -> (src <= 0.5) ? 2 * dest * src
+            : 2 * (src + dest - src * dest) - 1;
 
     private static BlendChannelFunction softLight = (src, dest) -> {
         if (src <= 0.5)
