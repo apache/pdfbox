@@ -257,7 +257,7 @@ public final class PDFPrintable implements Printable
             }
 
             // draw to graphics using PDFRender
-            AffineTransform transform = (AffineTransform) graphics2D.getTransform();
+            AffineTransform transform = graphics2D.getTransform();
             graphics2D.setBackground(Color.WHITE);
             renderer.setSubsamplingAllowed(subsamplingAllowed);
             renderer.setRenderingHints(renderingHints);
