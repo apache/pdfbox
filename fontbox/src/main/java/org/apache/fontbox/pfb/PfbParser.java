@@ -167,9 +167,9 @@ public class PfbParser
             }
             if (size > pfbdata.length - pointer)
             {
-                throw new IOException("PFB record size (" + size +
-                        ") doesn't fit in buffer, position: " + pointer +
-                        ", total length: " + pfbdata.length);
+                throw new EOFException("attempted to read " + size + " bytes at position " + pointer +
+                        " into array of size " + pfbdata.length + ", but only space for " + 
+                        (pfbdata.length - pointer) + " bytes left");
             }
             int got = in.read(pfbdata, pointer, size);
             if (got < 0) 
