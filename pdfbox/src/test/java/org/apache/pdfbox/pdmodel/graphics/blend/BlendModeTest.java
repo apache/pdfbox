@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.junit.jupiter.api.Test;
 
@@ -61,9 +62,9 @@ class BlendModeTest
         cosArrayOverlay.add(COSName.OVERLAY);
         assertEquals(BlendMode.OVERLAY, BlendMode.getInstance(cosArrayOverlay));
 
-        COSArray cosArrayPage = new COSArray();
-        cosArrayPage.add(COSName.PAGE);
-        assertEquals(BlendMode.NORMAL, BlendMode.getInstance(cosArrayPage));
+        COSArray cosArrayInteger = new COSArray();
+        cosArrayInteger.add(COSInteger.get(0));
+        assertEquals(BlendMode.NORMAL, BlendMode.getInstance(cosArrayInteger));
 
     }
 
@@ -106,6 +107,8 @@ class BlendModeTest
         assertNull(BlendMode.OVERLAY.getBlendFunction());
         assertNotNull(BlendMode.OVERLAY.getBlendChannelFunction());
         assertEquals(COSName.OVERLAY, BlendMode.OVERLAY.getCOSName());
+        assertEquals(0f, BlendMode.OVERLAY.getBlendChannelFunction().blendChannel(1f, 0f));
+        assertEquals(0.3f, BlendMode.OVERLAY.getBlendChannelFunction().blendChannel(0.5f, 0.3f));
     }
 
     @Test

@@ -56,6 +56,9 @@ public class BlendMode
         void blend(float[] src, float[] dest, float[] result);
     }
 
+    /**
+     * Functions for the blend operation of separable blend modes
+     */
     private static BlendChannelFunction fNormal = (src, dest) -> src;
 
     private static BlendChannelFunction fMultiply = (src, dest) -> src * dest;
@@ -115,6 +118,9 @@ public class BlendMode
 
     private static BlendChannelFunction fExclusion = (src, dest) -> dest + src - 2 * dest * src;
 
+    /**
+     * Functions for the blend operation of non-separable blend modes
+     */
     private static BlendFunction fHue = (src, dest, result) -> {
         float[] temp = new float[3];
         getSaturationRGB(dest, src, temp);
@@ -128,7 +134,9 @@ public class BlendMode
 
     private static BlendFunction fLuminosity = BlendMode::getLuminosityRGB;
 
-    // Separable blend modes
+    /**
+     * Separable blend modes as defined in the PDF specification
+     */
     public static final BlendMode NORMAL = new BlendMode(COSName.NORMAL, fNormal, null);
     public static final BlendMode COMPATIBLE = BlendMode.NORMAL;
     public static final BlendMode MULTIPLY = new BlendMode(COSName.MULTIPLY, fMultiply, null);
@@ -144,7 +152,9 @@ public class BlendMode
     public static final BlendMode DIFFERENCE = new BlendMode(COSName.DIFFERENCE, fDifference, null);
     public static final BlendMode EXCLUSION = new BlendMode(COSName.EXCLUSION, fExclusion, null);
 
-    // non-separable blend modes
+    /**
+     * Non-separable blend modes as defined in the PDF specification
+     */
     public static final BlendMode HUE = new BlendMode(COSName.HUE, null, fHue);
     public static final BlendMode SATURATION = new BlendMode(COSName.SATURATION, null, fSaturation);
     public static final BlendMode COLOR = new BlendMode(COSName.COLOR, null, fColor);
@@ -181,6 +191,13 @@ public class BlendMode
     private final BlendFunction blend;
     private final boolean isSeparable;
 
+    /**
+     * Private constructor due to the limited set of possible blend modes.
+     * 
+     * @param name the corresponding COSName of the blend mode
+     * @param blendChannel the blend function for separable blend modes
+     * @param blend the blend function for non-separable blend modes
+     */
     private BlendMode(COSName name, BlendChannelFunction blendChannel, BlendFunction blend)
     {
     	this.name = name;
@@ -271,9 +288,6 @@ public class BlendMode
         int rd = get255Value(dstValues[0]);
         int gd = get255Value(dstValues[1]);
         int bd = get255Value(dstValues[2]);
-        int rs = get255Value(srcValues[0]);
-        int gs = get255Value(srcValues[1]);
-        int bs = get255Value(srcValues[2]);
 
         int minb = Math.min(rd, Math.min(gd, bd));
         int maxb = Math.max(rd, Math.max(gd, bd));
@@ -285,6 +299,10 @@ public class BlendMode
             result[2] = gd / 255.0f;
             return;
         }
+
+        int rs = get255Value(srcValues[0]);
+        int gs = get255Value(srcValues[1]);
+        int bs = get255Value(srcValues[2]);
 
         int mins = Math.min(rs, Math.min(gs, bs));
         int maxs = Math.max(rs, Math.max(gs, bs));
