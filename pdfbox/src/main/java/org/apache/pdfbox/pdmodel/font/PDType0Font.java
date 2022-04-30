@@ -285,14 +285,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
             // predefined CMap
             COSName encodingName = (COSName) encoding;
             cMap = CMapManager.getPredefinedCMap(encodingName.getName());
-            if (cMap != null)
-            {
-                isCMapPredefined = true;
-            }
-            else
-            {
-                throw new IOException("Missing required CMap");
-            }
+            isCMapPredefined = true;
         }
         else if (encoding != null)
         {
