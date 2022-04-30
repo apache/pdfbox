@@ -21,17 +21,16 @@ import org.apache.fontbox.cmap.CMapParser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
+
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * CMap resource loader and cache.
  */
 final class CMapManager
 {
-    static Map<String, CMap> cMapCache =
-            Collections.synchronizedMap(new HashMap<String, CMap>());
+    static private final Map<String, CMap> CMAP_CACHE = new ConcurrentHashMap<String, CMap>();
 
     private CMapManager()
     {
@@ -46,7 +45,7 @@ final class CMapManager
      */
     public static CMap getPredefinedCMap(String cMapName) throws IOException
     {
-        CMap cmap = cMapCache.get(cMapName);
+        CMap cmap = CMAP_CACHE.get(cMapName);
         if (cmap != null)
         {
             return cmap;
@@ -55,7 +54,7 @@ final class CMapManager
         CMap targetCmap = new CMapParser().parsePredefined(cMapName);
 
         // limit the cache to predefined CMaps
-        cMapCache.put(targetCmap.getName(), targetCmap);
+        CMAP_CACHE.put(targetCmap.getName(), targetCmap);
         return targetCmap;
     }
 
