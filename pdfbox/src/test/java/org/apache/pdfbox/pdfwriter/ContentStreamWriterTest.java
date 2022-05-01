@@ -18,6 +18,8 @@
 package org.apache.pdfbox.pdfwriter;
 
 import java.awt.color.ColorSpace;
+import java.awt.color.ICC_ColorSpace;
+import java.awt.color.ICC_Profile;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.image.BufferedImage;
@@ -31,7 +33,6 @@ import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.jupiter.api.AfterAll;
@@ -62,8 +63,22 @@ class ContentStreamWriterTest
     public static void setUpClass()
     {
         // try to avoid "java.awt.color.CMMException: Unknown profile ID"
-        PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 });
-        ColorSpace.getInstance(ColorSpace.CS_CIEXYZ).toRGB(new float[] { 0, 0, 0 });
+        try
+        {
+            ColorSpace csRGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            csRGB.toRGB(new float[] { 0, 0, 0 });
+            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
+            ICC_ColorSpace iccCS = (ICC_ColorSpace) cs;
+            ICC_Profile profile = iccCS.getProfile();
+            byte[] data = profile.getData();
+            System.out.println("data length: " + data.length);
+            iccCS.toRGB(new float[] { 0, 0, 0 });
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            throw t;
+        }
     }
     
     @AfterAll
@@ -109,11 +124,6 @@ class ContentStreamWriterTest
                 page.setContents(newContent);
             }
             doc.save(new File(testDirIn, filename));
-        }
-        catch (Throwable t)
-        {
-            t.printStackTrace();
-            throw t;
         }
         if (!TestPDFToImage.doTestFile(new File(testDirIn, filename), testDirIn.getAbsolutePath(),
                 testDirOut.getAbsolutePath()))
