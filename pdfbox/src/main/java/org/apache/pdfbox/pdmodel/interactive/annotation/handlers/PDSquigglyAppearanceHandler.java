@@ -55,14 +55,6 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
     }
 
     @Override
-    public void generateAppearanceStreams()
-    {
-        generateNormalAppearance();
-        generateRolloverAppearance();
-        generateDownAppearance();
-    }
-
-    @Override
     public void generateNormalAppearance()
     {
         PDAnnotationSquiggly annotation = (PDAnnotationSquiggly) getAnnotation();

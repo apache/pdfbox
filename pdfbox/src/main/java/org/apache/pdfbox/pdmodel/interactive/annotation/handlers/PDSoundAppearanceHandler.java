@@ -31,14 +31,6 @@ public class PDSoundAppearanceHandler extends PDAbstractAppearanceHandler
     }
 
     @Override
-    public void generateAppearanceStreams()
-    {
-        generateNormalAppearance();
-        generateRolloverAppearance();
-        generateDownAppearance();
-    }
-
-    @Override
     public void generateNormalAppearance()
     {
         // TODO to be implemented

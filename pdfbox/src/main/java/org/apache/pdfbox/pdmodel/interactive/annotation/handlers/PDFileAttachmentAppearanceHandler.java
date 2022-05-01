@@ -45,14 +45,6 @@ public class PDFileAttachmentAppearanceHandler extends PDAbstractAppearanceHandl
     }
 
     @Override
-    public void generateAppearanceStreams()
-    {
-        generateNormalAppearance();
-        generateRolloverAppearance();
-        generateDownAppearance();
-    }
-
-    @Override
     public void generateNormalAppearance()
     {
         PDAnnotationFileAttachment annotation = (PDAnnotationFileAttachment) getAnnotation();

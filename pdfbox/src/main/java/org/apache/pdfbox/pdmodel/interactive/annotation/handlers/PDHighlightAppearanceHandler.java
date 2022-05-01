@@ -52,14 +52,6 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
     }
 
     @Override
-    public void generateAppearanceStreams()
-    {
-        generateNormalAppearance();
-        generateRolloverAppearance();
-        generateDownAppearance();
-    }
-
-    @Override
     public void generateNormalAppearance()
     {
         PDAnnotationHighlight annotation = (PDAnnotationHighlight) getAnnotation();
