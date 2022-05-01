@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.pdfwriter;
 
+import java.awt.color.ColorSpace;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.image.BufferedImage;
@@ -62,6 +63,7 @@ class ContentStreamWriterTest
     {
         // try to avoid "java.awt.color.CMMException: Unknown profile ID"
         PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 });
+        ColorSpace.getInstance(ColorSpace.CS_CIEXYZ).toRGB(new float[] { 0, 0, 0 });
     }
     
     @AfterAll
