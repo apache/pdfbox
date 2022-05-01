@@ -431,9 +431,8 @@ public class BruteForceParser extends COSParser
      *
      * @param trailer dictionary to be used as trailer dictionary
      * @return true if the root was found, false if not.
-     * @throws IOException if the page tree root is null
      */
-    private boolean searchForTrailerItems(COSDictionary trailer) throws IOException
+    private boolean searchForTrailerItems(COSDictionary trailer)
     {
         COSObject rootObject = null;
         COSObject infoObject = null;
@@ -748,29 +747,6 @@ public class BruteForceParser extends COSParser
     {
         return COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE))
                 || dictionary.containsKey(COSName.FDF);
-    }
-
-    /**
-     * Checks if the given string can be found at the current offset.
-     * 
-     * @param string the bytes of the string to look for
-     * @return true if the bytes are in place, false if not
-     * @throws IOException if something went wrong
-     */
-    private boolean isString(char[] string) throws IOException
-    {
-        boolean bytesMatching = true;
-        long originOffset = source.getPosition();
-        for (char c : string)
-        {
-            if (source.read() != c)
-            {
-                bytesMatching = false;
-                break;
-            }
-        }
-        source.seek(originOffset);
-        return bytesMatching;
     }
 
     /**

@@ -1454,7 +1454,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * @return true if the bytes are in place, false if not
      * @throws IOException if something went wrong
      */
-    private boolean isString(char[] string) throws IOException
+    protected boolean isString(char[] string) throws IOException
     {
         boolean bytesMatching = true;
         long originOffset = source.getPosition();
