@@ -68,7 +68,7 @@ public class BruteForceParser extends COSParser
      */
     private static final char[] OBJ_STREAM = new char[] { '/', 'O', 'b', 'j', 'S', 't', 'm' };
 
-    private static final Log LOG = LogFactory.getLog(COSParser.class);
+    private static final Log LOG = LogFactory.getLog(BruteForceParser.class);
 
     /**
      * Contains all found objects of a brute force search.
