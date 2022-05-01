@@ -44,18 +44,6 @@ public class FDFParser extends COSParser
         init();
     }
 
-    /**
-     * Tell if the dictionary is a FDF catalog.
-     *
-     * @param dictionary
-     * @return true if the dictionary is a FDF catalog
-     */
-    @Override
-    protected final boolean isCatalog(COSDictionary dictionary)
-    {
-        return dictionary.containsKey(COSName.FDF);
-    }
-
     private void init()
     {
         String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
