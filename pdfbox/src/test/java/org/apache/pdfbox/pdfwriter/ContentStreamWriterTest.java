@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.jupiter.api.AfterAll;
@@ -37,11 +38,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  *
  * @author Tilman Hausherr
  */
+@Execution(ExecutionMode.SAME_THREAD)
 class ContentStreamWriterTest
 {
     private final File testDirIn = new File("target/test-output/contentstream/in");
@@ -56,6 +60,8 @@ class ContentStreamWriterTest
     @BeforeAll
     public static void setUpClass()
     {
+        // try to avoid "java.awt.color.CMMException: Unknown profile ID"
+        PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 });
     }
     
     @AfterAll
