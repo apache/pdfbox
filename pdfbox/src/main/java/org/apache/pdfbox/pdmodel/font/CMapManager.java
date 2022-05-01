@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 final class CMapManager
 {
-    static private final Map<String, CMap> CMAP_CACHE = new ConcurrentHashMap<String, CMap>();
+    private static final Map<String, CMap> CMAP_CACHE = new ConcurrentHashMap<String, CMap>();
 
     private CMapManager()
     {
