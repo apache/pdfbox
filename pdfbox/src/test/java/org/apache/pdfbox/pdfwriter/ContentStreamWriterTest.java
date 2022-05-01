@@ -18,8 +18,6 @@
 package org.apache.pdfbox.pdfwriter;
 
 import java.awt.color.ColorSpace;
-import java.awt.color.ICC_ColorSpace;
-import java.awt.color.ICC_Profile;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.image.BufferedImage;
@@ -67,12 +65,8 @@ class ContentStreamWriterTest
         {
             ColorSpace csRGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             csRGB.toRGB(new float[] { 0, 0, 0 });
-            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
-            ICC_ColorSpace iccCS = (ICC_ColorSpace) cs;
-            ICC_Profile profile = iccCS.getProfile();
-            byte[] data = profile.getData();
-            System.out.println("data length: " + data.length);
-            iccCS.toRGB(new float[] { 0, 0, 0 });
+            ColorSpace csXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
+            csXYZ.toRGB(new float[] { 0, 0, 0 });
         }
         catch (Throwable t)
         {
