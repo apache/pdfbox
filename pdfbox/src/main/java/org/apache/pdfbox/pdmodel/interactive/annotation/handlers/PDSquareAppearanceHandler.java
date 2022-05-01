@@ -52,14 +52,6 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
     {
         super(annotation, document);
     }
-    
-    @Override
-    public void generateAppearanceStreams()
-    {
-        generateNormalAppearance();
-        generateRolloverAppearance();
-        generateDownAppearance();
-    }
 
     @Override
     public void generateNormalAppearance()
