@@ -108,6 +108,11 @@ class ContentStreamWriterTest
             }
             doc.save(new File(testDirIn, filename));
         }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            throw t;
+        }
         if (!TestPDFToImage.doTestFile(new File(testDirIn, filename), testDirIn.getAbsolutePath(),
                 testDirOut.getAbsolutePath()))
         {
