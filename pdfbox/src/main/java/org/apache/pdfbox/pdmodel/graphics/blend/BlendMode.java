@@ -51,7 +51,7 @@ public class BlendMode
          *
          * @param src the source values
          * @param dest the destination values
-         * @param the function result values
+         * @param result the function result values
          */
         void blend(float[] src, float[] dest, float[] result);
     }
