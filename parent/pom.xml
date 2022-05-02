@@ -29,7 +29,7 @@
 
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>3.0.0-alpha3</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>PDFBox parent</name>
@@ -552,8 +552,8 @@
     </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/pdfbox/tags/3.0.0-alpha3/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/tags/3.0.0-alpha3/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/pdfbox/tags/3.0.0-alpha3/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/pdfbox/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk</developerConnection>
+    <url>http://svn.apache.org/viewvc/pdfbox/trunk</url>
   </scm>
 </project>
