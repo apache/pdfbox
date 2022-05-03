@@ -308,6 +308,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
         PDFDebugger.allowSubsampling.setEnabled(false);
         PDFDebugger.allowSubsampling.removeActionListener(this);
+
+        PDFDebugger.repairAcroFormMenuItem.setEnabled(false);
+        PDFDebugger.repairAcroFormMenuItem.removeActionListener(this);
     }
 
     @Override
