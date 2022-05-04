@@ -106,12 +106,12 @@ public class CFFParser
         @SuppressWarnings("unused")
         Header header = readHeader(input);
         String[] nameIndex = readStringIndexData(input);
-        if (nameIndex == null)
+        if (nameIndex.length == 0)
         {
             throw new IOException("Name index missing in CFF font");
         }
         byte[][] topDictIndex = readIndexData(input);
-        if (topDictIndex == null)
+        if (topDictIndex.length == 0)
         {
             throw new IOException("Top DICT INDEX missing in CFF font");
         }
@@ -182,7 +182,7 @@ public class CFFParser
         int count = input.readCard16();
         if (count == 0)
         {
-            return null;
+            return new int[0];
         }
         int offSize = input.readOffSize();
         int[] offsets = new int[count+1];
@@ -201,9 +201,9 @@ public class CFFParser
     private static byte[][] readIndexData(CFFDataInput input) throws IOException
     {
         int[] offsets = readIndexDataOffsets(input);
-        if (offsets == null)
+        if (offsets.length == 0)
         {
-            return null;
+            return new byte[0][];
         }
         int count = offsets.length-1;
         byte[][] indexDataValues = new byte[count][];
@@ -218,9 +218,9 @@ public class CFFParser
     private static String[] readStringIndexData(CFFDataInput input) throws IOException
     {
         int[] offsets = readIndexDataOffsets(input);
-        if (offsets == null)
+        if (offsets.length == 0)
         {
-            return null;
+            return new String[0];
         }
         int count = offsets.length-1;
         String[] indexDataValues = new String[count];
@@ -513,7 +513,7 @@ public class CFFParser
             {
                 charset = CFFExpertSubsetCharset.getInstance();
             }
-            else if (charStringsIndex != null)
+            else if (charStringsIndex.length > 0)
             {
                 input.setPosition(charsetId);
                 charset = readCharset(input, charStringsIndex.length, isCIDFont);
@@ -529,10 +529,8 @@ public class CFFParser
         {
             if (isCIDFont)
             {
-                // CharStrings index could be null if the index data couldnÄt be read
-                int numEntries = charStringsIndex == null ? 0 :  charStringsIndex.length;
                 // a CID font with no charset does not default to any predefined charset
-                charset = new EmptyCharsetCID(numEntries);
+                charset = new EmptyCharsetCID(charStringsIndex.length);
             }
             else
             {
@@ -550,7 +548,7 @@ public class CFFParser
 
             // CharStrings index could be null if the index data couldn't be read
             int numEntries = 0;
-            if (charStringsIndex == null)
+            if (charStringsIndex.length == 0)
             {
                 LOG.debug("Couldn't read CharStrings index - parsing CIDFontDicts with number of char strings set to 0");
             }
@@ -645,7 +643,7 @@ public class CFFParser
         int fontDictOffset = fdArrayEntry.getNumber(0).intValue();
         input.setPosition(fontDictOffset);
         byte[][] fdIndex = readIndexData(input);
-        if (fdIndex == null)
+        if (fdIndex.length == 0)
         {
             throw new IOException("Font dict index is missing for a CIDKeyed Font");
         }
