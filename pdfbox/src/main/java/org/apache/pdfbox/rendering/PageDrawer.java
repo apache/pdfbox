@@ -489,7 +489,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         at.concatenate(font.getFontMatrix().createAffineTransform());
 
         Glyph2D glyph2D = createGlyph2D(font);
-        drawGlyph2D(glyph2D, font, code, displacement, at);
+        try
+        {
+            drawGlyph2D(glyph2D, font, code, displacement, at);
+        }
+        catch (IOException ex)
+        {
+            LOG.error("Could not draw glyph for code " + code + " at position (" +
+                    at.getTranslateX() + "," + at.getTranslateY() + ")", ex);
+        }
     }
 
     /**
