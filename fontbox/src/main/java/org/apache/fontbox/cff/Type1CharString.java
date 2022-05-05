@@ -154,39 +154,11 @@ public class Type1CharString
         path = new GeneralPath();
         leftSideBearing = new Point2D.Float(0, 0);
         width = 0;
-        handleSequence(type1Sequence);
+        CharStringHandler handler = Type1CharString.this::handleType1Command;
+        handler.handleSequence(type1Sequence);
     }
 
-    /**
-     * Process sequence of char string commands.
-     * 
-     * @param sequence the given char string sequence
-     */
-    protected void handleSequence(List<Object> sequence)
-    {
-        List<Number> numbers = new ArrayList<>();
-        sequence.forEach(obj -> {
-            if (obj instanceof CharStringCommand)
-            {
-                List<Number> results = handleCommand(numbers, (CharStringCommand) obj);
-                numbers.clear();
-                numbers.addAll(results);
-            }
-            else
-            {
-                numbers.add((Number) obj);
-            }
-        });
-    }
-
-    /**
-     * Handle the given char string command.
-     * 
-     * @param numbers numbers to be used as parameters for the char string command
-     * @param command the char string command
-     * @return the result of the calculation or an empty list if the command doesn't have a result
-     */
-    protected List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
+    private List<Number> handleType1Command(List<Number> numbers, CharStringCommand command)
     {
         commandCount++;
         Type1KeyWord type1KeyWord = command.getType1KeyWord();

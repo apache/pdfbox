@@ -73,11 +73,11 @@ public class Type2CharString extends Type1CharString
     {
         type1Sequence = new ArrayList<>();
         pathCount = 0;
-        handleSequence(sequence);
+        CharStringHandler handler = Type2CharString.this::handleType2Command;
+        handler.handleSequence(sequence);
     }
 
-    @Override
-    protected List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
+    private List<Number> handleType2Command(List<Number> numbers, CharStringCommand command)
     {
         commandCount++;
         Type2KeyWord type2KeyWord = command.getType2KeyWord();
