@@ -1,4 +1,4 @@
-/*
+ew io/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -682,12 +682,12 @@ public abstract class PDFStreamEngine
             }
             else if (obj instanceof COSArray)
             {
-                LOG.error("Nested arrays are not allowed in an array for TJ operation:" + obj);
+                LOG.error("Nested arrays are not allowed in an array for TJ operation: " + obj);
             }
             else
             {
-                throw new IOException("Unknown type " + obj.getClass().getSimpleName()
-                        + " in array for TJ operation:" + obj);
+                LOG.error("Unknown type " + obj.getClass().getSimpleName()
+                        + " in array for TJ operation: " + obj);
             }
         }
     }
