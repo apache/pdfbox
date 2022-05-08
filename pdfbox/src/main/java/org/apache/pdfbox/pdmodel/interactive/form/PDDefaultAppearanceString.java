@@ -103,7 +103,7 @@ class PDDefaultAppearanceString
             if (token instanceof Operator)
             {
                 processOperator((Operator) token, arguments);
-                arguments = new ArrayList<>();
+                arguments.clear();
             }
             else
             {
