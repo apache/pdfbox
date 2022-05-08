@@ -104,7 +104,7 @@ class SoftMask implements Paint
                                       RenderingHints hints)
     {
         PaintContext ctx = paint.createContext(cm, deviceBounds, userBounds, xform, hints);
-        return new SoftPaintContext(ctx);
+        return new SoftPaintContext(ctx, this);
     }
 
     @Override
@@ -113,13 +113,15 @@ class SoftMask implements Paint
         return TRANSLUCENT;
     }
 
-    private class SoftPaintContext implements PaintContext
+    private static class SoftPaintContext implements PaintContext
     {
         private final PaintContext context;
+        private final SoftMask parent;
 
-        SoftPaintContext(PaintContext context)
+        SoftPaintContext(PaintContext context, SoftMask parent)
         {
             this.context = context;
+            this.parent = parent;
         }
 
         @Override
@@ -136,7 +138,7 @@ class SoftMask implements Paint
             float[] input = null;
             Float[] map = null;
 
-            if (transferFunction != null)
+            if (parent.transferFunction != null)
             {
                 map = new Float[256];
                 input = new float[1];
@@ -146,8 +148,8 @@ class SoftMask implements Paint
             WritableRaster output = getColorModel().createCompatibleWritableRaster(w, h);
 
             // the soft mask has its own bbox
-            x1 = x1 - (int)bboxDevice.getX();
-            y1 = y1 - (int)bboxDevice.getY();
+            x1 = x1 - (int)parent.bboxDevice.getX();
+            y1 = y1 - (int)parent.bboxDevice.getY();
 
             int[] gray = new int[4];
             Object pixelInput = null;
@@ -165,11 +167,11 @@ class SoftMask implements Paint
                     
                     // get the alpha value from the gray mask, if within mask bounds
                     gray[0] = 0;
-                    if (x1 + x >= 0 && y1 + y >= 0 && x1 + x < mask.getWidth() && y1 + y < mask.getHeight())
+                    if (x1 + x >= 0 && y1 + y >= 0 && x1 + x < parent.mask.getWidth() && y1 + y < parent.mask.getHeight())
                     {
-                        mask.getRaster().getPixel(x1 + x, y1 + y, gray);
+                        parent.mask.getRaster().getPixel(x1 + x, y1 + y, gray);
                         int g = gray[0];
-                        if (transferFunction != null)
+                        if (parent.transferFunction != null)
                         {
                             // apply transfer function
                             try
@@ -183,7 +185,7 @@ class SoftMask implements Paint
                                 {
                                     // calculate and store in map
                                     input[0] = g / 255f;
-                                    float f = transferFunction.eval(input)[0];
+                                    float f = parent.transferFunction.eval(input)[0];
                                     map[g] = f;
                                     pixelOutput[3] = Math.round(pixelOutput[3] * f);
                                 }
@@ -192,7 +194,7 @@ class SoftMask implements Paint
                             {
                                 // ignore exception, treat as outside
                                 LOG.debug("Couldn't apply transferFunction - treating as outside", ex);
-                                pixelOutput[3] = Math.round(pixelOutput[3] * (bc / 255f));
+                                pixelOutput[3] = Math.round(pixelOutput[3] * (parent.bc / 255f));
                             }
                         }
                         else
@@ -202,7 +204,7 @@ class SoftMask implements Paint
                     }
                     else
                     {
-                        pixelOutput[3] = Math.round(pixelOutput[3] * (bc / 255f));
+                        pixelOutput[3] = Math.round(pixelOutput[3] * (parent.bc / 255f));
                     }
                     output.setPixel(x, y, pixelOutput);
                 }
