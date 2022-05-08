@@ -881,7 +881,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         byte[] paddedUser = truncateOrPad( userPassword );
 
         ByteArrayOutputStream encrypted = new ByteArrayOutputStream();
-        encryptDataRC4(rc4Key, new ByteArrayInputStream(paddedUser), encrypted);
+        encryptDataRC4(rc4Key, paddedUser, encrypted);
 
         if( encRevision == 3 || encRevision == 4 )
         {
@@ -893,7 +893,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                 {
                     iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
                 }
-                ByteArrayInputStream input = new ByteArrayInputStream( encrypted.toByteArray() );
+                byte[]input = encrypted.toByteArray();
                 encrypted.reset();
                 encryptDataRC4(iterationKey, input, encrypted );
             }
