@@ -50,8 +50,8 @@ public class Type1CharString
     private Point2D.Float current = null;
     private boolean isFlex = false;
     private final List<Point2D.Float> flexPoints = new ArrayList<>();
-    protected List<Object> type1Sequence;
-    protected int commandCount = 0;
+    private final List<Object> type1Sequence = new ArrayList<>();
+    private int commandCount = 0;
 
     /**
      * Constructs a new Type1CharString object.
@@ -62,10 +62,10 @@ public class Type1CharString
      * @param sequence Type 1 char string sequence
      */
     public Type1CharString(Type1CharStringReader font, String fontName, String glyphName,
-                           List<Object> sequence)
+            List<Object> sequence)
     {
         this(font, fontName, glyphName);
-        type1Sequence = sequence;
+        type1Sequence.addAll(sequence);
     }
 
     /**
@@ -497,6 +497,18 @@ public class Type1CharString
         {
             LOG.warn("invalid seac character in glyph " + glyphName + " of font " + fontName, e);
         }
+    }
+
+    /**
+     * Add a command to the type1 sequence.
+     * 
+     * @param numbers the parameters of the command to be added
+     * @param command the command to be added
+     */
+    protected void addCommand(List<Number> numbers, CharStringCommand command)
+    {
+        type1Sequence.addAll(numbers);
+        type1Sequence.add(command);
     }
 
     @Override
