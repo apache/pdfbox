@@ -73,11 +73,22 @@ public class Type2CharString extends Type1CharString
     private void convertType1ToType2(List<Object> sequence)
     {
         pathCount = 0;
-        CharStringHandler handler = Type2CharString.this::handleType2Command;
-        handler.handleSequence(sequence);
+        List<Number> numbers = new ArrayList<>();
+        sequence.forEach(obj -> {
+            if (obj instanceof CharStringCommand)
+            {
+                List<Number> results = convertType2Command(numbers, (CharStringCommand) obj);
+                numbers.clear();
+                numbers.addAll(results);
+            }
+            else
+            {
+                numbers.add((Number) obj);
+            }
+        });
     }
 
-    private List<Number> handleType2Command(List<Number> numbers, CharStringCommand command)
+    private List<Number> convertType2Command(List<Number> numbers, CharStringCommand command)
     {
         Type2KeyWord type2KeyWord = command.getType2KeyWord();
         if (type2KeyWord == null)
@@ -108,7 +119,7 @@ public class Type2CharString extends Type1CharString
             break;
         case HLINETO:
         case VLINETO:
-            drawAlternatingLine(numbers, type2KeyWord == Type2KeyWord.HLINETO);
+            addAlternatingLine(numbers, type2KeyWord == Type2KeyWord.HLINETO);
             break;
         case RRCURVETO:
             addCommandList(split(numbers, 6), command);
@@ -134,7 +145,7 @@ public class Type2CharString extends Type1CharString
             break;
         case HVCURVETO:
         case VHCURVETO:
-            drawAlternatingCurve(numbers, type2KeyWord == Type2KeyWord.HVCURVETO);
+            addAlternatingCurve(numbers, type2KeyWord == Type2KeyWord.HVCURVETO);
             break;
         case HFLEX:
             if (numbers.size() >= 7)
@@ -200,7 +211,7 @@ public class Type2CharString extends Type1CharString
             break;
         case HHCURVETO:
         case VVCURVETO:
-            drawCurve(numbers, type2KeyWord == Type2KeyWord.HHCURVETO);
+            addCurve(numbers, type2KeyWord == Type2KeyWord.HHCURVETO);
             break;
         default:
             addCommand(numbers, command);
@@ -211,7 +222,7 @@ public class Type2CharString extends Type1CharString
 
     private List<Number> clearStack(List<Number> numbers, boolean flag)
     {
-        if (getType1Sequence().isEmpty())
+        if (isSequenceEmpty())
         {
             if (flag)
             {
@@ -247,15 +258,15 @@ public class Type2CharString extends Type1CharString
 
     private void closeCharString2Path()
     {
-        CharStringCommand command = pathCount > 0
-                ? (CharStringCommand) getType1Sequence().get(getType1Sequence().size() - 1) : null;
+        CharStringCommand command = pathCount > 0 ? (CharStringCommand) getLastSequenceEntry()
+                : null;
         if (command != null && command.getType1KeyWord() != Type1KeyWord.CLOSEPATH)
         {
             addCommand(Collections.<Number> emptyList(), CharStringCommand.COMMAND_CLOSEPATH);
         }
     }
 
-    private void drawAlternatingLine(List<Number> numbers, boolean horizontal)
+    private void addAlternatingLine(List<Number> numbers, boolean horizontal)
     {
         while (!numbers.isEmpty())
         {
@@ -266,7 +277,7 @@ public class Type2CharString extends Type1CharString
         }
     }
 
-    private void drawAlternatingCurve(List<Number> numbers, boolean horizontal)
+    private void addAlternatingCurve(List<Number> numbers, boolean horizontal)
     {
         while (numbers.size() >= 4)
         {
@@ -290,7 +301,7 @@ public class Type2CharString extends Type1CharString
         }
     }
 
-    private void drawCurve(List<Number> numbers, boolean horizontal)
+    private void addCurve(List<Number> numbers, boolean horizontal)
     {
         while (numbers.size() >= 4)
         {

@@ -138,15 +138,6 @@ public class Type1CharString
     }
 
     /**
-     * Returns the Type 1 char string sequence.
-     * @return the Type 1 sequence
-     */
-    public List<Object> getType1Sequence()
-    {
-        return type1Sequence;
-    }
-
-    /**
      * Renders the Type 1 char string sequence to a GeneralPath.
      */
     private void render() 
@@ -154,8 +145,19 @@ public class Type1CharString
         path = new GeneralPath();
         leftSideBearing = new Point2D.Float(0, 0);
         width = 0;
-        CharStringHandler handler = Type1CharString.this::handleType1Command;
-        handler.handleSequence(type1Sequence);
+        List<Number> numbers = new ArrayList<>();
+        type1Sequence.forEach(obj -> {
+            if (obj instanceof CharStringCommand)
+            {
+                List<Number> results = handleType1Command(numbers, (CharStringCommand) obj);
+                numbers.clear();
+                numbers.addAll(results);
+            }
+            else
+            {
+                numbers.add((Number) obj);
+            }
+        });
     }
 
     private List<Number> handleType1Command(List<Number> numbers, CharStringCommand command)
@@ -509,6 +511,20 @@ public class Type1CharString
     {
         type1Sequence.addAll(numbers);
         type1Sequence.add(command);
+    }
+
+    protected boolean isSequenceEmpty()
+    {
+        return type1Sequence.isEmpty();
+    }
+
+    protected Object getLastSequenceEntry()
+    {
+        if (!type1Sequence.isEmpty())
+        {
+            type1Sequence.get(type1Sequence.size() - 1);
+        }
+        return null;
     }
 
     @Override
