@@ -517,6 +517,21 @@ public class Type1CharString
         type1Sequence.add(command);
     }
 
+    protected void addCommand(Number number, CharStringCommand command)
+    {
+        type1Sequence.add(number);
+        type1Sequence.add(command);
+    }
+
+    protected void addCommand(Number[] numbers, CharStringCommand command)
+    {
+        for (int i = 0; i < numbers.length; ++i)
+        {
+            type1Sequence.add(numbers[i]);
+        }
+        type1Sequence.add(command);
+    }
+
     protected boolean isSequenceEmpty()
     {
         return type1Sequence.isEmpty();

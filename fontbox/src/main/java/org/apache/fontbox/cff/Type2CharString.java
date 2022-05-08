@@ -104,13 +104,13 @@ public class Type2CharString extends Type1CharString
         case VSTEMHM:
         case HINTMASK:
         case CNTRMASK:
-            numbers = clearStack(numbers, numbers.size() % 2 != 0);
+            clearStack(numbers, numbers.size() % 2 != 0);
             expandStemHints(numbers,
                     type2KeyWord == Type2KeyWord.HSTEM || type2KeyWord == Type2KeyWord.HSTEMHM);
             break;
         case HMOVETO:
         case VMOVETO:
-            numbers = clearStack(numbers, numbers.size() > 1);
+            clearStack(numbers, numbers.size() > 1);
             markPath();
             addCommand(numbers, command);
             break;
@@ -384,27 +384,6 @@ public class Type2CharString extends Type1CharString
         {
             addCommand(list.subList(i * size, (i + 1) * size), command);
         }
-    }
-
-    private void addCommand(Number number, CharStringCommand command)
-    {
-        type1Sequence.add(number);
-        type1Sequence.add(command);
-    }
-
-    private void addCommand(List<Number> numbers, CharStringCommand command)
-    {
-        type1Sequence.addAll(numbers);
-        type1Sequence.add(command);
-    }
-
-    private void addCommand(Number[] numbers, CharStringCommand command)
-    {
-        for (int i = 0; i < numbers.length; ++i)
-        {
-            type1Sequence.add(numbers[i]);
-        }
-        type1Sequence.add(command);
     }
 
     private Number[] subArray(List<Number> numbers, int startIndex, int endIndex)
