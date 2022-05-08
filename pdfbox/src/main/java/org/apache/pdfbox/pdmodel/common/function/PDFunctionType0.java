@@ -249,7 +249,7 @@ public class PDFunctionType0 extends PDFunction
      * href="https://en.wikipedia.org/wiki/Trilinear_interpolation">trilinear
      * interpolation</a> (external links).
      */
-    private class Rinterpol
+    private static class Rinterpol
     {
         // coordinate that is to be interpolated
         private final float[] in;
@@ -258,8 +258,8 @@ public class PDFunctionType0 extends PDFunction
         // coordinate of the "floor" point
         private final int[] inNext;
         private final int numberOfInputValues;
-        private final int numberOfOutputValues = getNumberOfOutputParameters();
-
+        private final int numberOfOutputValues;
+        private final PDFunctionType0 function;
         /**
          * Constructor.
          *
@@ -268,12 +268,14 @@ public class PDFunctionType0 extends PDFunction
          * @param inputNext coordinate of the "floor" point
          *
          */
-        Rinterpol(float[] input, int[] inputPrev, int[] inputNext)
+        Rinterpol(float[] input, int[] inputPrev, int[] inputNext, PDFunctionType0 function)
         {
             in = input;
             inPrev = inputPrev;
             inNext = inputNext;
             numberOfInputValues = input.length;
+            this.function = function;
+            numberOfOutputValues = function.getNumberOfOutputParameters();
         }
 
         /**
@@ -318,7 +320,7 @@ public class PDFunctionType0 extends PDFunction
                 int[] sample2 = getSamples()[calcSampleIndex(coord)];
                 for (int i = 0; i < numberOfOutputValues; ++i)
                 {
-                    resultSample[i] = interpolate(in[step], inPrev[step], inNext[step], sample1[i], sample2[i]);
+                    resultSample[i] = function.interpolate(in[step], inPrev[step], inNext[step], sample1[i], sample2[i]);
                 }
                 return resultSample;
             }
@@ -336,7 +338,7 @@ public class PDFunctionType0 extends PDFunction
                 float[] sample2 = rinterpol(coord, step + 1);
                 for (int i = 0; i < numberOfOutputValues; ++i)
                 {
-                    resultSample[i] = interpolate(in[step], inPrev[step], inNext[step], sample1[i], sample2[i]);
+                    resultSample[i] = function.interpolate(in[step], inPrev[step], inNext[step], sample1[i], sample2[i]);
                 }
                 return resultSample;
             }
@@ -352,7 +354,7 @@ public class PDFunctionType0 extends PDFunction
         {
             // inspiration: http://stackoverflow.com/a/12113479/535646
             // but used in reverse
-            float[] sizeValues = getSize().toFloatArray();
+            float[] sizeValues = function.getSize().toFloatArray();
             int index = 0;
             int sizeProduct = 1;
             int dimension = vector.length;
@@ -378,20 +380,20 @@ public class PDFunctionType0 extends PDFunction
          */
         private int[][] getSamples()
         {
-            if (samples == null)
+            if (function.samples == null)
             {
                 int arraySize = 1;
-                int nIn = getNumberOfInputParameters();
-                int nOut = getNumberOfOutputParameters();
-                COSArray sizes = getSize();
+                int nIn = function.getNumberOfInputParameters();
+                int nOut = function.getNumberOfOutputParameters();
+                COSArray sizes = function.getSize();
                 for (int i = 0; i < nIn; i++)
                 {
                     arraySize *= sizes.getInt(i);
                 }
-                samples = new int[arraySize][nOut];
-                int bitsPerSample = getBitsPerSample();
+                function.samples = new int[arraySize][nOut];
+                int bitsPerSample = function.getBitsPerSample();
                 int index = 0;
-                try (InputStream is = getPDStream().createInputStream())
+                try (InputStream is = function.getPDStream().createInputStream())
                 {
                     // PDF spec 1.7 p.171:
                     // Each sample value is represented as a sequence of BitsPerSample bits. 
@@ -403,7 +405,7 @@ public class PDFunctionType0 extends PDFunction
                             for (int k = 0; k < nOut; k++)
                             {
                                 // TODO will this cast work properly for 32 bitsPerSample or should we use long[]?
-                                samples[index][k] = (int) mciis.readBits(bitsPerSample);
+                                function.samples[index][k] = (int) mciis.readBits(bitsPerSample);
                             }
                             index++;
                         }
@@ -414,7 +416,7 @@ public class PDFunctionType0 extends PDFunction
                     LOG.error("IOException while reading the sample values of this function.", exception);
                 }
             }
-            return samples;
+            return function.samples;
         }
     }
 
@@ -441,15 +443,17 @@ public class PDFunctionType0 extends PDFunction
         {
             PDRange domain = getDomainForInput(i);
             PDRange encodeValues = getEncodeForParameter(i);
-            input[i] = clipToRange(input[i], domain.getMin(), domain.getMax());
-            input[i] = interpolate(input[i], domain.getMin(), domain.getMax(), 
+            float min = domain.getMin();
+            float max = domain.getMax();
+            input[i] = clipToRange(input[i], min, max);
+            input[i] = interpolate(input[i], min, max,
                     encodeValues.getMin(), encodeValues.getMax());
             input[i] = clipToRange(input[i], 0, sizeValues[i] - 1);
             inputPrev[i] = (int) Math.floor(input[i]);
             inputNext[i] = (int) Math.ceil(input[i]);
         }
-        
-        float[] outputValues = new Rinterpol(input, inputPrev, inputNext).rinterpolate();
+
+        float[] outputValues = new Rinterpol(input, inputPrev, inputNext, this).rinterpolate();
 
         for (int i = 0; i < numberOfOutputValues; i++)
         {
