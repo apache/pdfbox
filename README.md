@@ -54,7 +54,7 @@ There are various ways to help us improve PDFBox.
 - look at the [Issue Tracker](https://issues.apache.org/jira/browse/PDFBOX) to help us fix bugs.
 - answer questions on our [Users Mailing List](https://pdfbox.apache.org/mailinglists.html "Subscribe to Mailing List").
 - help us enhance the [Examples](https://svn.apache.org/repos/asf/pdfbox/trunk/examples/)
-- help us to enhance the [PDFBox Documentation](https://git-wip-us.apache.org/repos/asf/pdfbox-docs)
+- help us to enhance the [PDFBox Documentation](https://gitbox.apache.org/repos/asf/pdfbox-docs)
 or on [GitHub](https://github.com/apache/pdfbox-docs). 
 
 Support

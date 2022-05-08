@@ -172,7 +172,7 @@ public class Type2CharStringParser
         {
             int b1 = input.readUnsignedByte();
 
-            return new CharStringCommand(b0, b1);
+            return CharStringCommand.getInstance(b0, b1);
         } 
         else if (b0 == 19 || b0 == 20)
         {
@@ -184,10 +184,10 @@ public class Type2CharStringParser
                 value[i] = input.readUnsignedByte();
             }
 
-            return new CharStringCommand(value);
+            return CharStringCommand.getInstance(value);
         }
 
-        return new CharStringCommand(b0);
+        return CharStringCommand.getInstance(b0);
     }
 
     private Number readNumber(int b0, DataInput input) throws IOException

@@ -44,14 +44,6 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
     }
 
     @Override
-    public void generateAppearanceStreams()
-    {
-        generateNormalAppearance();
-        generateRolloverAppearance();
-        generateDownAppearance();
-    }
-
-    @Override
     public void generateNormalAppearance()
     {
         PDAnnotationUnderline annotation = (PDAnnotationUnderline) getAnnotation();

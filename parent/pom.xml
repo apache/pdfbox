@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>23</version>
+        <version>26</version>
         <relativePath />
     </parent>
 
@@ -210,7 +210,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>7.0.4</version>
+                        <version>7.1.0</version>
                         <configuration>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                             <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->

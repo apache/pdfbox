@@ -191,7 +191,7 @@ public class StandardEncoding extends Encoding
     /**
      * Constructor.
      */
-    public StandardEncoding()
+    private StandardEncoding()
     {
         for (Object[] encodingEntry : STANDARD_ENCODING_TABLE)
         {
