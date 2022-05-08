@@ -198,7 +198,7 @@ public final class BlendComposite implements Composite
                                 dstValue = 1 - dstValue;
                             }
 
-                            float value = blendMode.getBlendChannelFunction().blendChannel(srcValue,
+                            float value = parent.blendMode.getBlendChannelFunction().blendChannel(srcValue,
                                     dstValue);
                             value = srcValue + dstAlpha * (value - srcValue);
                             value = dstValue + srcAlphaRatio * (value - dstValue);
