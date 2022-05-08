@@ -90,16 +90,16 @@ public class Type2CharString extends Type1CharString
         {
         case HSTEM:
         case HSTEMHM:
-            numbers = clearStack(numbers, numbers.size() % 2 != 0);
-            expandStemHints(numbers, true);
-            break;
         case VSTEM:
         case VSTEMHM:
+        case HINTMASK:
+        case CNTRMASK:
             numbers = clearStack(numbers, numbers.size() % 2 != 0);
-            expandStemHints(numbers, false);
+            expandStemHints(numbers,
+                    type2KeyWord == Type2KeyWord.HSTEM || type2KeyWord == Type2KeyWord.HSTEMHM);
             break;
-        case VMOVETO:
         case HMOVETO:
+        case VMOVETO:
             numbers = clearStack(numbers, numbers.size() > 1);
             markPath();
             addCommand(numbers, command);
@@ -108,10 +108,8 @@ public class Type2CharString extends Type1CharString
             addCommandList(split(numbers, 2), command);
             break;
         case HLINETO:
-            drawAlternatingLine(numbers, true);
-            break;
         case VLINETO:
-            drawAlternatingLine(numbers, false);
+            drawAlternatingLine(numbers, type2KeyWord == Type2KeyWord.HLINETO);
             break;
         case RRCURVETO:
             addCommandList(split(numbers, 6), command);
@@ -135,11 +133,9 @@ public class Type2CharString extends Type1CharString
             markPath();
             addCommand(numbers, command);
             break;
-        case VHCURVETO:
-            drawAlternatingCurve(numbers, false);
-            break;
         case HVCURVETO:
-            drawAlternatingCurve(numbers, true);
+        case VHCURVETO:
+            drawAlternatingCurve(numbers, type2KeyWord == Type2KeyWord.HVCURVETO);
             break;
         case HFLEX:
             if (numbers.size() >= 7)
@@ -184,14 +180,6 @@ public class Type2CharString extends Type1CharString
             addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
             break;
         }
-        case HINTMASK:
-        case CNTRMASK:
-            numbers = clearStack(numbers, numbers.size() % 2 != 0);
-            if (!numbers.isEmpty())
-            {
-                expandStemHints(numbers, false);
-            }
-            break;
         case RCURVELINE:
             if (numbers.size() >= 2)
             {
@@ -210,11 +198,9 @@ public class Type2CharString extends Type1CharString
                         new CharStringCommand(8));
             }
             break;
-        case VVCURVETO:
-            drawCurve(numbers, false);
-            break;
         case HHCURVETO:
-            drawCurve(numbers, true);
+        case VVCURVETO:
+            drawCurve(numbers, type2KeyWord == Type2KeyWord.HHCURVETO);
             break;
         default:
             addCommand(numbers, command);
