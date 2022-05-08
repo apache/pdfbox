@@ -592,7 +592,7 @@ public final class TextPosition
 
         int strLen = unicode.length();
         boolean wasAdded = false;
-
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < strLen && !wasAdded; i++)
         {
             if (i >= widths.length)
@@ -610,7 +610,7 @@ public final class TextPosition
             {
                 if (i == 0)
                 {
-                    insertDiacritic(i, diacritic);
+                    insertDiacritic(i, diacritic, sb);
                 }
                 else
                 {
@@ -622,11 +622,11 @@ public final class TextPosition
 
                     if (percentage1 >= percentage2)
                     {
-                        insertDiacritic(i, diacritic);
+                        insertDiacritic(i, diacritic, sb);
                     }
                     else
                     {
-                        insertDiacritic(i - 1, diacritic);
+                        insertDiacritic(i - 1, diacritic, sb);
                     }
                 }
                 wasAdded = true;
@@ -635,20 +635,20 @@ public final class TextPosition
             // character the diacritic belongs to
             else if (diacXStart < currCharXStart)
             {
-                insertDiacritic(i, diacritic);
+                insertDiacritic(i, diacritic, sb);
                 wasAdded = true;
             }
             // otherwise, The diacritic modifies this character because its completely
             // contained by the character width
             else if (diacXEnd <= currCharXEnd)
             {
-                insertDiacritic(i, diacritic);
+                insertDiacritic(i, diacritic, sb);
                 wasAdded = true;
             }
             // last character in the TextPosition so we add diacritic to the end
             else if (i == strLen - 1)
             {
-                insertDiacritic(i, diacritic);
+                insertDiacritic(i, diacritic, sb);
                 wasAdded = true;
             }
 
@@ -663,10 +663,11 @@ public final class TextPosition
      *
      * @param i current character
      * @param diacritic The diacritic TextPosition
+     * @param sb buffer to set unicode field
      */
-    private void insertDiacritic(int i, TextPosition diacritic)
+    private void insertDiacritic(int i, TextPosition diacritic, StringBuilder sb)
     {
-        StringBuilder sb = new StringBuilder();
+        sb.setLength(0);
         sb.append(unicode, 0, i);
 
         float[] widths2 = new float[widths.length + 1];
