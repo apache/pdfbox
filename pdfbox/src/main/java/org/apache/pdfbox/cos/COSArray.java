@@ -100,8 +100,11 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void clear()
     {
-        objects.clear();
-        getUpdateState().update();
+        if (objects.size() > 0)
+        {
+            objects.clear();
+            getUpdateState().update();
+        }
     }
 
     /**
@@ -111,8 +114,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void removeAll( Collection<COSBase> objectsList )
     {
-        objects.removeAll( objectsList );
-        getUpdateState().update();
+        if (objects.removeAll( objectsList ))
+        {
+            getUpdateState().update();
+        }
     }
 
     /**
@@ -122,8 +127,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void retainAll( Collection<COSBase> objectsList )
     {
-        objects.retainAll( objectsList );
-        getUpdateState().update();
+        if (objects.retainAll( objectsList ))
+        {
+            getUpdateState().update();
+        }
     }
 
     /**
@@ -172,8 +179,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void set( int index, COSBase object )
     {
-        objects.set( index, object );
-        getUpdateState().update(object);
+        if (objects.set( index, object ) != object)
+        {
+            getUpdateState().update(object);
+        }
     }
 
     /**
@@ -184,8 +193,11 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void set( int index, int intVal )
     {
-        objects.set( index, COSInteger.get(intVal));
-        getUpdateState().update();
+        COSInteger value = COSInteger.get(intVal);
+        if (objects.set( index, value) != value)
+        {
+            getUpdateState().update();
+        }
     }
 
     /**
@@ -201,8 +213,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         {
             base = object.getCOSObject();
         }
-        objects.set( index, base );
-        getUpdateState().update(base);
+        if (objects.set( index, base ) != base)
+        {
+            getUpdateState().update(base);
+        }
     }
 
     /**
@@ -543,9 +557,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         while( size() < size )
         {
             add( object );
-            getUpdateState().update(object);
         }
-        getUpdateState().update();
     }
 
     /**
@@ -571,7 +583,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         for (int i = 0; i < retval.length; i++)
         {
             COSBase base = getObject(i);
-            retval[i] = base instanceof COSNumber ? ((COSNumber) base).floatValue() : 0;
+            retval[i] = base instanceof COSNumber ? ((COSNumber) base).floatValue() : 0f;
         }
         return retval;
     }
