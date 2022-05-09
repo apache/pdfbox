@@ -129,8 +129,11 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void clear()
     {
-        items.clear();
-        getUpdateState().update();
+        if (items.size() > 0)
+        {
+            items.clear();
+            getUpdateState().update();
+        }
     }
 
     /**
@@ -203,8 +206,14 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         else
         {
+            boolean changed = !(items.containsKey(value) && items.get(key) == value);
+
             items.put(key, value);
-            getUpdateState().update(value);
+
+            if (changed)
+            {
+                getUpdateState().update(value);
+            }
         }
     }
 
@@ -1153,8 +1162,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void removeItem(COSName key)
     {
-        items.remove(key);
-        getUpdateState().update();
+        if (items.remove(key) != null)
+        {
+            getUpdateState().update();
+        }
     }
 
     /**
