@@ -598,7 +598,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
         }
         TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true, 
-                softMask.getInitialTransformationMatrix(), backdropColor);
+                softMask.getInitialTransformationMatrix(), backdropColor, this);
         BufferedImage image = transparencyGroup.getImage();
         if (image == null)
         {
@@ -1495,7 +1495,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return;
         }
         TransparencyGroup group
-                = new TransparencyGroup(form, false, getGraphicsState().getCurrentTransformationMatrix(), null);
+                = new TransparencyGroup(form, false, getGraphicsState().getCurrentTransformationMatrix(), null, this);
         BufferedImage image = group.getImage();
         if (image == null)
         {
@@ -1557,10 +1557,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     /**
      * Transparency group.
      **/
-    private final class TransparencyGroup
+    private static final class TransparencyGroup
     {
         private final BufferedImage image;
         private final PDRectangle bbox;
+        private final PageDrawer pageDrawer;
 
         private final int minX;
         private final int minY;
@@ -1579,14 +1580,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
          * for forms, this is the CTM at the time the form is invoked.
          * @param backdropColor the color according to the /bc entry to be used for luminosity soft
          * masks.
+         * @param pageDrawer the owner of this TransparencyGroup instance
          * @throws IOException
          */
         private TransparencyGroup(PDTransparencyGroup form, boolean isSoftMask, Matrix ctm, 
-                PDColor backdropColor) throws IOException
+                PDColor backdropColor, PageDrawer pageDrawer) throws IOException
         {
-            Graphics2D savedGraphics = graphics;
-            List<Path2D> savedLastClips = lastClips;
-            Shape savedInitialClip = initialClip;
+            this.pageDrawer = pageDrawer;
+            Graphics2D savedGraphics = pageDrawer.graphics;
+            List<Path2D> savedLastClips = pageDrawer.lastClips;
+            Shape savedInitialClip = pageDrawer.initialClip;
 
             // get the CTM x Form Matrix transform
             Matrix transform = Matrix.concatenate(ctm, form.getMatrix());
@@ -1596,7 +1599,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             // clip the bbox to prevent giant bboxes from consuming all memory
             Area transformed = new Area(transformedBox);
-            transformed.intersect(getGraphicsState().getCurrentClippingPath());
+            transformed.intersect(pageDrawer.getGraphicsState().getCurrentClippingPath());
             Rectangle2D clipRect = transformed.getBounds2D();
             if (clipRect.isEmpty())
             {
@@ -1614,9 +1617,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                         (float)clipRect.getWidth(), (float)clipRect.getHeight());
 
             // apply the underlying Graphics2D device's DPI transform
-            AffineTransform xformOriginal = xform;
-            xform = AffineTransform.getScaleInstance(xformScalingFactorX, xformScalingFactorY);
-            Rectangle2D bounds = xform.createTransformedShape(clipRect).getBounds2D();
+            AffineTransform xformOriginal = pageDrawer.xform;
+            pageDrawer.xform = AffineTransform.getScaleInstance(pageDrawer.xformScalingFactorX, pageDrawer.xformScalingFactorY);
+            Rectangle2D bounds = pageDrawer.xform.createTransformedShape(clipRect).getBounds2D();
 
             minX = (int) Math.floor(bounds.getMinX());
             minY = (int) Math.floor(bounds.getMinY());
@@ -1637,17 +1640,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
 
             boolean needsBackdrop = !isSoftMask && !form.getGroup().isIsolated() &&
-                hasBlendMode(form, new HashSet<>());
+                    pageDrawer.hasBlendMode(form, new HashSet<>());
             BufferedImage backdropImage = null;
             // Position of this group in parent group's coordinates
             int backdropX = 0;
             int backdropY = 0;
             if (needsBackdrop)
             {
-                if (transparencyGroupStack.isEmpty())
+                if (pageDrawer.transparencyGroupStack.isEmpty())
                 {
                     // Use the current page as the parent group.
-                    backdropImage = renderer.getPageImage();
+                    backdropImage = pageDrawer.renderer.getPageImage();
                     if (backdropImage == null)
                     {
                         needsBackdrop = false;
@@ -1660,7 +1663,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
                 else
                 {
-                    TransparencyGroup parentGroup = transparencyGroupStack.peek();
+                    TransparencyGroup parentGroup = pageDrawer.transparencyGroupStack.peek();
                     backdropImage = parentGroup.image;
                     backdropX = minX - parentGroup.minX;
                     backdropY = parentGroup.maxY - maxY;
@@ -1688,60 +1691,60 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             g.translate(0, image.getHeight());
             g.scale(1, -1);
 
-            boolean savedFlipTG = flipTG;
-            flipTG = false;
+            boolean savedFlipTG = pageDrawer.flipTG;
+            pageDrawer.flipTG = false;
 
             // apply device transform (DPI)
             // the initial translation is ignored, because we're not writing into the initial graphics device
-            g.transform(xform);
+            g.transform(pageDrawer.xform);
 
-            PDRectangle pageSizeOriginal = pageSize;
-            pageSize = new PDRectangle(minX / xformScalingFactorX,
-                                       minY / xformScalingFactorY,
-                                       (float) (bounds.getWidth() / xformScalingFactorX),
-                                        (float) (bounds.getHeight() / xformScalingFactorY));
-            int clipWindingRuleOriginal = clipWindingRule;
-            clipWindingRule = -1;
-            GeneralPath linePathOriginal = linePath;
-            linePath = new GeneralPath();
+            PDRectangle pageSizeOriginal = pageDrawer.pageSize;
+            pageDrawer.pageSize = new PDRectangle(minX / pageDrawer.xformScalingFactorX,
+                                       minY / pageDrawer.xformScalingFactorY,
+                                       (float) (bounds.getWidth() / pageDrawer.xformScalingFactorX),
+                                        (float) (bounds.getHeight() / pageDrawer.xformScalingFactorY));
+            int clipWindingRuleOriginal = pageDrawer.clipWindingRule;
+            pageDrawer.clipWindingRule = -1;
+            GeneralPath linePathOriginal = pageDrawer.linePath;
+            pageDrawer.linePath = new GeneralPath();
 
             // adjust the origin
             g.translate(-clipRect.getX(), -clipRect.getY());
 
-            graphics = g;
-            setRenderingHints();
+            pageDrawer.graphics = g;
+            pageDrawer.setRenderingHints();
             try
             {
                 if (isSoftMask)
                 {
-                    processSoftMask(form);
+                    pageDrawer.processSoftMask(form);
                 }
                 else
                 {
-                    transparencyGroupStack.push(this);
-                    processTransparencyGroup(form);
-                    if (!transparencyGroupStack.isEmpty())
+                    pageDrawer.transparencyGroupStack.push(this);
+                    pageDrawer.processTransparencyGroup(form);
+                    if (!pageDrawer.transparencyGroupStack.isEmpty())
                     {
-                        transparencyGroupStack.pop();
+                        pageDrawer.transparencyGroupStack.pop();
                     }
                 }
 
                 if (needsBackdrop)
                 {
-                    ((GroupGraphics) graphics).removeBackdrop(backdropImage, backdropX, backdropY);
+                    ((GroupGraphics) pageDrawer.graphics).removeBackdrop(backdropImage, backdropX, backdropY);
                 }
             }
             finally 
             {
-                flipTG = savedFlipTG;
-                lastClips = savedLastClips;
-                graphics.dispose();
-                graphics = savedGraphics;
-                initialClip = savedInitialClip;
-                clipWindingRule = clipWindingRuleOriginal;
-                linePath = linePathOriginal;
-                pageSize = pageSizeOriginal;
-                xform = xformOriginal;
+                pageDrawer.flipTG = savedFlipTG;
+                pageDrawer.lastClips = savedLastClips;
+                pageDrawer.graphics.dispose();
+                pageDrawer.graphics = savedGraphics;
+                pageDrawer.initialClip = savedInitialClip;
+                pageDrawer.clipWindingRule = clipWindingRuleOriginal;
+                pageDrawer.linePath = linePathOriginal;
+                pageDrawer.pageSize = pageSizeOriginal;
+                pageDrawer.xform = xformOriginal;
             }
         }
 
@@ -1806,8 +1809,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // apply the underlying Graphics2D device's DPI transform and y-axis flip
             Rectangle2D r = 
                     new Rectangle2D.Double(
-                            minX - pageSize.getLowerLeftX() * xformScalingFactorX,
-                            (pageSize.getLowerLeftY() + pageSize.getHeight()) * xformScalingFactorY - minY - height,
+                            minX - pageDrawer.pageSize.getLowerLeftX() * pageDrawer.xformScalingFactorX,
+                            (pageDrawer.pageSize.getLowerLeftY() + pageDrawer.pageSize.getHeight()) * pageDrawer.xformScalingFactorY - minY - height,
                             width,
                             height);
             // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
@@ -1815,8 +1818,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // 1. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask,
             // 2. Is it possible to create the softmask and transparency group in the correct rotation?
             //    (needs rendering identity testing before committing!)
-            AffineTransform adjustedTransform = new AffineTransform(xform);
-            adjustedTransform.scale(1.0 / xformScalingFactorX, 1.0 / xformScalingFactorY);
+            AffineTransform adjustedTransform = new AffineTransform(pageDrawer.xform);
+            adjustedTransform.scale(1.0 / pageDrawer.xformScalingFactorX, 1.0 / pageDrawer.xformScalingFactorY);
             return adjustedTransform.createTransformedShape(r).getBounds2D();
         }
     }
