@@ -195,36 +195,32 @@ public class Stream
 
         filterList.put(DECODED, null);
         PDStream pdStream = new PDStream(stream);
-
-        int filtersSize = pdStream.getFilters().size();
+        List<COSName> filters = pdStream.getFilters();
+        int filtersSize = filters.size();
 
         for (int i = filtersSize - 1; i >= 1; i--)
         {
-            filterList.put(getPartialStreamCommand(i), getStopFilterList(i));
+            filterList.put(getPartialStreamCommand(i, filters), getStopFilterList(i, filters));
         }
         filterList.put(getFilteredLabel(), null);
 
         return filterList;
     }
 
-    private String getPartialStreamCommand(final int indexOfStopFilter)
+    private String getPartialStreamCommand(final int indexOfStopFilter, List<COSName> availableFilters)
     {
-        List<COSName> availableFilters = new PDStream(strm).getFilters();
-
-        StringBuilder nameListBuilder = new StringBuilder();
+        StringBuilder nameListBuilder = new StringBuilder("Keep ");
         for (int i = indexOfStopFilter; i < availableFilters.size(); i++)
         {
             nameListBuilder.append(availableFilters.get(i).getName()).append(" & ");
         }
-        nameListBuilder.delete(nameListBuilder.lastIndexOf("&"), nameListBuilder.length());
-
-        return "Keep " + nameListBuilder.toString() + "...";
+        if (nameListBuilder.length() > 0)
+            nameListBuilder.delete(nameListBuilder.length() - 2, nameListBuilder.length());
+        return nameListBuilder.append("...").toString();
     }
 
-    private List<String> getStopFilterList(final int stopFilterIndex)
+    private List<String> getStopFilterList(final int stopFilterIndex, List<COSName> availableFilters)
     {
-        List<COSName> availableFilters = new PDStream(strm).getFilters();
-
         final List<String> stopFilters = new ArrayList<>(1);
         stopFilters.add(availableFilters.get(stopFilterIndex).getName());
 
