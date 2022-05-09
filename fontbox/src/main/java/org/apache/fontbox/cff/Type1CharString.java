@@ -513,16 +513,26 @@ public class Type1CharString
         type1Sequence.add(command);
     }
 
+    /**
+     * Indicates if the underlying type1 sequence is empty.
+     * 
+     * @return true if the sequence is empty
+     */
     protected boolean isSequenceEmpty()
     {
         return type1Sequence.isEmpty();
     }
 
+    /**
+     * Returns the last entry of the underlying type1 sequence.
+     * 
+     * @return the last entry of the type 1 sequence or null if empty
+     */
     protected Object getLastSequenceEntry()
     {
         if (!type1Sequence.isEmpty())
         {
-            type1Sequence.get(type1Sequence.size() - 1);
+            return type1Sequence.get(type1Sequence.size() - 1);
         }
         return null;
     }
