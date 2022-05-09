@@ -300,9 +300,13 @@ public class Type1CharString
 
                 float result = a / b;
 
-                List<Number> list = new ArrayList<>(numbers);
-                list.remove(list.size() - 1);
-                list.remove(list.size() - 1);
+                int numbersCount = numbers.size() - 2;              
+                List<Number> list = new ArrayList<>(numbersCount + 1);
+                //add everything without the last two elements
+                for(int i = 0; i < numbersCount; ++i)
+                {
+                    list.add(numbers.get(i));
+                }
                 list.add(result);
                 return list;
             }
@@ -508,7 +512,7 @@ public class Type1CharString
     /**
      * Add a command to the type1 sequence.
      * 
-     * @param numbers the parameters of the command to be added
+     * @param numbers the parameters list of the command to be added
      * @param command the command to be added
      */
     protected void addCommand(List<Number> numbers, CharStringCommand command)
@@ -516,13 +520,25 @@ public class Type1CharString
         type1Sequence.addAll(numbers);
         type1Sequence.add(command);
     }
-
+  
+    /**
+     * Add a command to the type1 sequence.
+     * 
+     * @param number the parameter of the command to be added
+     * @param command the command to be added
+     */
     protected void addCommand(Number number, CharStringCommand command)
     {
         type1Sequence.add(number);
         type1Sequence.add(command);
     }
-
+  
+    /**
+     * Add a command to the type1 sequence.
+     * 
+     * @param numbers the parameters array of the command to be added
+     * @param command the command to be added
+     */
     protected void addCommand(Number[] numbers, CharStringCommand command)
     {
         for (int i = 0; i < numbers.length; ++i)
@@ -532,16 +548,26 @@ public class Type1CharString
         type1Sequence.add(command);
     }
 
+    /**
+     * Indicates if the underlying type1 sequence is empty.
+     * 
+     * @return true if the sequence is empty
+     */
     protected boolean isSequenceEmpty()
     {
         return type1Sequence.isEmpty();
     }
 
+    /**
+     * Returns the last entry of the underlying type1 sequence.
+     * 
+     * @return the last entry of the type 1 sequence or null if empty
+     */
     protected Object getLastSequenceEntry()
     {
         if (!type1Sequence.isEmpty())
         {
-            type1Sequence.get(type1Sequence.size() - 1);
+            return type1Sequence.get(type1Sequence.size() - 1);
         }
         return null;
     }
