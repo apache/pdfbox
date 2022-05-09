@@ -105,7 +105,7 @@ public class Stream
      */
     private String getFilteredLabel()
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("Encoded (");
         COSBase base = strm.getFilters();
         if (base instanceof COSName)
         {
@@ -123,7 +123,7 @@ public class Stream
                 sb.append(((COSName) filterArray.get(i)).getName());
             }
         }
-        return "Encoded (" + sb.toString() + ")";
+        return sb.append(")").toString();
     }
 
     /**
