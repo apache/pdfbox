@@ -60,19 +60,11 @@ class ContentStreamWriterTest
     @BeforeAll
     public static void setUpClass()
     {
-        // try to avoid "java.awt.color.CMMException: Unknown profile ID"
-        try
-        {
-            ColorSpace csRGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-            csRGB.toRGB(new float[] { 0, 0, 0 });
-            ColorSpace csXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
-            csXYZ.toRGB(new float[] { 0, 0, 0 });
-        }
-        catch (Throwable t)
-        {
-            t.printStackTrace();
-            throw t;
-        }
+        // PDFBOX-5425: try to avoid "java.awt.color.CMMException: Unknown profile ID"
+        ColorSpace csRGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        csRGB.toRGB(new float[] { 0, 0, 0 });
+        ColorSpace csXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
+        csXYZ.toRGB(new float[] { 0, 0, 0 });
     }
     
     @AfterAll
