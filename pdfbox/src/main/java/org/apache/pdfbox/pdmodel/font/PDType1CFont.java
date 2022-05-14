@@ -35,6 +35,7 @@ import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
@@ -76,17 +77,18 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         super(fontDictionary);
 
         PDFontDescriptor fd = getFontDescriptor();
-        byte[] bytes = null;
+        RandomAccessRead randomAccessRead = null;
         if (fd != null)
         {
             PDStream ff3Stream = fd.getFontFile3();
             if (ff3Stream != null)
             {
-                bytes = ff3Stream.toByteArray();
-                if (bytes.length == 0)
+                randomAccessRead = fd.getFontFile3().getCOSObject().createView();
+                if (randomAccessRead.length() == 0)
                 {
                     LOG.error("Invalid data for embedded Type1C font " + getName());
-                    bytes = null;
+                    randomAccessRead.close();
+                    randomAccessRead = null;
                 }
             }
         }
@@ -95,11 +97,11 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         CFFType1Font cffEmbedded = null;
         try
         {
-            if (bytes != null)
+            if (randomAccessRead != null)
             {
                 // note: this could be an OpenType file, fortunately CFFParser can handle that
                 CFFParser cffParser = new CFFParser();
-                CFFFont parsedCffFont = cffParser.parse(bytes, new FF3ByteSource()).get(0);
+                CFFFont parsedCffFont = cffParser.parse(randomAccessRead).get(0);
                 if (parsedCffFont instanceof CFFType1Font)
                 {
                     cffEmbedded = (CFFType1Font) parsedCffFont;
@@ -109,6 +111,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
                     LOG.error("Expected CFFType1Font, got " + parsedCffFont.getClass().getSimpleName());
                     fontIsDamaged = true;
                 }
+                randomAccessRead.close();
             }
         }
         catch (IOException e)
@@ -482,12 +485,4 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         return ".notdef";
     }
     
-    private class FF3ByteSource implements CFFParser.ByteSource
-    {
-        @Override
-        public byte[] getBytes() throws IOException
-        {
-            return getFontDescriptor().getFontFile3().toByteArray();
-        }
-    }
 }

@@ -33,6 +33,7 @@ import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.cff.Type2CharString;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.Matrix;
@@ -73,30 +74,33 @@ public class PDCIDFontType0 extends PDCIDFont
         super(fontDictionary, parent);
 
         PDFontDescriptor fd = getFontDescriptor();
-        byte[] bytes = null;
+        RandomAccessRead randomAccessRead = null;
         if (fd != null)
         {
             PDStream ff3Stream = fd.getFontFile3();
             if (ff3Stream != null)
             {
-                bytes = ff3Stream.toByteArray();
+                randomAccessRead = ff3Stream.getCOSObject().createView();
             }
         }
 
         boolean fontIsDamaged = false;
         CFFFont cffFont = null;
-        if (bytes != null && bytes.length > 0 && (bytes[0] & 0xff) == '%')
+        if (randomAccessRead != null && randomAccessRead.length() > 0
+                && randomAccessRead.peek() == '%')
         {
             // PDFBOX-2642 contains a corrupt PFB font instead of a CFF
             LOG.warn("Found PFB but expected embedded CFF font " + fd.getFontName());
             fontIsDamaged = true;
+            randomAccessRead.close();
         }
-        else if (bytes != null)
+        else if (randomAccessRead != null)
         {
             CFFParser cffParser = new CFFParser();
             try
             {
-                cffFont = cffParser.parse(bytes, new FF3ByteSource()).get(0);
+                cffFont = cffParser.parse(randomAccessRead).get(0);
+                randomAccessRead.close();
             }
             catch (IOException e)
             {
@@ -470,12 +474,4 @@ public class PDCIDFontType0 extends PDCIDFont
         return 500;
     }
 
-    private class FF3ByteSource implements CFFParser.ByteSource
-    {
-        @Override
-        public byte[] getBytes() throws IOException
-        {
-            return getFontDescriptor().getFontFile3().toByteArray();
-        }
-    }
 }
