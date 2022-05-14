@@ -39,6 +39,11 @@
 
   <dependencies>
     <dependency>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>io</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
     </dependency>
