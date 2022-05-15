@@ -73,42 +73,36 @@ public class PDCIDFontType0 extends PDCIDFont
     {
         super(fontDictionary, parent);
 
+        boolean fontIsDamaged = false;
+        CFFFont cffFont = null;
         PDFontDescriptor fd = getFontDescriptor();
-        RandomAccessRead randomAccessRead = null;
         if (fd != null)
         {
             PDStream ff3Stream = fd.getFontFile3();
             if (ff3Stream != null)
             {
-                randomAccessRead = ff3Stream.getCOSObject().createView();
+                try (RandomAccessRead randomAccessRead = ff3Stream.getCOSObject().createView())
+                {
+                    if (randomAccessRead.length() > 0 && randomAccessRead.peek() == '%')
+                    {
+                        // PDFBOX-2642 contains a corrupt PFB font instead of a CFF
+                        LOG.warn("Found PFB but expected embedded CFF font " + fd.getFontName());
+                        fontIsDamaged = true;
+                    }
+                    else
+                    {
+                        CFFParser cffParser = new CFFParser();
+                        cffFont = cffParser.parse(randomAccessRead).get(0);
+                    }
+                }
+                catch (IOException e)
+                {
+                    LOG.error("Can't read the embedded CFF font " + fd.getFontName(), e);
+                    fontIsDamaged = true;
+                }
             }
         }
 
-        boolean fontIsDamaged = false;
-        CFFFont cffFont = null;
-        if (randomAccessRead != null && randomAccessRead.length() > 0
-                && randomAccessRead.peek() == '%')
-        {
-            // PDFBOX-2642 contains a corrupt PFB font instead of a CFF
-            LOG.warn("Found PFB but expected embedded CFF font " + fd.getFontName());
-            fontIsDamaged = true;
-            randomAccessRead.close();
-        }
-        else if (randomAccessRead != null)
-        {
-            CFFParser cffParser = new CFFParser();
-            try
-            {
-                cffFont = cffParser.parse(randomAccessRead).get(0);
-                randomAccessRead.close();
-            }
-            catch (IOException e)
-            {
-                LOG.error("Can't read the embedded CFF font " + fd.getFontName(), e);
-                fontIsDamaged = true;
-            }
-        }
-        
         if (cffFont != null)
         {
             // embedded
