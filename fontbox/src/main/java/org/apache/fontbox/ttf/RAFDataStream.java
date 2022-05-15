@@ -41,7 +41,7 @@ class RAFDataStream extends TTFDataStream
      * 
      * @throws IOException If there is a problem creating the RandomAccessReadBufferedFile.
      */
-    RAFDataStream(String name, String mode) throws IOException
+    RAFDataStream(String name) throws IOException
     {
         this(new File(name));
     }

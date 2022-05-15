@@ -41,7 +41,7 @@ class RAFDataStreamTest
     @Test
     void testDoubleClose() throws IOException
     {
-        RAFDataStream raf = new RAFDataStream("src/test/resources/ttf/LiberationSans-Regular.ttf", "r");
+        RAFDataStream raf = new RAFDataStream("src/test/resources/ttf/LiberationSans-Regular.ttf");
         raf.close();
         raf.close();
     }
