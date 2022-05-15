@@ -95,9 +95,8 @@ public class PDFStreamParser extends BaseParser
      * Constructor.
      *
      * @param bytes the bytes to parse.
-     * @throws IOException If there is an error initializing the stream.
      */
-    public PDFStreamParser(byte[] bytes) throws IOException
+    public PDFStreamParser(byte[] bytes)
     {
         super(new RandomAccessSource(new RandomAccessBuffer(bytes)));
     }
