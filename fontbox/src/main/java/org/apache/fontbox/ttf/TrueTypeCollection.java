@@ -42,7 +42,7 @@ public class TrueTypeCollection implements Closeable
      */
     public TrueTypeCollection(File file) throws IOException
     {
-        this(new RAFDataStream(file, "r"));
+        this(new RAFDataStream(file));
     }
 
     /**

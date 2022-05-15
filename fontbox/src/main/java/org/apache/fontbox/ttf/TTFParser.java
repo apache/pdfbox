@@ -85,7 +85,7 @@ public class TTFParser
      */
     public TrueTypeFont parse(File ttfFile) throws IOException
     {
-        RAFDataStream raf = new RAFDataStream(ttfFile, "r");
+        RAFDataStream raf = new RAFDataStream(ttfFile);
         try
         {
             return parse(raf);

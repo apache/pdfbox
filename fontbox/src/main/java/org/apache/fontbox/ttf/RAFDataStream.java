@@ -20,47 +20,42 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
+
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 
 /**
- * An implementation of the TTFDataStream that goes against a RAF.
+ * An implementation of the TTFDataStream using RandomAccessReadBufferedFile .
  * 
  * @author Ben Litchfield
  */
 class RAFDataStream extends TTFDataStream 
 {
-    private RandomAccessFile raf = null;
-    private File ttfFile = null;
-    private static final int BUFFERSIZE = 16384;
+    private final RandomAccessRead randomAccessRead;
+    private final File ttfFile;
     
     /**
      * Constructor.
      * 
-     * @param name The raf file.
-     * @param mode The mode to open the RAF.
+     * @param name The name of the file to be read.
      * 
-     * @throws IOException If there is a problem creating the RAF.
-     * 
-     * @see RandomAccessFile#RandomAccessFile( String, String )
+     * @throws IOException If there is a problem creating the RandomAccessReadBufferedFile.
      */
     RAFDataStream(String name, String mode) throws IOException
     {
-        this( new File( name ), mode );
+        this(new File(name));
     }
-    
+
     /**
      * Constructor.
      * 
-     * @param file The raf file.
-     * @param mode The mode to open the RAF.
+     * @param file The file to be read.
      * 
-     * @throws IOException If there is a problem creating the RAF.
-     * 
-     * @see RandomAccessFile#RandomAccessFile( File, String )
+     * @throws IOException If there is a problem creating the RandomAccessReadBufferedFile.
      */
-    RAFDataStream(File file, String mode) throws IOException
+    RAFDataStream(File file) throws IOException
     {
-        raf = new BufferedRandomAccessFile(file, mode, BUFFERSIZE);
+        randomAccessRead = new RandomAccessReadBufferedFile(file);
         ttfFile = file;
     }
     
@@ -69,12 +64,11 @@ class RAFDataStream extends TTFDataStream
      * 
      * @return An signed short.
      * @throws IOException If there is an error reading the data.
-     * @see RandomAccessFile#readShort()
      */
     @Override
     public short readSignedShort() throws IOException
     {
-        return raf.readShort();
+        return (short) readUnsignedShort();
     }
     
     /**
@@ -85,7 +79,7 @@ class RAFDataStream extends TTFDataStream
     @Override
     public long getCurrentPosition() throws IOException
     {
-        return raf.getFilePointer();
+        return randomAccessRead.getPosition();
     }
     
     /**
@@ -96,23 +90,18 @@ class RAFDataStream extends TTFDataStream
     @Override
     public void close() throws IOException
     {
-        if (raf != null)
-        {
-            raf.close();
-            raf = null;
-        }
+        randomAccessRead.close();
     }
     
     /**
      * Read an unsigned byte.
      * @return An unsigned byte.
      * @throws IOException If there is an error reading the data.
-     * @see RandomAccessFile#read()
      */
     @Override
     public int read() throws IOException
     {
-        return raf.read();
+        return randomAccessRead.read();
     }
     
     /**
@@ -120,12 +109,12 @@ class RAFDataStream extends TTFDataStream
      * 
      * @return An unsigned short.
      * @throws IOException If there is an error reading the data.
-     * @see RandomAccessFile#readUnsignedShort()
      */
-    @Override
     public int readUnsignedShort() throws IOException
     {
-        return raf.readUnsignedShort();
+        int b1 = read();
+        int b2 = read();
+        return (b1 << 8) + b2;
     }
     
     /**
@@ -133,14 +122,27 @@ class RAFDataStream extends TTFDataStream
      * 
      * @return eight bytes interpreted as a long.
      * @throws IOException If there is an error reading the data.
-     * @see RandomAccessFile#readLong()    
      */
     @Override
-    public long readLong() throws IOException
+    public final long readLong() throws IOException
     {
-        return raf.readLong();
+        return ((long) (readInt()) << 32) + (readInt() & 0xFFFFFFFFL);
     }
-    
+
+    /**
+     * Read a signed 32-bit integer.
+     * 
+     * @return 4 bytes interpreted as a int.
+     * @throws IOException If there is an error reading the data.
+     */
+    private long readInt() throws IOException
+    {
+        int b1 = read();
+        int b2 = read();
+        int b3 = read();
+        int b4 = read();
+        return (b1 << 24) + (b2 << 16) + (b3 << 8) + b4;
+    }
     /**
      * Seek into the datasource.
      * 
@@ -150,7 +152,7 @@ class RAFDataStream extends TTFDataStream
     @Override
     public void seek(long pos) throws IOException
     {
-        raf.seek( pos );
+        randomAccessRead.seek(pos);
     }
     
     /**
@@ -167,7 +169,7 @@ class RAFDataStream extends TTFDataStream
     @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
-        return raf.read(b, off, len);
+        return randomAccessRead.read(b, off, len);
     }
     
     /**
