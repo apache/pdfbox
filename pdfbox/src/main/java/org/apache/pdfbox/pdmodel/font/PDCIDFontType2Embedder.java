@@ -292,10 +292,11 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         int prev = Integer.MIN_VALUE;
         // Use a sorted list to get an optimal width array  
         Set<Integer> keys = new TreeSet<Integer>(cidToGid.keySet());
+        HorizontalMetricsTable horizontalMetricsTable = ttf.getHorizontalMetrics();
         for (int cid : keys)
         {
             int gid = cidToGid.get(cid);
-            long width = Math.round(ttf.getHorizontalMetrics().getAdvanceWidth(gid) * scaling);
+            long width = Math.round(horizontalMetricsTable.getAdvanceWidth(gid) * scaling);
             if (width == 1000)
             {
                 // skip default width
@@ -405,10 +406,11 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     {
         int cidMax = ttf.getNumberOfGlyphs();
         int[] gidwidths = new int[cidMax * 2];
+        HorizontalMetricsTable horizontalMetricsTable = ttf.getHorizontalMetrics();
         for (int cid = 0; cid < cidMax; cid++)
         {
             gidwidths[cid * 2] = cid;
-            gidwidths[cid * 2 + 1] = ttf.getHorizontalMetrics().getAdvanceWidth(cid);
+            gidwidths[cid * 2 + 1] = horizontalMetricsTable.getAdvanceWidth(cid);
         }
 
         cidFont.setItem(COSName.W, getWidths(gidwidths));
@@ -527,9 +529,12 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
         int cidMax = ttf.getNumberOfGlyphs();
         int[] gidMetrics = new int[cidMax * 4];
+        GlyphTable glyphTable = ttf.getGlyph();
+        VerticalMetricsTable verticalMetricsTable = ttf.getVerticalMetrics();
+        HorizontalMetricsTable horizontalMetricsTable = ttf.getHorizontalMetrics();
         for (int cid = 0; cid < cidMax; cid++)
         {
-            GlyphData glyph = ttf.getGlyph().getGlyph(cid);
+            GlyphData glyph = glyphTable.getGlyph(cid);
             if (glyph == null)
             {
                 gidMetrics[cid * 4] = Integer.MIN_VALUE;
@@ -537,9 +542,9 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             else
             {
                 gidMetrics[cid * 4] = cid;
-                gidMetrics[cid * 4 + 1] = ttf.getVerticalMetrics().getAdvanceHeight(cid);
-                gidMetrics[cid * 4 + 2] = ttf.getHorizontalMetrics().getAdvanceWidth(cid);
-                gidMetrics[cid * 4 + 3] = glyph.getYMaximum() + ttf.getVerticalMetrics().getTopSideBearing(cid);
+                gidMetrics[cid * 4 + 1] = verticalMetricsTable.getAdvanceHeight(cid);
+                gidMetrics[cid * 4 + 2] = horizontalMetricsTable.getAdvanceWidth(cid);
+                gidMetrics[cid * 4 + 3] = glyph.getYMaximum() + verticalMetricsTable.getTopSideBearing(cid);
             }
         }
 
