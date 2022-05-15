@@ -79,7 +79,8 @@ class DataInputRandomAccessTest
         assertEquals(10, dataInput.length());
         assertTrue(dataInput.hasRemaining());
         assertThrows(IOException.class, () -> dataInput.setPosition(-1));
-        assertThrows(IOException.class, () -> dataInput.setPosition(dataInput.length()));
+        int length = dataInput.length();
+        assertThrows(IOException.class, () -> dataInput.setPosition(length));
     }
 
     @Test
@@ -90,7 +91,8 @@ class DataInputRandomAccessTest
         assertEquals(0, dataInput.peekUnsignedByte(0));
         assertEquals(251, dataInput.peekUnsignedByte(5));
         assertThrows(IOException.class, () -> dataInput.peekUnsignedByte(-1));
-        assertThrows(IOException.class, () -> dataInput.peekUnsignedByte(dataInput.length()));
+        int length = dataInput.length();
+        assertThrows(IOException.class, () -> dataInput.peekUnsignedByte(length));
     }
 
     @Test
