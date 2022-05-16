@@ -22,6 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
+
 /**
  * A TrueType Collection, now more properly known as a "Font Collection" as it may contain either
  * TrueType or OpenType fonts.
@@ -42,7 +46,7 @@ public class TrueTypeCollection implements Closeable
      */
     public TrueTypeCollection(File file) throws IOException
     {
-        this(new RAFDataStream(file));
+        this(new RandomAccessReadBufferedFile(file));
     }
 
     /**
@@ -53,7 +57,7 @@ public class TrueTypeCollection implements Closeable
      */
     public TrueTypeCollection(InputStream stream) throws IOException
     {
-        this(new MemoryTTFDataStream(stream));
+        this(new RandomAccessReadBuffer(stream));
     }
 
     /**
@@ -62,9 +66,9 @@ public class TrueTypeCollection implements Closeable
      * @param stream The TTF file.
      * @throws IOException If the font could not be parsed.
      */
-    TrueTypeCollection(TTFDataStream stream) throws IOException
+    TrueTypeCollection(RandomAccessRead randomAccessRead) throws IOException
     {
-        this.stream = stream;
+        this.stream = new RandomAccessReadDataStream(randomAccessRead);
 
         // TTC header
         String tag = stream.readTag();

@@ -17,6 +17,7 @@
 package org.apache.fontbox.ttf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -25,25 +26,56 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Tilman Hausherr
  */
-class RAFDataStreamTest
+class RandomAccessReadBufferDataStreamTest
 {
+    @Test
+    void testEOF() throws IOException
+    {
+        byte[] byteArray = new byte[10];
+        RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(byteArray);
+        RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(
+                randomAccessReadBuffer);
+        int value = dataStream.read();
+        try
+        {
+            while (value > -1)
+            {
+                value = dataStream.read();
+            }
+        }
+        catch (ArrayIndexOutOfBoundsException exception)
+        {
+            fail("EOF not detected!");
+        }
+        finally
+        {
+            dataStream.close();
+        }
+    }
+
     /**
      * Test of PDFBOX-4242: make sure that the Closeable.close() contract is fulfilled.
      * 
-     * @throws IOException 
+     * @throws IOException
      */
     @Test
     void testDoubleClose() throws IOException
     {
-        RAFDataStream raf = new RAFDataStream("src/test/resources/ttf/LiberationSans-Regular.ttf");
-        raf.close();
-        raf.close();
+        RandomAccessRead randomAccessRead = new RandomAccessReadBufferedFile(
+                "src/test/resources/ttf/LiberationSans-Regular.ttf");
+        RandomAccessReadDataStream randomAccessReadDataStream = new RandomAccessReadDataStream(
+                randomAccessRead);
+        randomAccessReadDataStream.close();
+        randomAccessReadDataStream.close();
     }
 
     /**
@@ -64,11 +96,13 @@ class RAFDataStreamTest
         }
 
         final byte[] readBuffer = new byte[2];
-        try (RAFDataStream braf = new RAFDataStream(file))
+        RandomAccessRead randomAccessRead = new RandomAccessReadBufferedFile(file);
+        try (RandomAccessReadDataStream randomAccessReadDataStream = new RandomAccessReadDataStream(
+                randomAccessRead))
         {
             int amountRead;
             int totalAmountRead = 0;
-            while ((amountRead = braf.read(readBuffer, 0, 2)) != -1)
+            while ((amountRead = randomAccessReadDataStream.read(readBuffer, 0, 2)) != -1)
             {
                 totalAmountRead += amountRead;
             }
@@ -93,75 +127,77 @@ class RAFDataStreamTest
             outputStream.write(content.getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
         }
+        RandomAccessRead randomAccessRead = new RandomAccessReadBufferedFile(file);
 
         final byte[] readBuffer = new byte[40];
-        try (RAFDataStream braf = new RAFDataStream(file))
+        try (RandomAccessReadDataStream randomAccessReadDataStream = new RandomAccessReadDataStream(
+                randomAccessRead))
         {
             int count = 4;
-            int bytesRead = braf.read(readBuffer, 0, count);
-            assertEquals(4, braf.getCurrentPosition());
+            int bytesRead = randomAccessReadDataStream.read(readBuffer, 0, count);
+            assertEquals(4, randomAccessReadDataStream.getCurrentPosition());
             assertEquals(count, bytesRead);
             assertEquals("0123", new String(readBuffer, 0, count));
 
             count = 6;
-            bytesRead = braf.read(readBuffer, 0, count);
-            assertEquals(10, braf.getCurrentPosition());
+            bytesRead = randomAccessReadDataStream.read(readBuffer, 0, count);
+            assertEquals(10, randomAccessReadDataStream.getCurrentPosition());
             assertEquals(count, bytesRead);
             assertEquals("45678A", new String(readBuffer, 0, count));
 
             count = 10;
-            bytesRead = braf.read(readBuffer, 0, count);
-            assertEquals(20, braf.getCurrentPosition());
+            bytesRead = randomAccessReadDataStream.read(readBuffer, 0, count);
+            assertEquals(20, randomAccessReadDataStream.getCurrentPosition());
             assertEquals(count, bytesRead);
             assertEquals("012345678B", new String(readBuffer, 0, count));
 
             count = 10;
-            bytesRead = braf.read(readBuffer, 0, count);
-            assertEquals(30, braf.getCurrentPosition());
+            bytesRead = randomAccessReadDataStream.read(readBuffer, 0, count);
+            assertEquals(30, randomAccessReadDataStream.getCurrentPosition());
             assertEquals(count, bytesRead);
             assertEquals("012345678C", new String(readBuffer, 0, count));
 
             count = 10;
-            bytesRead = braf.read(readBuffer, 0, count);
-            assertEquals(40, braf.getCurrentPosition());
+            bytesRead = randomAccessReadDataStream.read(readBuffer, 0, count);
+            assertEquals(40, randomAccessReadDataStream.getCurrentPosition());
             assertEquals(count, bytesRead);
             assertEquals("012345678D", new String(readBuffer, 0, count));
 
-            assertEquals(-1, braf.read());
+            assertEquals(-1, randomAccessReadDataStream.read());
 
-            braf.seek(0);
-            braf.read(readBuffer, 0, 7);
-            assertEquals(7, braf.getCurrentPosition());
+            randomAccessReadDataStream.seek(0);
+            randomAccessReadDataStream.read(readBuffer, 0, 7);
+            assertEquals(7, randomAccessReadDataStream.getCurrentPosition());
 
             count = 16;
-            bytesRead = braf.read(readBuffer, 0, count);
-            assertEquals(23, braf.getCurrentPosition());
+            bytesRead = randomAccessReadDataStream.read(readBuffer, 0, count);
+            assertEquals(23, randomAccessReadDataStream.getCurrentPosition());
             assertEquals(count, bytesRead);
             assertEquals("78A012345678B012", new String(readBuffer, 0, count));
 
-            bytesRead = braf.read(readBuffer, 0, 99);
-            assertEquals(40, braf.getCurrentPosition());
+            bytesRead = randomAccessReadDataStream.read(readBuffer, 0, 99);
+            assertEquals(40, randomAccessReadDataStream.getCurrentPosition());
             assertEquals(17, bytesRead);
             assertEquals("345678C012345678D", new String(readBuffer, 0, 17));
 
-            assertEquals(-1, braf.read());
+            assertEquals(-1, randomAccessReadDataStream.read());
 
-            braf.seek(0);
-            braf.read(readBuffer, 0, 7);
-            assertEquals(7, braf.getCurrentPosition());
+            randomAccessReadDataStream.seek(0);
+            randomAccessReadDataStream.read(readBuffer, 0, 7);
+            assertEquals(7, randomAccessReadDataStream.getCurrentPosition());
 
             count = 23;
-            bytesRead = braf.read(readBuffer, 0, count);
-            assertEquals(30, braf.getCurrentPosition());
+            bytesRead = randomAccessReadDataStream.read(readBuffer, 0, count);
+            assertEquals(30, randomAccessReadDataStream.getCurrentPosition());
             assertEquals(count, bytesRead);
             assertEquals("78A012345678B012345678C", new String(readBuffer, 0, count));
 
-            braf.seek(0);
-            braf.read(readBuffer, 0, 10);
-            assertEquals(10, braf.getCurrentPosition());
+            randomAccessReadDataStream.seek(0);
+            randomAccessReadDataStream.read(readBuffer, 0, 10);
+            assertEquals(10, randomAccessReadDataStream.getCurrentPosition());
             count = 23;
-            bytesRead = braf.read(readBuffer, 0, count);
-            assertEquals(33, braf.getCurrentPosition());
+            bytesRead = randomAccessReadDataStream.read(readBuffer, 0, count);
+            assertEquals(33, randomAccessReadDataStream.getCurrentPosition());
             assertEquals(count, bytesRead);
             assertEquals("012345678B012345678C012", new String(readBuffer, 0, count));
         }

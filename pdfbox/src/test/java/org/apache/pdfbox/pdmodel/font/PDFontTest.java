@@ -40,6 +40,7 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -143,7 +144,7 @@ class PDFontTest
             testPDFBox3826checkFonts(testPDFBox3826createDoc(ttf1), fontFile);
         }
 
-        try (TrueTypeFont ttf2 = new TTFParser().parse(new FileInputStream(fontFile)))
+        try (TrueTypeFont ttf2 = new TTFParser().parse(new RandomAccessReadBufferedFile(fontFile)))
         {
             testPDFBox3826checkFonts(testPDFBox3826createDoc(ttf2), fontFile);
         }

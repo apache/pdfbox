@@ -106,7 +106,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
                 {
                     // embedded
                     TTFParser ttfParser = new TTFParser(true);
-                    ttfFont = ttfParser.parse(ff2Stream.createInputStream());
+                    ttfFont = ttfParser.parse(ff2Stream.getCOSObject().createView());
                 }
                 catch (IOException e)
                 {

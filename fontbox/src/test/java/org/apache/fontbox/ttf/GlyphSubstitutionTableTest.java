@@ -35,6 +35,7 @@ import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.ttf.model.Language;
 import org.apache.fontbox.ttf.model.MapBackedScriptFeature;
 import org.apache.fontbox.ttf.model.ScriptFeature;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.junit.jupiter.api.Test;
 
 class GlyphSubstitutionTableTest
@@ -49,14 +50,16 @@ class GlyphSubstitutionTableTest
     void testGetGsubData() throws IOException
     {
         // given
-        MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
-                GlyphSubstitutionTableTest.class.getResourceAsStream("/ttf/Lohit-Bengali.ttf"));
-        memoryTTFDataStream.seek(DATA_POSITION_FOR_GSUB_TABLE);
+        RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(
+                GSUBTableDebugger.class.getResourceAsStream("/ttf/Lohit-Bengali.ttf"));
+        RandomAccessReadDataStream randomAccessReadBufferDataStream = new RandomAccessReadDataStream(
+                randomAccessReadBuffer);
+        randomAccessReadBufferDataStream.seek(DATA_POSITION_FOR_GSUB_TABLE);
 
         GlyphSubstitutionTable testClass = new GlyphSubstitutionTable(null);
 
         // when
-        testClass.read(null, memoryTTFDataStream);
+        testClass.read(null, randomAccessReadBufferDataStream);
 
         // then
         GsubData gsubData = testClass.getGsubData();

@@ -18,6 +18,7 @@ package org.apache.fontbox.cmap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.fontbox.ttf.CmapLookup;
@@ -54,7 +55,8 @@ class TestCMap
     @Test
     void testPDFBox3997() throws IOException
     {
-        try (TrueTypeFont ttf = new TTFParser().parse("target/pdfs/NotoEmoji-Regular.ttf"))
+        try (TrueTypeFont ttf = new TTFParser()
+                .parse(new File("target/pdfs/NotoEmoji-Regular.ttf")))
         {
             CmapLookup cmap = ttf.getUnicodeCmapLookup(false);
             assertEquals(886, cmap.getGlyphId(0x1F681));

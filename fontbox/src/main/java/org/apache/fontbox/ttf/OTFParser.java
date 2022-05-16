@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.io.RandomAccessRead;
+
 /**
  * OpenType font file parser.
  */
@@ -56,12 +58,6 @@ public final class OTFParser extends TTFParser
     }
 
     @Override
-    public OpenTypeFont parse(String file) throws IOException
-    {
-        return (OpenTypeFont)super.parse(file);
-    }
-
-    @Override
     public OpenTypeFont parse(File file) throws IOException
     {
         return (OpenTypeFont)super.parse(file);
@@ -71,6 +67,12 @@ public final class OTFParser extends TTFParser
     public OpenTypeFont parse(InputStream data) throws IOException
     {
         return (OpenTypeFont)super.parse(data);
+    }
+
+    @Override
+    public OpenTypeFont parse(RandomAccessRead RandomAccessRead) throws IOException
+    {
+        return (OpenTypeFont) super.parse(RandomAccessRead);
     }
 
     @Override

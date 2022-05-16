@@ -48,7 +48,8 @@ class TTFSubsetterTest
     @Test
     void testEmptySubset() throws IOException
     {
-        TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont x = new TTFParser()
+                .parse(new File("src/test/resources/ttf/LiberationSans-Regular.ttf"));
         TTFSubsetter ttfSubsetter = new TTFSubsetter(x);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -69,7 +70,8 @@ class TTFSubsetterTest
     @Test
     void testEmptySubset2() throws IOException
     {
-        TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont x = new TTFParser()
+                .parse(new File("src/test/resources/ttf/LiberationSans-Regular.ttf"));
         // List copied from TrueTypeEmbedder.java
         List<String> tables = new ArrayList<>();
         tables.add("head");
@@ -102,7 +104,8 @@ class TTFSubsetterTest
     @Test
     void testNonEmptySubset() throws IOException
     {
-        TrueTypeFont full = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont full = new TTFParser()
+                .parse(new File("src/test/resources/ttf/LiberationSans-Regular.ttf"));
         TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
         ttfSubsetter.add('a');
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -197,7 +200,7 @@ class TTFSubsetterTest
     @Test
     void testPDFBox3379() throws IOException
     {
-        TrueTypeFont full = new TTFParser().parse("target/pdfs/DejaVuSansMono.ttf");
+        TrueTypeFont full = new TTFParser().parse(new File("target/pdfs/DejaVuSansMono.ttf"));
         TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
         ttfSubsetter.add('A');
         ttfSubsetter.add(' ');
