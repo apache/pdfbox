@@ -120,7 +120,7 @@ class RandomAccessReadDataStream extends TTFDataStream
     @Override
     public final long readLong() throws IOException
     {
-        return (readInt() << 32) + (readInt() & 0xFFFFFFFFL);
+        return ((long) readInt() << 32) + (readInt() & 0xFFFFFFFFL);
     }
 
     /**
@@ -129,7 +129,7 @@ class RandomAccessReadDataStream extends TTFDataStream
      * @return 4 bytes interpreted as a int.
      * @throws IOException If there is an error reading the data.
      */
-    private long readInt() throws IOException
+    private int readInt() throws IOException
     {
         int b1 = read();
         int b2 = read();
