@@ -70,9 +70,9 @@ public final class OTFParser extends TTFParser
     }
 
     @Override
-    public OpenTypeFont parse(RandomAccessRead RandomAccessRead) throws IOException
+    public OpenTypeFont parse(RandomAccessRead randomAccessRead) throws IOException
     {
-        return (OpenTypeFont) super.parse(RandomAccessRead);
+        return (OpenTypeFont) super.parse(randomAccessRead);
     }
 
     @Override
