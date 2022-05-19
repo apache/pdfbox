@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
