@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.ttf;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -75,7 +76,7 @@ class RandomAccessReadBufferDataStreamTest
         RandomAccessReadDataStream randomAccessReadDataStream = new RandomAccessReadDataStream(
                 randomAccessRead);
         randomAccessReadDataStream.close();
-        randomAccessReadDataStream.close();
+        assertDoesNotThrow(() -> randomAccessReadDataStream.close());
     }
 
     /**
