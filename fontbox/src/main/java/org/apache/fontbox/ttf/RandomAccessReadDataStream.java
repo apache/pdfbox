@@ -54,18 +54,6 @@ class RandomAccessReadDataStream extends TTFDataStream
     }
     
     /**
-     * Read a signed short.
-     * 
-     * @return An signed short.
-     * @throws IOException If there is an error reading the data.
-     */
-    @Override
-    public short readSignedShort() throws IOException
-    {
-        return (short) readUnsignedShort();
-    }
-    
-    /**
      * Get the current position in the stream.
      * @return The current position in the stream.
      * @throws IOException If an error occurs while reading the stream.
@@ -96,19 +84,6 @@ class RandomAccessReadDataStream extends TTFDataStream
     public int read() throws IOException
     {
         return randomAccessRead.read();
-    }
-    
-    /**
-     * Read an unsigned short.
-     * 
-     * @return An unsigned short.
-     * @throws IOException If there is an error reading the data.
-     */
-    public int readUnsignedShort() throws IOException
-    {
-        int b1 = read();
-        int b2 = read();
-        return (b1 << 8) + b2;
     }
     
     /**
