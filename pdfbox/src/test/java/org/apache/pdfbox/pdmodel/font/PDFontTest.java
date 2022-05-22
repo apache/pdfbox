@@ -139,7 +139,7 @@ class PDFontTest
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
         File fontFile = new File(url.toURI());
 
-        try (TrueTypeFont ttf1 = new TTFParser().parse(fontFile))
+        try (TrueTypeFont ttf1 = new TTFParser().parse(new RandomAccessReadBufferedFile(fontFile)))
         {
             testPDFBox3826checkFonts(testPDFBox3826createDoc(ttf1), fontFile);
         }

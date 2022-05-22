@@ -45,6 +45,7 @@ import org.apache.fontbox.ttf.TrueTypeCollection;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 
 /**
  * A FontProvider which searches for fonts on the local filesystem.
@@ -232,7 +233,7 @@ final class FileSystemFontProvider extends FontProvider
             else
             {
                 TTFParser ttfParser = new TTFParser(false, true);
-                return ttfParser.parse(file);
+                return ttfParser.parse(new RandomAccessReadBufferedFile(file));
             }
         }
 
@@ -266,7 +267,7 @@ final class FileSystemFontProvider extends FontProvider
                 }
 
                 OTFParser parser = new OTFParser(false, true);
-                OpenTypeFont otf = parser.parse(file);
+                OpenTypeFont otf = parser.parse(new RandomAccessReadBufferedFile(file));
 
                 if (LOG.isDebugEnabled())
                 {
@@ -630,13 +631,13 @@ final class FileSystemFontProvider extends FontProvider
             if (ttfFile.getPath().toLowerCase().endsWith(".otf"))
             {
                 OTFParser parser = new OTFParser(false, true);
-                OpenTypeFont otf = parser.parse(ttfFile);
+                OpenTypeFont otf = parser.parse(new RandomAccessReadBufferedFile(ttfFile));
                 addTrueTypeFontImpl(otf, ttfFile);
             }
             else
             {
                 TTFParser parser = new TTFParser(false, true);
-                TrueTypeFont ttf = parser.parse(ttfFile);
+                TrueTypeFont ttf = parser.parse(new RandomAccessReadBufferedFile(ttfFile));
                 addTrueTypeFontImpl(ttf, ttfFile);
             }
         }

@@ -16,14 +16,12 @@
  */
 package org.apache.fontbox.ttf;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
-import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 
 /**
  * TrueType font file parser.
@@ -68,41 +66,6 @@ public class TTFParser
     }
 
     /**
-     * Parse a file and return a TrueType font.
-     *
-     * @param ttfFile The TrueType font file.
-     * @return A TrueType font.
-     * @throws IOException If there is an error parsing the TrueType font.
-     */
-    public TrueTypeFont parse(File ttfFile) throws IOException
-    {
-        RandomAccessReadBufferedFile randomAccessReadBufferedFile = new RandomAccessReadBufferedFile(
-                ttfFile);
-        try
-        {
-            return parse(randomAccessReadBufferedFile);
-        }
-        catch (IOException ex)
-        {
-            // close only on error (file is still being accessed later)
-            randomAccessReadBufferedFile.close();
-            throw ex;
-        }
-    }
-
-    /**
-     * Parse an input stream and return a TrueType font.
-     *
-     * @param inputStream The TTF data stream to parse from. It will be closed before returning.
-     * @return A TrueType font.
-     * @throws IOException If there is an error parsing the TrueType font.
-     */
-    public TrueTypeFont parse(InputStream inputStream) throws IOException
-    {
-        return parse(new RandomAccessReadBuffer(inputStream));
-    }
-
-    /**
      * Parse a RandomAccessRead and return a TrueType font.
      *
      * @param randomAccessRead The RandomAccessREad to be read from. It will be closed before returning.
@@ -111,7 +74,17 @@ public class TTFParser
      */
     public TrueTypeFont parse(RandomAccessRead randomAccessRead) throws IOException
     {
-        return parse(new RandomAccessReadDataStream(randomAccessRead));
+        RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(randomAccessRead);
+        try
+        {
+            return parse(dataStream);
+        }
+        catch (IOException ex)
+        {
+            // close only on error (source is still being accessed later)
+            dataStream.close();
+            throw ex;
+        }
     }
 
     /**

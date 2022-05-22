@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -57,7 +58,7 @@ public class EmbeddedVerticalFonts
 
         // Load as vertical, but disable vertical glyph substitution
         // (You will usually not want this because it doesn't look good!)
-        TrueTypeFont ttf = new TTFParser().parse(ipafont);
+        TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(ipafont));
         PDType0Font vfont2 = PDType0Font.loadVertical(document, ttf, true);
         ttf.disableGsubFeature("vrt2");
         ttf.disableGsubFeature("vert");

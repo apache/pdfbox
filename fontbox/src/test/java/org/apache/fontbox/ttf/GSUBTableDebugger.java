@@ -49,7 +49,8 @@ public class GSUBTableDebugger
         glyphSubstitutionTable.read(null, randomAccessReadBufferDataStream);
 
         TrueTypeFont trueTypeFont = new TTFParser()
-                .parse(GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE));
+                .parse(new RandomAccessReadBuffer(
+                        GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE)));
 
         GsubData gsubData = glyphSubstitutionTable.getGsubData();
         new GSUBTablePrintUtil().printCharacterToGlyph(gsubData,

@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -56,7 +57,7 @@ class TestCMap
     void testPDFBox3997() throws IOException
     {
         try (TrueTypeFont ttf = new TTFParser()
-                .parse(new File("target/pdfs/NotoEmoji-Regular.ttf")))
+                .parse(new RandomAccessReadBufferedFile("target/pdfs/NotoEmoji-Regular.ttf")))
         {
             CmapLookup cmap = ttf.getUnicodeCmapLookup(false);
             assertEquals(886, cmap.getGlyphId(0x1F681));

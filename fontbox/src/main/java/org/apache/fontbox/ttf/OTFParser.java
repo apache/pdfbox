@@ -17,9 +17,7 @@
 
 package org.apache.fontbox.ttf;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.pdfbox.io.RandomAccessRead;
 
@@ -55,18 +53,6 @@ public final class OTFParser extends TTFParser
     public OTFParser(boolean isEmbedded, boolean parseOnDemand)
     {
         super(isEmbedded, parseOnDemand);
-    }
-
-    @Override
-    public OpenTypeFont parse(File file) throws IOException
-    {
-        return (OpenTypeFont)super.parse(file);
-    }
-
-    @Override
-    public OpenTypeFont parse(InputStream data) throws IOException
-    {
-        return (OpenTypeFont)super.parse(data);
     }
 
     @Override
