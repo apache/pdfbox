@@ -32,7 +32,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VAL
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_CMAP_IDENTITY_V;
 
 import java.io.IOException;
-import java.io.InputStream;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.cmap.CMapParser;
 import org.apache.pdfbox.cos.COSArray;
@@ -42,6 +41,7 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
@@ -246,10 +246,10 @@ public class Type0FontValidator extends FontValidator<Type0Container>
     {
         checkCIDSystemInfo(aCMap.getCOSDictionary(COSName.CIDSYSTEMINFO));
 
-        try (InputStream cmapStream = aCMap.createInputStream())
+        try (RandomAccessRead randomAccessRead = aCMap.createView())
         {
             // extract information from the CMap stream using strict mode
-            CMap fontboxCMap = new CMapParser(true).parse(cmapStream);
+            CMap fontboxCMap = new CMapParser(true).parse(randomAccessRead);
             int wmValue = fontboxCMap.getWMode();
             String cmnValue = fontboxCMap.getName();
 
