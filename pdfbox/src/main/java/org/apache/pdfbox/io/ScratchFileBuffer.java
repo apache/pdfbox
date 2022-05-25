@@ -16,12 +16,10 @@
  */
 package org.apache.pdfbox.io;
 
+import org.apache.fontbox.util.PDFBoxInternalCleaner;
+
 import java.io.EOFException;
 import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSStream;
 
 /**
  * Implementation of {@link RandomAccess} as sequence of multiple fixed size pages handled
@@ -64,8 +62,34 @@ class ScratchFileBuffer implements RandomAccess
     /** number of pages held by this buffer */
     private int pageCount = 0;
     
-    private static final Log LOG = LogFactory.getLog(ScratchFileBuffer.class);
-    
+    private final static PDFBoxInternalCleaner CLEANER = PDFBoxInternalCleaner.create();
+    private final PDFBoxInternalCleaner.Cleanable cleanable;
+    private final ScratchFileBufferCleaner scratchFileBufferCleaner;
+
+    private static class ScratchFileBufferCleaner implements PDFBoxInternalCleaner.CleaningRunnable
+    {
+        private final ScratchFile pageHandler;
+        private int[] pageIndexes;
+        private int pageCount;
+        public ScratchFileBufferCleaner(ScratchFile pageHandler)
+        {
+            this.pageHandler = pageHandler;
+        }
+
+        private void updateFields(ScratchFileBuffer buffer)
+        {
+            pageIndexes = buffer.pageIndexes;
+            pageCount = buffer.pageCount;
+        }
+
+        @Override
+        public void run() throws IOException
+        {
+            pageHandler.markPagesAsFree(pageIndexes, 0, pageCount);
+        }
+    }
+
+
     /**
      * Creates a new buffer using pages handled by provided {@link ScratchFile}.
      * 
@@ -76,6 +100,9 @@ class ScratchFileBuffer implements RandomAccess
     ScratchFileBuffer(ScratchFile pageHandler) throws IOException
     {
         pageHandler.checkClosed();
+
+        scratchFileBufferCleaner = new ScratchFileBufferCleaner(pageHandler);
+        cleanable = CLEANER.register(this, scratchFileBufferCleaner);
 
         this.pageHandler = pageHandler;
         
@@ -131,6 +158,8 @@ class ScratchFileBuffer implements RandomAccess
         pageCount++;
         currentPage = new byte[pageSize];
         positionInPage = 0;
+
+        scratchFileBufferCleaner.updateFields(this);
     }
     
     /**
@@ -263,7 +292,8 @@ class ScratchFileBuffer implements RandomAccess
         // keep only the first page, discard all other pages
         pageHandler.markPagesAsFree(pageIndexes, 1, pageCount - 1);
         pageCount = 1;
-        
+        scratchFileBufferCleaner.updateFields(this);
+
         // change to first page if we are not already there
         if (currentPagePositionInPageIndexes > 0)
         {
@@ -422,11 +452,9 @@ class ScratchFileBuffer implements RandomAccess
     @Override
     public void close() throws IOException
     {
+        cleanable.clean();;
         if (pageHandler != null) {
-
-            pageHandler.markPagesAsFree(pageIndexes, 0, pageCount);
             pageHandler = null;
-            
             pageIndexes = null;
             currentPage = null;
             currentPageOffset = 0;
@@ -436,33 +464,6 @@ class ScratchFileBuffer implements RandomAccess
         }
     }
     
-    /**
-     * While calling finalize is normally discouraged we will have to
-     * use it here as long as closing a scratch file buffer is not 
-     * done in every case. Currently {@link COSStream} creates new
-     * buffers without closing the old one - which might still be
-     * used.
-     * 
-     * <p>Enabling debugging one will see if there are still cases
-     * where the buffer is not closed.</p>
-     */
-    @Override
-    protected void finalize() throws Throwable
-    {
-        try
-        {
-            if ((pageHandler != null) && LOG.isDebugEnabled())
-            {
-                LOG.debug("ScratchFileBuffer not closed!");
-            }
-            close();
-        }
-        finally
-        {
-            super.finalize();
-        }
-    }
-
     @Override
     public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
     {

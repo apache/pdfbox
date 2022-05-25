@@ -33,6 +33,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.util.BoundingBox;
+import org.apache.fontbox.util.PDFBoxInternalCleaner;
+import org.apache.fontbox.util.PDFBoxInternalCleaner.Cleanable;
+import org.apache.fontbox.util.PDFBoxInternalCleaner.CleaningRunnable;
 
 /**
  * A TrueType font file.
@@ -55,6 +58,22 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     private final Object lockPSNames = new Object();
     private final List<String> enabledGsubFeatures = new ArrayList<>();
 
+    private final static PDFBoxInternalCleaner CLEANER = PDFBoxInternalCleaner.create();
+    private final Cleanable cleanable;
+    private static class TTFCleaner implements CleaningRunnable {
+        TTFDataStream data;
+        public TTFCleaner(TTFDataStream data)
+        {
+            this.data = data;
+        }
+
+        @Override
+        public void run() throws IOException
+        {
+            data.close();
+        }
+    }
+
     /**
      * Constructor.  Clients should use the TTFParser to create a new TrueTypeFont object.
      * 
@@ -63,20 +82,13 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     TrueTypeFont(TTFDataStream fontData)
     {
         data = fontData;
+        cleanable = CLEANER.register(this, new TTFCleaner(data));
     }
     
     @Override
     public void close() throws IOException
     {
-        data.close();
-    }
-
-    @Override
-    protected void finalize() throws Throwable
-    {
-        super.finalize();
-        // PDFBOX-4963: risk of memory leaks due to SoftReference in FontCache 
-        close();
+        cleanable.clean();
     }
 
     /**
