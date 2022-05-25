@@ -99,34 +99,31 @@ public class CMapParser
                     break;
                 }
 
-                if (previousToken != null)
+                if (op.op.equals("usecmap") && previousToken instanceof LiteralName)
                 {
-                    if (op.op.equals("usecmap") && previousToken instanceof LiteralName)
+                    parseUsecmap((LiteralName) previousToken, result);
+                }
+                else if (previousToken instanceof Number)
+                {
+                    if (op.op.equals("begincodespacerange"))
                     {
-                        parseUsecmap((LiteralName) previousToken, result);
+                        parseBegincodespacerange((Number) previousToken, randomAcccessRead, result);
                     }
-                    else if (previousToken instanceof Number)
+                    else if (op.op.equals("beginbfchar"))
                     {
-                        if (op.op.equals("begincodespacerange"))
-                        {
-                            parseBegincodespacerange((Number) previousToken, randomAcccessRead, result);
-                        }
-                        else if (op.op.equals("beginbfchar"))
-                        {
-                            parseBeginbfchar((Number) previousToken, randomAcccessRead, result);
-                        }
-                        else if (op.op.equals("beginbfrange"))
-                        {
-                            parseBeginbfrange((Number) previousToken, randomAcccessRead, result);
-                        }
-                        else if (op.op.equals("begincidchar"))
-                        {
-                            parseBegincidchar((Number) previousToken, randomAcccessRead, result);
-                        }
-                        else if (op.op.equals("begincidrange") && previousToken instanceof Integer)
-                        {
-                            parseBegincidrange((Integer) previousToken, randomAcccessRead, result);
-                        }
+                        parseBeginbfchar((Number) previousToken, randomAcccessRead, result);
+                    }
+                    else if (op.op.equals("beginbfrange"))
+                    {
+                        parseBeginbfrange((Number) previousToken, randomAcccessRead, result);
+                    }
+                    else if (op.op.equals("begincidchar"))
+                    {
+                        parseBegincidchar((Number) previousToken, randomAcccessRead, result);
+                    }
+                    else if (op.op.equals("begincidrange") && previousToken instanceof Integer)
+                    {
+                        parseBegincidrange((Integer) previousToken, randomAcccessRead, result);
                     }
                 }
             }
@@ -481,17 +478,9 @@ public class CMapParser
         switch (nextByte)
         {
         case '%':
-        {
-            // header operations, for now return the entire line
-            // may need to smarter in the future
-            StringBuilder buffer = new StringBuilder();
-            buffer.append((char) nextByte);
-            readUntilEndOfLine(randomAcccessRead, buffer);
-            retval = buffer.toString();
+            retval = readLine(randomAcccessRead, nextByte);
             break;
-        }
         case '(':
-        {
             StringBuilder buffer = new StringBuilder();
             int stringByte = randomAcccessRead.read();
 
@@ -502,11 +491,8 @@ public class CMapParser
             }
             retval = buffer.toString();
             break;
-        }
         case '>':
-        {
-            int secondCloseBrace = randomAcccessRead.read();
-            if (secondCloseBrace == '>')
+            if (randomAcccessRead.read() == '>')
             {
                 retval = MARK_END_OF_DICTIONARY;
             }
@@ -515,14 +501,10 @@ public class CMapParser
                 throw new IOException("Error: expected the end of a dictionary.");
             }
             break;
-        }
         case ']':
-        {
             retval = MARK_END_OF_ARRAY;
             break;
-        }
         case '[':
-        {
             List<Object> list = new ArrayList<>();
 
             Object nextToken = parseNextToken(randomAcccessRead);
@@ -533,99 +515,12 @@ public class CMapParser
             }
             retval = list;
             break;
-        }
         case '<':
-        {
-            int theNextByte = randomAcccessRead.read();
-            if (theNextByte == '<')
-            {
-                Map<String, Object> result = new HashMap<>();
-                // we are reading a dictionary
-                Object key = parseNextToken(randomAcccessRead);
-                while (key instanceof LiteralName && !MARK_END_OF_DICTIONARY.equals(key))
-                {
-                    Object value = parseNextToken(randomAcccessRead);
-                    result.put(((LiteralName) key).name, value);
-                    key = parseNextToken(randomAcccessRead);
-                }
-                retval = result;
-            }
-            else
-            {
-                // won't read more than 512 bytes
-
-                int multiplyer = 16;
-                int bufferIndex = -1;
-                while (theNextByte != -1 && theNextByte != '>')
-                {
-                    int intValue = 0;
-                    if (theNextByte >= '0' && theNextByte <= '9')
-                    {
-                        intValue = theNextByte - '0';
-                    }
-                    else if (theNextByte >= 'A' && theNextByte <= 'F')
-                    {
-                        intValue = 10 + theNextByte - 'A';
-                    }
-                    else if (theNextByte >= 'a' && theNextByte <= 'f')
-                    {
-                        intValue = 10 + theNextByte - 'a';
-                    }
-                    // all kind of whitespaces may occur in malformed CMap files
-                    // see PDFBOX-2035
-                    else if (isWhitespaceOrEOF(theNextByte))
-                    {
-                        // skipping whitespaces
-                        theNextByte = randomAcccessRead.read();
-                        continue;
-                    }
-                    else
-                    {
-                        throw new IOException("Error: expected hex character and not " + (char) theNextByte + ":"
-                                + theNextByte);
-                    }
-                    intValue *= multiplyer;
-                    if (multiplyer == 16)
-                    {
-                        bufferIndex++;
-                        if (bufferIndex >= tokenParserByteBuffer.length)
-                        {
-                            throw new IOException("cmap token ist larger than buffer size " +
-                                    tokenParserByteBuffer.length);
-                        }
-                        tokenParserByteBuffer[bufferIndex] = 0;
-                        multiplyer = 1;
-                    }
-                    else
-                    {
-                        multiplyer = 16;
-                    }
-                    tokenParserByteBuffer[bufferIndex] += intValue;
-                    theNextByte = randomAcccessRead.read();
-                }
-                byte[] finalResult = new byte[bufferIndex + 1];
-                System.arraycopy(tokenParserByteBuffer, 0, finalResult, 0, bufferIndex + 1);
-                retval = finalResult;
-            }
+            retval = readDictionary(randomAcccessRead);
             break;
-        }
         case '/':
-        {
-            StringBuilder buffer = new StringBuilder();
-            int stringByte = randomAcccessRead.read();
-
-            while (!isWhitespaceOrEOF(stringByte) && !isDelimiter(stringByte))
-            {
-                buffer.append((char) stringByte);
-                stringByte = randomAcccessRead.read();
-            }
-            if (isDelimiter( stringByte)) 
-            {
-                randomAcccessRead.rewind(1);
-            }
-            retval = new LiteralName(buffer.toString());
+            retval = readLiteralName(randomAcccessRead);
             break;
-        }
         case -1:
         {
             // EOF returning null
@@ -641,58 +536,170 @@ public class CMapParser
         case '7':
         case '8':
         case '9':
+            retval = readNumber(randomAcccessRead, nextByte);
+            break;
+        default:
+            retval = readOperator(randomAcccessRead, nextByte);
+            break;
+        }
+        return retval;
+    }
+
+    private String readLine(RandomAccessRead randomAcccessRead, int firstByte) throws IOException
+    {
+        // header operations, for now return the entire line
+        // may need to smarter in the future
+        int nextByte = firstByte;
+        StringBuilder buffer = new StringBuilder();
+        buffer.append((char) nextByte);
+        readUntilEndOfLine(randomAcccessRead, buffer);
+        return buffer.toString();
+    }
+
+    private LiteralName readLiteralName(RandomAccessRead randomAcccessRead) throws IOException
+    {
+        StringBuilder buffer = new StringBuilder();
+        int stringByte = randomAcccessRead.read();
+
+        while (!isWhitespaceOrEOF(stringByte) && !isDelimiter(stringByte))
         {
-            StringBuilder buffer = new StringBuilder();
+            buffer.append((char) stringByte);
+            stringByte = randomAcccessRead.read();
+        }
+        if (isDelimiter(stringByte))
+        {
+            randomAcccessRead.rewind(1);
+        }
+        return new LiteralName(buffer.toString());
+    }
+
+    private Operator readOperator(RandomAccessRead randomAcccessRead, int firstByte)
+            throws IOException
+    {
+        int nextByte = firstByte;
+        StringBuilder buffer = new StringBuilder();
+        buffer.append((char) nextByte);
+        nextByte = randomAcccessRead.read();
+
+        // newline separator may be missing in malformed CMap files
+        // see PDFBOX-2035
+        while (!isWhitespaceOrEOF(nextByte) && !isDelimiter(nextByte)
+                && !Character.isDigit(nextByte))
+        {
             buffer.append((char) nextByte);
             nextByte = randomAcccessRead.read();
-
-            while (!isWhitespaceOrEOF(nextByte) && (Character.isDigit((char) nextByte) || nextByte == '.'))
-            {
-                buffer.append((char) nextByte);
-                nextByte = randomAcccessRead.read();
-            }
+        }
+        if (isDelimiter(nextByte) || Character.isDigit(nextByte))
+        {
             randomAcccessRead.rewind(1);
-            String value = buffer.toString();
-            try
+        }
+        return new Operator(buffer.toString());
+    }
+    
+    private Number readNumber(RandomAccessRead randomAcccessRead, int firstByte) throws IOException
+    {
+        int nextByte = firstByte;
+        StringBuilder buffer = new StringBuilder();
+        buffer.append((char) nextByte);
+        nextByte = randomAcccessRead.read();
+
+        while (!isWhitespaceOrEOF(nextByte)
+                && (Character.isDigit((char) nextByte) || nextByte == '.'))
+        {
+            buffer.append((char) nextByte);
+            nextByte = randomAcccessRead.read();
+        }
+        randomAcccessRead.rewind(1);
+        String value = buffer.toString();
+        try
+        {
+            if (value.indexOf('.') >= 0)
             {
-                if (value.indexOf('.') >= 0)
+                return Double.valueOf(value);
+            }
+            else
+            {
+                return Integer.valueOf(value);
+            }
+        }
+        catch (NumberFormatException ex)
+        {
+            throw new IOException("Invalid number '" + value + "'", ex);
+        }
+    }
+
+    private Object readDictionary(RandomAccessRead randomAcccessRead) throws IOException
+    {
+        int theNextByte = randomAcccessRead.read();
+        if (theNextByte == '<')
+        {
+            Map<String, Object> result = new HashMap<>();
+            // we are reading a dictionary
+            Object key = parseNextToken(randomAcccessRead);
+            while (key instanceof LiteralName && !MARK_END_OF_DICTIONARY.equals(key))
+            {
+                Object value = parseNextToken(randomAcccessRead);
+                result.put(((LiteralName) key).name, value);
+                key = parseNextToken(randomAcccessRead);
+            }
+            return result;
+        }
+        else
+        {
+            // won't read more than 512 bytes
+            int multiplyer = 16;
+            int bufferIndex = -1;
+            while (theNextByte != -1 && theNextByte != '>')
+            {
+                // all kind of whitespaces may occur in malformed CMap files
+                // see PDFBOX-2035
+                if (isWhitespaceOrEOF(theNextByte))
                 {
-                    retval = Double.valueOf(value);
+                    // skipping whitespaces
+                    theNextByte = randomAcccessRead.read();
+                    continue;
+                }
+                int intValue = 0;
+                if (theNextByte >= '0' && theNextByte <= '9')
+                {
+                    intValue = theNextByte - '0';
+                }
+                else if (theNextByte >= 'A' && theNextByte <= 'F')
+                {
+                    intValue = 10 + theNextByte - 'A';
+                }
+                else if (theNextByte >= 'a' && theNextByte <= 'f')
+                {
+                    intValue = 10 + theNextByte - 'a';
                 }
                 else
                 {
-                    retval = Integer.valueOf(value);
+                    throw new IOException("Error: expected hex character and not "
+                            + (char) theNextByte + ":" + theNextByte);
                 }
+                intValue *= multiplyer;
+                if (multiplyer == 16)
+                {
+                    bufferIndex++;
+                    if (bufferIndex >= tokenParserByteBuffer.length)
+                    {
+                        throw new IOException("cmap token ist larger than buffer size "
+                                + tokenParserByteBuffer.length);
+                    }
+                    tokenParserByteBuffer[bufferIndex] = 0;
+                    multiplyer = 1;
+                }
+                else
+                {
+                    multiplyer = 16;
+                }
+                tokenParserByteBuffer[bufferIndex] += intValue;
+                theNextByte = randomAcccessRead.read();
             }
-            catch (NumberFormatException ex)
-            {
-                throw new IOException("Invalid number '" + value + "'", ex);
-            }
-            break;
+            byte[] finalResult = new byte[bufferIndex + 1];
+            System.arraycopy(tokenParserByteBuffer, 0, finalResult, 0, bufferIndex + 1);
+            return finalResult;
         }
-        default:
-        {
-            StringBuilder buffer = new StringBuilder();
-            buffer.append((char) nextByte);
-            nextByte = randomAcccessRead.read();
-
-            // newline separator may be missing in malformed CMap files
-            // see PDFBOX-2035
-            while (!isWhitespaceOrEOF(nextByte) && !isDelimiter(nextByte) && !Character.isDigit(nextByte))
-            {
-                buffer.append((char) nextByte);
-                nextByte = randomAcccessRead.read();
-            }
-            if (isDelimiter(nextByte) || Character.isDigit(nextByte))
-            {
-                randomAcccessRead.rewind(1);
-            }
-            retval = new Operator(buffer.toString());
-
-            break;
-        }
-        }
-        return retval;
     }
 
     private void readUntilEndOfLine(RandomAccessRead randomAcccessRead, StringBuilder buf)
