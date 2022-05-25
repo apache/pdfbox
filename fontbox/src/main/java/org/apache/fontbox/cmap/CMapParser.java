@@ -252,8 +252,17 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endcodespacerange", "codespacerange");
                 break;
             }
+            if (nextToken == null)
+            {
+                throw new IOException("start range missing");
+            }
             byte[] startRange = (byte[]) nextToken;
-            byte[] endRange = (byte[]) parseNextToken(randomAcccessRead);
+            nextToken = parseNextToken(randomAcccessRead);
+            if (nextToken == null)
+            {
+                throw new IOException("end range missing");
+            }
+            byte[] endRange = (byte[]) nextToken;
             try
             {
                 result.addCodespaceRange(new CodespaceRange(startRange, endRange));
@@ -275,6 +284,10 @@ public class CMapParser
             {
                 checkExpectedOperator((Operator) nextToken, "endbfchar", "bfchar");
                 break;
+            }
+            if (nextToken == null)
+            {
+                throw new IOException("input code missing");
             }
             byte[] inputCode = (byte[]) nextToken;
             nextToken = parseNextToken(randomAcccessRead);
@@ -307,9 +320,23 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endcidrange", "cidrange");
                 break;
             }
+            if (nextToken == null)
+            {
+                throw new IOException("start code missing");
+            }
             byte[] startCode = (byte[]) nextToken;
-            byte[] endCode = (byte[]) parseNextToken(randomAcccessRead);
-            int mappedCode = (Integer) parseNextToken(randomAcccessRead);
+            nextToken = parseNextToken(randomAcccessRead);
+            if (nextToken == null)
+            {
+                throw new IOException("end code missing");
+            }
+            byte[] endCode = (byte[]) nextToken;
+            nextToken = parseNextToken(randomAcccessRead);
+            if (nextToken == null)
+            {
+                throw new IOException("mapped code missing");
+            }
+            int mappedCode = (Integer) nextToken;
             if (startCode.length == endCode.length)
             {
                 // some CMaps are using CID ranges to map single values
@@ -341,8 +368,17 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endcidchar", "cidchar");
                 break;
             }
+            if (nextToken == null)
+            {
+                throw new IOException("input code missing");
+            }
             byte[] inputCode = (byte[]) nextToken;
-            int mappedCID = (Integer) parseNextToken(randomAcccessRead);
+            nextToken = parseNextToken(randomAcccessRead);
+            if (nextToken == null)
+            {
+                throw new IOException("mapped CID missing");
+            }
+            int mappedCID = (Integer) nextToken;
             result.addCIDMapping(inputCode, mappedCID);
         }
     }
@@ -353,14 +389,14 @@ public class CMapParser
         for (int j = 0; j < cosCount.intValue(); j++)
         {
             Object nextToken = parseNextToken(randomAcccessRead);
-            if (nextToken == null)
-            {
-                throw new IOException("start code missing");
-            }
             if (nextToken instanceof Operator)
             {
                 checkExpectedOperator((Operator) nextToken, "endbfrange", "bfrange");
                 break;
+            }
+            if (nextToken == null)
+            {
+                throw new IOException("start code missing");
             }
             byte[] startCode = (byte[]) nextToken;
             nextToken = parseNextToken(randomAcccessRead);
