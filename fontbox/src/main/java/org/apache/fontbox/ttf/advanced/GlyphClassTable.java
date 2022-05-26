@@ -20,6 +20,9 @@ package org.apache.fontbox.ttf.advanced;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.SEGlyphCoverageTable;
 import org.apache.fontbox.ttf.advanced.SubtableEntryHolder.SEInteger;
@@ -258,8 +261,11 @@ public final class GlyphClassTable extends GlyphMappingTable implements GlyphCla
     }
 
     private static class CoverageSetClassTable extends GlyphMappingTable.EmptyMappingTable implements GlyphClassMapping {
+        private static final Log LOG = LogFactory.getLog(CoverageSetClassTable.class);
         public CoverageSetClassTable(List<SubtableEntry> entries) {
-            throw new UnsupportedOperationException("coverage set class table not yet supported");
+            // See FOP-2704
+            // throw new UnsupportedOperationException("coverage set class table not yet supported");
+            LOG.warn("coverage set class table not yet supported");
         }
 
         /** {@inheritDoc} */
