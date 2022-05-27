@@ -72,7 +72,7 @@ public class AdvancedOpenTypeFont extends OpenTypeFont {
     /**
      * TODO
      */
-    public GlyphVector createGlyphVector(String text) throws IOException 
+    public GlyphVector createGlyphVector(String text,  int fontSize) throws IOException
     {
         if (text.isEmpty()) {
             return new GlyphVectorSimple(null);
@@ -130,12 +130,25 @@ public class AdvancedOpenTypeFont extends OpenTypeFont {
 
             for (int i = 0; i < size; i++) {
                 widths[i] = getAdvanceWidth(workingGlyphs[i]);
+                adjustments[i][2] = widths[i]; /* initialize with default advance */
             }
 
             // TODO: Correct script, language and font size
             // TODO: widths?
             positioned = positioningTable != null ? positioningTable.position(
-                substituted, "latn", "dflt", null, 20, widths, adjustments) : false;
+                substituted, "latn", "dflt", null, fontSize, widths, adjustments) : false;
+
+            // For positioning an array dx, dy, advance_x, advance_y is needed
+            // Compare output of HarfBuzz hb-shape
+            System.out.printf("createGlyphVector1 i  px py ax ay w%n");
+            System.out.printf("createGlyphVector1 %d %d %d %d %d %d%n", 0, adjustments[0][0], adjustments[0][1], adjustments[0][2], adjustments[0][3], widths[0]);
+            for (int i=1; i < size; i++) {
+                System.out.printf("createGlyphVector1 %d %d %d %d %d %d%n", i, adjustments[i][0], adjustments[i][1], adjustments[i][2], adjustments[i][3], widths[i]);
+                if (adjustments[i][0]!=0 && widths[i-1]!=0) {
+                    adjustments[i][0] -= widths[i-1];
+                }
+                System.out.printf("createGlyphVector2 %d %d %d %d %d %d%n", i, adjustments[i][0], adjustments[i][1], adjustments[i][2], adjustments[i][3], widths[i]);
+            }
         }
 
 //System.out.println("widths = " + Arrays.toString(widths));

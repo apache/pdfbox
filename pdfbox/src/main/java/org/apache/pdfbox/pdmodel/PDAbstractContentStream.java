@@ -46,10 +46,7 @@ import org.apache.fontbox.ttf.gsub.GsubWorker;
 import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.*;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -88,6 +85,8 @@ abstract class PDAbstractContentStream implements Closeable
 
     protected boolean inTextMode = false;
     protected final Deque<PDFont> fontStack = new ArrayDeque<>();
+    protected final Deque<Float> fontSizeStack = new ArrayDeque<>();
+
 
     protected final Deque<PDColorSpace> nonStrokingColorSpaceStack = new ArrayDeque<>();
     protected final Deque<PDColorSpace> strokingColorSpaceStack = new ArrayDeque<>();
@@ -118,7 +117,7 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Sets the maximum number of digits allowed for fractional numbers.
-     * 
+     *
      * @see NumberFormat#setMaximumFractionDigits(int)
      * @param fractionDigitsNumber
      */
@@ -160,7 +159,7 @@ abstract class PDAbstractContentStream implements Closeable
         writeOperator(OperatorName.END_TEXT);
         inTextMode = false;
     }
-    
+
     /**
      * Set the font and font size to draw text with.
      *
@@ -173,11 +172,14 @@ abstract class PDAbstractContentStream implements Closeable
         if (fontStack.isEmpty())
         {
             fontStack.add(font);
+            fontSizeStack.add(fontSize);
         }
         else
         {
             fontStack.pop();
             fontStack.push(font);
+            fontSizeStack.pop();
+            fontSizeStack.push(fontSize);
         }
 
         // keep track of fonts which are configured for subsetting
@@ -265,14 +267,110 @@ abstract class PDAbstractContentStream implements Closeable
         writeOperator(OperatorName.SHOW_TEXT);
     }
 
+
     /**
      * TODO
      * @param vector
-     * @param matrix
      * @return
      * @throws IOException
      */
-    public void showGlyphVector(GlyphVector vector, Matrix textMatrix) throws IOException
+    public void showGlyphVector(GlyphVector vector) throws IOException {
+        if (vector instanceof GlyphVectorAdvanced)
+        {
+            showGlyphVector((GlyphVectorAdvanced) vector);
+        }
+        else if (vector instanceof  GlyphVectorSimple)
+        {
+            showGlyphVector((GlyphVectorSimple) vector);
+        } else
+        {
+            // TODO
+            throw new UnsupportedOperationException("not implemented");
+        }
+    }
+
+
+    /**
+     * TODO
+     * @param vector
+     * @return
+     * @throws IOException
+     */
+    public void showGlyphVector(GlyphVectorSimple vector) throws IOException {
+        // TODO
+    }
+
+
+    /**
+     * TODO
+     * @param vector
+     * @return
+     * @throws IOException
+     */
+    public void showGlyphVector(GlyphVectorAdvanced vector) throws IOException
+    {
+        if (!inTextMode)
+        {
+            throw new IllegalStateException("Must call beginText() before showText()");
+        }
+
+        if (fontStack.isEmpty())
+        {
+            throw new IllegalStateException("Must call setFont() before showText()");
+        }
+
+        PDType0Font font = (PDType0Font) fontStack.peek();
+        float fontSize = fontSizeStack.peek();
+
+        int[] gids = vector.getGlyphArray();
+        int[][] adjustments = vector.getAdjustments();
+
+        if (gids.length == 0) {
+            return;
+        }
+
+        // TODO: Text extraction of result PDF.
+        font.addGlyphsToSubset(vector.getGlyphs());
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        if (adjustments == null) {
+            for (int i = 0; i < gids.length; i++) {
+                os.write(font.encodeGlyphId(gids[i]));
+            }
+            COSWriter.writeString(os.toByteArray(), outputStream);
+            write(" ");
+            writeOperator(OperatorName.SHOW_TEXT);
+        } else {
+            for (int i = 0; i < gids.length; i++) {
+                int placementX = 0;
+                int placementY = 0;
+                int advanceX = 0;
+                // not used: int advanceY = 0;
+
+                if (adjustments != null) {
+                    placementX = adjustments[i][0];
+                    placementY = adjustments[i][1];
+                    advanceX = adjustments[i][2];
+                    // not used: advanceY = adjustments[i][3];;
+                }
+                if (placementY!=0) {
+                    System.out.printf("placementY=%d rise=%f%n", placementY, placementY*fontSize/1000.0f);
+                    setTextRise(placementY*fontSize/1000.0f);
+                }
+                write("[");
+                System.out.printf("TJ pX=%d%n", placementX);
+                writeOperand(-placementX);
+                COSWriter.writeString(font.encodeGlyphId(gids[i]), outputStream);
+                write("] ");
+                writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
+                if (placementY!=0) {
+                    setTextRise(0);
+                }
+            }
+        }
+    }
+    public void showGlyphVector1(GlyphVector vector, Matrix textMatrix) throws IOException
     {
         if (!inTextMode)
         {
@@ -377,7 +475,7 @@ abstract class PDAbstractContentStream implements Closeable
                                 COSWriter.writeString(font.encodeGlyphId(gids[i]), outputStream);
                                 fixupX = -placementX;
                             }
-                        } else if (!haveXAdjust && haveYAdjust) { 
+                        } else if (!haveXAdjust && haveYAdjust) {
                             // TODO
                         } else {
                             // TODO
@@ -406,7 +504,7 @@ abstract class PDAbstractContentStream implements Closeable
      * Outputs a string using the correct encoding and subsetting as required.
      *
      * @param text The Unicode text to show.
-     * 
+     *
      * @throws IOException If an io exception occurs.
      */
     protected void showTextInternal(String text) throws IOException
@@ -1160,7 +1258,7 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Stroke the path.
-     * 
+     *
      * @throws IOException If the content stream could not be written
      * @throws IllegalStateException If the method was called within a text block.
      */
@@ -1175,7 +1273,7 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Close and stroke the path.
-     * 
+     *
      * @throws IOException If the content stream could not be written
      * @throws IllegalStateException If the method was called within a text block.
      */
@@ -1332,7 +1430,7 @@ abstract class PDAbstractContentStream implements Closeable
             throw new IllegalStateException("Error: clip is not allowed within a text block.");
         }
         writeOperator(OperatorName.CLIP_NON_ZERO);
-        
+
         // end path without filling or stroking
         writeOperator(OperatorName.ENDPATH);
     }
@@ -1350,7 +1448,7 @@ abstract class PDAbstractContentStream implements Closeable
             throw new IllegalStateException("Error: clipEvenOdd is not allowed within a text block.");
         }
         writeOperator(OperatorName.CLIP_EVEN_ODD);
-        
+
         // end path without filling or stroking
         writeOperator(OperatorName.ENDPATH);
     }
@@ -1482,7 +1580,7 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Set an extended graphics state.
-     * 
+     *
      * @param state The extended graphics state.
      * @throws IOException If the content stream could not be written.
      */
@@ -1589,7 +1687,7 @@ abstract class PDAbstractContentStream implements Closeable
     {
         outputStream.write(data);
     }
-    
+
     /**
      * Writes a newline to the content stream as ASCII.
      * @throws java.io.IOException
@@ -1616,10 +1714,13 @@ abstract class PDAbstractContentStream implements Closeable
     {
         double[] values = new double[6];
         transform.getMatrix(values);
+        System.out.printf("writeAffineTransform(");
         for (double v : values)
         {
+            System.out.printf("%f ", (float)v);
             writeOperand((float) v);
         }
+        System.out.println();
     }
 
     /**

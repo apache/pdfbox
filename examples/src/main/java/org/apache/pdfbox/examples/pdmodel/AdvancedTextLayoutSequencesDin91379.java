@@ -47,6 +47,16 @@ import java.io.File;
 import java.io.IOException;
 import java.text.AttributedString;
 import java.text.Bidi;
+/*
+XXXXXXXXX
+Fehler bei "C̨̆"
+Was passiert, wenn zwei diakrit. Zeichen aufeinanderfolgen?
+Was ist die aktuelle Stelle im Postscript-File nach
+[ ... ] TJ ?
+Wie soll der Glyphvektor aussehen?
+Zusammenfassen von Grundbuchstaben und danach kommenden Zeichen mit width==0 ?
+Wird die nötige Info überhaupt aus dem Font ausgelesen?
+ */
 
 /**
  * An example of using an embedded OpenType font with advanced glyph layout for
@@ -59,14 +69,15 @@ import java.text.Bidi;
  */
 public final class AdvancedTextLayoutSequencesDin91379
 {
-    public static String sequencesDin91379 = "A̋";
-/*             "A̋ C̀ C̄ C̆ C̈ C̕ C̣ C̦ C̨̆ D̂ F̀ F̄ G̀ H̄ H̦ H̱ J́ J̌ K̀ K̂ K̄ K̇ K̕ K̛ K̦ K͟H \n";
+    public static String sequencesDin91379 = /*"xC̨̆x"; */
+             "A̋ C̀ C̄ C̆ C̈ C̕ C̣ C̦ C̨̆ D̂ F̀ F̄ G̀ H̄ H̦ H̱ J́ J̌ K̀ K̂ K̄ K̇ K̕ K̛ K̦ K͟H \n"
             + "K͟h L̂ L̥ L̥̄ L̦ M̀ M̂ M̆ M̐ N̂ N̄ N̆ N̦ P̀ P̄ P̕ P̣ R̆ R̥ R̥̄ S̀ S̄ S̛̄ S̱ T̀ T̄ \n"
             + "T̈ T̕ T̛ U̇ Z̀ Z̄ Z̆ Z̈ Z̧ a̋ c̀ c̄ c̆ c̈ c̕ c̣ c̦ c̨̆ d̂ f̀ f̄ g̀ h̄ h̦ j́ k̀ \n"
             + "k̂ k̄ k̇ k̕ k̛ k̦ k͟h l̂ l̥ l̥̄ l̦ m̀ m̂ m̆ m̐ n̂ n̄ n̆ n̦ p̀ p̄ p̕ p̣ r̆ r̥ r̥̄ \n"
             + "s̀ s̄ s̛̄ s̱ t̀ t̄ t̕ t̛ u̇ z̀ z̄ z̆ z̈ z̧ Ç̆ Û̄ ç̆ û̄ ÿ́ Č̕ Č̣ č̕ č̣ Ī́ ī́ Ž̦ \n"
             + "Ž̧ ž̦ ž̧ Ḳ̄ ḳ̄ Ṣ̄ ṣ̄ Ṭ̄ ṭ̄ Ạ̈ ạ̈ Ọ̈ ọ̈ Ụ̄ Ụ̈ ụ̄ ụ̈ \n";
-*/
+/**/
+
     private AdvancedTextLayoutSequencesDin91379()
     {
     }
@@ -79,20 +90,24 @@ public final class AdvancedTextLayoutSequencesDin91379
         String dir = args[0];
         String[] fontFileNames = new String[] {
                 "NotoSans-Regular.ttf",
-                "LiberationSans-Regular.ttf",
+           /*     "LiberationSans-Regular.ttf",
                 "DejaVuSans.ttf",
                 "IBMPlexSans-Regular.ttf",
                 "SourceSans3-Regular.ttf",
-        };
-        float fontSize = 20f;
 
-        for (String fontFileName : fontFileNames) {
-            try {
-                System.out.printf("--font:%s%n", fontFileName);
-                testJava2D(dir, fontFileName, fontSize, sequencesDin91379);
-                testAdvancedLayout(dir, fontFileName, fontSize, sequencesDin91379);
-            } catch (Exception ee) {
-                ee.printStackTrace();
+            */
+        };
+        float[] fontSizes = new float[]{20f};
+
+        for (float fontSize: fontSizes) {
+            for (String fontFileName : fontFileNames) {
+                try {
+                    System.out.printf("--font:%s%n", fontFileName);
+                    testJava2D(dir, fontFileName, fontSize, sequencesDin91379);
+                    testAdvancedLayout(dir, fontFileName, fontSize, sequencesDin91379);
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                }
             }
         }
     }
@@ -101,19 +116,23 @@ public final class AdvancedTextLayoutSequencesDin91379
 
         try {
             PDDocument pdDocument = new PDDocument();
-            PDPage blankPage = new PDPage();
-            pdDocument.addPage(blankPage);
+            PDPage page = new PDPage();
+            pdDocument.addPage(page);
             PDPageContentStream cs = new PDPageContentStream(pdDocument, pdDocument.getPage(0),
                     PDPageContentStream.AppendMode.APPEND, true);
 
             File fontFile = new File(dir + "/" + fontFileName );
             PDType0Font font = PDType0Font.load(pdDocument, fontFile);
             Font awtFont = Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(fontSize);
-            float x = blankPage.getBBox().getLowerLeftX();
-            float y = blankPage.getBBox().getUpperRightY() - awtFont.getSize2D();
+            float x = page.getBBox().getLowerLeftX();
+            float y = page.getBBox().getUpperRightY() - awtFont.getSize2D();
+            System.out.printf("testJava2D ur=%f h=%f %n", page.getBBox().getUpperRightY(), awtFont.getSize2D());
+            System.out.printf("testJava2D (x,y)=(%f, %f)%n", x, y);
+
+
             testSequences2D(cs, font, fontSize, awtFont, x, y, s);
             cs.close();
-            pdDocument.save(String.format("%s/TestDin91379Java2D-%s-.pdf", dir, fontFileName));
+            pdDocument.save(String.format("%s/TestDin91379Java2D-%s-%s.pdf", dir, fontFileName, fontSize));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,7 +148,7 @@ public final class AdvancedTextLayoutSequencesDin91379
             if (line.length() > 0) {
                 testSequencesLine2D(cs, font, fontSize, awtFont, line, x, y);
             }
-            y -= awtFont.getSize2D() * 0.65;
+            y -= awtFont.getSize2D()*1.2f;
         }
     }
 
@@ -146,7 +165,7 @@ public final class AdvancedTextLayoutSequencesDin91379
             Point2D p = awtGlyphVector.getGlyphPosition(i);
             float ax =  awtGlyphVector.getGlyphMetrics(i).getAdvanceX();
             float ay =  awtGlyphVector.getGlyphMetrics(i).getAdvanceY();
-            float factor = 1000f/fontSize;
+            float factor = 1000f/fontSize; //XXX oder 72 ??
             System.out.printf("px=%f py=%f ", p.getX()*factor, p.getY()*factor);
             System.out.printf("ax=%f ay=%f ", ax*factor, ay*factor);
             System.out.printf("dx=%f dy=%f %n", (p.getX() - lastX -lastAx)*factor, (p.getY() - lastY -lastAy)*factor);
@@ -169,9 +188,34 @@ public final class AdvancedTextLayoutSequencesDin91379
         AttributedString as = new AttributedString(line);
         Bidi bidi = new Bidi(as.getIterator());
         int localFlags = bidi.isLeftToRight() ? java.awt.Font.LAYOUT_LEFT_TO_RIGHT : java.awt.Font.LAYOUT_RIGHT_TO_LEFT;
-        java.awt.font.GlyphVector glyphVector = awtFont.layoutGlyphVector(fontRenderContext, chars, 0, chars.length, localFlags);
-        printAdjustments2D(line, glyphVector, fontSize);
+        java.awt.font.GlyphVector awtGlyphVector = awtFont.layoutGlyphVector(fontRenderContext, chars, 0, chars.length, localFlags);
+        printAdjustments2D(line, awtGlyphVector, fontSize);
 
+        // cs.showGlyphVector(...)
+        int[] glyphs = awtGlyphVector.getGlyphCodes(0, awtGlyphVector.getNumGlyphs(), null);
+        int width = 0;
+        int[][] adjustments = new int[awtGlyphVector.getNumGlyphs()][4];
+        int lastX = 0;
+        int lastAdvanceX = 0;
+        for( int i=0; i<awtGlyphVector.getNumGlyphs(); i+=1) {
+            int px = (int) (awtGlyphVector.getGlyphPosition(i).getX()*1000/fontSize);
+            adjustments[i][0] = lastX = px - lastX - lastAdvanceX;
+            adjustments[i][1] = -(int)Math.round(awtGlyphVector.getGlyphPosition(i).getY()*1000/fontSize);
+            adjustments[i][2] = lastAdvanceX = (int) Math.round(awtGlyphVector.getGlyphMetrics(i).getAdvanceX()*1000/fontSize);
+            adjustments[i][3] = (int) Math.round(awtGlyphVector.getGlyphMetrics(i).getAdvanceY()*1000/fontSize);
+            lastX = px;
+            lastAdvanceX = adjustments[i][2];
+            width += adjustments[i][2];
+        }
+        GlyphVectorAdvanced vector = new GlyphVectorAdvanced(glyphs, width, adjustments);
+        System.out.printf("2d GlyphVectorAdvanced=%s%n", vector);
+
+        cs.beginText();
+        cs.setFont(font, fontSize);
+        cs.newLineAtOffset(x, y);
+        cs.showGlyphVector(vector);
+        cs.endText();
+/*
         cs.beginText();
         cs.setFont(font, fontSize);
         cs.newLineAtOffset(x, y);
@@ -193,6 +237,7 @@ public final class AdvancedTextLayoutSequencesDin91379
             lastY = (float) p.getY();
         }
         cs.endText();
+  */
     }
 
     private static Matrix createMatrix(float translateX, float translateY) {
@@ -232,26 +277,35 @@ public final class AdvancedTextLayoutSequencesDin91379
             PDFont font = PDType0Font.load(document, otFont, true);
 
             GlyphVector vector;
-            float x = 10;
+            float x = page.getBBox().getLowerLeftX();
+            float y = page.getBBox().getUpperRightY() - otFont.getFontBBox().getHeight()/72;
+            System.out.printf("ur=%f h=%f %n", page.getBBox().getUpperRightY(), otFont.getFontBBox().getHeight());
+            System.out.printf("(x,y)=(%f, %f)%n", x, y);
+
 
             try (PDPageContentStream stream = new PDPageContentStream(document, page))
             {
                 stream.beginText();
                 stream.setFont(font, fontSize);
+                stream.newLineAtOffset(x, y);
+
 
                 s = s.replaceAll("[ \t]", " ");
                 String[] lines = s.split("\n");
 
                 for (String line : lines) {
                     if (line.length() > 0) {
-                        vector = otFont.createGlyphVector(line);
+                        vector = otFont.createGlyphVector(line, (int)fontSize);
+                        System.out.printf("fontbox vector=%s%n",vector.toString());
                         printAdjustmentsAdvancedLayout(line, vector);
-                        stream.showGlyphVector(vector, createMatrix(x, 200));
+                        stream.showGlyphVector(vector);
                     }
+                    stream.newLineAtOffset(0, -24);
+                    System.out.printf("(x,y)=(%f, %f) l=%s%n", x, y, line);
                 }
                 stream.endText();
             }
-            document.save(String.format("%s/TestDin91379AdvancedLayout-%s-.pdf", dir, fontFileName));
+            document.save(String.format("%s/TestDin91379AdvancedLayout-%s-%s.pdf", dir, fontFileName, fontSize));
         }
     }
 }
