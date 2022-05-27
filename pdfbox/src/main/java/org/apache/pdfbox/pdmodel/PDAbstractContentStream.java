@@ -98,6 +98,8 @@ abstract class PDAbstractContentStream implements Closeable
     private final Map<PDType0Font, GsubWorker> gsubWorkers = new HashMap<>();
     private final GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
 
+    private final COSString EMPTY_COS_STRING = new COSString("");
+
     /**
      * Create a new appearance stream.
      *
@@ -354,7 +356,7 @@ abstract class PDAbstractContentStream implements Closeable
                     advanceX = adjustments[i][2];
                     // not used: advanceY = adjustments[i][3];;
                 }
-                if (placementY!=0) {
+                if (placementY != 0) {
                     System.out.printf("placementY=%d rise=%f%n", placementY, placementY*fontSize/1000.0f);
                     setTextRise(placementY*fontSize/1000.0f);
                 }
@@ -362,6 +364,10 @@ abstract class PDAbstractContentStream implements Closeable
                 System.out.printf("TJ pX=%d%n", placementX);
                 writeOperand(-placementX);
                 COSWriter.writeString(font.encodeGlyphId(gids[i]), outputStream);
+                if (placementX != 0) { // update current PDF-position
+                    writeOperand(placementX);
+                    COSWriter.writeString(EMPTY_COS_STRING, outputStream);
+                }
                 write("] ");
                 writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
                 if (placementY!=0) {
