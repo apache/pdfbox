@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
+import org.apache.fontbox.ttf.advanced.GlyphVectorAdvanced;
 import org.apache.fontbox.ttf.advanced.api.AdvancedOTFParser;
 import org.apache.fontbox.ttf.advanced.api.AdvancedOpenTypeFont;
 import org.apache.fontbox.ttf.advanced.api.GlyphVector;
@@ -58,12 +59,15 @@ public final class AdvancedTextLayout
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
 
-            String dir = "C:\\Users\\daniel\\Desktop\\fonts\\";
+            //String dir = "C:\\Users\\daniel\\Desktop\\fonts\\";
             //String fontFile = "./pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
             //String fontFile = dir + "IndieFlower-Regular.ttf";
-            String fontFile = dir + "SourceSansPro-Regular.ttf";
+            //String fontFile = dir + "SourceSansPro-Regular.ttf";
+            String dir = "/home/volker/work/";
+            String fontFile = dir + "NotoSans-Regular.ttf";
 
-            AdvancedOTFParser fontParser = new AdvancedOTFParser();
+
+                    AdvancedOTFParser fontParser = new AdvancedOTFParser();
             AdvancedOpenTypeFont otFont = fontParser.parse(fontFile);
             PDFont font = PDType0Font.load(document, otFont, true);
 
@@ -76,22 +80,26 @@ public final class AdvancedTextLayout
                 stream.beginText();
                 stream.setFont(font, fontSize);
 
-                vector = otFont.createGlyphVector("PDFBox's Unicode with Embedded OpenType Font");
-                stream.showGlyphVector(vector, createMatrix(x, 200));
+                vector = otFont.createGlyphVector("PDFBox's Unicode with Embedded OpenType Font", (int)fontSize);
+                stream.setTextMatrix(createMatrix(x, 200));
+                stream.showGlyphVector(vector);
                 x = getAdvance(10, vector, fontSize);
 
-                vector = otFont.createGlyphVector("|AFTER (SIMPLE)");
-                stream.showGlyphVector(vector, createMatrix(x, 200));
+                vector = otFont.createGlyphVector("|AFTER (SIMPLE)", (int)fontSize);
+                stream.setTextMatrix(createMatrix(x, 200));
+                stream.showGlyphVector(vector);
                 x = 10;
 
                 String complex = "A̋L̦    a̋   N̂N̦B ўў 1/2";
 
-                vector = otFont.createGlyphVector(complex);
-                stream.showGlyphVector(vector, createMatrix(x, 100));
+                vector = otFont.createGlyphVector(complex, (int)fontSize);
+                stream.setTextMatrix(createMatrix(x, 100));
+                stream.showGlyphVector(vector);
                 x = getAdvance(10, vector, fontSize);
 
-                vector = otFont.createGlyphVector("|AFTER (COMPLEX)");
-                stream.showGlyphVector(vector, createMatrix(x, 100));
+                vector = otFont.createGlyphVector("|AFTER (COMPLEX)", (int)fontSize);
+                stream.setTextMatrix(createMatrix(x, 100));
+                stream.showGlyphVector(vector);
 
                 stream.setTextMatrix(Matrix.getTranslateInstance(10, 160));
                 stream.showText(complex);
