@@ -135,8 +135,9 @@ public class AdvancedOpenTypeFont extends OpenTypeFont {
 
             // TODO: Correct script, language and font size
             // TODO: widths?
+            Object[][] features = {{ "kern", true}, {"mark", true}, {"mkmk", true}};
             positioned = positioningTable != null ? positioningTable.position(
-                substituted, "latn", "dflt", null, fontSize, widths, adjustments) : false;
+                substituted, "latn", "dflt", features, fontSize, widths, adjustments) : false;
 
             // For positioning an array dx, dy, advance_x, advance_y is needed
             // Compare output of HarfBuzz hb-shape
