@@ -253,7 +253,7 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endcodespacerange", "codespacerange");
                 break;
             }
-            if (nextToken == null || !(nextToken instanceof byte[]))
+            if (!(nextToken instanceof byte[]))
             {
                 throw new IOException("start range missing");
             }
@@ -281,7 +281,7 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endbfchar", "bfchar");
                 break;
             }
-            if (nextToken == null || !(nextToken instanceof byte[]))
+            if (!(nextToken instanceof byte[]))
             {
                 throw new IOException("input code missing");
             }
@@ -316,7 +316,7 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endcidrange", "cidrange");
                 break;
             }
-            if (nextToken == null || !(nextToken instanceof byte[]))
+            if (!(nextToken instanceof byte[]))
             {
                 throw new IOException("start code missing");
             }
@@ -354,7 +354,7 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endcidchar", "cidchar");
                 break;
             }
-            if (nextToken == null || !(nextToken instanceof byte[]))
+            if (!(nextToken instanceof byte[]))
             {
                 throw new IOException("input code missing");
             }
@@ -375,7 +375,7 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endbfrange", "bfrange");
                 break;
             }
-            if (nextToken == null || !(nextToken instanceof byte[]))
+            if (!(nextToken instanceof byte[]))
             {
                 throw new IOException("start code missing");
             }
@@ -386,7 +386,7 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endbfrange", "bfrange");
                 break;
             }
-            if (nextToken == null || !(nextToken instanceof byte[]))
+            if (!(nextToken instanceof byte[]))
             {
                 throw new IOException("end code missing");
             }
