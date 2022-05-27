@@ -139,12 +139,12 @@ public class FDFJavaScript implements COSObjectable
      */
     public Map<String, PDActionJavaScript> getDoc()
     {
-        Map<String, PDActionJavaScript> map = new LinkedHashMap<String, PDActionJavaScript>();
         COSArray array = dictionary.getCOSArray(COSName.DOC);
         if (array == null)
         {
             return null;
         }
+        Map<String, PDActionJavaScript> map = new LinkedHashMap<String, PDActionJavaScript>();
         for (int i = 0; i + 1 < array.size(); i += 2)
         {
             String name = array.getName(i);
