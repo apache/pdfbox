@@ -23,7 +23,7 @@ import java.io.InputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
- * An implementation of the TTFDataStream using RandomAccessRead as sourece.
+ * An implementation of the TTFDataStream using RandomAccessRead as source.
  * 
  */
 class RandomAccessReadDataStream extends TTFDataStream
@@ -35,7 +35,7 @@ class RandomAccessReadDataStream extends TTFDataStream
     /**
      * Constructor.
      * 
-     * @param file The file to be read.
+     * @param randomAccessRead
      * 
      * @throws IOException If there is a problem creating the RandomAccessReadBufferedFile.
      */

@@ -79,9 +79,9 @@ public class CFFParser
     }
     
     /**
-     * Parse CFF font using a byte array as input.
+     * Parse CFF font using a RandomAccessRead as input.
      * 
-     * @param bytes the given byte array
+     * @param randomAccessRead
      * @return the parsed CFF fonts
      * @throws IOException If there is an error reading from the stream
      */
@@ -97,9 +97,9 @@ public class CFFParser
     }
 
     /**
-     * Parse CFF font using a byte array as input.
+     * Parse CFF font using a DataInput as input.
      * 
-     * @param bytes the given byte array
+     * @param input
      * @return the parsed CFF fonts
      * @throws IOException If there is an error reading from the stream
      */
