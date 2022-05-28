@@ -19,11 +19,14 @@
 Comaring Java AWT layout vector and AdvancedLayout: factor 50 = 1000/(20=fontSize), y different sign
 Small diffenences, awt.Glyphlayout has data type float, AdvancedLayout integer
 
-Comparison of AWT glyph vector to hb-shape
-hb_position_t x_advance; how much the line advances after drawing this glyph when setting text in horizontal direction.
-hb_position_t y_advance; how much the line advances after drawing this glyph when setting text in vertical direction.
-hb_position_t x_offset;  how much the glyph moves on the X-axis before drawing it, this should not affect how much the line advances.
-hb_position_t y_offset;  how much the glyph moves on the Y-axis before drawing it, this should not affect how much the line advances.
+Comparison of glyph vector to hb-shape, see HarfBUzz documentation:
+  hb_position_t x_offset;  how much the glyph moves on the X-axis before drawing it, this should not affect how much the line advances.
+  hb_position_t y_offset;  how much the glyph moves on the Y-axis before drawing it, this should not affect how much the line advances.
+  hb_position_t x_advance; how much the line advances after drawing this glyph when setting text in horizontal direction.
+  hb_position_t y_advance; how much the line advances after drawing this glyph when setting text in vertical direction.
+
+2022-05-28
+  Error positioning double accents, e.g. "C̨̆" GlyphVectorAdvanced does not contain positioning information for the second accent.
 */
 package org.apache.pdfbox.examples.pdmodel;
 
@@ -47,16 +50,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.AttributedString;
 import java.text.Bidi;
-/*
-XXXXXXXXX
-Fehler bei "C̨̆"
-Was passiert, wenn zwei diakrit. Zeichen aufeinanderfolgen?
-Was ist die aktuelle Stelle im Postscript-File nach
-[ ... ] TJ ?
-Wie soll der Glyphvektor aussehen?
-Zusammenfassen von Grundbuchstaben und danach kommenden Zeichen mit width==0 ?
-Wird die nötige Info überhaupt aus dem Font ausgelesen?
- */
 
 /**
  * An example of using an embedded OpenType font with advanced glyph layout for
@@ -178,6 +171,17 @@ public final class AdvancedTextLayoutSequencesDin91379
     }
 
 
+    /**
+     * Positioning using an adapted version of the AWT layout vector
+     * @param cs
+     * @param font
+     * @param fontSize
+     * @param awtFont
+     * @param line
+     * @param x
+     * @param y
+     * @throws IOException
+     */
     public static void testSequencesLine2D(PDPageContentStream cs, PDType0Font font,
                                           float fontSize, Font awtFont, String line, float x, float y) throws IOException {
         char[] chars = line.toCharArray();
@@ -191,7 +195,6 @@ public final class AdvancedTextLayoutSequencesDin91379
         java.awt.font.GlyphVector awtGlyphVector = awtFont.layoutGlyphVector(fontRenderContext, chars, 0, chars.length, localFlags);
         printAdjustments2D(line, awtGlyphVector, fontSize);
 
-        // cs.showGlyphVector(...)
         int[] glyphs = awtGlyphVector.getGlyphCodes(0, awtGlyphVector.getNumGlyphs(), null);
         int width = 0;
         int[][] adjustments = new int[awtGlyphVector.getNumGlyphs()][4];
@@ -215,7 +218,7 @@ public final class AdvancedTextLayoutSequencesDin91379
         cs.newLineAtOffset(x, y);
         cs.showGlyphVector(vector);
         cs.endText();
-/*
+/* Alternate implementation using newLIneAtOffset for positioning
         cs.beginText();
         cs.setFont(font, fontSize);
         cs.newLineAtOffset(x, y);
@@ -238,10 +241,6 @@ public final class AdvancedTextLayoutSequencesDin91379
         }
         cs.endText();
   */
-    }
-
-    private static Matrix createMatrix(float translateX, float translateY) {
-        return Matrix.getTranslateInstance(translateX, translateY);
     }
 
     public static void printAdjustmentsAdvancedLayout(String line, GlyphVector vector) {
