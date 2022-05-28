@@ -301,7 +301,6 @@ public class Overlay implements Closeable
     /**
      * Create a LayoutPage object from given PDPage object.
      *
-     * @param doc
      * @return
      * @throws IOException 
      */
