@@ -67,7 +67,7 @@ public final class AdvancedTextLayout
             String fontFile = dir + "NotoSans-Regular.ttf";
 
 
-                    AdvancedOTFParser fontParser = new AdvancedOTFParser();
+            AdvancedOTFParser fontParser = new AdvancedOTFParser();
             AdvancedOpenTypeFont otFont = fontParser.parse(fontFile);
             PDFont font = PDType0Font.load(document, otFont, true);
 

@@ -46,7 +46,11 @@ import org.apache.fontbox.ttf.gsub.GsubWorker;
 import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
-import org.apache.pdfbox.cos.*;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -1720,13 +1724,10 @@ abstract class PDAbstractContentStream implements Closeable
     {
         double[] values = new double[6];
         transform.getMatrix(values);
-        System.out.printf("writeAffineTransform(");
         for (double v : values)
         {
-            System.out.printf("%f ", (float)v);
             writeOperand((float) v);
         }
-        System.out.println();
     }
 
     /**
