@@ -28,7 +28,7 @@ hb-shape, see HarfBUzz documentation:
 java.awt.font.GlyphVector
     Positioning is possible using glyph positions (relative to origin of text) using MOVE_TEXT (newLineAtOffset()).
             Point2D p = awtGlyphVector.getGlyphPosition(i);
-    AdvanceX is needed for positionung using SHOW_TEXT_ADJUSTED (showTextWithPositioning())
+    AdvanceX is needed for positioning using SHOW_TEXT_ADJUSTED (showTextWithPositioning())
             float ax =  awtGlyphVector.getGlyphMetrics(i).getAdvanceX();
     AdvanceY is not needed for horizontal scripts.
 
