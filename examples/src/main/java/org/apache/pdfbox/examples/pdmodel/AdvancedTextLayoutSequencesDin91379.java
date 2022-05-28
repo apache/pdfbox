@@ -15,15 +15,25 @@
  * limitations under the License.
  */
 
-/*XXX
-Comaring Java AWT layout vector and AdvancedLayout: factor 50 = 1000/(20=fontSize), y different sign
-Small diffenences, awt.Glyphlayout has data type float, AdvancedLayout integer
+/*
+Comparing Java AWT layout vector and AdvancedLayout: factor 50 = 1000/(20=fontSize), y different sign
+Small differences, awt.Glyphlayout has data type float, AdvancedLayout integer
 
-Comparison of glyph vector to hb-shape, see HarfBUzz documentation:
+hb-shape, see HarfBUzz documentation:
   hb_position_t x_offset;  how much the glyph moves on the X-axis before drawing it, this should not affect how much the line advances.
   hb_position_t y_offset;  how much the glyph moves on the Y-axis before drawing it, this should not affect how much the line advances.
   hb_position_t x_advance; how much the line advances after drawing this glyph when setting text in horizontal direction.
   hb_position_t y_advance; how much the line advances after drawing this glyph when setting text in vertical direction.
+
+java.awt.font.GlyphVector
+    Positioning is possible using glyph positions (relative to origin of text) using MOVE_TEXT (newLineAtOffset()).
+            Point2D p = awtGlyphVector.getGlyphPosition(i);
+    AdvanceX is needed for positionung using SHOW_TEXT_ADJUSTED (showTextWithPositioning())
+            float ax =  awtGlyphVector.getGlyphMetrics(i).getAdvanceX();
+    AdvanceY is not needed for horizontal scripts.
+
+GlyphVectorAdvanced
+    ???
 
 2022-05-28
   Error positioning double accents, e.g. "C̨̆" GlyphVectorAdvanced does not contain positioning information for the second accent.
@@ -62,7 +72,7 @@ import java.text.Bidi;
  */
 public final class AdvancedTextLayoutSequencesDin91379
 {
-    public static String sequencesDin91379 = /*"xC̆C̨̆x"; */
+    public static String sequencesDin91379 = "C̆C̨̆ C̨̆"; /*
              "A̋ C̀ C̄ C̆ C̈ C̕ C̣ C̦ C̨̆ D̂ F̀ F̄ G̀ H̄ H̦ H̱ J́ J̌ K̀ K̂ K̄ K̇ K̕ K̛ K̦ K͟H \n"
             + "K͟h L̂ L̥ L̥̄ L̦ M̀ M̂ M̆ M̐ N̂ N̄ N̆ N̦ P̀ P̄ P̕ P̣ R̆ R̥ R̥̄ S̀ S̄ S̛̄ S̱ T̀ T̄ \n"
             + "T̈ T̕ T̛ U̇ Z̀ Z̄ Z̆ Z̈ Z̧ a̋ c̀ c̄ c̆ c̈ c̕ c̣ c̦ c̨̆ d̂ f̀ f̄ g̀ h̄ h̦ j́ k̀ \n"
