@@ -249,7 +249,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
      * @param language a language identifier
      * @param fontSize size in device units
      * @param widths array of default advancements for each glyph
-     * @param adjustments accumulated adjustments array (sequence) of 4-tuples of placement [PX,PY] ansd advance [AX,AY] adjustments, in that order,
+     * @param adjustments accumulated adjustments array (sequence) of 4-tuples of placement [PX,PY] and advance [AX,AY] adjustments, in that order,
      * with one 4-tuple for each element of glyph sequence
      * @return true if some adjustment is not zero; otherwise, false
      */
