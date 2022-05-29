@@ -137,7 +137,7 @@ public class AdvancedOpenTypeFont extends OpenTypeFont {
             // TODO: Correct script, language and font size
             // TODO: widths?
             positioned = positioningTable != null ? positioningTable.position(
-                substituted, script, language, features, fontSize, widths, adjustments) : false;
+                substituted, script, language, features, fontSize*1000, getAdvanceWidths(), adjustments) : false;
         }
 
         System.out.printf("createGlyphVector1 i  dx dy dax day w -- positioned %n");
