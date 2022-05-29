@@ -368,8 +368,8 @@ abstract class PDAbstractContentStream implements Closeable
                 System.out.printf("TJ pX=%d%n", placementX);
                 writeOperand(-placementX);
                 COSWriter.writeString(font.encodeGlyphId(gids[i]), outputStream);
-                if (placementX != 0) { // update current PDF-position
-                    writeOperand(placementX);
+                if (placementX+advanceX != 0) { // update current PDF-position
+                    writeOperand(placementX+advanceX);
                     COSWriter.writeString(EMPTY_COS_STRING, outputStream);
                 }
                 write("] ");

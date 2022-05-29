@@ -72,7 +72,7 @@ import java.text.Bidi;
  */
 public final class AdvancedTextLayoutSequencesDin91379
 {
-    public static String sequencesDin91379 = /* "C̨̆x"; */
+    public static String sequencesDin91379 =  /*"C̨̆x"; */
              "A̋ C̀ C̄ C̆ C̈ C̕ C̣ C̦ C̨̆ D̂ F̀ F̄ G̀ H̄ H̦ H̱ J́ J̌ K̀ K̂ K̄ K̇ K̕ K̛ K̦ K͟H \n"
             + "K͟h L̂ L̥ L̥̄ L̦ M̀ M̂ M̆ M̐ N̂ N̄ N̆ N̦ P̀ P̄ P̕ P̣ R̆ R̥ R̥̄ S̀ S̄ S̛̄ S̱ T̀ T̄ \n"
             + "T̈ T̕ T̛ U̇ Z̀ Z̄ Z̆ Z̈ Z̧ a̋ c̀ c̄ c̆ c̈ c̕ c̣ c̦ c̨̆ d̂ f̀ f̄ g̀ h̄ h̦ j́ k̀ \n"
@@ -206,7 +206,6 @@ public final class AdvancedTextLayoutSequencesDin91379
         printAdjustments2D(line, awtGlyphVector, fontSize);
 
         int[] glyphs = awtGlyphVector.getGlyphCodes(0, awtGlyphVector.getNumGlyphs(), null);
-        int width = 0;
         int[][] adjustments = new int[awtGlyphVector.getNumGlyphs()][4];
         int currentXPosition = 0; /* only changed by advanceX */
         System.out.printf("i  code px currentXPosition dx   dy   ax   ay%n");
@@ -214,14 +213,14 @@ public final class AdvancedTextLayoutSequencesDin91379
             int px = (int) (awtGlyphVector.getGlyphPosition(i).getX()*1000/fontSize);
             int dx = adjustments[i][0] = px - currentXPosition;
             int dy = adjustments[i][1] = -(int)Math.round(awtGlyphVector.getGlyphPosition(i).getY()*1000/fontSize);
-            int ax = adjustments[i][2] = (int) Math.round(awtGlyphVector.getGlyphMetrics(i).getAdvanceX()*1000/fontSize);
-            int ay = adjustments[i][3] = (int) Math.round(awtGlyphVector.getGlyphMetrics(i).getAdvanceY()*1000/fontSize);
-            currentXPosition += adjustments[i][2];
-            width += adjustments[i][2];
+            int ax = adjustments[i][2] = 0;
+            int ay = adjustments[i][3] = 0;
+            currentXPosition += (int) Math.round(awtGlyphVector.getGlyphMetrics(i).getAdvanceX()*1000/fontSize);;
             System.out.printf("%d\t%h\t%d\t%d\t%d\t%d\t%d\t%d%n",
                     i, awtGlyphVector.getGlyphCharIndex(i), px, currentXPosition, dx, dy, ax, ay);
 
         }
+        int width = (int) Math.round(awtGlyphVector.getGlyphPosition(awtGlyphVector.getNumGlyphs()).getX()*1000/fontSize);
         GlyphVectorAdvanced vector = new GlyphVectorAdvanced(glyphs, width, adjustments);
         System.out.printf("2d GlyphVectorAdvanced=%s%n", vector);
 
