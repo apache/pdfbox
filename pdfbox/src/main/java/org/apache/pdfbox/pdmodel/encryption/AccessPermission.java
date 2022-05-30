@@ -391,11 +391,11 @@ public class AccessPermission
 
     /**
      * This will tell if the user can print the document in a faithful format or in a degraded
-     * format.
+     * format (if print is enabled).
      *
      * @return true If supplied with the user password they are allowed to print the document in a
      * faithful format.
-     * 
+     *
      * @deprecated use {@link #canPrintFaithful() }
      */
     @Deprecated
@@ -405,13 +405,14 @@ public class AccessPermission
     }
 
     /**
-     * Set if the user can print the document in a faithful format or in a degraded format.
+     * Set if the user can print the document in a faithful format or in a degraded format (if print
+     * is enabled).
      * <p>
      * This method will have no effect if the object is in read only mode.
      *
      * @param canPrintFaithful A boolean determining if the user can print the document in a
      * faithful format.
-     * 
+     *
      * @deprecated use {@link #setCanPrintFaithful(boolean)}
      */
     @Deprecated
@@ -425,7 +426,7 @@ public class AccessPermission
 
     /**
      * This will tell if the user can print the document in a faithful format or in a degraded
-     * format.
+     * format (if print is enabled).
      *
      * @return true If supplied with the user password they are allowed to print the document in a
      * degraded format.
@@ -436,7 +437,8 @@ public class AccessPermission
     }
 
     /**
-     * Set if the user can print the document in a faithful format or in a degraded format.
+     * Set if the user can print the document in a faithful format or in a degraded format (if print
+     * is enabled).
      * <p>
      * This method will have no effect if the object is in read only mode.
      *
