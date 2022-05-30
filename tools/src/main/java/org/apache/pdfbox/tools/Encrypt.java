@@ -124,9 +124,9 @@ public final class Encrypt
                     {
                         ap.setCanPrint( args[++i].equalsIgnoreCase( "true" ) );
                     }
-                    else if( key.equals( "-canPrintDegraded" ) )
+                    else if( key.equals( "-canPrintDegraded") || key.equals( "-canPrintFaithful") )
                     {
-                        ap.setCanPrintDegraded( args[++i].equalsIgnoreCase( "true" ) );
+                        ap.setCanPrintFaithful( args[++i].equalsIgnoreCase( "true" ) );
                     }
                     else if( key.equals( "-certFile" ) )
                     {
@@ -241,7 +241,7 @@ public final class Encrypt
                 + "  -canModify <true|false>                  : Set the modify permission\n"
                 + "  -canModifyAnnotations <true|false>       : Set the modify annots permission\n"
                 + "  -canPrint <true|false>                   : Set the print permission\n"
-                + "  -canPrintDegraded <true|false>           : Set the print degraded permission\n"
+                + "  -canPrintFaithful <true|false>           : Set the print faithful permission\n"
                 + "  -keyLength <length>                      : Key length in bits "
                 + "(valid values: 40, 128 or 256, default is 256)\n"
                 + "\nNote: By default all permissions are set to true!";

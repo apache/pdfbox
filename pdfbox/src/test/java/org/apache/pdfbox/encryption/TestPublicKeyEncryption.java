@@ -113,7 +113,7 @@ public class TestPublicKeyEncryption
         permission1.setCanModify(false);
         permission1.setCanModifyAnnotations(false);
         permission1.setCanPrint(false);
-        permission1.setCanPrintDegraded(false);
+        permission1.setCanPrintFaithful(false);
 
         permission2 = new AccessPermission();
         permission2.setCanAssembleDocument(false);
@@ -123,7 +123,7 @@ public class TestPublicKeyEncryption
         permission2.setCanModify(false);
         permission2.setCanModifyAnnotations(false);
         permission2.setCanPrint(true); // it is true now !
-        permission2.setCanPrintDegraded(false);
+        permission2.setCanPrintFaithful(false);
 
         recipient1 = getRecipient("test1.der", permission1);
         recipient2 = getRecipient("test2.der", permission2);
@@ -215,7 +215,7 @@ public class TestPublicKeyEncryption
             Assert.assertFalse(permission.canModify());
             Assert.assertFalse(permission.canModifyAnnotations());
             Assert.assertFalse(permission.canPrint());
-            Assert.assertFalse(permission.canPrintDegraded());
+            Assert.assertFalse(permission.canPrintFaithful());
         } 
         finally 
         {
@@ -251,7 +251,7 @@ public class TestPublicKeyEncryption
             Assert.assertFalse(permission.canModify());
             Assert.assertFalse(permission.canModifyAnnotations());
             Assert.assertFalse(permission.canPrint());
-            Assert.assertFalse(permission.canPrintDegraded());
+            Assert.assertFalse(permission.canPrintFaithful());
         } 
         finally 
         {
@@ -270,7 +270,7 @@ public class TestPublicKeyEncryption
             Assert.assertFalse(permission.canModify());
             Assert.assertFalse(permission.canModifyAnnotations());
             Assert.assertTrue(permission.canPrint());
-            Assert.assertFalse(permission.canPrintDegraded());
+            Assert.assertFalse(permission.canPrintFaithful());
         } 
         finally 
         {
