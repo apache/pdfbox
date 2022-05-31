@@ -49,7 +49,6 @@ class RandomAccessReadDataStream extends TTFDataStream
         {
             bytesRead += randomAccessRead.read(data, bytesRead, (int) length - bytesRead);
         }
-        randomAccessRead.read(data);
         randomAccessRead.seek(0);
     }
     
