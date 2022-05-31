@@ -55,6 +55,7 @@ public class AdvancedOpenTypeFont extends OpenTypeFont {
     @Override
     public org.apache.fontbox.ttf.GlyphSubstitutionTable getGsub() throws IOException {
         return null;
+        //TODO return (org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable) getTable(org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable.TAG);
     }
 
     /**

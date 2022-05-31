@@ -61,7 +61,7 @@ public class AdvancedTypographicTable extends TTFTable {
     public static final int GLYPH_TABLE_TYPE_DEFINITION = 5;
 
     // (optional) glyph definition table in table types other than glyph definition table
-    private AdvancedTypographicTable gdef;
+    protected AdvancedTypographicTable gdef;
 
     // map from lookup specs to lists of strings, each of which identifies a lookup table (consisting of one or more subtables)
     private Map<LookupSpec, List<String>> lookups;

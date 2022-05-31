@@ -201,7 +201,7 @@ public class DefaultScriptProcessor extends ScriptProcessor {
     }
 
     protected boolean isReorderedMark(GlyphDefinitionTable gdef, int[] glyphs, int[] unscaledWidths, int index) {
-        return gdef.isGlyphClass(glyphs[index], GlyphDefinitionTable.GLYPH_CLASS_MARK) && (unscaledWidths[index] == 0);
+        return gdef.isGlyphClass(glyphs[index], GlyphDefinitionTable.GLYPH_CLASS_MARK);
     }
 
 }
