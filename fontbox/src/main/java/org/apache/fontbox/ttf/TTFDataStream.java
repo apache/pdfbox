@@ -147,6 +147,10 @@ abstract class TTFDataStream implements Closeable
     {
         int b1 = read();
         int b2 = read();
+        if ((b1 | b2) < 0)
+        {
+            throw new EOFException();
+        }
         return (b1 << 8) + b2;
     }
 
