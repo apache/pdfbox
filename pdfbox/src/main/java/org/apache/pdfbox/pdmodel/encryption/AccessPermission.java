@@ -403,7 +403,7 @@ public class AccessPermission
 
     /**
      * Set if the user can print the document in a faithful format or in a degraded format (if print
-     * is enabled).
+     * is enabled). The PDF version must be 1.5 or higher.
      * <p>
      * This method will have no effect if the object is in read only mode.
      *
