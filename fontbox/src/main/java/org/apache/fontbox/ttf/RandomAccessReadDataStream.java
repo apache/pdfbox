@@ -44,10 +44,12 @@ class RandomAccessReadDataStream extends TTFDataStream
         this.randomAccessRead = randomAccessRead;
         length = randomAccessRead.length();
         data = new byte[(int) length];
-        int bytesRead = randomAccessRead.read(data, 0, (int) length);
-        while (bytesRead > -1 && bytesRead < length)
+        int remainingBytes = data.length;
+        int amountRead;
+        while ((amountRead = randomAccessRead.read(data, data.length - remainingBytes,
+                remainingBytes)) > 0)
         {
-            bytesRead += randomAccessRead.read(data, bytesRead, (int) length - bytesRead);
+            remainingBytes -= amountRead;
         }
         randomAccessRead.seek(0);
     }
