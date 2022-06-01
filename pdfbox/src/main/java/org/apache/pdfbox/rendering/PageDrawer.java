@@ -110,7 +110,7 @@ import org.apache.pdfbox.util.Vector;
  * subclass {@link PDFGraphicsStreamEngine} instead. Subclassing PageDrawer is only suitable for
  * cases where the goal is to render onto a {@link Graphics2D} surface. In that case you'll also
  * have to subclass {@link PDFRenderer} and override
- * {@link PDFRenderer#createPageDrawer(PageDrawerParameters)}. See the <i>OpaquePDFRenderer.java</a>
+ * {@link PDFRenderer#createPageDrawer(PageDrawerParameters)}. See the <i>OpaquePDFRenderer.java</i>
  * example in the source code download on how to do this.
  *
  * @author Ben Litchfield
