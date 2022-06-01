@@ -18,9 +18,11 @@ package org.apache.fontbox.ttf;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,11 +45,10 @@ class RandomAccessReadBufferDataStreamTest
     {
         byte[] byteArray = new byte[10];
         RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(byteArray);
-        RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(
-                randomAccessReadBuffer);
-        int value = dataStream.read();
-        try
+        try (RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(
+                randomAccessReadBuffer))
         {
+            int value = dataStream.read();
             while (value > -1)
             {
                 value = dataStream.read();
@@ -57,12 +58,47 @@ class RandomAccessReadBufferDataStreamTest
         {
             fail("EOF not detected!");
         }
-        finally
+    }
+
+    @Test
+    void testEOFUnsignedShort() throws IOException
+    {
+        byte[] byteArray = new byte[3];
+        RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(byteArray);
+        try(RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(
+                randomAccessReadBuffer))
         {
-            dataStream.close();
+            dataStream.readUnsignedShort();
+            assertThrows(EOFException.class, () -> dataStream.readUnsignedShort());
         }
     }
 
+    @Test
+    void testEOFUnsignedInt() throws IOException
+    {
+        byte[] byteArray = new byte[5];
+        RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(byteArray);
+        try (RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(
+                randomAccessReadBuffer))
+        {
+            dataStream.readUnsignedInt();
+            assertThrows(EOFException.class, () -> dataStream.readUnsignedInt());
+        }
+    }
+
+    @Test
+    void testEOFUnsignedByte() throws IOException
+    {
+        byte[] byteArray = new byte[2];
+        RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(byteArray);
+        try (RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(
+                randomAccessReadBuffer))
+        {
+            dataStream.readUnsignedByte();
+            dataStream.readUnsignedByte();
+            assertThrows(EOFException.class, () -> dataStream.readUnsignedByte());
+        }
+    }
     /**
      * Test of PDFBOX-4242: make sure that the Closeable.close() contract is fulfilled.
      * 
