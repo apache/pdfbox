@@ -100,10 +100,10 @@ public class OpaquePDFRenderer extends PDFRenderer
 
     // copied from org.apache.pdfbox.contentstream.operator.graphics.DrawObject()
     // but doesn't call showTransparencyGroup
-    private class OpaqueDrawObject extends GraphicsOperatorProcessor
+    private static class OpaqueDrawObject extends GraphicsOperatorProcessor
     {
 
-        private final Log LOG = LogFactory.getLog(OpaqueDrawObject.class);
+        private static final Log LOG = LogFactory.getLog(OpaqueDrawObject.class);
 
         @Override
         public void process(Operator operator, List<COSBase> operands) throws IOException
