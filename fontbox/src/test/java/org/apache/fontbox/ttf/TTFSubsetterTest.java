@@ -15,7 +15,6 @@
  */
 package org.apache.fontbox.ttf;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +24,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,12 +50,14 @@ class TTFSubsetterTest
     @Test
     void testEmptySubset() throws IOException
     {
-        TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont x = new TTFParser().parse(new RandomAccessReadBufferedFile(
+                "src/test/resources/ttf/LiberationSans-Regular.ttf"));
         TTFSubsetter ttfSubsetter = new TTFSubsetter(x);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
+        try (TrueTypeFont subset = new TTFParser(true)
+                .parse(new RandomAccessReadBuffer(baos.toByteArray())))
         {
             assertEquals(1, subset.getNumberOfGlyphs());
             assertEquals(0, subset.nameToGID(".notdef"));
@@ -69,7 +73,8 @@ class TTFSubsetterTest
     @Test
     void testEmptySubset2() throws IOException
     {
-        TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont x = new TTFParser().parse(new RandomAccessReadBufferedFile(
+                "src/test/resources/ttf/LiberationSans-Regular.ttf"));
         // List copied from TrueTypeEmbedder.java
         List<String> tables = new ArrayList<>();
         tables.add("head");
@@ -86,7 +91,8 @@ class TTFSubsetterTest
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
+        try (TrueTypeFont subset = new TTFParser(true)
+                .parse(new RandomAccessReadBuffer(baos.toByteArray())))
         {
             assertEquals(1, subset.getNumberOfGlyphs());
             assertEquals(0, subset.nameToGID(".notdef"));
@@ -102,12 +108,14 @@ class TTFSubsetterTest
     @Test
     void testNonEmptySubset() throws IOException
     {
-        TrueTypeFont full = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont full = new TTFParser().parse(new RandomAccessReadBufferedFile(
+                "src/test/resources/ttf/LiberationSans-Regular.ttf"));
         TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
         ttfSubsetter.add('a');
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
+        try (TrueTypeFont subset = new TTFParser(true)
+                .parse(new RandomAccessReadBuffer(baos.toByteArray())))
         {
             assertEquals(2, subset.getNumberOfGlyphs());
             assertEquals(0, subset.nameToGID(".notdef"));
@@ -146,7 +154,7 @@ class TTFSubsetterTest
         }
         Assumptions.assumeTrue(simhei != null, "SimHei font not available on this machine, test skipped");
         System.out.println("SimHei font found!");
-        TrueTypeFont full = new TTFParser().parse(simhei);
+        TrueTypeFont full = new TTFParser().parse(new RandomAccessReadBufferedFile(simhei));
 
         // List copied from TrueTypeEmbedder.java
         // Without it, the test would fail because of missing post table in source font
@@ -174,7 +182,8 @@ class TTFSubsetterTest
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
+        try (TrueTypeFont subset = new TTFParser(true)
+                .parse(new RandomAccessReadBuffer(baos.toByteArray())))
         {
             assertEquals(6, subset.getNumberOfGlyphs());
 
@@ -197,14 +206,16 @@ class TTFSubsetterTest
     @Test
     void testPDFBox3379() throws IOException
     {
-        TrueTypeFont full = new TTFParser().parse("target/pdfs/DejaVuSansMono.ttf");
+        TrueTypeFont full = new TTFParser()
+                .parse(new RandomAccessReadBufferedFile("target/pdfs/DejaVuSansMono.ttf"));
         TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
         ttfSubsetter.add('A');
         ttfSubsetter.add(' ');
         ttfSubsetter.add('B');
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        try (TrueTypeFont subset = new TTFParser().parse(new ByteArrayInputStream(baos.toByteArray())))
+        try (TrueTypeFont subset = new TTFParser()
+                .parse(new RandomAccessReadBuffer(baos.toByteArray())))
         {
             assertEquals(4, subset.getNumberOfGlyphs());
             assertEquals(0, subset.nameToGID(".notdef"));
@@ -232,13 +243,14 @@ class TTFSubsetterTest
     void testPDFBox3757() throws IOException
     {
         final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
-        TrueTypeFont ttf = new TTFParser().parse(testFile);
+        TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(testFile));
         TTFSubsetter ttfSubsetter = new TTFSubsetter(ttf);
         ttfSubsetter.add('Ö');
         ttfSubsetter.add('\u200A');
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
+        try (TrueTypeFont subset = new TTFParser(true)
+                .parse(new RandomAccessReadBuffer(baos.toByteArray())))
         {
             assertEquals(5, subset.getNumberOfGlyphs());
             

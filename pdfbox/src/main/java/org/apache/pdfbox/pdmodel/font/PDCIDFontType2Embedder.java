@@ -288,11 +288,11 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         int prev = Integer.MIN_VALUE;
         // Use a sorted list to get an optimal width array  
         Set<Integer> keys = new TreeSet<>(cidToGid.keySet());
-        HorizontalMetricsTable table = ttf.getHorizontalMetrics();
+        HorizontalMetricsTable horizontalMetricsTable = ttf.getHorizontalMetrics();
         for (int cid : keys)
         {
             int gid = cidToGid.get(cid);
-            long width = Math.round(table.getAdvanceWidth(gid) * scaling);
+            long width = Math.round(horizontalMetricsTable.getAdvanceWidth(gid) * scaling);
             if (width == 1000)
             {
                 // skip default width
@@ -402,11 +402,11 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     {
         int cidMax = ttf.getNumberOfGlyphs();
         int[] gidwidths = new int[cidMax * 2];
-        HorizontalMetricsTable table = ttf.getHorizontalMetrics();
+        HorizontalMetricsTable horizontalMetricsTable = ttf.getHorizontalMetrics();
         for (int cid = 0; cid < cidMax; cid++)
         {
             gidwidths[cid * 2] = cid;
-            gidwidths[cid * 2 + 1] = table.getAdvanceWidth(cid);
+            gidwidths[cid * 2 + 1] = horizontalMetricsTable.getAdvanceWidth(cid);
         }
 
         cidFont.setItem(COSName.W, getWidths(gidwidths));
@@ -526,7 +526,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         int cidMax = ttf.getNumberOfGlyphs();
         int[] gidMetrics = new int[cidMax * 4];
         GlyphTable glyphTable = ttf.getGlyph();
-        VerticalMetricsTable vtable = ttf.getVerticalMetrics();
+        VerticalMetricsTable verticalMetricsTable = ttf.getVerticalMetrics();
         HorizontalMetricsTable htable = ttf.getHorizontalMetrics();
         for (int cid = 0; cid < cidMax; cid++)
         {
@@ -538,9 +538,9 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             else
             {
                 gidMetrics[cid * 4] = cid;
-                gidMetrics[cid * 4 + 1] = vtable.getAdvanceHeight(cid);
+                gidMetrics[cid * 4 + 1] = verticalMetricsTable.getAdvanceHeight(cid);
                 gidMetrics[cid * 4 + 2] = htable.getAdvanceWidth(cid);
-                gidMetrics[cid * 4 + 3] = glyph.getYMaximum() + vtable.getTopSideBearing(cid);
+                gidMetrics[cid * 4 + 3] = glyph.getYMaximum() + verticalMetricsTable.getTopSideBearing(cid);
             }
         }
 

@@ -74,7 +74,7 @@ public class Type2CharStringParser
     private List<Object> parseSequence(byte[] bytes, byte[][] globalSubrIndex,
             byte[][] localSubrIndex) throws IOException
     {
-        DataInput input = new DataInput(bytes);
+        DataInput input = new DataInputByteArray(bytes);
         boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.length > 0;
         boolean globalSubroutineIndexProvided = globalSubrIndex != null && globalSubrIndex.length > 0;
 

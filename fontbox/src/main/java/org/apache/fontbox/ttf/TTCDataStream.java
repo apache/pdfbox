@@ -47,18 +47,6 @@ class TTCDataStream extends TTFDataStream
     }
 
     @Override
-    public int readUnsignedShort() throws IOException
-    {
-        return stream.readUnsignedShort();
-    }
-
-    @Override
-    public short readSignedShort() throws IOException
-    {
-        return stream.readSignedShort();
-    }
-
-    @Override
     public void close() throws IOException
     {
         // don't close the underlying stream, as it is shared by all fonts from the same TTC
@@ -94,4 +82,5 @@ class TTCDataStream extends TTFDataStream
     {
         return stream.getOriginalDataSize();
     }
+
 }

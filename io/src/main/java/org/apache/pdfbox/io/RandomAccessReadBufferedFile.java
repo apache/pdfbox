@@ -258,20 +258,6 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
     {
         checkClosed();
-        // support long values?
-        ByteBuffer byteBuffer = ByteBuffer.allocate((int) streamLength);
-        fileChannel.position(startPosition);
-        int readBytes = 0;
-        while (readBytes < streamLength)
-        {
-            int curBytesRead = fileChannel.read(byteBuffer);
-            if (curBytesRead < 0)
-            {
-                // EOF
-                break;
-            }
-            readBytes += curBytesRead;
-        }
         return new RandomAccessReadView(new RandomAccessReadBufferedFile(file), startPosition,
                 streamLength, true);
     }

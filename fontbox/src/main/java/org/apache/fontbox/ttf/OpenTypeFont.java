@@ -88,10 +88,10 @@ public class OpenTypeFont extends TrueTypeFont
      */
     public boolean hasLayoutTables()
     {
-        return tables.containsKey("BASE") ||
-               tables.containsKey("GDEF") ||
-               tables.containsKey("GPOS") ||
-               tables.containsKey("GSUB") ||
-               tables.containsKey("JSTF");
+        return tables.containsKey("BASE") //
+                || tables.containsKey("GDEF") //
+                || tables.containsKey("GPOS") //
+                || tables.containsKey(GlyphSubstitutionTable.TAG) //
+                || tables.containsKey(OTLTable.TAG);
     }
 }

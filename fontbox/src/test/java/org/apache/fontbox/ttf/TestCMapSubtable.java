@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +41,7 @@ class TestCMapSubtable
         int gid = 8712;
         File fontFile = new File("target/pdfs", "NotoSansSC-Regular.otf");
         OTFParser otfParser = new OTFParser(false);
-        OpenTypeFont otf = otfParser.parse(fontFile);
+        OpenTypeFont otf = otfParser.parse(new RandomAccessReadBufferedFile(fontFile));
 
         CmapLookup unicodeCmapLookup = otf.getUnicodeCmapLookup();
         List<Integer> charCodes = unicodeCmapLookup.getCharCodes(gid);

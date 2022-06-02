@@ -111,7 +111,7 @@ public class PDCIDFontType2 extends PDCIDFont
                 {
                     // embedded OTF or TTF
                     OTFParser otfParser = new OTFParser(true);
-                    OpenTypeFont otf = otfParser.parse(stream.createInputStream());
+                    OpenTypeFont otf = otfParser.parse(stream.getCOSObject().createView());
                     ttfFont = otf;
     
                     if (otf.isPostScript())

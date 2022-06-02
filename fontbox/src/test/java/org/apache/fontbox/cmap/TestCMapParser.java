@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -47,7 +48,8 @@ class TestCMapParser
         final String resourceDir = "src/test/resources/cmap";
         File inDir = new File(resourceDir);
 
-        CMap cMap = new CMapParser().parse(new File(inDir, "CMapTest"));
+        CMap cMap = new CMapParser()
+                .parse(new RandomAccessReadBufferedFile(new File(inDir, "CMapTest")));
 
         // char mappings
         byte[] bytes1 = {0, 1};
@@ -148,7 +150,8 @@ class TestCMapParser
     @Test
     void testParserWithPoorWhitespace() throws IOException
     {
-        CMap cMap = new CMapParser().parse(new File("src/test/resources/cmap", "CMapNoWhitespace"));
+        CMap cMap = new CMapParser().parse(new RandomAccessReadBufferedFile(
+                new File("src/test/resources/cmap", "CMapNoWhitespace")));
 
         assertNotNull(cMap, "Failed to parse nasty CMap file");
     }
@@ -157,7 +160,8 @@ class TestCMapParser
     void testParserWithMalformedbfrange1() throws IOException
     {
         CMap cMap = new CMapParser()
-                .parse(new File("src/test/resources/cmap", "CMapMalformedbfrange1"));
+                .parse(new RandomAccessReadBufferedFile(
+                        new File("src/test/resources/cmap", "CMapMalformedbfrange1")));
 
         assertNotNull(cMap, "Failed to parse malformed CMap file");
 
@@ -173,7 +177,8 @@ class TestCMapParser
     void testParserWithMalformedbfrange2() throws IOException
     {
         CMap cMap = new CMapParser()
-                .parse(new File("src/test/resources/cmap", "CMapMalformedbfrange2"));
+                .parse(new RandomAccessReadBufferedFile(
+                        new File("src/test/resources/cmap", "CMapMalformedbfrange2")));
 
         assertNotNull(cMap, "Failed to parse malformed CMap file");
 
@@ -189,7 +194,8 @@ class TestCMapParser
 
         // use strict mode
         cMap = new CMapParser(true)
-                .parse(new File("src/test/resources/cmap", "CMapMalformedbfrange2"));
+                .parse(new RandomAccessReadBufferedFile(
+                        new File("src/test/resources/cmap", "CMapMalformedbfrange2")));
         // check border values for strict mode
         assertNotNull(cMap.toUnicode(new byte[] { 2, (byte) 0xF0 }));
         assertNull(cMap.toUnicode(new byte[] { 2, (byte) 0xF1 }));
@@ -216,7 +222,8 @@ class TestCMapParser
     {
         // use strict mode
         CMap cMap = new CMapParser(true)
-                .parse(new File("src/test/resources/cmap", "Identitybfrange"));
+                .parse(new RandomAccessReadBufferedFile(
+                        new File("src/test/resources/cmap", "Identitybfrange")));
         assertEquals("Adobe-Identity-UCS", cMap.getName(), "wrong CMap name");
 
         byte[] bytes = new byte[] { 0, 65 };

@@ -20,14 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.fontbox.util.BoundingBox;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -205,10 +203,9 @@ class CFFParserTest
 
     private static List<CFFFont> readFont(String filename) throws IOException
     {
-        ByteArrayOutputStream content = new ByteArrayOutputStream();
-        Files.copy(Paths.get(filename), content);
+        RandomAccessReadBufferedFile randomAccessRead = new RandomAccessReadBufferedFile(filename);
         CFFParser parser = new CFFParser();
-        return parser.parse(content.toByteArray());
+        return parser.parse(randomAccessRead);
     }
 
     private void assertNumberList(String message, int[] expected, List<Number> found)

@@ -251,8 +251,15 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         if (rebuildTrailer)
         {
-            trailer = getBruteForceParser().rebuildTrailer(xrefTrailerResolver, securityHandler);
+            trailer = getBruteForceParser().rebuildTrailer(xrefTrailerResolver, null);
             trailerWasRebuild = true;
+            // transfer encryption information from BruteForceParser
+            encryption = getBruteForceParser().getEncryption();
+            if (encryption != null)
+            {
+                securityHandler = encryption.getSecurityHandler();
+                accessPermission = securityHandler.getCurrentAccessPermission();
+            }
         }
         else
         {

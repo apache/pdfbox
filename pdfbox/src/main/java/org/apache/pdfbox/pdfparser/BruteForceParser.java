@@ -807,7 +807,7 @@ public class BruteForceParser extends COSParser
         trailerResolver.reset();
         // use the found objects to rebuild the trailer resolver
         trailerResolver.nextXrefObj(0, XRefType.TABLE);
-        bfSearchCOSObjectKeyOffsets.forEach(xrefTrailerResolver::setXRef);
+        bfSearchCOSObjectKeyOffsets.forEach(trailerResolver::setXRef);
         trailerResolver.setStartxref(0);
         COSDictionary trailer = trailerResolver.getTrailer();
         document.setTrailer(trailer);
