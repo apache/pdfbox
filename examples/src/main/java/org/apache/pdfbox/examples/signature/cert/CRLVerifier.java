@@ -22,7 +22,6 @@ package org.apache.pdfbox.examples.signature.cert;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
@@ -43,14 +42,17 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.examples.signature.SigUtils;
+
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 
+import org.bouncycastle.asn1.ASN1IA5String;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.x509.CRLDistPoint;
 import org.bouncycastle.asn1.x509.DistributionPoint;
 import org.bouncycastle.asn1.x509.DistributionPointName;
@@ -291,7 +293,7 @@ public final class CRLVerifier
     public static X509CRL downloadCRLFromWeb(String crlURL)
             throws IOException, CertificateException, CRLException
     {
-        try (InputStream crlStream = new URL(crlURL).openStream())
+        try (InputStream crlStream = SigUtils.openURL(crlURL))
         {
             return (X509CRL) CertificateFactory.getInstance("X.509").generateCRL(crlStream);
         }
@@ -345,7 +347,7 @@ public final class CRLVerifier
                 {
                     if (genName.getTagNo() == GeneralName.uniformResourceIdentifier)
                     {
-                        String url = DERIA5String.getInstance(genName.getName()).getString();
+                        String url = ASN1IA5String.getInstance(genName.getName()).getString();
                         crlUrls.add(url);
                     }
                 }

@@ -167,6 +167,10 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         try (FileOutputStream fos = new FileOutputStream(signedFile);
                 PDDocument doc = Loader.loadPDF(inputFile))
         {
+            // call SigUtils.checkCrossReferenceTable(doc) if Adobe complains
+            // and read https://stackoverflow.com/a/71293901/535646
+            // and https://issues.apache.org/jira/browse/PDFBOX-5382
+
             int accessPermissions = SigUtils.getMDPPermission(doc);
             if (accessPermissions == 1)
             {
@@ -542,7 +546,10 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         File ksFile = new File(args[0]);
         KeyStore keystore = KeyStore.getInstance("PKCS12");
         char[] pin = args[1].toCharArray();
-        keystore.load(new FileInputStream(ksFile), pin);
+        try (InputStream is = new FileInputStream(ksFile))
+        {
+            keystore.load(is, pin);
+        }
 
         File documentFile = new File(args[2]);
 

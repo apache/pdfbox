@@ -29,11 +29,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.EncodedFont;
 import org.apache.fontbox.FontBoxFont;
+import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
@@ -74,41 +76,47 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     {
         super(fontDictionary);
 
+        boolean fontIsDamaged = false;
+        CFFType1Font cffEmbedded = null;
         PDFontDescriptor fd = getFontDescriptor();
-        byte[] bytes = null;
         if (fd != null)
         {
             PDStream ff3Stream = fd.getFontFile3();
             if (ff3Stream != null)
             {
-                bytes = ff3Stream.toByteArray();
-                if (bytes.length == 0)
+                try (RandomAccessRead randomAccessRead = fd.getFontFile3().getCOSObject()
+                        .createView())
                 {
-                    LOG.error("Invalid data for embedded Type1C font " + getName());
-                    bytes = null;
+                    if (randomAccessRead.length() == 0)
+                    {
+                        LOG.error("Invalid data for embedded Type1C font " + getName());
+                    }
+                    else
+                    {
+                        // note: this could be an OpenType file, fortunately CFFParser can handle that
+                        CFFParser cffParser = new CFFParser();
+                        CFFFont parsedCffFont = cffParser.parse(randomAccessRead).get(0);
+                        if (parsedCffFont instanceof CFFType1Font)
+                        {
+                            cffEmbedded = (CFFType1Font) parsedCffFont;
+                        }
+                        else
+                        {
+                            LOG.error("Expected CFFType1Font, got "
+                                    + parsedCffFont.getClass().getSimpleName());
+                            fontIsDamaged = true;
+                        }
+                    }
+                }
+                catch (IOException e)
+                {
+                    LOG.error("Can't read the embedded Type1C font " + getName(), e);
+                    fontIsDamaged = true;
                 }
             }
         }
-
-        boolean fontIsDamaged = false;
-        CFFType1Font cffEmbedded = null;
-        try
-        {
-            if (bytes != null)
-            {
-                // note: this could be an OpenType file, fortunately CFFParser can handle that
-                CFFParser cffParser = new CFFParser();
-                cffEmbedded = (CFFType1Font)cffParser.parse(bytes, new FF3ByteSource()).get(0);
-            }
-        }
-        catch (IOException e)
-        {
-            LOG.error("Can't read the embedded Type1C font " + getName(), e);
-            fontIsDamaged = true;
-        }
         isDamaged = fontIsDamaged;
         cffFont = cffEmbedded;
-
         if (cffFont != null)
         {
             genericFont = cffFont;
@@ -472,12 +480,4 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         return ".notdef";
     }
     
-    private class FF3ByteSource implements CFFParser.ByteSource
-    {
-        @Override
-        public byte[] getBytes() throws IOException
-        {
-            return getFontDescriptor().getFontFile3().toByteArray();
-        }
-    }
 }

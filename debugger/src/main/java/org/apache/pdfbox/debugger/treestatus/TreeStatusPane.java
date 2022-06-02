@@ -30,6 +30,7 @@ import javax.swing.border.Border;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
+import org.apache.pdfbox.debugger.PDFDebugger;
 
 /**
  * @author Khyrul Bashar
@@ -77,6 +78,9 @@ public class TreeStatusPane implements TreeSelectionListener
         panel = new JPanel(new BorderLayout());
         statusField = new JTextField();
         statusField.setEditable(false);
+        int treePathFontHeight = Integer.parseInt(PDFDebugger.configuration.getProperty(
+                                    "treePathFontHeight", Integer.toString(statusField.getFont().getSize())));
+        statusField.setFont(statusField.getFont().deriveFont((float) treePathFontHeight));
         panel.add(statusField);
         defaultBorder = new BevelBorder(BevelBorder.LOWERED);
         errorBorder = new BevelBorder(BevelBorder.LOWERED, Color.RED, Color.RED);

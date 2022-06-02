@@ -227,7 +227,7 @@ public class SymbolEncoding extends Encoding
     /**
      * Constructor.
      */
-    public SymbolEncoding()
+    private SymbolEncoding()
     {
         for (Object[] encodingEntry : SYMBOL_ENCODING_TABLE)
         {

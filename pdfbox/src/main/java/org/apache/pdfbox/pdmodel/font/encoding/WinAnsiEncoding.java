@@ -261,7 +261,7 @@ public class WinAnsiEncoding extends Encoding
     /**
      * Constructor.
      */
-    public WinAnsiEncoding()
+    private WinAnsiEncoding()
     {
         for (Object[] encodingEntry : WIN_ANSI_ENCODING_TABLE)
         {

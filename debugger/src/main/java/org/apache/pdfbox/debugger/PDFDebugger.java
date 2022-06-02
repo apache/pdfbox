@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.spi.IIORegistry;
 
@@ -69,7 +70,11 @@ import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.TreePath;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -97,7 +102,6 @@ import org.apache.pdfbox.debugger.treestatus.TreeStatusPane;
 import org.apache.pdfbox.debugger.ui.ArrayEntry;
 import org.apache.pdfbox.debugger.ui.DocumentEntry;
 import org.apache.pdfbox.debugger.ui.ErrorDialog;
-import org.apache.pdfbox.debugger.ui.ExtensionFileFilter;
 import org.apache.pdfbox.debugger.ui.FileOpenSaveDialog;
 import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
 import org.apache.pdfbox.debugger.ui.LogDialog;
@@ -146,11 +150,15 @@ import picocli.CommandLine.Model.CommandSpec;
 @Command(name = "pdfdebugger", description = "Analyzes and inspects the internal structure of a PDF document")
 public class PDFDebugger extends JFrame implements Callable<Integer>
 {
+    private static Log LOG; // needs late initialization
+
     private static final Set<COSName> SPECIALCOLORSPACES = new HashSet<>(
             Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
     private static final Set<COSName> OTHERCOLORSPACES = new HashSet<>(
             Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY, COSName.CALRGB, COSName.LAB));
+
+    private static final FileFilter PDF_FILTER = new FileNameExtensionFilter("PDF Files (*.pdf)", "pdf", "PDF");
 
     private int shortcutKeyMask;
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
@@ -257,11 +265,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             initComponents();
 
             // use our custom logger
-            // this works only if there is no "LogFactory.getLog()" in this class,
+            // this works only if there is no earlier "LogFactory.getLog()" in this class,
             // and if there are no methods that call logging, even invisible
             // use reduced file from PDFBOX-3653 to see logging
             LogDialog.init(this,statusBar.getLogLabel());
             System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
+            LOG = LogFactory.getLog(PDFDebugger.class);
 
             TextDialog.init(this);
 
@@ -376,7 +385,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
 
         statusPane = new TreeStatusPane(tree);
         statusPane.getPanel().setBorder(new BevelBorder(BevelBorder.RAISED));
-        statusPane.getPanel().setPreferredSize(new Dimension(300, 25));
+        Dimension preferredTreePathSize = statusPane.getPanel().getPreferredSize();
+        int treePathHeight = (int) Math.round(preferredTreePathSize.getHeight());
+        treePathHeight = Integer.parseInt(
+                configuration.getProperty("treePathHeight", Integer.toString(treePathHeight)));
+        preferredTreePathSize.height = treePathHeight;
+        statusPane.getPanel().setPreferredSize(preferredTreePathSize);
         getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
         getContentPane().add(jSplitPane, BorderLayout.CENTER);
@@ -416,14 +430,14 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                             DataFlavor.javaFileListFlavor);
                     readPDFFile(files.get(0), "");
                 }
-                catch (IOException e)
-                {
-                    new ErrorDialog(e).setVisible(true);
-                }
                 catch (UnsupportedFlavorException e)
                 {
                     new ErrorDialog(e).setVisible(true);
                     return false;
+                }
+                catch (Exception e)
+                {
+                    new ErrorDialog(e).setVisible(true);
                 }
                 return true;
             }
@@ -687,9 +701,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             }
             else
             {
-                String[] extensions = new String[] { "pdf", "PDF" };
-                FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
-                FileOpenSaveDialog saveAsDialog = new FileOpenSaveDialog(this, pdfFilter);
+                FileOpenSaveDialog saveAsDialog = new FileOpenSaveDialog(this, PDF_FILTER);
                 saveAsDialog.saveDocument(document, "pdf");
             }
         }
@@ -715,9 +727,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             }
             else
             {
-                String[] extensions = new String[] {"pdf", "PDF"};
-                FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
-                FileOpenSaveDialog openDialog = new FileOpenSaveDialog(this, pdfFilter);
+                FileOpenSaveDialog openDialog = new FileOpenSaveDialog(this, PDF_FILTER);
 
                 File file = openDialog.openFile();
                 if (file != null)
@@ -1227,7 +1237,11 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 try
                 {
+                    long t0 = System.nanoTime();
                     job.print(pras);
+                    long t1 = System.nanoTime();
+                    long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+                    LOG.info("Printed in " + ms + " ms");
                 }
                 finally
                 {
@@ -1267,7 +1281,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             @Override
             PDDocument open() throws IOException
             {
-                return Loader.loadPDF(file, password);
+                long t0 = System.nanoTime();
+                PDDocument doc = Loader.loadPDF(file, password);
+                long t1 = System.nanoTime();
+                long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+                LOG.info("Parsed in " + ms + " ms");
+                return doc;
             }
         };
         document = documentOpener.parse();
@@ -1309,7 +1328,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             @Override
             PDDocument open() throws IOException
             {
-                return Loader.loadPDF(new URL(urlString).openStream(), password);
+                long t0 = System.nanoTime();
+                PDDocument doc = Loader.loadPDF(new URL(urlString).openStream(), password);
+                long t1 = System.nanoTime();
+                long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+                LOG.info("Parsed in " + ms + " ms");
+                return doc;
             }
         };
         document = documentOpener.parse();

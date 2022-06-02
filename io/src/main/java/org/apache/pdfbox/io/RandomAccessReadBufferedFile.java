@@ -65,6 +65,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     private int offsetWithinPage = 0;
 
     private final FileChannel fileChannel;
+    private final File file;
     private final long fileLength;
     private long fileOffset = 0;
     private boolean isClosed;
@@ -88,6 +89,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
      */
     public RandomAccessReadBufferedFile( File file ) throws IOException 
     {
+        this.file = file;
         fileChannel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
         fileLength = file.length();
         seek(0);
@@ -256,21 +258,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
     {
         checkClosed();
-        // support long values?
-        ByteBuffer byteBuffer = ByteBuffer.allocate((int) streamLength);
-        fileChannel.position(startPosition);
-        int readBytes = 0;
-        while (readBytes < streamLength)
-        {
-            int curBytesRead = fileChannel.read(byteBuffer);
-            if (curBytesRead < 0)
-            {
-                // EOF
-                break;
-            }
-            readBytes += curBytesRead;
-        }
-        return new RandomAccessReadView(new RandomAccessReadBuffer(byteBuffer), 0, streamLength,
-                true);
+        return new RandomAccessReadView(new RandomAccessReadBufferedFile(file), startPosition,
+                streamLength, true);
     }
 }

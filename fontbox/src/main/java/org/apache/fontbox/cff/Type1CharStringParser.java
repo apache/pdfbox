@@ -76,7 +76,7 @@ public class Type1CharStringParser
     private List<Object> parse(byte[] bytes, List<byte[]> subrs, List<Object> sequence)
             throws IOException
     {
-        DataInput input = new DataInput(bytes);
+        DataInput input = new DataInputByteArray(bytes);
         while (input.hasRemaining())
         {
             int b0 = input.readUnsignedByte();
@@ -157,12 +157,12 @@ public class Type1CharStringParser
             sequence.remove(sequence.size() - 1);
             // end flex
             sequence.add(0);
-            sequence.add(new CharStringCommand(TWO_BYTE, CALLOTHERSUBR));
+            sequence.add(CharStringCommand.COMMAND_CALLOTHERSUBR);
             break;
         case 1:
             // begin flex
             sequence.add(1);
-            sequence.add(new CharStringCommand(TWO_BYTE, CALLOTHERSUBR));
+            sequence.add(CharStringCommand.COMMAND_CALLOTHERSUBR);
             break;
         case 3:
             // allows hint replacement
@@ -218,9 +218,9 @@ public class Type1CharStringParser
         if (b0 == 12)
         {
             int b1 = input.readUnsignedByte();
-            return new CharStringCommand(b0, b1);
+            return CharStringCommand.getInstance(b0, b1);
         }
-        return new CharStringCommand(b0);
+        return CharStringCommand.getInstance(b0);
     }
 
     private Integer readNumber(DataInput input, int b0) throws IOException

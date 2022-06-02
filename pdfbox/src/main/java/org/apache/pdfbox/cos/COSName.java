@@ -760,9 +760,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     }
 
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public void accept(ICOSVisitor visitor) throws IOException
     {
-        return visitor.visitFromName(this);
+        visitor.visitFromName(this);
     }
 
     /**

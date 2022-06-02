@@ -61,6 +61,7 @@ public class PDFXrefStreamParser extends BaseParser
         catch (IOException exception)
         {
             close();
+            throw exception;
         }
     }
 
@@ -93,7 +94,7 @@ public class PDFXrefStreamParser extends BaseParser
             indexArray.add(COSInteger.ZERO);
             indexArray.add(COSInteger.get(stream.getInt(COSName.SIZE, 0)));
         }
-        if (indexArray.size() % 2 == 1)
+        if (indexArray.size() == 0 || indexArray.size() % 2 == 1)
         {
             throw new IOException(
                     "Wrong number of values for /Index array in XRef: " + Arrays.toString(w));
@@ -123,7 +124,7 @@ public class PDFXrefStreamParser extends BaseParser
         byte[] currLine = new byte[w[0] + w[1] + w[2]];
         while (!isEOF() && objectNumbers.hasNext())
         {
-            source.read(currLine);
+            readNextValue(currLine);
             // get the current objID
             long objID = objectNumbers.next();
             // default value is 1 if w[0] == 0, otherwise parse first field
@@ -151,6 +152,16 @@ public class PDFXrefStreamParser extends BaseParser
             }
         }
         close();
+    }
+
+    private void readNextValue(byte[] value) throws IOException
+    {
+        int remainingBytes = value.length;
+        int amountRead;
+        while ((amountRead = source.read(value, value.length - remainingBytes, remainingBytes)) > 0)
+        {
+            remainingBytes -= amountRead;
+        }
     }
 
     private long parseValue(byte[] data, int start, int length)

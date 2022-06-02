@@ -331,14 +331,17 @@ public class COSWriter implements ICOSVisitor
         Set<COSObjectKey> keySet = cosDoc.getXrefTable().keySet();
         for (COSObjectKey cosObjectKey : keySet)
         {
-            COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
-            if (object != null && cosObjectKey != null && !(object instanceof COSNumber))
+            if (cosObjectKey != null)
             {
-                // FIXME see PDFBOX-4997: objectKeys is (theoretically) risky because a COSName in
-                // different objects would appear only once. Rev 1092855 considered this
-                // but only for COSNumber.
-                objectKeys.put(object, cosObjectKey);
-                keyObject.put(cosObjectKey, object);
+                COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
+                if (object != null && !(object instanceof COSNumber))
+                {
+                    // FIXME see PDFBOX-4997: objectKeys is (theoretically) risky because a COSName in
+                    // different objects would appear only once. Rev 1092855 considered this
+                    // but only for COSNumber.
+                    objectKeys.put(object, cosObjectKey);
+                    keyObject.put(cosObjectKey, object);
+                }
             }
         }
     }
@@ -913,7 +916,7 @@ public class COSWriter implements ICOSVisitor
             byte[] signatureBytes = signatureInterface.sign(dataToSign);
             writeExternalSignature(signatureBytes);
         }
-        // else signature should created externally and set via writeSignature()
+        // else signature should be created externally and set via writeSignature()
     }
 
     /**
@@ -968,7 +971,8 @@ public class COSWriter implements ICOSVisitor
         // subtract 2 bytes because of the enclosing "<>"
         if (signatureBytes.length > signatureLength - 2)
         {
-            throw new IOException("Can't write signature, not enough space");
+            throw new IOException("Can't write signature, not enough space; "
+                    + "adjust it with SignatureOptions.setPreferredSignatureSize");
         }
 
         // overwrite the signature Contents in the buffer
@@ -1085,7 +1089,7 @@ public class COSWriter implements ICOSVisitor
     }
 
     @Override
-    public Object visitFromArray( COSArray obj ) throws IOException
+    public void visitFromArray(COSArray obj) throws IOException
     {
         int count = 0;
         getStandardOutput().write(ARRAY_OPEN);
@@ -1106,23 +1110,8 @@ public class COSWriter implements ICOSVisitor
             }
             else if( current instanceof COSObject )
             {
-                COSBase subValue = ((COSObject)current).getObject();
-                if (willEncrypt || incrementalUpdate //
-                        || subValue instanceof COSDictionary //
-                        || subValue instanceof COSArray //
-                        || subValue == null)
-                {
-                    // PDFBOX-4308: added willEncrypt to prevent an object
-                    // that is referenced several times from being written
-                    // direct and indirect, thus getting encrypted
-                    // with wrong object number or getting encrypted twice
-                    addObjectToWrite( current );
-                    writeReference( current );
-                }
-                else
-                {
-                    subValue.accept( this );
-                }
+                addObjectToWrite(current);
+                writeReference(current);
             }
             else if( current == null )
             {
@@ -1147,18 +1136,16 @@ public class COSWriter implements ICOSVisitor
         }
         getStandardOutput().write(ARRAY_CLOSE);
         getStandardOutput().writeEOL();
-        return null;
     }
 
     @Override
-    public Object visitFromBoolean(COSBoolean obj) throws IOException
+    public void visitFromBoolean(COSBoolean obj) throws IOException
     {
         obj.writePDF( getStandardOutput() );
-        return null;
     }
 
     @Override
-    public Object visitFromDictionary(COSDictionary obj) throws IOException
+    public void visitFromDictionary(COSDictionary obj) throws IOException
     {
         if (!reachedSignature)
         {
@@ -1211,23 +1198,8 @@ public class COSWriter implements ICOSVisitor
                 }
                 else if( value instanceof COSObject )
                 {
-                    COSBase subValue = ((COSObject)value).getObject();
-                    if (willEncrypt || incrementalUpdate //
-                            || subValue instanceof COSDictionary //
-                            || subValue instanceof COSArray //
-                            || subValue == null)
-                    {
-                        // PDFBOX-4308: added willEncrypt to prevent an object
-                        // that is referenced several times from being written
-                        // direct and indirect, thus getting encrypted
-                        // with wrong object number or getting encrypted twice
-                        addObjectToWrite( value );
-                        writeReference( value );
-                    }
-                    else
-                    {
-                        subValue.accept( this );
-                    }
+                    addObjectToWrite(value);
+                    writeReference(value);
                 }
                 else
                 {
@@ -1265,11 +1237,10 @@ public class COSWriter implements ICOSVisitor
         }
         getStandardOutput().write(DICT_CLOSE);
         getStandardOutput().writeEOL();
-        return null;
     }
 
     @Override
-    public Object visitFromDocument(COSDocument doc) throws IOException
+    public void visitFromDocument(COSDocument doc) throws IOException
     {
         if(!incrementalUpdate)
         {
@@ -1332,35 +1303,30 @@ public class COSWriter implements ICOSVisitor
             }
         }
 
-        return null;
     }
 
     @Override
-    public Object visitFromFloat(COSFloat obj) throws IOException
+    public void visitFromFloat(COSFloat obj) throws IOException
     {
         obj.writePDF( getStandardOutput() );
-        return null;
     }
 
     @Override
-    public Object visitFromInt(COSInteger obj) throws IOException
+    public void visitFromInt(COSInteger obj) throws IOException
     {
         obj.writePDF( getStandardOutput() );
-        return null;
     }
 
     @Override
-    public Object visitFromName(COSName obj) throws IOException
+    public void visitFromName(COSName obj) throws IOException
     {
         obj.writePDF( getStandardOutput() );
-        return null;
     }
 
     @Override
-    public Object visitFromNull(COSNull obj) throws IOException
+    public void visitFromNull(COSNull obj) throws IOException
     {
         obj.writePDF(getStandardOutput());
-        return null;
     }
 
     /**
@@ -1381,7 +1347,7 @@ public class COSWriter implements ICOSVisitor
     }
 
     @Override
-    public Object visitFromStream(COSStream obj) throws IOException
+    public void visitFromStream(COSStream obj) throws IOException
     {
         if (willEncrypt)
         {
@@ -1404,7 +1370,6 @@ public class COSWriter implements ICOSVisitor
             getStandardOutput().writeCRLF();
             getStandardOutput().write(ENDSTREAM);
             getStandardOutput().writeEOL();
-            return null;
         }
         finally
         {
@@ -1416,7 +1381,7 @@ public class COSWriter implements ICOSVisitor
     }
 
     @Override
-    public Object visitFromString(COSString obj) throws IOException
+    public void visitFromString(COSString obj) throws IOException
     {
         if (willEncrypt)
         {
@@ -1426,7 +1391,6 @@ public class COSWriter implements ICOSVisitor
                     currentObjectKey.getGeneration());
         }
         COSWriter.writeString(obj, getStandardOutput());
-        return null;
     }
 
     /**
@@ -1471,8 +1435,19 @@ public class COSWriter implements ICOSVisitor
         pdDocument = doc;
         COSDocument cosDoc = pdDocument.getDocument();
         COSDictionary trailer = cosDoc.getTrailer();
-        if(incrementalUpdate){
-            trailer.toIncrement().exclude(trailer).forEach(objectsToWrite::add);
+        if (incrementalUpdate)
+        {
+            trailer.toIncrement().exclude(trailer).forEach(base -> {
+                objectsToWrite.add(base);
+                if (base instanceof COSObject)
+                {
+                    actualsAdded.add(((COSObject) base).getObject());
+                }
+                else
+                {
+                    actualsAdded.add(base);
+                }
+            });
         }
         signatureInterface = signInterface;
         number = pdDocument.getDocument().getHighestXRefObjectNumber();
@@ -1480,7 +1455,7 @@ public class COSWriter implements ICOSVisitor
         {
             prepareIncrement();
         }
-        Long idTime = pdDocument.getDocumentId() == null ? System.currentTimeMillis()
+        long idTime = pdDocument.getDocumentId() == null ? System.currentTimeMillis()
                 : pdDocument.getDocumentId();
 
         // if the document says we should remove encryption, then we shouldn't encrypt
@@ -1531,6 +1506,7 @@ public class COSWriter implements ICOSVisitor
         }
         if( missingID || incrementalUpdate)
         {
+            @SuppressWarnings({"squid:S5542","lgtm [java/weak-cryptographic-algorithm]"})
             MessageDigest md5;
             try
             {
@@ -1577,8 +1553,9 @@ public class COSWriter implements ICOSVisitor
     {
         fdfDocument = doc;
         COSDocument cosDoc = fdfDocument.getDocument();
-        COSDictionary trailer = cosDoc.getTrailer();
-        if(incrementalUpdate){
+        if (incrementalUpdate)
+        {
+            COSDictionary trailer = cosDoc.getTrailer();
             trailer.toIncrement().exclude(trailer).forEach(objectsToWrite::add);
         }
         willEncrypt = false;

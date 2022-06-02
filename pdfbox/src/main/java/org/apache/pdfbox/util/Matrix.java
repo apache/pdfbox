@@ -64,7 +64,7 @@ public final class Matrix implements Cloneable
      *
      * @param array source array, elements must be or extend COSNumber
      */
-    public Matrix(COSArray array)
+    private Matrix(COSArray array)
     {
         single = new float[SIZE];
         single[0] = ((COSNumber)array.getObject(0)).floatValue();

@@ -214,7 +214,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        String pageLabelText = pageIndex < 0 ? "Page number not found" : "Page " + (pageIndex + 1);
+        String pageLabelText = pageIndex < 0 ? "Page number not found (may be an orphan page)" : "Page " + (pageIndex + 1);
 
         // append PDF page label, if available
         String lbl = PDFDebugger.getPageLabel(document, pageIndex);
@@ -307,6 +307,10 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void startRendering()
     {
+        if (pageIndex < 0)
+        {
+            return;
+        }
         // render in a background thread: rendering is read-only, so this should be ok, despite
         // the fact that PDDocument is not officially thread safe
         new RenderWorker().execute();
@@ -376,6 +380,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 }
             }
         }
+
+        // this avoids memory leaks with the display image; other memory leaks may still exist
+        label.removeMouseMotionListener(this);
+        label.removeMouseListener(this);
+        label.setIcon(null);
+        panel.removeAncestorListener(this);
+        panel.removeAll();
     }
 
     @Override

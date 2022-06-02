@@ -26,6 +26,7 @@ import java.io.Writer;
 import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -46,7 +47,7 @@ import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
-import org.apache.pdfbox.util.QuickSort;
+import org.apache.pdfbox.util.IterativeMergeSort;
 
 /**
  * This class will take a pdf document and strip out all of the text and ignore the formatting and such. Please note; it
@@ -498,8 +499,15 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
                 // because the TextPositionComparator is not transitive, but
                 // JDK7+ enforces transitivity on comparators, we need to use
-                // a custom quicksort implementation (which is slower, unfortunately).
-                QuickSort.sort(textList, comparator);
+                // a custom mergesort implementation (which is slower, unfortunately).
+                try
+                {
+                    Collections.sort(textList, comparator);
+                }
+                catch (IllegalArgumentException e)
+                {
+                    IterativeMergeSort.sort(textList, comparator);
+                }
             }
 
             startArticle();

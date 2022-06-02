@@ -169,13 +169,23 @@ public abstract class BaseParser
         }
         if (!(generationNumber instanceof COSInteger))
         {
-            LOG.error("expected number, actual=" + value + " at offset " + genOffset);
+            LOG.error("expected number, actual=" + generationNumber + " at offset " + genOffset);
             return COSNull.NULL;
         }
-        COSObjectKey key = new COSObjectKey(((COSInteger) value).longValue(),
-                ((COSInteger) generationNumber).intValue());
+        long objNumber = ((COSInteger) value).longValue();
+        if (objNumber <= 0)
+        {
+            LOG.error("invalid object number value =" + objNumber + " at offset " + numOffset);
+            return COSNull.NULL;
+        }
+        int genNumber = ((COSInteger) generationNumber).intValue();
+        if (genNumber < 0)
+        {
+            LOG.error("invalid generation number value =" + genNumber + " at offset " + numOffset);
+            return COSNull.NULL;
+        }
         // dereference the object
-        return getObjectFromPool(key);
+        return getObjectFromPool(new COSObjectKey(objNumber, genNumber));
     }
 
     private COSBase getObjectFromPool(COSObjectKey key) throws IOException
@@ -289,6 +299,10 @@ public abstract class BaseParser
     private boolean parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException
     {
         COSName key = parseCOSName();
+        if (key == null || key.getName().isEmpty())
+        {
+            LOG.warn("Empty COSName at offset " + source.getPosition());
+        }
         COSBase value = parseCOSDictionaryValue();
         skipSpaces();
         if (value == null)

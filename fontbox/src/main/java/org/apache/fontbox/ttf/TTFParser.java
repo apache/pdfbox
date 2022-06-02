@@ -16,9 +16,12 @@
  */
 package org.apache.fontbox.ttf;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
  * TrueType font file parser.
@@ -27,6 +30,8 @@ import java.io.InputStream;
  */
 public class TTFParser
 {
+    private static final Log LOG = LogFactory.getLog(TTFParser.class);
+
     private boolean isEmbedded = false;
     private boolean parseOnDemandOnly = false;
 
@@ -61,49 +66,25 @@ public class TTFParser
     }
 
     /**
-     * Parse a file and return a TrueType font.
+     * Parse a RandomAccessRead and return a TrueType font.
      *
-     * @param ttfFile The TrueType font filename.
+     * @param randomAccessRead The RandomAccessREad to be read from. It will be closed before returning.
      * @return A TrueType font.
      * @throws IOException If there is an error parsing the TrueType font.
      */
-    public TrueTypeFont parse(String ttfFile) throws IOException
+    public TrueTypeFont parse(RandomAccessRead randomAccessRead) throws IOException
     {
-        return parse(new File(ttfFile));
-    }
-
-    /**
-     * Parse a file and return a TrueType font.
-     *
-     * @param ttfFile The TrueType font file.
-     * @return A TrueType font.
-     * @throws IOException If there is an error parsing the TrueType font.
-     */
-    public TrueTypeFont parse(File ttfFile) throws IOException
-    {
-        RAFDataStream raf = new RAFDataStream(ttfFile, "r");
+        RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(randomAccessRead);
         try
         {
-            return parse(raf);
+            return parse(dataStream);
         }
         catch (IOException ex)
         {
-            // close only on error (file is still being accessed later)
-            raf.close();
+            // close only on error (source is still being accessed later)
+            dataStream.close();
             throw ex;
         }
-    }
-
-    /**
-     * Parse an input stream and return a TrueType font.
-     *
-     * @param inputStream The TTF data stream to parse from. It will be closed before returning.
-     * @return A TrueType font.
-     * @throws IOException If there is an error parsing the TrueType font.
-     */
-    public TrueTypeFont parse(InputStream inputStream) throws IOException
-    {
-        return parse(new MemoryTTFDataStream(inputStream));
     }
 
     /**
@@ -116,7 +97,7 @@ public class TTFParser
     public TrueTypeFont parseEmbedded(InputStream inputStream) throws IOException
     {
         this.isEmbedded = true;
-        return parse(new MemoryTTFDataStream(inputStream));
+        return parse(new RandomAccessReadBuffer(inputStream));
     }
 
     /**
@@ -141,7 +122,18 @@ public class TTFParser
             // skip tables with zero length
             if (table != null)
             {
-                font.addTable(table);
+                if (table.getOffset() + table.getLength() > font.getOriginalDataSize())
+                {
+                    // PDFBOX-5285 if we're lucky, this is an "unimportant" table, e.g. vmtx
+                    LOG.warn("Skip table '" + table.getTag() + 
+                            "' which goes past the file size; offset: " + table.getOffset() + 
+                            ", size: " + table.getLength() + 
+                            ", font size: " + font.getOriginalDataSize());
+                }
+                else
+                {
+                    font.addTable(table);
+                }
             }
         }
         // parse tables if wanted
@@ -174,60 +166,66 @@ public class TTFParser
             }
         }
 
-        boolean isPostScript = allowCFF() && font.tables.containsKey(CFFTable.TAG);
+        boolean hasCFF = font.tables.containsKey(CFFTable.TAG);
+        boolean isPostScript = allowCFF() && hasCFF;
         
         HeaderTable head = font.getHeader();
         if (head == null)
         {
-            throw new IOException("head is mandatory");
+            throw new IOException("'head' table is mandatory");
         }
 
         HorizontalHeaderTable hh = font.getHorizontalHeader();
         if (hh == null)
         {
-            throw new IOException("hhead is mandatory");
+            throw new IOException("'hhea' table is mandatory");
         }
 
         MaximumProfileTable maxp = font.getMaximumProfile();
         if (maxp == null)
         {
-            throw new IOException("maxp is mandatory");
+            throw new IOException("'maxp' table is mandatory");
         }
 
         PostScriptTable post = font.getPostScript();
         if (post == null && !isEmbedded)
         {
             // in an embedded font this table is optional
-            throw new IOException("post is mandatory");
+            throw new IOException("'post' table is mandatory");
         }
 
         if (!isPostScript)
         {
+            String messageSuffix = "";
+            if (hasCFF)
+            {
+                messageSuffix = "; this an OpenType CFF font, but we expected a TrueType font here";
+            }
             IndexToLocationTable loc = font.getIndexToLocation();
             if (loc == null)
             {
-                throw new IOException("loca is mandatory");
+                throw new IOException("'loca' table is mandatory" + messageSuffix);
             }
 
             if (font.getGlyph() == null)
             {
-                throw new IOException("glyf is mandatory");
+                throw new IOException("'glyf' table is mandatory" + messageSuffix);
             }
         }
         
         if (font.getNaming() == null && !isEmbedded)
         {
-            throw new IOException("name is mandatory");
+            throw new IOException("'name' table is mandatory");
         }
         
         if (font.getHorizontalMetrics() == null)
         {
-            throw new IOException("hmtx is mandatory");
+            throw new IOException("'hmtx' table is mandatory");
         }
         
         if (!isEmbedded && font.getCmap() == null)
         {
-            throw new IOException("cmap is mandatory");
+            throw new IOException("'cmap' table is mandatory");
         }
     }
 

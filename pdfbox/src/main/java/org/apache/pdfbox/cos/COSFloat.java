@@ -199,7 +199,7 @@ public class COSFloat extends COSNumber
     }
 
     /**
-     * Builds, if needed, and returns the a string representation of the current value.
+     * Builds, if needed, and returns the string representation of the current value.
      * @return current value as string.
      */
     private String formatString()
@@ -212,16 +212,15 @@ public class COSFloat extends COSNumber
     }
 
     /**
-     * visitor pattern double dispatch method.
+     * Visitor pattern double dispatch method.
      *
      * @param visitor The object to notify when visiting this object.
-     * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public void accept(ICOSVisitor visitor) throws IOException
     {
-        return visitor.visitFromFloat(this);
+        visitor.visitFromFloat(this);
     }
 
     /**

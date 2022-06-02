@@ -152,7 +152,7 @@ public final class COSString extends COSBase
     }
 
     /**
-     * Sets whether or not to force the string is to be written in hex form.
+     * Sets whether to force the string is to be written in hex form.
      * This is needed when signing PDF files.
      *
      * @param value True to force hex.
@@ -225,13 +225,12 @@ public final class COSString extends COSBase
      * Visitor pattern double dispatch method.
      * 
      * @param visitor The object to notify when visiting this object.
-     * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public void accept(ICOSVisitor visitor) throws IOException
     {
-        return visitor.visitFromString(this);
+        visitor.visitFromString(this);
     }
 
     @Override

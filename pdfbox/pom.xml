@@ -43,6 +43,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
+            <artifactId>io</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
             <artifactId>fontbox</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -78,7 +83,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>4.0.0</version>
+            <version>4.6.0</version>
             <scope>test</scope>
         </dependency>
         <!-- For legal reasons (incompatible license), these three dependencies below
@@ -162,7 +167,6 @@
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.p12</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.pfx</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/filter/*.bin</exclude>
-                        <exclude>src/test/resources/org/apache/pdfbox/io/*.txt</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/text/*.txt</exclude>
                         <exclude>src/test/resources/*.properties</exclude>
                         <exclude>src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java</exclude>
@@ -171,11 +175,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <!-- 
-            	Publish Javadoc to Apache CMS
-            	After completion log in to https://cms.apache.org/pdfbox/publish 
-            	and click on the Submit button to commit to production.
-             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-publish-plugin</artifactId>

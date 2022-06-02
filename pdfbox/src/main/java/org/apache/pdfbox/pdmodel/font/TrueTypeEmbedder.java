@@ -180,9 +180,6 @@ abstract class TrueTypeEmbedder implements Subsetter
      */
     private PDFontDescriptor createFontDescriptor(TrueTypeFont ttf) throws IOException
     {
-        PDFontDescriptor fd = new PDFontDescriptor();
-        fd.setFontName(ttf.getName());
-
         OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
         if (os2 == null)
         {
@@ -193,6 +190,9 @@ abstract class TrueTypeEmbedder implements Subsetter
         {
             throw new IOException("post table is missing in font " + ttf.getName());            
         }
+
+        PDFontDescriptor fd = new PDFontDescriptor();
+        fd.setFontName(ttf.getName());
 
         // Flags
         fd.setFixedPitch(post.getIsFixedPitch() > 0 ||

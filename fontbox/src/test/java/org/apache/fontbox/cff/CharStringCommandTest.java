@@ -41,18 +41,18 @@ class CharStringCommandTest
     @Test
     void testCharStringCommand()
     {
-        CharStringCommand charStringCommand1 = new CharStringCommand(1);
+        CharStringCommand charStringCommand1 = CharStringCommand.getInstance(1);
         assertEquals(Type1KeyWord.HSTEM, charStringCommand1.getType1KeyWord());
         assertEquals(Type2KeyWord.HSTEM, charStringCommand1.getType2KeyWord());
         assertEquals("HSTEM|", charStringCommand1.toString());
 
-        CharStringCommand charStringCommand12_0 = new CharStringCommand(12, 0);
+        CharStringCommand charStringCommand12_0 = CharStringCommand.getInstance(12, 0);
         assertEquals(Type1KeyWord.DOTSECTION, charStringCommand12_0.getType1KeyWord());
         assertNull(charStringCommand12_0.getType2KeyWord());
         assertEquals("DOTSECTION|", charStringCommand12_0.toString());
 
         int[] values12_3 = new int[] { 12, 3 };
-        CharStringCommand charStringCommand12_3 = new CharStringCommand(values12_3);
+        CharStringCommand charStringCommand12_3 = CharStringCommand.getInstance(values12_3);
         assertNull(charStringCommand12_3.getType1KeyWord());
         assertEquals(Type2KeyWord.AND, charStringCommand12_3.getType2KeyWord());
         assertEquals("AND|", charStringCommand12_3.toString());
@@ -62,7 +62,7 @@ class CharStringCommandTest
     @Test
     void testUnknownCharStringCommand()
     {
-        CharStringCommand charStringCommandUnknown = new CharStringCommand(99);
+        CharStringCommand charStringCommandUnknown = CharStringCommand.getInstance(99);
         assertEquals("unknown command|", charStringCommandUnknown.toString());
     }
 

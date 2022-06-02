@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,6 +35,7 @@ import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 
 /**
@@ -104,13 +104,13 @@ final class FontMapperImpl implements FontMapper
         // these include names such as "Arial" and "TimesNewRoman"
         for (String baseName : Standard14Fonts.getNames())
         {
-            if (!substitutes.containsKey(baseName))
+            substitutes.computeIfAbsent(baseName, key ->
             {
-                FontName mappedName = Standard14Fonts.getMappedFontName(baseName);
-                substitutes.put(baseName, copySubstitutes(mappedName));
-            }
+                FontName mappedName = Standard14Fonts.getMappedFontName(key);
+                return new ArrayList<>(substitutes.get(mappedName.getName()));
+            });
         }
-        
+
         // -------------------------
 
         try
@@ -121,9 +121,10 @@ final class FontMapperImpl implements FontMapper
             {
                 throw new IOException("resource '" + resourceName + "' not found");
             }
-            InputStream ttfStream = new BufferedInputStream(resourceAsStream);
+            RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(
+                    resourceAsStream);
             TTFParser ttfParser = new TTFParser();
-            lastResortFont = ttfParser.parse(ttfStream);
+            lastResortFont = ttfParser.parse(randomAccessReadBuffer);
         }
         catch (IOException e)
         {
@@ -197,14 +198,6 @@ final class FontMapperImpl implements FontMapper
     }
 
     /**
-     * Copies a list of font substitutes, adding the original font at the start of the list.
-     */
-    private List<String> copySubstitutes(FontName postScriptName)
-    {
-        return new ArrayList<>(substitutes.get(postScriptName.getName()));
-    }
-
-    /**
      * Adds a top-priority substitute for the given font.
      *
      * @param match PostScript name of the font to match
@@ -212,11 +205,7 @@ final class FontMapperImpl implements FontMapper
      */
     public void addSubstitute(String match, String replace)
     {
-        if (!substitutes.containsKey(match))
-        {
-            substitutes.put(match, new ArrayList<>());
-        }
-        substitutes.get(match).add(replace);
+        substitutes.computeIfAbsent(match, key -> new ArrayList<>()).add(replace);
     }
 
     /**

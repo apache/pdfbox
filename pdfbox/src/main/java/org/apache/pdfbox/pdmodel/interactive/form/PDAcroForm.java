@@ -293,6 +293,12 @@ public final class PDAcroForm implements COSObjectable
         
         // remove XFA for hybrid forms
         dictionary.removeItem(COSName.XFA);
+
+        // remove SigFlags if no signature left
+        if (this.document.getSignatureDictionaries().isEmpty())
+        {
+            this.getCOSObject().removeItem(COSName.SIG_FLAGS);
+        }
     }
 
     private boolean isVisibleAnnotation(PDAnnotation annotation)

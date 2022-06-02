@@ -28,7 +28,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORM
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT_UNKNOWN;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT_XPACKET;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_UNKNOWN_VALUETYPE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -217,14 +216,6 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
 
             if (metadata != null)
             {
-                // Filters are forbidden in a XMP stream
-                if (!metadata.getFilters().isEmpty())
-                {
-                    this.fContainer.push(new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER,
-                            this.font.getName() + ": Filter specified in font file metadata dictionary"));
-                    return;
-                }
-
                 byte[] mdAsBytes = getMetaDataStreamAsBytes(metadata);
 
                 try

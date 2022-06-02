@@ -131,7 +131,7 @@ public class OcspHelper
      */
     public OCSPResp getResponseOcsp() throws IOException, OCSPException, RevokedCertificateException
     {
-        OCSPResp ocspResponse = performRequest();
+        OCSPResp ocspResponse = performRequest(ocspUrl);
         verifyOcspResponse(ocspResponse);
         return ocspResponse;
     }
@@ -446,30 +446,53 @@ public class OcspHelper
 
     /**
      * Performs the OCSP-Request, with given data.
-     * 
+     *
+     * @param urlString URL of OCSP service.
      * @return the OCSPResp, that has been fetched from the ocspUrl
      * @throws IOException
      * @throws OCSPException
      */
-    private OCSPResp performRequest() throws IOException, OCSPException
+    private OCSPResp performRequest(String urlString) throws IOException, OCSPException
     {
         OCSPReq request = generateOCSPRequest();
-        URL url = new URL(ocspUrl);
+        URL url = new URL(urlString);
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
         try
         {
             httpConnection.setRequestProperty("Content-Type", "application/ocsp-request");
             httpConnection.setRequestProperty("Accept", "application/ocsp-response");
+            httpConnection.setRequestMethod("POST");
             httpConnection.setDoOutput(true);
             try (OutputStream out = httpConnection.getOutputStream())
             {
                 out.write(request.getEncoded());
             }
 
-            if (httpConnection.getResponseCode() != 200)
+            int responseCode = httpConnection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP ||
+                responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
+                responseCode == HttpURLConnection.HTTP_SEE_OTHER)
             {
-                throw new IOException("OCSP: Could not access url, ResponseCode: "
-                        + httpConnection.getResponseCode());
+                String location = httpConnection.getHeaderField("Location");
+                if (urlString.startsWith("http://") &&
+                    location.startsWith("https://") &&
+                    urlString.substring(7).equals(location.substring(8)))
+                {
+                    // redirection from http:// to https://
+                    // change this code if you want to be more flexible (but think about security!)
+                    LOG.info("redirection to " + location + " followed");
+                    return performRequest(location);
+                }
+                else
+                {
+                    LOG.info("redirection to " + location + " ignored");
+                }
+            }
+            if (responseCode != HttpURLConnection.HTTP_OK)
+            {
+                throw new IOException("OCSP: Could not access url, ResponseCode "
+                        + httpConnection.getResponseCode() + ": "
+                        + httpConnection.getResponseMessage());
             }
             // Get response
             try (InputStream in = (InputStream) httpConnection.getContent())

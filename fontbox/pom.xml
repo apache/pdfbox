@@ -39,6 +39,11 @@
 
   <dependencies>
     <dependency>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>io</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
     </dependency>
@@ -110,6 +115,30 @@
                       <url>https://issues.apache.org/jira/secure/attachment/12809395/DejaVuSansMono.ttf</url>
                       <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                       <sha512>1af1ce3e6d34a0b89c93072d8646e92cceb45b276389d2dd0d84457ec1193394d2bcc49bf3ce99c9c6b2658cd1337fc40ee5c61957f74cd45dbc3d51b6aef417</sha512>
+                  </configuration>
+              </execution>
+              <execution>
+                  <id>PDFBOX-5328</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://issues.apache.org/jira/secure/attachment/13036376/NotoSansSC-Regular.otf</url>
+                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <sha512>cbdd317d16099d24736457eef631353c7830a1a3c132b01f2cdc1e6a0c21a78e3b1fe8479b3f40179e7630a15cc23a093775bb22d521dba39376bb367d497b21</sha512>
+                  </configuration>
+              </execution>
+              <execution>
+                  <id>PDFBOX-5356</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>http://mirrors.ctan.org/fonts/opensans/type1/OpenSans-Regular.pfb</url>
+                      <outputDirectory>${project.build.directory}/fonts</outputDirectory>
+                      <sha512>2787fcecc0feb1c9e6ff0d8de6193658413863e44eaab572751ca7e6c3b369c0a9731f4952cb0821f307760f0422f77c5f0d3fe7df6b054643fb39423e8d70ee</sha512>
                   </configuration>
               </execution>
           </executions>

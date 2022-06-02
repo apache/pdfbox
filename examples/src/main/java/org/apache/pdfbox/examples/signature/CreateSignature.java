@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -115,6 +116,10 @@ public class CreateSignature extends CreateSignatureBase
     public void signDetached(PDDocument document, OutputStream output)
             throws IOException
     {
+        // call SigUtils.checkCrossReferenceTable(document) if Adobe complains
+        // and read https://stackoverflow.com/a/71293901/535646
+        // and https://issues.apache.org/jira/browse/PDFBOX-5382
+
         int accessPermissions = SigUtils.getMDPPermission(document);
         if (accessPermissions == 1)
         {
@@ -193,7 +198,10 @@ public class CreateSignature extends CreateSignatureBase
         // load the keystore
         KeyStore keystore = KeyStore.getInstance("PKCS12");
         char[] password = args[1].toCharArray(); // TODO use Java 6 java.io.Console.readPassword
-        keystore.load(new FileInputStream(args[0]), password);
+        try (InputStream is = new FileInputStream(args[0]))
+        {
+            keystore.load(is, password);
+        }
         // TODO alias command line argument
 
         // sign PDF

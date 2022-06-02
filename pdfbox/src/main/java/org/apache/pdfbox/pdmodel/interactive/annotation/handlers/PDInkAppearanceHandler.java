@@ -45,14 +45,6 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
     }
 
     @Override
-    public void generateAppearanceStreams()
-    {
-        generateNormalAppearance();
-        generateRolloverAppearance();
-        generateDownAppearance();
-    }
-
-    @Override
     public void generateNormalAppearance()
     {
         PDAnnotationInk ink = (PDAnnotationInk) getAnnotation();
@@ -89,6 +81,10 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
             }
         }
         PDRectangle rect = ink.getRectangle();
+        if (rect == null)
+        {
+            return;
+        }
         rect.setLowerLeftX(Math.min(minX - ab.width * 2, rect.getLowerLeftX()));
         rect.setLowerLeftY(Math.min(minY - ab.width * 2, rect.getLowerLeftY()));
         rect.setUpperRightX(Math.max(maxX + ab.width * 2, rect.getUpperRightX()));

@@ -130,8 +130,8 @@ public class PrintImageLocations extends PDFStreamEngine
                 imageYScale /= 72;
                 System.out.println("displayed size  = " + imageXScale + ", " + imageYScale + " in inches at 72 dpi rendering");
                 // displayed size in millimeters at 72 dpi rendering
-                imageXScale *= 25.4;
-                imageYScale *= 25.4;
+                imageXScale *= 25.4f;
+                imageYScale *= 25.4f;
                 System.out.println("displayed size  = " + imageXScale + ", " + imageYScale + " in millimeters at 72 dpi rendering");
                 System.out.println();
             }

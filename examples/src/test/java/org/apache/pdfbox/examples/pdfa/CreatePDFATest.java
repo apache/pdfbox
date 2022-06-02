@@ -16,11 +16,16 @@
 package org.apache.pdfbox.examples.pdfa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.security.KeyStore;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.examples.pdmodel.CreatePDFA;
@@ -90,5 +95,36 @@ class CreatePDFATest
             DublinCoreSchema dc = metadata.getDublinCoreSchema();
             assertEquals(pdfaFilename, dc.getTitle());
         }
+
+        File signedFile = new File(signedPdfaFilename);
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(new FileInputStream(signedFile)));
+        String line;
+        boolean isIncrementalArea = false;
+        Set<String> set = new HashSet<>();
+        int linePos = 0;
+        while ((line = br.readLine()) != null)
+        {
+            ++linePos;
+            if (line.equals("%%EOF"))
+            {
+                isIncrementalArea = true;
+                set.clear(); // for cases with several revisions
+            }
+            if (!isIncrementalArea)
+            {
+                continue;
+            }
+            if (line.matches("^\\d+ 0 obj$"))
+            {
+                int pos = line.indexOf(" 0 obj");
+                line = line.substring(0, pos);
+                assertFalse(set.contains(line), "object '" + line
+                        + " 0 obj' twice in incremental part of PDF at line " + linePos);
+                set.add(line);
+            }
+        }
+        br.close();
+
     }
 }

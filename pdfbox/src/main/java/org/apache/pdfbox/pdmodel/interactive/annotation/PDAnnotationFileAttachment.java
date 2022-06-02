@@ -20,7 +20,10 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDFileAttachmentAppearanceHandler;
 
 /**
  * This is the class that represents a file attachment.
@@ -50,6 +53,8 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      * The type of annotation.
      */
     public static final String SUB_TYPE = "FileAttachment";
+
+    private PDAppearanceHandler customAppearanceHandler;
 
     /**
      * Constructor.
@@ -109,5 +114,35 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
     public void setAttachmentName(String name)
     {
         getCOSObject().setName(COSName.NAME, name);
+    }
+
+    /**
+     * Set a custom appearance handler for generating the annotations appearance streams.
+     * 
+     * @param appearanceHandler
+     */
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    {
+        customAppearanceHandler = appearanceHandler;
+    }
+
+    @Override
+    public void constructAppearances()
+    {
+        this.constructAppearances(null);
+    }
+
+    @Override
+    public void constructAppearances(PDDocument document)
+    {
+        if (customAppearanceHandler == null)
+        {
+            PDFileAttachmentAppearanceHandler appearanceHandler = new PDFileAttachmentAppearanceHandler(this, document);
+            appearanceHandler.generateAppearanceStreams();
+        }
+        else
+        {
+            customAppearanceHandler.generateAppearanceStreams();
+        }
     }
 }

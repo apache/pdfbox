@@ -49,10 +49,10 @@ public interface CFFCharset
     /**
      * Returns the SID for a given GID. SIDs are internal to the font and are not public.
      *
-     * @param sid SID
-     * @return GID
+     * @param gid GID
+     * @return SID
      */
-    public abstract int getSIDForGID(int sid);
+    public abstract int getSIDForGID(int gid);
 
     /**
      * Returns the GID for the given SID. SIDs are internal to the font and are not public.

@@ -111,7 +111,7 @@ public class PDCIDFontType2 extends PDCIDFont
                 {
                     // embedded OTF or TTF
                     OTFParser otfParser = new OTFParser(true);
-                    OpenTypeFont otf = otfParser.parse(stream.createInputStream());
+                    OpenTypeFont otf = otfParser.parse(stream.getCOSObject().createView());
                     ttfFont = otf;
     
                     if (otf.isPostScript())
@@ -322,7 +322,7 @@ public class PDCIDFontType2 extends PDCIDFont
     public float getWidthFromFont(int code) throws IOException
     {
         int gid = codeToGID(code);
-        int width = ttf.getAdvanceWidth(gid);
+        float width = ttf.getAdvanceWidth(gid);
         int unitsPerEM = ttf.getUnitsPerEm();
         if (unitsPerEM != 1000)
         {
@@ -358,10 +358,13 @@ public class PDCIDFontType2 extends PDCIDFont
             if (cid == -1)
             {
                 CMap toUnicodeCMap = parent.getToUnicodeCMap();
-                byte[] codes = toUnicodeCMap.getCodesFromUnicode(Character.toString((char) unicode));
-                if (codes != null)
+                if (toUnicodeCMap != null)
                 {
-                    return codes;
+                    byte[] codes = toUnicodeCMap.getCodesFromUnicode(Character.toString((char) unicode));
+                    if (codes != null)
+                    {
+                        return codes;
+                    }
                 }
                 cid = 0;
             }
@@ -369,7 +372,7 @@ public class PDCIDFontType2 extends PDCIDFont
         else
         {
             // a non-embedded font always has a cmap (otherwise it we wouldn't load it)
-            cid = cmap.getGlyphId(unicode);
+            cid = cmap.getGlyphId(unicode); // lgtm[java/dereferenced-value-may-be-null]
         }
 
         if (cid == 0)

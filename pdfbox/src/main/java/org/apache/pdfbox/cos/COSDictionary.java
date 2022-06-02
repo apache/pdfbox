@@ -1250,14 +1250,12 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * visitor pattern double dispatch method.
      *
      * @param visitor The object to notify when visiting this object.
-     * @return The object that the visitor returns.
-     *
      * @throws IOException If there is an error visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public void accept(ICOSVisitor visitor) throws IOException
     {
-        return visitor.visitFromDictionary(this);
+        visitor.visitFromDictionary(this);
     }
 
     /**

@@ -197,13 +197,12 @@ public final class COSInteger extends COSNumber
      * visitor pattern double dispatch method.
      *
      * @param visitor The object to notify when visiting this object.
-     * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public void accept(ICOSVisitor visitor) throws IOException
     {
-        return visitor.visitFromInt(this);
+        visitor.visitFromInt(this);
     }
 
     /**

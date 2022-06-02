@@ -58,7 +58,7 @@ public class COSIncrement implements Iterable<COSBase>
     
     /**
      * Creates a new {@link COSIncrement} for the given {@link COSUpdateInfo}, the increment will use it´s
-     * {@link COSDocumentState} as it´s own origin and shall conllect all updates contained in the given
+     * {@link COSDocumentState} as it´s own origin and shall collect all updates contained in the given
      * {@link COSUpdateInfo}.<br>
      * Should the given object be {@code null}, the resulting increment shall be empty.
      *
@@ -127,7 +127,7 @@ public class COSIncrement implements Iterable<COSBase>
                 continue;
             }
             COSUpdateInfo updatableEntry = (COSUpdateInfo) entry;
-            COSUpdateState entryUpdateState = ((COSUpdateInfo) entry).getUpdateState();
+            COSUpdateState entryUpdateState = updatableEntry.getUpdateState();
             // Entries with different document origin must be part of the increment!
             updateDifferentOrigin(entryUpdateState);
             // Always attempt to write COSArrays as direct objects.

@@ -46,6 +46,7 @@ public final class BlendComposite implements Composite
      * @param constantAlpha Constant alpha, must be in the inclusive range
      * [0.0...1.0] or it will be clipped.
      * @return a blend composite.
+     * @throws IllegalArgumentException if blendMode is null.
      */
     public static Composite getInstance(BlendMode blendMode, float constantAlpha)
     {
@@ -58,6 +59,10 @@ public final class BlendComposite implements Composite
         {
             LOG.warn("using 1 instead of incorrect Alpha " + constantAlpha);
             constantAlpha = 1;
+        }
+        if (blendMode == null)
+        {
+            throw new IllegalArgumentException("blendMode parameter cannot be null");
         }
         if (blendMode == BlendMode.NORMAL)
         {
@@ -130,12 +135,7 @@ public final class BlendComposite implements Composite
             boolean subtractive = (dstColorSpaceType != ColorSpace.TYPE_RGB)
                     && (dstColorSpaceType != ColorSpace.TYPE_GRAY);
 
-            boolean blendModeIsSeparable = blendMode instanceof SeparableBlendMode;
-            SeparableBlendMode separableBlendMode = blendModeIsSeparable ?
-                    (SeparableBlendMode) blendMode : null;
-            NonSeparableBlendMode nonSeparableBlendMode = !blendModeIsSeparable ?
-                    (NonSeparableBlendMode) blendMode : null;
-
+            boolean blendModeIsSeparable = blendMode.isSeparableBlendMode();
             boolean needsColorConversion = !srcColorSpace.equals(dstColorSpace);
 
             Object srcPixel = null;
@@ -170,7 +170,7 @@ public final class BlendComposite implements Composite
                     float resultAlpha = dstAlpha + srcAlpha - srcAlpha * dstAlpha;
                     float srcAlphaRatio = (resultAlpha > 0) ? srcAlpha / resultAlpha : 0;
 
-                    if (separableBlendMode != null)
+                    if (blendModeIsSeparable)
                     {
                         // convert color
                         System.arraycopy(srcComponents, 0, srcColor, 0, numSrcColorComponents);
@@ -196,7 +196,8 @@ public final class BlendComposite implements Composite
                                 dstValue = 1 - dstValue;
                             }
 
-                            float value = separableBlendMode.blendChannel(srcValue, dstValue);
+                            float value = blendMode.getBlendChannelFunction().blendChannel(srcValue,
+                                    dstValue);
                             value = srcValue + dstAlpha * (value - srcValue);
                             value = dstValue + srcAlphaRatio * (value - dstValue);
 
@@ -231,7 +232,7 @@ public final class BlendComposite implements Composite
                             dstConverted = dstColorSpace.toRGB(dstComponents);
                         }
                         
-                        nonSeparableBlendMode.blend(srcConverted, dstConverted, rgbResult);
+                        blendMode.getBlendFunction().blend(srcConverted, dstConverted, rgbResult);
 
                         for (int k = 0; k < 3; k++)
                         {

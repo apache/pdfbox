@@ -65,21 +65,19 @@ public final class IndexPDFFiles
         boolean create = true;
         for (int i = 0; i < args.length; i++)
         {
-            switch (args[i])
+            if ("-index".equals(args[i]) && i + 1 < args.length)
             {
-                case "-index":
-                    indexPath = args[i + 1];
-                    i++;
-                    break;
-                case "-docs":
-                    docsPath = args[i + 1];
-                    i++;
-                    break;
-                case "-update":
-                    create = false;
-                    break;
-                default:
-                    break;
+                indexPath = args[i + 1];
+                i++;
+            }
+            else if ("-docs".equals(args[i]) && i + 1 < args.length)
+            {
+                docsPath = args[i + 1];
+                i++;
+            }
+            else if ("-update".equals(args[i]))
+            {
+                create = false;
             }
         }
 

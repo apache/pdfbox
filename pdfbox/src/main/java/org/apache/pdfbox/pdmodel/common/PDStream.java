@@ -207,29 +207,26 @@ public class PDStream implements COSObjectable
         InputStream is = stream.createRawInputStream();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         List<COSName> filters = getFilters();
-        if (filters != null)
+        for (int i = 0; i < filters.size(); i++)
         {
-            for (int i = 0; i < filters.size(); i++)
+            COSName nextFilter = filters.get(i);
+            if ((stopFilters != null) && stopFilters.contains(nextFilter.getName()))
             {
-                COSName nextFilter = filters.get(i);
-                if ((stopFilters != null) && stopFilters.contains(nextFilter.getName()))
+                break;
+            }
+            else
+            {
+                Filter filter = FilterFactory.INSTANCE.getFilter(nextFilter);
+                try
                 {
-                    break;
+                    filter.decode(is, os, stream, i);
                 }
-                else
+                finally
                 {
-                    Filter filter = FilterFactory.INSTANCE.getFilter(nextFilter);
-                    try
-                    {
-                        filter.decode(is, os, stream, i);
-                    }
-                    finally
-                    {
-                        IOUtils.closeQuietly(is);
-                    }
-                    is = new ByteArrayInputStream(os.toByteArray());
-                    os.reset();
+                    IOUtils.closeQuietly(is);
                 }
+                is = new ByteArrayInputStream(os.toByteArray());
+                os.reset();
             }
         }
         return is;
@@ -433,22 +430,18 @@ public class PDStream implements COSObjectable
     {
         PDMetadata retval = null;
         COSBase mdStream = stream.getDictionaryObject(COSName.METADATA);
-        if (mdStream != null)
+        if (mdStream instanceof COSStream)
         {
-            if (mdStream instanceof COSStream)
-            {
-                retval = new PDMetadata((COSStream) mdStream);
-            } 
-            else if (mdStream instanceof COSNull)
-            {
-                // null is authorized
-            } 
-            else
-            {
-                throw new IllegalStateException(
-                        "Expected a COSStream but was a "
-                                + mdStream.getClass().getSimpleName());
-            }
+            retval = new PDMetadata((COSStream) mdStream);
+        } 
+        else if (mdStream instanceof COSNull)
+        {
+            // null is authorized
+        } 
+        else if (mdStream != null)
+        {
+            throw new IllegalStateException("Expected a COSStream but was a "
+                            + mdStream.getClass().getSimpleName());
         }
         return retval;
     }

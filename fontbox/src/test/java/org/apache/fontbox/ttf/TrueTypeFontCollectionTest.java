@@ -14,18 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.graphics.blend;
+package org.apache.fontbox.ttf;
 
-/**
- * Non-separable blend mode (supports blend function).
- *
- * @author Kühn &amp; Weyh Software GmbH
- */
-public abstract class NonSeparableBlendMode extends BlendMode
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
+
+class TrueTypeFontCollectionTest
 {
-    NonSeparableBlendMode()
+    @Test
+    void testNumberOfFonts()
     {
+        byte[] payload = { 0x74, 0x74, 0x63, 0x66, 0x00, 0x00, 0x00, 0x00, 0x7F, (byte) 0xFF,
+                (byte) 0xFF, (byte) 0xFF };
+        assertThrows(IOException.class,
+                () -> new TrueTypeCollection(new ByteArrayInputStream(payload)),
+                "Invalid number of fonts not detected!");
     }
-
-    public abstract void blend(float[] srcValues, float[] dstValues, float[] result);
 }

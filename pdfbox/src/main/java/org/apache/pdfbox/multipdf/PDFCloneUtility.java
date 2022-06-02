@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -41,6 +43,8 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 class PDFCloneUtility
 {
+    private static final Log LOG = LogFactory.getLog(PDFCloneUtility.class);
+
     private final PDDocument destination;
     private final Map<Object,COSBase> clonedVersion = new HashMap<>();
     private final Set<COSBase> clonedValues = new HashSet<>();
@@ -115,7 +119,15 @@ class PDFCloneUtility
               COSArray array = (COSArray)base;
               for( int i=0; i<array.size(); i++ )
               {
-                  newArray.add( cloneForNewDocument( array.get( i ) ) );
+                  COSBase value = array.get(i);
+                  if (hasSelfReference(base, value))
+                  {
+                      newArray.add(newArray);
+                  }
+                  else
+                  {
+                      newArray.add(cloneForNewDocument(value));
+                  }
               }
               retval = newArray;
           }
@@ -131,7 +143,15 @@ class PDFCloneUtility
               clonedVersion.put( base, stream );
               for( Map.Entry<COSName, COSBase> entry :  originalStream.entrySet() )
               {
-                  stream.setItem(entry.getKey(), cloneForNewDocument(entry.getValue()));
+                  COSBase value = entry.getValue();
+                  if (hasSelfReference(base, value))
+                  {
+                      stream.setItem(entry.getKey(), stream);
+                  }
+                  else
+                  {
+                      stream.setItem(entry.getKey(), cloneForNewDocument(value));
+                  }
               }
               retval = stream;
           }
@@ -142,9 +162,15 @@ class PDFCloneUtility
               clonedVersion.put( base, retval );
               for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
               {
-                  ((COSDictionary)retval).setItem(
-                          entry.getKey(),
-                          cloneForNewDocument(entry.getValue()));
+                  COSBase value = entry.getValue();
+                  if (hasSelfReference(base, value))
+                  {
+                      ((COSDictionary) retval).setItem(entry.getKey(), retval);
+                  }
+                  else
+                  {
+                      ((COSDictionary) retval).setItem(entry.getKey(), cloneForNewDocument(value));
+                  }
               }
           }
           else
@@ -255,4 +281,26 @@ class PDFCloneUtility
           clonedVersion.put( base, retval );
           clonedValues.add(retval);
       }
+
+    /**
+     * Check whether an element (of an array or a dictionary) points to its parent.
+     *
+     * @param parent COSArray or COSDictionary
+     * @param value an element
+     */
+    private boolean hasSelfReference(Object parent, COSBase value)
+    {
+        if (value instanceof COSObject)
+        {
+            COSBase actual = ((COSObject) value).getObject();
+            if (actual == parent)
+            {
+                COSObject cosObj = ((COSObject) value);
+                LOG.warn(parent.getClass().getSimpleName() + " object has a reference to itself: " +
+                        cosObj.getObjectNumber() + " " + cosObj.getGenerationNumber() + " R");
+                return true;
+            }
+        }
+        return false;
+    }
 }

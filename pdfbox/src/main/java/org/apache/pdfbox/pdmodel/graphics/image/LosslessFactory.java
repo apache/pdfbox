@@ -549,7 +549,7 @@ public final class LosslessFactory
                 byte[] targetValues, byte[] alphaImageData, int alphaPtr)
         {
             int itr = indexInTranferRow;
-            for (int i = 0; i < targetValues.length; i += 2)
+            for (int i = 0; i < targetValues.length - 1; i += 2)
             {
                 short val = transferRow[itr++];
                 targetValues[i] = (byte) ((val >> 8) & 0xFF);

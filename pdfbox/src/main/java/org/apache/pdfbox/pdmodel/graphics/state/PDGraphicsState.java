@@ -45,7 +45,7 @@ import org.apache.pdfbox.util.Matrix;
 public class PDGraphicsState implements Cloneable
 {
     private boolean isClippingPathDirty;
-    private List<Path2D> clippingPaths = new ArrayList<>();
+    private List<Path2D> clippingPaths = new ArrayList<>(1);
     private Map<Path2D, Area> clippingCache = new IdentityHashMap<>();
     private Matrix currentTransformationMatrix = new Matrix();
     private PDColor strokingColor = PDDeviceGray.INSTANCE.getInitialColor();
@@ -60,7 +60,7 @@ public class PDGraphicsState implements Cloneable
     private PDLineDashPattern lineDashPattern = new PDLineDashPattern();
     private RenderingIntent renderingIntent;
     private boolean strokeAdjustment = false;
-    private BlendMode blendMode = BlendMode.COMPATIBLE;
+    private BlendMode blendMode = BlendMode.NORMAL;
     private PDSoftMask softMask;
     private double alphaConstant = 1.0;
     private double nonStrokingAlphaConstant = 1.0;
@@ -69,7 +69,7 @@ public class PDGraphicsState implements Cloneable
     // DEVICE-DEPENDENT parameters
     private boolean overprint = false;
     private boolean nonStrokingOverprint = false;
-    private double overprintMode = 0;
+    private int overprintMode = 0;
     //black generation
     //undercolor removal
     private COSBase transfer = null;
@@ -301,9 +301,14 @@ public class PDGraphicsState implements Cloneable
      * Sets the blend mode in the current graphics state
      *
      * @param blendMode
+     * @throws IllegalArgumentException if blendMode is null.
      */
     public void setBlendMode(BlendMode blendMode)
     {
+        if (blendMode == null)
+        {
+            throw new IllegalArgumentException("blendMode parameter cannot be null");
+        }
         this.blendMode = blendMode;
     }
 
@@ -352,7 +357,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @return The value of the overprint mode parameter.
      */
-    public double getOverprintMode()
+    public int getOverprintMode()
     {
         return overprintMode;
     }
@@ -362,7 +367,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @param value The value of the overprint mode parameter.
      */
-    public void setOverprintMode(double value)
+    public void setOverprintMode(int value)
     {
         overprintMode = value;
     }
@@ -628,7 +633,7 @@ public class PDGraphicsState implements Cloneable
         }
         // Replace the list of individual clipping paths with the intersection, and add it to the cache.
         Path2D newPath = new Path2D.Double(clippingArea);
-        clippingPaths = new ArrayList<>();
+        clippingPaths = new ArrayList<>(1);
         clippingPaths.add(newPath);
         clippingCache.put(newPath, clippingArea);
         return clippingArea;

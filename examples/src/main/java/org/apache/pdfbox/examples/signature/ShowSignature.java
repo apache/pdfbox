@@ -179,6 +179,7 @@ public final class ShowSignature
                                     ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
                                     Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
                                     System.out.println("certs=" + certs);
+                                    @SuppressWarnings({"squid:S5542","lgtm [java/weak-cryptographic-algorithm]"})
                                     MessageDigest md = MessageDigest.getInstance("SHA1");
                                     try (DigestInputStream dis = new DigestInputStream(signedContentAsStream, md))
                                     {

@@ -278,9 +278,9 @@ public class PDFRenderer
     {
         PDPage page = pageTree.get(pageIndex);
 
-        PDRectangle cropbBox = page.getCropBox();
-        float widthPt = cropbBox.getWidth();
-        float heightPt = cropbBox.getHeight();
+        PDRectangle cropBox = page.getCropBox();
+        float widthPt = cropBox.getWidth();
+        float heightPt = cropBox.getHeight();
 
         // PDFBOX-4306 avoid single blank pixel line on the right or on the bottom
         int widthPx = (int) Math.max(Math.floor(widthPt * scale), 1);
@@ -299,7 +299,7 @@ public class PDFRenderer
         if (imageType != ImageType.ARGB && hasBlendMode(page))
         {
             // PDFBOX-4095: if the PDF has blending on the top level, draw on transparent background
-            // Inpired from PDF.js: if a PDF page uses any blend modes other than Normal, 
+            // Inspired from PDF.js: if a PDF page uses any blend modes other than Normal, 
             // PDF.js renders everything on a fully transparent RGBA canvas. 
             // Finally when the page has been rendered, PDF.js draws the RGBA canvas on a white canvas.
             bimType = BufferedImage.TYPE_INT_ARGB;
@@ -334,7 +334,7 @@ public class PDFRenderer
         }
         g.clearRect(0, 0, image.getWidth(), image.getHeight());
         
-        transform(g, page, scale, scale);
+        transform(g, page.getRotation(), cropBox, scale, scale);
 
         // the end-user may provide a custom PageDrawer
         RenderingHints actualRenderingHints =
@@ -343,7 +343,7 @@ public class PDFRenderer
                 new PageDrawerParameters(this, page, subsamplingAllowed, destination,
                         actualRenderingHints, imageDownscalingOptimizationThreshold);
         PageDrawer drawer = createPageDrawer(parameters);
-        drawer.drawPage(g, page.getCropBox());       
+        drawer.drawPage(g, cropBox);
         
         g.dispose();
 
@@ -442,9 +442,8 @@ public class PDFRenderer
         PDPage page = pageTree.get(pageIndex);
         // TODO need width/height calculations? should these be in PageDrawer?
 
-        transform(graphics, page, scaleX, scaleY);
-
         PDRectangle cropBox = page.getCropBox();
+        transform(graphics, page.getRotation(), cropBox, scaleX, scaleY);
         graphics.clearRect(0, 0, (int) cropBox.getWidth(), (int) cropBox.getHeight());
 
         // the end-user may provide a custom PageDrawer
@@ -469,15 +468,13 @@ public class PDFRenderer
     }
 
     // scale rotate translate
-    private void transform(Graphics2D graphics, PDPage page, float scaleX, float scaleY)
+    private void transform(Graphics2D graphics, int rotationAngle, PDRectangle cropBox, float scaleX, float scaleY)
     {
         graphics.scale(scaleX, scaleY);
 
         // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
-        int rotationAngle = page.getRotation();
         if (rotationAngle != 0)
         {
-            PDRectangle cropBox = page.getCropBox();
             float translateX = 0;
             float translateY = 0;
             switch (rotationAngle)
@@ -522,12 +519,13 @@ public class PDFRenderer
 
     private RenderingHints createDefaultRenderingHints(Graphics2D graphics)
     {
+        boolean isBitonal = isBitonal(graphics);
         RenderingHints r = new RenderingHints(null);
-        r.put(RenderingHints.KEY_INTERPOLATION, isBitonal(graphics) ?
+        r.put(RenderingHints.KEY_INTERPOLATION, isBitonal ?
                 RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR :
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         r.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        r.put(RenderingHints.KEY_ANTIALIASING, isBitonal(graphics) ?
+        r.put(RenderingHints.KEY_ANTIALIASING, isBitonal ?
                                         RenderingHints.VALUE_ANTIALIAS_OFF :
                                         RenderingHints.VALUE_ANTIALIAS_ON);
         return r;
@@ -554,16 +552,15 @@ public class PDFRenderer
         for (COSName name : resources.getExtGStateNames())
         {
             PDExtendedGraphicsState extGState = resources.getExtGState(name);
-            if (extGState == null)
+            if (extGState != null)
             {
-                // can happen if key exists but no value 
+                // extGState null can happen if key exists but no value 
                 // see PDFBOX-3950-23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf
-                continue;
-            }
-            BlendMode blendMode = extGState.getBlendMode();
-            if (blendMode != BlendMode.NORMAL)
-            {
-                return true;
+                BlendMode blendMode = extGState.getBlendMode();
+                if (blendMode != BlendMode.NORMAL)
+                {
+                    return true;
+                }
             }
         }
         return false;

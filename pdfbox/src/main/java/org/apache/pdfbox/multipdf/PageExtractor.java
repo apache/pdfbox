@@ -18,6 +18,10 @@
 package org.apache.pdfbox.multipdf;
 
 import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
@@ -27,6 +31,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
  */
 public class PageExtractor
 {
+    private static final Log LOG = LogFactory.getLog(PageExtractor.class);
+    
     private final PDDocument sourceDocument;
     
     // first page to extract is page 1 (by default)
@@ -47,8 +53,8 @@ public class PageExtractor
     /** 
      * Creates a new instance of PageExtractor
      * @param sourceDocument The document to split.
-     * @param startPage The first page you want extracted (inclusive)
-     * @param endPage The last page you want extracted (inclusive)
+     * @param startPage The first page you want extracted (1-based, inclusive)
+     * @param endPage The last page you want extracted (1-based, inclusive)
      */
     public PageExtractor(PDDocument sourceDocument, int startPage, int endPage)
     {
@@ -80,12 +86,13 @@ public class PageExtractor
         {
             PDPage page = sourceDocument.getPage(i - 1);
             PDPage imported = extractedDocument.importPage(page);
-            imported.setCropBox(page.getCropBox());
-            imported.setMediaBox(page.getMediaBox());
-            imported.setResources(page.getResources());
-            imported.setRotation(page.getRotation());
+            if (page.getResources() != null && !page.getCOSObject().containsKey(COSName.RESOURCES))
+            {
+                imported.setResources(page.getResources());
+                LOG.info("Done in PageExtractor"); // follow-up to warning in importPage
+            }
         }
-            
+
         return extractedDocument;
     }
 

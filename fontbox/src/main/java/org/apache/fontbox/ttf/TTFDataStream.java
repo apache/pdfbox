@@ -26,7 +26,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- * An interface into a data stream.
+ * An abstract class to read a data stream.
  * 
  * @author Ben Litchfield
  */
@@ -45,7 +45,7 @@ public abstract class TTFDataStream implements Closeable
     public float read32Fixed() throws IOException
     {
         float retval = readSignedShort();
-        retval += (readUnsignedShort() / 65536.0);
+        retval += (readUnsignedShort() / 65536f);
         return retval;
     }
 
@@ -69,25 +69,11 @@ public abstract class TTFDataStream implements Closeable
      * @return A string of the desired length.
      * @throws IOException If there is an error reading the data.
      */
-    public String readString(int length, String charset) throws IOException
-    {
-        byte[] buffer = read(length);
-        return new String(buffer, charset);
-    }
-
-    /**
-     * Read a fixed length string.
-     * 
-     * @param length The length of the string to read in bytes.
-     * @param charset The expected character set of the string.
-     * @return A string of the desired length.
-     * @throws IOException If there is an error reading the data.
-     */
     public String readString(int length, Charset charset) throws IOException
     {
-        byte[] buffer = read(length);
-        return new String(buffer, charset);
+        return new String(read(length), charset);
     }
+
     /**
      * Read an unsigned byte.
      * 
@@ -167,7 +153,16 @@ public abstract class TTFDataStream implements Closeable
      * @return An unsigned short.
      * @throws IOException If there is an error reading the data.
      */
-    public abstract int readUnsignedShort() throws IOException;
+    public int readUnsignedShort() throws IOException
+    {
+        int b1 = read();
+        int b2 = read();
+        if ((b1 | b2) < 0)
+        {
+            throw new EOFException();
+        }
+        return (b1 << 8) + b2;
+    }
 
     /**
      * Read an unsigned byte array.
@@ -209,7 +204,10 @@ public abstract class TTFDataStream implements Closeable
      * @return An signed short.
      * @throws IOException If there is an error reading the data.
      */
-    public abstract short readSignedShort() throws IOException;
+    public short readSignedShort() throws IOException
+    {
+        return (short) readUnsignedShort();
+    }
 
     /**
      * Read an eight byte international date.

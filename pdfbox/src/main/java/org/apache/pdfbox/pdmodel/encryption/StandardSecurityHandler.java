@@ -163,6 +163,50 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         int dicPermissions = encryption.getPermissions();
         int dicRevision = encryption.getRevision();
         int dicLength = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
+        
+        if (encryption.getVersion() == 4 || encryption.getVersion() == 5)
+        {
+            // detect whether AES encryption is used. This assumes that the encryption algo is 
+            // stored in the PDCryptFilterDictionary
+            // However, crypt filters are used only when V is 4 or 5.
+            PDCryptFilterDictionary stdCryptFilterDictionary = encryption.getStdCryptFilterDictionary();
+            if (stdCryptFilterDictionary != null)
+            {
+                COSName cryptFilterMethod = stdCryptFilterDictionary.getCryptFilterMethod();
+                if (COSName.AESV2.equals(cryptFilterMethod))
+                {
+                    dicLength = 128 / 8;
+                    setAES(true);
+                    if (encryption.getCOSObject().containsKey(COSName.LENGTH))
+                    {
+                        // PDFBOX-5345
+                        int newLength = encryption.getLength() / 8;
+                        if (newLength < dicLength)
+                        {
+                            LOG.warn("Using " + newLength + " bytes key length instead of " +
+                                    dicLength + " in AESV2 encryption?!");
+                            dicLength = newLength;
+                        }
+                    }
+                }
+                if (COSName.AESV3.equals(cryptFilterMethod))
+                {
+                    dicLength = 256 / 8;
+                    setAES(true);
+                    if (encryption.getCOSObject().containsKey(COSName.LENGTH))
+                    {
+                        // PDFBOX-5345
+                        int newLength = encryption.getLength() / 8;
+                        if (newLength < dicLength)
+                        {
+                            LOG.warn("Using " + newLength + " bytes key length instead of " +
+                                    dicLength + " in AESV3 encryption?!");
+                            dicLength = newLength;
+                        }
+                    }
+                }
+            }
+        }
 
         byte[] documentIDBytes = getDocumentIDBytes(documentIDArray);
 
@@ -243,21 +287,6 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         {
             validatePerms(encryption, dicPermissions, encryptMetadata);
         }
-
-        if (encryption.getVersion() == 4 || encryption.getVersion() == 5)
-        {
-            // detect whether AES encryption is used. This assumes that the encryption algo is 
-            // stored in the PDCryptFilterDictionary
-            // However, crypt filters are used only when V is 4 or 5.
-            PDCryptFilterDictionary stdCryptFilterDictionary = encryption.getStdCryptFilterDictionary();
-
-            if (stdCryptFilterDictionary != null)
-            {
-                COSName cryptFilterMethod = stdCryptFilterDictionary.getCryptFilterMethod();
-                setAES(COSName.AESV2.equals(cryptFilterMethod) || 
-                       COSName.AESV3.equals(cryptFilterMethod));
-            }
-        }
     }
 
     private byte[] getDocumentIDBytes(COSArray documentIDArray)
@@ -285,7 +314,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         {
             // "Decrypt the 16-byte Perms string using AES-256 in ECB mode with an 
             // initialization vector of zero and the file encryption key as the key."
-            @SuppressWarnings({"squid:S5542"})
+            @SuppressWarnings({"squid:S5542","lgtm [java/weak-cryptographic-algorithm]"})
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getEncryptionKey(), "AES"));
             byte[] perms = cipher.doFinal(encryption.getPerms());

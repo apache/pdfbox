@@ -85,12 +85,12 @@ public class CertInformationHelper
             if (X509ObjectIdentifiers.id_ad_ocsp.equals(oid)
                     && location.getTagNo() == GeneralName.uniformResourceIdentifier)
             {
-                ASN1OctetString url = (ASN1OctetString) location.getObject();
+                ASN1OctetString url = (ASN1OctetString) location.getBaseObject();
                 certInfo.setOcspUrl(new String(url.getOctets()));
             }
             else if (X509ObjectIdentifiers.id_ad_caIssuers.equals(oid))
             {
-                ASN1OctetString uri = (ASN1OctetString) location.getObject();
+                ASN1OctetString uri = (ASN1OctetString) location.getBaseObject();
                 certInfo.setIssuerUrl(new String(uri.getOctets()));
             }
         }
@@ -127,15 +127,15 @@ public class CertInformationHelper
     private static String extractCrlUrlFromSequence(ASN1Sequence sequence)
     {
         ASN1TaggedObject taggedObject = (ASN1TaggedObject) sequence.getObjectAt(0);
-        taggedObject = (ASN1TaggedObject) taggedObject.getObject();
-        if (taggedObject.getObject() instanceof ASN1TaggedObject)
+        taggedObject = (ASN1TaggedObject) taggedObject.getBaseObject();
+        if (taggedObject.getBaseObject() instanceof ASN1TaggedObject)
         {
-            taggedObject = (ASN1TaggedObject) taggedObject.getObject();
+            taggedObject = (ASN1TaggedObject) taggedObject.getBaseObject();
         }
-        else if (taggedObject.getObject() instanceof ASN1Sequence)
+        else if (taggedObject.getBaseObject() instanceof ASN1Sequence)
         {
             // multiple URLs (we take the first)
-            ASN1Sequence seq = (ASN1Sequence) taggedObject.getObject();
+            ASN1Sequence seq = (ASN1Sequence) taggedObject.getBaseObject();
             if (seq.getObjectAt(0) instanceof ASN1TaggedObject)
             {
                 taggedObject = (ASN1TaggedObject) seq.getObjectAt(0);
@@ -149,9 +149,9 @@ public class CertInformationHelper
         {
             return null;
         }
-        if (taggedObject.getObject() instanceof ASN1OctetString)
+        if (taggedObject.getBaseObject() instanceof ASN1OctetString)
         {
-            ASN1OctetString uri = (ASN1OctetString) taggedObject.getObject();
+            ASN1OctetString uri = (ASN1OctetString) taggedObject.getBaseObject();
             String url = new String(uri.getOctets());
 
             // return first http(s)-Url for crl

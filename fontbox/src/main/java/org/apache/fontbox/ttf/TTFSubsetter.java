@@ -282,7 +282,7 @@ public final class TTFSubsetter
         DataOutputStream out = new DataOutputStream(bos);
 
         NamingTable name = ttf.getNaming();
-        if (name == null || keepTables != null && !keepTables.contains("name"))
+        if (name == null || keepTables != null && !keepTables.contains(NamingTable.TAG))
         {
             return null;
         }
@@ -300,12 +300,12 @@ public final class TTFSubsetter
 
         byte[][] names = new byte[numRecords][];
         int j = 0;
-        for (NameRecord record : nameRecords)
+        for (NameRecord nameRecord : nameRecords)
         {
-            if (shouldCopyNameRecord(record))
+            if (shouldCopyNameRecord(nameRecord))
             {
-                int platform = record.getPlatformId();
-                int encoding = record.getPlatformEncodingId();
+                int platform = nameRecord.getPlatformId();
+                int encoding = nameRecord.getPlatformEncodingId();
                 Charset charset = StandardCharsets.ISO_8859_1;
 
                 if (platform == CmapTable.PLATFORM_WINDOWS &&
@@ -325,8 +325,8 @@ public final class TTFSubsetter
                         charset = StandardCharsets.UTF_16BE;
                     }
                 }
-                String value = record.getString();
-                if (record.getNameId() == 6 && prefix != null)
+                String value = nameRecord.getString();
+                if (nameRecord.getNameId() == 6 && prefix != null)
                 {
                     value = prefix + value;
                 }
@@ -390,7 +390,8 @@ public final class TTFSubsetter
     private byte[] buildOS2Table() throws IOException
     {
         OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
-        if (os2 == null || uniToGID.isEmpty() || keepTables != null && !keepTables.contains("OS/2"))
+        if (os2 == null || uniToGID.isEmpty()
+                || keepTables != null && !keepTables.contains(OS2WindowsMetricsTable.TAG))
         {
             return null;
         }
@@ -704,7 +705,8 @@ public final class TTFSubsetter
 
     private byte[] buildCmapTable() throws IOException
     {
-        if (ttf.getCmap() == null || uniToGID.isEmpty() || keepTables != null && !keepTables.contains("cmap"))
+        if (ttf.getCmap() == null || uniToGID.isEmpty()
+                || keepTables != null && !keepTables.contains(CmapTable.TAG))
         {
             return null;
         }
@@ -823,7 +825,7 @@ public final class TTFSubsetter
     private byte[] buildPostTable() throws IOException
     {
         PostScriptTable post = ttf.getPostScript();
-        if (post == null || keepTables != null && !keepTables.contains("post"))
+        if (post == null || keepTables != null && !keepTables.contains(PostScriptTable.TAG))
         {
             return null;
         }
@@ -991,25 +993,25 @@ public final class TTFSubsetter
             Map<String, byte[]> tables = new TreeMap<>();
             if (os2 != null)
             {
-                tables.put("OS/2", os2);
+                tables.put(OS2WindowsMetricsTable.TAG, os2);
             }
             if (cmap != null)
             {
-                tables.put("cmap", cmap);
+                tables.put(CmapTable.TAG, cmap);
             }
-            tables.put("glyf", glyf); 
-            tables.put("head", head);
-            tables.put("hhea", hhea);
-            tables.put("hmtx", hmtx);
-            tables.put("loca", loca);
-            tables.put("maxp", maxp);
+            tables.put(GlyphTable.TAG, glyf);
+            tables.put(HeaderTable.TAG, head);
+            tables.put(HorizontalHeaderTable.TAG, hhea);
+            tables.put(HorizontalMetricsTable.TAG, hmtx);
+            tables.put(IndexToLocationTable.TAG, loca);
+            tables.put(MaximumProfileTable.TAG, maxp);
             if (name != null)
             {
-                tables.put("name", name);
+                tables.put(NamingTable.TAG, name);
             }
             if (post != null)
             {
-                tables.put("post", post);
+                tables.put(PostScriptTable.TAG, post);
             }
 
             // copy all other tables
@@ -1100,7 +1102,7 @@ public final class TTFSubsetter
 
     private int log2(int num)
     {
-        return (int)Math.round(Math.log(num) / Math.log(2));
+        return (int) Math.floor(Math.log(num) / Math.log(2));
     }
 
     public void addGlyphIds(Set<Integer> allGlyphIds)

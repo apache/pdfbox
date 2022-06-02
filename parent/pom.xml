@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>23</version>
+        <version>26</version>
         <relativePath />
     </parent>
 
@@ -49,7 +49,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <bouncycastle.version>1.69</bouncycastle.version>
+        <bouncycastle.version>1.70</bouncycastle.version>
 
         <!-- This is a default value to avoid problems when running single tests
              see also https://stackoverflow.com/a/28695766/535646 
@@ -63,7 +63,7 @@
             <dependency>
 	            <groupId>org.junit.jupiter</groupId>
 	            <artifactId>junit-jupiter</artifactId>
-	            <version>5.8.1</version>
+	            <version>5.9.0-M1</version>
 	            <scope>test</scope>
             </dependency>
             <dependency>
@@ -96,7 +96,7 @@
             <dependency>
                 <groupId>org.apache.pdfbox</groupId>
                 <artifactId>jbig2-imageio</artifactId>
-                <version>3.0.3</version>
+                <version>3.0.4</version>
                 <scope>test</scope>
             </dependency>
 
@@ -118,7 +118,7 @@
             <dependency>
                 <groupId>info.picocli</groupId>
                 <artifactId>picocli</artifactId>
-                <version>4.6.1</version>
+                <version>4.6.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -210,7 +210,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>6.3.2</version>
+                        <version>7.1.0</version>
                         <configuration>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                             <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
@@ -234,7 +234,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>0.8.8</version>
                 <executions>
                     <execution>
                         <goals>
@@ -316,7 +316,7 @@
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId>
 	            <artifactId>animal-sniffer-maven-plugin</artifactId>
-	            <version>1.20</version>
+	            <version>1.21</version>
 	            <executions>
 	               <execution>
 	                  <id>check-java-version</id>
@@ -341,7 +341,7 @@
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>1.6.8</version>
                 <configuration>
                     <skip>${skipTests}</skip>
                 </configuration>
@@ -373,13 +373,14 @@
                     <configuration>
                         <excludes>
                             <exclude>release.properties</exclude>
+                            <exclude>.github/workflows/codeql-analysis.yml</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.1</version>
+                    <version>5.1.2</version>
                 </plugin>
             </plugins>
         </pluginManagement>

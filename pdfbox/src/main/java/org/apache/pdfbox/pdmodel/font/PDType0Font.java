@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -35,6 +36,9 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
@@ -84,6 +88,11 @@ public class PDType0Font extends PDFont implements PDVectorFont
         if (!(descendantFontDictBase instanceof COSDictionary))
         {
             throw new IOException("Missing descendant font dictionary");
+        }
+        if (!COSName.FONT.equals(
+                ((COSDictionary) descendantFontDictBase).getCOSName(COSName.TYPE, COSName.FONT)))
+        {
+            throw new IOException("Missing or wrong type in descendant font dictionary");
         }
         descendantFont = PDFontFactory.createDescendantFont((COSDictionary) descendantFontDictBase, this);
         readEncoding();
@@ -143,7 +152,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      */
     public static PDType0Font load(PDDocument doc, File file) throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(file), true, true, false);
+        return load(doc, new RandomAccessReadBufferedFile(file), true, false);
     }
 
     /**
@@ -173,7 +182,24 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font load(PDDocument doc, InputStream input, boolean embedSubset)
             throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(input), embedSubset, true, false);
+        return load(doc, new RandomAccessReadBuffer(input), embedSubset, false);
+    }
+
+    /**
+     * Loads a TTF to be embedded into a document as a Type 0 font.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param randomAccessRead source of a TrueType font.
+     * @param embedSubset True if the font will be subset before embedding. Set this to false when creating a font for
+     * AcroForm.
+     * @return A Type0 font with a CIDFontType2 descendant.
+     * @throws IOException If there is an error reading the font stream.
+     */
+    public static PDType0Font load(PDDocument doc, RandomAccessRead randomAccessRead,
+            boolean embedSubset, boolean vertical) throws IOException
+    {
+        return new PDType0Font(doc, new TTFParser().parse(randomAccessRead), embedSubset, true,
+                vertical);
     }
 
     /**
@@ -181,8 +207,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
      *
      * @param doc The PDF document that will hold the embedded font.
      * @param ttf A TrueType font.
-     * @param embedSubset True if the font will be subset before embedding. Set this to false when
-     * creating a font for AcroForm.
+     * @param embedSubset True if the font will be subset before embedding. Set this to false when creating a font for
+     * AcroForm.
      * @return A Type0 font with a CIDFontType2 descendant.
      * @throws IOException If there is an error reading the font stream.
      */
@@ -202,7 +228,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      */
     public static PDType0Font loadVertical(PDDocument doc, File file) throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(file), true, true, true);
+        return load(doc, new RandomAccessReadBufferedFile(file), true, true);
     }
 
     /**
@@ -215,7 +241,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      */
     public static PDType0Font loadVertical(PDDocument doc, InputStream input) throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(input), true, true, true);
+        return load(doc, new RandomAccessReadBuffer(input), true, true);
     }
 
     /**
@@ -230,7 +256,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font loadVertical(PDDocument doc, InputStream input, boolean embedSubset)
             throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(input), embedSubset, true, true);
+        return load(doc, new RandomAccessReadBuffer(input), embedSubset, true);
     }
 
     /**
@@ -299,14 +325,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
             // predefined CMap
             COSName encodingName = (COSName) encoding;
             cMap = CMapManager.getPredefinedCMap(encodingName.getName());
-            if (cMap != null)
-            {
-                isCMapPredefined = true;
-            }
-            else
-            {
-                throw new IOException("Missing required CMap");
-            }
+            isCMapPredefined = true;
         }
         else if (encoding != null)
         {
@@ -382,7 +401,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     }
 
     /**
-     * Returns the PostScript name of the font.
+     * Returns the PostScript name of the font. if (!((COSDictionary) descendantFontDictBase).contai
      */
     public String getBaseFont()
     {
@@ -520,18 +539,53 @@ public class PDType0Font extends PDFont implements PDVectorFont
             // e) Map the CID according to the CMap from step d), producing a Unicode value
             return cMapUCS2.toUnicode(cid);
         }
-        else
+
+        // PDFBOX-5324: try to get unicode from font cmap
+        if (descendantFont instanceof PDCIDFontType2)
         {
-            if (LOG.isWarnEnabled() && !noUnicode.contains(code))
+            TrueTypeFont font = ((PDCIDFontType2) descendantFont).getTrueTypeFont();
+            if (font != null)
             {
-                // if no value has been produced, there is no way to obtain Unicode for the character.
-                String cid = "CID+" + codeToCID(code);
-                LOG.warn("No Unicode mapping for " + cid + " (" + code + ") in font " + getName());
-                // we keep track of which warnings have been issued, so we don't log multiple times
-                noUnicode.add(code);
+                try
+                {
+                    CmapLookup cmap = font.getUnicodeCmapLookup(false);
+                    if (cmap != null)
+                    {
+                        int gid;
+                        if (descendantFont.isEmbedded())
+                        {
+                            // original PDFBOX-5324 supported only embedded fonts
+                            gid = descendantFont.codeToGID(code);
+                        }
+                        else
+                        {
+                            // PDFBOX-5331: this bypasses the fallback attempt in
+                            // PDCIDFontType2.codeToGID() which would bring a stackoverflow
+                            gid = descendantFont.codeToCID(code);
+                        }
+                        List<Integer> codes = cmap.getCharCodes(gid);
+                        if (codes != null && !codes.isEmpty())
+                        {
+                            return Character.toString((char) (int) codes.get(0));
+                        }
+                    }
+                }
+                catch (IOException e)
+                {
+                    LOG.warn("get unicode from font cmap fail", e);
+                }
             }
-            return null;
         }
+
+        if (LOG.isWarnEnabled() && !noUnicode.contains(code))
+        {
+            // if no value has been produced, there is no way to obtain Unicode for the character.
+            String cid = "CID+" + codeToCID(code);
+            LOG.warn("No Unicode mapping for " + cid + " (" + code + ") in font " + getName());
+            // we keep track of which warnings have been issued, so we don't log multiple times
+            noUnicode.add(code);
+        }
+        return null;
     }
 
     @Override

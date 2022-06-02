@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -52,6 +54,8 @@ import org.apache.pdfbox.util.Vector;
  */
 final class DebugTextOverlay
 {
+    private static final Log LOG = LogFactory.getLog(DebugTextOverlay.class);
+
     private final PDDocument document;
     private final int pageIndex;
     private final float scale;
@@ -210,7 +214,16 @@ final class DebugTextOverlay
             }
 
             AffineTransform at = textRenderingMatrix.createAffineTransform();
-            Shape bbox = calculateGlyphBounds(at, font, code, displacement);
+            Shape bbox = null;
+            try
+            {
+                bbox = calculateGlyphBounds(at, font, code, displacement);
+            }
+            catch (IOException ex)
+            {
+                LOG.error("Couldn't get bounds for code " + code + " at position (" +
+                        at.getTranslateX() + "," + at.getTranslateY() + ")", ex);
+            }
             if (bbox == null)
             {
                 return;

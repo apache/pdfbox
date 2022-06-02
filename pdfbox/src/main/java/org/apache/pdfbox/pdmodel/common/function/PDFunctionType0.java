@@ -455,6 +455,10 @@ public class PDFunctionType0 extends PDFunction
         {
             PDRange range = getRangeForOutput(i);
             PDRange decodeValues = getDecodeForParameter(i);
+            if (decodeValues == null)
+            {
+                throw new IOException("Range missing in function /Decode entry");
+            }
             outputValues[i] = interpolate(outputValues[i], 0, maxSample, decodeValues.getMin(), decodeValues.getMax());
             outputValues[i] = clipToRange(outputValues[i], range.getMin(), range.getMax());
         }

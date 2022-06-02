@@ -72,7 +72,13 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public String getDefaultAppearance()
     {
-        COSString defaultAppearance = (COSString) getInheritableAttribute(COSName.DA);
+        COSBase base = getInheritableAttribute(COSName.DA);
+        COSString defaultAppearance;
+        if (!(base instanceof COSString))
+        {
+            return null;
+        }
+        defaultAppearance = (COSString) base;
         return defaultAppearance.getString();
     }
 
@@ -88,7 +94,12 @@ public abstract class PDVariableText extends PDTerminalField
      */
     PDDefaultAppearanceString getDefaultAppearanceString() throws IOException
     {
-        COSString da = (COSString) getInheritableAttribute(COSName.DA);
+        COSBase base = getInheritableAttribute(COSName.DA);
+        COSString da = null;
+        if (base instanceof COSString)
+        {
+            da = (COSString) base;
+        }
         PDResources dr = getAcroForm().getDefaultResources();
         return new PDDefaultAppearanceString(da, dr);
     }

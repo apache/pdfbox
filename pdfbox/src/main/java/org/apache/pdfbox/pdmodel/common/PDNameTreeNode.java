@@ -117,7 +117,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
         COSArray kids = node.getCOSArray(COSName.KIDS);
         if( kids != null )
         {
-            List<PDNameTreeNode<T>> pdObjects = new ArrayList<>();
+            List<PDNameTreeNode<T>> pdObjects = new ArrayList<>(kids.size());
             for( int i=0; i<kids.size(); i++ )
             {
                 pdObjects.add( createChildNode( (COSDictionary)kids.getObject(i) ) );
@@ -132,8 +132,8 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
      * Set the children of this named tree.
      *
      * @param kids The children of this named tree. These have to be in sorted order. Because of
-     * that, it is usually easier to call {@link setNames} with a map and pass a single element list
-     * here.
+     * that, it is usually easier to call {@link #setNames(Map)} with a map and pass a single
+     * element list here.
      */
     public void setKids( List<? extends PDNameTreeNode<T>> kids )
     {
@@ -208,40 +208,36 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
      *
      * @param name The name in the tree.
      * @return The value of the name in the tree.
-     * @throws IOException If an there is a problem creating the destinations.
+     * @throws IOException If there is a problem creating the destinations.
      */
     public T getValue( String name ) throws IOException
     {
-        T retval = null;
         Map<String, T> names = getNames();
-        if( names != null )
+        if (names != null)
         {
-            retval = names.get( name );
+            return names.get(name);
+        }
+        List<PDNameTreeNode<T>> kids = getKids();
+        if (kids != null)
+        {
+            for (int i = 0; i < kids.size(); i++)
+            {
+                PDNameTreeNode<T> childNode = kids.get(i);
+                String upperLimit = childNode.getUpperLimit();
+                String lowerLimit = childNode.getLowerLimit();
+                if (upperLimit == null || lowerLimit == null || 
+                    upperLimit.compareTo(lowerLimit) < 0 ||
+                    (lowerLimit.compareTo(name) <= 0 && upperLimit.compareTo(name) >= 0))
+                {
+                    return childNode.getValue(name);
+                }
+            }
         }
         else
         {
-            List<PDNameTreeNode<T>> kids = getKids();
-            if (kids != null)
-            {
-                for( int i=0; i<kids.size() && retval == null; i++ )
-                {
-                    PDNameTreeNode<T> childNode = kids.get( i );
-                    String upperLimit = childNode.getUpperLimit();
-                    String lowerLimit = childNode.getLowerLimit();
-                    if (upperLimit == null || lowerLimit == null || 
-                        upperLimit.compareTo(lowerLimit) < 0 ||
-                        (lowerLimit.compareTo(name) <= 0 && upperLimit.compareTo(name) >= 0))
-                    {
-                        retval = childNode.getValue( name );
-                    }
-                }
-            }
-            else
-            {
-                LOG.warn("NameTreeNode does not have \"names\" nor \"kids\" objects.");
-            }
+            LOG.warn("NameTreeNode does not have \"names\" nor \"kids\" objects.");
         }
-        return retval;
+        return null;
     }
 
     /**

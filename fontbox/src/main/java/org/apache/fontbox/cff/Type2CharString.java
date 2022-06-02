@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.fontbox.cff.CharStringCommand.Type1KeyWord;
 import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
 import org.apache.fontbox.type1.Type1CharStringReader;
 
@@ -71,15 +72,24 @@ public class Type2CharString extends Type1CharString
      */
     private void convertType1ToType2(List<Object> sequence)
     {
-        type1Sequence = new ArrayList<>();
         pathCount = 0;
-        CharStringHandler handler = Type2CharString.this::handleType2Command;
-        handler.handleSequence(sequence);
+        List<Number> numbers = new ArrayList<>();
+        sequence.forEach(obj -> {
+            if (obj instanceof CharStringCommand)
+            {
+                List<Number> results = convertType2Command(numbers, (CharStringCommand) obj);
+                numbers.clear();
+                numbers.addAll(results);
+            }
+            else
+            {
+                numbers.add((Number) obj);
+            }
+        });
     }
 
-    private List<Number> handleType2Command(List<Number> numbers, CharStringCommand command)
+    private List<Number> convertType2Command(List<Number> numbers, CharStringCommand command)
     {
-        commandCount++;
         Type2KeyWord type2KeyWord = command.getType2KeyWord();
         if (type2KeyWord == null)
         {
@@ -90,16 +100,16 @@ public class Type2CharString extends Type1CharString
         {
         case HSTEM:
         case HSTEMHM:
-            numbers = clearStack(numbers, numbers.size() % 2 != 0);
-            expandStemHints(numbers, true);
-            break;
         case VSTEM:
         case VSTEMHM:
+        case HINTMASK:
+        case CNTRMASK:
             numbers = clearStack(numbers, numbers.size() % 2 != 0);
-            expandStemHints(numbers, false);
+            expandStemHints(numbers,
+                    type2KeyWord == Type2KeyWord.HSTEM || type2KeyWord == Type2KeyWord.HSTEMHM);
             break;
-        case VMOVETO:
         case HMOVETO:
+        case VMOVETO:
             numbers = clearStack(numbers, numbers.size() > 1);
             markPath();
             addCommand(numbers, command);
@@ -108,10 +118,8 @@ public class Type2CharString extends Type1CharString
             addCommandList(split(numbers, 2), command);
             break;
         case HLINETO:
-            drawAlternatingLine(numbers, true);
-            break;
         case VLINETO:
-            drawAlternatingLine(numbers, false);
+            addAlternatingLine(numbers, type2KeyWord == Type2KeyWord.HLINETO);
             break;
         case RRCURVETO:
             addCommandList(split(numbers, 6), command);
@@ -123,7 +131,7 @@ public class Type2CharString extends Type1CharString
             {
                 // deprecated "seac" operator
                 numbers.add(0, 0);
-                addCommand(numbers, new CharStringCommand(12, 6));
+                addCommand(numbers, CharStringCommand.getInstance(12, 6));
             }
             else
             {
@@ -135,37 +143,37 @@ public class Type2CharString extends Type1CharString
             markPath();
             addCommand(numbers, command);
             break;
-        case VHCURVETO:
-            drawAlternatingCurve(numbers, false);
-            break;
         case HVCURVETO:
-            drawAlternatingCurve(numbers, true);
+        case VHCURVETO:
+            addAlternatingCurve(numbers, type2KeyWord == Type2KeyWord.HVCURVETO);
             break;
         case HFLEX:
-        {
-            List<Number> first = Arrays.asList(numbers.get(0), 0, numbers.get(1), numbers.get(2),
-                    numbers.get(3), 0);
-            List<Number> second = Arrays.asList(numbers.get(4), 0, numbers.get(5),
-                    -(numbers.get(2).floatValue()), numbers.get(6), 0);
-            addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
+            if (numbers.size() >= 7)
+            {
+                List<Number> first = Arrays.asList(numbers.get(0), 0, numbers.get(1), numbers.get(2),
+                        numbers.get(3), 0);
+                List<Number> second = Arrays.asList(numbers.get(4), 0, numbers.get(5),
+                        -(numbers.get(2).floatValue()), numbers.get(6), 0);
+                addCommandList(Arrays.asList(first, second), CharStringCommand.COMMAND_RRCURVETO);
+            }
             break;
-        }
         case FLEX:
         {
             List<Number> first = numbers.subList(0, 6);
             List<Number> second = numbers.subList(6, 12);
-            addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
+            addCommandList(Arrays.asList(first, second), CharStringCommand.COMMAND_RRCURVETO);
             break;
         }
         case HFLEX1:
-        {
-            List<Number> first = Arrays.asList(numbers.get(0), numbers.get(1), numbers.get(2),
-                    numbers.get(3), numbers.get(4), 0);
-            List<Number> second = Arrays.asList(numbers.get(5), 0, numbers.get(6), numbers.get(7),
-                    numbers.get(8), 0);
-            addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
+            if (numbers.size() >= 9)
+            {
+                List<Number> first = Arrays.asList(numbers.get(0), numbers.get(1), numbers.get(2),
+                        numbers.get(3), numbers.get(4), 0);
+                List<Number> second = Arrays.asList(numbers.get(5), 0, numbers.get(6), numbers.get(7),
+                        numbers.get(8), 0);
+                addCommandList(Arrays.asList(first, second), CharStringCommand.COMMAND_RRCURVETO);
+            }
             break;
-        }
         case FLEX1:
         {
             int dx = 0;
@@ -179,40 +187,31 @@ public class Type2CharString extends Type1CharString
             List<Number> second = Arrays.asList(numbers.get(6), numbers.get(7), numbers.get(8),
                     numbers.get(9), (Math.abs(dx) > Math.abs(dy) ? numbers.get(10) : -dx),
                     (Math.abs(dx) > Math.abs(dy) ? -dy : numbers.get(10)));
-            addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
+            addCommandList(Arrays.asList(first, second),
+                    CharStringCommand.COMMAND_RRCURVETO);
             break;
         }
-        case HINTMASK:
-        case CNTRMASK:
-            numbers = clearStack(numbers, numbers.size() % 2 != 0);
-            if (!numbers.isEmpty())
-            {
-                expandStemHints(numbers, false);
-            }
-            break;
         case RCURVELINE:
             if (numbers.size() >= 2)
             {
                 addCommandList(split(numbers.subList(0, numbers.size() - 2), 6),
-                        new CharStringCommand(8));
+                        CharStringCommand.COMMAND_RRCURVETO);
                 addCommand(numbers.subList(numbers.size() - 2, numbers.size()),
-                        new CharStringCommand(5));
+                        CharStringCommand.COMMAND_RLINETO);
             }
             break;
         case RLINECURVE:
             if (numbers.size() >= 6)
             {
                 addCommandList(split(numbers.subList(0, numbers.size() - 6), 2),
-                        new CharStringCommand(5));
+                        CharStringCommand.COMMAND_RLINETO);
                 addCommand(numbers.subList(numbers.size() - 6, numbers.size()),
-                        new CharStringCommand(8));
+                        CharStringCommand.COMMAND_RRCURVETO);
             }
             break;
-        case VVCURVETO:
-            drawCurve(numbers, false);
-            break;
         case HHCURVETO:
-            drawCurve(numbers, true);
+        case VVCURVETO:
+            addCurve(numbers, type2KeyWord == Type2KeyWord.HHCURVETO);
             break;
         default:
             addCommand(numbers, command);
@@ -223,17 +222,17 @@ public class Type2CharString extends Type1CharString
 
     private List<Number> clearStack(List<Number> numbers, boolean flag)
     {
-        if (type1Sequence.isEmpty())
+        if (isSequenceEmpty())
         {
             if (flag)
             {
                 addCommand(Arrays.asList(0, numbers.get(0).floatValue() + nominalWidthX),
-                        new CharStringCommand(13));
+                        CharStringCommand.COMMAND_HSBW);
                 numbers = numbers.subList(1, numbers.size());
             }
             else
             {
-                addCommand(Arrays.asList(0, defWidthX), new CharStringCommand(13));
+                addCommand(Arrays.asList(0, defWidthX), CharStringCommand.COMMAND_HSBW);
             }
         }
         return numbers;
@@ -259,29 +258,26 @@ public class Type2CharString extends Type1CharString
 
     private void closeCharString2Path()
     {
-        CharStringCommand command = pathCount > 0 ? (CharStringCommand) type1Sequence
-                .get(type1Sequence.size() - 1)
+        CharStringCommand command = pathCount > 0 ? (CharStringCommand) getLastSequenceEntry()
                 : null;
-
-        CharStringCommand closepathCommand = new CharStringCommand(9);
-        if (command != null && !closepathCommand.equals(command))
+        if (command != null && command.getType1KeyWord() != Type1KeyWord.CLOSEPATH)
         {
-            addCommand(Collections.<Number> emptyList(), closepathCommand);
+            addCommand(Collections.<Number> emptyList(), CharStringCommand.COMMAND_CLOSEPATH);
         }
     }
 
-    private void drawAlternatingLine(List<Number> numbers, boolean horizontal)
+    private void addAlternatingLine(List<Number> numbers, boolean horizontal)
     {
         while (!numbers.isEmpty())
         {
-            addCommand(numbers.subList(0, 1), new CharStringCommand(
-                    horizontal ? 6 : 7));
+            addCommand(numbers.subList(0, 1), horizontal ? CharStringCommand.COMMAND_HLINETO
+                    : CharStringCommand.COMMAND_VLINETO);
             numbers = numbers.subList(1, numbers.size());
             horizontal = !horizontal;
         }
     }
 
-    private void drawAlternatingCurve(List<Number> numbers, boolean horizontal)
+    private void addAlternatingCurve(List<Number> numbers, boolean horizontal)
     {
         while (numbers.size() >= 4)
         {
@@ -291,21 +287,21 @@ public class Type2CharString extends Type1CharString
                 addCommand(Arrays.asList(numbers.get(0), 0,
                         numbers.get(1), numbers.get(2), last ? numbers.get(4)
                                 : 0, numbers.get(3)),
-                        new CharStringCommand(8));
+                        CharStringCommand.COMMAND_RRCURVETO);
             } 
             else
             {
                 addCommand(Arrays.asList(0, numbers.get(0),
                         numbers.get(1), numbers.get(2), numbers.get(3),
                         last ? numbers.get(4) : 0),
-                        new CharStringCommand(8));
+                        CharStringCommand.COMMAND_RRCURVETO);
             }
             numbers = numbers.subList(last ? 5 : 4, numbers.size());
             horizontal = !horizontal;
         }
     }
 
-    private void drawCurve(List<Number> numbers, boolean horizontal)
+    private void addCurve(List<Number> numbers, boolean horizontal)
     {
         while (numbers.size() >= 4)
         {
@@ -317,14 +313,14 @@ public class Type2CharString extends Type1CharString
                         first ? numbers.get(0) : 0, numbers
                                 .get(first ? 2 : 1),
                         numbers.get(first ? 3 : 2), numbers.get(first ? 4 : 3),
-                        0), new CharStringCommand(8));
+                        0), CharStringCommand.COMMAND_RRCURVETO);
             } 
             else
             {
                 addCommand(Arrays.asList(first ? numbers.get(0) : 0, numbers.get(first ? 1 : 0), numbers
                         .get(first ? 2 : 1), numbers.get(first ? 3 : 2),
                         0, numbers.get(first ? 4 : 3)),
-                        new CharStringCommand(8));
+                        CharStringCommand.COMMAND_RRCURVETO);
             }
             numbers = numbers.subList(first ? 5 : 4, numbers.size());
         }
@@ -333,12 +329,6 @@ public class Type2CharString extends Type1CharString
     private void addCommandList(List<List<Number>> numbers, CharStringCommand command)
     {
         numbers.forEach(ns -> addCommand(ns, command));
-    }
-
-    private void addCommand(List<Number> numbers, CharStringCommand command)
-    {
-        type1Sequence.addAll(numbers);
-        type1Sequence.add(command);
     }
 
     private static <E> List<List<E>> split(List<E> list, int size)

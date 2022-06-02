@@ -226,7 +226,7 @@ public class ZapfDingbatsEncoding extends Encoding
     /**
      * Constructor.
      */
-    public ZapfDingbatsEncoding()
+    private ZapfDingbatsEncoding()
     {
         for (Object[] encodingEntry : ZAPFDINGBATS_ENCODING_TABLE)
         {

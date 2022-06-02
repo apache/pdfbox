@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 3.0.0-alpha2
+Release Notes -- Apache PDFBox -- Version 3.0.0-alpha3
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is a second release candidate for the upcoming major release 3.0.0 of PDFBox.
+This is the third alpha release candidate for the upcoming major release 3.0.0 of PDFBox.
 This release contains a lot of improvements, fixes and refactorings. The API is 
 supposed to be stable, but we can't guarantee that there won't be any last changes
 to it before providing the final release candidate.
@@ -47,6 +47,7 @@ Sub-task
 [PDFBOX-4731] - Support RenderDestination
 [PDFBOX-4732] - Support ImageType
 [PDFBOX-5277] - Add print dpi submenu
+[PDFBOX-5320] - Reduce HighResolutionImageIcons memory leaks
 
 Bug
 
@@ -776,6 +777,7 @@ Bug
 [PDFBOX-5194] - CreateCheckBox example draws too large, clipped checkmark
 [PDFBOX-5196] - Wrong color space detected for some Jpeg images
 [PDFBOX-5199] - Possible memory leak after calling decode filter
+[PDFBOX-5203] - TestCreateSignature.testCreateSignedTimeStamp checkLTV build test fail
 [PDFBOX-5204] - Ink annotation not rendered
 [PDFBOX-5207] - Page not rendered / extracted, Unknown type in array for TJ operation
 [PDFBOX-5214] - File generated differently depending on test call
@@ -794,6 +796,56 @@ Bug
 [PDFBOX-5274] - Not existing rectangle appears on page image
 [PDFBOX-5275] - Not rendered (white) pages for given pdf
 [PDFBOX-5276] - Encryption on Split documents
+[PDFBOX-5278] - PDPage.getAnnotations() causes subsequent calls to PDDocument.getPages() to fail
+[PDFBOX-5281] - Error rendering png from PDF - Error at Type1Parser parseBinary for Type 1 Font
+[PDFBOX-5283] - No Content - xRef / Obj Parsing
+[PDFBOX-5285] - EOFException during TTF parsing
+[PDFBOX-5286] - Runtime degredation in RC1 and alpha2
+[PDFBOX-5294] - Incorrect rendering of Type3 character
+[PDFBOX-5297] - class org.apache.pdfbox.cos.COSName cannot be cast to class org.apache.pdfbox.cos.COSString
+[PDFBOX-5298] - unneeded / double code in PageExtractor
+[PDFBOX-5302] - When PDF is converted to an image, the image has a large black rectangle.
+[PDFBOX-5305] - Pdf-A/1b Validation
+[PDFBOX-5310] - Slow rendering for specific PDF File with small chunks 16x8
+[PDFBOX-5312] - Decryption for V4 fails when no Length entry is set in Encryption Dictionary
+[PDFBOX-5313] - `NullPointerException` when intersecting area with null clipping path
+[PDFBOX-5315] - Stack overflow in PDColorSpace.create()
+[PDFBOX-5317] - Splitter: Problematic /Info causes big files
+[PDFBOX-5318] - Resolution of ambiguities in inline images don't follow the standard
+[PDFBOX-5321] - Silent fail of PDTextField.setValue when font encoding missing
+[PDFBOX-5326] - TTFSubsetter incorrectly calculating 'searchRange'
+[PDFBOX-5328] - Failing to get multiple encodings from cmap table
+[PDFBOX-5331] - Text "820-01869-U-A" is omitted from PDF doc
+[PDFBOX-5333] - Wrong number of fonts leads to OOM-Exception
+[PDFBOX-5339] - A list of bugs found （70 bugs in total)
+[PDFBOX-5342] - Text size option for PDFBox Debugger
+[PDFBOX-5345] - IllegalArgumentException: Input buffer too short in StandardSecurityHandler.computeRC4key
+[PDFBOX-5352] - ArrayIndexOutOfBoundsException in PDSeparation.tintTransform()
+[PDFBOX-5360] - EOFException: Can't read 20 bytes
+[PDFBOX-5361] - Wrong datatype for OPM in PDExtendedGraphicsState
+[PDFBOX-5366] - Unhandled IOException thrown from BaseParser creates issue in PDFStreamEngine.processStreamOperators
+[PDFBOX-5372] - *LOADS of* "WARNING: key node000xxxxx already exists in destination IDTree"
+[PDFBOX-5373] - NullPointerException in PDRange.getMin()
+[PDFBOX-5376] - Image interpolation when there shouldn't be
+[PDFBOX-5377] - pDAcroForm.flatten() does not remove /SigFlags in /Catalog object
+[PDFBOX-5380] - Could not read embedded TTF for font
+[PDFBOX-5381] - Catalog object twice in signed file
+[PDFBOX-5387] - ToUnicodeWriter.writeTo allows byte overflow in bfrange operator
+[PDFBOX-5390] - TextToPDF appends space to each line
+[PDFBOX-5393] - NegativeArraySizeException in pfb parser with 0 byte pfb font file
+[PDFBOX-5395] - Hangup in COSFilterInputStream.nextRange
+[PDFBOX-5397] - Certain PDF cannot be processed
+[PDFBOX-5398] - Parsing fails in 2.0.26 that worked in 2.0.25
+[PDFBOX-5399] - Object must be defined and must not be compressed object
+[PDFBOX-5401] - A carefully crafted pdf can trigger an infinite loop while parsing
+[PDFBOX-5402] - POCIDFontType2 (Wingdings) encode throws a NullPointerException
+[PDFBOX-5410] - Possible loop detection is triggered in 2.0.26 but file works in 2.0.25
+[PDFBOX-5412] - IOException: object reference 112 0 R at offset 18355 in content stream
+[PDFBOX-5413] - Field text missing
+[PDFBOX-5418] - NPE during page render
+[PDFBOX-5419] - Parsing shows 1 empty page with 2.0.26 and 7 with 2.0.25
+[PDFBOX-5421] - Sonar build fails with NPE
+[PDFBOX-5424] - java.lang.IndexOutOfBoundsException (2)
 
 New Feature
 
@@ -813,6 +865,8 @@ New Feature
 [PDFBOX-4721] - Move Apache PDFBox from a low-API model
 [PDFBOX-4847] - [PATCH] Allow to access raw image data and fix ICC profile embedding in PNGConverter
 [PDFBOX-4952] - PDF compression - object stream creation
+[PDFBOX-5314] - Additional `showTransparencyGroupOnGraphics()` method
+[PDFBOX-5329] - Add Benchmark Package
 
 Improvement
 
@@ -1045,6 +1099,7 @@ Improvement
 [PDFBOX-5001] - Refactor AFMParser
 [PDFBOX-5004] - Repair AcroForm in PDFDebugger
 [PDFBOX-5027] - Protect/Encrypt PDF with multiple certificates on command line
+[PDFBOX-5031] - Refactor COSParser: separate brute force parser
 [PDFBOX-5055] - Minor improvement
 [PDFBOX-5058] - Remove check for external glyphlist
 [PDFBOX-5093] - Pass PDFRenderer to PDFPrintable constructor
@@ -1056,6 +1111,7 @@ Improvement
 [PDFBOX-5122] - Don't use RGB loop in PDDeviceN.toRGBWithTintTransform()
 [PDFBOX-5136] - Remove COSDocument#finalize
 [PDFBOX-5141] - Create tests for HelloWorld examples
+[PDFBOX-5143] - Refactor/Simplify CFF parsing
 [PDFBOX-5145] - Faster PDImageXObject.applyMask
 [PDFBOX-5154] - Custom folder for fonts in FontMapper
 [PDFBOX-5157] - allow to make timestamp only signature "LTV"
@@ -1070,11 +1126,24 @@ Improvement
 [PDFBOX-5239] - Support BGR for OpenCV and JavaCV
 [PDFBOX-5253] - Create PDImmutableRectangle class for fixed sizes
 [PDFBOX-5254] - Preserve indirect object reference when copying resources
+[PDFBOX-5255] - Create a separate maven module for org.apache.pdfbox.io
 [PDFBOX-5256] - PDFBox should use the quadding for fields with the comb flag
 [PDFBOX-5258] - Lazier clipping
 [PDFBOX-5263] - Suggestion: Signing actual document changes - Enhancing incremental saving
 [PDFBOX-5267] - LegacyPDFStreamEngine.glyphList loaded from disk on each instantiation rather than static final?
 [PDFBOX-5270] - Consider BaseParser.seqSource a protected member
+[PDFBOX-5308] - Prefer MergeSort over QuickSort and try native TimSort first (with explanation)
+[PDFBOX-5319] - Avoid creating Paint objects and filling when there is nothing to do
+[PDFBOX-5324] - support get unicode from embedded TrueTypeFont cmap
+[PDFBOX-5336] - Update liberation fonts
+[PDFBOX-5338] - Simplify ICOSVisitor interface, remove unused return value
+[PDFBOX-5347] - Create push button example
+[PDFBOX-5348] - FontMapper should also take into account the user's font directory on Windows operating systems
+[PDFBOX-5363] - Don't log warnings if there are not fonts to cache
+[PDFBOX-5379] - support multiple widgets in PDTerminalField.importFDF()
+[PDFBOX-5385] - Improve AddValidationInformation to handle exceptional situations better
+[PDFBOX-5388] - Avoid duplicate certificates in AddValidation example
+[PDFBOX-5394] - Render symbol for file attachment annotations
 
 Test
 
@@ -1140,6 +1209,11 @@ Task
 [PDFBOX-5186] - Create test for CreateGradientShadingPDF
 [PDFBOX-5189] - Refactor ShadingContext class so that it implements PaintContext
 [PDFBOX-5215] - Add test for double visible signature on encrypted file
+[PDFBOX-5287] - Add test for comb fields adjustment
+[PDFBOX-5293] - Store x and y scaling factor
+[PDFBOX-5340] - Update CCITTFaxDecoderStream.java from twelvemonkeys (3)
+[PDFBOX-5341] - Enable GitHub CodeQL Scans for PDFBox Codebase
+[PDFBOX-5356] - Add test of PFB font
 
 
 Release Contents

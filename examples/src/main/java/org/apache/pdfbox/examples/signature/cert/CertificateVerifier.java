@@ -21,7 +21,6 @@ package org.apache.pdfbox.examples.signature.cert;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
@@ -47,6 +46,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
@@ -327,10 +327,10 @@ public final class CertificateVerifier
                 continue;
             }
             ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
-            ASN1OctetString uri = (ASN1OctetString) location.getObject();
+            ASN1OctetString uri = (ASN1OctetString) location.getBaseObject();
             String urlString = new String(uri.getOctets());
             LOG.info("CA issuers URL: " + urlString);
-            try (InputStream in = new URL(urlString).openStream())
+            try (InputStream in = SigUtils.openURL(urlString))
             {
                 CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
                 Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
@@ -432,7 +432,7 @@ public final class CertificateVerifier
                 if (X509ObjectIdentifiers.id_ad_ocsp.equals(oid)
                         && location.getTagNo() == GeneralName.uniformResourceIdentifier)
                 {
-                    ASN1OctetString url = (ASN1OctetString) location.getObject();
+                    ASN1OctetString url = (ASN1OctetString) location.getBaseObject();
                     String ocspURL = new String(url.getOctets());
                     LOG.info("OCSP URL: " + ocspURL);
                     return ocspURL;

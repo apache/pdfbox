@@ -59,8 +59,6 @@ public class MacOSRomanEncoding extends MacRomanEncoding
      */
     public MacOSRomanEncoding()
     {
-        super();
-
         // differences and additions to MacRomanEncoding
         for (Object[] encodingEntry : MAC_OS_ROMAN_ENCODING_TABLE)
         {

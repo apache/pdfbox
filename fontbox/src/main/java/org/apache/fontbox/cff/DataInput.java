@@ -19,42 +19,24 @@ package org.apache.fontbox.cff;
 import java.io.IOException;
 
 /**
- * This class contains some functionality to read a byte buffer.
+ * This interface defines some functionality to read a CFF font.
  * 
  * @author Villu Ruusmann
  */
-public class DataInput
+public interface DataInput
 {
-
-    private final byte[] inputBuffer;
-    private int bufferPosition = 0;
-
-    /**
-     * Constructor.
-     * @param buffer the buffer to be read
-     */
-    public DataInput(byte[] buffer)
-    {
-        inputBuffer = buffer;
-    }
 
     /**
      * Determines if there are any bytes left to read or not. 
      * @return true if there are any bytes left to read
      */
-    public boolean hasRemaining()
-    {
-        return bufferPosition < inputBuffer.length;
-    }
+    public boolean hasRemaining() throws IOException;
 
     /**
      * Returns the current position.
      * @return current position
      */
-    public int getPosition()
-    {
-        return bufferPosition;
-    }
+    public int getPosition() throws IOException;
 
     /**
      * Sets the current position to the given value.
@@ -62,47 +44,21 @@ public class DataInput
      * @param position the given position
      * @throws IOException if the new position ist out of range
      */
-    public void setPosition(int position) throws IOException
-    {
-        if (position < 0)
-        {
-            throw new IOException("position is negative");
-        }
-        if (position >= inputBuffer.length)
-        {
-            throw new IOException(
-                    "New position is out of range " + position + " >= " + inputBuffer.length);
-        }
-        bufferPosition = position;
-    }
+    public void setPosition(int position) throws IOException;
 
     /**
      * Read one single byte from the buffer.
      * @return the byte
      * @throws IOException if an error occurs during reading
      */
-    public byte readByte() throws IOException
-    {
-        if (!hasRemaining())
-        {
-            throw new IOException("End off buffer reached");
-        }
-        return inputBuffer[bufferPosition++];
-    }
+    public byte readByte() throws IOException;
 
     /**
      * Read one single unsigned byte from the buffer.
      * @return the unsigned byte as int
      * @throws IOException if an error occurs during reading
      */
-    public int readUnsignedByte() throws IOException
-    {
-        if (!hasRemaining())
-        {
-            throw new IOException("End off buffer reached");
-        }
-        return inputBuffer[bufferPosition++] & 0xff;
-    }
+    public int readUnsignedByte() throws IOException;
 
     /**
      * Peeks one single unsigned byte from the buffer.
@@ -111,26 +67,14 @@ public class DataInput
      * @return the unsigned byte as int
      * @throws IOException if an error occurs during reading
      */
-    public int peekUnsignedByte(int offset) throws IOException
-    {
-        if (offset < 0)
-        {
-            throw new IOException("offset is negative");
-        }
-        if (bufferPosition + offset >= inputBuffer.length)
-        {
-            throw new IOException("Offset position is out of range " + (bufferPosition + offset)
-                    + " >= " + inputBuffer.length);
-        }
-        return inputBuffer[bufferPosition + offset] & 0xff;
-    }
+    public int peekUnsignedByte(int offset) throws IOException;
 
     /**
      * Read one single short value from the buffer.
      * @return the short value
      * @throws IOException if an error occurs during reading
      */
-    public short readShort() throws IOException
+    default short readShort() throws IOException
     {
         return (short) readUnsignedShort();
     }
@@ -140,7 +84,7 @@ public class DataInput
      * @return the unsigned short value as int
      * @throws IOException if an error occurs during reading
      */
-    public int readUnsignedShort() throws IOException
+    default int readUnsignedShort() throws IOException
     {
         int b1 = readUnsignedByte();
         int b2 = readUnsignedByte();
@@ -152,7 +96,7 @@ public class DataInput
      * @return the int value
      * @throws IOException if an error occurs during reading
      */
-    public int readInt() throws IOException
+    default int readInt() throws IOException
     {
         int b1 = readUnsignedByte();
         int b2 = readUnsignedByte();
@@ -167,24 +111,23 @@ public class DataInput
      * @return an array with containing the bytes from the buffer 
      * @throws IOException if an error occurs during reading
      */
-    public byte[] readBytes(int length) throws IOException
-    {
-        if (length < 0)
-        {
-            throw new IOException("length is negative"); 
-        }
-        if (inputBuffer.length - bufferPosition < length)
-        {
-            throw new IOException("Premature end of buffer reached");
-        }
-        byte[] bytes = new byte[length];
-        System.arraycopy(inputBuffer, bufferPosition, bytes, 0, length);
-        bufferPosition += length;
-        return bytes;
-    }
+    public byte[] readBytes(int length) throws IOException;
 
-    public int length()
+    public int length() throws IOException;
+
+    /**
+     * Read the offset from the buffer.
+     * @param offSize the given offsize
+     * @return the offset
+     * @throws IOException if an error occurs during reading
+     */
+    default int readOffset(int offSize) throws IOException
     {
-        return inputBuffer.length;
+        int value = 0;
+        for (int i = 0; i < offSize; i++)
+        {
+            value = value << 8 | readUnsignedByte();
+        }
+        return value;
     }
 }

@@ -17,9 +17,9 @@
 
 package org.apache.fontbox.ttf;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+
+import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
  * OpenType font file parser.
@@ -56,21 +56,9 @@ public class OTFParser extends TTFParser
     }
 
     @Override
-    public OpenTypeFont parse(String file) throws IOException
+    public OpenTypeFont parse(RandomAccessRead randomAccessRead) throws IOException
     {
-        return (OpenTypeFont)super.parse(file);
-    }
-
-    @Override
-    public OpenTypeFont parse(File file) throws IOException
-    {
-        return (OpenTypeFont)super.parse(file);
-    }
-
-    @Override
-    public OpenTypeFont parse(InputStream data) throws IOException
-    {
-        return (OpenTypeFont)super.parse(data);
+        return (OpenTypeFont) super.parse(randomAccessRead);
     }
 
     @Override
@@ -94,8 +82,12 @@ public class OTFParser extends TTFParser
         {
             case "BASE":
             case "JSTF":
+            case "GDEF":
+            case "GPOS":
+            case GlyphSubstitutionTable.TAG:
+            case OTLTable.TAG:
                 return new OTLTable(font);
-            case "CFF ":
+            case CFFTable.TAG:
                 return new CFFTable(font);
             default:
                 return super.readTable(font, tag);

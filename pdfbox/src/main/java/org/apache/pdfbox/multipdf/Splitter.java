@@ -20,8 +20,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -38,6 +44,8 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
  */
 public class Splitter
 {
+    private static final Log LOG = LogFactory.getLog(Splitter.class);
+
     private PDDocument sourceDocument;
     private PDDocument currentDestinationDocument;
 
@@ -212,7 +220,35 @@ public class Splitter
         PDDocument document = memoryUsageSetting == null ?
                                 new PDDocument() : new PDDocument(memoryUsageSetting);
         document.getDocument().setVersion(getSourceDocument().getVersion());
-        document.setDocumentInformation(getSourceDocument().getDocumentInformation());
+        PDDocumentInformation sourceDocumentInformation = getSourceDocument().getDocumentInformation();
+        if (sourceDocumentInformation != null)
+        {
+            // PDFBOX-5317: Image Capture Plus files where /Root and /Info share the same dictionary
+            // Only copy simple elements to avoid huge files
+            COSDictionary sourceDocumentInformationDictionary = sourceDocumentInformation.getCOSObject();
+            COSDictionary destDocumentInformationDictionary = new COSDictionary();
+            for (COSName key : sourceDocumentInformationDictionary.keySet())
+            {
+                COSBase value = sourceDocumentInformationDictionary.getDictionaryObject(key);
+                if (value instanceof COSDictionary)
+                {
+                    LOG.warn("Nested entry for key '" + key.getName()
+                            + "' skipped in document information dictionary");
+                    if (sourceDocument.getDocumentCatalog().getCOSObject() ==
+                            sourceDocument.getDocumentInformation().getCOSObject())
+                    {
+                        LOG.warn("/Root and /Info share the same dictionary");
+                    }
+                    continue;
+                }
+                if (COSName.TYPE.equals(key))
+                {
+                    continue; // there is no /Type in the document information dictionary
+                }
+                destDocumentInformationDictionary.setItem(key, value);
+            }
+            document.setDocumentInformation(new PDDocumentInformation(destDocumentInformationDictionary));
+        }
         document.getDocumentCatalog().setViewerPreferences(
                 getSourceDocument().getDocumentCatalog().getViewerPreferences());
         return document;
@@ -230,7 +266,11 @@ public class Splitter
         createNewDocumentIfNecessary();
         
         PDPage imported = getDestinationDocument().importPage(page);
-        imported.setResources(page.getResources());
+        if (page.getResources() != null && !page.getCOSObject().containsKey(COSName.RESOURCES))
+        {
+            imported.setResources(page.getResources());
+            LOG.info("Resources imported in Splitter"); // follow-up to warning in importPage
+        }
         // remove page links to avoid copying not needed resources 
         processAnnotations(imported);
     }

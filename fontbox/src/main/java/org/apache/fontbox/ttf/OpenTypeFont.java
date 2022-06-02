@@ -83,4 +83,15 @@ public class OpenTypeFont extends TrueTypeFont
         return tables.containsKey(CFFTable.TAG);
     }
 
+    /**
+     * Returns true if this font uses OpenType Layout (Advanced Typographic) tables.
+     */
+    public boolean hasLayoutTables()
+    {
+        return tables.containsKey("BASE") //
+                || tables.containsKey("GDEF") //
+                || tables.containsKey("GPOS") //
+                || tables.containsKey(GlyphSubstitutionTable.TAG) //
+                || tables.containsKey(OTLTable.TAG);
+    }
 }

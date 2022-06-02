@@ -15,7 +15,6 @@
  */
 package org.apache.pdfbox.multipdf;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -713,8 +712,7 @@ class PDFMergerUtilityTest
     /**
      * Check that there is a top level Document and Parts below in a merge of 2 documents.
      *
-     * @param file
-     * @throws IOException 
+     * @throws IOException
      */
     @Test
     void testPDFBox5198_2() throws IOException
@@ -730,9 +728,8 @@ class PDFMergerUtilityTest
     
     /**
      * Check that there is a top level Document and Parts below in a merge of 3 documents.
-     *
-     * @param file
-     * @throws IOException 
+     * 
+     * @throws IOException
      */
     @Test
     void testPDFBox5198_3() throws IOException

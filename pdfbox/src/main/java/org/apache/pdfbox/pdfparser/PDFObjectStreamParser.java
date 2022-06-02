@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdfparser;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
@@ -83,7 +85,7 @@ public class PDFObjectStreamParser extends BaseParser
         try
         {
             Integer objectOffset = privateReadObjectNumbers().get(objectNumber);
-            if (objectOffset != null) 
+            if (objectOffset != null)
             {
                 // jump to the offset of the first object
                 long currentPosition = source.getPosition();
@@ -108,6 +110,48 @@ public class PDFObjectStreamParser extends BaseParser
         return streamObject;
     }
 
+    /**
+     * Parse all compressed objects. The stream is closed after parsing.
+     * 
+     * @return a map containing all parsed objects using the object number as key
+     * @throws IOException if there is an error while parsing the stream
+     */
+    public Map<Long, COSBase> parseAllObjects() throws IOException
+    {
+        Map<Long, COSBase> allObjects = new HashMap<>();
+        try
+        {
+            Map<Integer, Long> objectNumbers = privateReadObjectOffsets();
+            long currentPosition = source.getPosition();
+            if (firstObject > 0 && currentPosition < firstObject)
+            {
+                source.skip(firstObject - (int) currentPosition);
+            }
+            for (Entry<Integer, Long> entry : objectNumbers.entrySet())
+            {
+                int finalPosition = firstObject + entry.getKey();
+                currentPosition = source.getPosition();
+                if (finalPosition > 0 && currentPosition < finalPosition)
+                {
+                    // jump to the offset of the object to be parsed
+                    source.skip(finalPosition - (int) currentPosition);
+                }
+                COSBase streamObject = parseDirObject();
+                if (streamObject != null)
+                {
+                    streamObject.setDirect(false);
+                }
+                allObjects.put(entry.getValue(), streamObject);
+            }
+        }
+        finally
+        {
+            source.close();
+            document = null;
+        }
+        return allObjects;
+    }
+
     private Map<Long, Integer> privateReadObjectNumbers() throws IOException
     {
         // don't initialize map using numberOfObjects as there might by less object numbers than expected
@@ -125,6 +169,27 @@ public class PDFObjectStreamParser extends BaseParser
             objectNumbers.put(objectNumber, offset);
         }
         return objectNumbers;
+    }
+
+    private Map<Integer, Long> privateReadObjectOffsets() throws IOException
+    {
+        // according to the pdf spec the offsets shall be sorted ascending
+        // but we can't rely on that, so that we have to sort the offsets
+        // as the sequential parsers relies on it, see PDFBOX-4927
+        Map<Integer, Long> objectOffsets = new TreeMap<>();
+        long firstObjectPosition = source.getPosition() + firstObject - 1;
+        for (int i = 0; i < numberOfObjects; i++)
+        {
+            // don't read beyond the part of the stream reserved for the object numbers
+            if (source.getPosition() >= firstObjectPosition)
+            {
+                break;
+            }
+            long objectNumber = readObjectNumber();
+            int offset = (int) readLong();
+            objectOffsets.put(offset, objectNumber);
+        }
+        return objectOffsets;
     }
 
     /**

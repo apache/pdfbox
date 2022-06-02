@@ -28,14 +28,13 @@ import org.junit.jupiter.api.Test;
  *
  * @author Uwe Pachler
  */
-class TestQuickSort
+class TestSort
 {
 
     <T extends Comparable<T>> void doTest(T[] input, T[] expected)
     {
         List<T> list = Arrays.asList(input);
-        QuickSort.sort(list);
-
+        IterativeMergeSort.sort(list, Comparable::compareTo);
         assertTrue(Arrays.equals(list.toArray(new Object[input.length]), expected));
     }
 

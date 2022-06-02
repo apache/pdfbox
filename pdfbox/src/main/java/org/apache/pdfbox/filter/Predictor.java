@@ -73,7 +73,7 @@ public final class Predictor
                 }
                 if (bitsPerComponent == 16)
                 {
-                    for (int p = bytesPerPixel; p < rowlength; p += 2)
+                    for (int p = bytesPerPixel; p < rowlength - 1; p += 2)
                     {
                         int sub = ((actline[p] & 0xff) << 8) + (actline[p + 1] & 0xff);
                         int left = (((actline[p - bytesPerPixel] & 0xff) << 8)

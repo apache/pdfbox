@@ -16,203 +16,234 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.blend;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Blend mode.
  *
  * @author Kühn &amp; Weyh Software GmbH
  */
-public abstract class BlendMode
+public class BlendMode
 {
-    public static final SeparableBlendMode NORMAL = new SeparableBlendMode()
+    @FunctionalInterface
+    public interface BlendChannelFunction
     {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
+        /**
+         * BlendChannel function for separable blend modes.
+         *
+         * @param src the source value
+         * @param dest the destination value
+         * @return the function result
+         */
+        float blendChannel(float src, float dest);
+    }
+
+    @FunctionalInterface
+    public interface BlendFunction
+    {
+        /**
+         * Blend function for non separable blend modes.
+         *
+         * @param src the source values
+         * @param dest the destination values
+         * @param result the function result values
+         */
+        void blend(float[] src, float[] dest, float[] result);
+    }
+
+    /**
+     * Functions for the blend operation of separable blend modes
+     */
+    private static BlendChannelFunction fNormal = (src, dest) -> src;
+
+    private static BlendChannelFunction fMultiply = (src, dest) -> src * dest;
+
+    private static BlendChannelFunction fScreen = (src, dest) -> src + dest - src * dest;
+
+    private static BlendChannelFunction fOverlay = (src, dest) -> (dest <= 0.5) ? 2 * dest * src
+            : 2 * (src + dest - src * dest) - 1;
+
+    private static BlendChannelFunction fDarken = Math::min;
+
+    private static BlendChannelFunction fLighten = Math::max;
+
+    private static BlendChannelFunction fColorDodge = (src, dest) -> {
+        // See PDF 2.0 specification
+        if (Float.compare(dest, 0) == 0)
         {
-            return srcValue;
+            return 0f;
+        }
+        if (dest >= 1 - src)
+        {
+            return 1f;
+        }
+        return dest / (1 - src);
+    };
+
+    private static BlendChannelFunction fColorBurn = (src, dest) -> {
+        // See PDF 2.0 specification
+        if (Float.compare(dest, 1) == 0)
+        {
+            return 1f;
+        }
+        if (1 - dest >= src)
+        {
+            return 0f;
+        }
+        return 1 - (1 - dest) / src;
+    };
+
+    private static BlendChannelFunction fHardLight = (src, dest) -> (src <= 0.5) ? 2 * dest * src
+            : 2 * (src + dest - src * dest) - 1;
+
+    private static BlendChannelFunction fSoftLight = (src, dest) -> {
+        if (src <= 0.5)
+        {
+            return dest - (1 - 2 * src) * dest * (1 - dest);
+        }
+        else
+        {
+            float d = (dest <= 0.25) ? ((16 * dest - 12) * dest + 4) * dest
+                    : (float) Math.sqrt(dest);
+            return dest + (2 * src - 1) * (d - dest);
         }
     };
 
-    public static final SeparableBlendMode COMPATIBLE = NORMAL;
+    private static BlendChannelFunction fDifference = (src, dest) -> Math.abs(dest - src);
 
-    public static final SeparableBlendMode MULTIPLY = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            return srcValue * dstValue;
-        }
+    private static BlendChannelFunction fExclusion = (src, dest) -> dest + src - 2 * dest * src;
+
+    /**
+     * Functions for the blend operation of non-separable blend modes
+     */
+    private static BlendFunction fHue = (src, dest, result) -> {
+        float[] temp = new float[3];
+        getSaturationRGB(dest, src, temp);
+        getLuminosityRGB(dest, temp, result);
     };
 
-    public static final SeparableBlendMode SCREEN = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            return srcValue + dstValue - srcValue * dstValue;
-        }
-    };
+    private static BlendFunction fSaturation = BlendMode::getSaturationRGB;
 
-    public static final SeparableBlendMode OVERLAY = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            return (dstValue <= 0.5) ? 2 * dstValue * srcValue : 2 * (srcValue + dstValue - srcValue
-                    * dstValue) - 1;
-        }
-    };
+    private static BlendFunction fColor = (src, dest, result) -> getLuminosityRGB(dest, src,
+            result);
 
-    public static final SeparableBlendMode DARKEN = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            return Math.min(srcValue, dstValue);
-        }
-    };
+    private static BlendFunction fLuminosity = BlendMode::getLuminosityRGB;
 
-    public static final SeparableBlendMode LIGHTEN = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            return Math.max(srcValue, dstValue);
-        }
-    };
+    /**
+     * Separable blend modes as defined in the PDF specification
+     */
+    public static final BlendMode NORMAL = new BlendMode(COSName.NORMAL, fNormal, null);
+    public static final BlendMode COMPATIBLE = BlendMode.NORMAL;
+    public static final BlendMode MULTIPLY = new BlendMode(COSName.MULTIPLY, fMultiply, null);
+    public static final BlendMode SCREEN = new BlendMode(COSName.SCREEN, fScreen, null);
+    public static final BlendMode OVERLAY = new BlendMode(COSName.OVERLAY, fOverlay, null);
+    public static final BlendMode DARKEN = new BlendMode(COSName.DARKEN, fDarken, null);
+    public static final BlendMode LIGHTEN = new BlendMode(COSName.LIGHTEN, fLighten, null);
+    public static final BlendMode COLOR_DODGE = new BlendMode(COSName.COLOR_DODGE, fColorDodge,
+            null);
+    public static final BlendMode COLOR_BURN = new BlendMode(COSName.COLOR_BURN, fColorBurn, null);
+    public static final BlendMode HARD_LIGHT = new BlendMode(COSName.HARD_LIGHT, fHardLight, null);
+    public static final BlendMode SOFT_LIGHT = new BlendMode(COSName.SOFT_LIGHT, fSoftLight, null);
+    public static final BlendMode DIFFERENCE = new BlendMode(COSName.DIFFERENCE, fDifference, null);
+    public static final BlendMode EXCLUSION = new BlendMode(COSName.EXCLUSION, fExclusion, null);
 
-    public static final SeparableBlendMode COLOR_DODGE = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            // See PDF 2.0 specification
-            if (Float.compare(dstValue,0) == 0)
-            {
-                return 0;
-            }
-            if (dstValue >= 1 - srcValue)
-            {
-                return 1;
-            }
-            return dstValue / (1 - srcValue);
-        }
-    };
+    /**
+     * Non-separable blend modes as defined in the PDF specification
+     */
+    public static final BlendMode HUE = new BlendMode(COSName.HUE, null, fHue);
+    public static final BlendMode SATURATION = new BlendMode(COSName.SATURATION, null, fSaturation);
+    public static final BlendMode COLOR = new BlendMode(COSName.COLOR, null, fColor);
+    public static final BlendMode LUMINOSITY = new BlendMode(COSName.LUMINOSITY, null, fLuminosity);
 
-    public static final SeparableBlendMode COLOR_BURN = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            // See PDF 2.0 specification
-            if (Float.compare(dstValue, 1) == 0)
-            {
-                return 1;
-            }
-            if (1 - dstValue >= srcValue)
-            {
-                return 0;
-            }
-            return 1 - (1 - dstValue) / srcValue;
-        }
-    };
-
-    public static final SeparableBlendMode HARD_LIGHT = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            return (srcValue <= 0.5) ? 2 * dstValue * srcValue :
-                    2 * (srcValue + dstValue - srcValue * dstValue) - 1;
-        }
-    };
-
-    public static final SeparableBlendMode SOFT_LIGHT = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            if (srcValue <= 0.5)
-            {
-                return dstValue - (1 - 2 * srcValue) * dstValue * (1 - dstValue);
-            }
-            else
-            {
-                float d = (dstValue <= 0.25) ? ((16 * dstValue - 12) * dstValue + 4) * dstValue
-                        : (float) Math .sqrt(dstValue);
-                return dstValue + (2 * srcValue - 1) * (d - dstValue);
-            }
-        }
-    };
-
-    public static final SeparableBlendMode DIFFERENCE = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            return Math.abs(dstValue - srcValue);
-        }
-    };
-
-    public static final SeparableBlendMode EXCLUSION = new SeparableBlendMode()
-    {
-        @Override
-        public float blendChannel(float srcValue, float dstValue)
-        {
-            return dstValue + srcValue - 2 * dstValue * srcValue;
-        }
-    };
-
-    public static final NonSeparableBlendMode HUE = new NonSeparableBlendMode()
-    {
-        @Override
-        public void blend(float[] srcValues, float[] dstValues, float[] result)
-        {
-            float[] temp = new float[3];
-            getSaturationRGB(dstValues, srcValues, temp);
-            getLuminosityRGB(dstValues, temp, result);
-        }
-    };
-
-    public static final NonSeparableBlendMode SATURATION = new NonSeparableBlendMode()
-    {
-        @Override
-        public void blend(float[] srcValues, float[] dstValues, float[] result)
-        {
-            getSaturationRGB(srcValues, dstValues, result);
-        }
-    };
-
-    public static final NonSeparableBlendMode COLOR = new NonSeparableBlendMode()
-    {
-        @Override
-        public void blend(float[] srcValues, float[] dstValues, float[] result)
-        {
-            getLuminosityRGB(dstValues, srcValues, result);
-        }
-    };
-
-    public static final NonSeparableBlendMode LUMINOSITY = new NonSeparableBlendMode()
-    {
-        @Override
-        public void blend(float[] srcValues, float[] dstValues, float[] result)
-        {
-            getLuminosityRGB(srcValues, dstValues, result);
-        }
-    };
-
-    // these maps *must* come after the BlendMode.* constant declarations, otherwise their values would be null
     private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
-    private static final Map<BlendMode, COSName> BLEND_MODE_NAMES = createBlendModeNamesMap();
 
-    BlendMode()
+    private static Map<COSName, BlendMode> createBlendModeMap()
     {
+        Map<COSName, BlendMode> map = new HashMap<>(13);
+        map.put(COSName.NORMAL, NORMAL);
+        // BlendMode.COMPATIBLE should not be used
+        map.put(COSName.COMPATIBLE, NORMAL);
+        map.put(COSName.MULTIPLY, MULTIPLY);
+        map.put(COSName.SCREEN, SCREEN);
+        map.put(COSName.OVERLAY, OVERLAY);
+        map.put(COSName.DARKEN, DARKEN);
+        map.put(COSName.LIGHTEN, LIGHTEN);
+        map.put(COSName.COLOR_DODGE, COLOR_DODGE);
+        map.put(COSName.COLOR_BURN, COLOR_BURN);
+        map.put(COSName.HARD_LIGHT, HARD_LIGHT);
+        map.put(COSName.SOFT_LIGHT, SOFT_LIGHT);
+        map.put(COSName.DIFFERENCE, DIFFERENCE);
+        map.put(COSName.EXCLUSION, EXCLUSION);
+        map.put(COSName.HUE, HUE);
+        map.put(COSName.SATURATION, SATURATION);
+        map.put(COSName.LUMINOSITY, LUMINOSITY);
+        map.put(COSName.COLOR, COLOR);
+        return map;
+    }
+
+    private final COSName name;
+    private final BlendChannelFunction blendChannel;
+    private final BlendFunction blend;
+    private final boolean isSeparable;
+
+    /**
+     * Private constructor due to the limited set of possible blend modes.
+     * 
+     * @param name the corresponding COSName of the blend mode
+     * @param blendChannel the blend function for separable blend modes
+     * @param blend the blend function for non-separable blend modes
+     */
+    private BlendMode(COSName name, BlendChannelFunction blendChannel, BlendFunction blend)
+    {
+    	this.name = name;
+    	this.blendChannel = blendChannel;
+        this.blend = blend;
+        isSeparable = blendChannel != null;
+    }
+
+    /**
+     * The blend mode name from the BM object.
+     *
+     * @return name of blend mode.
+     */
+    public COSName getCOSName()
+    {
+    	return name;
+    }
+
+    /**
+     * Determines if the blend mode is a separable blend mode.
+     * 
+     * @return true for separable blend modes
+     */
+    public boolean isSeparableBlendMode()
+    {
+        return isSeparable;
+    }
+    
+    /**
+     * Returns the blend channel function, only available for separable blend modes.
+     * 
+     * @return the blend channel function
+     */
+    public BlendChannelFunction getBlendChannelFunction()
+    {
+        return blendChannel;
+    }
+
+    /**
+     * Returns the blend function, only available for non separable blend modes.
+     * 
+     * @return the blend function
+     */
+    public BlendFunction getBlendFunction()
+    {
+        return blend;
     }
 
     /**
@@ -233,30 +264,18 @@ public abstract class BlendMode
             COSArray cosBlendModeArray = (COSArray) cosBlendMode;
             for (int i = 0; i < cosBlendModeArray.size(); i++)
             {
-                result = BLEND_MODES.get(cosBlendModeArray.getObject(i));
-                if (result != null)
-                {
-                    break;
-                }
+            	COSBase cosBase = cosBlendModeArray.getObject(i);
+            	if (cosBase instanceof COSName)
+            	{
+                    result = BLEND_MODES.get(cosBase);
+	                if (result != null)
+	                {
+	                    break;
+	                }
+            	}
             }
         }
-
-        if (result != null)
-        {
-            return result;
-        }
-        return BlendMode.NORMAL;
-    }
-    
-    /**
-     * Determines the blend mode name from the BM object.
-     *
-     * @param bm Blend mode.
-     * @return name of blend mode.
-     */
-    public static COSName getCOSName(BlendMode bm)
-    {
-        return BLEND_MODE_NAMES.get(bm);
+        return result != null ? result : BlendMode.NORMAL;
     }
 
     private static int get255Value(float val)
@@ -266,25 +285,12 @@ public abstract class BlendMode
 
     private static void getSaturationRGB(float[] srcValues, float[] dstValues, float[] result)
     {
-        int minb;
-        int maxb;
-        int mins;
-        int maxs;
-        int y;
-        int scale;
-        int r;
-        int g;
-        int b;
-
         int rd = get255Value(dstValues[0]);
         int gd = get255Value(dstValues[1]);
         int bd = get255Value(dstValues[2]);
-        int rs = get255Value(srcValues[0]);
-        int gs = get255Value(srcValues[1]);
-        int bs = get255Value(srcValues[2]);
 
-        minb = Math.min(rd, Math.min(gd, bd));
-        maxb = Math.max(rd, Math.max(gd, bd));
+        int minb = Math.min(rd, Math.min(gd, bd));
+        int maxb = Math.max(rd, Math.max(gd, bd));
         if (minb == maxb)
         {
             /* backdrop has zero saturation, avoid divide by 0 */
@@ -294,24 +300,26 @@ public abstract class BlendMode
             return;
         }
 
-        mins = Math.min(rs, Math.min(gs, bs));
-        maxs = Math.max(rs, Math.max(gs, bs));
+        int rs = get255Value(srcValues[0]);
+        int gs = get255Value(srcValues[1]);
+        int bs = get255Value(srcValues[2]);
 
-        scale = ((maxs - mins) << 16) / (maxb - minb);
-        y = (rd * 77 + gd * 151 + bd * 28 + 0x80) >> 8;
-        r = y + ((((rd - y) * scale) + 0x8000) >> 16);
-        g = y + ((((gd - y) * scale) + 0x8000) >> 16);
-        b = y + ((((bd - y) * scale) + 0x8000) >> 16);
+        int mins = Math.min(rs, Math.min(gs, bs));
+        int maxs = Math.max(rs, Math.max(gs, bs));
+
+        int scale = ((maxs - mins) << 16) / (maxb - minb);
+        int y = (rd * 77 + gd * 151 + bd * 28 + 0x80) >> 8;
+        int r = y + ((((rd - y) * scale) + 0x8000) >> 16);
+        int g = y + ((((gd - y) * scale) + 0x8000) >> 16);
+        int b = y + ((((bd - y) * scale) + 0x8000) >> 16);
 
         if (((r | g | b) & 0x100) == 0x100)
         {
             int scalemin;
             int scalemax;
-            int min;
-            int max;
 
-            min = Math.min(r, Math.min(g, b));
-            max = Math.max(r, Math.max(g, b));
+            int min = Math.min(r, Math.min(g, b));
+            int max = Math.max(r, Math.max(g, b));
 
             if (min < 0)
             {
@@ -343,26 +351,21 @@ public abstract class BlendMode
 
     private static void getLuminosityRGB(float[] srcValues, float[] dstValues, float[] result)
     {
-        int delta;
-        int scale;
-        int r;
-        int g;
-        int b;
-        int y;
         int rd = get255Value(dstValues[0]);
         int gd = get255Value(dstValues[1]);
         int bd = get255Value(dstValues[2]);
         int rs = get255Value(srcValues[0]);
         int gs = get255Value(srcValues[1]);
         int bs = get255Value(srcValues[2]);
-        delta = ((rs - rd) * 77 + (gs - gd) * 151 + (bs - bd) * 28 + 0x80) >> 8;
-        r = rd + delta;
-        g = gd + delta;
-        b = bd + delta;
+        int delta = ((rs - rd) * 77 + (gs - gd) * 151 + (bs - bd) * 28 + 0x80) >> 8;
+        int r = rd + delta;
+        int g = gd + delta;
+        int b = bd + delta;
 
         if (((r | g | b) & 0x100) == 0x100)
         {
-            y = (rs * 77 + gs * 151 + bs * 28 + 0x80) >> 8;
+            int scale;
+            int y = (rs * 77 + gs * 151 + bs * 28 + 0x80) >> 8;
             if (delta > 0)
             {
                 int max;
@@ -383,52 +386,5 @@ public abstract class BlendMode
         result[1] = g / 255.0f;
         result[2] = b / 255.0f;
     }
-    
-    private static Map<COSName, BlendMode> createBlendModeMap()
-    {
-        Map<COSName, BlendMode> map = new HashMap<>(13);
-        map.put(COSName.NORMAL, BlendMode.NORMAL);
-        // BlendMode.COMPATIBLE should not be used
-        map.put(COSName.COMPATIBLE, BlendMode.NORMAL);
-        map.put(COSName.MULTIPLY, BlendMode.MULTIPLY);
-        map.put(COSName.SCREEN, BlendMode.SCREEN);
-        map.put(COSName.OVERLAY, BlendMode.OVERLAY);
-        map.put(COSName.DARKEN, BlendMode.DARKEN);
-        map.put(COSName.LIGHTEN, BlendMode.LIGHTEN);
-        map.put(COSName.COLOR_DODGE, BlendMode.COLOR_DODGE);
-        map.put(COSName.COLOR_BURN, BlendMode.COLOR_BURN);
-        map.put(COSName.HARD_LIGHT, BlendMode.HARD_LIGHT);
-        map.put(COSName.SOFT_LIGHT, BlendMode.SOFT_LIGHT);
-        map.put(COSName.DIFFERENCE, BlendMode.DIFFERENCE);
-        map.put(COSName.EXCLUSION, BlendMode.EXCLUSION);
-        map.put(COSName.HUE, BlendMode.HUE);
-        map.put(COSName.SATURATION, BlendMode.SATURATION);
-        map.put(COSName.LUMINOSITY, BlendMode.LUMINOSITY);
-        map.put(COSName.COLOR, BlendMode.COLOR);
-        return map;
-    }
 
-    private static Map<BlendMode, COSName> createBlendModeNamesMap()
-    {
-        Map<BlendMode, COSName> map = new HashMap<>(13);
-        map.put(BlendMode.NORMAL, COSName.NORMAL);
-        // BlendMode.COMPATIBLE should not be used
-        map.put(BlendMode.COMPATIBLE, COSName.NORMAL);
-        map.put(BlendMode.MULTIPLY, COSName.MULTIPLY);
-        map.put(BlendMode.SCREEN, COSName.SCREEN);
-        map.put(BlendMode.OVERLAY, COSName.OVERLAY);
-        map.put(BlendMode.DARKEN, COSName.DARKEN);
-        map.put(BlendMode.LIGHTEN, COSName.LIGHTEN);
-        map.put(BlendMode.COLOR_DODGE, COSName.COLOR_DODGE);
-        map.put(BlendMode.COLOR_BURN, COSName.COLOR_BURN);
-        map.put(BlendMode.HARD_LIGHT, COSName.HARD_LIGHT);
-        map.put(BlendMode.SOFT_LIGHT, COSName.SOFT_LIGHT);
-        map.put(BlendMode.DIFFERENCE, COSName.DIFFERENCE);
-        map.put(BlendMode.EXCLUSION, COSName.EXCLUSION);
-        map.put(BlendMode.HUE, COSName.HUE);
-        map.put(BlendMode.SATURATION, COSName.SATURATION);
-        map.put(BlendMode.LUMINOSITY, COSName.LUMINOSITY);
-        map.put(BlendMode.COLOR, COSName.COLOR);
-        return map;
-    }
 }

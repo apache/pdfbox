@@ -466,17 +466,17 @@ public class StreamPane implements ActionListener
                 for (byte b : bytes)
                 {
                     int chr = b & 0xff;
+                    if (chr == '(' || chr == ')' || chr == '\\')
+                    {
+                        // PDF reserved characters must be escaped
+                        String str = "\\" + (char)chr;
+                        docu.insertString(docu.getLength(), str, ESCAPE_STYLE);
+                    }
+                    else
                     if (chr < 0x20 || chr > 0x7e)
                     {
                         // non-printable ASCII is shown as an octal escape
                         String str = String.format("\\%03o", chr);
-                        docu.insertString(docu.getLength(), str, ESCAPE_STYLE);
-                    }
-                    else if (chr == '(' || chr == ')' || chr == '\n' || chr == '\r' ||
-                             chr == '\t' || chr == '\b' || chr == '\f' || chr == '\\')
-                    {
-                        // PDF reserved characters must be escaped
-                        String str = "\\" + (char)chr;
                         docu.insertString(docu.getLength(), str, ESCAPE_STYLE);
                     }
                     else

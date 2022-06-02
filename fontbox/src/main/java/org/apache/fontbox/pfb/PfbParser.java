@@ -119,7 +119,10 @@ public class PfbParser
      */
     private void parsePfb(final byte[] pfb) throws IOException 
     {
-
+        if (pfb.length < PFB_HEADER_LENGTH)
+        {
+            throw new IOException("PFB header missing");
+        }
         ByteArrayInputStream in = new ByteArrayInputStream(pfb);
         pfbdata = new byte[pfb.length - PFB_HEADER_LENGTH];
         lengths = new int[PFB_RECORDS.length];
@@ -144,6 +147,12 @@ public class PfbParser
             if (pointer >= pfbdata.length)
             {
                 throw new EOFException("attempted to read past EOF");
+            }
+            if (size > pfbdata.length - pointer)
+            {
+                throw new EOFException("attempted to read " + size + " bytes at position " + pointer +
+                        " into array of size " + pfbdata.length + ", but only space for " + 
+                        (pfbdata.length - pointer) + " bytes left");
             }
             int got = in.read(pfbdata, pointer, size);
             if (got < 0) 

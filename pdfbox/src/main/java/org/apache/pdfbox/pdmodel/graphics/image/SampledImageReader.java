@@ -499,9 +499,9 @@ final class SampledImageReader
             {
                 // we just need to copy all sample data, then convert to RGB image.
                 long inputResult = IOUtils.populateBuffer(input, bank);
-                if (Long.compare(inputResult, width * height * (long) numComponents) != 0)
+                if (Long.compare(inputResult, (long) width * height * numComponents) != 0)
                 {
-                    LOG.debug("Tried reading " + width * height * (long) numComponents + " bytes but only " + inputResult + " bytes read");
+                    LOG.debug("Tried reading " + (long) width * height * numComponents + " bytes but only " + inputResult + " bytes read");
                 }
                 return pdImage.getColorSpace().toRGBImage(raster);
             }

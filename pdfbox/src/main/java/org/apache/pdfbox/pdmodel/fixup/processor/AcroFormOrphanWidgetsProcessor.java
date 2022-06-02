@@ -58,7 +58,8 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
     }
 
     @Override
-    public void process() {
+    public void process()
+    {
         /*
          * Get the AcroForm in it's current state.
          *
@@ -76,17 +77,23 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
     private void resolveFieldsFromWidgets(PDAcroForm acroForm)
     {
-        Map<String, PDField> nonTerminalFieldsMap = new HashMap<>();
-
         LOG.debug("rebuilding fields from widgets");
 
-        List<PDField> fields = new ArrayList<>();
+        PDResources resources = acroForm.getDefaultResources();
+        if (resources == null)
+        {
+            // failsafe. Currently resources is never null because defaultfixup is called first.
+            LOG.debug("AcroForm default resources is null");
+            return;
+        }
 
+        List<PDField> fields = new ArrayList<>();
+        Map<String, PDField> nonTerminalFieldsMap = new HashMap<>();
         for (PDPage page : document.getPages())
         {
             try
             {
-                handleAnnotations(acroForm, fields, page.getAnnotations(), nonTerminalFieldsMap);
+                handleAnnotations(acroForm, resources, fields, page.getAnnotations(), nonTerminalFieldsMap);
             }
             catch (IOException ioe)
             {
@@ -96,20 +103,19 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
         acroForm.setFields(fields);
 
-        // ensure that PDVariableText fields have the neccesary resources
         for (PDField field : acroForm.getFieldTree())
         {
             if (field instanceof PDVariableText)
             {
-                ensureFontResources(acroForm.getDefaultResources(), (PDVariableText) field);
+                ensureFontResources(resources, (PDVariableText) field);
             }
         }
     }
 
-    private void handleAnnotations(PDAcroForm acroForm, List<PDField> fields, List<PDAnnotation> annotations, Map<String, PDField> nonTerminalFieldsMap)
+    private void handleAnnotations(PDAcroForm acroForm, PDResources acroFormResources,
+            List<PDField> fields, List<PDAnnotation> annotations,
+            Map<String, PDField> nonTerminalFieldsMap)
     {
-        PDResources acroFormResources = acroForm.getDefaultResources();
-
         for (PDAnnotation annot : annotations)
         {
             if (annot instanceof PDAnnotationWidget)
@@ -119,7 +125,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                 COSDictionary parent = annot.getCOSObject().getCOSDictionary(COSName.PARENT);
                 if (parent != null)
                 {
-                    PDField resolvedField = resolveNonRootField(acroForm, (PDAnnotationWidget) annot, nonTerminalFieldsMap);
+                    PDField resolvedField = resolveNonRootField(acroForm, parent, nonTerminalFieldsMap);
                     if (resolvedField != null)
                     {
                         fields.add(resolvedField);
@@ -137,47 +143,55 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         }
     }
 
-    /*
-     *  Add font resources from the widget to the AcroForm to make sure embedded fonts are being
-     *  used and not added by ensureFontResources potentially using a fallback font
+    /**
+     * Add font resources from the widget to the AcroForm to make sure embedded fonts are being used
+     * and not added by ensureFontResources potentially using a fallback font.
+     * 
+     * @param acroFormResources AcroForm default resources, should not be null.
+     * @param annotation annotation, should not be null.
      */
     private void addFontFromWidget(PDResources acroFormResources, PDAnnotation annotation)
     {
         PDAppearanceStream normalAppearanceStream = annotation.getNormalAppearanceStream();
-        if (normalAppearanceStream != null && normalAppearanceStream.getResources() != null)    
+        if (normalAppearanceStream == null)
         {
-            PDResources widgetResources = normalAppearanceStream.getResources();
-            widgetResources.getFontNames().forEach(fontName -> {
-                if (!fontName.getName().startsWith("+"))
-                {
-                    try
-                    {
-                        if (acroFormResources.getFont(fontName) == null)
-                        {
-                            acroFormResources.put(fontName, widgetResources.getFont(fontName));
-                            LOG.debug("qdded font resource to AcroForm from widget for font name " + fontName.getName());
-                        }
-                    }
-                    catch (IOException ioe)
-                    {
-                        LOG.debug("unable to add font to AcroForm for font name " + fontName.getName());
-                    }
-                }
-                else
-                {
-                    LOG.debug("font resource for widget was a subsetted font - ignored: " + fontName.getName());
-                }
-            });
+            return;
         }
+        PDResources widgetResources = normalAppearanceStream.getResources();
+        if (widgetResources == null)
+        {
+            return;
+        }
+        widgetResources.getFontNames().forEach(fontName ->
+        {
+            if (!fontName.getName().startsWith("+"))
+            {
+                try
+                {
+                    if (acroFormResources.getFont(fontName) == null)
+                    {
+                        acroFormResources.put(fontName, widgetResources.getFont(fontName));
+                        LOG.debug("added font resource to AcroForm from widget for font name " + fontName.getName());
+                    }
+                }
+                catch (IOException ioe)
+                {
+                    LOG.debug("unable to add font to AcroForm for font name " + fontName.getName());
+                }
+            }
+            else
+            {
+                LOG.debug("font resource for widget was a subsetted font - ignored: " + fontName.getName());
+            }
+        });
     }
 
     /*
      *  Widgets having a /Parent entry are non root fields. Go up until the root node is found
      *  and handle from there.
      */
-    private PDField resolveNonRootField(PDAcroForm acroForm, PDAnnotationWidget widget, Map<String, PDField> nonTerminalFieldsMap)
+    private PDField resolveNonRootField(PDAcroForm acroForm, COSDictionary parent, Map<String, PDField> nonTerminalFieldsMap)
     {
-        COSDictionary parent = widget.getCOSObject().getCOSDictionary(COSName.PARENT);
         while (parent.containsKey(COSName.PARENT))
         {
             parent = parent.getCOSDictionary(COSName.PARENT);
@@ -197,7 +211,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             return field;
         }
 
-        // this should not happen
+        // this should not happen, likely broken PDF
         return null;
     }
 
@@ -217,8 +231,9 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         if (daString.startsWith("/") && daString.length() > 1)
         {
             COSName fontName = COSName.getPDFName(daString.substring(1, daString.indexOf(" ")));
-            try{
-                if (defaultResources != null && defaultResources.getFont(fontName) == null)
+            try
+            {
+                if (defaultResources.getFont(fontName) == null)
                 {
                     LOG.debug("trying to add missing font resource for field " + field.getFullyQualifiedName());
                     FontMapper mapper = FontMappers.instance();
@@ -241,4 +256,4 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             }
         }
     }
-} 
+}

@@ -14,27 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.fontbox.ttf;
+package org.apache.pdfbox.benchmark;
 
 import java.io.IOException;
-import org.junit.jupiter.api.Test;
+import java.io.OutputStream;
 
-/**
- *
- * @author Tilman Hausherr
- */
-class RAFDataStreamTest
-{
-    /**
-     * Test of PDFBOX-4242: make sure that the Closeable.close() contract is fulfilled.
-     * 
-     * @throws IOException 
-     */
-    @Test
-    void testDoubleClose() throws IOException
-    {
-        RAFDataStream raf = new RAFDataStream("src/test/resources/ttf/LiberationSans-Regular.ttf", "r");
-        raf.close();
-        raf.close();
+public class NullOutputStream extends OutputStream {
+
+    @Override
+    public void write(byte[] b) throws IOException {
+        // don't write anything
+    }
+
+    @Override
+    public void write(byte[] b, int off, int len) throws IOException {
+        // don't write anything
+    }
+
+    @Override
+    public void write(int b) throws IOException {
+        // don't write anything
     }
 }

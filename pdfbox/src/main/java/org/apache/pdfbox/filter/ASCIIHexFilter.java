@@ -93,14 +93,11 @@ final class ASCIIHexFilter extends Filter
                 decoded.write(value);
                 break;
             }
-            if (secondByte >= 0) 
+            if (REVERSE_HEX[secondByte] == -1)
             {
-                if (REVERSE_HEX[secondByte] == -1)
-                {
-                    LOG.error("Invalid hex, int: " + secondByte + " char: " + (char)secondByte);
-                }
-                value += REVERSE_HEX[secondByte];
+                LOG.error("Invalid hex, int: " + secondByte + " char: " + (char) secondByte);
             }
+            value += REVERSE_HEX[secondByte];
             decoded.write(value);
         }
         decoded.flush();

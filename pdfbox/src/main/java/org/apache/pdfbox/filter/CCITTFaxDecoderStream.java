@@ -62,8 +62,6 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     private final boolean optionUncompressed;
     private final boolean optionByteAligned;
 
-    // Need to take fill order into account (?) (use flip table?)
-    private final int fillOrder;
     private final int type;
 
     private int decodedLength;
@@ -85,18 +83,15 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
      * @param columns the number of columns in the stream.
      * @param type the type of stream, must be one of {@code COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE},
      *             {@code COMPRESSION_CCITT_T4} or {@code COMPRESSION_CCITT_T6}.
-     * @param fillOrder fillOrder, must be {@code FILL_LEFT_TO_RIGHT} or
-     * {@code FILL_RIGHT_TO_LEFT}.
      * @param options CCITT T.4 or T.6 options.
      * @param byteAligned enable byte alignment used in PDF files (EncodedByteAlign).
      */
-    public CCITTFaxDecoderStream(final InputStream stream, final int columns, final int type, final int fillOrder,
+    public CCITTFaxDecoderStream(final InputStream stream, final int columns, final int type,
                                  final long options, final boolean byteAligned) {
         super(stream);
 
         this.columns = columns;
         this.type = type;
-        this.fillOrder = fillOrder;
 
         // We know this is only used for b/w (1 bit)
         decodedRow = new byte[(columns + 7) / 8];
@@ -128,28 +123,16 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
 
     }
 
-    /**
-     * Creates a CCITTFaxDecoderStream.
-     *
-     * @param stream the compressed CCITT stream.
-     * @param columns the number of columns in the stream.
-     * @param type the type of stream, must be one of {@code COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE},
-     *             {@code COMPRESSION_CCITT_T4} or {@code COMPRESSION_CCITT_T6}.
-     * @param fillOrder fillOrder, must be {@code FILL_LEFT_TO_RIGHT} or
-     * {@code FILL_RIGHT_TO_LEFT}.
-     * @param options CCITT T.4 or T.6 options.
-     */
-    public CCITTFaxDecoderStream(final InputStream stream, final int columns, final int type, final int fillOrder,
-                                 final long options) {
-        this(stream, columns, type, fillOrder, options, type == TIFFExtension.COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE);
-    }
-
     private void fetch() throws IOException {
         if (decodedPos >= decodedLength) {
             decodedLength = 0;
 
             try {
                 decodeRow();
+            }
+            catch (ArrayIndexOutOfBoundsException e) {
+                // Mask the AIOOBE as an IOException
+                throw new IOException("Malformed CCITT stream", e);
             }
             catch (EOFException e) {
                 // TODO: Rewrite to avoid throw/catch for normal flow...
@@ -434,20 +417,9 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
             bufferPos = 0;
         }
 
-        boolean isSet;
-
-        if (fillOrder == TIFFExtension.FILL_LEFT_TO_RIGHT) {
-            isSet = ((buffer >> (7 - bufferPos)) & 1) == 1;
-        }
-        else {
-            isSet = ((buffer >> (bufferPos)) & 1) == 1;
-        }
-
+        boolean isSet = (buffer & 0x80) != 0;
+        buffer <<= 1;
         bufferPos++;
-
-        if (bufferPos > 7) {
-            bufferPos = -1;
-        }
 
         return isSet;
     }

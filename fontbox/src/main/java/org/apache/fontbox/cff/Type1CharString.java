@@ -50,8 +50,8 @@ public class Type1CharString
     private Point2D.Float current = null;
     private boolean isFlex = false;
     private final List<Point2D.Float> flexPoints = new ArrayList<>();
-    protected List<Object> type1Sequence;
-    protected int commandCount = 0;
+    private final List<Object> type1Sequence = new ArrayList<>();
+    private int commandCount = 0;
 
     /**
      * Constructs a new Type1CharString object.
@@ -62,10 +62,10 @@ public class Type1CharString
      * @param sequence Type 1 char string sequence
      */
     public Type1CharString(Type1CharStringReader font, String fontName, String glyphName,
-                           List<Object> sequence)
+            List<Object> sequence)
     {
         this(font, fontName, glyphName);
-        type1Sequence = sequence;
+        type1Sequence.addAll(sequence);
     }
 
     /**
@@ -138,15 +138,6 @@ public class Type1CharString
     }
 
     /**
-     * Returns the Type 1 char string sequence.
-     * @return the Type 1 sequence
-     */
-    public List<Object> getType1Sequence()
-    {
-        return type1Sequence;
-    }
-
-    /**
      * Renders the Type 1 char string sequence to a GeneralPath.
      */
     private void render() 
@@ -154,8 +145,19 @@ public class Type1CharString
         path = new GeneralPath();
         leftSideBearing = new Point2D.Float(0, 0);
         width = 0;
-        CharStringHandler handler = Type1CharString.this::handleType1Command;
-        handler.handleSequence(type1Sequence);
+        List<Number> numbers = new ArrayList<>();
+        type1Sequence.forEach(obj -> {
+            if (obj instanceof CharStringCommand)
+            {
+                List<Number> results = handleType1Command(numbers, (CharStringCommand) obj);
+                numbers.clear();
+                numbers.addAll(results);
+            }
+            else
+            {
+                numbers.add((Number) obj);
+            }
+        });
     }
 
     private List<Number> handleType1Command(List<Number> numbers, CharStringCommand command)
@@ -288,16 +290,20 @@ public class Type1CharString
             }
             break;
         case DIV:
-            float b = numbers.get(numbers.size() -1).floatValue();
-            float a = numbers.get(numbers.size() -2).floatValue();
+            if (numbers.size() >= 2)
+            {
+                float b = numbers.get(numbers.size() - 1).floatValue();
+                float a = numbers.get(numbers.size() - 2).floatValue();
 
-            float result = a / b;
+                float result = a / b;
 
-            List<Number> list = new ArrayList<>(numbers);
-            list.remove(list.size() - 1);
-            list.remove(list.size() - 1);
-            list.add(result);
-            return list;
+                List<Number> list = new ArrayList<>(numbers);
+                list.remove(list.size() - 1);
+                list.remove(list.size() - 1);
+                list.add(result);
+                return list;
+            }
+            break;
         case HSTEM:
         case VSTEM:
         case HSTEM3:
@@ -309,8 +315,9 @@ public class Type1CharString
             // end
             break;
         case RET:
+        case CALLSUBR:
             // indicates an invalid charstring
-            LOG.warn("Unexpected charstring command: RET in glyph " + glyphName + " of font "
+            LOG.warn("Unexpected charstring command: " + type1KeyWord + " in glyph " + glyphName + " of font "
                     + fontName);
             break;
         default:
@@ -378,8 +385,7 @@ public class Type1CharString
         }
         else
         {
-            // indicates a PDFBox bug
-            throw new IllegalArgumentException("Unexpected other subroutine: " + num);
+            LOG.warn("Invalid callothersubr parameter: " + num);
         }
     }
 
@@ -477,6 +483,13 @@ public class Type1CharString
         try
         {
             Type1CharString accent = font.getType1CharString(accentName);
+            if (path == accent.getPath())
+            {
+                // PDFBOX-5339: avoid ArrayIndexOutOfBoundsException 
+                // reproducable with poc file crash-4698e0dc7833a3f959d06707e01d03cda52a83f4
+                LOG.warn("Path for " + baseName + " and for accent " + accentName + " are same, ignored");
+                return;
+            }
             AffineTransform at = AffineTransform.getTranslateInstance(
                     leftSideBearing.getX() + adx.floatValue() - asb.floatValue(),
                     leftSideBearing.getY() + ady.floatValue());
@@ -486,6 +499,42 @@ public class Type1CharString
         {
             LOG.warn("invalid seac character in glyph " + glyphName + " of font " + fontName, e);
         }
+    }
+
+    /**
+     * Add a command to the type1 sequence.
+     * 
+     * @param numbers the parameters of the command to be added
+     * @param command the command to be added
+     */
+    protected void addCommand(List<Number> numbers, CharStringCommand command)
+    {
+        type1Sequence.addAll(numbers);
+        type1Sequence.add(command);
+    }
+
+    /**
+     * Indicates if the underlying type1 sequence is empty.
+     * 
+     * @return true if the sequence is empty
+     */
+    protected boolean isSequenceEmpty()
+    {
+        return type1Sequence.isEmpty();
+    }
+
+    /**
+     * Returns the last entry of the underlying type1 sequence.
+     * 
+     * @return the last entry of the type 1 sequence or null if empty
+     */
+    protected Object getLastSequenceEntry()
+    {
+        if (!type1Sequence.isEmpty())
+        {
+            return type1Sequence.get(type1Sequence.size() - 1);
+        }
+        return null;
     }
 
     @Override

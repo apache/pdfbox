@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.io.RandomAccessRead;
 
 
 /**
@@ -72,27 +73,50 @@ public class CFFParser
      */
     public List<CFFFont> parse(byte[] bytes, ByteSource source) throws IOException
     {
+        // TODO do we need to store the source data of the font? It isn't used at all
         this.source = source;
-        return parse(bytes);
+        return parse(new DataInputByteArray(bytes));
     }
     
     /**
-     * Parse CFF font using a byte array as input.
+     * Parse CFF font using a RandomAccessRead as input.
      * 
-     * @param bytes the given byte array
+     * @param randomAccessRead
      * @return the parsed CFF fonts
      * @throws IOException If there is an error reading from the stream
      */
-    public List<CFFFont> parse(byte[] bytes) throws IOException
+    public List<CFFFont> parse(RandomAccessRead randomAccessRead) throws IOException
     {
-        CFFDataInput input = new CFFDataInput(bytes);
+        // TODO do we need to store the source data of the font? It isn't used at all
+        byte[] bytes = new byte[(int) randomAccessRead.length()];
+        randomAccessRead.seek(0);
+        int remainingBytes = bytes.length;
+        int amountRead;
+        while ((amountRead = randomAccessRead.read(bytes, bytes.length - remainingBytes,
+                remainingBytes)) > 0)
+        {
+            remainingBytes -= amountRead;
+        }
+        randomAccessRead.seek(0);
+        this.source = new CFFBytesource(bytes);
+        return parse(new DataInputRandomAccessRead(randomAccessRead));
+    }
 
+    /**
+     * Parse CFF font using a DataInput as input.
+     * 
+     * @param input
+     * @return the parsed CFF fonts
+     * @throws IOException If there is an error reading from the stream
+     */
+    private List<CFFFont> parse(DataInput input) throws IOException
+    {
         String firstTag = readTagName(input);
         // try to determine which kind of font we have
         switch (firstTag)
         {
             case TAG_OTTO:
-                input = createTaggedCFFDataInput(input, bytes);
+                input = createTaggedCFFDataInput(input);
                 break;
             case TAG_TTCF:
                 throw new IOException("True Type Collection fonts are not supported.");
@@ -106,12 +130,12 @@ public class CFFParser
         @SuppressWarnings("unused")
         Header header = readHeader(input);
         String[] nameIndex = readStringIndexData(input);
-        if (nameIndex == null)
+        if (nameIndex.length == 0)
         {
             throw new IOException("Name index missing in CFF font");
         }
         byte[][] topDictIndex = readIndexData(input);
-        if (topDictIndex == null)
+        if (topDictIndex.length == 0)
         {
             throw new IOException("Top DICT INDEX missing in CFF font");
         }
@@ -130,7 +154,7 @@ public class CFFParser
         return fonts;
     }
 
-    private CFFDataInput createTaggedCFFDataInput(CFFDataInput input, byte[] bytes) throws IOException
+    private DataInput createTaggedCFFDataInput(DataInput input) throws IOException
     {
         // this is OpenType font containing CFF data
         // so find CFF tag
@@ -150,42 +174,54 @@ public class CFFParser
             long length = readLong(input);
             if ("CFF ".equals(tagName))
             {
-                byte[] bytes2 = Arrays.copyOfRange(bytes, (int) offset, (int) (offset + length));
-                return new CFFDataInput(bytes2);
+                input.setPosition((int)offset);
+                byte[] bytes2 = input.readBytes((int) length);
+                return new DataInputByteArray(bytes2);
             }
         }
         throw new IOException("CFF tag not found in this OpenType font.");
     }
 
-    private static String readTagName(CFFDataInput input) throws IOException
+    private static String readTagName(DataInput input) throws IOException
     {
         byte[] b = input.readBytes(4);
         return new String(b, StandardCharsets.ISO_8859_1);
     }
 
-    private static long readLong(CFFDataInput input) throws IOException
+    private static long readLong(DataInput input) throws IOException
     {
-        return (input.readCard16() << 16) | input.readCard16();
+        return (input.readUnsignedShort() << 16) | input.readUnsignedShort();
     }
 
-    private static Header readHeader(CFFDataInput input) throws IOException
+    private static int readOffSize(DataInput input) throws IOException
     {
-        int major = input.readCard8();
-        int minor = input.readCard8();
-        int hdrSize = input.readCard8();
-        int offSize = input.readOffSize();
+        int offSize = input.readUnsignedByte();
+        if (offSize < 1 || offSize > 4)
+        {
+            throw new IOException("Illegal (< 1 or > 4) offSize value " + offSize
+                    + " in CFF font at position " + (input.getPosition() - 1));
+        }
+        return offSize;
+    }
+
+    private static Header readHeader(DataInput input) throws IOException
+    {
+        int major = input.readUnsignedByte();
+        int minor = input.readUnsignedByte();
+        int hdrSize = input.readUnsignedByte();
+        int offSize = readOffSize(input);
         return new Header(major, minor, hdrSize, offSize);
     }
 
-    private static int[] readIndexDataOffsets(CFFDataInput input) throws IOException
+    private static int[] readIndexDataOffsets(DataInput input) throws IOException
     {
-        int count = input.readCard16();
+        int count = input.readUnsignedShort();
         if (count == 0)
         {
-            return null;
+            return new int[0];
         }
-        int offSize = input.readOffSize();
-        int[] offsets = new int[count+1];
+        int offSize = readOffSize(input);
+        int[] offsets = new int[count + 1];
         for (int i = 0; i <= count; i++)
         {
             int offset = input.readOffset(offSize);
@@ -198,12 +234,12 @@ public class CFFParser
         return offsets;
     }
 
-    private static byte[][] readIndexData(CFFDataInput input) throws IOException
+    private static byte[][] readIndexData(DataInput input) throws IOException
     {
         int[] offsets = readIndexDataOffsets(input);
-        if (offsets == null)
+        if (offsets.length == 0)
         {
-            return null;
+            return new byte[0][];
         }
         int count = offsets.length-1;
         byte[][] indexDataValues = new byte[count][];
@@ -215,12 +251,12 @@ public class CFFParser
         return indexDataValues;
     }
 
-    private static String[] readStringIndexData(CFFDataInput input) throws IOException
+    private static String[] readStringIndexData(DataInput input) throws IOException
     {
         int[] offsets = readIndexDataOffsets(input);
-        if (offsets == null)
+        if (offsets.length == 0)
         {
-            return null;
+            return new String[0];
         }
         int count = offsets.length-1;
         String[] indexDataValues = new String[count];
@@ -238,7 +274,7 @@ public class CFFParser
         return indexDataValues;
     }
 
-    private static DictData readDictData(CFFDataInput input) throws IOException
+    private static DictData readDictData(DataInput input) throws IOException
     {
         DictData dict = new DictData();
         while (input.hasRemaining())
@@ -248,7 +284,7 @@ public class CFFParser
         return dict;
     }
 
-    private static DictData readDictData(CFFDataInput input, int offset, int dictSize)
+    private static DictData readDictData(DataInput input, int offset, int dictSize)
             throws IOException
     {
         DictData dict = new DictData();
@@ -264,7 +300,7 @@ public class CFFParser
         return dict;
     }
 
-    private static DictData.Entry readEntry(CFFDataInput input) throws IOException
+    private static DictData.Entry readEntry(DataInput input) throws IOException
     {
         DictData.Entry entry = new DictData.Entry();
         while (true)
@@ -296,7 +332,7 @@ public class CFFParser
         return entry;
     }
 
-    private static String readOperator(CFFDataInput input, int b0) throws IOException
+    private static String readOperator(DataInput input, int b0) throws IOException
     {
         if (b0 == 12)
         {
@@ -307,7 +343,7 @@ public class CFFParser
 
     }
 
-    private static Integer readIntegerNumber(CFFDataInput input, int b0) throws IOException
+    private static Integer readIntegerNumber(DataInput input, int b0) throws IOException
     {
         if (b0 == 28)
         {
@@ -337,7 +373,7 @@ public class CFFParser
         }
     }
 
-    private static Double readRealNumber(CFFDataInput input) throws IOException
+    private static Double readRealNumber(DataInput input) throws IOException
     {
         StringBuilder sb = new StringBuilder();
         boolean done = false;
@@ -424,10 +460,10 @@ public class CFFParser
         }
     }
 
-    private CFFFont parseFont(CFFDataInput input, String name, byte[] topDictIndex) throws IOException
+    private CFFFont parseFont(DataInput input, String name, byte[] topDictIndex) throws IOException
     {
         // top dict
-        CFFDataInput topDictInput = new CFFDataInput(topDictIndex);
+        DataInputByteArray topDictInput = new DataInputByteArray(topDictIndex);
         DictData topDict = readDictData(topDictInput);
 
         // we don't support synthetic fonts
@@ -444,6 +480,10 @@ public class CFFParser
         {
             CFFCIDFont cffCIDFont = new CFFCIDFont();
             DictData.Entry rosEntry = topDict.getEntry("ROS");
+            if (rosEntry == null || rosEntry.size() < 3)
+            {
+                throw new IOException("ROS entry must have 3 elements");
+            }
             cffCIDFont.setRegistry(readString(rosEntry.getNumber(0).intValue()));
             cffCIDFont.setOrdering(readString(rosEntry.getNumber(1).intValue()));
             cffCIDFont.setSupplement(rosEntry.getNumber(2).intValue());
@@ -483,6 +523,10 @@ public class CFFParser
 
         // charstrings index
         DictData.Entry charStringsEntry = topDict.getEntry("CharStrings");
+        if (charStringsEntry == null || !charStringsEntry.hasOperands())
+        {
+            throw new IOException("CharStrings is missing or empty");
+        }
         int charStringsOffset = charStringsEntry.getNumber(0).intValue();
         input.setPosition(charStringsOffset);
         byte[][] charStringsIndex = readIndexData(input);
@@ -490,7 +534,7 @@ public class CFFParser
         // charset
         DictData.Entry charsetEntry = topDict.getEntry("charset");
         CFFCharset charset;
-        if (charsetEntry != null)
+        if (charsetEntry != null && charsetEntry.hasOperands())
         {
             int charsetId = charsetEntry.getNumber(0).intValue();
             if (!isCIDFont && charsetId == 0)
@@ -505,7 +549,7 @@ public class CFFParser
             {
                 charset = CFFExpertSubsetCharset.getInstance();
             }
-            else if (charStringsIndex != null)
+            else if (charStringsIndex.length > 0)
             {
                 input.setPosition(charsetId);
                 charset = readCharset(input, charStringsIndex.length, isCIDFont);
@@ -514,18 +558,15 @@ public class CFFParser
             else
             {
                 LOG.debug("Couldn't read CharStrings index - returning empty charset instead");
-                charset = new EmptyCharset(0);
-            }
-            
+                charset = new EmptyCharsetType1();
+            }            
         }
         else
         {
             if (isCIDFont)
             {
-                // CharStrings index could be null if the index data couldnÄt be read
-                int numEntries = charStringsIndex == null ? 0 :  charStringsIndex.length;
                 // a CID font with no charset does not default to any predefined charset
-                charset = new EmptyCharset(numEntries);
+                charset = new EmptyCharsetCID(charStringsIndex.length);
             }
             else
             {
@@ -543,7 +584,7 @@ public class CFFParser
 
             // CharStrings index could be null if the index data couldn't be read
             int numEntries = 0;
-            if (charStringsIndex == null)
+            if (charStringsIndex.length == 0)
             {
                 LOG.debug("Couldn't read CharStrings index - parsing CIDFontDicts with number of char strings set to 0");
             }
@@ -623,13 +664,14 @@ public class CFFParser
     /**
      * Parse dictionaries specific to a CIDFont.
      */
-    private void parseCIDFontDicts(CFFDataInput input, DictData topDict, CFFCIDFont font, int nrOfcharStrings)
+    private void parseCIDFontDicts(DataInput input, DictData topDict, CFFCIDFont font,
+            int nrOfcharStrings)
             throws IOException
     {
         // In a CIDKeyed Font, the Private dictionary isn't in the Top Dict but in the Font dict
         // which can be accessed by a lookup using FDArray and FDSelect
         DictData.Entry fdArrayEntry = topDict.getEntry("FDArray");
-        if (fdArrayEntry == null)
+        if (fdArrayEntry == null || !fdArrayEntry.hasOperands())
         {
             throw new IOException("FDArray is missing for a CIDKeyed Font.");
         }
@@ -638,7 +680,7 @@ public class CFFParser
         int fontDictOffset = fdArrayEntry.getNumber(0).intValue();
         input.setPosition(fontDictOffset);
         byte[][] fdIndex = readIndexData(input);
-        if (fdIndex == null)
+        if (fdIndex.length == 0)
         {
             throw new IOException("Font dict index is missing for a CIDKeyed Font");
         }
@@ -648,12 +690,12 @@ public class CFFParser
 
         for (byte[] bytes : fdIndex)
         {
-            CFFDataInput fontDictInput = new CFFDataInput(bytes);
+            DataInputByteArray fontDictInput = new DataInputByteArray(bytes);
             DictData fontDict = readDictData(fontDictInput);
 
             // read private dict
             DictData.Entry privateEntry = fontDict.getEntry("Private");
-            if (privateEntry == null)
+            if (privateEntry == null || privateEntry.size() < 2)
             {
                 throw new IOException("Font DICT invalid without \"Private\" entry");
             }
@@ -676,16 +718,20 @@ public class CFFParser
             privateDictionaries.add(privDict);
 
             // local subrs
-            int localSubrOffset = (Integer) privateDict.getNumber("Subrs", 0);
-            if (localSubrOffset > 0)
+            Number localSubrOffset = privateDict.getNumber("Subrs", 0);
+            if (localSubrOffset instanceof Integer && ((int) localSubrOffset) > 0)
             {
-                input.setPosition(privateOffset + localSubrOffset);
+                input.setPosition(privateOffset + (int) localSubrOffset);
                 privDict.put("Subrs", readIndexData(input));
             }
         }
 
         // font-dict (FD) select
         DictData.Entry fdSelectEntry = topDict.getEntry("FDSelect");
+        if (fdSelectEntry == null || !fdSelectEntry.hasOperands())
+        {
+            throw new IOException("FDSelect is missing or empty");
+        }
         int fdSelectPos = fdSelectEntry.getNumber(0).intValue();
         input.setPosition(fdSelectPos);
         FDSelect fdSelect = readFDSelect(input, nrOfcharStrings);
@@ -725,13 +771,15 @@ public class CFFParser
     /**
      * Parse dictionaries specific to a Type 1-equivalent font.
      */
-    private void parseType1Dicts(CFFDataInput input, DictData topDict, CFFType1Font font, CFFCharset charset)
+    private void parseType1Dicts(DataInput input, DictData topDict, CFFType1Font font,
+            CFFCharset charset)
             throws IOException
     {
         // encoding
         DictData.Entry encodingEntry = topDict.getEntry("Encoding");
         CFFEncoding encoding;
-        int encodingId = encodingEntry != null ? encodingEntry.getNumber(0).intValue() : 0;
+        int encodingId = encodingEntry != null && encodingEntry.hasOperands() ?
+                encodingEntry.getNumber(0).intValue() : 0;
         switch (encodingId)
         {
             case 0:
@@ -749,7 +797,7 @@ public class CFFParser
 
         // read private dict
         DictData.Entry privateEntry = topDict.getEntry("Private");
-        if (privateEntry == null)
+        if (privateEntry == null || privateEntry.size() < 2)
         {
             throw new IOException("Private dictionary entry missing for font " + font.getName());
         }
@@ -762,40 +810,41 @@ public class CFFParser
         privDict.forEach(font::addToPrivateDict);
 
         // local subrs
-        int localSubrOffset = (Integer) privateDict.getNumber("Subrs", 0);
-        if (localSubrOffset > 0)
+        Number localSubrOffset = privateDict.getNumber("Subrs", 0);
+        if (localSubrOffset instanceof Integer && ((int) localSubrOffset) > 0)
         {
-            input.setPosition(privateOffset + localSubrOffset);
+            input.setPosition(privateOffset + (int) localSubrOffset);
             font.addToPrivateDict("Subrs", readIndexData(input));
         }
     }
 
-    private String readString(int index)
+    private String readString(int index) throws IOException
     {
-        if (index >= 0 && index <= 390)
+        if (index < 0)
+        {
+            throw new IOException("Invalid negative index when reading a string");
+        }
+        if (index <= 390)
         {
             return CFFStandardString.getName(index);
         }
-        if (index - 391 < stringIndex.length)
+        if (stringIndex != null && index - 391 < stringIndex.length)
         {
             return stringIndex[index - 391];
         }
-        else
-        {
-            // technically this maps to .notdef, but we need a unique sid name
-            return "SID" + index;
-        }
+        // technically this maps to .notdef, but we need a unique sid name
+        return "SID" + index;
     }
 
-    private String getString(DictData dict, String name)
+    private String getString(DictData dict, String name) throws IOException
     {
         DictData.Entry entry = dict.getEntry(name);
-        return entry != null ? readString(entry.getNumber(0).intValue()) : null;
+        return entry != null && entry.hasOperands() ? readString(entry.getNumber(0).intValue()) : null;
     }
 
-    private CFFEncoding readEncoding(CFFDataInput dataInput, CFFCharset charset) throws IOException
+    private CFFEncoding readEncoding(DataInput dataInput, CFFCharset charset) throws IOException
     {
-        int format = dataInput.readCard8();
+        int format = dataInput.readUnsignedByte();
         int baseFormat = format & 0x7f;
 
         switch (baseFormat)
@@ -805,19 +854,19 @@ public class CFFParser
             case 1:
                 return readFormat1Encoding(dataInput, charset, format);
             default:
-                throw new IllegalArgumentException();
+                throw new IOException("Invalid encoding base format " + baseFormat);
         }
     }
 
-    private Format0Encoding readFormat0Encoding(CFFDataInput dataInput, CFFCharset charset,
+    private Format0Encoding readFormat0Encoding(DataInput dataInput, CFFCharset charset,
             int format)
             throws IOException
     {
-        Format0Encoding encoding = new Format0Encoding(dataInput.readCard8());
+        Format0Encoding encoding = new Format0Encoding(dataInput.readUnsignedByte());
         encoding.add(0, 0, ".notdef");
         for (int gid = 1; gid <= encoding.nCodes; gid++)
         {
-            int code = dataInput.readCard8();
+            int code = dataInput.readUnsignedByte();
             int sid = charset.getSIDForGID(gid);
             encoding.add(code, sid, readString(sid));
         }
@@ -828,16 +877,16 @@ public class CFFParser
         return encoding;
     }
 
-    private Format1Encoding readFormat1Encoding(CFFDataInput dataInput, CFFCharset charset,
+    private Format1Encoding readFormat1Encoding(DataInput dataInput, CFFCharset charset,
             int format) throws IOException
     {
-        Format1Encoding encoding = new Format1Encoding(dataInput.readCard8());
+        Format1Encoding encoding = new Format1Encoding(dataInput.readUnsignedByte());
         encoding.add(0, 0, ".notdef");
         int gid = 1;
         for (int i = 0; i < encoding.nRanges; i++)
         {
-            int rangeFirst = dataInput.readCard8(); // First code in range
-            int rangeLeft = dataInput.readCard8(); // Codes left in range (excluding first)
+            int rangeFirst = dataInput.readUnsignedByte(); // First code in range
+            int rangeLeft = dataInput.readUnsignedByte(); // Codes left in range (excluding first)
             for (int j = 0; j <= rangeLeft; j++)
             {
                 int sid = charset.getSIDForGID(gid);
@@ -852,15 +901,15 @@ public class CFFParser
         return encoding;
     }
 
-    private void readSupplement(CFFDataInput dataInput, CFFBuiltInEncoding encoding)
+    private void readSupplement(DataInput dataInput, CFFBuiltInEncoding encoding)
             throws IOException
     {
-        int nSups = dataInput.readCard8();
+        int nSups = dataInput.readUnsignedByte();
         encoding.supplement = new CFFBuiltInEncoding.Supplement[nSups];
         for (int i = 0; i < nSups; i++)
         {
-            int code = dataInput.readCard8();
-            int sid = dataInput.readSID();
+            int code = dataInput.readUnsignedByte();
+            int sid = dataInput.readUnsignedShort();
             encoding.supplement[i] = new CFFBuiltInEncoding.Supplement(code, sid, readString(sid));
             encoding.add(encoding.supplement[i]);
         }
@@ -873,9 +922,9 @@ public class CFFParser
      * @return the FDSelect data
      * @throws IOException
      */
-    private static FDSelect readFDSelect(CFFDataInput dataInput, int nGlyphs) throws IOException
+    private static FDSelect readFDSelect(DataInput dataInput, int nGlyphs) throws IOException
     {
-        int format = dataInput.readCard8();
+        int format = dataInput.readUnsignedByte();
         switch (format)
         {
             case 0:
@@ -894,13 +943,13 @@ public class CFFParser
      * @return the Format 0 of the FDSelect data
      * @throws IOException
      */
-    private static Format0FDSelect readFormat0FDSelect(CFFDataInput dataInput, int nGlyphs)
+    private static Format0FDSelect readFormat0FDSelect(DataInput dataInput, int nGlyphs)
             throws IOException
     {
         int[] fds = new int[nGlyphs];
         for (int i = 0; i < nGlyphs; i++)
         {
-            fds[i] = dataInput.readCard8();
+            fds[i] = dataInput.readUnsignedByte();
         }
         return new Format0FDSelect(fds);
     }
@@ -912,17 +961,17 @@ public class CFFParser
      * @return the Format 3 of the FDSelect data
      * @throws IOException
      */
-    private static Format3FDSelect readFormat3FDSelect(CFFDataInput dataInput)
+    private static Format3FDSelect readFormat3FDSelect(DataInput dataInput)
             throws IOException
     {
-        int nbRanges = dataInput.readCard16();
+        int nbRanges = dataInput.readUnsignedShort();
 
         Range3[] range3 = new Range3[nbRanges];
         for (int i = 0; i < nbRanges; i++)
         {
-            range3[i] = new Range3(dataInput.readCard16(), dataInput.readCard8());
+            range3[i] = new Range3(dataInput.readUnsignedShort(), dataInput.readUnsignedByte());
         }
-        return new Format3FDSelect(range3, dataInput.readCard16());
+        return new Format3FDSelect(range3, dataInput.readUnsignedShort());
     }
 
     /**
@@ -1026,10 +1075,10 @@ public class CFFParser
         }
     }
 
-    private CFFCharset readCharset(CFFDataInput dataInput, int nGlyphs, boolean isCIDFont)
+    private CFFCharset readCharset(DataInput dataInput, int nGlyphs, boolean isCIDFont)
             throws IOException
     {
-        int format = dataInput.readCard8();
+        int format = dataInput.readUnsignedByte();
         switch (format)
         {
             case 0:
@@ -1039,11 +1088,12 @@ public class CFFParser
             case 2:
                 return readFormat2Charset(dataInput, nGlyphs, isCIDFont);
             default:
-                throw new IllegalArgumentException();
+                // we can't return new EmptyCharset(0), because this will bring more mayhem
+                throw new IOException("Incorrect charset format " + format);
         }
     }
 
-    private Format0Charset readFormat0Charset(CFFDataInput dataInput, int nGlyphs,
+    private Format0Charset readFormat0Charset(DataInput dataInput, int nGlyphs,
                                               boolean isCIDFont) throws IOException
     {
         Format0Charset charset = new Format0Charset(isCIDFont);
@@ -1052,7 +1102,7 @@ public class CFFParser
             charset.addCID(0, 0);
             for (int gid = 1; gid < nGlyphs; gid++)
             {
-                charset.addCID(gid, dataInput.readSID());
+                charset.addCID(gid, dataInput.readUnsignedShort());
             }
         }
         else
@@ -1060,14 +1110,14 @@ public class CFFParser
             charset.addSID(0, 0, ".notdef");
             for (int gid = 1; gid < nGlyphs; gid++)
             {
-                int sid = dataInput.readSID();
+                int sid = dataInput.readUnsignedShort();
                 charset.addSID(gid, sid, readString(sid));
             }
         }
         return charset;
     }
 
-    private Format1Charset readFormat1Charset(CFFDataInput dataInput, int nGlyphs,
+    private Format1Charset readFormat1Charset(DataInput dataInput, int nGlyphs,
                                               boolean isCIDFont) throws IOException
     {
         Format1Charset charset = new Format1Charset(isCIDFont);
@@ -1077,8 +1127,8 @@ public class CFFParser
             int gid = 1;
             while (gid < nGlyphs)
             {
-                int rangeFirst = dataInput.readSID();
-                int rangeLeft = dataInput.readCard8();
+                int rangeFirst = dataInput.readUnsignedShort();
+                int rangeLeft = dataInput.readUnsignedByte();
                 charset.addRangeMapping(new RangeMapping(gid, rangeFirst, rangeLeft));
                 gid += rangeLeft + 1;
             }
@@ -1089,8 +1139,8 @@ public class CFFParser
             int gid = 1;
             while (gid < nGlyphs)
             {
-                int rangeFirst = dataInput.readSID();
-                int rangeLeft = dataInput.readCard8() + 1;
+                int rangeFirst = dataInput.readUnsignedShort();
+                int rangeLeft = dataInput.readUnsignedByte() + 1;
                 for (int j = 0; j < rangeLeft; j++)
                 {
                     int sid = rangeFirst + j;
@@ -1102,7 +1152,7 @@ public class CFFParser
         return charset;
     }
 
-    private Format2Charset readFormat2Charset(CFFDataInput dataInput, int nGlyphs,
+    private Format2Charset readFormat2Charset(DataInput dataInput, int nGlyphs,
             boolean isCIDFont) throws IOException
     {
         Format2Charset charset = new Format2Charset(isCIDFont);
@@ -1112,8 +1162,8 @@ public class CFFParser
             int gid = 1;
             while (gid < nGlyphs)
             {
-                int first = dataInput.readSID();
-                int nLeft = dataInput.readCard16();
+                int first = dataInput.readUnsignedShort();
+                int nLeft = dataInput.readUnsignedShort();
                 charset.addRangeMapping(new RangeMapping(gid, first, nLeft));
                 gid += nLeft + 1;
             }
@@ -1124,8 +1174,8 @@ public class CFFParser
             int gid = 1;
             while (gid < nGlyphs)
             {
-                int first = dataInput.readSID();
-                int nLeft = dataInput.readCard16() + 1;
+                int first = dataInput.readUnsignedShort();
+                int nLeft = dataInput.readUnsignedShort() + 1;
                 for (int j = 0; j < nLeft; j++)
                 {
                     int sid = first + j;
@@ -1186,7 +1236,7 @@ public class CFFParser
         public Boolean getBoolean(String name, boolean defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null && entry.hasOperands() ? entry.getBoolean(0) : defaultValue;
+            return entry != null && entry.hasOperands() ? entry.getBoolean(0, defaultValue) : defaultValue;
         }
 
         public List<Number> getArray(String name, List<Number> defaultValue)
@@ -1229,22 +1279,28 @@ public class CFFParser
                 return operands.get(index);
             }
 
-            public Boolean getBoolean(int index)
+            public int size()
+            {
+                return operands.size();
+            }
+
+            public Boolean getBoolean(int index, Boolean defaultValue)
             {
                 Number operand = operands.get(index);
                 if (operand instanceof Integer)
                 {
                     switch (operand.intValue())
                     {
-                    case 0:
-                        return Boolean.FALSE;
-                    case 1:
-                        return Boolean.TRUE;
-                    default:
-                        break;
+                        case 0:
+                            return Boolean.FALSE;
+                        case 1:
+                            return Boolean.TRUE;
+                        default:
+                            break;
                     }
                 }
-                throw new IllegalArgumentException();
+                LOG.warn("Expected boolean, got " + operand + ", returning default " + defaultValue);
+                return defaultValue;
             }
 
             public void addOperand(Number operand)
@@ -1269,7 +1325,7 @@ public class CFFParser
                 {
                     Number previous = result.get(i - 1);
                     Number current = result.get(i);
-                    Integer sum = previous.intValue() + current.intValue();
+                    int sum = previous.intValue() + current.intValue();
                     result.set(i, sum);
                 }
                 return result;
@@ -1363,9 +1419,9 @@ public class CFFParser
     /**
      * An empty charset in a malformed CID font.
      */
-    private static class EmptyCharset extends CFFCharsetCID
+    private static class EmptyCharsetCID extends CFFCharsetCID
     {
-        private EmptyCharset(int numCharStrings)
+        private EmptyCharsetCID(int numCharStrings)
         {
             addCID(0, 0); // .notdef
             
@@ -1384,7 +1440,24 @@ public class CFFParser
     }
 
     /**
-     * Inner class representing a Format0 charset. 
+     * An empty charset in a malformed Type1 font.
+     */
+    private static class EmptyCharsetType1 extends CFFCharsetType1
+    {
+        private EmptyCharsetType1()
+        {
+            addSID(0, 0, ".notdef");
+        }
+
+        @Override
+        public String toString()
+        {
+            return getClass().getName();
+        }
+    }
+
+    /**
+     * Inner class representing a Format0 charset.
      */
     private static class Format0Charset extends EmbeddedCharset
     {
@@ -1542,6 +1615,25 @@ public class CFFParser
         public String toString()
         {
             return getClass().getName() + "[start value=" + startValue + ", end value=" + endValue +  ", start mapped-value=" + startMappedValue +  ", end mapped-value=" + endMappedValue +"]";
+        }
+    }
+
+    /**
+     * Allows bytes to be re-read later by CFFParser.
+     */
+    private static class CFFBytesource implements CFFParser.ByteSource
+    {
+        private final byte[] bytes;
+
+        CFFBytesource(byte[] bytes)
+        {
+            this.bytes = bytes;
+        }
+
+        @Override
+        public byte[] getBytes() throws IOException
+        {
+            return bytes;
         }
     }
 

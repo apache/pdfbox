@@ -102,6 +102,10 @@ public class HorizontalMetricsTable extends TTFTable
      */
     public int getAdvanceWidth(int gid)
     {
+        if (advanceWidth.length == 0)
+        {
+            return 250;
+        }
         if (gid < numHMetrics)
         {
             return advanceWidth[gid];
@@ -130,6 +134,10 @@ public class HorizontalMetricsTable extends TTFTable
      */
     public int getLeftSideBearing(int gid)
     {
+        if (leftSideBearing.length == 0)
+        {
+            return 0;
+        }
         if (gid < numHMetrics)
         {
             return leftSideBearing[gid];

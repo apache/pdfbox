@@ -51,7 +51,6 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
     /**
      * Create a patch list from a data stream, the returned list contains all the patches contained in the data stream.
      *
-     * @param shadingType the shading type
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param controlPoints number of control points, 12 for type 6 shading and 16 for type 7 shading
@@ -69,8 +68,9 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
         }
         PDRange rangeX = getDecodeForParameter(0);
         PDRange rangeY = getDecodeForParameter(1);
-        if (Float.compare(rangeX.getMin(), rangeX.getMax()) == 0
-                || Float.compare(rangeY.getMin(), rangeY.getMax()) == 0)
+        if (rangeX == null || rangeY == null ||
+            Float.compare(rangeX.getMin(), rangeX.getMax()) == 0 ||
+            Float.compare(rangeY.getMin(), rangeY.getMax()) == 0)
         {
             return Collections.emptyList();
         }

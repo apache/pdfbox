@@ -33,6 +33,7 @@ import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.cff.Type2CharString;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.Matrix;
@@ -72,39 +73,36 @@ public class PDCIDFontType0 extends PDCIDFont
     {
         super(fontDictionary, parent);
 
+        boolean fontIsDamaged = false;
+        CFFFont cffFont = null;
         PDFontDescriptor fd = getFontDescriptor();
-        byte[] bytes = null;
         if (fd != null)
         {
             PDStream ff3Stream = fd.getFontFile3();
             if (ff3Stream != null)
             {
-                bytes = ff3Stream.toByteArray();
+                try (RandomAccessRead randomAccessRead = ff3Stream.getCOSObject().createView())
+                {
+                    if (randomAccessRead.length() > 0 && randomAccessRead.peek() == '%')
+                    {
+                        // PDFBOX-2642 contains a corrupt PFB font instead of a CFF
+                        LOG.warn("Found PFB but expected embedded CFF font " + fd.getFontName());
+                        fontIsDamaged = true;
+                    }
+                    else
+                    {
+                        CFFParser cffParser = new CFFParser();
+                        cffFont = cffParser.parse(randomAccessRead).get(0);
+                    }
+                }
+                catch (IOException e)
+                {
+                    LOG.error("Can't read the embedded CFF font " + fd.getFontName(), e);
+                    fontIsDamaged = true;
+                }
             }
         }
 
-        boolean fontIsDamaged = false;
-        CFFFont cffFont = null;
-        if (bytes != null && bytes.length > 0 && (bytes[0] & 0xff) == '%')
-        {
-            // PDFBOX-2642 contains a corrupt PFB font instead of a CFF
-            LOG.warn("Found PFB but expected embedded CFF font " + fd.getFontName());
-            fontIsDamaged = true;
-        }
-        else if (bytes != null)
-        {
-            CFFParser cffParser = new CFFParser();
-            try
-            {
-                cffFont = cffParser.parse(bytes, new FF3ByteSource()).get(0);
-            }
-            catch (IOException e)
-            {
-                LOG.error("Can't read the embedded CFF font " + fd.getFontName(), e);
-                fontIsDamaged = true;
-            }
-        }
-        
         if (cffFont != null)
         {
             // embedded
@@ -226,21 +224,14 @@ public class PDCIDFontType0 extends PDCIDFont
                                           bbox.getUpperRightX(), bbox.getUpperRightY());
             }
         }
-        if (cidFont != null)
+        try
         {
-            return cidFont.getFontBBox();
+            return cidFont != null ? cidFont.getFontBBox() : t1Font.getFontBBox();
         }
-        else
+        catch (IOException e)
         {
-            try
-            {
-                return t1Font.getFontBBox();
-            }
-            catch (IOException e)
-            {
-                LOG.debug("Couldn't get font bounding box - returning default value", e);
-                return new BoundingBox();
-            }
+            LOG.debug("Couldn't get font bounding box - returning default value", e);
+            return new BoundingBox();
         }
     }
 
@@ -477,12 +468,4 @@ public class PDCIDFontType0 extends PDCIDFont
         return 500;
     }
 
-    private class FF3ByteSource implements CFFParser.ByteSource
-    {
-        @Override
-        public byte[] getBytes() throws IOException
-        {
-            return getFontDescriptor().getFontFile3().toByteArray();
-        }
-    }
 }

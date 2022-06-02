@@ -198,10 +198,13 @@ public class COSStream extends COSDictionary implements Closeable
         }
         else
         {
-            Set<Filter> filterSet = new HashSet<>(filterList);
-            if (filterSet.size() != filterList.size())
+            if (filterList.size() > 1)
             {
-                throw new IOException("Duplicate");
+                Set<Filter> filterSet = new HashSet<>(filterList);
+                if (filterSet.size() != filterList.size())
+                {
+                    throw new IOException("Duplicate");
+                }
             }
             InputStream input = createRawInputStream();
             ByteArrayOutputStream output = new ByteArrayOutputStream(input.available());
@@ -404,9 +407,9 @@ public class COSStream extends COSDictionary implements Closeable
     }
     
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public void accept(ICOSVisitor visitor) throws IOException
     {
-        return visitor.visitFromStream(this);
+        visitor.visitFromStream(this);
     }
     
     /**
@@ -420,21 +423,33 @@ public class COSStream extends COSDictionary implements Closeable
     @Override
     public void close() throws IOException
     {
-        if (closeScratchFile && scratchFile != null)
+        try
         {
-            scratchFile.close();
-            scratchFile = null;
+            if (closeScratchFile && scratchFile != null)
+            {
+                scratchFile.close();
+                scratchFile = null;
+            }
         }
-        // marks the scratch file pages as free
-        if (randomAccess != null)
+        finally
         {
-            randomAccess.close();
-            randomAccess = null;
-        }
-        if (randomAccessReadView != null)
-        {
-            randomAccessReadView.close();
-            randomAccessReadView = null;
+            try
+            {
+                // marks the scratch file pages as free
+                if (randomAccess != null)
+                {
+                    randomAccess.close();
+                    randomAccess = null;
+                }
+            }
+            finally
+            {
+                if (randomAccessReadView != null)
+                {
+                    randomAccessReadView.close();
+                    randomAccessReadView = null;
+                }
+            }
         }
     }
 

@@ -248,10 +248,6 @@ public abstract class PDStructureNode implements COSObjectable
         {
             refKidBase = ((COSObjectable) refKid).getCOSObject();
         }
-        else if (refKid instanceof COSInteger)
-        {
-            refKidBase = (COSBase) refKid;
-        }
         if (k instanceof COSArray)
         {
             COSArray array = (COSArray) k;

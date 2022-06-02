@@ -43,6 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
+import org.apache.pdfbox.debugger.PDFDebugger;
 
 /**
  * @author Khyrul Bashar
@@ -52,6 +54,7 @@ import java.util.List;
 @SuppressWarnings({"serial","squid:S1948"})
 public class Tree extends JTree
 {
+    // No logging possible in this class because it is created before the "LogDialog.init()" call
     private final JPopupMenu treePopupMenu;
     private final Object rootNode;
 
@@ -63,6 +66,9 @@ public class Tree extends JTree
         treePopupMenu = new JPopupMenu();
         setComponentPopupMenu(treePopupMenu);
         rootNode = getModel().getRoot();
+        int treeRowHeight = Integer.parseInt(PDFDebugger.configuration.getProperty(
+                                    "treeRowHeight", Integer.toString(getRowHeight())));
+        setRowHeight(treeRowHeight);
     }
 
     @Override
@@ -174,25 +180,21 @@ public class Tree extends JTree
      */
     private String getFilters(COSStream cosStream)
     {
-        StringBuilder sb = new StringBuilder();
+        StringJoiner sj = new StringJoiner(", ");
         COSBase filters = cosStream.getFilters();
         if (filters instanceof COSName)
         {
-            sb.append(((COSName) filters).getName());
+            sj.add(((COSName) filters).getName());
         }
         else if (filters instanceof COSArray)
         {
             COSArray filterArray = (COSArray) filters;
-            for (int i = 0; i < filterArray.size(); i++)
+            for (COSBase name : filterArray)
             {
-                if (i > 0)
-                {
-                    sb.append(", ");
-                }
-                sb.append(((COSName) filterArray.get(i)).getName());
+                sj.add(((COSName) name).getName());
             }
         }
-        return sb.toString();
+        return sj.toString();
     }
 
     /**

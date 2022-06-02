@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ ! Licensed to the Apache Software Foundation (ASF) under one or more
+ ! contributor license agreements.  See the NOTICE file distributed with
+ ! this work for additional information regarding copyright ownership.
+ ! The ASF licenses this file to You under the Apache License, Version 2.0
+ ! (the "License"); you may not use this file except in compliance with
+ ! the License.  You may obtain a copy of the License at
+ !
+ !      http://www.apache.org/licenses/LICENSE-2.0
+ !
+ ! Unless required by applicable law or agreed to in writing, software
+ ! distributed under the License is distributed on an "AS IS" BASIS,
+ ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ! See the License for the specific language governing permissions and
+ ! limitations under the License.
+ !-->
+ 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>pdfbox-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+        <relativePath>../parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>pdfbox-benchmark</artifactId>
+
+    <packaging>jar</packaging>
+    <name>Apache PDFBox Benchmarks</name>
+    <description>
+        The Apache PDFBox library is an open source Java tool for working with PDF documents. 
+        This artefact contains commandline tools using Apache PDFBox.
+      </description>
+    <inceptionYear>2002</inceptionYear>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>${jmh.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>${jmh.version}</version>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+    </dependencies>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jmh.version>1.35</jmh.version>
+        <uberjar.name>benchmarks</uberjar.name>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${uberjar.name}</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.openjdk.jmh.Main</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <!--
+                                        Shading signed JARs will fail without this.
+                                        http://stackoverflow.com/questions/999489/invalid-signature-file-when-attempting-to-run-a-jar
+                                    -->
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>benchmark-large-file</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://crossasia-books.ub.uni-heidelberg.de/xasia/reader/download/506/506-42-86246-2-10-20190822.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>506-42-86246-2-10-20190822.pdf</outputFileName>
+                            <sha512>ed2d295d0dfc702174bafd04df79ae4aaf56289f2befc981f217d3b7990e59106f8b7358fe147a9aeaf179dc1f2432c2cc064b0243c91cf18418df59be15bb96</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>benchmark-medium-file</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://crossasia-books.ub.uni-heidelberg.de/xasia/reader/download/849/849-42-94772-1-10-20210818.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>849-42-94772-1-10-20210818.pdf</outputFileName>
+                            <sha512>78ef8c0f2a3027d44fdfb8afc63ef7dc2cac8ae8f6d35fab4a8782d1c99354a0d944ae9b38026e8a7d82c03142000f78b3715064bd4c52245d7e2feeb241654f</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>pdf32000-2008</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDF32000_2008.pdf</outputFileName>
+                            <sha512>690ce2177154a9526d378b0a6dec48cb2cf648fb7d3f2e43358e43e0b551a1af1b97c68e79b147c70b59c45687e7a98d5858159fca7bb93c3bb419070f7e4dae</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>altona-test-suite</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>http://www.eci.org/lib/exe/fetch.php?media=downloads:altona_test_suite:eci_altona-test-suite-v2_technical2_x4.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>eci_altona-test-suite-v2_technical2_x4.pdf</outputFileName>
+                            <sha512>11303a7b9c20f0fb67258715219f8cbdf4d0e52b394a16d21ab0f8517e2cb453337a216d65af35e28fabc56eafc64ed40c1ff4a4d40aef48e66168b9a3d0fc49</sha512>
+                        </configuration>
+                    </execution>                    
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

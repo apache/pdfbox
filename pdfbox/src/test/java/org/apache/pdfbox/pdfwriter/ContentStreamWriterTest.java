@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.pdfwriter;
 
+import java.awt.color.ColorSpace;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.image.BufferedImage;
@@ -37,11 +38,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  *
  * @author Tilman Hausherr
  */
+@Execution(ExecutionMode.SAME_THREAD)
 class ContentStreamWriterTest
 {
     private final File testDirIn = new File("target/test-output/contentstream/in");
@@ -56,6 +60,11 @@ class ContentStreamWriterTest
     @BeforeAll
     public static void setUpClass()
     {
+        // PDFBOX-5425: try to avoid "java.awt.color.CMMException: Unknown profile ID"
+        ColorSpace csRGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        csRGB.toRGB(new float[] { 0, 0, 0 });
+        ColorSpace csXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
+        csXYZ.toRGB(new float[] { 0, 0, 0 });
     }
     
     @AfterAll

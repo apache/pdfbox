@@ -218,7 +218,11 @@ public class CreateVisibleSignature extends CreateSignatureBase
         {
             doc = Loader.loadPDF(inputFile, memoryUsageSetting);
         }
-        
+
+        // call SigUtils.checkCrossReferenceTable(doc) if Adobe complains
+        // and read https://stackoverflow.com/a/71293901/535646
+        // and https://issues.apache.org/jira/browse/PDFBOX-5382
+
         try (FileOutputStream fos = new FileOutputStream(signedFile))
         {
             int accessPermissions = SigUtils.getMDPPermission(doc);
@@ -276,15 +280,12 @@ public class CreateVisibleSignature extends CreateSignatureBase
             // subfilter for basic and PAdES Part 2 signatures
             signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
 
-            if (visibleSignatureProperties != null)
-            {
-                // this builds the signature structures in a separate document
-                visibleSignatureProperties.buildSignature();
+            // this builds the signature structures in a separate document
+            visibleSignatureProperties.buildSignature();
 
-                signature.setName(visibleSignatureProperties.getSignerName());
-                signature.setLocation(visibleSignatureProperties.getSignerLocation());
-                signature.setReason(visibleSignatureProperties.getSignatureReason());
-            }
+            signature.setName(visibleSignatureProperties.getSignerName());
+            signature.setLocation(visibleSignatureProperties.getSignerLocation());
+            signature.setReason(visibleSignatureProperties.getSignatureReason());
             
             // the signing date, needed for valid signature
             signature.setSignDate(Calendar.getInstance());
@@ -293,7 +294,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
             SignatureInterface signatureInterface = isExternalSigning() ? null : this;
 
             // register signature dictionary and sign interface
-            if (visibleSignatureProperties != null && visibleSignatureProperties.isVisualSignEnabled())
+            if (visibleSignatureProperties.isVisualSignEnabled())
             {
                 signatureOptions = new SignatureOptions();
                 signatureOptions.setVisualSignature(visibleSignatureProperties.getVisibleSignature());
@@ -437,7 +438,10 @@ public class CreateVisibleSignature extends CreateSignatureBase
         File ksFile = new File(args[0]);
         KeyStore keystore = KeyStore.getInstance("PKCS12");
         char[] pin = args[1].toCharArray();
-        keystore.load(new FileInputStream(ksFile), pin);
+        try (InputStream is = new FileInputStream(ksFile))
+        {
+            keystore.load(is, pin);
+        }
 
         File documentFile = new File(args[2]);
 

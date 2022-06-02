@@ -133,7 +133,7 @@ public class PDPage implements COSObjectable, PDContentStream
         {
             streams.add(new PDStream((COSStream) base));
         }
-        else if (base instanceof COSArray && ((COSArray) base).size() > 0)
+        else if (base instanceof COSArray)
         {
             COSArray array = (COSArray)base;
             for (int i = 0; i < array.size(); i++)
@@ -670,25 +670,26 @@ public class PDPage implements COSObjectable, PDContentStream
     public List<PDAnnotation> getAnnotations(AnnotationFilter annotationFilter) throws IOException
     {
         COSArray annots = page.getCOSArray(COSName.ANNOTS);
-        if (annots != null)
+        if (annots == null)
         {
-            List<PDAnnotation> actuals = new ArrayList<>();
-            for (int i = 0; i < annots.size(); i++)
-            {
-                COSBase item = annots.getObject(i);
-                if (item == null)
-                {
-                    continue;
-                }
-                PDAnnotation createdAnnotation = PDAnnotation.createAnnotation(item);
-                if (annotationFilter.accept(createdAnnotation))
-                {
-                    actuals.add(createdAnnotation);
-                }
-            }
-            return new COSArrayList<>(actuals, annots);
+            return new COSArrayList<>(page, COSName.ANNOTS);
         }
-        return new COSArrayList<>(page, COSName.ANNOTS);
+
+        List<PDAnnotation> actuals = new ArrayList<>();
+        for (int i = 0; i < annots.size(); i++)
+        {
+            COSBase item = annots.getObject(i);
+            if (item == null)
+            {
+                continue;
+            }
+            PDAnnotation createdAnnotation = PDAnnotation.createAnnotation(item);
+            if (annotationFilter.accept(createdAnnotation))
+            {
+                actuals.add(createdAnnotation);
+            }
+        }
+        return new COSArrayList<>(actuals, annots);
     }
 
     /**

@@ -94,7 +94,8 @@ public class PDExtendedGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.OPM ) )
             {
-                gs.setOverprintMode( defaultIfNull( getOverprintMode(), 0 ) );
+                Integer overprintMode = getOverprintMode();
+                gs.setOverprintMode(overprintMode != null ? overprintMode : 0);
             }
             else if( key.equals( COSName.OP ) )
             {
@@ -349,7 +350,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the overprint control(OP).
+     * This will set the overprint control(OP).
      *
      * @param op The overprint control.
      */
@@ -370,7 +371,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the overprint control(OP).
+     * This will set the overprint control(OP).
      *
      * @param op The overprint control.
      */
@@ -384,19 +385,33 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @return The overprint control mode or null if one has not been set.
      */
-    public Float getOverprintMode()
+    public Integer getOverprintMode()
     {
-        return getFloatItem(COSName.OPM);
+        Integer retval = null;
+        COSBase base = dict.getDictionaryObject(COSName.OPM);
+        if (base instanceof COSNumber)
+        {
+            COSNumber value = (COSNumber) base;
+            retval = value.intValue();
+        }
+        return retval;
     }
 
     /**
-     * This will get the overprint mode(OPM).
+     * This will set the overprint mode(OPM).
      *
      * @param overprintMode The overprint mode
      */
-    public void setOverprintMode( Float overprintMode )
+    public void setOverprintMode(Integer overprintMode)
     {
-        setFloatItem(COSName.OPM, overprintMode);
+        if (overprintMode == null)
+        {
+            dict.removeItem(COSName.OPM);
+        }
+        else
+        {
+            dict.setInt(COSName.OPM, overprintMode);
+        }
     }
 
     /**
@@ -431,7 +446,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the flatness tolerance.
+     * This will set the flatness tolerance.
      *
      * @param flatness The new flatness tolerance
      */
@@ -451,7 +466,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the smoothness tolerance.
+     * This will set the smoothness tolerance.
      *
      * @param smoothness The new smoothness tolerance
      */
@@ -471,7 +486,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the automatic stroke adjustment flag.
+     * This will set the automatic stroke adjustment flag.
      *
      * @param sa The new automatic stroke adjustment flag.
      */
@@ -491,7 +506,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the stroking alpha constant.
+     * This will set the stroking alpha constant.
      *
      * @param alpha The new stroking alpha constant.
      */
@@ -511,7 +526,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the non stroking alpha constant.
+     * This will set the non stroking alpha constant.
      *
      * @param alpha The new non stroking alpha constant.
      */
@@ -533,7 +548,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the alpha source flag (“alpha is shape”), that specifies whether the current
+     * This will set the alpha source flag (“alpha is shape”), that specifies whether the current
      * soft mask and alpha constant shall be interpreted as shape values (true) or opacity values
      * (false).
      *
@@ -561,7 +576,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setBlendMode(BlendMode bm)
     {
-        dict.setItem(COSName.BM, BlendMode.getCOSName(bm));
+        dict.setItem(COSName.BM, bm.getCOSName());
     }
 
     /**
@@ -591,7 +606,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
-     * This will get the text knockout flag.
+     * This will set the text knockout flag.
      *
      * @param tk The text knockout flag.
      */

@@ -71,13 +71,13 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     /** The length in bits of the secret key used to encrypt the document. */
     private short keyLength = DEFAULT_KEY_LENGTH;
 
-    /** The encryption key that will used to encrypt / decrypt.*/
+    /** The encryption key that will be used to encrypt / decrypt.*/
     private byte[] encryptionKey;
 
     /** The RC4 implementation used for cryptographic functions. */
     private final RC4Cipher rc4 = new RC4Cipher();
 
-    /** indicates if the Metadata have to be decrypted of not. */
+    /** Indicates if the Metadata have to be decrypted of not. */
     private boolean decryptMetadata;
 
     /** Can be used to allow stateless AES encryption */
@@ -392,7 +392,8 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
 
     private Cipher createCipher(byte[] key, byte[] iv, boolean decrypt) throws GeneralSecurityException
     {
-        @SuppressWarnings({"squid:S5542"}) // PKCS#5 padding is requested by PDF specification
+        // PKCS#5 padding is requested by PDF specification
+        @SuppressWarnings({"squid:S5542","lgtm [java/weak-cryptographic-algorithm]"})
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         Key keySpec = new SecretKeySpec(key, "AES");
         IvParameterSpec ips = new IvParameterSpec(iv);
@@ -452,10 +453,6 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      */
     public void decrypt(COSBase obj, long objNum, long genNum) throws IOException
     {
-        if (!(obj instanceof COSString || obj instanceof COSDictionary || obj instanceof COSArray))
-        {
-            return;
-        }
         // PDFBOX-4477: only cache strings and streams, this improves speed and memory footprint
         if (obj instanceof COSString)
         {
@@ -679,7 +676,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
 
     /**
      * Getter of the property <tt>keyLength</tt>.
-     * @return  Returns the keyLength.
+     * @return  Returns the keyLength in bits.
      */
     public int getKeyLength()
     {
@@ -689,7 +686,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     /**
      * Setter of the property <tt>keyLength</tt>.
      *
-     * @param keyLen  The keyLength to set.
+     * @param keyLen  The keyLength to set in bits.
      */
     public void setKeyLength(int keyLen)
     {

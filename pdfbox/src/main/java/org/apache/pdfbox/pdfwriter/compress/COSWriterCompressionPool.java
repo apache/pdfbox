@@ -19,8 +19,8 @@ package org.apache.pdfbox.pdfwriter.compress;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -52,6 +52,8 @@ public class COSWriterCompressionPool
     private final List<COSObjectKey> topLevelObjects = new ArrayList<>();
     // A list containing all objects, that may be appended to an object stream.
     private final List<COSObjectKey> objectStreamObjects = new ArrayList<>();
+    // A list of all direct objects
+    private final List<COSBase> allDirectObjects = new ArrayList<>();
 
     /**
      * <p>
@@ -78,8 +80,8 @@ public class COSWriterCompressionPool
         COSDocument cosDocument = document.getDocument();
 
         COSDictionary trailer = cosDocument.getTrailer();
-        addStructure(new TraversedCOSElement(trailer.getItem(COSName.ROOT)));
-        addStructure(new TraversedCOSElement(trailer.getItem(COSName.INFO)));
+        addStructure(trailer.getItem(COSName.ROOT));
+        addStructure(trailer.getItem(COSName.INFO));
 
         Collections.sort(objectStreamObjects);
         Collections.sort(topLevelObjects);
@@ -91,16 +93,21 @@ public class COSWriterCompressionPool
      * of object, it shall either be appended as-is or shall be appended to a compressed {@link COSWriterObjectStream}.
      *
      * @param key The {@link COSObjectKey} that shall be used as the {@link COSBase}s ID, if possible.
-     * @param element The {@link COSBase}, that shall be registered in this pool.
+     * @param base The {@link COSBase}, that shall be registered in this pool.
      */
-    private COSBase addObjectToPool(COSObjectKey key, TraversedCOSElement element)
+    private COSBase addObjectToPool(COSObjectKey key, COSBase base)
     {
         // Drop hollow objects.
-        COSBase base = element.getCurrentObject();
-        base = base instanceof COSObject ? ((COSObject) base).getObject() : base;
-        if (base == null || objectPool.contains(base))
+        COSBase current = base instanceof COSObject ? ((COSObject) base).getObject() : base;
+        // to avoid to mixup indirect COSInteger objects holding the same value we have to check
+        // if the given key is the same than the key which is stored for the "same" base object wihtin the object pool
+        // the same is always true for COSFloat, COSBoolean and COSName and under certain circumstances for the remainig
+        // types as well
+        if (current == null //
+                || (key != null && objectPool.contains(key)) //
+                || (key == null && objectPool.contains(current)))
         {
-            return base;
+            return current;
         }
 
         // Check whether the object can not be appended to an object stream.
@@ -109,98 +116,88 @@ public class COSWriterCompressionPool
         // It shall never contain the document's root dictionary. (relevant for document encryption)
         // It shall never contain other streams.
         if ((key != null && key.getGeneration() != 0)
+                || current instanceof COSStream
                 || (document.getEncryption() != null
-                        && base == document.getEncryption().getCOSObject())
-                || base == this.document.getDocument().getTrailer().getCOSDictionary(COSName.ROOT)
-                || base instanceof COSStream)
+                        && current == document.getEncryption().getCOSObject())
+                || current == this.document.getDocument().getTrailer()
+                        .getCOSDictionary(COSName.ROOT))
         {
-            COSObjectKey actualKey = objectPool.put(key, base);
+            COSObjectKey actualKey = objectPool.put(key, current);
             if (actualKey == null)
             {
-                return base;
+                return current;
             }
             topLevelObjects.add(actualKey);
-            return base;
+            return current;
         }
 
         // Determine the object key.
-        COSObjectKey actualKey = objectPool.put(key, base);
+        COSObjectKey actualKey = objectPool.put(key, current);
         if (actualKey == null)
         {
-            return base;
+            return current;
         }
 
         // Append it to an object stream.
         this.objectStreamObjects.add(actualKey);
-        return base;
+        return current;
     }
 
     /**
      * Attempts to find yet unregistered streams and dictionaries in the given structure.
      *
-     * @param traversedObject A Collection of all objects, that have already been traversed, to avoid cycles.
+     * @param current The object to be added for compressing.
      * @throws IOException Shall be thrown, if compressing the object failed.
      */
-    private COSBase addStructure(TraversedCOSElement traversedObject) throws IOException
+    private void addStructure(COSBase current) throws IOException
     {
-        COSBase current = traversedObject.getCurrentObject();
         COSBase base = current;
-        COSBase retVal = current;
-
         if (current instanceof COSStream
                 || (current instanceof COSDictionary && !current.isDirect()))
         {
-            base = addObjectToPool(base.getKey(), traversedObject);
-            retVal = base;
+            base = addObjectToPool(base.getKey(), current);
         }
         else if (current instanceof COSObject)
         {
             base = ((COSObject) current).getObject();
-            if (base instanceof COSDictionary || base instanceof COSArray)
+            if (base != null)
             {
-                base = addObjectToPool(current.getKey(), traversedObject);
-            }
-            else
-            {
-                retVal = base;
+                base = addObjectToPool(current.getKey(), current);
             }
         }
-
         if (base instanceof COSArray)
         {
-            addCOSArray(traversedObject, (COSArray) base);
+            addElements(((COSArray) base).iterator());
         }
         else if (base instanceof COSDictionary)
         {
-            addCOSDictionary(traversedObject, (COSDictionary) base);
+            addElements(((COSDictionary) base).getValues().iterator());
         }
-        return retVal;
     }
 
-    private void addCOSArray(TraversedCOSElement traversedObject, COSArray array) throws IOException
+    private void addElements(Iterator<COSBase> elements) throws IOException
     {
-        for (COSBase value : array)
+        while (elements.hasNext())
         {
-            if ((value instanceof COSDictionary || value instanceof COSObject
-                    || value instanceof COSArray)
-                    && !traversedObject.getAllTraversedObjects().contains(value))
+            COSBase value = elements.next();
+            if (value instanceof COSArray
+                    || (value instanceof COSDictionary
+                    && !allDirectObjects.contains(value)))
             {
-                addStructure(traversedObject.appendTraversedElement(value));
+                allDirectObjects.add(value);
+                addStructure(value);
             }
-        }
-    }
-
-    private void addCOSDictionary(TraversedCOSElement traversedObject, COSDictionary dictionary)
-            throws IOException
-    {
-        for (Entry<COSName, COSBase> entry : dictionary.entrySet())
-        {
-            COSBase value = entry.getValue();
-            if ((value instanceof COSDictionary || value instanceof COSObject
-                    || value instanceof COSArray)
-                    && !traversedObject.getAllTraversedObjects().contains(value))
+            else if (value instanceof COSObject)
             {
-                addStructure(traversedObject.appendTraversedElement(value));
+                COSObject cosObject = (COSObject) value;
+                if (cosObject.getKey() != null && objectPool.contains(cosObject.getKey()))
+                {
+                    continue;
+                }
+                if (cosObject.getObject() != null)
+                {
+                    addStructure(value);
+                }
             }
         }
     }

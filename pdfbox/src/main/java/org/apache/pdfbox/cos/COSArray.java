@@ -140,7 +140,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     /**
      * This will add all objects to this array.
      *
-     * @param objectList The objects to add.
+     * @param objectList The list of objects to add.
      */
     public void addAll( COSArray objectList )
     {
@@ -407,8 +407,11 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public boolean remove( COSBase o )
     {
-        boolean removed = objects.remove( o );
-        getUpdateState().update();
+        boolean removed = objects.remove(o);
+        if (removed)
+        {
+            getUpdateState().update();
+        }
         return removed;
     }
 
@@ -546,16 +549,15 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * visitor pattern double dispatch method.
+     * Visitor pattern double dispatch method.
      *
      * @param visitor The object to notify when visiting this object.
-     * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException
+    public void accept(ICOSVisitor visitor) throws IOException
     {
-        return visitor.visitFromArray(this);
+        visitor.visitFromArray(this);
     }
 
     /**
@@ -566,11 +568,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public float[] toFloatArray()
     {
         float[] retval = new float[size()];
-        for (int i = 0; i < size(); i++)
+        for (int i = 0; i < retval.length; i++)
         {
             COSBase base = getObject(i);
-            retval[i] =
-                base instanceof COSNumber ? ((COSNumber) base).floatValue() : 0;
+            retval[i] = base instanceof COSNumber ? ((COSNumber) base).floatValue() : 0;
         }
         return retval;
     }
@@ -670,7 +671,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will take an list of integer objects and return a COSArray of COSInteger objects.
+     * This will take a list of integer objects and return a COSArray of COSInteger objects.
      *
      * @param integer A list of integers
      *
@@ -684,7 +685,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will take an list of string objects and return a COSArray of COSName objects.
+     * This will take a list of string objects and return a COSArray of COSName objects.
      *
      * @param strings A list of strings
      *
@@ -698,7 +699,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will take an list of string objects and return a COSArray of COSName objects.
+     * This will take a list of string objects and return a COSArray of COSName objects.
      *
      * @param strings A list of strings
      *

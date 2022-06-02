@@ -22,6 +22,8 @@ package org.apache.fontbox.ttf;
  */
 public class OTLTable extends TTFTable
 {
+    public static final String TAG = "JSTF";
+
     // todo: this is a stub, a full implementation is needed
 
     /**
