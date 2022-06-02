@@ -84,7 +84,7 @@ public class GlyphPositioningTable extends AdvancedTypographicTable {
      * @param subtables a list of identified subtables
      */
     public GlyphPositioningTable initialize(GlyphDefinitionTable gdef, Map<LookupSpec, List<String>> lookups, List<GlyphSubtable> subtables) {
-        this.gdef = gdef;
+        setGdef(gdef);
         initialize(lookups);
         if ((subtables == null) || (subtables.size() == 0)) {
             throw new AdvancedTypographicTableFormatException("subtables must be non-empty");
