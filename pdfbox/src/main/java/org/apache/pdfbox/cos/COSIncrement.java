@@ -308,7 +308,10 @@ public class COSIncrement implements Iterable<COSBase>
     {
         if(base != null)
         {
-            excluded.addAll(Arrays.asList(base));
+            for (int i = 0; i < base.length; i++)
+            {
+                excluded.add(base[i]);
+            }
         }
         return this;
     }
