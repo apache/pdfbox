@@ -76,7 +76,7 @@ public class Type1CharStringParser
     private List<Object> parse(byte[] bytes, List<byte[]> subrs, List<Object> sequence)
             throws IOException
     {
-        DataInput input = new DataInput(bytes);
+        DataInput input = new DataInputByteArray(bytes);
         while (input.hasRemaining())
         {
             int b0 = input.readUnsignedByte();

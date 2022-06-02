@@ -21,7 +21,6 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSStream;
 
 /**
  * Implementation of {@link RandomAccess} as sequence of multiple fixed size pages handled

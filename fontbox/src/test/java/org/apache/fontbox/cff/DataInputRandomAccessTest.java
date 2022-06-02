@@ -22,15 +22,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.junit.jupiter.api.Test;
 
-class DataInputTest
+class DataInputRandomAccessTest
 {
     @Test
     void testReadBytes() throws IOException
     {
         byte[] data = new byte[] { 0, -1, 2, -3, 4, -5, 6, -7, 8, -9 };
-        DataInput dataInput = new DataInputByteArray(data);
+        DataInput dataInput = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data));
         assertThrows(IOException.class, () -> dataInput.readBytes(20));
         assertArrayEquals(new byte[] { 0 }, dataInput.readBytes(1));
         assertArrayEquals(new byte[] { -1, 2, -3 }, dataInput.readBytes(3));
@@ -44,7 +45,7 @@ class DataInputTest
     void testReadByte() throws IOException
     {
         byte[] data = new byte[] { 0, -1, 2, -3, 4, -5, 6, -7, 8, -9 };
-        DataInput dataInput = new DataInputByteArray(data);
+        DataInput dataInput = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data));
         assertEquals(0, dataInput.readByte());
         assertEquals(-1, dataInput.readByte());
         dataInput.setPosition(6);
@@ -59,7 +60,7 @@ class DataInputTest
     void testReadUnsignedByte() throws IOException
     {
         byte[] data = new byte[] { 0, -1, 2, -3, 4, -5, 6, -7, 8, -9 };
-        DataInput dataInput = new DataInputByteArray(data);
+        DataInput dataInput = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data));
         assertEquals(0, dataInput.readUnsignedByte());
         assertEquals(255, dataInput.readUnsignedByte());
         dataInput.setPosition(6);
@@ -74,7 +75,7 @@ class DataInputTest
     void testBasics() throws IOException
     {
         byte[] data = new byte[] { 0, -1, 2, -3, 4, -5, 6, -7, 8, -9 };
-        DataInput dataInput = new DataInputByteArray(data);
+        DataInput dataInput = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data));
         assertEquals(10, dataInput.length());
         assertTrue(dataInput.hasRemaining());
         assertThrows(IOException.class, () -> dataInput.setPosition(-1));
@@ -86,7 +87,7 @@ class DataInputTest
     void testPeek() throws IOException
     {
         byte[] data = new byte[] { 0, -1, 2, -3, 4, -5, 6, -7, 8, -9 };
-        DataInput dataInput = new DataInputByteArray(data);
+        DataInput dataInput = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data));
         assertEquals(0, dataInput.peekUnsignedByte(0));
         assertEquals(251, dataInput.peekUnsignedByte(5));
         assertThrows(IOException.class, () -> dataInput.peekUnsignedByte(-1));
@@ -98,7 +99,7 @@ class DataInputTest
     void testReadShort() throws IOException
     {
         byte[] data = new byte[] { 0x00, 0x0F, (byte) 0xAA, 0, (byte) 0xFE, (byte) 0xFF };
-        DataInput dataInput = new DataInputByteArray(data);
+        DataInput dataInput = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data));
         assertEquals((short) 0x000F, dataInput.readShort());
         assertEquals((short) 0xAA00, dataInput.readShort());
         assertEquals((short) 0xFEFF, dataInput.readShort());
@@ -109,14 +110,14 @@ class DataInputTest
     void testReadUnsignedShort() throws IOException
     {
         byte[] data = new byte[] { 0x00, 0x0F, (byte) 0xAA, 0, (byte) 0xFE, (byte) 0xFF };
-        DataInput dataInput = new DataInputByteArray(data);
+        DataInput dataInput = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data));
         assertEquals(0x000F, dataInput.readUnsignedShort());
         assertEquals(0xAA00, dataInput.readUnsignedShort());
         assertEquals(0xFEFF, dataInput.readUnsignedShort());
         assertThrows(IOException.class, () -> dataInput.readUnsignedShort());
 
         byte[] data2 = new byte[] { 0x00 };
-        DataInput dataInput2 = new DataInputByteArray(data2);
+        DataInput dataInput2 = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data2));
         assertThrows(IOException.class, () -> dataInput2.readUnsignedShort());
     }
 
@@ -125,13 +126,13 @@ class DataInputTest
     {
         byte[] data = new byte[] { 0x00, 0x0F, (byte) 0xAA, 0, (byte) 0xFE, (byte) 0xFF, 0x30,
                 0x50 };
-        DataInput dataInput = new DataInputByteArray(data);
+        DataInput dataInput = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data));
         assertEquals(0x000FAA00, dataInput.readInt());
         assertEquals(0xFEFF3050, dataInput.readInt());
         assertThrows(IOException.class, () -> dataInput.readInt());
 
         byte[] data2 = new byte[] { 0x00, 0x0F, (byte) 0xAA };
-        DataInput dataInput2 = new DataInputByteArray(data2);
+        DataInput dataInput2 = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data2));
         assertThrows(IOException.class, () -> dataInput2.readInt());
 
     }

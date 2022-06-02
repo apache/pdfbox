@@ -18,9 +18,9 @@ package org.apache.pdfbox.pdmodel.font;
 
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.cmap.CMapParser;
+import org.apache.pdfbox.io.RandomAccessRead;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,16 +61,16 @@ final class CMapManager
     /**
      * Parse the given CMap.
      *
-     * @param cMapStream the CMap to be read
+     * @param randomAccessRead the source of the CMap to be read
      * @return the parsed CMap
      */
-    public static CMap parseCMap(InputStream cMapStream) throws IOException
+    public static CMap parseCMap(RandomAccessRead randomAccessRead) throws IOException
     {
         CMap targetCmap = null;
-        if (cMapStream != null)
+        if (randomAccessRead != null)
         {
             // parse CMap using strict mode
-            targetCmap = new CMapParser(true).parse(cMapStream);
+            targetCmap = new CMapParser(true).parse(randomAccessRead);
         }
         return targetCmap;
     }

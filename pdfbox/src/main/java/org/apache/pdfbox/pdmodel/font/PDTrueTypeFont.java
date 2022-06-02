@@ -35,6 +35,9 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -106,7 +109,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
                 {
                     // embedded
                     TTFParser ttfParser = new TTFParser(true);
-                    ttfFont = ttfParser.parse(ff2Stream.createInputStream());
+                    ttfFont = ttfParser.parse(ff2Stream.getCOSObject().createView());
                 }
                 catch (IOException e)
                 {
@@ -171,7 +174,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     public static PDTrueTypeFont load(PDDocument doc, File file, Encoding encoding)
             throws IOException
     {
-        return new PDTrueTypeFont(doc, new TTFParser().parse(file), encoding, true);
+        return load(doc, new RandomAccessReadBufferedFile(file), encoding);
     }
 
     /**
@@ -189,7 +192,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     public static PDTrueTypeFont load(PDDocument doc, InputStream input, Encoding encoding)
             throws IOException
     {
-        return new PDTrueTypeFont(doc, new TTFParser().parse(input), encoding, true);
+        return load(doc, new RandomAccessReadBuffer(input), encoding);
     }
 
     /**
@@ -210,6 +213,26 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             throws IOException
     {
         return new PDTrueTypeFont(doc, ttf, encoding, false);
+    }
+
+    /**
+     * Loads a TTF to be embedded into a document as a simple font.
+     * 
+     * <p>
+     * <b>Note:</b> Simple fonts only support 256 characters. For Unicode support, use
+     * {@link PDType0Font#load(PDDocument, File)} instead.
+     * </p>
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param randomAccessRead the source of the TTF.
+     * @param encoding The PostScript encoding vector to be used for embedding.
+     * @return a PDTrueTypeFont instance.
+     * @throws IOException If there is an error loading the data.
+     */
+    public static PDTrueTypeFont load(PDDocument doc, RandomAccessRead randomAccessRead,
+            Encoding encoding) throws IOException
+    {
+        return new PDTrueTypeFont(doc, new TTFParser().parse(randomAccessRead), encoding, true);
     }
 
     /**

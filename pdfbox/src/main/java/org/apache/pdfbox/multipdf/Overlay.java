@@ -95,8 +95,9 @@ public class Overlay implements Closeable
     /**
      * This will add overlays to a document.
      *
-     * @param specificPageOverlayFile Optional map of overlay files for specific pages. The page
-     * numbers are 1-based. The map must be empty (but not null) if no specific mappings are used.
+     * @param specificPageOverlayFile Optional map of overlay files of which the first page will be
+     * used for specific pages of the input document. The page numbers are 1-based. The map must be
+     * empty (but not null) if no specific mappings are used.
      *
      * @return The modified input PDF document, which has to be saved and closed by the caller. If
      * the input document was passed by {@link #setInputPDF(PDDocument) setInputPDF(PDDocument)}
@@ -283,11 +284,24 @@ public class Overlay implements Closeable
         }
     }
 
+    /**
+     * Create a LayoutPage object from the first page of the given document.
+     *
+     * @param doc
+     * @return
+     * @throws IOException 
+     */
     private LayoutPage getLayoutPage(PDDocument doc) throws IOException
     {
         return createLayoutPage(doc.getPage(0));
     }
 
+    /**
+     * Create a LayoutPage object from given PDPage object.
+     *
+     * @return
+     * @throws IOException 
+     */
     private LayoutPage createLayoutPage(PDPage page) throws IOException
     {
         COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);

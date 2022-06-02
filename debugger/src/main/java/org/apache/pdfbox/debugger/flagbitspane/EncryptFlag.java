@@ -63,7 +63,7 @@ public class EncryptFlag extends Flag
                 new Object[]{9, "can fill in form fields", ap.canFillInForm()},
                 new Object[]{10, "can extract for accessibility", ap.canExtractForAccessibility()},
                 new Object[]{11, "can assemble document", ap.canAssembleDocument()},
-                new Object[]{12, "can print degraded", ap.canPrintDegraded()},
+                new Object[]{12, "can print faithful", ap.canPrintFaithful()},
         };
     }
 }

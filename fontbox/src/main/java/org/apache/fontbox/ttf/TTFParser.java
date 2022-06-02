@@ -16,11 +16,12 @@
  */
 package org.apache.fontbox.ttf;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
  * TrueType font file parser.
@@ -65,49 +66,25 @@ public class TTFParser
     }
 
     /**
-     * Parse a file and return a TrueType font.
+     * Parse a RandomAccessRead and return a TrueType font.
      *
-     * @param ttfFile The TrueType font filename.
+     * @param randomAccessRead The RandomAccessREad to be read from. It will be closed before returning.
      * @return A TrueType font.
      * @throws IOException If there is an error parsing the TrueType font.
      */
-    public TrueTypeFont parse(String ttfFile) throws IOException
+    public TrueTypeFont parse(RandomAccessRead randomAccessRead) throws IOException
     {
-        return parse(new File(ttfFile));
-    }
-
-    /**
-     * Parse a file and return a TrueType font.
-     *
-     * @param ttfFile The TrueType font file.
-     * @return A TrueType font.
-     * @throws IOException If there is an error parsing the TrueType font.
-     */
-    public TrueTypeFont parse(File ttfFile) throws IOException
-    {
-        RAFDataStream raf = new RAFDataStream(ttfFile, "r");
+        RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(randomAccessRead);
         try
         {
-            return parse(raf);
+            return parse(dataStream);
         }
         catch (IOException ex)
         {
-            // close only on error (file is still being accessed later)
-            raf.close();
+            // close only on error (source is still being accessed later)
+            dataStream.close();
             throw ex;
         }
-    }
-
-    /**
-     * Parse an input stream and return a TrueType font.
-     *
-     * @param inputStream The TTF data stream to parse from. It will be closed before returning.
-     * @return A TrueType font.
-     * @throws IOException If there is an error parsing the TrueType font.
-     */
-    public TrueTypeFont parse(InputStream inputStream) throws IOException
-    {
-        return parse(new MemoryTTFDataStream(inputStream));
     }
 
     /**
@@ -120,7 +97,7 @@ public class TTFParser
     public TrueTypeFont parseEmbedded(InputStream inputStream) throws IOException
     {
         this.isEmbedded = true;
-        return parse(new MemoryTTFDataStream(inputStream));
+        return parse(new RandomAccessReadBuffer(inputStream));
     }
 
     /**

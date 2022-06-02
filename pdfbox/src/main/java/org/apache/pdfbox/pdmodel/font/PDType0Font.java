@@ -36,6 +36,9 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
@@ -149,7 +152,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      */
     public static PDType0Font load(PDDocument doc, File file) throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(file), true, true, false);
+        return load(doc, new RandomAccessReadBufferedFile(file), true, false);
     }
 
     /**
@@ -179,7 +182,24 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font load(PDDocument doc, InputStream input, boolean embedSubset)
             throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(input), embedSubset, true, false);
+        return load(doc, new RandomAccessReadBuffer(input), embedSubset, false);
+    }
+
+    /**
+     * Loads a TTF to be embedded into a document as a Type 0 font.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param randomAccessRead source of a TrueType font.
+     * @param embedSubset True if the font will be subset before embedding. Set this to false when creating a font for
+     * AcroForm.
+     * @return A Type0 font with a CIDFontType2 descendant.
+     * @throws IOException If there is an error reading the font stream.
+     */
+    public static PDType0Font load(PDDocument doc, RandomAccessRead randomAccessRead,
+            boolean embedSubset, boolean vertical) throws IOException
+    {
+        return new PDType0Font(doc, new TTFParser().parse(randomAccessRead), embedSubset, true,
+                vertical);
     }
 
     /**
@@ -187,8 +207,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
      *
      * @param doc The PDF document that will hold the embedded font.
      * @param ttf A TrueType font.
-     * @param embedSubset True if the font will be subset before embedding. Set this to false when
-     * creating a font for AcroForm.
+     * @param embedSubset True if the font will be subset before embedding. Set this to false when creating a font for
+     * AcroForm.
      * @return A Type0 font with a CIDFontType2 descendant.
      * @throws IOException If there is an error reading the font stream.
      */
@@ -208,7 +228,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      */
     public static PDType0Font loadVertical(PDDocument doc, File file) throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(file), true, true, true);
+        return load(doc, new RandomAccessReadBufferedFile(file), true, true);
     }
 
     /**
@@ -221,7 +241,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      */
     public static PDType0Font loadVertical(PDDocument doc, InputStream input) throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(input), true, true, true);
+        return load(doc, new RandomAccessReadBuffer(input), true, true);
     }
 
     /**
@@ -236,7 +256,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font loadVertical(PDDocument doc, InputStream input, boolean embedSubset)
             throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(input), embedSubset, true, true);
+        return load(doc, new RandomAccessReadBuffer(input), embedSubset, true);
     }
 
     /**

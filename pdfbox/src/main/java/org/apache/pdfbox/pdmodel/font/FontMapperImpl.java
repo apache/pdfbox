@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,6 +35,7 @@ import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 
 /**
@@ -121,9 +121,10 @@ final class FontMapperImpl implements FontMapper
             {
                 throw new IOException("resource '" + resourceName + "' not found");
             }
-            InputStream ttfStream = new BufferedInputStream(resourceAsStream);
+            RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(
+                    resourceAsStream);
             TTFParser ttfParser = new TTFParser();
-            lastResortFont = ttfParser.parse(ttfStream);
+            lastResortFont = ttfParser.parse(randomAccessReadBuffer);
         }
         catch (IOException e)
         {

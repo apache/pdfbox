@@ -91,8 +91,8 @@ public final class Encrypt implements Callable<Integer>
     @Option(names = "-canPrint", description = "set the print permission (default: ${DEFAULT-VALUE})")
     private boolean canPrint = true;
 
-    @Option(names = "-canPrintDegraded", description = "set the print degraded permission (default: ${DEFAULT-VALUE})")
-    private boolean canPrintDegraded = true;
+    @Option(names = "-canPrintFaithful", description = "set the print faithful permission (default: ${DEFAULT-VALUE})")
+    private boolean canPrintFaithful = true;
 
     @Option(names = "-keyLength", description = "Key length in bits (valid values: 40, 128 or 256) (default: ${DEFAULT-VALUE})")
     private int keyLength = 256;
@@ -127,7 +127,7 @@ public final class Encrypt implements Callable<Integer>
         ap.setCanModify(canModify);
         ap.setCanModifyAnnotations(canModifyAnnotations);
         ap.setCanPrint(canPrint);
-        ap.setCanPrintDegraded(canPrintDegraded);
+        ap.setCanPrintFaithful(canPrintFaithful);
 
         if (outfile == null)
         {

@@ -36,6 +36,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
@@ -207,15 +208,9 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         else if (base instanceof COSStream)
         {
             // embedded CMap
-            InputStream input = null;
-            try
+            try (RandomAccessRead input = ((COSStream) base).createView())
             {
-                input = ((COSStream)base).createInputStream();
                 return CMapManager.parseCMap(input);
-            }
-            finally
-            {
-                IOUtils.closeQuietly(input);
             }
         }
         else
