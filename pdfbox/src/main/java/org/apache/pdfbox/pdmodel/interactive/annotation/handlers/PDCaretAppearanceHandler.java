@@ -25,6 +25,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -63,6 +64,7 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
 
             PDRectangle rect = getRectangle();
             PDRectangle bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
+            PDAppearanceStream pdAppearanceStream = annotation.getNormalAppearanceStream();
             if (!annotation.getCOSObject().containsKey(COSName.RD))
             {
                 // Adobe creates the /RD entry with a number that is decided
@@ -74,14 +76,14 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
                 float rd = Math.min(rect.getHeight() / 10, 5);
                 annotation.setRectDifferences(rd);
                 bbox = new PDRectangle(-rd, -rd, rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
-                Matrix matrix = annotation.getNormalAppearanceStream().getMatrix();
+                Matrix matrix = pdAppearanceStream.getMatrix();
                 matrix.transformPoint(rd, rd);
-                annotation.getNormalAppearanceStream().setMatrix(matrix.createAffineTransform());
+                pdAppearanceStream.setMatrix(matrix.createAffineTransform());
                 PDRectangle rect2 = new PDRectangle(rect.getLowerLeftX() - rd, rect.getLowerLeftY() - rd,
                                                     rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
                 annotation.setRectangle(rect2);
             }
-            annotation.getNormalAppearanceStream().setBBox(bbox);
+            pdAppearanceStream.setBBox(bbox);
 
             float halfX = rect.getWidth() / 2;
             float halfY = rect.getHeight() / 2;
