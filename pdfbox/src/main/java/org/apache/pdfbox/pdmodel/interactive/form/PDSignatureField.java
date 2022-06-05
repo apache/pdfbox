@@ -47,8 +47,9 @@ public class PDSignatureField extends PDTerminalField
     {
         super(acroForm);
         getCOSObject().setItem(COSName.FT, COSName.SIG);
-        getWidgets().get(0).setLocked(true);
-        getWidgets().get(0).setPrinted(true);
+        PDAnnotationWidget firstWidget = getWidgets().get(0);
+        firstWidget.setLocked(true);
+        firstWidget.setPrinted(true);
         setPartialName(generatePartialName());
     }
     
