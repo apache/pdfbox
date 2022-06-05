@@ -376,16 +376,19 @@ public class PDDocument implements Closeable
         {
             acroForm.getCOSObject().setItem(COSName.FIELDS, new COSArray());
         }
+        PDAnnotationWidget firstWidget;
         if (signatureField == null)
         {
             signatureField = new PDSignatureField(acroForm);
             // append the signature object
             signatureField.setValue(sigObject);
+            firstWidget = signatureField.getWidgets().get(0);
             // backward linking
-            signatureField.getWidgets().get(0).setPage(page);
+            firstWidget.setPage(page);
         }
         else
         {
+            firstWidget = signatureField.getWidgets().get(0);
             sigObject.getCOSObject().setNeedToBeUpdated(true);
         }
 
@@ -395,7 +398,7 @@ public class PDDocument implements Closeable
         // to conform PDF/A-1 requirement:
         // The /F key's Print flag bit shall be set to 1 and 
         // its Hidden, Invisible and NoView flag bits shall be set to 0
-        signatureField.getWidgets().get(0).setPrinted(true);
+        firstWidget.setPrinted(true);
         // This may be troublesome if several form fields are signed,
         // see thread from PDFBox users mailing list 17.2.2021 - 19.2.2021
         // https://mail-archives.apache.org/mod_mbox/pdfbox-users/202102.mbox/thread
@@ -423,11 +426,11 @@ public class PDDocument implements Closeable
         // Distinction of case for visual and non-visual signature
         if (visualSignature == null)
         {
-            prepareNonVisibleSignature(signatureField);
+            prepareNonVisibleSignature(firstWidget);
             return;
         }
 
-        prepareVisibleSignature(signatureField, acroForm, visualSignature);
+        prepareVisibleSignature(firstWidget, acroForm, visualSignature);
 
         // Create Annotation / Field for signature
         List<PDAnnotation> annotations = page.getAnnotations();
@@ -440,15 +443,14 @@ public class PDDocument implements Closeable
               ((COSArrayList<PDAnnotation>) annotations).toList().
                       equals(((COSArrayList<PDField>) acroFormFields).toList())))
         {
-            PDAnnotationWidget widget = signatureField.getWidgets().get(0);
             // use check to prevent the annotation widget from appearing twice
-            if (checkSignatureAnnotation(annotations, widget))
+            if (checkSignatureAnnotation(annotations, firstWidget))
             {
-                widget.getCOSObject().setNeedToBeUpdated(true);
+                firstWidget.getCOSObject().setNeedToBeUpdated(true);
             }
             else
             {
-                annotations.add(widget);
+                annotations.add(firstWidget);
             }   
         }
 
@@ -527,7 +529,7 @@ public class PDDocument implements Closeable
         return false;
     }
 
-    private void prepareVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm, 
+    private void prepareVisibleSignature(PDAnnotationWidget firstWidget, PDAcroForm acroForm, 
             COSDocument visualSignature)
     {
         // Obtain visual signature object
@@ -546,7 +548,7 @@ public class PDDocument implements Closeable
                 // Search for signature annotation
                 if (!annotFound && COSName.ANNOT.equals(cosBaseDict.getCOSName(COSName.TYPE)))
                 {
-                    assignSignatureRectangle(signatureField, cosBaseDict);
+                    assignSignatureRectangle(firstWidget, cosBaseDict);
                     annotFound = true;
                 }
                 // Search for signature field
@@ -554,7 +556,7 @@ public class PDDocument implements Closeable
                 if (apDict != null && !sigFieldFound
                         && COSName.SIG.equals(cosBaseDict.getCOSName(COSName.FT)))
                 {
-                    assignAppearanceDictionary(signatureField, apDict);
+                    assignAppearanceDictionary(firstWidget, apDict);
                     assignAcroFormDefaultResource(acroForm, cosBaseDict);
                     sigFieldFound = true;
                 }
@@ -570,26 +572,26 @@ public class PDDocument implements Closeable
         }
     }
 
-    private void assignSignatureRectangle(PDSignatureField signatureField, COSDictionary annotDict)
+    private void assignSignatureRectangle(PDAnnotationWidget firstWidget, COSDictionary annotDict)
     {
         // Read and set the rectangle for visual signature
-        PDRectangle existingRectangle = signatureField.getWidgets().get(0).getRectangle();
+        PDRectangle existingRectangle = firstWidget.getRectangle();
 
         //in case of an existing field keep the original rect
         if (existingRectangle == null || existingRectangle.getCOSArray().size() != 4)
         {
             COSArray rectArray = annotDict.getCOSArray(COSName.RECT);
             PDRectangle rect = new PDRectangle(rectArray);
-            signatureField.getWidgets().get(0).setRectangle(rect);
+            firstWidget.setRectangle(rect);
         }
     }
 
-    private void assignAppearanceDictionary(PDSignatureField signatureField, COSDictionary apDict)
+    private void assignAppearanceDictionary(PDAnnotationWidget firstWidget, COSDictionary apDict)
     {
         // read and set Appearance Dictionary
         PDAppearanceDictionary ap = new PDAppearanceDictionary(apDict);
         apDict.setDirect(true);
-        signatureField.getWidgets().get(0).setAppearance(ap);
+        firstWidget.setAppearance(ap);
     }
 
     private void assignAcroFormDefaultResource(PDAcroForm acroForm, COSDictionary newDict)
@@ -619,19 +621,19 @@ public class PDDocument implements Closeable
         }
     }
 
-    private void prepareNonVisibleSignature(PDSignatureField signatureField)
+    private void prepareNonVisibleSignature(PDAnnotationWidget firstWidget)
     {
         // "Signature fields that are not intended to be visible shall
         // have an annotation rectangle that has zero height and width."
         // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
-        signatureField.getWidgets().get(0).setRectangle(new PDRectangle());
+        firstWidget.setRectangle(new PDRectangle());
         
         // The visual appearance must also exist for an invisible signature but may be empty.
         PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
         PDAppearanceStream appearanceStream = new PDAppearanceStream(this);
         appearanceStream.setBBox(new PDRectangle());
         appearanceDictionary.setNormalAppearance(appearanceStream);
-        signatureField.getWidgets().get(0).setAppearance(appearanceDictionary);
+        firstWidget.setAppearance(appearanceDictionary);
     }
 
     /**
