@@ -100,10 +100,9 @@ public abstract class PDTerminalField extends PDField
     {
         super.importFDF(fdfField);
         
+        Integer f = fdfField.getWidgetFieldFlags();
         for (PDAnnotationWidget widget : getWidgets())
         {
-            int annotFlags = widget.getAnnotationFlags();
-            Integer f = fdfField.getWidgetFieldFlags();
             if (f != null)
             {
                 widget.setAnnotationFlags(f);
@@ -112,6 +111,7 @@ public abstract class PDTerminalField extends PDField
             {
                 // these are supposed to be ignored if the F is set.
                 Integer setF = fdfField.getSetWidgetFieldFlags();
+                int annotFlags = widget.getAnnotationFlags();
                 if (setF != null)
                 {
                     annotFlags = annotFlags | setF;
