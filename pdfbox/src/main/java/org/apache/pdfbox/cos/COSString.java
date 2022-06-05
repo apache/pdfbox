@@ -62,7 +62,7 @@ public final class COSString extends COSBase
      */
     public COSString(byte[] bytes)
     {
-        setValue(bytes);
+        this.bytes = bytes;
     }
 
     /**
@@ -148,7 +148,7 @@ public final class COSString extends COSBase
      */
     public void setValue(byte[] value)
     {
-        bytes = value.clone();
+        bytes = value;
     }
 
     /**
