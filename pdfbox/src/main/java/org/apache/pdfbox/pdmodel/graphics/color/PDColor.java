@@ -23,6 +23,10 @@ import org.apache.pdfbox.cos.COSNumber;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSBase;
+
 /**
  * A color value, consisting of one or more color components, or for pattern color spaces,
  * a name and optional color components.
@@ -34,6 +38,8 @@ import java.util.Arrays;
  */
 public final class PDColor
 {
+    private static final Log LOG = LogFactory.getLog(PDColor.class);
+
     private final float[] components;
     private final COSName patternName;
     private final PDColorSpace colorSpace;
@@ -49,25 +55,44 @@ public final class PDColor
         {
             // color components (optional), for the color of an uncoloured tiling pattern
             components = new float[array.size() - 1];
-            for (int i = 0; i < components.length; i++)
-            {
-                components[i] = ((COSNumber)array.get(i)).floatValue();
-            }
+            initComponents(array);
 
             // pattern name (required)
-            patternName = (COSName)array.get(array.size() - 1);
+            COSBase base = array.get(array.size() - 1);
+            if (base instanceof COSName)
+            {
+                patternName = (COSName) base;
+            }
+            else
+            {
+                LOG.warn("pattern name in " + array + " isn't a name, ignored");
+                patternName = COSName.getPDFName("Unknown");
+            }
         }
         else
         {
             // color components only
             components = new float[array.size()];
-            for (int i = 0; i < array.size(); i++)
-            {
-                components[i] = ((COSNumber)array.get(i)).floatValue();
-            }
+            initComponents(array);
             patternName = null;
         }
         this.colorSpace = colorSpace;
+    }
+
+    private void initComponents(COSArray array)
+    {
+        for (int i = 0; i < components.length; i++)
+        {
+            COSBase base = array.get(i);
+            if (base instanceof COSNumber)
+            {
+                components[i] = ((COSNumber) base).floatValue();
+            }
+            else
+            {
+                LOG.warn("color component " + i + " in " + array + " isn't a number, ignored");
+            }
+        }
     }
 
     /**
