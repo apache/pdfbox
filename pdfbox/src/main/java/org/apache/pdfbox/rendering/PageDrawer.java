@@ -227,6 +227,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
+     * Sets the underlying Graphics2D.
+     */
+    protected final void setGraphics(Graphics2D graphics) {
+        this.graphics = graphics;
+    }
+
+    /**
      * Returns the current line path. This is reset to empty after each fill/stroke.
      */
     protected final GeneralPath getLinePath()
