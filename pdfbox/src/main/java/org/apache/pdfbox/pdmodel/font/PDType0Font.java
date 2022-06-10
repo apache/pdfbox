@@ -346,7 +346,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
         {
             String ordering = ros.getOrdering();
             isDescendantCJK = "Adobe".equals(ros.getRegistry()) &&
-                    ("GB1".equals(ordering) ||
+                    ("GB1".equals(ordering) || 
                      "CNS1".equals(ordering) ||
                      "Japan1".equals(ordering) ||
                      "Korea1".equals(ordering));
@@ -375,10 +375,13 @@ public class PDType0Font extends PDFont implements PDVectorFont
             String strName = null;
             if (isDescendantCJK)
             {
-                PDCIDSystemInfo pdCIDSystemInfo = descendantFont.getCIDSystemInfo();//Can't pdCIDSystemInfo be null here? See: readEncoding
-                strName = pdCIDSystemInfo.getRegistry() + "-" +
-                          pdCIDSystemInfo.getOrdering() + "-" +
-                          pdCIDSystemInfo.getSupplement();
+                PDCIDSystemInfo cidSystemInfo = descendantFont.getCIDSystemInfo();
+                if (cidSystemInfo != null)
+                {
+                    strName = cidSystemInfo.getRegistry() + "-" +
+                              cidSystemInfo.getOrdering() + "-" +
+                              cidSystemInfo.getSupplement();
+                }
             }
             else if (name != null)
             {

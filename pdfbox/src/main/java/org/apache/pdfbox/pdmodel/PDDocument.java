@@ -382,7 +382,7 @@ public class PDDocument implements Closeable
             signatureField = new PDSignatureField(acroForm);
             // append the signature object
             signatureField.setValue(sigObject);
-            firstWidget = signatureField.getWidgets().get(0);//is there always not empty?
+            firstWidget = signatureField.getWidgets().get(0);
             // backward linking
             firstWidget.setPage(page);
         }
@@ -529,7 +529,7 @@ public class PDDocument implements Closeable
         return false;
     }
 
-    private void prepareVisibleSignature(PDAnnotationWidget firstWidget, PDAcroForm acroForm,
+    private void prepareVisibleSignature(PDAnnotationWidget firstWidget, PDAcroForm acroForm, 
             COSDocument visualSignature)
     {
         // Obtain visual signature object
@@ -621,19 +621,19 @@ public class PDDocument implements Closeable
         }
     }
 
-    private void prepareNonVisibleSignature(PDAnnotationWidget widget)
+    private void prepareNonVisibleSignature(PDAnnotationWidget firstWidget)
     {
         // "Signature fields that are not intended to be visible shall
         // have an annotation rectangle that has zero height and width."
         // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
-        widget.setRectangle(new PDRectangle());
+        firstWidget.setRectangle(new PDRectangle());
         
         // The visual appearance must also exist for an invisible signature but may be empty.
         PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
         PDAppearanceStream appearanceStream = new PDAppearanceStream(this);
         appearanceStream.setBBox(new PDRectangle());
         appearanceDictionary.setNormalAppearance(appearanceStream);
-        widget.setAppearance(appearanceDictionary);
+        firstWidget.setAppearance(appearanceDictionary);
     }
 
     /**

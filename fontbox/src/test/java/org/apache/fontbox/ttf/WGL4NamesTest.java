@@ -44,6 +44,7 @@ class WGL4NamesTest
         assertEquals("Ocircumflex", WGL4Names.getGlyphName(209));
         assertEquals("ccaron", WGL4Names.getGlyphName(256));
         assertNull(WGL4Names.getGlyphName(WGL4Names.NUMBER_OF_MAC_GLYPHS + 1));
+        assertNull(WGL4Names.getGlyphName(-1));
     }
 
     @Test

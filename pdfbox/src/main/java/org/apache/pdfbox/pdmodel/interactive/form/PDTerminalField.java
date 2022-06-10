@@ -100,7 +100,7 @@ public abstract class PDTerminalField extends PDField
     public void importFDF(FDFField fdfField) throws IOException
     {
         super.importFDF(fdfField);
-
+        
         Integer f = fdfField.getWidgetFieldFlags();
         for (PDAnnotationWidget widget : getWidgets())
         {
@@ -113,6 +113,7 @@ public abstract class PDTerminalField extends PDField
                 int annotFlags = widget.getAnnotationFlags();
                 // these are supposed to be ignored if the F is set.
                 Integer setF = fdfField.getSetWidgetFieldFlags();
+                int annotFlags = widget.getAnnotationFlags();
                 if (setF != null)
                 {
                     annotFlags = annotFlags | setF;

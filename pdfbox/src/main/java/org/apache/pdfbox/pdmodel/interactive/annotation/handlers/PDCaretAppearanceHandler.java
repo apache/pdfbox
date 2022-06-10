@@ -59,6 +59,7 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
 
             PDRectangle rect = getRectangle();
             PDRectangle bbox;
+            PDAppearanceStream pdAppearanceStream = annotation.getNormalAppearanceStream();
             if (!annotation.getCOSObject().containsKey(COSName.RD))
             {
                 // Adobe creates the /RD entry with a number that is decided
@@ -70,21 +71,18 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
                 float rd = Math.min(rect.getHeight() / 10, 5);
                 annotation.setRectDifferences(rd);
                 bbox = new PDRectangle(-rd, -rd, rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
-                PDAppearanceStream pdAppearanceStream = annotation.getNormalAppearanceStream();
                 Matrix matrix = pdAppearanceStream.getMatrix();
                 matrix.transformPoint(rd, rd);
                 pdAppearanceStream.setMatrix(matrix.createAffineTransform());
                 PDRectangle rect2 = new PDRectangle(rect.getLowerLeftX() - rd, rect.getLowerLeftY() - rd,
                                                     rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
                 annotation.setRectangle(rect2);
-                pdAppearanceStream.setBBox(bbox);
-
             }
             else
             {
                 bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
-                annotation.getNormalAppearanceStream().setBBox(bbox);
             }
+            pdAppearanceStream.setBBox(bbox);
 
             float halfX = rect.getWidth() / 2;
             float halfY = rect.getHeight() / 2;
