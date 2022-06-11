@@ -123,6 +123,33 @@ public class StreamValidationProcess extends AbstractProcess
         // else Filter entry is optional
     }
 
+    private boolean readUntilEndOfDictionaryStream(InputStream ra) throws IOException
+    {
+        boolean search = true;
+        boolean maybe = false;
+        do
+        {
+            int c = ra.read();
+            switch (c)
+            {
+            case '>':
+                if (maybe)
+                {
+                    return true;
+                }
+                maybe = true;
+                break;
+            case -1:
+                search = false;
+                break;
+            default:
+                maybe = false;
+                break;
+            }
+        } while (search);
+        return false;
+    }
+
     private boolean readUntilStream(InputStream ra) throws IOException
     {
         boolean search = true;
@@ -223,6 +250,14 @@ public class StreamValidationProcess extends AbstractProcess
                         return;
                     }
                     skipped += curSkip;
+                }
+
+                // skip (most of) the dictionary to avoid false positives, see PDFBOX-4925
+                if (!readUntilEndOfDictionaryStream(ra))
+                {
+                    addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_DAMAGED,
+                            "Unable to find end of dictionary"));
+                    return;
                 }
 
                 // ---- go to the stream key word
