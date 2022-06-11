@@ -75,6 +75,8 @@ public class BruteForceParser extends COSParser
      */
     private final Map<COSObjectKey, Long> bfSearchCOSObjectKeyOffsets = new HashMap<>();
 
+    private boolean bfSearchTriggered = false;
+
     /**
      * Constructor. Triggers a brute force search for all objects of the document.
      *
@@ -86,16 +88,33 @@ public class BruteForceParser extends COSParser
     {
         super(source);
         this.document = document;
-        bfSearchForObjects();
+    }
+
+    /**
+     * Indicates wether the brute force search for objects was triggered.
+     * 
+     * @return true if the search was triggered
+     */
+    public boolean bfSearchTriggered()
+    {
+        return bfSearchTriggered;
     }
 
     /**
      * Returns all found objects of a brute force search.
      * 
      * @return map containing all found objects of a brute force search
+     * 
+     * @throws IOException if something went wrong
+     * 
      */
-    protected Map<COSObjectKey, Long> getBFCOSObjectOffsets()
+    protected Map<COSObjectKey, Long> getBFCOSObjectOffsets() throws IOException
     {
+        if (!bfSearchTriggered)
+        {
+            bfSearchTriggered = true;
+            bfSearchForObjects();
+        }
         return bfSearchCOSObjectKeyOffsets;
     }
 
@@ -284,16 +303,17 @@ public class BruteForceParser extends COSParser
         long originOffset = source.getPosition();
 
         Map<Long, COSObjectKey> bfSearchForObjStreamOffsets = bfSearchForObjStreamOffsets();
+        Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
         // log warning about skipped stream
         bfSearchForObjStreamOffsets.entrySet().stream() //
-                .filter(o -> bfSearchCOSObjectKeyOffsets.get(o.getValue()) == null) //
+                .filter(o -> bfCOSObjectOffsets.get(o.getValue()) == null) //
                 .forEach(o -> LOG.warn(
                         "Skipped incomplete object stream:" + o.getValue() + " at " + o.getKey()));
 
         // collect all stream offsets
         List<Long> objStreamOffsets = bfSearchForObjStreamOffsets.entrySet().stream() //
-                .filter(o -> bfSearchCOSObjectKeyOffsets.get(o.getValue()) != null) //
-                .filter(o -> o.getKey().equals(bfSearchCOSObjectKeyOffsets.get(o.getValue()))) //
+                .filter(o -> bfCOSObjectOffsets.get(o.getValue()) != null) //
+                .filter(o -> o.getKey().equals(bfCOSObjectOffsets.get(o.getValue()))) //
                 .map(Map.Entry::getKey) //
                 .collect(Collectors.toList());
         // add all found compressed objects to the brute force search result
@@ -318,16 +338,16 @@ public class BruteForceParser extends COSParser
                 for (Long objNumber : objectNumbers.keySet())
                 {
                     COSObjectKey objKey = new COSObjectKey(objNumber, 0);
-                    Long existingOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
+                    Long existingOffset = bfCOSObjectOffsets.get(objKey);
                     if (existingOffset != null && existingOffset < 0)
                     {
                         // translate stream object key to its offset
                         COSObjectKey objStmKey = new COSObjectKey(Math.abs(existingOffset), 0);
-                        existingOffset = bfSearchCOSObjectKeyOffsets.get(objStmKey);
+                        existingOffset = bfCOSObjectOffsets.get(objStmKey);
                     }
                     if (existingOffset == null || offset > existingOffset)
                     {
-                        bfSearchCOSObjectKeyOffsets.put(objKey, -stmObjNumber);
+                        bfCOSObjectOffsets.put(objKey, -stmObjNumber);
                         xrefOffset.put(objKey, -stmObjNumber);
                     }
                 }
@@ -431,12 +451,14 @@ public class BruteForceParser extends COSParser
      *
      * @param trailer dictionary to be used as trailer dictionary
      * @return true if the root was found, false if not.
+     * 
+     * @throws IOException if something went wrong
      */
-    private boolean searchForTrailerItems(COSDictionary trailer)
+    private boolean searchForTrailerItems(COSDictionary trailer) throws IOException
     {
         COSObject rootObject = null;
         COSObject infoObject = null;
-        for (Entry<COSObjectKey, Long> entrySet : bfSearchCOSObjectKeyOffsets.entrySet())
+        for (Entry<COSObjectKey, Long> entrySet : getBFCOSObjectOffsets().entrySet())
         {
             COSObjectKey currentKey = entrySet.getKey();
             COSObject cosObject = document.getObjectFromPool(currentKey);
@@ -807,7 +829,7 @@ public class BruteForceParser extends COSParser
         trailerResolver.reset();
         // use the found objects to rebuild the trailer resolver
         trailerResolver.nextXrefObj(0, XRefType.TABLE);
-        bfSearchCOSObjectKeyOffsets.forEach(trailerResolver::setXRef);
+        getBFCOSObjectOffsets().forEach(trailerResolver::setXRef);
         trailerResolver.setStartxref(0);
         COSDictionary trailer = trailerResolver.getTrailer();
         document.setTrailer(trailer);
