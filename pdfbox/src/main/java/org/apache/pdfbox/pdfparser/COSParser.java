@@ -1748,7 +1748,7 @@ public class COSParser extends BaseParser implements ICOSParser
                             xrefTrailerResolver.setXRef(objKey, currOffset);
                         }
                     }
-                    catch(NumberFormatException e)
+                    catch (IllegalArgumentException e)
                     {
                         throw new IOException(e);
                     }
