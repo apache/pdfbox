@@ -653,8 +653,18 @@ public abstract class BaseParser
                     if (po.size() > 0 && po.get(po.size() - 1) instanceof COSInteger)
                     {
                         COSInteger number = (COSInteger)po.remove( po.size() -1 );
-                        COSObjectKey key = new COSObjectKey(number.longValue(), genNumber.intValue());
-                        pbo = getObjectFromPool(key);
+                        if (number.longValue() >= 0 && genNumber.intValue() >= 0)
+                        {
+                            COSObjectKey key = new COSObjectKey(number.longValue(),
+                                    genNumber.intValue());
+                            pbo = getObjectFromPool(key);
+                        }
+                        else
+                        {
+                            LOG.warn("Invalid value(s) for an object key " + number.longValue()
+                                    + " " + genNumber.intValue());
+                            pbo = null;
+                        }
                     }
                     else
                     {
