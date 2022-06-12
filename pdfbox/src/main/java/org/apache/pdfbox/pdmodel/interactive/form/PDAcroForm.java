@@ -40,6 +40,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -243,7 +244,8 @@ public final class PDAcroForm implements COSObjectable
         }
 
         // get the widgets per page
-        Map<COSDictionary,Set<COSDictionary>> pagesWidgetsMap = buildPagesWidgetsMap(fields);
+        PDPageTree pages = document.getPages();
+        Map<COSDictionary,Set<COSDictionary>> pagesWidgetsMap = buildPagesWidgetsMap(fields, pages);
         
         // preserve all non widget annotations
         for (PDPage page : document.getPages())
@@ -718,7 +720,8 @@ public final class PDAcroForm implements COSObjectable
         return transformedAppearanceBox.getBounds2D();
     }
 
-    private Map<COSDictionary,Set<COSDictionary>> buildPagesWidgetsMap(List<PDField> fields) throws IOException
+    private Map<COSDictionary,Set<COSDictionary>> buildPagesWidgetsMap(
+            List<PDField> fields, PDPageTree pages) throws IOException
     {
         Map<COSDictionary,Set<COSDictionary>> pagesAnnotationsMap =
                 new HashMap<COSDictionary, Set<COSDictionary>>();
@@ -749,7 +752,7 @@ public final class PDAcroForm implements COSObjectable
         // If there is a widget with a missing page reference we need to build the map reverse i.e. 
         // from the annotations to the widget.
         LOG.warn("There has been a widget with a missing page reference, will check all page annotations");
-        for (PDPage page : document.getPages())
+        for (PDPage page : pages)
         {
             for (PDAnnotation annotation : page.getAnnotations())
             {
