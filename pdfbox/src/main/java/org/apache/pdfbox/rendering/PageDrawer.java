@@ -1949,7 +1949,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return false;
         }
-        List<Boolean> visibles = new ArrayList<>();
+        List<Boolean> visibles = new ArrayList<>(oCGs.size());
         oCGs.forEach(prop -> visibles.add(!isHiddenOCG(prop)));
         COSName visibilityPolicy = ocmd.getVisibilityPolicy();
         
