@@ -25,29 +25,6 @@ import org.apache.pdfbox.cos.COSBase;
 public class MacOSRomanEncoding extends MacRomanEncoding
 {
     /**
-     * Table of octal character codes and their corresponding names
-     * on top of {@link MacRomanEncoding}.
-     */
-    private static final Object[][] MAC_OS_ROMAN_ENCODING_TABLE = {
-            {255, "notequal"},
-            {260, "infinity"},
-            {262, "lessequal"},
-            {263, "greaterequal"},
-            {266, "partialdiff"},
-            {267, "summation"},
-            {270, "product"},
-            {271, "pi"},
-            {272, "integral"},
-            {275, "Omega"},
-            {303, "radical"},
-            {305, "approxequal"},
-            {306, "Delta"},
-            {327, "lozenge"},
-            {333, "Euro"},
-            {360, "apple"}    
-    };
-    
-    /**
      * Singleton instance of this class.
      *
      * @since Apache PDFBox 2.0.0
@@ -59,6 +36,28 @@ public class MacOSRomanEncoding extends MacRomanEncoding
      */
     public MacOSRomanEncoding()
     {
+        /*
+        * Table of octal character codes and their corresponding names
+        * on top of {@link MacRomanEncoding}.
+        */
+        Object[][] MAC_OS_ROMAN_ENCODING_TABLE = {
+                {255, "notequal"},
+                {260, "infinity"},
+                {262, "lessequal"},
+                {263, "greaterequal"},
+                {266, "partialdiff"},
+                {267, "summation"},
+                {270, "product"},
+                {271, "pi"},
+                {272, "integral"},
+                {275, "Omega"},
+                {303, "radical"},
+                {305, "approxequal"},
+                {306, "Delta"},
+                {327, "lozenge"},
+                {333, "Euro"},
+                {360, "apple"}
+        };
         // differences and additions to MacRomanEncoding
         for (Object[] encodingEntry : MAC_OS_ROMAN_ENCODING_TABLE)
         {
