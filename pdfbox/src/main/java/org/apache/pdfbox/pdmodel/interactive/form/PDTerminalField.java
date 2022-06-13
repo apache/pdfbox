@@ -110,7 +110,6 @@ public abstract class PDTerminalField extends PDField
             }
             else
             {
-                int annotFlags = widget.getAnnotationFlags();
                 // these are supposed to be ignored if the F is set.
                 Integer setF = fdfField.getSetWidgetFieldFlags();
                 int annotFlags = widget.getAnnotationFlags();
