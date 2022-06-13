@@ -112,7 +112,7 @@ public class GlyphSubstitutionTable extends TTFTable
     {
         data.seek(offset);
         int scriptCount = data.readUnsignedShort();
-        ScriptTable[] scriptTables= new ScriptTable[scriptCount];
+        ScriptTable[] scriptTables = new ScriptTable[scriptCount];
         int[] scriptOffsets = new int[scriptCount];
         String[] scriptTags = new String[scriptCount];
         for (int i = 0; i < scriptCount; i++)
@@ -127,10 +127,9 @@ public class GlyphSubstitutionTable extends TTFTable
         Map<String, ScriptTable> resultScriptList = new LinkedHashMap<>(scriptCount);
         for (int i = 0; i < scriptCount; i++)
         {
-            ScriptRecord scriptRecord = new ScriptRecord(scriptTags[i], scriptTables[i]);
-            resultScriptList.put(scriptRecord.getScriptTag(), scriptRecord.getScriptTable());
+            resultScriptList.put(scriptTags[i], scriptTables[i]);
         }
-        return Collections.unmodifiableMap(resultScriptList);
+        return resultScriptList;
     }
 
     private ScriptTable readScriptTable(TTFDataStream data, long offset) throws IOException
