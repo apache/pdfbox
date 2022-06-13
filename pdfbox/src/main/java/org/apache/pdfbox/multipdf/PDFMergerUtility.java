@@ -21,14 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -317,12 +310,12 @@ public class PDFMergerUtility
     /**
      * Add a list of sources to the list of documents to merge.
      *
-     * @param sourcesList List of InputStream objects representing source
+     * @param inputStreams Collection of InputStream objects representing source
      * documents
      */
-    public void addSources(List<InputStream> sourcesList)
+    public void addSources(Collection<InputStream> inputStreams)
     {
-        sources.addAll(sourcesList);
+        sources.addAll(inputStreams);
     }
 
     /**
