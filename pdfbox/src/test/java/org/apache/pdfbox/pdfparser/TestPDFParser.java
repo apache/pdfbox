@@ -196,9 +196,10 @@ class TestPDFParser
         try (PDDocument doc = Loader
                 .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3950-23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf")))
         {
-            assertEquals(4, doc.getNumberOfPages());
+            int numberOfPages = doc.getNumberOfPages();
+            assertEquals(4, numberOfPages);
             PDFRenderer renderer = new PDFRenderer(doc);
-            for (int i = 0; i < doc.getNumberOfPages(); ++i)
+            for (int i = 0; i < numberOfPages; ++i)
             {
                 try
                 {
