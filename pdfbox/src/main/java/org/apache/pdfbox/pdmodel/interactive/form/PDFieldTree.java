@@ -42,6 +42,7 @@ public class PDFieldTree implements Iterable<PDField>
      * Constructor for reading.
      *
      * @param acroForm the AcroForm containing the fields.
+     * @throws IllegalArgumentException if parameter is null
      */
     public PDFieldTree(PDAcroForm acroForm)
     {
