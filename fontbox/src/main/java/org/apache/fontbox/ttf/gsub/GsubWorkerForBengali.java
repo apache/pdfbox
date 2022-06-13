@@ -87,7 +87,7 @@ public class GsubWorkerForBengali implements GsubWorker
                     intermediateGlyphsFromGsub);
         }
 
-        return Collections.unmodifiableList(repositionGlyphs(intermediateGlyphsFromGsub));
+        return repositionGlyphs(intermediateGlyphsFromGsub);
     }
 
     private List<Integer> repositionGlyphs(List<Integer> originalGlyphIds)
@@ -186,8 +186,7 @@ public class GsubWorkerForBengali implements GsubWorker
             }
         }
 
-        return Collections.unmodifiableList(glyphIds);
-
+        return glyphIds;
     }
 
     private Integer getGlyphId(char character)
@@ -197,7 +196,7 @@ public class GsubWorkerForBengali implements GsubWorker
 
     private Map<Integer, BeforeAndAfterSpanComponent> getBeforeAndAfterSpanGlyphIds()
     {
-        Map<Integer, BeforeAndAfterSpanComponent> result = new HashMap<>();
+        Map<Integer, BeforeAndAfterSpanComponent> result = new HashMap<>(BEFORE_AND_AFTER_SPAN_CHARS.length);
 
         for (BeforeAndAfterSpanComponent beforeAndAfterSpanComponent : BEFORE_AND_AFTER_SPAN_CHARS)
         {
@@ -206,7 +205,7 @@ public class GsubWorkerForBengali implements GsubWorker
                     beforeAndAfterSpanComponent);
         }
 
-        return Collections.unmodifiableMap(result);
+        return result;
     }
 
     /**
@@ -229,7 +228,5 @@ public class GsubWorkerForBengali implements GsubWorker
             this.beforeComponentCharacter = beforeComponentCharacter;
             this.afterComponentCharacter = afterComponentCharacter;
         }
-
     }
-
 }
