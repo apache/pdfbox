@@ -39,6 +39,7 @@ public class PDOptionalContentGroup extends PDPropertyList
     /**
      * Creates a new instance based on a given {@link COSDictionary}.
      * @param dict the dictionary
+     * @throws IllegalArgumentException if provided dictionary is not of type COSName.OCG
      */
     public PDOptionalContentGroup(COSDictionary dict)
     {
