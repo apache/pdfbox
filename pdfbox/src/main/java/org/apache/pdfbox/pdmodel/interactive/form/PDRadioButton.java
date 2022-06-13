@@ -30,10 +30,10 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
  */
 public final class PDRadioButton extends PDButton
 {
-    /**
+    /* *
      * A Ff flag.
      */
-    private static final int FLAG_NO_TOGGLE_TO_OFF = 1 << 14;
+    //private static final int FLAG_NO_TOGGLE_TO_OFF = 1 << 14;
     
     /**
      * @see PDField#PDField(PDAcroForm)
@@ -126,11 +126,9 @@ public final class PDRadioButton extends PDButton
         if (exportValues.isEmpty())
         {
             selectedExportValues.add(getValue());
-            return selectedExportValues;
         }
         else
         {
-            Set<String> onValues = getOnValues();
             String fieldValue = getValue();
             int idx = 0;
             for (String onValue : getOnValues())
@@ -141,7 +139,7 @@ public final class PDRadioButton extends PDButton
                 }
                 ++idx;
             }
-            return selectedExportValues;
         }
+        return selectedExportValues;
     }
 }
