@@ -578,36 +578,41 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         {
             cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
                                          CmapTable.ENCODING_WIN_UNICODE_FULL);
-        }
-        if (cmap == null)
-        {
-            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
-                                         CmapTable.ENCODING_UNICODE_2_0_BMP);
-        }
-        if (cmap == null)
-        {
-            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
-                                         CmapTable.ENCODING_WIN_UNICODE_BMP);
-        }
-        if (cmap == null)
-        {
-            // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
-            // actually means "Unicode, non-standard character set"
-            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
-                                         CmapTable.ENCODING_WIN_SYMBOL);
-        }
-        if (cmap == null)
-        {
-            if (isStrict)
+
+            if (cmap == null)
             {
-                throw new IOException("The TrueType font does not contain a Unicode cmap");
-            }
-            else if (cmapTable.getCmaps().length > 0)
-            {
-                // fallback to the first cmap (may not be Unicode, so may produce poor results)
-                cmap = cmapTable.getCmaps()[0];
+                cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
+                                             CmapTable.ENCODING_UNICODE_2_0_BMP);
+
+                if (cmap == null)
+                {
+                    cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                                                 CmapTable.ENCODING_WIN_UNICODE_BMP);
+
+                    if (cmap == null)
+                    {
+                        // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
+                        // actually means "Unicode, non-standard character set"
+                        cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                                CmapTable.ENCODING_WIN_SYMBOL);
+
+                        if (cmap == null)
+                        {
+                            if (isStrict)
+                            {
+                                throw new IOException("The TrueType font does not contain a Unicode cmap");
+                            }
+                            else if (cmapTable.getCmaps().length > 0)
+                            {
+                                // fallback to the first cmap (may not be Unicode, so may produce poor results)
+                                cmap = cmapTable.getCmaps()[0];
+                            }
+                        }
+                    }
+                }
             }
         }
+
         return cmap;
     }
 
