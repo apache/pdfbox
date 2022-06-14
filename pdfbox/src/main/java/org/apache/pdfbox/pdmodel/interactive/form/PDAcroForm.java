@@ -246,7 +246,7 @@ public final class PDAcroForm implements COSObjectable
         Map<COSDictionary,Set<COSDictionary>> pagesWidgetsMap = buildPagesWidgetsMap(fields, pages);
 
         // preserve all non widget annotations
-        for (PDPage page : document.getPages())
+        for (PDPage page : pages)
         {
             Set<COSDictionary> widgetsForPageMap = pagesWidgetsMap.get(page.getCOSObject());
 
