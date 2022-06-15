@@ -113,10 +113,10 @@ public class PDFunctionType3 extends PDFunction
                     break;
                 }
             }
-            if (function == null)
-            {
-                throw new IOException("partition not found in type 3 function");
-            }
+        }
+        if (function == null)
+        {
+            throw new IOException("partition not found in type 3 function");
         }
         float[] functionValues = new float[]{x};
         // calculate the output values using the chosen function
