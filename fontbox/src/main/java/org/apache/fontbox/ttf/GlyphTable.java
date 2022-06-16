@@ -39,6 +39,8 @@ public class GlyphTable extends TTFTable
     
     private int cached = 0;
     
+    private HorizontalMetricsTable hmt = null;
+    
     /**
      * Don't even bother to cache huge fonts.
      */
@@ -75,6 +77,12 @@ public class GlyphTable extends TTFTable
 
         // we don't actually read the complete table here because it can contain tens of thousands of glyphs
         this.data = data;
+
+        // PDFBOX-5460: read hmtx table early to avoid deadlock if getGlyph() locks "data"
+        // and then locks TrueTypeFont to read this table, while another thread
+        // locks TrueTypeFont and then tries to lock "data"
+        hmt = font.getHorizontalMetrics();
+
         initialized = true;
     }
 
@@ -147,7 +155,6 @@ public class GlyphTable extends TTFTable
     private GlyphData getGlyphData(int gid) throws IOException
     {
         GlyphData glyph = new GlyphData();
-        HorizontalMetricsTable hmt = font.getHorizontalMetrics();
         int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(gid);
         glyph.initData(this, data, leftSideBearing);
         // resolve composite glyph
