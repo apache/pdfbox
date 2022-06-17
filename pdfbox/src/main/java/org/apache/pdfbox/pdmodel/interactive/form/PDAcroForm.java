@@ -37,6 +37,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -248,11 +250,11 @@ public final class PDAcroForm implements COSObjectable
             // indicates if the original content stream
             // has been wrapped in a q...Q pair.
             boolean isContentStreamWrapped = false;
-            List<PDAnnotation> pdAnnotations = page.getAnnotations();
-            List<PDAnnotation> annotations = new ArrayList<>(pdAnnotations.size());
+            
+            List<PDAnnotation> annotations = new ArrayList<>();
 
-            for (PDAnnotation annotation: pdAnnotations)
-            {
+            for (PDAnnotation annotation: page.getAnnotations())
+            {                
                 if (widgetsForPageMap == null || !widgetsForPageMap.contains(annotation.getCOSObject()))
                 {
                     annotations.add(annotation);
@@ -693,7 +695,8 @@ public final class PDAcroForm implements COSObjectable
         return transformedAppearanceBox.getBounds2D();
     }
 
-    private Map<COSDictionary,Set<COSDictionary>> buildPagesWidgetsMap(List<PDField> fields, PDPageTree pages) throws IOException
+    private Map<COSDictionary,Set<COSDictionary>> buildPagesWidgetsMap(
+            List<PDField> fields, PDPageTree pages) throws IOException
     {
         Map<COSDictionary,Set<COSDictionary>> pagesAnnotationsMap = new HashMap<>();
         boolean hasMissingPageRef = false;

@@ -61,16 +61,16 @@ public class PDOptionalContentMembershipDictionary extends PDPropertyList
      */
     public List<PDPropertyList> getOCGs()
     {
-        List<PDPropertyList> list;
         COSBase base = dict.getDictionaryObject(COSName.OCGS);
         if (base instanceof COSDictionary)
         {
-            list = Collections.singletonList(PDPropertyList.create((COSDictionary) base));
+            return Collections.singletonList(PDPropertyList.create((COSDictionary) base));
         }
-        else if (base instanceof COSArray)
+
+        if (base instanceof COSArray)
         {
+            List<PDPropertyList> list = new ArrayList<>();
             COSArray ar = (COSArray) base;
-            list = new ArrayList<>();
             for (int i = 0; i < ar.size(); ++i)
             {
                 COSBase elem = ar.getObject(i);
@@ -79,13 +79,10 @@ public class PDOptionalContentMembershipDictionary extends PDPropertyList
                     list.add(PDPropertyList.create((COSDictionary) elem));
                 }
             }
-        }
-        else
-        {
-            list = Collections.emptyList();
+            return list;
         }
 
-        return list;
+        return Collections.emptyList();
     }
 
     /**

@@ -123,7 +123,6 @@ public class COSParser extends BaseParser implements ICOSParser
     private boolean trailerWasRebuild = false;
     
     private BruteForceParser bruteForceParser = null;
-    private boolean bruteForceSearchSuccessful = false;
     private PDEncryption encryption = null;
     
     /**
@@ -160,6 +159,8 @@ public class COSParser extends BaseParser implements ICOSParser
      * Default constructor.
      *
      * @param source input representing the pdf.
+     * 
+     * @throws IOException if something went wrong
      */
     public COSParser(RandomAccessRead source) throws IOException
     {
@@ -265,7 +266,8 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             // prepare decryption if necessary
             prepareDecryption();
-            if (bruteForceSearchSuccessful)
+            // don't use the getter as it creates an instance of BruteForceParser
+            if (bruteForceParser != null && bruteForceParser.bfSearchTriggered())
             {
                 getBruteForceParser().bfSearchForObjStreams(xrefTrailerResolver, securityHandler);
             }
@@ -1339,8 +1341,7 @@ public class COSParser extends BaseParser implements ICOSParser
     	if (bruteForceParser == null)
     	{
     		bruteForceParser = new BruteForceParser(source, document);
-    		bruteForceSearchSuccessful = !bruteForceParser.getBFCOSObjectOffsets().isEmpty();
-    	}
+        }
     	return bruteForceParser;
     }
     
@@ -1748,7 +1749,7 @@ public class COSParser extends BaseParser implements ICOSParser
                             xrefTrailerResolver.setXRef(objKey, currOffset);
                         }
                     }
-                    catch(NumberFormatException e)
+                    catch (IllegalArgumentException e)
                     {
                         throw new IOException(e);
                     }

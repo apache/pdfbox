@@ -157,7 +157,7 @@ public class ScratchFile implements Closeable
      *                           <code>-1</code> for no restriction;
      *                           <code>0</code> will also be interpreted here as no restriction
      * 
-     * @return instance configured to only use main memory with no size restriction or null if cannot create scratch file
+     * @return instance configured to only use main memory with no size restriction
      */
     public static ScratchFile getMainMemoryOnlyInstance(long maxMainMemoryBytes)
     {
