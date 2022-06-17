@@ -19,7 +19,6 @@ package org.apache.pdfbox.io;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.BitSet;
 
 import org.apache.commons.logging.Log;
@@ -153,11 +152,11 @@ public class ScratchFile implements Closeable
     /**
      * Getter for an instance to only use main-memory with the defined maximum.
      * 
-     * @param maxMainMemoryBytes maximum number of main-memory to be used;
-     *                           <code>-1</code> for no restriction;
-     *                           <code>0</code> will also be interpreted here as no restriction
+     * @param maxMainMemoryBytes maximum number of main-memory to be used; <code>-1</code> for no restriction;
+     * <code>0</code> will also be interpreted here as no restriction
      * 
-     * @return instance configured to only use main memory with no size restriction
+     * @return instance configured to only use main memory with no size restriction or null if cannot create scratch
+     * file
      */
     public static ScratchFile getMainMemoryOnlyInstance(long maxMainMemoryBytes)
     {
@@ -424,31 +423,6 @@ public class ScratchFile implements Closeable
     public RandomAccess createBuffer() throws IOException
     {
         return new ScratchFileBuffer(this);
-    }
-
-    /**
-     * Creates a new buffer using this page handler and initializes it with the
-     * data read from provided input stream (input stream is copied to buffer).
-     * The buffer data pointer is reset to point to first byte.
-     * 
-     * @param input The input stream that is to be copied into the buffer.
-     * @return A new buffer containing data read from input stream.
-     * 
-     * @throws IOException If an error occurred.
-     */
-    public RandomAccess createBuffer(InputStream input) throws IOException
-    {
-        ScratchFileBuffer buf = new ScratchFileBuffer(this);
-        
-        byte[] byteBuffer = new byte[8192];
-        int bytesRead;
-        while ((bytesRead = input.read(byteBuffer)) > -1)
-        {
-            buf.write(byteBuffer, 0, bytesRead);
-        }
-        buf.seek(0);
-
-        return buf;
     }
 
     /**
