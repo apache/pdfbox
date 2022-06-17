@@ -119,7 +119,7 @@ public class COSArrayList<E> implements List<E>
     {
         array = new COSArray();
         array.add( item );
-        actual = new ArrayList<>();
+        actual = new ArrayList<>(1);
         actual.add( actualObject );
 
         parentDict = dictionary;
@@ -304,44 +304,42 @@ public class COSArrayList<E> implements List<E>
     public static COSArray converterToCOSArray(List<?> cosObjectableList)
     {
         COSArray array = null;
+        if( cosObjectableList instanceof COSArrayList )
+        {
+            //if it is already a COSArrayList then we don't want to recreate the array, we want to reuse it.
+            array = ((COSArrayList<?>)cosObjectableList).array;
+        }
+        else
         if( cosObjectableList != null )
         {
-            if( cosObjectableList instanceof COSArrayList )
+            array = new COSArray();
+            for (Object next : cosObjectableList)
             {
-                //if it is already a COSArrayList then we don't want to recreate the array, we want to reuse it.
-                array = ((COSArrayList<?>)cosObjectableList).array;
-            }
-            else
-            {
-                array = new COSArray();
-                for (Object next : cosObjectableList)
+                if( next instanceof String )
                 {
-                    if( next instanceof String )
-                    {
-                        array.add( new COSString( (String)next ) );
-                    }
-                    else if( next instanceof Integer || next instanceof Long )
-                    {
-                        array.add( COSInteger.get( ((Number)next).longValue() ) );
-                    }
-                    else if( next instanceof Float || next instanceof Double )
-                    {
-                        array.add( new COSFloat( ((Number)next).floatValue() ) );
-                    }
-                    else if( next instanceof COSObjectable )
-                    {
-                        COSObjectable object = (COSObjectable)next;
-                        array.add( object.getCOSObject() );
-                    }
-                    else if( next == null )
-                    {
-                        array.add( COSNull.NULL );
-                    }
-                    else
-                    {
-                        throw new IllegalArgumentException( "Error: Don't know how to convert type to COSBase '" +
-                        next.getClass().getName() + "'" );
-                    }
+                    array.add( new COSString( (String)next ) );
+                }
+                else if( next instanceof Integer || next instanceof Long )
+                {
+                    array.add( COSInteger.get( ((Number)next).longValue() ) );
+                }
+                else if( next instanceof Float || next instanceof Double )
+                {
+                    array.add( new COSFloat( ((Number)next).floatValue() ) );
+                }
+                else if( next instanceof COSObjectable )
+                {
+                    COSObjectable object = (COSObjectable)next;
+                    array.add( object.getCOSObject() );
+                }
+                else if( next == null )
+                {
+                    array.add( COSNull.NULL );
+                }
+                else
+                {
+                    throw new IllegalArgumentException( "Error: Don't know how to convert type to COSBase '" +
+                    next.getClass().getName() + "'" );
                 }
             }
         }
