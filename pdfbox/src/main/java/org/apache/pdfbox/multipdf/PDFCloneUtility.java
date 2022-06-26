@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.logging.Log;
@@ -45,7 +44,7 @@ class PDFCloneUtility
     private static final Log LOG = LogFactory.getLog(PDFCloneUtility.class);
 
     private final PDDocument destination;
-    private final Map<Object, COSBase> clonedVersion = new HashMap<>();
+    private final Map<COSObjectable, COSBase> clonedVersion = new HashMap<>();
     private final Set<COSBase> clonedValues = new HashSet<>();
     // It might be useful to use IdentityHashMap like in PDFBOX-4477 for speed,
     // but we need a really huge file to test this. A test with the file from PDFBOX-4477
@@ -78,7 +77,7 @@ class PDFCloneUtility
      * @return the cloned instance of the base object
      * @throws IOException if an I/O error occurs
      */
-    COSBase cloneForNewDocument(Object base) throws IOException
+    COSBase cloneForNewDocument(COSObjectable base) throws IOException
     {
         if (base == null)
         {
@@ -95,17 +94,7 @@ class PDFCloneUtility
             // Don't clone a clone
             return (COSBase) base;
         }
-        if (base instanceof List)
-        {
-            COSArray array = new COSArray();
-            List<?> list = (List<?>) base;
-            for (Object obj : list)
-            {
-                array.add(cloneForNewDocument(obj));
-            }
-            retval = array;
-        }
-        else if (base instanceof COSObjectable && !(base instanceof COSBase))
+        if (!(base instanceof COSBase))
         {
             retval = cloneForNewDocument(((COSObjectable) base).getCOSObject());
         }
@@ -121,7 +110,7 @@ class PDFCloneUtility
             for (int i = 0; i < array.size(); i++)
             {
                 COSBase value = array.get(i);
-                if (hasSelfReference(base, value))
+                if (hasSelfReference(array, value))
                 {
                     newArray.add(newArray);
                 }
@@ -145,7 +134,7 @@ class PDFCloneUtility
             for (Map.Entry<COSName, COSBase> entry : originalStream.entrySet())
             {
                 COSBase value = entry.getValue();
-                if (hasSelfReference(base, value))
+                if (hasSelfReference(originalStream, value))
                 {
                     stream.setItem(entry.getKey(), stream);
                 }
@@ -164,7 +153,7 @@ class PDFCloneUtility
             for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
             {
                 COSBase value = entry.getValue();
-                if (hasSelfReference(base, value))
+                if (hasSelfReference(dic, value))
                 {
                     ((COSDictionary) retval).setItem(entry.getKey(), retval);
                 }
@@ -289,7 +278,7 @@ class PDFCloneUtility
      * @param parent COSArray or COSDictionary
      * @param value an element
      */
-    private boolean hasSelfReference(Object parent, COSBase value)
+    private boolean hasSelfReference(COSBase parent, COSBase value)
     {
         if (value instanceof COSObject)
         {
