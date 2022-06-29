@@ -99,7 +99,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     /**
      * Creates a Type 1 standard 14 font for embedding.
      *
-     * @param baseFont One of the standard 14 PostScript names
+     * @param baseFont One of the standard 14 PostScript names, e.g. {@link FontName#HELVETICA_BOLD}.
      */
     public PDType1Font(FontName baseFont)
     {
