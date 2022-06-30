@@ -98,78 +98,95 @@ class PDFCloneUtility
         {
             retval = cloneForNewDocument(((COSObjectable) base).getCOSObject());
         }
-        else if (base instanceof COSObject)
-        {
-            COSObject object = (COSObject) base;
-            retval = cloneForNewDocument(object.getObject());
-        }
-        else if (base instanceof COSArray)
-        {
-            COSArray newArray = new COSArray();
-            COSArray array = (COSArray) base;
-            for (int i = 0; i < array.size(); i++)
-            {
-                COSBase value = array.get(i);
-                if (hasSelfReference(array, value))
-                {
-                    newArray.add(newArray);
-                }
-                else
-                {
-                    newArray.add(cloneForNewDocument(value));
-                }
-            }
-            retval = newArray;
-        }
-        else if (base instanceof COSStream)
-        {
-            COSStream originalStream = (COSStream) base;
-            COSStream stream = destination.getDocument().createCOSStream();
-            try (OutputStream output = stream.createRawOutputStream();
-                    InputStream input = originalStream.createRawInputStream())
-            {
-                IOUtils.copy(input, output);
-            }
-            clonedVersion.put(base, stream);
-            for (Map.Entry<COSName, COSBase> entry : originalStream.entrySet())
-            {
-                COSBase value = entry.getValue();
-                if (hasSelfReference(originalStream, value))
-                {
-                    stream.setItem(entry.getKey(), stream);
-                }
-                else
-                {
-                    stream.setItem(entry.getKey(), cloneForNewDocument(value));
-                }
-            }
-            retval = stream;
-        }
-        else if (base instanceof COSDictionary)
-        {
-            COSDictionary dic = (COSDictionary) base;
-            retval = new COSDictionary();
-            clonedVersion.put(base, retval);
-            for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
-            {
-                COSBase value = entry.getValue();
-                if (hasSelfReference(dic, value))
-                {
-                    ((COSDictionary) retval).setItem(entry.getKey(), retval);
-                }
-                else
-                {
-                    ((COSDictionary) retval).setItem(entry.getKey(), cloneForNewDocument(value));
-                }
-            }
-        }
         else
         {
-            retval = (COSBase) base;
+            retval = cloneCOSBaseForNewDocument((COSBase)base);
         }
         clonedVersion.put(base, retval);
         clonedValues.add(retval);
         return retval;
+    }
+
+    COSBase cloneCOSBaseForNewDocument(COSBase base) throws IOException
+    {
+        if (base instanceof COSObject)
+        {
+            return cloneForNewDocument(((COSObject) base).getObject());
+        }
+        if (base instanceof COSArray)
+        {
+            return cloneCOSArray((COSArray) base);
+        }
+        if (base instanceof COSStream)
+        {
+            return cloneCOSStream((COSStream) base);
+        }
+        if (base instanceof COSDictionary)
+        {
+            return cloneCOSDictionary((COSDictionary) base);
+        }
+        return base;
+    }
+
+    private COSArray cloneCOSArray(COSArray array) throws IOException
+    {
+        COSArray newArray = new COSArray();
+        for (int i = 0; i < array.size(); i++)
+        {
+            COSBase value = array.get(i);
+            if (hasSelfReference(array, value))
+            {
+                newArray.add(newArray);
+            }
+            else
+            {
+                newArray.add(cloneForNewDocument(value));
+            }
+        }
+        return newArray;
+    }
+
+    private COSStream cloneCOSStream(COSStream stream) throws IOException
+    {
+        COSStream newStream = destination.getDocument().createCOSStream();
+        try (OutputStream output = newStream.createRawOutputStream();
+                InputStream input = stream.createRawInputStream())
+        {
+            IOUtils.copy(input, output);
+        }
+        clonedVersion.put(stream, newStream);
+        for (Map.Entry<COSName, COSBase> entry : stream.entrySet())
+        {
+            COSBase value = entry.getValue();
+            if (hasSelfReference(stream, value))
+            {
+                newStream.setItem(entry.getKey(), newStream);
+            }
+            else
+            {
+                newStream.setItem(entry.getKey(), cloneForNewDocument(value));
+            }
+        }
+        return newStream;
+    }
+
+    private COSDictionary cloneCOSDictionary(COSDictionary dictionary) throws IOException
+    {
+        COSDictionary newDictionary = new COSDictionary();
+        clonedVersion.put(dictionary, newDictionary);
+        for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
+        {
+            COSBase value = entry.getValue();
+            if (hasSelfReference(dictionary, value))
+            {
+                newDictionary.setItem(entry.getKey(), newDictionary);
+            }
+            else
+            {
+                newDictionary.setItem(entry.getKey(), cloneForNewDocument(value));
+            }
+        }
+        return newDictionary;
     }
 
     /**
