@@ -794,7 +794,7 @@ public class OS2WindowsMetricsTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         version = data.readUnsignedShort();
         averageCharWidth = data.readSignedShort();

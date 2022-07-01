@@ -45,7 +45,7 @@ public class TTFTable
      * 
      * @param font The font which contains this table.
      */
-    TTFTable(TrueTypeFont font)
+    protected TTFTable(TrueTypeFont font)
     {
         this.font = font;
     }
@@ -61,7 +61,7 @@ public class TTFTable
     /**
      * @param checkSumValue The checkSum to set.
      */
-    void setCheckSum(long checkSumValue) 
+    public void setCheckSum(long checkSumValue) 
     {
         this.checkSum = checkSumValue;
     }
@@ -77,7 +77,7 @@ public class TTFTable
     /**
      * @param lengthValue The length to set.
      */
-    void setLength(long lengthValue) 
+    public void setLength(long lengthValue) 
     {
         this.length = lengthValue;
     }
@@ -93,7 +93,7 @@ public class TTFTable
     /**
      * @param offsetValue The offset to set.
      */
-    void setOffset(long offsetValue) 
+    public void setOffset(long offsetValue) 
     {
         this.offset = offsetValue;
     }
@@ -109,7 +109,7 @@ public class TTFTable
     /**
      * @param tagValue The tag to set.
      */
-    void setTag(String tagValue) 
+    public void setTag(String tagValue) 
     {
         this.tag = tagValue;
     }
@@ -131,7 +131,7 @@ public class TTFTable
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
     }
 }

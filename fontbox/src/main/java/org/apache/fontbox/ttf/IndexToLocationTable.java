@@ -48,7 +48,7 @@ public class IndexToLocationTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         HeaderTable head = ttf.getHeader();
         if (head == null)

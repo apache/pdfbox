@@ -643,6 +643,22 @@ public class CmapSubtable implements CmapLookup
     }
 
     /**
+     * Returns the character code for the given GID, or null if there is none.
+     *
+     * @param gid glyph id
+     * @return character code
+     */
+    public Integer getCharacterCode(int gid)
+    {
+        int code = getCharCode(gid);
+        if (code == -1)
+        {
+            return null;
+        }
+        return Integer.valueOf(code);
+    }
+
+    /**
      * Returns all possible character codes for the given gid, or null if there is none.
      *
      * @param gid glyph id

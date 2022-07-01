@@ -48,7 +48,7 @@ public class HorizontalMetricsTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
         if (hHeader == null)
@@ -116,6 +116,15 @@ public class HorizontalMetricsTable extends TTFTable
             // the last one is for subsequent glyphs
             return advanceWidth[advanceWidth.length -1];
         }
+    }
+    
+    /**
+     * Returns array of advance widths.
+     * @return array of advance widths
+     */
+    public int[] getAdvanceWidths()
+    {
+        return advanceWidth;
     }
     
     /**

@@ -62,7 +62,7 @@ public class TTFParser
     public TTFParser(boolean isEmbedded, boolean parseOnDemand)
     {
         this.isEmbedded = isEmbedded;
-        parseOnDemandOnly = parseOnDemand;
+        this.parseOnDemandOnly = parseOnDemand;
     }
 
     /**
@@ -234,10 +234,31 @@ public class TTFParser
         return false;
     }
 
-    private TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
+    protected TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
     {
-        TTFTable table;
         String tag = raf.readString(4);
+
+        TTFTable table = createTable(font, tag);
+        
+        if (table == null)
+            table = readTable(font, tag);
+        table.setTag(tag);
+        table.setCheckSum(raf.readUnsignedInt());
+        table.setOffset(raf.readUnsignedInt());
+        table.setLength(raf.readUnsignedInt());
+        
+        // skip tables with zero length (except glyf)
+        if (table.getLength() == 0 && !tag.equals(GlyphTable.TAG))
+        {
+            return null;
+        }
+
+        return table;
+    }
+
+    protected TTFTable createTable(TrueTypeFont font, String tag)
+    {
+        TTFTable table = null;
         switch (tag)
         {
             case CmapTable.TAG:
@@ -289,20 +310,8 @@ public class TTFParser
                 table = new GlyphSubstitutionTable(font);
                 break;
             default:
-                table = readTable(font, tag);
                 break;
         }
-        table.setTag(tag);
-        table.setCheckSum(raf.readUnsignedInt());
-        table.setOffset(raf.readUnsignedInt());
-        table.setLength(raf.readUnsignedInt());
-        
-        // skip tables with zero length (except glyf)
-        if (table.getLength() == 0 && !tag.equals(GlyphTable.TAG))
-        {
-            return null;
-        }
-
         return table;
     }
 

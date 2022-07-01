@@ -32,7 +32,7 @@ public class OpenTypeFont extends TrueTypeFont
      *
      * @param fontData The font data.
      */
-    OpenTypeFont(TTFDataStream fontData)
+    protected OpenTypeFont(TTFDataStream fontData)
     {
         super(fontData);
     }

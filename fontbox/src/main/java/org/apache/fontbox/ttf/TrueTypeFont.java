@@ -31,6 +31,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
+import org.apache.fontbox.ttf.advanced.api.AdvancedOpenTypeFont;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.util.BoundingBox;
 
@@ -62,7 +63,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      */
     TrueTypeFont(TTFDataStream fontData)
     {
-        data = fontData;
+        this.data = fontData;
     }
     
     @Override
@@ -364,13 +365,13 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     }
 
     /**
-     * Read the given table if necessary. Package-private, used by TTFParser only.
+     * Read the given table if necessary. Protected, used by TTFParser and subclasses only.
      * 
      * @param table the table to be initialized
      * 
      * @throws IOException if there was an error reading the table.
      */
-    void readTable(TTFTable table) throws IOException
+    protected void readTable(TTFTable table) throws IOException
     {
         // PDFBOX-4219: synchronize on data because it is accessed by several threads
         // when PDFBox is accessing a standard 14 font for the first time
@@ -434,6 +435,26 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     }
 
     /**
+     * Convert from truetype units to pdf units based on the
+     * unitsPerEm field in the "head" table
+     * @param  ttfUnits truetype units
+     * @return pdf units
+     */
+    public int convertTTFUnit2PDFUnit(int ttfUnits) throws IOException {
+        int pdfUnits;
+        int upem = getUnitsPerEm();
+        if (ttfUnits < 0) {
+            long rest1 = ttfUnits % upem;
+            long storrest = 1000 * rest1;
+            long ledd2 = (storrest != 0 ? rest1 / storrest : 0);
+            pdfUnits = -((-1000 * ttfUnits) / upem - (int) ledd2);
+        } else {
+            pdfUnits = (ttfUnits / upem) * 1000 + ((ttfUnits % upem) * 1000) / upem;
+        }
+        return pdfUnits;
+    }
+
+    /**
      * Returns the width for the given GID.
      * 
      * @param gid the GID
@@ -455,6 +476,16 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     }
 
     /**
+     * Returns array of advance widths.
+     * @return array of advance widths
+     */
+    public int[] getAdvanceWidths() throws IOException
+    {
+        HorizontalMetricsTable hmtx = getHorizontalMetrics();
+        return (hmtx != null) ? hmtx.getAdvanceWidths() : null;
+    }
+
+    /**
      * Returns the height for the given GID.
      * 
      * @param gid the GID
@@ -473,6 +504,16 @@ public class TrueTypeFont implements FontBoxFont, Closeable
             // this should never happen
             return 250;
         }
+    }
+
+    /**
+     * Returns array of advance heights.
+     * @return array of advance heights
+     */
+    public int[] getAdvanceHeights() throws IOException
+    {
+        VerticalMetricsTable vmtx = getVerticalMetrics();
+        return (vmtx != null) ? vmtx.getAdvanceHeights() : null;
     }
 
     @Override
@@ -518,6 +559,73 @@ public class TrueTypeFont implements FontBoxFont, Closeable
                 }
             }
         }
+    }
+
+    /**
+     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
+     * by which this is accomplished are implementation-dependent."
+     * 
+     * @throws IOException if the font could not be read
+     */
+    public CmapSubtable getUnicodeCmap() throws IOException
+    {
+        return getUnicodeCmap(true);
+    }
+
+    /**
+     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
+     * by which this is accomplished are implementation-dependent."
+     * 
+     * @param isStrict False if we allow falling back to any cmap, even if it's not Unicode.
+     * @throws IOException if the font could not be read, or there is no Unicode cmap
+     */
+    public CmapSubtable getUnicodeCmap(boolean isStrict) throws IOException
+    {
+        CmapTable cmapTable = getCmap();
+        if (cmapTable == null)
+        {
+            if (isStrict)
+            {
+                throw new IOException("The TrueType font does not contain a 'cmap' table");
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        CmapSubtable cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
+                                                  CmapTable.ENCODING_UNICODE_2_0_FULL);
+        if (cmap == null)
+        {
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
+                                         CmapTable.ENCODING_UNICODE_2_0_BMP);
+        }
+        if (cmap == null)
+        {
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                                         CmapTable.ENCODING_WIN_UNICODE_BMP);
+        }
+        if (cmap == null)
+        {
+            // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
+            // actually means "Unicode, non-standard character set"
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                                         CmapTable.ENCODING_WIN_SYMBOL);
+        }
+        if (cmap == null)
+        {
+            if (isStrict)
+            {
+                throw new IOException("The TrueType font does not contain a Unicode cmap");
+            }
+            else
+            {
+                // fallback to the first cmap (may not be Unicode, so may produce poor results)
+                cmap = cmapTable.getCmaps()[0];
+            }
+        }
+        return cmap;
     }
 
     /**

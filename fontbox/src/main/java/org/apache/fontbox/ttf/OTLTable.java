@@ -25,8 +25,11 @@ public class OTLTable extends TTFTable
     public static final String TAG = "JSTF";
 
     // todo: this is a stub, a full implementation is needed
-    
-    OTLTable(TrueTypeFont font)
+
+    /**
+     * Creates and reads the OTL table.
+     */
+    public OTLTable(TrueTypeFont font)
     {
         super(font);
     }

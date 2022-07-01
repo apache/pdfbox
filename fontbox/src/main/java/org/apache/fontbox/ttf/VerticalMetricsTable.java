@@ -54,7 +54,7 @@ public class VerticalMetricsTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         VerticalHeaderTable vHeader = ttf.getVerticalHeader();
         if (vHeader == null)
@@ -132,5 +132,14 @@ public class VerticalMetricsTable extends TTFTable
             // the last one is for subsequent glyphs
             return advanceHeight[advanceHeight.length -1];
         }
+    }
+
+    /**
+     * Returns array of advance heights.
+     * @return array of advance heights
+     */
+    public int[] getAdvanceHeights()
+    {
+        return advanceHeight;
     }
 }

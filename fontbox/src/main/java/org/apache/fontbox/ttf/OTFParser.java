@@ -24,14 +24,14 @@ import org.apache.pdfbox.io.RandomAccessRead;
 /**
  * OpenType font file parser.
  */
-public final class OTFParser extends TTFParser
+public class OTFParser extends TTFParser
 {
     /**
      * Constructor.
      */
     public OTFParser()
     {
-        super();
+        this(false);
     }
 
     /**
@@ -62,13 +62,13 @@ public final class OTFParser extends TTFParser
     }
 
     @Override
-    OpenTypeFont parse(TTFDataStream raf) throws IOException
+    protected OpenTypeFont parse(TTFDataStream raf) throws IOException
     {
         return (OpenTypeFont)super.parse(raf);
     }
     
     @Override
-    OpenTypeFont newFont(TTFDataStream raf)
+    protected OpenTypeFont newFont(TTFDataStream raf)
     {
         return new OpenTypeFont(raf);
     }
@@ -77,9 +77,11 @@ public final class OTFParser extends TTFParser
     protected TTFTable readTable(TrueTypeFont font, String tag)
     {
         // todo: this is a stub, a full implementation is needed
+        assert font instanceof OpenTypeFont;
         switch (tag)
         {
             case "BASE":
+            case "JSTF":
             case "GDEF":
             case "GPOS":
             case GlyphSubstitutionTable.TAG:

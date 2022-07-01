@@ -38,6 +38,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.advanced.GlyphVectorAdvanced;
+import org.apache.fontbox.ttf.advanced.GlyphVectorSimple;
+import org.apache.fontbox.ttf.advanced.api.GlyphVector;
 import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
 import org.apache.fontbox.ttf.gsub.GsubWorker;
 import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
@@ -47,6 +50,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -85,6 +89,8 @@ abstract class PDAbstractContentStream implements Closeable
 
     protected boolean inTextMode = false;
     protected final Deque<PDFont> fontStack = new ArrayDeque<>();
+    protected final Deque<Float> fontSizeStack = new ArrayDeque<>();
+
 
     protected final Deque<PDColorSpace> nonStrokingColorSpaceStack = new ArrayDeque<>();
     protected final Deque<PDColorSpace> strokingColorSpaceStack = new ArrayDeque<>();
@@ -95,6 +101,8 @@ abstract class PDAbstractContentStream implements Closeable
 
     private final Map<PDType0Font, GsubWorker> gsubWorkers = new HashMap<>();
     private final GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
+
+    private final COSString EMPTY_COS_STRING = new COSString("");
 
     /**
      * Create a new appearance stream.
@@ -115,7 +123,7 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Sets the maximum number of digits allowed for fractional numbers.
-     * 
+     *
      * @see NumberFormat#setMaximumFractionDigits(int)
      * @param fractionDigitsNumber
      */
@@ -157,7 +165,7 @@ abstract class PDAbstractContentStream implements Closeable
         writeOperator(OperatorName.END_TEXT);
         inTextMode = false;
     }
-    
+
     /**
      * Set the font and font size to draw text with.
      *
@@ -170,11 +178,14 @@ abstract class PDAbstractContentStream implements Closeable
         if (fontStack.isEmpty())
         {
             fontStack.add(font);
+            fontSizeStack.add(fontSize);
         }
         else
         {
             fontStack.pop();
             fontStack.push(font);
+            fontSizeStack.pop();
+            fontSizeStack.push(fontSize);
         }
 
         // keep track of fonts which are configured for subsetting
@@ -262,11 +273,248 @@ abstract class PDAbstractContentStream implements Closeable
         writeOperator(OperatorName.SHOW_TEXT);
     }
 
+
+    /**
+     * TODO
+     * @param vector
+     * @return
+     * @throws IOException
+     */
+    public void showGlyphVector(GlyphVector vector) throws IOException {
+        if (vector instanceof GlyphVectorAdvanced)
+        {
+            showGlyphVector((GlyphVectorAdvanced) vector);
+        }
+        else if (vector instanceof  GlyphVectorSimple)
+        {
+            showGlyphVector((GlyphVectorSimple) vector);
+        } else
+        {
+            // TODO
+            throw new UnsupportedOperationException("not implemented");
+        }
+    }
+
+
+    /**
+     * TODO
+     * @param vector
+     * @return
+     * @throws IOException
+     */
+    public void showGlyphVector(GlyphVectorSimple vector) throws IOException {
+        // TODO
+    }
+
+
+    /**
+     * TODO
+     * @param vector
+     * @return
+     * @throws IOException
+     */
+    public void showGlyphVector(GlyphVectorAdvanced vector) throws IOException
+    {
+        if (!inTextMode)
+        {
+            throw new IllegalStateException("Must call beginText() before showText()");
+        }
+
+        if (fontStack.isEmpty())
+        {
+            throw new IllegalStateException("Must call setFont() before showText()");
+        }
+
+        PDType0Font font = (PDType0Font) fontStack.peek();
+        float fontSize = fontSizeStack.peek();
+
+        int[] gids = vector.getGlyphArray();
+        int[][] adjustments = vector.getAdjustments();
+
+        if (gids.length == 0) {
+            return;
+        }
+
+        // TODO: Text extraction of result PDF.
+        font.addGlyphsToSubset(vector.getGlyphs());
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        if (adjustments == null) {
+            for (int i = 0; i < gids.length; i++) {
+                os.write(font.encodeGlyphId(gids[i]));
+            }
+            COSWriter.writeString(os.toByteArray(), outputStream);
+            write(" ");
+            writeOperator(OperatorName.SHOW_TEXT);
+        } else {
+            for (int i = 0; i < gids.length; i++) {
+                int placementX = 0;
+                int placementY = 0;
+                int advanceX = 0;
+                // not used: int advanceY = 0;
+
+                if (adjustments != null) {
+                    placementX = adjustments[i][0];
+                    placementY = adjustments[i][1];
+                    advanceX = adjustments[i][2];
+                    // not used: advanceY = adjustments[i][3];;
+                }
+                if (placementY != 0) {
+                    System.out.printf("placementY=%d rise=%f%n", placementY, placementY*fontSize/1000.0f);
+                    setTextRise(placementY*fontSize/1000.0f);
+                }
+                write("[");
+                System.out.printf("TJ pX=%d%n", placementX);
+                writeOperand(-placementX);
+                COSWriter.writeString(font.encodeGlyphId(gids[i]), outputStream);
+                if (placementX+advanceX != 0) { // update current PDF-position
+                    writeOperand(placementX+advanceX);
+                    COSWriter.writeString(EMPTY_COS_STRING, outputStream);
+                }
+                write("] ");
+                writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
+                if (placementY!=0) {
+                    setTextRise(0);
+                }
+            }
+        }
+    }
+    public void showGlyphVector1(GlyphVector vector, Matrix textMatrix) throws IOException
+    {
+        if (!inTextMode)
+        {
+            throw new IllegalStateException("Must call beginText() before showText()");
+        }
+
+        if (fontStack.isEmpty())
+        {
+            throw new IllegalStateException("Must call setFont() before showText()");
+        }
+
+        PDType0Font font = (PDType0Font) fontStack.peek();
+
+        if (vector instanceof GlyphVectorAdvanced) {
+            GlyphVectorAdvanced vec = (GlyphVectorAdvanced) vector;
+
+            int[] gids = vec.getGlyphArray();
+            int[][] adjustments = vec.getAdjustments();
+
+            if (gids.length == 0) {
+                return;
+            }
+
+            // TODO: Text extraction of result PDF.
+            font.addGlyphsToSubset(vec.getGlyphs());
+
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+            if (adjustments == null) {
+                setTextMatrix(textMatrix);
+
+                for (int i = 0; i < gids.length; i++) {
+                    os.write(font.encodeGlyphId(gids[i]));
+                }
+
+                COSWriter.writeString(os.toByteArray(), outputStream);
+                write(" ");
+                writeOperator(OperatorName.SHOW_TEXT);
+            } else {
+                int adjustedY = 0;
+                // fixupX records the move back we have to perform after altering the placement of a glyph
+                int fixupX = 0;
+                Matrix tm = new Matrix(textMatrix.createAffineTransform());
+
+                for (int i = 0; i < gids.length; i++) {
+                    int placementX = 0;
+                    int placementY = 0;
+                    int advanceX = 0;
+                    int advanceY = 0;
+
+                    if (adjustments != null) {
+                        placementX = adjustments[i][0];
+                        placementY = adjustments[i][1];
+                        advanceX = adjustments[i][2];
+                        advanceY = adjustments[i][3];
+                    }
+
+                    boolean haveXAdjust = placementX != 0 || advanceX != 0;
+                    boolean haveYAdjust = placementY != 0 || advanceY != 0;
+
+                    if (i == 0) {
+                        if (haveXAdjust || haveYAdjust) {
+                            // If the first glyph has adjustments adjust the text matrix.
+                            if (haveYAdjust) {
+                                adjustedY = placementY + advanceY;
+                                int adjustedX = placementX + advanceX;
+                                tm.translate(-adjustedX, -adjustedY);
+                            } else {
+                                int adjustedX = placementX + advanceX;
+                                tm.translate(-adjustedX, 0);
+                                fixupX = placementX;
+                            }
+                        }
+
+                        haveXAdjust = false;
+                        haveYAdjust = false;
+
+                        setTextMatrix(tm);
+                        write("[");
+
+                        os.write(font.encodeGlyphId(gids[i]));
+                    } else {
+                        if (!haveXAdjust && !haveYAdjust) {
+                            if (fixupX != 0) {
+                                writeOperand(fixupX);
+                                fixupX = 0;
+                            }
+                            os.write(font.encodeGlyphId(gids[i]));
+                        } else if (haveXAdjust && !haveYAdjust) {
+                            if (os.size() > 0) {
+                                COSWriter.writeString(os.toByteArray(), outputStream);
+                                os.reset();
+                                writeOperand(placementX + advanceX);
+                            } else if (fixupX != 0) {
+                                writeOperand(placementX + advanceX + fixupX);
+                                fixupX = 0;
+                            } else {
+                                writeOperand(placementX + advanceX);
+                            }
+
+                            if (placementX != 0) {
+                                COSWriter.writeString(font.encodeGlyphId(gids[i]), outputStream);
+                                fixupX = -placementX;
+                            }
+                        } else if (!haveXAdjust && haveYAdjust) {
+                            // TODO
+                        } else {
+                            // TODO
+                        }
+                    }
+                }
+
+                if (os.size() > 0) {
+                    COSWriter.writeString(os.toByteArray(), outputStream);
+                    write("] ");
+                    writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
+                } else {
+                    write("] ");
+                    writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
+                }
+            }
+        } else if (vector instanceof GlyphVectorSimple) {
+            // TODO
+
+        } else {
+            throw new IllegalArgumentException("Invalid glyph vector provided: " + vector.getClass().getName());
+        }
+    }
+
     /**
      * Outputs a string using the correct encoding and subsetting as required.
      *
      * @param text The Unicode text to show.
-     * 
+     *
      * @throws IOException If an io exception occurs.
      */
     protected void showTextInternal(String text) throws IOException
@@ -287,7 +535,6 @@ abstract class PDAbstractContentStream implements Closeable
         byte[] encodedText = null;
         if (font instanceof PDType0Font)
         {
-
             GsubWorker gsubWorker = gsubWorkers.get(font);
             if (gsubWorker != null)
             {
@@ -1021,7 +1268,7 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Stroke the path.
-     * 
+     *
      * @throws IOException If the content stream could not be written
      * @throws IllegalStateException If the method was called within a text block.
      */
@@ -1036,7 +1283,7 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Close and stroke the path.
-     * 
+     *
      * @throws IOException If the content stream could not be written
      * @throws IllegalStateException If the method was called within a text block.
      */
@@ -1193,7 +1440,7 @@ abstract class PDAbstractContentStream implements Closeable
             throw new IllegalStateException("Error: clip is not allowed within a text block.");
         }
         writeOperator(OperatorName.CLIP_NON_ZERO);
-        
+
         // end path without filling or stroking
         writeOperator(OperatorName.ENDPATH);
     }
@@ -1211,7 +1458,7 @@ abstract class PDAbstractContentStream implements Closeable
             throw new IllegalStateException("Error: clipEvenOdd is not allowed within a text block.");
         }
         writeOperator(OperatorName.CLIP_EVEN_ODD);
-        
+
         // end path without filling or stroking
         writeOperator(OperatorName.ENDPATH);
     }
@@ -1343,7 +1590,7 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Set an extended graphics state.
-     * 
+     *
      * @param state The extended graphics state.
      * @throws IOException If the content stream could not be written.
      */
@@ -1450,7 +1697,7 @@ abstract class PDAbstractContentStream implements Closeable
     {
         outputStream.write(data);
     }
-    
+
     /**
      * Writes a newline to the content stream as ASCII.
      * @throws java.io.IOException
