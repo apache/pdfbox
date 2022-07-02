@@ -392,7 +392,8 @@ public class PDFMergerUtility
                             // this is smart enough to just create references for resources that are used on multiple
                             // pages
                             newPage.setResources(new PDResources(
-                                    (COSDictionary) cloner.cloneForNewDocument(resources)));
+                                    (COSDictionary) cloner
+                                            .cloneForNewDocument(resources.getCOSObject())));
                         }
                         else
                         {
@@ -589,7 +590,8 @@ public class PDFMergerUtility
         {
             if (destNames == null)
             {
-                destCatalog.getCOSObject().setItem(COSName.NAMES, cloner.cloneForNewDocument(srcNames));
+                destCatalog.getCOSObject().setItem(COSName.NAMES,
+                        cloner.cloneForNewDocument(srcNames.getCOSObject()));
             }
             else
             {
@@ -610,7 +612,8 @@ public class PDFMergerUtility
             PDDocumentNameDestinationDictionary destDests = destCatalog.getDests();
             if (destDests == null)
             {
-                destCatalog.getCOSObject().setItem(COSName.DESTS, cloner.cloneForNewDocument(srcDests));
+                destCatalog.getCOSObject().setItem(COSName.DESTS,
+                        cloner.cloneForNewDocument(srcDests.getCOSObject()));
             }
             else
             {
@@ -624,7 +627,8 @@ public class PDFMergerUtility
             PDDocumentOutline destOutline = destCatalog.getDocumentOutline();
             if (destOutline == null || destOutline.getFirstChild() == null)
             {
-                PDDocumentOutline cloned = new PDDocumentOutline((COSDictionary) cloner.cloneForNewDocument(srcOutline));
+                PDDocumentOutline cloned = new PDDocumentOutline(
+                        (COSDictionary) cloner.cloneForNewDocument(srcOutline.getCOSObject()));
                 destCatalog.setDocumentOutline(cloned);
             }
             else
@@ -644,7 +648,8 @@ public class PDFMergerUtility
                 {
                     // get each child, clone its dictionary, remove siblings info,
                     // append outline item created from there
-                    COSDictionary clonedDict = (COSDictionary) cloner.cloneForNewDocument(item);
+                    COSDictionary clonedDict = (COSDictionary) cloner
+                            .cloneForNewDocument(item.getCOSObject());
                     clonedDict.removeItem(COSName.PREV);
                     clonedDict.removeItem(COSName.NEXT);
                     PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
@@ -812,7 +817,8 @@ public class PDFMergerUtility
             if (resources != null)
             {
                 // this is smart enough to just create references for resources that are used on multiple pages
-                newPage.setResources(new PDResources((COSDictionary) cloner.cloneForNewDocument(resources)));
+                newPage.setResources(new PDResources(
+                        (COSDictionary) cloner.cloneForNewDocument(resources.getCOSObject())));
             }
             else
             {
@@ -860,7 +866,8 @@ public class PDFMergerUtility
             {
                 int srcKey = entry.getKey();
                 maxSrcKey = Math.max(srcKey, maxSrcKey);
-                destNumberTreeAsMap.put(destParentTreeNextKey + srcKey, cloner.cloneForNewDocument(entry.getValue()));
+                destNumberTreeAsMap.put(destParentTreeNextKey + srcKey,
+                        cloner.cloneForNewDocument(entry.getValue().getCOSObject()));
             }
             destParentTreeNextKey += maxSrcKey + 1;
             PDNumberTreeNode newParentTreeNode = new PDNumberTreeNode(PDParentTreeValue.class);
@@ -1338,7 +1345,8 @@ public class PDFMergerUtility
                     continue;
                 }
             }
-            destCatalog.addOutputIntent(new PDOutputIntent((COSDictionary) cloner.cloneForNewDocument(srcOI)));
+            destCatalog.addOutputIntent(new PDOutputIntent(
+                    (COSDictionary) cloner.cloneForNewDocument(srcOI.getCOSObject())));
             dstOutputIntents.add(srcOI);
         }
     }
