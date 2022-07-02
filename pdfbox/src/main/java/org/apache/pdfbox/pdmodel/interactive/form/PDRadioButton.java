@@ -31,6 +31,11 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 public final class PDRadioButton extends PDButton
 {
     /**
+     * A Ff flag. If set, radio buttons individual fields, using the same
+     * value for the on state will turn on and off in unison.
+     */
+    static final int FLAG_RADIOS_IN_UNISON = 1 << 25;
+    /**
      * A Ff flag.
      */
     private static final int FLAG_NO_TOGGLE_TO_OFF = 1 << 14;

@@ -73,7 +73,7 @@ public final class GoToSecondBookmarkOnOpen
                 PDOutlineItem item = bookmarks.getFirstChild().getNextSibling();
                 PDDestination dest = item.getDestination();
                 PDActionGoTo action = new PDActionGoTo();
-                action.setDestination(dest);
+                action.setDestination(dest, action.SUB_TYPE);
                 document.getDocumentCatalog().setOpenAction(action);
 
                 document.save( args[1] );

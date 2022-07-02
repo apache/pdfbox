@@ -1340,7 +1340,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     /**
      * Returns the string which will be used at the end of a page.
-     * 
+     *
      * @return the page end string
      */
     public String getPageEnd()
@@ -1487,7 +1487,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             else if (xGap > newXVal)
             {
                 // text is indented, but try to screen for hanging indent
-                if (!lastLineStartPosition.isParagraphStart())
+                if (checkHangingIndent(lastLineStartPosition))
                 {
                     result = true;
                 }
@@ -1499,10 +1499,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             else if (xGap < -position.getTextPosition().getWidthOfSpace())
             {
                 // text is left of previous line. Was it a hanging indent?
-                if (!lastLineStartPosition.isParagraphStart())
-                {
-                    result = true;
-                }
+                result = checkHangingIndent(lastLineStartPosition);
             }
             else if (Math.abs(xGap) < positionWidth)
             {
@@ -1512,7 +1509,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 {
                     position.setHangingIndent();
                 }
-                else if (lastLineStartPosition.isParagraphStart())
+                else if (!checkHangingIndent(lastLineStartPosition))
                 {
                     // check to see if the previous line looks like
                     // any of a number of standard list item formats
@@ -1532,6 +1529,18 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         {
             position.setParagraphStart();
         }
+    }
+
+    /**
+     * This method attempts to identify text that is indented under a hanging indent
+     * by checking the last text position that followed a line separator.
+     *
+     * @param lastLineStartPosition last text position that followed a line separator
+     * @return whether hanging indent is present or not.
+     */
+    private boolean checkHangingIndent(PositionWrapper lastLineStartPosition){
+
+        return !lastLineStartPosition.isParagraphStart();
     }
 
     private float multiplyFloat(float value1, float value2)

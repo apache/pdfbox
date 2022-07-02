@@ -145,24 +145,39 @@ public final class FieldUtils
         }
         else if (items instanceof COSArray)
         {
-            List<String> entryList = new ArrayList<>(); 
-            for (COSBase entry : (COSArray) items)
-            {
-                if (entry instanceof COSString)
-                {
-                    entryList.add(((COSString) entry).getString());
-                }
-                else if (entry instanceof COSArray)
-                {
-                    COSArray cosArray = (COSArray) entry;
-                    if (cosArray.size() >= pairIdx +1 && cosArray.get(pairIdx) instanceof COSString)
-                    {
-                        entryList.add(((COSString) cosArray.get(pairIdx)).getString());
-                    }
-                }
-            }
-            return entryList;
+
+            return getElementsByPairIndex((COSArray) items, pairIdx);
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * In case of two-element arrays, this method returns a list of elements
+     * designated by the given Pair Index value.
+     *
+     * @param items   the array of elements or two-element arrays
+     * @param pairIdx the index into the two-element array
+     * @return the list of elements designated by the pair index
+     */
+    private static List<String> getElementsByPairIndex(COSArray items, int pairIdx) {
+
+        List<String> entries = new ArrayList<>();
+        for (COSBase entry : items)
+        {
+            if (entry instanceof COSString)
+            {
+                entries.add(((COSString) entry).getString());
+            }
+            else if (entry instanceof COSArray)
+            {
+                COSArray cosArray = (COSArray) entry;
+                if (cosArray.size() >= pairIdx +1 && cosArray.get(pairIdx) instanceof COSString)
+                {
+                    entries.add(((COSString) cosArray.get(pairIdx)).getString());
+                }
+            }
+        }
+
+        return entries;
     }
 }

@@ -36,7 +36,7 @@ public final class PDFPageable extends Book
     private final PDDocument document;
     private final int numberOfPages;
     private final boolean showPageBorder;
-    private final float dpi;
+    private final float dotsPerInch;
     private final Orientation orientation;
     private boolean subsamplingAllowed = false;
     private RenderingHints renderingHints = null;
@@ -82,15 +82,15 @@ public final class PDFPageable extends Book
      * @param document the document to print
      * @param orientation page orientation policy
      * @param showPageBorder true if page borders are to be printed
-     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @param dotsPerInch if non-zero then the image will be rasterized at the given DPI
      */
     public PDFPageable(PDDocument document, Orientation orientation, boolean showPageBorder,
-                       float dpi)
+                       float dotsPerInch)
     {
         this.document = document;
         this.orientation = orientation;
         this.showPageBorder = showPageBorder;
-        this.dpi = dpi;
+        this.dotsPerInch = dotsPerInch;
         numberOfPages = document.getNumberOfPages();
     }
 
@@ -217,7 +217,7 @@ public final class PDFPageable extends Book
         {
             throw new IndexOutOfBoundsException(i + " >= " + numberOfPages);
         }
-        PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
+        PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dotsPerInch);
         printable.setSubsamplingAllowed(subsamplingAllowed);
         printable.setRenderingHints(renderingHints);
         return printable;
