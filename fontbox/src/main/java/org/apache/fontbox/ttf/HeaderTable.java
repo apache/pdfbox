@@ -59,9 +59,9 @@ public class HeaderTable extends TTFTable
     private short indexToLocFormat;
     private short glyphDataFormat;
 
-    HeaderTable(TrueTypeFont font)
+    HeaderTable()
     {
-        super(font);
+        super();
     }
 
     /**

@@ -35,9 +35,9 @@ public class HorizontalMetricsTable extends TTFTable
     private short[] nonHorizontalLeftSideBearing;
     private int numHMetrics;
 
-    HorizontalMetricsTable(TrueTypeFont font)
+    HorizontalMetricsTable()
     {
-        super(font);
+        super();
     }
 
     /**

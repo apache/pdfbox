@@ -41,9 +41,9 @@ public class VerticalMetricsTable extends TTFTable
     private short[] additionalTopSideBearing;
     private int numVMetrics;
 
-    VerticalMetricsTable(TrueTypeFont font)
+    VerticalMetricsTable()
     {
-        super(font);
+        super();
     }
 
     /**

@@ -46,9 +46,9 @@ public class MaximumProfileTable extends TTFTable
     private int maxComponentElements;
     private int maxComponentDepth;
 
-    MaximumProfileTable(TrueTypeFont font)
+    MaximumProfileTable()
     {
-        super(font);
+        super();
     }
 
     /**

@@ -74,7 +74,7 @@ public final class OTFParser extends TTFParser
     }
 
     @Override
-    protected TTFTable readTable(TrueTypeFont font, String tag)
+    protected TTFTable readTable(String tag)
     {
         // todo: this is a stub, a full implementation is needed
         switch (tag)
@@ -84,11 +84,11 @@ public final class OTFParser extends TTFParser
             case "GPOS":
             case GlyphSubstitutionTable.TAG:
             case OTLTable.TAG:
-                return new OTLTable(font);
+                return new OTLTable();
             case CFFTable.TAG:
-                return new CFFTable(font);
+                return new CFFTable();
             default:
-                return super.readTable(font, tag);
+                return super.readTable(tag);
         }
     }
 

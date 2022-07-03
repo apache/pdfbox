@@ -36,18 +36,10 @@ public class TTFTable
     protected volatile boolean initialized;
 
     /**
-     * The font which contains this table.
-     */
-    protected final TrueTypeFont font;
-
-    /**
      * Constructor.
-     * 
-     * @param font The font which contains this table.
      */
-    TTFTable(TrueTypeFont font)
+    TTFTable()
     {
-        this.font = font;
     }
     
     /**

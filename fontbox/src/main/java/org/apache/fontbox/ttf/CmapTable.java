@@ -56,9 +56,9 @@ public class CmapTable extends TTFTable
 
     private CmapSubtable[] cmaps;
 
-    CmapTable(TrueTypeFont font)
+    CmapTable()
     {
-        super(font);
+        super();
     }
 
     /**

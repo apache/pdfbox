@@ -48,9 +48,9 @@ public class HorizontalHeaderTable extends TTFTable
     private short metricDataFormat;
     private int numberOfHMetrics;
 
-    HorizontalHeaderTable(TrueTypeFont font)
+    HorizontalHeaderTable()
     {
-        super(font);
+        super();
     }
 
     /**

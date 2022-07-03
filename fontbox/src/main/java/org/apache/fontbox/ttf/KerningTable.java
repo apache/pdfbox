@@ -38,9 +38,9 @@ public class KerningTable extends TTFTable
 
     private KerningSubtable[] subtables;
 
-    KerningTable(TrueTypeFont font)
+    KerningTable()
     {
-        super(font);
+        super();
     }
 
     /**

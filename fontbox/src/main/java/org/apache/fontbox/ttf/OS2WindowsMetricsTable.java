@@ -224,9 +224,9 @@ public class OS2WindowsMetricsTable extends TTFTable
     private int usBreakChar;
     private int usMaxContext;
 
-    OS2WindowsMetricsTable(TrueTypeFont font)
+    OS2WindowsMetricsTable()
     {
-        super(font);
+        super();
     }
 
     /**
