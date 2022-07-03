@@ -39,7 +39,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * Utility class used to clone PDF objects. It keeps track of objects it has already cloned.
  *
  */
-class PDFCloneUtility
+public class PDFCloneUtility
 {
     private static final Log LOG = LogFactory.getLog(PDFCloneUtility.class);
 
@@ -73,11 +73,14 @@ class PDFCloneUtility
     /**
      * Deep-clones the given object for inclusion into a different PDF document identified by the destination parameter.
      * 
+     * Expert use only, don’t use it if you don’t know exactly what you are doing.
+     * 
      * @param base the initial object as the root of the deep-clone operation
      * @return the cloned instance of the base object
      * @throws IOException if an I/O error occurs
      */
-    COSBase cloneForNewDocument(COSBase base) throws IOException
+    @SuppressWarnings("unchecked")
+    public <TCOSBase extends COSBase> TCOSBase cloneForNewDocument(TCOSBase base) throws IOException
     {
         if (base == null)
         {
@@ -87,7 +90,7 @@ class PDFCloneUtility
         if (retval != null)
         {
             // we are done, it has already been converted.
-            return retval;
+            return (TCOSBase) retval;
         }
         if (clonedValues.contains(base))
         {
@@ -97,7 +100,7 @@ class PDFCloneUtility
         retval = cloneCOSBaseForNewDocument((COSBase)base);
         clonedVersion.put(base, retval);
         clonedValues.add(retval);
-        return retval;
+        return (TCOSBase) retval;
     }
 
     COSBase cloneCOSBaseForNewDocument(COSBase base) throws IOException
