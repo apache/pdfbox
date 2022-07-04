@@ -1678,7 +1678,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Matrix transform = Matrix.concatenate(ctm, form.getMatrix());
 
             // transform the bbox
-            GeneralPath transformedBox = form.getBBox().transform(transform);
+            PDRectangle formBBox = form.getBBox();
+            if (formBBox == null)
+            {
+                // PDFBOX-5471
+                // check done here and not in caller to avoid getBBox() creating rectangle twice
+                formBBox = new PDRectangle();
+            }
+            GeneralPath transformedBox = formBBox.transform(transform);
 
             // clip the bbox to prevent giant bboxes from consuming all memory
             Area transformed = new Area(transformedBox);
