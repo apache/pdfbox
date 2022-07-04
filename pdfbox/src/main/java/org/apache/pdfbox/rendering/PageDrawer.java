@@ -1597,6 +1597,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 // PDFBOX-5471
                 // check done here and not in caller to avoid getBBox() creating rectangle twice
+                LOG.warn("transparency group ignored because BBox is null");
                 formBBox = new PDRectangle();
             }
             GeneralPath transformedBox = formBBox.transform(transform);
