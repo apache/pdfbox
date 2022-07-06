@@ -33,7 +33,7 @@ public class TTFTable
     /**
      * Indicates if the table is initialized or not.
      */
-    protected volatile boolean initialized;
+    protected boolean initialized;
 
     /**
      * Constructor.

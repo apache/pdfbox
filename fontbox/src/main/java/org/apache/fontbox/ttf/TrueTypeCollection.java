@@ -117,11 +117,11 @@ public class TrueTypeCollection implements Closeable
         TTFParser parser;
         if (stream.readTag().equals("OTTO"))
         {
-            parser = new OTFParser(false, true);
+            parser = new OTFParser(false);
         }
         else
         {
-            parser = new TTFParser(false, true);
+            parser = new TTFParser(false);
         }
         stream.seek(fontOffsets[idx]);
         return parser.parse(new TTCDataStream(stream));

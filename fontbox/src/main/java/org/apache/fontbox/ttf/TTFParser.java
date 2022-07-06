@@ -33,7 +33,6 @@ public class TTFParser
     private static final Log LOG = LogFactory.getLog(TTFParser.class);
 
     private boolean isEmbedded = false;
-    private boolean parseOnDemandOnly = false;
 
     /**
      * Constructor.
@@ -50,19 +49,7 @@ public class TTFParser
      */
     public TTFParser(boolean isEmbedded)
     {
-        this(isEmbedded, false);
-    }
-
-    /**
-     *  Constructor.
-     *  
-     * @param isEmbedded true if the font is embedded in PDF
-     * @param parseOnDemand true if the tables of the font should be parsed on demand
-     */
-    public TTFParser(boolean isEmbedded, boolean parseOnDemand)
-    {
         this.isEmbedded = isEmbedded;
-        parseOnDemandOnly = parseOnDemand;
     }
 
     /**
@@ -136,12 +123,8 @@ public class TTFParser
                 }
             }
         }
-        // parse tables if wanted
-        if (!parseOnDemandOnly)
-        {
-            parseTables(font);
-        }
-
+        // parse tables
+        parseTables(font);
         return font;
     }
 

@@ -157,20 +157,12 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      */
     protected TTFTable getTable(String tag) throws IOException
     {
-        // after the initial parsing of the ttf there aren't any write operations
-        // to the HashMap anymore, so that we don't have to synchronize the read access
-        TTFTable ttfTable = tables.get(tag);
-        if (ttfTable != null && !ttfTable.initialized)
+        TTFTable table = tables.get(tag);
+        if (table != null && !table.getInitialized())
         {
-            synchronized (lockReadtable)
-            {
-                if (!ttfTable.initialized)
-                {
-                    readTable(ttfTable);
-                }
-            }
+            readTable(table);
         }
-        return ttfTable;
+        return table;
     }
 
     /**
@@ -372,17 +364,12 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      */
     void readTable(TTFTable table) throws IOException
     {
-        // PDFBOX-4219: synchronize on data because it is accessed by several threads
-        // when PDFBox is accessing a standard 14 font for the first time
-        synchronized (data)
-        {
-            // save current position
-            long currentPosition = data.getCurrentPosition();
-            data.seek(table.getOffset());
-            table.read(this, data);
-            // restore current position
-            data.seek(currentPosition);
-        }
+        // save current position
+        long currentPosition = data.getCurrentPosition();
+        data.seek(table.getOffset());
+        table.read(this, data);
+        // restore current position
+        data.seek(currentPosition);
     }
 
     /**

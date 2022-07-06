@@ -41,18 +41,7 @@ public final class OTFParser extends TTFParser
      */
     public OTFParser(boolean isEmbedded)
     {
-        this(isEmbedded, false);
-    }
-
-    /**
-     *  Constructor.
-     *
-     * @param isEmbedded true if the font is embedded in PDF
-     * @param parseOnDemand true if the tables of the font should be parsed on demand
-     */
-    public OTFParser(boolean isEmbedded, boolean parseOnDemand)
-    {
-        super(isEmbedded, parseOnDemand);
+        super(isEmbedded);
     }
 
     @Override
