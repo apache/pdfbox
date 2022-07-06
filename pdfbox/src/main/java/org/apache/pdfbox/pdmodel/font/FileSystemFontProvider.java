@@ -232,7 +232,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             else
             {
-                TTFParser ttfParser = new TTFParser(false, true);
+                TTFParser ttfParser = new TTFParser(false);
                 return ttfParser.parse(new RandomAccessReadBufferedFile(file));
             }
         }
@@ -266,7 +266,7 @@ final class FileSystemFontProvider extends FontProvider
                     return (OpenTypeFont) ttf;
                 }
 
-                OTFParser parser = new OTFParser(false, true);
+                OTFParser parser = new OTFParser(false);
                 OpenTypeFont otf = parser.parse(new RandomAccessReadBufferedFile(file));
 
                 if (LOG.isDebugEnabled())
@@ -630,13 +630,13 @@ final class FileSystemFontProvider extends FontProvider
         {
             if (ttfFile.getPath().toLowerCase().endsWith(".otf"))
             {
-                OTFParser parser = new OTFParser(false, true);
+                OTFParser parser = new OTFParser(false);
                 OpenTypeFont otf = parser.parse(new RandomAccessReadBufferedFile(ttfFile));
                 addTrueTypeFontImpl(otf, ttfFile);
             }
             else
             {
-                TTFParser parser = new TTFParser(false, true);
+                TTFParser parser = new TTFParser(false);
                 TrueTypeFont ttf = parser.parse(new RandomAccessReadBufferedFile(ttfFile));
                 addTrueTypeFontImpl(ttf, ttfFile);
             }
