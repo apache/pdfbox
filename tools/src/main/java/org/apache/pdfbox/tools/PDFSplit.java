@@ -139,7 +139,6 @@ public final class PDFSplit
             {
                 document = PDDocument.load(new File(pdfFile), password);
 
-                int numberOfPages = document.getNumberOfPages();
                 boolean startEndPageSet = false;
                 if (startPage != null)
                 {
@@ -147,6 +146,7 @@ public final class PDFSplit
                     startEndPageSet = true;
                     if (split == null)
                     {
+                        int numberOfPages = document.getNumberOfPages();
                         splitter.setSplitAtPage(numberOfPages);
                     }
                 }
