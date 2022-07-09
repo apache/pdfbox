@@ -151,8 +151,8 @@ public final class PDAcroForm implements COSObjectable
         FDFDictionary fdfDict = new FDFDictionary();
         catalog.setFDF(fdfDict);
 
-        List<FDFField> fdfFields = new ArrayList<>();
         List<PDField> fields = getFields();
+        List<FDFField> fdfFields = new ArrayList<>(fields.size());
         for (PDField field : fields)
         {
             fdfFields.add(field.exportFDF());
