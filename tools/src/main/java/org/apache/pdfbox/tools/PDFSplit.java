@@ -90,7 +90,6 @@ public final class PDFSplit implements Callable<Integer>
 
         try (PDDocument document = Loader.loadPDF(infile, password))
         {
-            int numberOfPages = document.getNumberOfPages();
             boolean startEndPageSet = false;
             if (startPage != -1)
             {
@@ -98,6 +97,7 @@ public final class PDFSplit implements Callable<Integer>
                 startEndPageSet = true;
                 if (split == -1)
                 {
+                    int numberOfPages = document.getNumberOfPages();
                     splitter.setSplitAtPage(numberOfPages);
                 }
             }
