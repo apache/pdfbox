@@ -1010,7 +1010,7 @@ public class COSWriter implements ICOSVisitor
 
     /**
      * check the xref entries and write out the ranges.  The format of the
-     * returned array is exactly the same as the pdf specification.  See section
+     * returned collection is exactly the same as the pdf specification.  See section
      * 7.5.4 of ISO32000-1:2008, example 1 (page 40) for reference.
      * <p>
      * example: 0 1 2 5 6 7 8 10
