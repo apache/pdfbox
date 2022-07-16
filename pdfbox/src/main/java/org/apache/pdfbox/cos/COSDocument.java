@@ -198,7 +198,7 @@ public class COSDocument extends COSBase implements Closeable
         // within the pdf
         List<COSObjectKey> objectKeys = xrefTable.entrySet().stream() //
                 .filter(e -> e.getValue() > 0L) //
-                .sorted(Comparator.comparing(Entry::getValue)) //
+                .sorted(Entry.comparingByValue()) //
                 .map(Entry::getKey) //
                 .collect(Collectors.toList());
         for (COSObjectKey objectKey : objectKeys)
