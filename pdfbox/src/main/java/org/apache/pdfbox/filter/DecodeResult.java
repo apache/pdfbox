@@ -44,7 +44,7 @@ public final class DecodeResult
     /**
      * Return a default DecodeResult.
      *
-     * @return 
+     * @return a default DecodeResult instance.
      */
     public static DecodeResult createDefault()
     {

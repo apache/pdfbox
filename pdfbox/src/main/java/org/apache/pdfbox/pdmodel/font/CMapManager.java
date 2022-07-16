@@ -41,7 +41,7 @@ final class CMapManager
      *
      * @param cMapName CMap name
      * @return The predefined CMap, never null.
-     * @throws IOException 
+     * @throws IOException if the CMap could not be parsed.
      */
     public static CMap getPredefinedCMap(String cMapName) throws IOException
     {
