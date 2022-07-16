@@ -40,9 +40,8 @@ public class PDFTextStripperByArea extends PDFTextStripper
 
     /**
      * Constructor.
-     * @throws IOException If there is an error loading properties.
      */
-    public PDFTextStripperByArea() throws IOException
+    public PDFTextStripperByArea()
     {
         super.setShouldSeparateByBeads(false);
     }

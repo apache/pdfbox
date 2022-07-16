@@ -356,7 +356,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     /**
      * Fetches the corresponding UCS2 CMap if the font's CMap is predefined.
      */
-    private void fetchCMapUCS2() throws IOException
+    private void fetchCMapUCS2()
     {
         // if the font is composite and uses a predefined cmap (excluding Identity-H/V)
         // or whose descendant CIDFont uses the Adobe-GB1, Adobe-CNS1, Adobe-Japan1, or

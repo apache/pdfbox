@@ -291,7 +291,7 @@ public class PDFMergerUtility
      * @param source File representing source document
      *
      */
-    public void addSource(File source) throws FileNotFoundException
+    public void addSource(File source)
     {
         sources.add(source);
     }

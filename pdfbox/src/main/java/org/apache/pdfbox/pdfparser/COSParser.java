@@ -1250,11 +1250,9 @@ public class COSParser extends BaseParser implements ICOSParser
      * @param offset the offset where to look
      * @param xrefOffset a map with with all known xref entries
      * @return returns the found/fixed object key
-     * 
-     * @throws IOException if something went wrong
      */
     private COSObjectKey findObjectKey(COSObjectKey objectKey, long offset,
-            Map<COSObjectKey, Long> xrefOffset) throws IOException
+            Map<COSObjectKey, Long> xrefOffset)
     {
         // there can't be any object at the very beginning of a pdf
         if (offset < MINIMUM_SEARCH_OFFSET)
