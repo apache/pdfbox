@@ -33,9 +33,9 @@ public class CFFTable extends TTFTable
 
     private CFFFont cffFont;
 
-    CFFTable(TrueTypeFont font)
+    CFFTable()
     {
-        super(font);
+        super();
     }
 
     /**
@@ -51,7 +51,7 @@ public class CFFTable extends TTFTable
         byte[] bytes = data.read((int)getLength());
 
         CFFParser parser = new CFFParser();
-        cffFont = parser.parse(bytes, new CFFBytesource(font)).get(0);
+        cffFont = parser.parse(bytes, new CFFBytesource(ttf)).get(0);
 
         initialized = true;
     }

@@ -51,9 +51,9 @@ public class GlyphTable extends TTFTable
      */
     private static final int MAX_CACHED_GLYPHS = 100;
 
-    GlyphTable(TrueTypeFont font)
+    GlyphTable()
     {
-        super(font);
+        super();
     }
 
     /**
@@ -81,7 +81,7 @@ public class GlyphTable extends TTFTable
         // PDFBOX-5460: read hmtx table early to avoid deadlock if getGlyph() locks "data"
         // and then locks TrueTypeFont to read this table, while another thread
         // locks TrueTypeFont and then tries to lock "data"
-        hmt = font.getHorizontalMetrics();
+        hmt = ttf.getHorizontalMetrics();
 
         initialized = true;
     }

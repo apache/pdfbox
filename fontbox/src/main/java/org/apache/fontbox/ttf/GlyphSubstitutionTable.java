@@ -74,9 +74,9 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private GsubData gsubData;
 
-    GlyphSubstitutionTable(TrueTypeFont font)
+    GlyphSubstitutionTable()
     {
-        super(font);
+        super();
     }
 
     @Override

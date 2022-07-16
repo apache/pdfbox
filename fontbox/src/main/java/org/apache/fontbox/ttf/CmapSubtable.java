@@ -635,7 +635,7 @@ public class CmapSubtable implements CmapLookup
 
     private int getCharCode(int gid)
     {
-        if (gid < 0 || gid >= glyphIdToCharacterCode.length)
+        if (gid < 0 || glyphIdToCharacterCode == null || gid >= glyphIdToCharacterCode.length)
         {
             return -1;
         }

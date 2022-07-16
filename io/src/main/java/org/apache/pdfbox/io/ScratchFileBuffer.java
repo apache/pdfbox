@@ -436,14 +436,13 @@ class ScratchFileBuffer implements RandomAccess
     }
     
     /**
-     * While calling finalize is normally discouraged we will have to
-     * use it here as long as closing a scratch file buffer is not 
-     * done in every case. Currently {@link COSStream} creates new
-     * buffers without closing the old one - which might still be
-     * used.
+     * While calling finalize is normally discouraged we will have to use it here as long as closing a scratch file
+     * buffer is not done in every case. Currently org.apache.pdfbox.cos.COSStream creates new buffers without closing
+     * the old one - which might still be used.
      * 
-     * <p>Enabling debugging one will see if there are still cases
-     * where the buffer is not closed.</p>
+     * <p>
+     * Enabling debugging one will see if there are still cases where the buffer is not closed.
+     * </p>
      */
     @Override
     protected void finalize() throws Throwable

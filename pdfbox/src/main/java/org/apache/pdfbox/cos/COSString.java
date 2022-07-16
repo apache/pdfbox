@@ -62,7 +62,7 @@ public final class COSString extends COSBase
      */
     public COSString(byte[] bytes)
     {
-        this.bytes = bytes;
+        setValue(bytes);
     }
 
     /**
@@ -145,10 +145,12 @@ public final class COSString extends COSBase
      * Sets the raw value of this string.
      *
      * @param value The raw bytes of the PDF text string or byte string.
+     * 
+     * @deprecated to be removed in a future release.
      */
     public void setValue(byte[] value)
     {
-        bytes = value;
+        bytes = value.clone();
     }
 
     /**
@@ -204,11 +206,11 @@ public final class COSString extends COSBase
     }
 
     /**
-     * Returns the raw bytes of the string. Best used with a PDF <i>byte string</i>.
+     * Returns the raw bytes of the string using a new byte array. Best used with a PDF <i>byte string</i>.
      */
     public byte[] getBytes()
     {
-        return bytes;
+        return bytes.clone();
     }
 
     /**

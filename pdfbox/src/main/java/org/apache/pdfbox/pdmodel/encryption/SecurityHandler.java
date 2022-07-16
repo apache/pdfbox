@@ -531,9 +531,10 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
             }
         }
         decryptDictionary(stream, objNum, genNum);
-        byte[] encrypted = IOUtils.toByteArray(stream.createRawInputStream());
-        ByteArrayInputStream encryptedStream = new ByteArrayInputStream(encrypted);
-        try (OutputStream output = stream.createRawOutputStream())
+        // the input and the output stream of a still encrypted COSStream aren't no longer based
+        // on the same object so that it is safe to omit the intermediate ByteArrayStream
+        try (InputStream encryptedStream = stream.createRawInputStream(); //
+                OutputStream output = stream.createRawOutputStream())
         {
             encryptData(objNum, genNum, encryptedStream, output, true /* decrypt */);
         }

@@ -33,21 +33,13 @@ public class TTFTable
     /**
      * Indicates if the table is initialized or not.
      */
-    protected volatile boolean initialized;
-
-    /**
-     * The font which contains this table.
-     */
-    protected final TrueTypeFont font;
+    protected boolean initialized;
 
     /**
      * Constructor.
-     * 
-     * @param font The font which contains this table.
      */
-    TTFTable(TrueTypeFont font)
+    TTFTable()
     {
-        this.font = font;
     }
     
     /**

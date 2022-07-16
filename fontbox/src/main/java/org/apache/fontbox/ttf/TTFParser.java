@@ -33,7 +33,6 @@ public class TTFParser
     private static final Log LOG = LogFactory.getLog(TTFParser.class);
 
     private boolean isEmbedded = false;
-    private boolean parseOnDemandOnly = false;
 
     /**
      * Constructor.
@@ -50,19 +49,7 @@ public class TTFParser
      */
     public TTFParser(boolean isEmbedded)
     {
-        this(isEmbedded, false);
-    }
-
-    /**
-     *  Constructor.
-     *  
-     * @param isEmbedded true if the font is embedded in PDF
-     * @param parseOnDemand true if the tables of the font should be parsed on demand
-     */
-    public TTFParser(boolean isEmbedded, boolean parseOnDemand)
-    {
         this.isEmbedded = isEmbedded;
-        parseOnDemandOnly = parseOnDemand;
     }
 
     /**
@@ -136,12 +123,8 @@ public class TTFParser
                 }
             }
         }
-        // parse tables if wanted
-        if (!parseOnDemandOnly)
-        {
-            parseTables(font);
-        }
-
+        // parse tables
+        parseTables(font);
         return font;
     }
 
@@ -241,55 +224,55 @@ public class TTFParser
         switch (tag)
         {
             case CmapTable.TAG:
-                table = new CmapTable(font);
+                table = new CmapTable();
                 break;
             case GlyphTable.TAG:
-                table = new GlyphTable(font);
+                table = new GlyphTable();
                 break;
             case HeaderTable.TAG:
-                table = new HeaderTable(font);
+                table = new HeaderTable();
                 break;
             case HorizontalHeaderTable.TAG:
-                table = new HorizontalHeaderTable(font);
+                table = new HorizontalHeaderTable();
                 break;
             case HorizontalMetricsTable.TAG:
-                table = new HorizontalMetricsTable(font);
+                table = new HorizontalMetricsTable();
                 break;
             case IndexToLocationTable.TAG:
-                table = new IndexToLocationTable(font);
+                table = new IndexToLocationTable();
                 break;
             case MaximumProfileTable.TAG:
-                table = new MaximumProfileTable(font);
+                table = new MaximumProfileTable();
                 break;
             case NamingTable.TAG:
-                table = new NamingTable(font);
+                table = new NamingTable();
                 break;
             case OS2WindowsMetricsTable.TAG:
-                table = new OS2WindowsMetricsTable(font);
+                table = new OS2WindowsMetricsTable();
                 break;
             case PostScriptTable.TAG:
-                table = new PostScriptTable(font);
+                table = new PostScriptTable();
                 break;
             case DigitalSignatureTable.TAG:
-                table = new DigitalSignatureTable(font);
+                table = new DigitalSignatureTable();
                 break;
             case KerningTable.TAG:
-                table = new KerningTable(font);
+                table = new KerningTable();
                 break;
             case VerticalHeaderTable.TAG:
-                table = new VerticalHeaderTable(font);
+                table = new VerticalHeaderTable();
                 break;
             case VerticalMetricsTable.TAG:
-                table = new VerticalMetricsTable(font);
+                table = new VerticalMetricsTable();
                 break;
             case VerticalOriginTable.TAG:
-                table = new VerticalOriginTable(font);
+                table = new VerticalOriginTable();
                 break;
             case GlyphSubstitutionTable.TAG:
-                table = new GlyphSubstitutionTable(font);
+                table = new GlyphSubstitutionTable();
                 break;
             default:
-                table = readTable(font, tag);
+                table = readTable(tag);
                 break;
         }
         table.setTag(tag);
@@ -306,9 +289,9 @@ public class TTFParser
         return table;
     }
 
-    protected TTFTable readTable(TrueTypeFont font, String tag)
+    protected TTFTable readTable(String tag)
     {
         // unknown table type but read it anyway.
-        return new TTFTable(font);
+        return new TTFTable();
     }
 }

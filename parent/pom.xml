@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>26</version>
+        <version>27</version>
         <relativePath />
     </parent>
 
@@ -63,7 +63,7 @@
             <dependency>
 	            <groupId>org.junit.jupiter</groupId>
 	            <artifactId>junit-jupiter</artifactId>
-	            <version>5.9.0-M1</version>
+	            <version>5.9.0-RC1</version>
 	            <scope>test</scope>
             </dependency>
             <dependency>
@@ -370,6 +370,7 @@
                 <plugin>
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
+                    <version>0.14</version>
                     <configuration>
                         <excludes>
                             <exclude>release.properties</exclude>
@@ -380,7 +381,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.2</version>
+                    <version>5.1.6</version>
                 </plugin>
             </plugins>
         </pluginManagement>

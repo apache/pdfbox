@@ -58,9 +58,9 @@ public class VerticalHeaderTable extends TTFTable
     private short metricDataFormat;
     private int numberOfVMetrics;
 
-    VerticalHeaderTable(TrueTypeFont font)
+    VerticalHeaderTable()
     {
-        super(font);
+        super();
     }
 
     /**

@@ -46,9 +46,9 @@ public class VerticalOriginTable extends TTFTable
     private int defaultVertOriginY;
     private Map<Integer, Integer> origins;
 
-    VerticalOriginTable(TrueTypeFont font)
+    VerticalOriginTable()
     {
-        super(font);
+        super();
     }
 
     /**

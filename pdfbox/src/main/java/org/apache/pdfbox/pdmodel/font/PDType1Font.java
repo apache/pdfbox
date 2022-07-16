@@ -99,7 +99,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     /**
      * Creates a Type 1 standard 14 font for embedding.
      *
-     * @param baseFont One of the standard 14 PostScript names
+     * @param baseFont One of the standard 14 PostScript names, e.g. {@link FontName#HELVETICA_BOLD}.
      */
     public PDType1Font(FontName baseFont)
     {
@@ -199,7 +199,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
             PDStream fontFile3 = fd.getFontFile3();
             if (fontFile3 != null)
             {
-                throw new IOException("/FontFile3 for Type1 font not supported");
+                LOG.warn("/FontFile3 for Type1 font not supported");
             }
 
             // or it may contain a PFB

@@ -104,8 +104,8 @@ public class TrueTypeCollection implements Closeable
      */
     public void processAllFonts(TrueTypeFontProcessor trueTypeFontProcessor) throws IOException
     {
-        OTFParser otfParser = new OTFParser(false, true);
-        TTFParser ttfParser = new TTFParser(false, true);
+        OTFParser otfParser = new OTFParser(false);
+        TTFParser ttfParser = new TTFParser(false);
 
         for (int i = 0; i < numFonts; i++)
         {
@@ -139,8 +139,8 @@ public class TrueTypeCollection implements Closeable
      */
     public TrueTypeFont getFontByName(String name) throws IOException
     {
-        OTFParser otfParser = new OTFParser(false, true);
-        TTFParser ttfParser = new TTFParser(false, true);
+        OTFParser otfParser = new OTFParser(false);
+        TTFParser ttfParser = new TTFParser(false);
 
         for (int i = 0; i < numFonts; i++)
         {

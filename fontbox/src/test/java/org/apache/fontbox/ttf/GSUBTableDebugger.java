@@ -44,7 +44,7 @@ public class GSUBTableDebugger
 
         randomAccessReadBufferDataStream.seek(GlyphSubstitutionTableTest.DATA_POSITION_FOR_GSUB_TABLE);
 
-        GlyphSubstitutionTable glyphSubstitutionTable = new GlyphSubstitutionTable(null);
+        GlyphSubstitutionTable glyphSubstitutionTable = new GlyphSubstitutionTable();
 
         glyphSubstitutionTable.read(null, randomAccessReadBufferDataStream);
 

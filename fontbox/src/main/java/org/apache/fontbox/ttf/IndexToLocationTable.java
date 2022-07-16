@@ -35,9 +35,9 @@ public class IndexToLocationTable extends TTFTable
     
     private long[] offsets;
 
-    IndexToLocationTable(TrueTypeFont font)
+    IndexToLocationTable()
     {
-        super(font);
+        super();
     }
 
     /**

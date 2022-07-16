@@ -56,7 +56,7 @@ class GlyphSubstitutionTableTest
                 randomAccessReadBuffer);
         randomAccessReadBufferDataStream.seek(DATA_POSITION_FOR_GSUB_TABLE);
 
-        GlyphSubstitutionTable testClass = new GlyphSubstitutionTable(null);
+        GlyphSubstitutionTable testClass = new GlyphSubstitutionTable();
 
         // when
         testClass.read(null, randomAccessReadBufferDataStream);

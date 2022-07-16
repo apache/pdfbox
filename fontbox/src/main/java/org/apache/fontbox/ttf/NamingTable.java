@@ -44,9 +44,9 @@ public class NamingTable extends TTFTable
     private String fontSubFamily = null;
     private String psName = null;
 
-    NamingTable(TrueTypeFont font)
+    NamingTable()
     {
-        super(font);
+        super();
     }
 
     /**

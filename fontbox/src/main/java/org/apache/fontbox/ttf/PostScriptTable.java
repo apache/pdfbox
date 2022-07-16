@@ -44,9 +44,9 @@ public class PostScriptTable extends TTFTable
      */
     public static final String TAG = "post";
 
-    PostScriptTable(TrueTypeFont font)
+    PostScriptTable()
     {
-        super(font);
+        super();
     }
 
     /**
@@ -164,7 +164,7 @@ public class PostScriptTable extends TTFTable
         else if (Float.compare(formatType, 3.0f) == 0)
         {
             // no postscript information is provided.
-            LOG.debug("No PostScript name information is provided for the font " + font.getName());
+            LOG.debug("No PostScript name information is provided for the font " + ttf.getName());
         }
         initialized = true;
     }
