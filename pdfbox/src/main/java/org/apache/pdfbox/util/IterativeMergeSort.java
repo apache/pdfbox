@@ -100,7 +100,7 @@ public final class IterativeMergeSort
 
     /**
      * Merges two sorted subarrays arr and aux into the order specified by cmp and places the
-     * ordered result back into into arr array.
+     * ordered result back into arr array.
      *
      * @param <T>
      * @param arr Array containing source data to be sorted and target for destination data

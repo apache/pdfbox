@@ -1900,7 +1900,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     /**
      * Normalize certain Unicode characters. For example, convert the single "fi" ligature to "f" and "i". Also
-     * normalises Arabic and Hebrew presentation forms.
+     * normalizes Arabic and Hebrew presentation forms.
      *
      * @param word Word to normalize
      * @return Normalized word
