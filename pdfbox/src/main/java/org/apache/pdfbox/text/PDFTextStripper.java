@@ -1078,7 +1078,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     }
 
     /**
-     * By default the text stripper will attempt to remove text that overlapps each other. Word paints the same
+     * By default the text stripper will attempt to remove text that overlaps each other. Word paints the same
      * character several times in order to make it look bold. By setting this to false all text will be extracted, which
      * means that certain sections will be duplicated, but better performance will be noticed.
      *
@@ -1740,7 +1740,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
         for (LineItem item : line)
         {
-            lineBuilder = normalizeAdd(normalized, lineBuilder, wordPositions, item);
+            normalizeAdd(normalized, lineBuilder, wordPositions, item);
         }
 
         if (lineBuilder.length() > 0)
@@ -1956,17 +1956,15 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     /**
      * Used within {@link #normalize(List)} to handle a {@link TextPosition}.
-     * 
-     * @return The StringBuilder that must be used when calling this method.
      */
-    private StringBuilder normalizeAdd(List<WordWithTextPositions> normalized,
+    private void normalizeAdd(List<WordWithTextPositions> normalized,
             StringBuilder lineBuilder, List<TextPosition> wordPositions, LineItem item)
     {
         if (item.isWordSeparator())
         {
             normalized.add(
                     createWord(lineBuilder.toString(), new ArrayList<>(wordPositions)));
-            lineBuilder = new StringBuilder();
+            lineBuilder.setLength(0);
             wordPositions.clear();
         }
         else
@@ -1975,7 +1973,6 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             lineBuilder.append(text.getUnicode());
             wordPositions.add(text);
         }
-        return lineBuilder;
     }
 
     /**
