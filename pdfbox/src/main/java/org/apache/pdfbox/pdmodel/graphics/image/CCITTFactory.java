@@ -78,9 +78,10 @@ public final class CCITTFactory
                     // flip bit to avoid having to set /BlackIs1
                     mcios.writeBits(~(image.getRGB(x, y) & 1), 1);
                 }
-                if (mcios.getBitOffset() != 0)
+                int bitOffset = mcios.getBitOffset();
+                if (bitOffset != 0)
                 {
-                    mcios.writeBits(0, 8 - mcios.getBitOffset());
+                    mcios.writeBits(0, 8 - bitOffset);
                 }
             }
             mcios.flush();
