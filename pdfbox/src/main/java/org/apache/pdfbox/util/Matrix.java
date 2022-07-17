@@ -400,6 +400,7 @@ public final class Matrix implements Cloneable
         c[7] = a[6] * b[1] + a[7] * b[4] + a[8] * b[7];
         c[8] = a[6] * b[2] + a[7] * b[5] + a[8] * b[8];
     }
+
     /**
      * Transforms the given point by this matrix.
      *
@@ -423,6 +424,8 @@ public final class Matrix implements Cloneable
      *
      * @param x x-coordinate
      * @param y y-coordinate
+     *
+     * @return the transformed point.
      */
     public Point2D.Float transformPoint(float x, float y)
     {
@@ -436,9 +439,11 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Transforms the given point by this matrix.
+     * Transforms the given vector by this matrix.
      *
      * @param vector 2D vector
+     *
+     * @return the transformed vector.
      */
     public Vector transform(Vector vector)
     {
