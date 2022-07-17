@@ -148,6 +148,7 @@ public final class COSString extends COSBase
      * 
      * @deprecated to be removed in a future release.
      */
+    @Deprecated
     public void setValue(byte[] value)
     {
         bytes = value.clone();
