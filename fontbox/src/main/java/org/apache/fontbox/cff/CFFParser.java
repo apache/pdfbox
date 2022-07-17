@@ -1330,7 +1330,7 @@ public class CFFParser
                     for (int i = 1; i < operands.size(); i++)
                     {
                         Number current = operands.get(i);
-                        Integer sum = prevSum + current.intValue();
+                        int sum = prevSum + current.intValue();
                         result.add(sum);
                         prevSum = sum;
                     }
