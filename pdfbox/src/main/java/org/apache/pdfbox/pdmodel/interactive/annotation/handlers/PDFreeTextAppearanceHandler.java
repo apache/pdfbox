@@ -185,14 +185,15 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
             if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
             {
+                PDRectangle rect = getRectangle();
                 // Adobe draws the text with the original rectangle in mind.
                 // but if there is an /RD, then writing area get smaller.
                 // do this here because /RD is overwritten in a few lines
-                borderBox = applyRectDifferences(getRectangle(), annotation.getRectDifferences());
+                borderBox = applyRectDifferences(rect, annotation.getRectDifferences());
 
                 //TODO this segment was copied from square handler. Refactor?
                 CloudyBorder cloudyBorder = new CloudyBorder(cs,
-                    borderEffect.getIntensity(), ab.width, getRectangle());
+                    borderEffect.getIntensity(), ab.width, rect);
                 cloudyBorder.createCloudyRectangle(annotation.getRectDifference());
                 annotation.setRectangle(cloudyBorder.getRectangle());
                 annotation.setRectDifference(cloudyBorder.getRectDifference());
@@ -287,8 +288,8 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             // clip writing area
             cs.addRect(xOffset, clipY, clipWidth, clipHeight);
             cs.clip();
-
-            if (annotation.getContents() != null)
+            String contents = annotation.getContents();
+            if (contents != null)
             {
                 cs.beginText();
                 cs.setFont(font, fontSize);
@@ -298,7 +299,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 appearanceStyle.setFontSize(fontSize);
                 PlainTextFormatter formatter = new PlainTextFormatter.Builder(cs)
                         .style(appearanceStyle)
-                        .text(new PlainText(annotation.getContents()))
+                        .text(new PlainText(contents))
                         .width(width - ab.width * 4)
                         .wrapLines(true)
                         .initialOffset(xOffset, yOffset)
