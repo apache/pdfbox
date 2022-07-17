@@ -217,7 +217,7 @@ public class TTFParser
         return false;
     }
 
-    private TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
+    private TTFTable readTableDirectory(TTFDataStream raf) throws IOException
     {
         TTFTable table;
         String tag = raf.readString(4);
