@@ -320,7 +320,7 @@ public class LayerUtility
         if (dstOCProperties == null)
         {
             dstCatalog.setOCProperties(new PDOptionalContentProperties(
-                    (COSDictionary) cloner.cloneForNewDocument(srcOCProperties.getCOSObject())));
+                    cloner.cloneForNewDocument(srcOCProperties.getCOSObject())));
         }
         else
         {

@@ -496,7 +496,7 @@ public class Overlay implements Closeable
     {
         PDFormXObject xobjForm = new PDFormXObject(layoutPage.overlayContentStream);
         xobjForm.setResources(new PDResources(
-                (COSDictionary) cloner.cloneForNewDocument(layoutPage.overlayResources)));
+                cloner.cloneForNewDocument(layoutPage.overlayResources)));
         xobjForm.setFormType(1);
         xobjForm.setBBox(layoutPage.overlayMediaBox.createRetranslatedRectangle());
         AffineTransform at = new AffineTransform();

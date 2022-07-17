@@ -381,8 +381,7 @@ public class PDFMergerUtility
                     }
                     for (PDPage page : sourceDoc.getPages())
                     {
-                        PDPage newPage = new PDPage(
-                                (COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
+                        PDPage newPage = new PDPage(cloner.cloneForNewDocument(page.getCOSObject()));
                         newPage.setCropBox(page.getCropBox());
                         newPage.setMediaBox(page.getMediaBox());
                         newPage.setRotation(page.getRotation());
@@ -392,8 +391,7 @@ public class PDFMergerUtility
                             // this is smart enough to just create references for resources that are used on multiple
                             // pages
                             newPage.setResources(new PDResources(
-                                    (COSDictionary) cloner
-                                            .cloneForNewDocument(resources.getCOSObject())));
+                                    cloner.cloneForNewDocument(resources.getCOSObject())));
                         }
                         else
                         {
@@ -628,7 +626,7 @@ public class PDFMergerUtility
             if (destOutline == null || destOutline.getFirstChild() == null)
             {
                 PDDocumentOutline cloned = new PDDocumentOutline(
-                        (COSDictionary) cloner.cloneForNewDocument(srcOutline.getCOSObject()));
+                        cloner.cloneForNewDocument(srcOutline.getCOSObject()));
                 destCatalog.setDocumentOutline(cloned);
             }
             else
@@ -648,8 +646,7 @@ public class PDFMergerUtility
                 {
                     // get each child, clone its dictionary, remove siblings info,
                     // append outline item created from there
-                    COSDictionary clonedDict = (COSDictionary) cloner
-                            .cloneForNewDocument(item.getCOSObject());
+                    COSDictionary clonedDict = cloner.cloneForNewDocument(item.getCOSObject());
                     clonedDict.removeItem(COSName.PREV);
                     clonedDict.removeItem(COSName.NEXT);
                     PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
@@ -800,7 +797,7 @@ public class PDFMergerUtility
         int pageIndex = 0;
         for (PDPage page : srcCatalog.getPages())
         {
-            PDPage newPage = new PDPage((COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
+            PDPage newPage = new PDPage(cloner.cloneForNewDocument(page.getCOSObject()));
             if (!mergeStructTree)
             {
                 // PDFBOX-4429: remove bogus StructParent(s)
@@ -818,7 +815,7 @@ public class PDFMergerUtility
             {
                 // this is smart enough to just create references for resources that are used on multiple pages
                 newPage.setResources(new PDResources(
-                        (COSDictionary) cloner.cloneForNewDocument(resources.getCOSObject())));
+                        cloner.cloneForNewDocument(resources.getCOSObject())));
             }
             else
             {
@@ -1104,7 +1101,7 @@ public class PDFMergerUtility
             else
             {
                 destNames.put(entry.getKey(),
-                              new PDStructureElement((COSDictionary) cloner.cloneForNewDocument(entry.getValue().getCOSObject())));
+                              new PDStructureElement(cloner.cloneForNewDocument(entry.getValue().getCOSObject())));
             }
         }
         destIDTree = new PDStructureElementNameTreeNode();
@@ -1304,7 +1301,7 @@ public class PDFMergerUtility
             
             for (PDField srcField : srcAcroForm.getFields())
             {
-                COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
+                COSDictionary dstField = cloner.cloneForNewDocument(srcField.getCOSObject());
                 // if the form already has a field with this name then we need to rename this field
                 // to prevent merge conflicts.
                 if (destAcroForm.getField(srcField.getFullyQualifiedName()) != null)
@@ -1346,7 +1343,7 @@ public class PDFMergerUtility
                 }
             }
             destCatalog.addOutputIntent(new PDOutputIntent(
-                    (COSDictionary) cloner.cloneForNewDocument(srcOI.getCOSObject())));
+                    cloner.cloneForNewDocument(srcOI.getCOSObject())));
             dstOutputIntents.add(srcOI);
         }
     }

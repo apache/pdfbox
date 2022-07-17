@@ -97,7 +97,7 @@ public class PDFCloneUtility
             // Don't clone a clone
             return base;
         }
-        retval = cloneCOSBaseForNewDocument((COSBase)base);
+        retval = cloneCOSBaseForNewDocument(base);
         clonedVersion.put(base, retval);
         clonedValues.add(retval);
         return (TCOSBase) retval;
