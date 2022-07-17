@@ -72,7 +72,6 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
                 annotation.setRectDifferences(rd);
                 bbox = new PDRectangle(-rd, -rd, rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
                 Matrix matrix = pdAppearanceStream.getMatrix();
-                matrix.transformPoint(rd, rd);
                 pdAppearanceStream.setMatrix(matrix.createAffineTransform());
                 PDRectangle rect2 = new PDRectangle(rect.getLowerLeftX() - rd, rect.getLowerLeftY() - rd,
                                                     rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
