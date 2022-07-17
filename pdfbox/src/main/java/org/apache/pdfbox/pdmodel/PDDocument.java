@@ -473,8 +473,8 @@ public class PDDocument implements Closeable
         if (!(checkFields &&
               annotations instanceof COSArrayList &&
               acroFormFields instanceof COSArrayList &&
-              ((COSArrayList<PDAnnotation>) annotations).toList().
-                      equals(((COSArrayList<PDField>) acroFormFields).toList())))
+              ((COSArrayList) annotations).toList().
+                      equals(((COSArrayList) acroFormFields).toList())))
         {
             // use check to prevent the annotation widget from appearing twice
             if (checkSignatureAnnotation(annotations, firstWidget))
