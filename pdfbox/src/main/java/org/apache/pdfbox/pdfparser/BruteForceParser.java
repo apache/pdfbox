@@ -746,17 +746,13 @@ public class BruteForceParser extends COSParser
         {
             return false;
         }
-        if (!dictionary.containsKey(COSName.MOD_DATE) && !dictionary.containsKey(COSName.TITLE)
-                && !dictionary.containsKey(COSName.AUTHOR)
-                && !dictionary.containsKey(COSName.SUBJECT)
-                && !dictionary.containsKey(COSName.KEYWORDS)
-                && !dictionary.containsKey(COSName.CREATOR)
-                && !dictionary.containsKey(COSName.PRODUCER)
-                && !dictionary.containsKey(COSName.CREATION_DATE))
-        {
-            return false;
-        }
-        return true;
+        return dictionary.containsKey(COSName.MOD_DATE) || dictionary.containsKey(COSName.TITLE)
+                || dictionary.containsKey(COSName.AUTHOR)
+                || dictionary.containsKey(COSName.SUBJECT)
+                || dictionary.containsKey(COSName.KEYWORDS)
+                || dictionary.containsKey(COSName.CREATOR)
+                || dictionary.containsKey(COSName.PRODUCER)
+                || dictionary.containsKey(COSName.CREATION_DATE);
     }
 
     /**
