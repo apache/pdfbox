@@ -845,6 +845,8 @@ public class PDDocument implements Closeable
                     fields.add((PDSignatureField)field);
                 }
             }
+
+            return fields;
         }
         return Collections.emptyList();
     }
