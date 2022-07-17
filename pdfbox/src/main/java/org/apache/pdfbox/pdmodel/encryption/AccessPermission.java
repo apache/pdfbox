@@ -456,7 +456,7 @@ public class AccessPermission
     /**
      * Locks the access permission read only (ie, the setters will have no effects).
      * After that, the object cannot be unlocked.
-     * This method is used for the currentAccessPermssion of a document to avoid
+     * This method is used for the currentAccessPermission of a document to avoid
      * users to change access permission.
      */
     public void setReadOnly()
