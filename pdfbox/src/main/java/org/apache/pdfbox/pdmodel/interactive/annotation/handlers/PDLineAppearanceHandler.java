@@ -105,10 +105,11 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
         // arrow length is 9 * width at about 30° => 10 * width seems to be enough
         // but need to consider /LL, /LLE and /LLO too
         //TODO find better way to calculate padding
-        rect.setLowerLeftX(Math.min(minX - Math.max(lineEndingSize * 10, Math.abs(llo+ll+lle)), rect.getLowerLeftX()));
-        rect.setLowerLeftY(Math.min(minY - Math.max(lineEndingSize * 10, Math.abs(llo+ll+lle)), rect.getLowerLeftY()));
-        rect.setUpperRightX(Math.max(maxX + Math.max(lineEndingSize * 10, Math.abs(llo+ll+lle)), rect.getUpperRightX()));
-        rect.setUpperRightY(Math.max(maxY + Math.max(lineEndingSize * 10, Math.abs(llo+ll+lle)), rect.getUpperRightY()));
+        float max = Math.max(lineEndingSize * 10, Math.abs(llo+ll+lle));
+        rect.setLowerLeftX(Math.min(minX - max, rect.getLowerLeftX()));
+        rect.setLowerLeftY(Math.min(minY - max, rect.getLowerLeftY()));
+        rect.setUpperRightX(Math.max(maxX + max, rect.getUpperRightX()));
+        rect.setUpperRightY(Math.max(maxY + max, rect.getUpperRightY()));
 
         annotation.setRectangle(rect);
 
