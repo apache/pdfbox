@@ -104,7 +104,7 @@ public class TTFParser
         int rangeShift = raf.readUnsignedShort();
         for (int i = 0; i < numberOfTables; i++)
         {
-            TTFTable table = readTableDirectory(font, raf);
+            TTFTable table = readTableDirectory(raf);
             
             // skip tables with zero length
             if (table != null)
