@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.cos;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -113,7 +112,7 @@ public class COSIncrement implements Iterable<COSBase>
     {
         COSUpdateState updateState = dictionary.getUpdateState();
         // Is definitely part of the increment?
-        if(!isExcluded(dictionary) && !contains(dictionary) && updateState.isUpdated())
+        if (updateState.isUpdated() && !isExcluded(dictionary) && !contains(dictionary))
         {
             add(dictionary);
         }
@@ -192,10 +191,6 @@ public class COSIncrement implements Iterable<COSBase>
      */
     private boolean collect(COSObject object)
     {
-        if(contains(object))
-        {
-            return false;
-        }
         addProcessedObject(object);
         COSUpdateState updateState = object.getUpdateState();
         // Objects with different document origin must be part of the increment!
@@ -215,15 +210,12 @@ public class COSIncrement implements Iterable<COSBase>
         {
             return false;
         }
-        boolean childDemandsParentUpdate = false;
         COSUpdateState actualUpdateState = actual.getUpdateState();
-        if(actualUpdateState.isUpdated())
-        {
-            childDemandsParentUpdate = true;
-        }
+        boolean childDemandsParentUpdate = actualUpdateState.isUpdated();
+
         exclude(actual.getCOSObject());
         childDemandsParentUpdate = collect(actual.getCOSObject()) || childDemandsParentUpdate;
-        if(updateState.isUpdated() || childDemandsParentUpdate)
+        if (childDemandsParentUpdate || updateState.isUpdated())
         {
             add(actual.getCOSObject());
         }
@@ -374,5 +366,4 @@ public class COSIncrement implements Iterable<COSBase>
     {
         return getObjects().iterator();
     }
-    
 }
