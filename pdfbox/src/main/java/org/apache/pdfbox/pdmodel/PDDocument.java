@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -833,10 +834,10 @@ public class PDDocument implements Closeable
      */
     public List<PDSignatureField> getSignatureFields()
     {
-        List<PDSignatureField> fields = new ArrayList<>();
         PDAcroForm acroForm = getDocumentCatalog().getAcroForm(null);
         if (acroForm != null)
         {
+            List<PDSignatureField> fields = new ArrayList<>();
             for (PDField field : acroForm.getFieldTree())
             {
                 if (field instanceof PDSignatureField)
@@ -845,7 +846,7 @@ public class PDDocument implements Closeable
                 }
             }
         }
-        return fields;
+        return Collections.emptyList();
     }
 
     /**
