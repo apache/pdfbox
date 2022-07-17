@@ -59,20 +59,20 @@ public class BlendMode
     /**
      * Functions for the blend operation of separable blend modes
      */
-    private static BlendChannelFunction fNormal = (src, dest) -> src;
+    private static final BlendChannelFunction fNormal = (src, dest) -> src;
 
-    private static BlendChannelFunction fMultiply = (src, dest) -> src * dest;
+    private static final BlendChannelFunction fMultiply = (src, dest) -> src * dest;
 
-    private static BlendChannelFunction fScreen = (src, dest) -> src + dest - src * dest;
+    private static final BlendChannelFunction fScreen = (src, dest) -> src + dest - src * dest;
 
-    private static BlendChannelFunction fOverlay = (src, dest) -> (dest <= 0.5) ? 2 * dest * src
+    private static final BlendChannelFunction fOverlay = (src, dest) -> (dest <= 0.5) ? 2 * dest * src
             : 2 * (src + dest - src * dest) - 1;
 
-    private static BlendChannelFunction fDarken = Math::min;
+    private static final BlendChannelFunction fDarken = Math::min;
 
-    private static BlendChannelFunction fLighten = Math::max;
+    private static final BlendChannelFunction fLighten = Math::max;
 
-    private static BlendChannelFunction fColorDodge = (src, dest) -> {
+    private static final BlendChannelFunction fColorDodge = (src, dest) -> {
         // See PDF 2.0 specification
         if (Float.compare(dest, 0) == 0)
         {
@@ -85,7 +85,7 @@ public class BlendMode
         return dest / (1 - src);
     };
 
-    private static BlendChannelFunction fColorBurn = (src, dest) -> {
+    private static final BlendChannelFunction fColorBurn = (src, dest) -> {
         // See PDF 2.0 specification
         if (Float.compare(dest, 1) == 0)
         {
@@ -98,10 +98,10 @@ public class BlendMode
         return 1 - (1 - dest) / src;
     };
 
-    private static BlendChannelFunction fHardLight = (src, dest) -> (src <= 0.5) ? 2 * dest * src
+    private static final BlendChannelFunction fHardLight = (src, dest) -> (src <= 0.5) ? 2 * dest * src
             : 2 * (src + dest - src * dest) - 1;
 
-    private static BlendChannelFunction fSoftLight = (src, dest) -> {
+    private static final BlendChannelFunction fSoftLight = (src, dest) -> {
         if (src <= 0.5)
         {
             return dest - (1 - 2 * src) * dest * (1 - dest);
@@ -114,25 +114,25 @@ public class BlendMode
         }
     };
 
-    private static BlendChannelFunction fDifference = (src, dest) -> Math.abs(dest - src);
+    private static final BlendChannelFunction fDifference = (src, dest) -> Math.abs(dest - src);
 
-    private static BlendChannelFunction fExclusion = (src, dest) -> dest + src - 2 * dest * src;
+    private static final BlendChannelFunction fExclusion = (src, dest) -> dest + src - 2 * dest * src;
 
     /**
      * Functions for the blend operation of non-separable blend modes
      */
-    private static BlendFunction fHue = (src, dest, result) -> {
+    private static final BlendFunction fHue = (src, dest, result) -> {
         float[] temp = new float[3];
         getSaturationRGB(dest, src, temp);
         getLuminosityRGB(dest, temp, result);
     };
 
-    private static BlendFunction fSaturation = BlendMode::getSaturationRGB;
+    private static final BlendFunction fSaturation = BlendMode::getSaturationRGB;
 
-    private static BlendFunction fColor = (src, dest, result) -> getLuminosityRGB(dest, src,
+    private static final BlendFunction fColor = (src, dest, result) -> getLuminosityRGB(dest, src,
             result);
 
-    private static BlendFunction fLuminosity = BlendMode::getLuminosityRGB;
+    private static final BlendFunction fLuminosity = BlendMode::getLuminosityRGB;
 
     /**
      * Separable blend modes as defined in the PDF specification
