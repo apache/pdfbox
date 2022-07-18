@@ -20,7 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
  * An implementation of the TTFDataStream using RandomAccessRead as source.
@@ -35,13 +37,12 @@ class RandomAccessReadDataStream extends TTFDataStream
     /**
      * Constructor.
      * 
-     * @param randomAccessRead
+     * @param randomAccessRead source to be read from
      * 
-     * @throws IOException If there is a problem creating the RandomAccessReadBufferedFile.
+     * @throws IOException If there is a problem reading the source data.
      */
     RandomAccessReadDataStream(RandomAccessRead randomAccessRead) throws IOException
     {
-        this.randomAccessRead = randomAccessRead;
         length = randomAccessRead.length();
         data = new byte[(int) length];
         int remainingBytes = data.length;
@@ -51,9 +52,23 @@ class RandomAccessReadDataStream extends TTFDataStream
         {
             remainingBytes -= amountRead;
         }
-        randomAccessRead.seek(0);
+        this.randomAccessRead = new RandomAccessReadBuffer(data);
     }
     
+    /**
+     * Constructor.
+     * 
+     * @param inputStream source to be read from
+     * 
+     * @throws IOException If there is a problem reading the source data.
+     */
+    RandomAccessReadDataStream(InputStream inputStream) throws IOException
+    {
+        data = IOUtils.toByteArray(inputStream);
+        length = data.length;
+        this.randomAccessRead = new RandomAccessReadBuffer(data);
+    }
+
     /**
      * Get the current position in the stream.
      * @return The current position in the stream.
