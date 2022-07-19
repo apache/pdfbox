@@ -437,7 +437,6 @@ public class PDDocument implements Closeable
 
         // Get the annotations of the page and append the signature-annotation to it
         // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
-        @SuppressWarnings({"java/abstract-to-concrete-cast]"})
         if (!(checkFields &&
               annotations instanceof COSArrayList &&
               acroFormFields instanceof COSArrayList &&
