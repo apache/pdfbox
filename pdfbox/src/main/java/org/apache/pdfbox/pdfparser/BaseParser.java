@@ -1046,7 +1046,8 @@ public abstract class BaseParser
     {
         if (source.isEOF())
         {
-            throw new IOException( "Error: End-of-File, expected line");
+            throw new IOException( "Error: End-of-File, expected line at offset " +
+                    source.getPosition());
         }
 
         StringBuilder buffer = new StringBuilder( 11 );
