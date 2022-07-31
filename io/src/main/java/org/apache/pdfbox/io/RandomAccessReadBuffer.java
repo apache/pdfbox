@@ -93,7 +93,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     }
 
     /**
-     * Create a random access read buffer of the given input stream by copying the data.
+     * Create a random access read buffer of the given input stream by copying the data to the memory.
      * 
      * @param input the input stream to be read
      * @throws IOException if something went wrong while copying the data
