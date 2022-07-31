@@ -40,10 +40,13 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ByteLookupTable;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.LookupOp;
+import java.awt.image.LookupTable;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -163,6 +166,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private final RenderDestination destination;
     private final RenderingHints renderingHints;
     private final float imageDownscalingOptimizationThreshold;
+    private LookupTable invTable = null;
 
     /**
     * Default annotations filter, returns all annotations
@@ -1078,19 +1082,65 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
                 // draw the mask
                 BufferedImage mask = pdImage.getImage();
-                BufferedImage renderedMask = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-                g = (Graphics2D) renderedMask.getGraphics();
-                g.translate(-bounds.getMinX(), -bounds.getMinY());
                 AffineTransform imageTransform = new AffineTransform(at);
                 imageTransform.scale(1.0 / mask.getWidth(), -1.0 / mask.getHeight());
                 imageTransform.translate(0, -mask.getHeight());
+                AffineTransform full = new AffineTransform(g.getTransform());
+                full.concatenate(imageTransform);
+                Matrix m = new Matrix(full);
+                double scaleX = Math.abs(m.getScalingFactorX());
+                double scaleY = Math.abs(m.getScalingFactorY());
+
+                boolean smallMask = mask.getWidth() <= 8 && mask.getHeight() <= 8;
+                if (!smallMask)
+                {
+                    // PDFBOX-5403:
+                    // The mask is copied to RGB because this supports a smooth scaling, so we
+                    // get a mask with 255 values instead of just 0 and 255.
+                    // Inverting is done because when we don't do it, the getScaledInstance() call
+                    // produces a black line in many masks. With the inversion we have a white line
+                    // which is neutral. Because of the inversion we don't have to substract from 255
+                    // in the "apply the mask" segment when rasterPixel[3] is assigned.
+
+                    // The inversion is not done for very small ones, because of
+                    // PDFBOX-2171-002-002710-p14.pdf where the "New Harmony Consolidated" and
+                    // "Sailor Springs" patterns became almost invisible.
+                    // (We may have to decide this differently in the future, e.g. on b/w relationship)
+                    BufferedImage tmp = new BufferedImage(mask.getWidth(), mask.getHeight(), BufferedImage.TYPE_INT_RGB);
+                    mask = new LookupOp(getInvLookupTable(), graphics.getRenderingHints()).filter(mask, tmp);
+                }
+
+                BufferedImage renderedMask = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+                g = (Graphics2D) renderedMask.getGraphics();
+                g.translate(-bounds.getMinX(), -bounds.getMinY());
                 g.setRenderingHints(graphics.getRenderingHints());
-                g.drawImage(mask, imageTransform, null);
+
+                if (smallMask)
+                {
+                    g.drawImage(mask, imageTransform, null);
+                }
+                else
+                {
+                    while (scaleX < 0.25)
+                    {
+                        scaleX *= 2.0;
+                    }
+                    while (scaleY < 0.25)
+                    {
+                        scaleY *= 2.0;
+                    }
+                    int w2 = (int) Math.round(mask.getWidth() * scaleX);
+                    int h2 = (int) Math.round(mask.getHeight() * scaleY);
+
+                    Image scaledMask = mask.getScaledInstance(w2, h2, Image.SCALE_SMOOTH);
+                    imageTransform.scale(1f / Math.abs(scaleX), 1f / Math.abs(scaleY));
+                    g.drawImage(scaledMask, imageTransform, null);
+                }
                 g.dispose();
 
                 // apply the mask
-                final int[] transparent = new int[4];
                 int[] alphaPixel = null;
+                int[] rasterPixel = null;
                 WritableRaster raster = renderedPaint.getRaster();
                 WritableRaster alpha = renderedMask.getRaster();
                 for (int y = 0; y < h; y++)
@@ -1098,13 +1148,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     for (int x = 0; x < w; x++)
                     {
                         alphaPixel = alpha.getPixel(x, y, alphaPixel);
-                        if (alphaPixel[0] == 255)
-                        {
-                            raster.setPixel(x, y, transparent);
-                        }
+                        rasterPixel = raster.getPixel(x, y, rasterPixel);
+                        rasterPixel[3] = alphaPixel[0];
+                        raster.setPixel(x, y, rasterPixel);
                     }
                 }
-                
+
                 // draw the image
                 graphics.drawImage(renderedPaint,
                         AffineTransform.getTranslateInstance(bounds.getMinX(), bounds.getMinY()),
@@ -1979,5 +2028,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // visible if any of the entries in OCGs are ON
         // AnyOn is default
         return visibles.stream().noneMatch(v -> v);
+    }
+
+    private LookupTable getInvLookupTable()
+    {
+        if (invTable == null)
+        {
+            byte[] inv = new byte[256];
+            for (int i = 0; i < inv.length; i++)
+            {
+                inv[i] = (byte) (255 - i);
+            }
+            invTable = new ByteLookupTable(0, inv);
+        }
+        return invTable;
     }
 }
