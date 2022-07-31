@@ -22,9 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSBase;
@@ -145,15 +143,10 @@ class MergeAcroFormsTest
         File f2 = new File(TARGET_PDF_DIR, "PDFBOX-1031-2.pdf");
         File pdfOutput = new File(OUT_DIR,"PDFBOX-1031.pdf");
 
-        try (InputStream is1 = new FileInputStream(f1);
-             InputStream is2 = new FileInputStream(f2))
-        {
-            
-            merger.setDestinationFileName(pdfOutput.getAbsolutePath());
-            merger.addSource(is1);
-            merger.addSource(is2);
-            merger.mergeDocuments(null);
-        }
+        merger.setDestinationFileName(pdfOutput.getAbsolutePath());
+        merger.addSource(f1);
+        merger.addSource(f2);
+        merger.mergeDocuments(null);
         
         // Test merge result
         try (PDDocument mergedPDF = Loader.loadPDF(pdfOutput))
@@ -185,14 +178,10 @@ class MergeAcroFormsTest
         
         File pdfOutput = new File(OUT_DIR,"PDFBOX-1100.pdf");
 
-        try (InputStream is1 = new FileInputStream(file1);
-                InputStream is2 = new FileInputStream(file2))
-        {
-            merger.setDestinationFileName(pdfOutput.getAbsolutePath());
-            merger.addSource(is1);
-            merger.addSource(is2);
-            merger.mergeDocuments(null);
-        }
+        merger.setDestinationFileName(pdfOutput.getAbsolutePath());
+        merger.addSource(file1);
+        merger.addSource(file2);
+        merger.mergeDocuments(null);
         
         // Test merge result
         try (PDDocument mergedPDF = Loader.loadPDF(pdfOutput))
