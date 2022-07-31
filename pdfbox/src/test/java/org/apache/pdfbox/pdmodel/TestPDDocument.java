@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -76,7 +75,7 @@ class TestPDDocument
         assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), StandardCharsets.UTF_8));
 
         // reload
-        try (PDDocument loadDoc = Loader.loadPDF(new ByteArrayInputStream(pdf)))
+        try (PDDocument loadDoc = Loader.loadPDF(pdf))
         {
             assertEquals(1, loadDoc.getNumberOfPages());
         }
@@ -244,7 +243,7 @@ class TestPDDocument
             doc.save(baos);
         }
 
-        Loader.loadPDF(new ByteArrayInputStream(baos.toByteArray())).close();
+        Loader.loadPDF(baos.toByteArray()).close();
 
         Locale.setDefault(defaultLocale);
     }
