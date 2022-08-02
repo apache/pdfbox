@@ -32,6 +32,7 @@ import java.util.List;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -357,7 +358,8 @@ class PDAcroFormTest
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12866226/D1790B.PDF";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
 
