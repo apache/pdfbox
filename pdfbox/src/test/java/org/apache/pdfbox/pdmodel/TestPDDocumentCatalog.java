@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,8 +50,8 @@ class TestPDDocumentCatalog
     @Test
     void retrievePageLabels() throws IOException
     {
-        try (PDDocument doc = Loader.loadPDF(
-                TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf")))
+        try (PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf"))))
         {
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             String[] labels = cat.getPageLabels().getLabelsByPageIndices();
@@ -83,7 +84,8 @@ class TestPDDocumentCatalog
     void retrievePageLabelsOnMalformedPdf() throws IOException
     {
         try (PDDocument doc = Loader
-                .loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("badpagelabels.pdf")))
+                .loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                        TestPDDocumentCatalog.class.getResourceAsStream("badpagelabels.pdf"))))
         {
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             // getLabelsByPageIndices() should not throw an exception
@@ -104,7 +106,8 @@ class TestPDDocumentCatalog
     @Test
     void retrieveNumberOfPages() throws IOException
     {
-        try (PDDocument doc = Loader.loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf")))
+        try (PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"))))
         {
             assertEquals(4, doc.getNumberOfPages());
         }
@@ -123,7 +126,8 @@ class TestPDDocumentCatalog
     void handleOutputIntents() throws IOException
     {
         try (InputStream colorProfile = TestPDDocumentCatalog.class.getResourceAsStream("sRGB.icc");
-             PDDocument doc = Loader.loadPDF(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf")))
+                PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                        TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"))))
         {
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
 

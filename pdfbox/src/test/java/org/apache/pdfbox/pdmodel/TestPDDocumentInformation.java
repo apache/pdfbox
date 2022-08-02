@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -77,8 +78,8 @@ class TestPDDocumentInformation
     @Test
     void testPDFBox3068() throws Exception
     {
-        try (PDDocument doc = Loader
-                .loadPDF(TestPDDocumentInformation.class.getResourceAsStream("PDFBOX-3068.pdf")))
+        try (PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                        TestPDDocumentInformation.class.getResourceAsStream("PDFBOX-3068.pdf"))))
         {
             PDDocumentInformation documentInformation = doc.getDocumentInformation();
             assertEquals("Title", documentInformation.getTitle());
