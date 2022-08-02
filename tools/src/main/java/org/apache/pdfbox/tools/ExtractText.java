@@ -19,7 +19,6 @@ package org.apache.pdfbox.tools;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
@@ -34,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
@@ -224,8 +224,8 @@ public final class ExtractText  implements Callable<Integer>
                                 {
                                     SYSERR.println("  is PDF (size=" + file.getSize() + ")");
                                 }
-                                try (InputStream fis = file.createInputStream();
-                                        PDDocument subDoc = Loader.loadPDF(fis))
+                                try (PDDocument subDoc = Loader.loadPDF(RandomAccessReadBuffer
+                                                .createBufferFromStream(file.createInputStream())))
                                 {
                                     if (toHTML)
                                     {
