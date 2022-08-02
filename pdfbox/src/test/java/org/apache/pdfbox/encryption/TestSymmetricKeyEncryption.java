@@ -24,9 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +42,9 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
@@ -262,7 +263,9 @@ class TestSymmetricKeyEncryption
         int sizeOfFileWithEmbeddedFile = inputFileWithEmbeddedFileAsByteArray.length;
 
         File extractedEmbeddedFile
-                = extractEmbeddedFile(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray), "innerFile.pdf");
+                = extractEmbeddedFile(
+                        new RandomAccessReadBuffer(inputFileWithEmbeddedFileAsByteArray),
+                        "innerFile.pdf");
 
         testSymmEncrForKeySizeInner(40, false, sizeOfFileWithEmbeddedFile, 
                 inputFileWithEmbeddedFileAsByteArray, extractedEmbeddedFile, USERPASSWORD, OWNERPASSWORD);
@@ -426,9 +429,9 @@ class TestSymmetricKeyEncryption
     }
 
     // extract the embedded file, saves it, and return the extracted saved file
-    private File extractEmbeddedFile(InputStream pdfInputStream, String name) throws IOException
+    private File extractEmbeddedFile(RandomAccessRead pdfSource, String name) throws IOException
     {
-        PDDocument docWithEmbeddedFile = Loader.loadPDF(pdfInputStream);
+        PDDocument docWithEmbeddedFile = Loader.loadPDF(pdfSource);
         PDDocumentCatalog catalog = docWithEmbeddedFile.getDocumentCatalog();
         PDDocumentNameDictionary names = catalog.getNames();
         PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
@@ -464,7 +467,9 @@ class TestSymmetricKeyEncryption
             encryptedDoc.setAllSecurityToBeRemoved(true);
             encryptedDoc.save(decryptedFile);
             
-            File extractedEmbeddedFile = extractEmbeddedFile(new FileInputStream(decryptedFile), "decryptedInnerFile-" + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + ".pdf");
+            File extractedEmbeddedFile = extractEmbeddedFile(
+                    new RandomAccessReadBufferedFile(decryptedFile), "decryptedInnerFile-"
+                            + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + ".pdf");
             
             assertEquals(embeddedFilePriorToEncryption.length(), extractedEmbeddedFile.length(),
                     keyLength + "-bit " + (preferAES ? "AES" : "RC4") + " decrypted inner attachment pdf should have same size as plain one");

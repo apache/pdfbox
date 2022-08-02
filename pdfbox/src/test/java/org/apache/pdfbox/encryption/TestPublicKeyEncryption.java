@@ -36,6 +36,7 @@ import javax.crypto.Cipher;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
@@ -333,8 +334,9 @@ class TestPublicKeyEncryption
     @Test
     void testReadPubkeyEncryptedAES128() throws IOException
     {
-        try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength128.pdf");
-             PDDocument doc = Loader.loadPDF(is,
+        try (PDDocument doc = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(
+                        TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength128.pdf")),
                 "w!z%C*F-JaNdRgUk",
                 TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
                 "testnutzer"))
@@ -356,8 +358,9 @@ class TestPublicKeyEncryption
     @Test
     void testReadPubkeyEncryptedAES256() throws IOException
     {
-        try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength256.pdf");
-             PDDocument doc = Loader.loadPDF(is,
+        try (PDDocument doc = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(
+                        TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength256.pdf")),
                 "w!z%C*F-JaNdRgUk",
                 TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
                 "testnutzer"))
@@ -379,10 +382,11 @@ class TestPublicKeyEncryption
     @Test
     void testReadPubkeyEncryptedAES128withMetadataExposed() throws IOException
     {
-        try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AES128ExposedMeta.pdf");
-             PDDocument doc = Loader.loadPDF(is, "",
-                     TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-5249.p12"), "test",
-                     MemoryUsageSetting.setupMainMemoryOnly()))
+        try (PDDocument doc = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(
+                        TestPublicKeyEncryption.class.getResourceAsStream("AES128ExposedMeta.pdf")), //
+                "", TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-5249.p12"), //
+                "test", MemoryUsageSetting.setupMainMemoryOnly()))
         {
             assertEquals("PublicKeySecurityHandler",
                     doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
@@ -402,10 +406,11 @@ class TestPublicKeyEncryption
     @Test
     void testReadPubkeyEncryptedAES256withMetadataExposed() throws IOException
     {
-        try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AES256ExposedMeta.pdf");
-             PDDocument doc = Loader.loadPDF(is, "",
-                     TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-5249.p12"), "test",
-                     MemoryUsageSetting.setupMainMemoryOnly()))
+        try (PDDocument doc = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(
+                        TestPublicKeyEncryption.class.getResourceAsStream("AES256ExposedMeta.pdf")), //
+                "", TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-5249.p12"), //
+                "test", MemoryUsageSetting.setupMainMemoryOnly()))
         {
             assertEquals("PublicKeySecurityHandler",
                     doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
