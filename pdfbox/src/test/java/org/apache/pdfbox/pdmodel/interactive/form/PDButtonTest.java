@@ -25,9 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -110,8 +108,7 @@ class PDButtonTest
     {
         File file = new File(TARGET_PDF_DIR, "PDFBOX-3656.pdf");
         
-        try (InputStream is = new FileInputStream(file);
-                PDDocument pdfDocument = Loader.loadPDF(is))
+        try (PDDocument pdfDocument = Loader.loadPDF(file))
         {   
             PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("Checking/Savings");
             radioButton.setValue("Off");
@@ -137,8 +134,7 @@ class PDButtonTest
     void testOptionsAndNamesNotNumbers()
     {
         File file = new File(TARGET_PDF_DIR, "PDFBOX-3682.pdf");
-        try (InputStream is = new FileInputStream(file);
-                PDDocument pdfDocument = Loader.loadPDF(is))
+        try (PDDocument pdfDocument = Loader.loadPDF(file))
         {            
             pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton").setValue("c");
             PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton");
