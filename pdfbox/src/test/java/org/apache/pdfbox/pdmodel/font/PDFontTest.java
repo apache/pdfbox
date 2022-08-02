@@ -40,6 +40,7 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -256,8 +257,9 @@ class PDFontTest
     @Test
     void testPDFox5048() throws IOException
     {
-        try (InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf").openStream();
-             PDDocument doc = Loader.loadPDF(is))
+        try (PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                new URL("https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf")
+                        .openStream())))
         {
             PDPage page = doc.getPage(0);
             PDFont font = page.getResources().getFont(COSName.getPDFName("F70"));
