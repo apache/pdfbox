@@ -364,4 +364,26 @@ public class RandomAccessReadBuffer implements RandomAccessRead
                 streamLength, true);
     }
 
+    /**
+     * Create e new RandomAccessReadBuffer using the given InputStream. The data is copied to the memory and the
+     * InputStream is closed.
+     * 
+     * @param inputStream the InputStream holding the data to be copied
+     * 
+     * @return the RandomAccessReadBufer holding the data of the InputStream
+     * @throws IOException if something went wrong while copying the data
+     */
+    public static RandomAccessReadBuffer createBufferFromStream(InputStream inputStream) throws IOException
+    {
+        RandomAccessReadBuffer randomAccessRead = null;
+        try
+        {
+            randomAccessRead = new RandomAccessReadBuffer(inputStream);
+        }
+        finally
+        {
+            inputStream.close();
+        }
+        return randomAccessRead;
+    }
 }
