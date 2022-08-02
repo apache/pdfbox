@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
@@ -45,9 +46,9 @@ class TestEmbeddedFiles
         boolean ok = false;
         try
         {
-            PDDocument doc = Loader.loadPDF(TestEmbeddedFiles.class
-                    .getResourceAsStream(
-                "null_PDComplexFileSpecification.pdf"));
+            PDDocument doc = Loader
+                    .loadPDF(RandomAccessReadBuffer.createBufferFromStream(TestEmbeddedFiles.class
+                            .getResourceAsStream("null_PDComplexFileSpecification.pdf")));
 
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
             PDDocumentNameDictionary names = catalog.getNames();
@@ -83,9 +84,8 @@ class TestEmbeddedFiles
         PDEmbeddedFile dosFile = null;
         PDEmbeddedFile unixFile = null;
 
-        PDDocument doc = Loader.loadPDF(
-                TestEmbeddedFiles.class
-                .getResourceAsStream("testPDF_multiFormatEmbFiles.pdf"));
+        PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                TestEmbeddedFiles.class.getResourceAsStream("testPDF_multiFormatEmbFiles.pdf")));
 
         PDDocumentCatalog catalog = doc.getDocumentCatalog();
         PDDocumentNameDictionary names = catalog.getNames();
