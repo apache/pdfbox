@@ -79,7 +79,8 @@ public class Loader
     }
 
     /**
-     * This will load a document from an input stream.
+     * This will load a document from an input stream. The stream is loaded to the memory to establish random access to
+     * the data.
      *
      * @param input The stream that contains the document.
      *
@@ -125,7 +126,8 @@ public class Loader
     }
 
     /**
-     * This will load a document from an input stream.
+     * This will load a document from an input stream. The stream is loaded to the memory to establish random access to
+     * the data.
      *
      * @param input The stream that contains the document.
      *
@@ -324,7 +326,7 @@ public class Loader
     }
 
     /**
-     * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * Parses a PDF. Unrestricted main memory will be used for buffering PDF new streams.
      * 
      * @param randomAccessRead random access read representing the pdf to be loaded
      * 
@@ -343,7 +345,7 @@ public class Loader
      * Parses a PDF.
      * 
      * @param randomAccessRead random access read representing the pdf to be loaded
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
      * 
      * @return loaded document
      * 
@@ -357,9 +359,9 @@ public class Loader
     }
 
     /**
-     * Parses a PDF.
+     * Parses a PDF. Unrestricted main memory will be used for buffering new/altered PDF streams.
      *
-     * @param randomAccessRead stream that contains the document. Don't forget to close it after loading.
+     * @param randomAccessRead random access read representing the pdf to be loaded
      * @param password password to be used for decryption
      *
      * @return loaded document
@@ -374,9 +376,9 @@ public class Loader
     }
 
     /**
-     * Parses a PDF.
+     * Parses a PDF. Unrestricted main memory will be used for buffering new/altered PDF streams.
      *
-     * @param randomAccessRead stream that contains the document. Don't forget to close it after loading.
+     * @param randomAccessRead random access read representing the pdf to be loaded
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
@@ -395,9 +397,9 @@ public class Loader
     /**
      * Parses a PDF.
      *
-     * @param randomAccessRead stream that contains the document. Don't forget to close it after loading.
+     * @param randomAccessRead random access read representing the pdf to be loaded
      * @param password password to be used for decryption
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
      * 
      * @return loaded document
      * 
@@ -417,7 +419,7 @@ public class Loader
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used PDF streams
+     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
      * 
      * @return loaded document
      * 
@@ -430,124 +432,6 @@ public class Loader
         PDFParser parser = new PDFParser(randomAccessRead, password, keyStore, alias,
                 memUsageSetting);
         return parser.parse();
-    }
-
-    /**
-     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf. Unrestricted
-     * main memory will be used for buffering PDF streams.
-     * 
-     * @param input stream that contains the document. Don't forget to close it after loading.
-     * 
-     * @return loaded document
-     * 
-     * @throws InvalidPasswordException If the PDF required a non-empty password.
-     * @throws IOException In case of a reading or parsing error.
-     */
-    public static PDDocument loadPDF(InputStream input) throws IOException
-    {
-        return Loader.loadPDF(input, "", null, null, MemoryUsageSetting.setupMainMemoryOnly());
-    }
-    
-    /**
-     * Parses a PDF. The given input stream is copied to main memory to enable random access to the pdf.
-     * 
-     * @param input stream that contains the document. Don't forget to close it after loading.
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
-     * 
-     * @return loaded document
-     * 
-     * @throws InvalidPasswordException If the PDF required a non-empty password.
-     * @throws IOException In case of a reading or parsing error.
-     */
-    public static PDDocument loadPDF(InputStream input, MemoryUsageSetting memUsageSetting)
-            throws IOException
-    {
-        return Loader.loadPDF(input, "", null, null, memUsageSetting);
-    }
-    
-    /**
-     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf. Unrestricted
-     * main memory will be used for buffering PDF streams.
-     *
-     * @param input stream that contains the document. Don't forget to close it after loading.
-     * @param password password to be used for decryption
-     *
-     * @return loaded document
-     * 
-     * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException In case of a reading or parsing error.
-     */
-    public static PDDocument loadPDF(InputStream input, String password) throws IOException
-    {
-        return Loader.loadPDF(input, password, null, null, MemoryUsageSetting.setupMainMemoryOnly());
-    }
-    /**
-     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf. Unrestricted
-     * main memory will be used for buffering PDF streams.
-     *
-     * @param input stream that contains the document. Don't forget to close it after loading.
-     * @param password password to be used for decryption
-     * @param keyStore key store to be used for decryption when using public key security
-     * @param alias alias to be used for decryption when using public key security
-     * 
-     * @return loaded document
-     * 
-     * @throws IOException In case of a reading or parsing error.
-     */
-    public static PDDocument loadPDF(InputStream input, String password, InputStream keyStore,
-            String alias) throws IOException
-    {
-        return Loader.loadPDF(input, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
-    }
-    
-    /**
-     * Parses a PDF. The given input stream is copied to main memory to enable random access to the pdf.
-     *
-     * @param input stream that contains the document. Don't forget to close it after loading.
-     * @param password password to be used for decryption
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
-     * 
-     * @return loaded document
-     * 
-     * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException In case of a reading or parsing error.
-     */
-    public static PDDocument loadPDF(InputStream input, String password,
-            MemoryUsageSetting memUsageSetting) throws IOException
-    {
-        return Loader.loadPDF(input, password, null, null, memUsageSetting);
-    }
-    
-    /**
-     * Parses a PDF. The given input stream is copied to memory to enable random access to the pdf.
-     *
-     * @param input stream that contains the document. Don't forget to close it after loading.
-     * @param password password to be used for decryption
-     * @param keyStore key store to be used for decryption when using public key security
-     * @param alias alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
-     * 
-     * @return loaded document
-     * 
-     * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException In case of a reading or parsing error.
-     */
-    public static PDDocument loadPDF(InputStream input, String password, InputStream keyStore,
-            String alias, MemoryUsageSetting memUsageSetting) throws IOException
-    {
-        RandomAccessRead source = null;
-        try
-        {
-            // RandomAccessRead is not closed here, may be needed for signing
-            source = new RandomAccessReadBuffer(input);
-            PDFParser parser = new PDFParser(source, password, keyStore, alias, memUsageSetting);
-            return parser.parse();
-        }
-        catch (IOException ioe)
-        {
-            IOUtils.closeQuietly(source);
-            throw ioe;
-        }
     }
 
 }
