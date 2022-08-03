@@ -17,6 +17,8 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +31,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeCollection;
 import org.apache.fontbox.ttf.TrueTypeFont;
@@ -41,6 +44,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
+
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -440,5 +444,23 @@ public class PDFontTest
         String extractedText = stripper.getText(doc);
         Assert.assertEquals(text + "\n" + text, extractedText.trim());
         doc.close();
+    }
+
+    /**
+     * Test font with an unusual cmap table combination (0, 3).
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox5484() throws IOException
+    {
+        File fontFile = new File("target/fonts", "PDFBOX-5484.ttf");
+        TrueTypeFont ttf = new TTFParser().parse(fontFile);
+        PDDocument doc = new PDDocument();
+        PDTrueTypeFont tr = PDTrueTypeFont.load(doc, ttf, WinAnsiEncoding.INSTANCE);
+        GeneralPath path1 = tr.getPath("oslash");
+        GeneralPath path2 = tr.getPath(248);
+        Assert.assertFalse(path2.getPathIterator(null).isDone()); // not empty
+        Assert.assertTrue(new Area(path1).equals(new Area(path2))); // assertEquals does not test equals()
     }
 }
