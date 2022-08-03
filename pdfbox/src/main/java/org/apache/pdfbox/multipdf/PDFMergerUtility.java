@@ -19,7 +19,6 @@ package org.apache.pdfbox.multipdf;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +43,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -307,9 +307,9 @@ public class PDFMergerUtility
     /**
      * Add a source to the list of documents to merge.
      *
-     * @param source InputStream representing source document
+     * @param source RandomAccessRead representing source document
      */
-    public void addSource(InputStream source)
+    public void addSource(RandomAccessRead source)
     {
         sources.add(source);
     }
@@ -317,10 +317,9 @@ public class PDFMergerUtility
     /**
      * Add a list of sources to the list of documents to merge.
      *
-     * @param sourcesList List of InputStream objects representing source
-     * documents
+     * @param sourcesList List of RandomAccessRead objects representing source documents
      */
-    public void addSources(List<InputStream> sourcesList)
+    public void addSources(List<RandomAccessRead> sourcesList)
     {
         sources.addAll(sourcesList);
     }
@@ -377,7 +376,8 @@ public class PDFMergerUtility
                     }
                     else
                     {
-                        sourceDoc = Loader.loadPDF((InputStream) sourceObject, memUsageSetting);
+                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject,
+                                memUsageSetting);
                     }
                     for (PDPage page : sourceDoc.getPages())
                     {
@@ -453,7 +453,7 @@ public class PDFMergerUtility
                     }
                     else
                     {
-                        sourceDoc = Loader.loadPDF((InputStream) sourceObject,
+                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject,
                                 partitionedMemSetting);
                     }
                     tobeclosed.add(sourceDoc);
