@@ -716,6 +716,19 @@
                             <sha512>37c73b41d1e00d66717c3715e6c45724c3f163d3d5b045c67e90c3713746d39eef96b4f0e6f368d0679d4c73d02ca01cfe5141d8a526e46ea15a4579ea1e75a2</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-5484</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13047577/PDFBOX-5484.ttf</url>
+                            <outputDirectory>${project.build.directory}/fonts</outputDirectory>
+                            <outputFileName>PDFBOX-5484.ttf</outputFileName>
+                            <sha512>7c3d8bbc18654315d6341a277dcd5c66218b95c43baf190b6e32f77817d17bab421ef76f2c904b46c97f84c49b00d58525449cff970897010534d6aa2812a4e2</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
