@@ -313,7 +313,7 @@ public class PDFMergerUtility
      */
     public void addSources(Collection<RandomAccessRead> sourcesList)
     {
-        sources.addAll(inputStreams);
+        sources.addAll(sourcesList);
     }
 
     /**
