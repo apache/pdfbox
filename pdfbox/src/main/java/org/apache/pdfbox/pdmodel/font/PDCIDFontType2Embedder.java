@@ -236,18 +236,22 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int cidMax = Collections.max(cidToGid.keySet());
+        byte[] buffer = new byte[2];
         for (int i = 0; i <= cidMax; i++)
         {
             int gid;
-            if (cidToGid.containsKey(i))
+            Integer key = cidToGid.get(i);
+            if (key != null)
             {
-                gid = cidToGid.get(i);
+                gid = key;
             }
             else
             {
                 gid = 0;
             }
-            out.write(new byte[] { (byte)(gid >> 8 & 0xff), (byte)(gid & 0xff) });
+            buffer[0] = (byte)(gid >> 8 & 0xff);
+            buffer[1] = (byte)(gid & 0xff);
+            out.write(buffer);
         }
 
         InputStream input = new ByteArrayInputStream(out.toByteArray());
