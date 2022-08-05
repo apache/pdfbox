@@ -24,6 +24,7 @@ import java.util.concurrent.Callable;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
@@ -76,6 +77,7 @@ public final class ImageToPDF implements Callable<Integer>
 
         try (PDDocument doc = new PDDocument())
         {
+            PDPageTree tree = doc.getPages();
             for (File imageFile : infiles)
             {
                 PDImageXObject pdImage = PDImageXObject.createFromFile(imageFile.getAbsolutePath(), doc);
@@ -86,7 +88,7 @@ public final class ImageToPDF implements Callable<Integer>
                     actualMediaBox = new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth());
                 }
                 PDPage page = new PDPage(actualMediaBox);
-                doc.addPage(page);
+                tree.add(page);
 
                 try (PDPageContentStream contents = new PDPageContentStream(doc, page))
                 {

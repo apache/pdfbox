@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -216,6 +217,7 @@ public class TextToPDF implements Callable<Integer>
             boolean textIsEmpty = true;
 
             StringBuilder nextLineToDraw = new StringBuilder();
+            PDPageTree tree = doc.getPages();
 
             while( (nextLine = data.readLine()) != null )
             {
@@ -300,7 +302,7 @@ public class TextToPDF implements Callable<Integer>
                         // We have crossed the end-of-page boundary and need to extend the
                         // document by another page.
                         page = new PDPage(actualMediaBox);
-                        doc.addPage( page );
+                        tree.add( page );
                         if( contentStream != null )
                         {
                             contentStream.endText();
@@ -323,7 +325,7 @@ public class TextToPDF implements Callable<Integer>
                     if (ff)
                     {
                         page = new PDPage(actualMediaBox);
-                        doc.addPage(page);
+                        tree.add(page);
                         contentStream.endText();
                         contentStream.close();
                         contentStream = new PDPageContentStream(doc, page);
@@ -340,7 +342,7 @@ public class TextToPDF implements Callable<Integer>
             // So in order to make the resultant PDF document readable by Adobe Reader etc, we'll add an empty page.
             if (textIsEmpty)
             {
-                doc.addPage(page);
+                tree.add(page);
             }
 
             if( contentStream != null )
