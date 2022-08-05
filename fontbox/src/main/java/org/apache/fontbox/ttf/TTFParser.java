@@ -21,7 +21,6 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.RandomAccessRead;
-import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
  * TrueType font file parser.
@@ -72,6 +71,10 @@ public class TTFParser
             dataStream.close();
             throw ex;
         }
+        finally
+        {
+            randomAccessRead.close();
+        }
     }
 
     /**
@@ -84,7 +87,21 @@ public class TTFParser
     public TrueTypeFont parseEmbedded(InputStream inputStream) throws IOException
     {
         this.isEmbedded = true;
-        return parse(new RandomAccessReadBuffer(inputStream));
+        RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(inputStream);
+        try
+        {
+            return parse(dataStream);
+        }
+        catch (IOException ex)
+        {
+            // close only on error (source is still being accessed later)
+            dataStream.close();
+            throw ex;
+        }
+        finally
+        {
+            inputStream.close();
+        }
     }
 
     /**
@@ -104,7 +121,7 @@ public class TTFParser
         int rangeShift = raf.readUnsignedShort();
         for (int i = 0; i < numberOfTables; i++)
         {
-            TTFTable table = readTableDirectory(font, raf);
+            TTFTable table = readTableDirectory(raf);
             
             // skip tables with zero length
             if (table != null)
@@ -217,7 +234,7 @@ public class TTFParser
         return false;
     }
 
-    private TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
+    private TTFTable readTableDirectory(TTFDataStream raf) throws IOException
     {
         TTFTable table;
         String tag = raf.readString(4);

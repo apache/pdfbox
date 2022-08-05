@@ -17,6 +17,7 @@
 package org.apache.pdfbox.cos;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -259,7 +260,8 @@ class TestCOSIncrement
         URL pdfLocation = 
             new URL("https://issues.apache.org/jira/secure/attachment/12891316/YTW2VWJQTDAE67PGJT6GS7QSKW3GNUQR.pdf");
         
-        try (PDDocument document = Loader.loadPDF(pdfLocation.openStream()))
+        try (PDDocument document = Loader
+                .loadPDF(RandomAccessReadBuffer.createBufferFromStream(pdfLocation.openStream())))
         {
             document.setAllSecurityToBeRemoved(true);
             try

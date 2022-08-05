@@ -122,6 +122,7 @@ import org.apache.pdfbox.debugger.ui.WindowPrefs;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -1329,7 +1330,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             PDDocument open() throws IOException
             {
                 long t0 = System.nanoTime();
-                PDDocument doc = Loader.loadPDF(new URL(urlString).openStream(), password);
+                PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer
+                        .createBufferFromStream(new URL(urlString).openStream()), password);
                 long t1 = System.nanoTime();
                 long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
                 LOG.info("Parsed in " + ms + " ms");

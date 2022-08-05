@@ -21,7 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -56,7 +55,7 @@ public final class PDOutputIntent implements COSObjectable
     }
 
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return dictionary;
     }

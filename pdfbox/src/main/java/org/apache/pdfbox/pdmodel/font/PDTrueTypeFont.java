@@ -706,6 +706,12 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
                     // PDFBOX-4755 / PDF.js #5501
                     cmapWinUnicode = cmap;
                 }
+                else if (CmapTable.PLATFORM_UNICODE == cmap.getPlatformId()
+                        && CmapTable.ENCODING_UNICODE_2_0_BMP == cmap.getPlatformEncodingId())
+                {
+                    // PDFBOX-5484
+                    cmapWinUnicode = cmap;
+                }
             }
         }
         cmapInitialized = true;

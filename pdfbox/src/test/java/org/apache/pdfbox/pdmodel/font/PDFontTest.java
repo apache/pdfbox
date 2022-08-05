@@ -17,11 +17,8 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,12 +31,15 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeCollection;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
+
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -48,6 +48,11 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -256,8 +261,9 @@ class PDFontTest
     @Test
     void testPDFox5048() throws IOException
     {
-        try (InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf").openStream();
-             PDDocument doc = Loader.loadPDF(is))
+        try (PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                new URL("https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf")
+                        .openStream())))
         {
             PDPage page = doc.getPage(0);
             PDFont font = page.getResources().getFont(COSName.getPDFName("F70"));
@@ -420,5 +426,23 @@ class PDFontTest
             String extractedText = stripper.getText(doc);
             assertEquals(text + "\n" + text, extractedText.trim());
         }
+    }
+
+    /**
+     * Test font with an unusual cmap table combination (0, 3).
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPDFBox5484() throws IOException
+    {
+        File fontFile = new File("target/fonts", "PDFBOX-5484.ttf");
+        TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(fontFile));
+        PDDocument doc = new PDDocument();
+        PDTrueTypeFont tr = PDTrueTypeFont.load(doc, ttf, WinAnsiEncoding.INSTANCE);
+        GeneralPath path1 = tr.getPath("oslash");
+        GeneralPath path2 = tr.getPath(248);
+        assertFalse(path2.getPathIterator(null).isDone()); // not empty
+        assertTrue(new Area(path1).equals(new Area(path2))); // assertEquals does not test equals()
     }
 }

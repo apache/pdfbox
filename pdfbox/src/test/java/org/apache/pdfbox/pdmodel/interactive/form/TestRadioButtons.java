@@ -32,6 +32,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
@@ -140,7 +141,8 @@ class TestRadioButtons
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -162,7 +164,8 @@ class TestRadioButtons
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -187,7 +190,8 @@ class TestRadioButtons
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -225,7 +229,8 @@ class TestRadioButtons
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -254,7 +259,8 @@ class TestRadioButtons
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -289,7 +295,8 @@ class TestRadioButtons
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -308,7 +315,8 @@ class TestRadioButtons
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -328,7 +336,8 @@ class TestRadioButtons
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");

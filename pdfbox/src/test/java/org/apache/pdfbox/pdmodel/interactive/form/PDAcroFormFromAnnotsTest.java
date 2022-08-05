@@ -29,6 +29,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -60,14 +61,15 @@ class PDAcroFormFromAnnotsTest
 
         int numFormFieldsByAcrobat = 0;
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer
+                .createBufferFromStream(new URL(acrobatSourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(null);
             numFormFieldsByAcrobat = acroForm.getFields().size();
         }
                 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm 
@@ -95,14 +97,16 @@ class PDAcroFormFromAnnotsTest
 
         int numFormFieldsByAcrobat = 0;
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer
+                .createBufferFromStream(new URL(acrobatSourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(null);
             numFormFieldsByAcrobat = acroForm.getFields().size();
         }
                 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm 
@@ -129,7 +133,8 @@ class PDAcroFormFromAnnotsTest
 
         int numCosFormFields = 0;
                 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm 
@@ -155,7 +160,8 @@ class PDAcroFormFromAnnotsTest
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm
@@ -186,7 +192,8 @@ class PDAcroFormFromAnnotsTest
         // will build the expected fields using the acrobat source document
         Map<String, PDField> fieldsByName = new HashMap<>();
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer
+                .createBufferFromStream(new URL(acrobatSourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(null);
@@ -197,7 +204,8 @@ class PDAcroFormFromAnnotsTest
             }
         }
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm
@@ -236,7 +244,8 @@ class PDAcroFormFromAnnotsTest
         // will build the expected font respurce names and font decriptor names using the acrobat source document
         Map<String, String> fontNames = new HashMap<>();
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer
+                .createBufferFromStream(new URL(acrobatSourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(null);
@@ -258,7 +267,8 @@ class PDAcroFormFromAnnotsTest
             }
         }
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
@@ -291,7 +301,8 @@ class PDAcroFormFromAnnotsTest
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016993/poppler-14433-0.pdf";
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             assertDoesNotThrow(() -> catalog.getAcroForm(new CreateFieldsFixup(testPdf)), "Getting the AcroForm shall not throw an exception");

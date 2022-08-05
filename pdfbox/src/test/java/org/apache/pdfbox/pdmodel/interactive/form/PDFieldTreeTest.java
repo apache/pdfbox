@@ -17,10 +17,10 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 
@@ -44,8 +44,8 @@ class PDFieldTreeTest
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016994/PDFBOX-4131-0.pdf";
 
-        try (InputStream is = new URL(sourceUrl).openStream();
-             PDDocument doc = Loader.loadPDF(is))
+        try (PDDocument doc = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm();

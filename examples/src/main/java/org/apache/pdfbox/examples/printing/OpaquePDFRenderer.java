@@ -20,7 +20,6 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import javax.print.PrintServiceLookup;
@@ -33,6 +32,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.graphics.GraphicsOperatorProcessor;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.MissingResourceException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
@@ -62,8 +62,9 @@ public class OpaquePDFRenderer extends PDFRenderer
     public static void main(String[] args) throws IOException, PrinterException
     {
         // PDF from the QZ Tray project, who reported this problem.
-        try (InputStream is = new URL("https://github.com/qzind/tray/files/1749977/test.pdf").openStream();
-             PDDocument doc = Loader.loadPDF(is))
+        try (PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                        new URL("https://github.com/qzind/tray/files/1749977/test.pdf")
+                                .openStream())))
         {
             PDFRenderer renderer = new OpaquePDFRenderer(doc);
             Printable printable = new PDFPrintable(doc, Scaling.SCALE_TO_FIT, false, 0, true, renderer);

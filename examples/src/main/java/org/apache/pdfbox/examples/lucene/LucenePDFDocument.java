@@ -17,9 +17,7 @@
 package org.apache.pdfbox.examples.lucene;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -36,6 +34,9 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -207,21 +208,6 @@ public class LucenePDFDocument
     }
 
     /**
-     * Convert the PDF stream to a lucene document.
-     * 
-     * @param is The input stream.
-     * @return The input stream converted to a lucene document.
-     * @throws IOException If there is an error converting the PDF.
-     */
-    public Document convertDocument(InputStream is) throws IOException
-    {
-        Document document = new Document();
-        addContent(document, is, "<inputstream>");
-        return document;
-
-    }
-
-    /**
      * This will take a reference to a PDF document and create a lucene document.
      * 
      * @param file A reference to a PDF document.
@@ -250,13 +236,8 @@ public class LucenePDFDocument
         // tokenized prior to indexing.
         addUnstoredKeywordField(document, "uid", uid);
 
-        try (FileInputStream input = new FileInputStream(file))
-        {
-            addContent(document, input, file.getPath());
-        }
-
+        addContent(document, new RandomAccessReadBufferedFile(file), file.getPath());
         // return the document
-
         return document;
     }
 
@@ -288,28 +269,12 @@ public class LucenePDFDocument
         // tokenized prior to indexing.
         addUnstoredKeywordField(document, "uid", uid);
 
-        try (InputStream input = connection.getInputStream())
-        {
-            addContent(document, input, url.toExternalForm());
-        }
+        addContent(document,
+                RandomAccessReadBuffer.createBufferFromStream(connection.getInputStream()),
+                    url.toExternalForm());
 
         // return the document
         return document;
-    }
-
-    /**
-     * This will get a lucene document from a PDF file.
-     * 
-     * @param is The stream to read the PDF from.
-     * 
-     * @return The lucene document.
-     * 
-     * @throws IOException If there is an error parsing or indexing the document.
-     */
-    public static Document getDocument(InputStream is) throws IOException
-    {
-        LucenePDFDocument converter = new LucenePDFDocument();
-        return converter.convertDocument(is);
     }
 
     /**
@@ -346,14 +311,15 @@ public class LucenePDFDocument
      * This will add the contents to the lucene document.
      * 
      * @param document The document to add the contents to.
-     * @param is The stream to get the contents from.
+     * @param source The source to get the content from.
      * @param documentLocation The location of the document, used just for debug messages.
      * 
      * @throws IOException If there is an error parsing the document.
      */
-    private void addContent(Document document, InputStream is, String documentLocation) throws IOException
+    private void addContent(Document document, RandomAccessRead source, String documentLocation)
+            throws IOException
     {
-        try (PDDocument pdfDocument = Loader.loadPDF(is))
+        try (PDDocument pdfDocument = Loader.loadPDF(source))
         {
             // create a writer where to append the text content.
             StringWriter writer = new StringWriter();

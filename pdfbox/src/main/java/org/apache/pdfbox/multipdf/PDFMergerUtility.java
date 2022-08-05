@@ -19,7 +19,6 @@ package org.apache.pdfbox.multipdf;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -36,6 +35,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -299,9 +299,9 @@ public class PDFMergerUtility
     /**
      * Add a source to the list of documents to merge.
      *
-     * @param source InputStream representing source document
+     * @param source RandomAccessRead representing source document
      */
-    public void addSource(InputStream source)
+    public void addSource(RandomAccessRead source)
     {
         sources.add(source);
     }
@@ -309,10 +309,9 @@ public class PDFMergerUtility
     /**
      * Add a list of sources to the list of documents to merge.
      *
-     * @param inputStreams Collection of InputStream objects representing source
-     * documents
+     * @param sourcesList Collection of RandomAccessRead objects representing source documents
      */
-    public void addSources(Collection<InputStream> inputStreams)
+    public void addSources(Collection<RandomAccessRead> sourcesList)
     {
         sources.addAll(inputStreams);
     }
@@ -370,12 +369,12 @@ public class PDFMergerUtility
                     }
                     else
                     {
-                        sourceDoc = Loader.loadPDF((InputStream) sourceObject, memUsageSetting);
+                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject,
+                                memUsageSetting);
                     }
                     for (PDPage page : sourceDoc.getPages())
                     {
-                        PDPage newPage = new PDPage(
-                                cloner.cloneForNewDocument(page.getCOSObject()));
+                        PDPage newPage = new PDPage(cloner.cloneForNewDocument(page.getCOSObject()));
                         newPage.setCropBox(page.getCropBox());
                         newPage.setMediaBox(page.getMediaBox());
                         newPage.setRotation(page.getRotation());
@@ -385,8 +384,7 @@ public class PDFMergerUtility
                             // this is smart enough to just create references for resources that are used on multiple
                             // pages
                             newPage.setResources(new PDResources(
-                                    cloner
-                                            .cloneForNewDocument(resources.getCOSObject())));
+                                    cloner.cloneForNewDocument(resources.getCOSObject())));
                         }
                         else
                         {
@@ -448,7 +446,7 @@ public class PDFMergerUtility
                     }
                     else
                     {
-                        sourceDoc = Loader.loadPDF((InputStream) sourceObject,
+                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject,
                                 partitionedMemSetting);
                     }
                     tobeclosed.add(sourceDoc);
@@ -644,8 +642,7 @@ public class PDFMergerUtility
                 {
                     // get each child, clone its dictionary, remove siblings info,
                     // append outline item created from there
-                    COSDictionary clonedDict = cloner
-                            .cloneForNewDocument(item.getCOSObject());
+                    COSDictionary clonedDict = cloner.cloneForNewDocument(item.getCOSObject());
                     clonedDict.removeItem(COSName.PREV);
                     clonedDict.removeItem(COSName.NEXT);
                     PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
@@ -1120,7 +1117,7 @@ public class PDFMergerUtility
             else
             {
                 destNames.put(entry.getKey(),
-                        new PDStructureElement(cloner.cloneForNewDocument(entry.getValue().getCOSObject())));
+                              new PDStructureElement(cloner.cloneForNewDocument(entry.getValue().getCOSObject())));
             }
         }
         destIDTree = new PDStructureElementNameTreeNode();
@@ -1362,7 +1359,7 @@ public class PDFMergerUtility
                 }
             }
             destCatalog.addOutputIntent(new PDOutputIntent(
-                    (COSDictionary) cloner.cloneForNewDocument(srcOI.getCOSObject())));
+                    cloner.cloneForNewDocument(srcOI.getCOSObject())));
             dstOutputIntents.add(srcOI);
         }
     }

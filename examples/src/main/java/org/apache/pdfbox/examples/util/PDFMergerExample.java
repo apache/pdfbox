@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -55,14 +56,14 @@ public class PDFMergerExample
     /**
      * Creates a compound PDF document from a list of input documents.
      * <p>
-     * The merged document is PDF/A-1b compliant, provided the source documents are as well. It
-     * contains document properties title, creator and subject, currently hard-coded.
+     * The merged document is PDF/A-1b compliant, provided the source documents are as well. It contains document
+     * properties title, creator and subject, currently hard-coded.
      *
-     * @param sources list of source PDF document streams.
+     * @param sources list of source PDF documents as RandomAccessRead.
      * @return compound PDF document as a readable input stream.
      * @throws IOException if anything goes wrong during PDF merge.
      */
-    public InputStream merge(final List<InputStream> sources) throws IOException
+    public InputStream merge(final List<RandomAccessRead> sources) throws IOException
     {
         String title = "My title";
         String creator = "Alexander Kriegisch";
@@ -98,7 +99,8 @@ public class PDFMergerExample
         }
     }
 
-    private PDFMergerUtility createPDFMergerUtility(List<InputStream> sources, ByteArrayOutputStream mergedPDFOutputStream)
+    private PDFMergerUtility createPDFMergerUtility(List<RandomAccessRead> sources,
+            ByteArrayOutputStream mergedPDFOutputStream)
     {
         LOG.info("Initialising PDF merge utility");
         PDFMergerUtility pdfMerger = new PDFMergerUtility();

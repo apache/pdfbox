@@ -155,7 +155,7 @@ public class PDFunctionType0 extends PDFunction
                 for (int i = 0; i < sizeValuesSize; i++)
                 {
                     encode.add(COSInteger.ZERO);
-                    encode.add(COSInteger.get(sizeValues.getInt(i) - 1));
+                    encode.add(COSInteger.get(sizeValues.getInt(i) - 1L));
                 }
             }
         }

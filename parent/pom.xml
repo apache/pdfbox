@@ -63,7 +63,7 @@
             <dependency>
 	            <groupId>org.junit.jupiter</groupId>
 	            <artifactId>junit-jupiter</artifactId>
-	            <version>5.9.0-RC1</version>
+	            <version>5.9.0</version>
 	            <scope>test</scope>
             </dependency>
             <dependency>
@@ -381,7 +381,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.6</version>
+                    <version>5.1.8</version>
                 </plugin>
             </plugins>
         </pluginManagement>

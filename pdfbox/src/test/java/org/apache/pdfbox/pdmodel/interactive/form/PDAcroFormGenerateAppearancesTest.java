@@ -20,10 +20,10 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.junit.jupiter.api.parallel.Execution;
@@ -48,8 +48,8 @@ class PDAcroFormGenerateAppearancesTest
     })
     void testGetAcroForm(String sourceUrl) throws IOException
     {
-        try (InputStream is = new URL(sourceUrl).openStream();
-             PDDocument testPdf = Loader.loadPDF(is))
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
 

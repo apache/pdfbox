@@ -616,6 +616,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      * @param string the string to decrypt.
      * @param objNum The object number.
      * @param genNum The object generation number.
+     *
      */
     private void decryptString(COSString string, long objNum, long genNum)
     {
