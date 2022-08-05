@@ -121,10 +121,10 @@ public class GsubWorkerForBengali implements GsubWorker
         for (int index = 1; index < originalGlyphIds.size(); index++)
         {
             int glyphId = originalGlyphIds.get(index);
-            if (beforeAndAfterSpanGlyphIds.containsKey(glyphId))
+            BeforeAndAfterSpanComponent beforeAndAfterSpanComponent =
+                    beforeAndAfterSpanGlyphIds.get(glyphId);
+            if (beforeAndAfterSpanComponent != null)
             {
-                BeforeAndAfterSpanComponent beforeAndAfterSpanComponent = beforeAndAfterSpanGlyphIds
-                        .get(glyphId);
                 int previousGlyphId = originalGlyphIds.get(index - 1);
                 repositionedGlyphIds.set(index, previousGlyphId);
                 repositionedGlyphIds.set(index - 1,
