@@ -462,5 +462,6 @@ public class PDFontTest
         GeneralPath path2 = tr.getPath(248);
         Assert.assertFalse(path2.getPathIterator(null).isDone()); // not empty
         Assert.assertTrue(new Area(path1).equals(new Area(path2))); // assertEquals does not test equals()
+        doc.close();
     }
 }
