@@ -438,11 +438,13 @@ class PDFontTest
     {
         File fontFile = new File("target/fonts", "PDFBOX-5484.ttf");
         TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(fontFile));
-        PDDocument doc = new PDDocument();
-        PDTrueTypeFont tr = PDTrueTypeFont.load(doc, ttf, WinAnsiEncoding.INSTANCE);
-        GeneralPath path1 = tr.getPath("oslash");
-        GeneralPath path2 = tr.getPath(248);
-        assertFalse(path2.getPathIterator(null).isDone()); // not empty
-        assertTrue(new Area(path1).equals(new Area(path2))); // assertEquals does not test equals()
+        try (PDDocument doc = new PDDocument())
+        {
+            PDTrueTypeFont tr = PDTrueTypeFont.load(doc, ttf, WinAnsiEncoding.INSTANCE);
+            GeneralPath path1 = tr.getPath("oslash");
+            GeneralPath path2 = tr.getPath(248);
+            assertFalse(path2.getPathIterator(null).isDone()); // not empty
+            assertTrue(new Area(path1).equals(new Area(path2))); // assertEquals does not test equals()
+        }
     }
 }
