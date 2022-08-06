@@ -93,6 +93,20 @@ class PDFontTest
         }
     }
 
+    @Test
+    void testPDFBOX5486() throws IOException
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+            PDTrueTypeFont ttf = PDTrueTypeFont.load(doc,
+                    PDFontTest.class.getResourceAsStream(
+                            "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"),
+                    WinAnsiEncoding.INSTANCE);
+            assertTrue(ttf.hasGlyph("A"));
+            ttf.getPath("A");
+        }
+    }
+
     /**
      * PDFBOX-3747: Test that using "-" with Calibri in Windows 7 has "-" in text extraction and not
      * \u2010, which was because of a wrong ToUnicode mapping because prior to the bugfix,
