@@ -31,6 +31,9 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,6 +53,21 @@ final class DCTFilter extends Filter
 
     private static final int POS_TRANSFORM = 11;
     private static final String ADOBE = "Adobe";
+
+    private static XPathExpression xPathExpression;
+
+    static
+    {
+        try
+        {
+            xPathExpression = XPathFactory.newInstance().newXPath().compile("Chroma/ColorSpaceType/@name");
+        }
+        catch (XPathExpressionException ex)
+        {
+            // shouldn't happen unless you changed the expression
+            LOG.error(ex.getMessage(), ex);
+        }
+    }
 
     @Override
     public DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary
@@ -179,6 +197,24 @@ final class DCTFilter extends Filter
         {
             Element adobe = (Element) app14AdobeNodeList.item(0);
             return Integer.parseInt(adobe.getAttribute("transform"));
+        }
+
+        // PDFBOX-5488: plan B: use ColorSpaceType from the other metadata tree.
+        try
+        {
+            String value = xPathExpression.evaluate(metadata.getAsTree("javax_imageio_1.0"));
+            if ("YCbCr".equals(value))
+            {
+                return 1;
+            }
+            if ("YCCK".equals(value))
+            {
+                return 2;
+            }
+        }
+        catch (XPathExpressionException ex)
+        {
+            return 0;
         }
         return 0;
     }
