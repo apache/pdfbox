@@ -18,6 +18,8 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+
 /**
  * A table in a true type font.
  * 
@@ -76,7 +78,9 @@ public class GlyphTable extends TTFTable
         }
 
         // we don't actually read the complete table here because it can contain tens of thousands of glyphs
-        this.data = data;
+        // cache the relevant part of the font data so that the data stream can be closed if it is no longer needed
+        byte[] dataBytes = data.read((int) getLength());
+        this.data = new RandomAccessReadDataStream(new RandomAccessReadBuffer(dataBytes));
 
         // PDFBOX-5460: read hmtx table early to avoid deadlock if getGlyph() locks "data"
         // and then locks TrueTypeFont to read this table, while another thread
@@ -134,7 +138,7 @@ public class GlyphTable extends TTFTable
                 // save
                 long currentPosition = data.getCurrentPosition();
 
-                data.seek(getOffset() + offsets[gid]);
+                data.seek(offsets[gid]);
 
                 glyph = getGlyphData(gid);
 
