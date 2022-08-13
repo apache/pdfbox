@@ -743,15 +743,15 @@ public final class PDAcroForm implements COSObjectable
     private void fillPagesAnnotationMap(Map<COSDictionary, Set<COSDictionary>> pagesAnnotationsMap,
                                         PDPage page, PDAnnotationWidget widget)
     {
-        if (pagesAnnotationsMap.get(page.getCOSObject()) == null)
+        Set<COSDictionary> widgetsForPage = pagesAnnotationsMap.get(page.getCOSObject());
+        if (widgetsForPage == null)
         {
-            Set<COSDictionary> widgetsForPage = new HashSet<>();
+            widgetsForPage = new HashSet<>();
             widgetsForPage.add(widget.getCOSObject());
             pagesAnnotationsMap.put(page.getCOSObject(), widgetsForPage);
         }
         else
         {
-            Set<COSDictionary> widgetsForPage = pagesAnnotationsMap.get(page.getCOSObject());
             widgetsForPage.add(widget.getCOSObject());
         }
     }
