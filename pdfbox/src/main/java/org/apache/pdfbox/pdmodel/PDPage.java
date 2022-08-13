@@ -311,11 +311,11 @@ public class PDPage implements COSObjectable, PDContentStream
             {
                 mediaBox = new PDRectangle((COSArray) base);
             }
-        }
-        if (mediaBox == null)
-        {
-            LOG.debug("Can't find MediaBox, will use U.S. Letter");
-            mediaBox = PDRectangle.LETTER;
+            else
+            {
+                LOG.debug("Can't find MediaBox, will use U.S. Letter");
+                mediaBox = PDRectangle.LETTER;
+            }
         }
         return mediaBox;
     }
