@@ -18,7 +18,12 @@ package org.apache.pdfbox.pdfwriter;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
+
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.multipdf.PageExtractor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.junit.jupiter.api.Test;
@@ -46,6 +51,21 @@ class COSWriterTest
                     throw new IOException("Stream was closed");
                 }
             }));
+        }
+    }
+
+    @Test
+    void testPDFBox5485() throws Exception
+    {
+        File pdfFile = Paths.get("src", "test", "resources", "input", "PDFBOX-3110-poems-beads.pdf")
+                .toFile();
+        try (PDDocument pdfDocument = Loader.loadPDF(pdfFile))
+        {
+            PageExtractor pageExtractor = new PageExtractor(pdfDocument, 2, 2);
+            try (PDDocument pdfPages = pageExtractor.extract())
+            {
+                pdfPages.save(new ByteArrayOutputStream());
+            }
         }
     }
 }

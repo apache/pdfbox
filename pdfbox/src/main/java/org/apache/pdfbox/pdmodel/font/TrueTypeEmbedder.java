@@ -182,6 +182,7 @@ abstract class TrueTypeEmbedder implements Subsetter
      */
     private PDFontDescriptor createFontDescriptor(TrueTypeFont ttf) throws IOException
     {
+        String ttfName = ttf.getName();
         OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
         String ttfName = ttf.getName();
         if (os2 == null)
@@ -191,15 +192,16 @@ abstract class TrueTypeEmbedder implements Subsetter
         PostScriptTable post = ttf.getPostScript();
         if (post == null)
         {
-            throw new IOException("post table is missing in font " + ttfName);
+            throw new IOException("post table is missing in font " + ttfName);            
         }
 
         PDFontDescriptor fd = new PDFontDescriptor();
         fd.setFontName(ttfName);
 
-        HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
+        HorizontalHeaderTable hhea = ttf.getHorizontalHeader();
+        
         // Flags
-        fd.setFixedPitch(post.getIsFixedPitch() > 0 || hHeader.getNumberOfHMetrics() == 1);
+        fd.setFixedPitch(post.getIsFixedPitch() > 0 || hhea.getNumberOfHMetrics() == 1);
 
         int fsSelection = os2.getFsSelection();
         fd.setItalic(((fsSelection & (ITALIC | OBLIQUE)) != 0));
@@ -239,8 +241,8 @@ abstract class TrueTypeEmbedder implements Subsetter
         fd.setFontBoundingBox(rect);
 
         // Ascent, Descent
-        fd.setAscent(hHeader.getAscender() * scaling);
-        fd.setDescent(hHeader.getDescender() * scaling);
+        fd.setAscent(hhea.getAscender() * scaling);
+        fd.setDescent(hhea.getDescender() * scaling);
 
         // CapHeight, XHeight
         if (os2.getVersion() >= 1.2)

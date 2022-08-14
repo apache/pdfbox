@@ -179,17 +179,25 @@ public class COSWriterObjectStream
         {
             throw new IOException("Error: Unknown type in object stream:" + object);
         }
-        COSBase base = object instanceof COSObject ? ((COSObject) object).getObject()
-                : (COSBase) object;
-        if (base == null)
+        COSBase base = null;
+        if (object instanceof COSObject)
         {
-            // the object reference can't be dereferenced
-            // be lenient and write the reference nevertheless
-            if (!topLevel && object instanceof COSObject)
+            base = ((COSObject) object).getObject();
+            if (!topLevel)
             {
-                writeObjectReference(output, ((COSObject) object).getKey());
+                COSObjectKey actualKey = ((COSObject) object).getKey();
+                // the object reference can't be dereferenced be lenient and write the reference nevertheless
+                // or the object is part of a compressed object stream and shouldn't be written directly
+                if (base == null || (actualKey != null && preparedKeys.contains(actualKey)))
+                {
+                    writeObjectReference(output, actualKey);
+                    return;
+                }
             }
-            return;
+        }
+        else
+        {
+            base = (COSBase) object;
         }
         if (!topLevel && this.compressionPool.contains(base))
         {
@@ -200,8 +208,9 @@ public class COSWriterObjectStream
                         "Error: Adding unknown object reference to object stream:" + object);
             }
             writeObjectReference(output, key);
+            return;
         }
-        else if (base instanceof COSString)
+        if (base instanceof COSString)
         {
             writeCOSString(output, (COSString) base);
         }
