@@ -184,7 +184,6 @@ abstract class TrueTypeEmbedder implements Subsetter
     {
         String ttfName = ttf.getName();
         OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
-        String ttfName = ttf.getName();
         if (os2 == null)
         {
             throw new IOException("os2 table is missing in font " + ttfName);
