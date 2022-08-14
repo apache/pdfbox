@@ -691,6 +691,7 @@ public class COSParser extends BaseParser implements ICOSParser
         if (parsedObject != null)
         {
             parsedObject.setDirect(false);
+            parsedObject.setKey(objKey);
         }
         String endObjectKey = readString();
 
