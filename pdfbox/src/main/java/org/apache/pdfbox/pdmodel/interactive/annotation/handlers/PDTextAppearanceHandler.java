@@ -200,15 +200,17 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         contentStream.setLineCapStyle(0);
         contentStream.setLineWidth(0.61f); // value from Adobe
-        contentStream.addRect(1, 1, bbox.getWidth() - 2, bbox.getHeight() - 2);
-        contentStream.moveTo(bbox.getWidth() / 4,         bbox.getHeight() / 7 * 2);
-        contentStream.lineTo(bbox.getWidth() * 3 / 4 - 1, bbox.getHeight() / 7 * 2);
-        contentStream.moveTo(bbox.getWidth() / 4,         bbox.getHeight() / 7 * 3);
-        contentStream.lineTo(bbox.getWidth() * 3 / 4 - 1, bbox.getHeight() / 7 * 3);
-        contentStream.moveTo(bbox.getWidth() / 4,         bbox.getHeight() / 7 * 4);
-        contentStream.lineTo(bbox.getWidth() * 3 / 4 - 1, bbox.getHeight() / 7 * 4);
-        contentStream.moveTo(bbox.getWidth() / 4,         bbox.getHeight() / 7 * 5);
-        contentStream.lineTo(bbox.getWidth() * 3 / 4 - 1, bbox.getHeight() / 7 * 5);
+        float width = bbox.getWidth();
+        float height = bbox.getHeight();
+        contentStream.addRect(1, 1, width - 2, height - 2);
+        contentStream.moveTo(width / 4, height / 7 * 2);
+        contentStream.lineTo(width * 3 / 4 - 1, height / 7 * 2);
+        contentStream.moveTo(width / 4, height / 7 * 3);
+        contentStream.lineTo(width * 3 / 4 - 1, height / 7 * 3);
+        contentStream.moveTo(width / 4, height / 7 * 4);
+        contentStream.lineTo(width * 3 / 4 - 1, height / 7 * 4);
+        contentStream.moveTo(width / 4, height / 7 * 5);
+        contentStream.lineTo(width * 3 / 4 - 1, height / 7 * 5);
         contentStream.fillAndStroke();
     }
 
@@ -240,13 +242,15 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         gs.setBlendMode(BlendMode.NORMAL);
         contentStream.setGraphicsStateParameters(gs);
         contentStream.setNonStrokingColor(1f);
-        drawCircle(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, smallR);
+        float width = bbox.getWidth() / 2;
+        float height = bbox.getHeight() / 2;
+        drawCircle(contentStream, width, height, smallR);
         contentStream.fill();
         contentStream.restoreGraphicsState();
 
         contentStream.setLineWidth(0.59f); // value from Adobe
-        drawCircle(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, smallR);
-        drawCircle2(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, largeR);
+        drawCircle(contentStream, width, height, smallR);
+        drawCircle2(contentStream, width, height, largeR);
         contentStream.fillAndStroke();
     }
 
