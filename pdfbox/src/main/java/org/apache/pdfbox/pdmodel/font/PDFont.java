@@ -535,10 +535,9 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     {
         if (fontWidthOfSpace == -1f)
         {
-            COSBase toUnicode = dict.getDictionaryObject(COSName.TO_UNICODE);
             try
             {
-                if (toUnicode != null && toUnicodeCMap != null)
+                if (toUnicodeCMap != null && dict.containsKey(COSName.TO_UNICODE))
                 {
                     int spaceMapping = toUnicodeCMap.getSpaceMapping();
                     if (spaceMapping > -1)
@@ -555,11 +554,12 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 if (fontWidthOfSpace <= 0)
                 {
                     fontWidthOfSpace = getWidthFromFont(32);
-                }
-                // use the average font width as fall back
-                if (fontWidthOfSpace <= 0)
-                {
-                    fontWidthOfSpace = getAverageFontWidth();
+
+                    // use the average font width as fall back
+                    if (fontWidthOfSpace <= 0)
+                    {
+                        fontWidthOfSpace = getAverageFontWidth();
+                    }
                 }
             }
             catch (Exception e)
