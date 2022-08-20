@@ -176,7 +176,7 @@ public abstract class BaseParser
         long objNumber = ((COSInteger) value).longValue();
         if (objNumber <= 0)
         {
-            LOG.error("invalid object number value =" + objNumber + " at offset " + numOffset);
+            LOG.warn("invalid object number value =" + objNumber + " at offset " + numOffset);
             return COSNull.NULL;
         }
         int genNumber = ((COSInteger) generationNumber).intValue();
