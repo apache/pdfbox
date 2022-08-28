@@ -234,23 +234,22 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
     private void buildCIDToGIDMap(Map<Integer, Integer> cidToGid) throws IOException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
         int cidMax = Collections.max(cidToGid.keySet());
+        byte buffer[] = new byte[cidMax * 2 + 2];
+        int bi = 0;
         for (int i = 0; i <= cidMax; i++)
         {
-            int gid;
-            if (cidToGid.containsKey(i))
+            Integer gid = cidToGid.get(i);
+            if (gid != null)
             {
-                gid = cidToGid.get(i);
+                buffer[bi]   = (byte) (gid >> 8 & 0xff);
+                buffer[bi+1] = (byte) (gid & 0xff);
             }
-            else
-            {
-                gid = 0;
-            }
-            out.write(new byte[] { (byte)(gid >> 8 & 0xff), (byte)(gid & 0xff) });
+            // else keep 0 initialization
+            bi += 2;
         }
 
-        InputStream input = new ByteArrayInputStream(out.toByteArray());
+        InputStream input = new ByteArrayInputStream(buffer);
         PDStream stream = new PDStream(document, input, COSName.FLATE_DECODE);
 
         cidFont.setItem(COSName.CID_TO_GID_MAP, stream);
