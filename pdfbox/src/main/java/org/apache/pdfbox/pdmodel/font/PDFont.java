@@ -564,7 +564,6 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 if (fontWidthOfSpace <= 0)
                 {
                     fontWidthOfSpace = getWidthFromFont(32);
-
                     // use the average font width as fall back
                     if (fontWidthOfSpace <= 0)
                     {
