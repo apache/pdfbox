@@ -237,7 +237,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     private void buildCIDToGIDMap(TreeMap<Integer, Integer> cidToGid) throws IOException
     {
         int cidMax = cidToGid.lastKey();
-        byte buffer[] = new byte[cidMax * 2 + 2];
+        byte[] buffer = new byte[cidMax * 2 + 2];
         int bi = 0;
         for (int i = 0; i <= cidMax; i++)
         {
