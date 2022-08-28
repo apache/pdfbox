@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -348,16 +349,17 @@ public class Overlay implements Closeable
     // get the content streams as a list
     private List<COSStream> createContentStreamList(COSBase contents) throws IOException
     {
-        List<COSStream> contentStreams = new ArrayList<COSStream>();
         if (contents == null)
         {
-            return contentStreams;
+            return Collections.emptyList();
         }
-        else if (contents instanceof COSStream)
+        if (contents instanceof COSStream)
         {
-            contentStreams.add((COSStream) contents);
+            return Collections.singletonList((COSStream) contents);
         }
-        else if (contents instanceof COSArray)
+
+        List<COSStream> contentStreams = new ArrayList<COSStream>();
+        if (contents instanceof COSArray)
         {
             for (COSBase item : (COSArray) contents)
             {
