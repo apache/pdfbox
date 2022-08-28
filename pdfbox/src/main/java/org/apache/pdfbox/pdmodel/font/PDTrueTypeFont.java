@@ -35,6 +35,7 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
@@ -105,17 +106,20 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             PDStream ff2Stream = fd.getFontFile2();
             if (ff2Stream != null)
             {
+                RandomAccessRead view = null;
                 try
                 {
                     // embedded
                     TTFParser ttfParser = new TTFParser(true);
-                    ttfFont = ttfParser.parse(ff2Stream.getCOSObject().createView());
+                    view = ff2Stream.getCOSObject().createView();
+                    ttfFont = ttfParser.parse(view);
                     ttfFont.close();
                 }
                 catch (IOException e)
                 {
                     LOG.warn("Could not read embedded TTF for font " + getBaseFont(), e);
                     fontIsDamaged = true;
+                    IOUtils.closeQuietly(view);
                 }
             }
         }
