@@ -34,6 +34,7 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -45,7 +46,6 @@ import org.apache.pdfbox.pdmodel.font.encoding.MacRomanEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
-
 
 import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
 
@@ -192,16 +192,19 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             PDStream ff2Stream = fd.getFontFile2();
             if (ff2Stream != null)
             {
+                InputStream is = null;
                 try
                 {
                     // embedded
                     TTFParser ttfParser = new TTFParser(true);
-                    ttfFont = ttfParser.parse(ff2Stream.createInputStream());
+                    is = ff2Stream.createInputStream();
+                    ttfFont = ttfParser.parse(is);
                 }
                 catch (IOException e)
                 {
                     LOG.warn("Could not read embedded TTF for font " + getBaseFont(), e);
                     fontIsDamaged = true;
+                    IOUtils.closeQuietly(is);
                 }
             }
         }
