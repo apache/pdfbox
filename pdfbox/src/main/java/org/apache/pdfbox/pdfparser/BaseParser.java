@@ -215,13 +215,13 @@ public abstract class BaseParser
         COSDictionary obj = new COSDictionary();
         obj.setDirect(isDirect);
         boolean done = false;
-        while (!done)
+        while (true)
         {
             skipSpaces();
             char c = (char) source.peek();
             if (c == '>')
             {
-                done = true;
+                break;
             }
             else if (c == '/')
             {
