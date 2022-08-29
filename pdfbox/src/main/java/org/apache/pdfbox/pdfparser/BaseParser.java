@@ -214,7 +214,6 @@ public abstract class BaseParser
         skipSpaces();
         COSDictionary obj = new COSDictionary();
         obj.setDirect(isDirect);
-        boolean done = false;
         while (true)
         {
             skipSpaces();
