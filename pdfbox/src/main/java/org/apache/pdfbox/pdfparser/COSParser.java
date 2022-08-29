@@ -767,7 +767,8 @@ public class COSParser extends BaseParser implements ICOSParser
         Map<Long, COSBase> streamObjects = decompressedObjects.computeIfAbsent(objstmObjNr,
                 n -> new HashMap<>());
         // did we already read the compressed object stream?
-        COSBase objectStreamObject = streamObjects.remove(key.getNumber());
+        long keyNumber = key.getNumber();
+        COSBase objectStreamObject = streamObjects.remove(keyNumber);
         if (objectStreamObject != null)
         {
             return objectStreamObject;
@@ -783,7 +784,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 for (Entry<Long, COSBase> entry : parser.parseAllObjects().entrySet())
                 {
                     Long stmObjNumber = entry.getKey();
-                    if (key.getNumber() == stmObjNumber)
+                    if (keyNumber == stmObjNumber)
                     {
                         objectStreamObject = entry.getValue();
                     }
