@@ -251,6 +251,8 @@ public class Splitter
         }
         document.getDocumentCatalog().setViewerPreferences(
                 getSourceDocument().getDocumentCatalog().getViewerPreferences());
+        document.getDocument().setHighestXRefObjectNumber(
+                getSourceDocument().getDocument().getHighestXRefObjectNumber());
         return document;
     }
 
