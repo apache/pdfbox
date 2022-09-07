@@ -452,7 +452,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     public boolean isVertical()
     {
-        return cMap.getWMode() == 1;
+        return cMap != null && cMap.getWMode() == 1;
     }
 
     @Override
@@ -609,6 +609,10 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     public int readCode(InputStream in) throws IOException
     {
+        if (cMap == null)
+        {
+            throw new IOException("required cmap is null");
+        }
         return cMap.readCode(in);
     }
 
