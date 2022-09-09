@@ -225,7 +225,7 @@ public abstract class BaseParser
             char c = (char) source.peek();
             if (c == '>')
             {
-                break;//done
+                break;
             }
             else if (c == '/')
             {

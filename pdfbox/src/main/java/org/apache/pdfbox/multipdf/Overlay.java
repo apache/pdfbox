@@ -24,7 +24,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -353,31 +359,27 @@ public class Overlay implements Closeable
             return Collections.emptyList();
         }
 
-        List<COSStream> contentStreams;
         if (contents instanceof COSStream)
         {
-            contentStreams = Collections.singletonList((COSStream) contents);
+            return Collections.singletonList((COSStream) contents);
+        }
+
+        List<COSStream> contentStreams = new ArrayList<>();
+        if (contents instanceof COSArray)
+        {
+            for (COSBase item : (COSArray) contents)
+            {
+                contentStreams.addAll(createContentStreamList(item));
+            }
+        }
+        else if (contents instanceof COSObject)
+        {
+            contentStreams.addAll(createContentStreamList(((COSObject) contents).getObject()));
         }
         else
         {
-            contentStreams = new ArrayList<>();
-
-            if (contents instanceof COSArray)
-            {
-                for (COSBase item : (COSArray) contents)
-                {
-                    contentStreams.addAll(createContentStreamList(item));
-                }
-            }
-            else if (contents instanceof COSObject)
-            {
-                contentStreams.addAll(createContentStreamList(((COSObject) contents).getObject()));
-            }
-            else
-            {
-                throw new IOException("Unknown content type: " + contents.getClass().getName());
-            }
-        }
+            throw new IOException("Unknown content type: " + contents.getClass().getName());
+        }       
         return contentStreams;
     }
 
