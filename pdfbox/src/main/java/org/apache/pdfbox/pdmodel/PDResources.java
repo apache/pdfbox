@@ -467,7 +467,7 @@ public final class PDResources implements COSObjectable
      */
     private COSObject getIndirect(COSName kind, COSName name)
     {
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
+        COSDictionary dict = resources.getCOSDictionary(kind);
         if (dict == null)
         {
             return null;
@@ -486,7 +486,7 @@ public final class PDResources implements COSObjectable
      */
     private COSBase get(COSName kind, COSName name)
     {
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
+        COSDictionary dict = resources.getCOSDictionary(kind);
         if (dict == null)
         {
             return null;
@@ -571,7 +571,7 @@ public final class PDResources implements COSObjectable
      */
     private Iterable<COSName> getNames(COSName kind)
     {
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
+        COSDictionary dict = resources.getCOSDictionary(kind);
         if (dict == null)
         {
             return Collections.emptySet();
@@ -701,7 +701,7 @@ public final class PDResources implements COSObjectable
     private COSName add(COSName kind, String prefix, COSObjectable object)
     {
         // return the existing key if the item exists already
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
+        COSDictionary dict = resources.getCOSDictionary(kind);
         if (dict != null && dict.containsValue(object.getCOSObject()))
         {
             return dict.getKeyForValue(object.getCOSObject());
@@ -732,7 +732,7 @@ public final class PDResources implements COSObjectable
      */
     private COSName createKey(COSName kind, String prefix)
     {
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
+        COSDictionary dict = resources.getCOSDictionary(kind);
         if (dict == null)
         {
             return COSName.getPDFName(prefix + 1);
@@ -755,7 +755,7 @@ public final class PDResources implements COSObjectable
      */
     private void put(COSName kind, COSName name, COSObjectable object)
     {
-        COSDictionary dict = (COSDictionary)resources.getDictionaryObject(kind);
+        COSDictionary dict = resources.getCOSDictionary(kind);
         if (dict == null)
         {
             dict = new COSDictionary();
