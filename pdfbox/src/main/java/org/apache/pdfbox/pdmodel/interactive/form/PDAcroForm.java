@@ -377,10 +377,10 @@ public final class PDAcroForm implements COSObjectable
         List<PDField> pdFields = new ArrayList<>();
         for (int i = 0; i < cosFields.size(); i++)
         {
-            COSDictionary element = (COSDictionary) cosFields.getObject(i);
-            if (element != null)
+            COSBase element = cosFields.getObject(i);
+            if (element instanceof COSDictionary)
             {
-                PDField field = PDField.fromDictionary(this, element, null);
+                PDField field = PDField.fromDictionary(this, (COSDictionary) element, null);
                 if (field != null)
                 {
                     pdFields.add(field);
