@@ -744,7 +744,11 @@ final class Type1Parser
 
             // RD
             Token charstring = read(Token.CHARSTRING);
-            font.subrs.set(index.intValue(), decrypt(charstring.getData(), CHARSTRING_KEY, lenIV));
+            int j = index.intValue();
+            if (j < font.subrs.size())
+            {
+                font.subrs.set(j, decrypt(charstring.getData(), CHARSTRING_KEY, lenIV));
+            }
             readPut();
         }
         readDef();
