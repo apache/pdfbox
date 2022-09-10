@@ -274,6 +274,10 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endcodespacerange", "codespacerange");
                 break;
             }
+            if (!(nextToken instanceof byte[]))
+            {
+                throw new IOException("start range missing");
+            }
             byte[] startRange = (byte[]) nextToken;
             byte[] endRange = (byte[]) parseNextToken(cmapStream);
             try
@@ -296,6 +300,10 @@ public class CMapParser
             {
                 checkExpectedOperator((Operator) nextToken, "endbfchar", "bfchar");
                 break;
+            }
+            if (!(nextToken instanceof byte[]))
+            {
+                throw new IOException("input code missing");
             }
             byte[] inputCode = (byte[]) nextToken;
             nextToken = parseNextToken(cmapStream);
@@ -326,6 +334,10 @@ public class CMapParser
             {
                 checkExpectedOperator((Operator) nextToken, "endcidrange", "cidrange");
                 break;
+            }
+            if (!(nextToken instanceof byte[]))
+            {
+                throw new IOException("start range missing");
             }
             byte[] startCode = (byte[]) nextToken;
             int start = createIntFromBytes(startCode);
@@ -368,6 +380,10 @@ public class CMapParser
                 checkExpectedOperator((Operator) nextToken, "endcidchar", "cidchar");
                 break;
             }
+            if (!(nextToken instanceof byte[]))
+            {
+                throw new IOException("start code missing");
+            }
             byte[] inputCode = (byte[]) nextToken;
             int mappedCode = (Integer) parseNextToken(cmapStream);
             int mappedCID = createIntFromBytes(inputCode);
@@ -380,25 +396,25 @@ public class CMapParser
         for (int j = 0; j < cosCount.intValue(); j++)
         {
             Object nextToken = parseNextToken(cmapStream);
-            if (nextToken == null)
+            if (nextToken instanceof Operator)
+            {
+                checkExpectedOperator((Operator) nextToken, "endbfrange", "bfrange");
+                break;
+            }
+            if (!(nextToken instanceof byte[]))
             {
                 throw new IOException("start code missing");
             }
-            if (nextToken instanceof Operator)
-            {
-                checkExpectedOperator((Operator) nextToken, "endbfrange", "bfrange");
-                break;
-            }
             byte[] startCode = (byte[]) nextToken;
             nextToken = parseNextToken(cmapStream);
-            if (nextToken == null)
-            {
-                throw new IOException("end code missing");
-            }
             if (nextToken instanceof Operator)
             {
                 checkExpectedOperator((Operator) nextToken, "endbfrange", "bfrange");
                 break;
+            }
+            if (!(nextToken instanceof byte[]))
+            {
+                throw new IOException("end code missing");
             }
             byte[] endCode = (byte[]) nextToken;
             int start = CMap.toInt(startCode, startCode.length);
