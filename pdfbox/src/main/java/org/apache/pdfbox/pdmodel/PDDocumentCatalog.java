@@ -140,7 +140,7 @@ public class PDDocumentCatalog implements COSObjectable
 
         if (cachedAcroForm == null)
         {
-            COSDictionary dict = (COSDictionary)root.getDictionaryObject(COSName.ACRO_FORM);
+            COSDictionary dict = root.getCOSDictionary(COSName.ACRO_FORM);
             cachedAcroForm = dict == null ? null : new PDAcroForm(document, dict);
         }
         return cachedAcroForm;
