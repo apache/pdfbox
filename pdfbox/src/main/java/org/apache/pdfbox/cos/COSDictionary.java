@@ -1451,10 +1451,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void addAll(COSDictionary dic)
     {
-        for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
-        {
-            setItem(entry.getKey(), entry.getValue());
-        }
+        items.putAll(dic.items);
     }
 
     /**
