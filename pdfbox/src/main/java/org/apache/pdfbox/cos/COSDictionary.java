@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,6 +74,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public COSDictionary(COSDictionary dict)
     {
         updateState = new COSUpdateState(this);
+        if (items instanceof SmallMap && items.size() + dict.items.size() >= 100)
+        {
+            items = new LinkedHashMap<>(items);
+        }
         items.putAll(dict.items);
     }
 
@@ -203,6 +208,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         else
         {
+            if (items instanceof SmallMap && items.size() >= 100)
+            {
+                items = new LinkedHashMap<>(items);
+            }
             items.put(key, value);
             getUpdateState().update(value);
         }
