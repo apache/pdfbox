@@ -1275,7 +1275,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void addAll(COSDictionary dic)
     {
-        dic.forEach(this::setItem);
+        items.putAll(dic.items);
     }
 
     /**
