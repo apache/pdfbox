@@ -74,11 +74,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public COSDictionary(COSDictionary dict)
     {
         updateState = new COSUpdateState(this);
-        if (items instanceof SmallMap && items.size() + dict.items.size() >= 100)
-        {
-            items = new LinkedHashMap<>(items);
-        }
-        items.putAll(dict.items);
+        addAll(dict);
     }
 
     /**
@@ -1271,11 +1267,15 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * This will add all of the dictionaries keys/values to this dictionary. Existing key/value pairs will be
      * overwritten.
      *
-     * @param dic The dictionaries to get the key/value pairs from.
+     * @param dict The dictionaries to get the key/value pairs from.
      */
-    public void addAll(COSDictionary dic)
+    public void addAll(COSDictionary dict)
     {
-        items.putAll(dic.items);
+        if (items instanceof SmallMap && items.size() + dict.items.size() >= 100)
+        {
+            items = new LinkedHashMap<>(items);
+        }
+        items.putAll(dict.items);
     }
 
     /**
