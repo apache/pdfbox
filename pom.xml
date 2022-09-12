@@ -135,7 +135,7 @@ A candidate for the PDFBox ${project.version} release is available at:
 
 The release candidate is a zip archive of the sources in:
 
-    http://svn.apache.org/repos/asf/pdfbox/tags/${project.version}/
+    https://svn.apache.org/repos/asf/pdfbox/tags/${project.version}/
 
 The SHA-512 checksum of the archive is ${checksum}.
 
