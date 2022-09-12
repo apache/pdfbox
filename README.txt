@@ -1,5 +1,5 @@
 ===================================================
-Apache PDFBox <http://pdfbox.apache.org/>
+Apache PDFBox <https://pdfbox.apache.org/>
 ===================================================
 
 The Apache PDFBox library is an open source Java tool for working with PDF 
@@ -8,7 +8,7 @@ of existing documents and the ability to extract content from documents.
 PDFBox also includes several command line utilities. PDFBox is published
 under the Apache License, Version 2.0.
 
-You need Java 5 (or higher) and Maven 2 <http://maven.apache.org/> to
+You need Java 8 and Maven 3 <https://maven.apache.org/> to
 build PDFBox. The recommended build command is:
 
     mvn clean install
@@ -22,7 +22,7 @@ The Ant build can also produce .NET DLLs if you have IKVM.NET
 <http://www.ikvm.net/> installed. See the build.xml file in the pdfbox
 subdirectory for details.
 
-PDFBox is a project of the Apache Software Foundation <http://www.apache.org/>.
+PDFBox is a project of the Apache Software Foundation <https://www.apache.org/>.
 
 Known Limitations and Problems
 ==============================

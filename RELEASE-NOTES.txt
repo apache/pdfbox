@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 1.8.16
+Release Notes -- Apache PDFBox -- Version 1.8.17
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 1.8.15 release. It 
+This is an incremental bugfix release based on the earlier 1.8.16 release. It 
 contains a couple of fixes and small improvements.
 
 For more details on all fixes included in this release, please refer to the following
@@ -13,15 +13,53 @@ issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFB
 
 Bug
 
-[PDFBOX-4261] - Invalidated signature signing pdf twice
-[PDFBOX-4276] - Multiply blend mode not detected
-[PDFBOX-4283] - Allowing Rectangles with additional elements
-[PDFBOX-4298] - NullPointerException when doing overlay
-[PDFBOX-4316] - RemoveAllText does not delete all parameters with " operator
+[PDFBOX-1752] - Rendering PDF containing Jpeg2000 fails
+[PDFBOX-4312] - Signature is not getting inserted into 00000 area
+[PDFBOX-4330] - NumberFormatException in CFFParser.readRealNumber()
+[PDFBOX-4332] - XMP dates contain time zone, while document info dates do not, and this isn't detected by preflight (2)
+[PDFBOX-4360] - ArrayIndexOutOfBoundsException in ASCIIHexFilter
+[PDFBOX-4372] - Stack overflow around PDFStreamEngine.processStream
+[PDFBOX-4404] - Input streams passed to Font.createFont() are not always closed
+[PDFBOX-4453] - Encrypted string not decrypted
+[PDFBOX-4461] - PDFunctionType0.eval() damages its input
+[PDFBOX-4466] - Signature without /Type /Sig can't be read
+[PDFBOX-4494] - Problem with google noto bold font and hungarian characters
+[PDFBOX-4497] - dash phase start should be float
+[PDFBOX-4551] - Prevent printing from CL applications when not authorized
+[PDFBOX-4582] - PDJpeg should throw IOException if the image isn't a JPEG
+[PDFBOX-4586] - Annotation widgets without AP not detected by preflight
+[PDFBOX-4622] - Various exceptions in TTFParser.parse
+[PDFBOX-4654] - PDFToImage shows reader image formats in usage
+[PDFBOX-4683] - Could not find referenced cmap stream Adobe-Japan1-7
+[PDFBOX-4722] - TestTextStripper doesn't detect when less output
+[PDFBOX-4727] - ExtractEmbeddedFiles.java example uses name tree keys as file names
+[PDFBOX-4822] - Off-by-one error in PDSignature.getConvertedContents()
+[PDFBOX-4839] - Iphone IOS able to open password PDF file without password
+[PDFBOX-4849] - FlateFilter Inflater leaks
+[PDFBOX-4902] - PDF/A validation fails when system time zone has minutes
+[PDFBOX-4907] - Signature not detected by Acrobat Reader
+[PDFBOX-4910] - Build test failure on OpenJDK "Invalid argument to native writeImage"
+[PDFBOX-4911] - isartor-6-2-2-t02-fail-a.pdf fails on OpenJDK with ArrayIndexOutOfBoundsException
+[PDFBOX-4913] - ArrayIndexOutOfBoundsException in ShadingContext.convertToRGB()
+[PDFBOX-4969] - java.lang.IndexOutOfBoundsException
+[PDFBOX-5028] - Partial field names must not contain period characters
+[PDFBOX-5033] - CFF FontParser exits with illegal offset in font
+[PDFBOX-5127] - Multithreading issue in JempBox's DateConverter
+[PDFBOX-5129] - 1.8 build test fails in com.ibm.icu.util.VersionInfo.getInstance()
+[PDFBOX-5240] - preflight SMask entry check incorrect
+[PDFBOX-5393] - NegativeArraySizeException in pfb parser with 0 byte pfb font file
+[PDFBOX-5459] - NullPointerException in PDFunctionType3.eval()
 
 Improvement
 
-[PDFBOX-4274] - Get rid of warning about prerequisites
+[PDFBOX-3192] - Animal sniffer maven plugin doesn't detect non java 5 api usage within the 1.8 branch
+[PDFBOX-4420] - Correct javadoc comment
+[PDFBOX-4641] - Keywords created using PDFBox are not visible in Acrobat
+
+Task
+
+[PDFBOX-4933] - Correct PDFBOX-1777 to PDFBOX-1977 in tests
+[PDFBOX-5165] - Exceedingly slow processing of XMPSchemaMediaManagement's getHistory in JempBox
 
 Release Contents
 ----------------
@@ -44,7 +82,7 @@ documents and the ability to extract content from documents. Apache PDFBox
 also includes several command line utilities. Apache PDFBox is published
 under the Apache License, Version 2.0.
 
-For more information, visit http://pdfbox.apache.org/
+For more information, visit https://pdfbox.apache.org/
 
 About The Apache Software Foundation
 ------------------------------------
@@ -56,5 +94,5 @@ enables individual and commercial users to easily deploy Apache software;
 the Foundation's intellectual property framework limits the legal exposure
 of its 2,500+ contributors.
 
-For more information, visit http://www.apache.org/
+For more information, visit https://www.apache.org/
 
