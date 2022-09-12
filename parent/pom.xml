@@ -163,7 +163,7 @@
         <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>animal-sniffer-maven-plugin</artifactId>
-            <version>1.18</version>
+            <version>1.22</version>
             <configuration>
               <skip>${skipTests}</skip>
               <signature>
@@ -205,7 +205,7 @@
           <plugin>
             <groupId>org.apache.rat</groupId>
             <artifactId>apache-rat-plugin</artifactId>
-            <version>0.11</version>
+            <version>0.14</version>
             <configuration>
               <excludes>
                 <exclude>release.properties</exclude>
