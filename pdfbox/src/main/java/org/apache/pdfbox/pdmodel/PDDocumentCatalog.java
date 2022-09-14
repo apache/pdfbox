@@ -493,7 +493,7 @@ public class PDDocumentCatalog implements COSObjectable
     public PageLayout getPageLayout()
     {
         String mode = root.getNameAsString(COSName.PAGE_LAYOUT);
-        if (mode != null)
+        if (mode != null && !mode.isEmpty())
         {
             try
             {
