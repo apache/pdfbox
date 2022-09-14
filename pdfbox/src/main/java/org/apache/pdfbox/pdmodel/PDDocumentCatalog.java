@@ -512,12 +512,16 @@ public class PDDocumentCatalog implements COSObjectable
         String mode = root.getNameAsString(COSName.PAGE_LAYOUT);
         if (mode != null)
         {
-            return PageLayout.fromString(mode);
+            try
+            {
+                return PageLayout.fromString(mode);
+            }
+            catch (IllegalArgumentException e)
+            {
+                LOG.warn("Invalid PageLayout used '" + mode + "' - returning PageLayout.SINGLE_PAGE", e);
+            }
         }
-        else
-        {
-            return PageLayout.SINGLE_PAGE;
-        }
+        return PageLayout.SINGLE_PAGE;
     }
 
     /**
