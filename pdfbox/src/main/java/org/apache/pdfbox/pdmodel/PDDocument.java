@@ -44,6 +44,7 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
@@ -687,6 +688,7 @@ public class PDDocument implements Closeable
         PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
         importedPage.setContents(dest);
         addPage(importedPage);
+        setHighestImportedObjectNumber(importedPage);
         importedPage.setCropBox(new PDRectangle(page.getCropBox().getCOSArray()));
         importedPage.setMediaBox(new PDRectangle(page.getMediaBox().getCOSArray()));
         importedPage.setRotation(page.getRotation());
@@ -696,6 +698,22 @@ public class PDDocument implements Closeable
             LOG.warn("call importedPage.setResources(page.getResources()) to do this");
         }
         return importedPage;
+    }
+
+    /**
+     * Determine the highest object number from the imported page to avoid mixed up numbers when saving the new pdf.
+     * 
+     * @param importedPage the imported page.
+     */
+    private void setHighestImportedObjectNumber(PDPage importedPage)
+    {
+        List<COSObjectKey> indirectObjectKeys = new ArrayList<>();
+        importedPage.getCOSObject().getIndirectObjectKeys(indirectObjectKeys);
+        long highestImportedNumber = indirectObjectKeys.stream().map(COSObjectKey::getNumber)
+                    .max(Long::compare).get();
+        long highestXRefObjectNumber = getDocument().getHighestXRefObjectNumber();
+        getDocument().setHighestXRefObjectNumber(
+                Math.max(highestXRefObjectNumber, highestImportedNumber));
     }
 
     /**

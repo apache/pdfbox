@@ -1419,5 +1419,49 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     {
         return updateState;
     }
-    
+
+    /**
+     * Collects all indirect objects numbers within this dictionary and all included dictionaries. It is used to avoid
+     * mixed up object numbers wwhen importing an existing page to another pdf.
+     * 
+     * Expert use only. You might run into an endless recursion if choosing a wrong starting point.
+     * 
+     * @param indirectObjects a list of already found indirect objects.
+     * 
+     */
+    public void getIndirectObjectKeys(List<COSObjectKey> indirectObjects)
+    {
+        // avoid endless recursions
+        if (indirectObjects == null || (getKey() != null && indirectObjects.contains(getKey())))
+        {
+            return;
+        }
+        for (COSBase cosBase : items.values())
+        {
+            COSDictionary dictionary = null;
+            if (cosBase instanceof COSObject)
+            {
+                // add indirect object key and dereference object
+                if (cosBase.getKey() != null && !indirectObjects.contains(cosBase.getKey()))
+                {
+                    indirectObjects.add(cosBase.getKey());
+                    COSBase referencedObject = ((COSObject) cosBase).getObject();
+                    if (referencedObject instanceof COSDictionary)
+                    {
+                        dictionary = (COSDictionary) referencedObject;
+                    }
+                }
+            }
+            else if (cosBase instanceof COSDictionary)
+            {
+                dictionary = (COSDictionary) cosBase;
+            }
+            if (dictionary != null)
+            {
+                // descend to included dictionary to collect all included indirect objects
+                dictionary.getIndirectObjectKeys(indirectObjects);
+            }
+        }
+    }
+
 }
