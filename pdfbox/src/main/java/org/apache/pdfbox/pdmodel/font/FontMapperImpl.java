@@ -108,8 +108,7 @@ final class FontMapperImpl implements FontMapper
             if (getSubstitutes(baseName).isEmpty())
             {
                 FontName mappedName = Standard14Fonts.getMappedFontName(baseName);
-                addSubstitutes(baseName,
-                        new ArrayList<>(getSubstitutes(mappedName.getName())));
+                addSubstitutes(baseName, new ArrayList<>(getSubstitutes(mappedName.getName())));
             }
         }
 
