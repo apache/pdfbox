@@ -480,7 +480,7 @@ final class FontMapperImpl implements FontMapper
         }
         return null;
     }
-    
+
     /**
      * Finds a CFF CID-Keyed font with the given PostScript name, or a suitable substitute, or null.
      * This method can also map CJK fonts via their CIDSystemInfo (ROS).
