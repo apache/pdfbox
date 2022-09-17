@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -58,57 +59,58 @@ final class FontMapperImpl implements FontMapper
     FontMapperImpl()
     {
         // substitutes for standard 14 fonts
-        substitutes.put("Courier",
+        addSubstitutes("Courier",
                 new ArrayList<>(Arrays.asList("CourierNew", "CourierNewPSMT", "LiberationMono",
                         "NimbusMonL-Regu")));
-        substitutes.put("Courier-Bold",
+        addSubstitutes("Courier-Bold",
                 new ArrayList<>(Arrays.asList("CourierNewPS-BoldMT", "CourierNew-Bold",
                         "LiberationMono-Bold", "NimbusMonL-Bold")));
-        substitutes.put("Courier-Oblique",
+        addSubstitutes("Courier-Oblique",
                 new ArrayList<>(Arrays.asList("CourierNewPS-ItalicMT","CourierNew-Italic",
                         "LiberationMono-Italic", "NimbusMonL-ReguObli")));
-        substitutes.put("Courier-BoldOblique",
+        addSubstitutes("Courier-BoldOblique",
                 new ArrayList<>(Arrays.asList("CourierNewPS-BoldItalicMT","CourierNew-BoldItalic",
                         "LiberationMono-BoldItalic", "NimbusMonL-BoldObli")));
-        substitutes.put("Helvetica",
+        addSubstitutes("Helvetica",
                 new ArrayList<>(Arrays.asList("ArialMT", "Arial", "LiberationSans", "NimbusSanL-Regu")));
-        substitutes.put("Helvetica-Bold",
+        addSubstitutes("Helvetica-Bold",
                 new ArrayList<>(Arrays.asList("Arial-BoldMT", "Arial-Bold", "LiberationSans-Bold",
                         "NimbusSanL-Bold")));
-        substitutes.put("Helvetica-Oblique",
+        addSubstitutes("Helvetica-Oblique",
                 new ArrayList<>(Arrays.asList("Arial-ItalicMT", "Arial-Italic", "Helvetica-Italic",
                         "LiberationSans-Italic", "NimbusSanL-ReguItal")));
-        substitutes.put("Helvetica-BoldOblique",
+        addSubstitutes("Helvetica-BoldOblique",
                 new ArrayList<>(Arrays.asList("Arial-BoldItalicMT", "Helvetica-BoldItalic",
                         "LiberationSans-BoldItalic", "NimbusSanL-BoldItal")));
-        substitutes.put("Times-Roman",
+        addSubstitutes("Times-Roman",
                 new ArrayList<>(Arrays.asList("TimesNewRomanPSMT", "TimesNewRoman", "TimesNewRomanPS",
                         "LiberationSerif", "NimbusRomNo9L-Regu")));
-        substitutes.put("Times-Bold",
+        addSubstitutes("Times-Bold",
                 new ArrayList<>(Arrays.asList("TimesNewRomanPS-BoldMT", "TimesNewRomanPS-Bold",
                         "TimesNewRoman-Bold", "LiberationSerif-Bold",
                         "NimbusRomNo9L-Medi")));
-        substitutes.put("Times-Italic",
+        addSubstitutes("Times-Italic",
                 new ArrayList<>(Arrays.asList("TimesNewRomanPS-ItalicMT", "TimesNewRomanPS-Italic",
                         "TimesNewRoman-Italic", "LiberationSerif-Italic",
                         "NimbusRomNo9L-ReguItal")));
-        substitutes.put("Times-BoldItalic",
+        addSubstitutes("Times-BoldItalic",
                 new ArrayList<>(Arrays.asList("TimesNewRomanPS-BoldItalicMT", "TimesNewRomanPS-BoldItalic",
                         "TimesNewRoman-BoldItalic", "LiberationSerif-BoldItalic",
                         "NimbusRomNo9L-MediItal")));
-        substitutes.put("Symbol", new ArrayList<>(Arrays.asList("Symbol", "SymbolMT", "StandardSymL")));
-        substitutes.put("ZapfDingbats", new ArrayList<>(Arrays.asList("ZapfDingbatsITCbyBT-Regular", 
+        addSubstitutes("Symbol", new ArrayList<>(Arrays.asList("Symbol", "SymbolMT", "StandardSymL")));
+        addSubstitutes("ZapfDingbats", new ArrayList<>(Arrays.asList("ZapfDingbatsITCbyBT-Regular", 
                         "ZapfDingbatsITC", "Dingbats", "MS-Gothic")));
 
         // Acrobat also uses alternative names for Standard 14 fonts, which we map to those above
         // these include names such as "Arial" and "TimesNewRoman"
         for (String baseName : Standard14Fonts.getNames())
         {
-            substitutes.computeIfAbsent(baseName, key ->
+            if (getSubstitutes(baseName).isEmpty())
             {
-                FontName mappedName = Standard14Fonts.getMappedFontName(key);
-                return new ArrayList<>(substitutes.get(mappedName.getName()));
-            });
+                FontName mappedName = Standard14Fonts.getMappedFontName(baseName);
+                addSubstitutes(mappedName.getName(),
+                        new ArrayList<String>(getSubstitutes(mappedName.getName())));
+            }
         }
 
         // -------------------------
@@ -175,7 +177,7 @@ final class FontMapperImpl implements FontMapper
         {
             for (String name : getPostScriptNames(info.getPostScriptName()))
             {
-                map.put(name, info);
+                map.put(name.toLowerCase(Locale.ENGLISH), info);
             }
         }
         return map;
@@ -205,7 +207,13 @@ final class FontMapperImpl implements FontMapper
      */
     public void addSubstitute(String match, String replace)
     {
-        substitutes.computeIfAbsent(match, key -> new ArrayList<>()).add(replace);
+        String lowerCaseMatch = match.toLowerCase(Locale.ENGLISH);
+        substitutes.computeIfAbsent(lowerCaseMatch, key -> new ArrayList<>()).add(replace);
+    }
+
+    private void addSubstitutes(String match, List<String> replacements)
+    {
+        substitutes.put(match.toLowerCase(Locale.ENGLISH), replacements);
     }
 
     /**
@@ -213,7 +221,7 @@ final class FontMapperImpl implements FontMapper
      */
     private List<String> getSubstitutes(String postScriptName)
     {
-        List<String> subs = substitutes.get(postScriptName.replace(" ", ""));
+        List<String> subs = substitutes.get(postScriptName.replace(" ", "").toLowerCase(Locale.ENGLISH));
         if (subs != null)
         {
             return subs;
@@ -462,7 +470,7 @@ final class FontMapperImpl implements FontMapper
         }
         
         // look up the PostScript name
-        FontInfo info = fontInfoByName.get(postScriptName);
+        FontInfo info = fontInfoByName.get(postScriptName.toLowerCase(Locale.ENGLISH));
         if (info != null && info.getFormat() == format)
         {
             if (LOG.isDebugEnabled())
