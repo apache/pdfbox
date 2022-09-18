@@ -1176,20 +1176,21 @@ public class GlyphSubstitutionTable extends AdvancedTypographicTable {
             assert (rv != null) && (rv.length > 0);
             assert rsa != null;
             if (rsa.length > 0) {
-                RuleSet rs = rsa [ 0 ];
-                if (rs != null) {
-                    Rule[] ra = rs.getRules();
-                    for (int i = 0, n = ra.length; i < n; i++) {
-                        Rule r = ra [ i ];
-                        if ((r != null) && (r instanceof ChainedClassSequenceRule)) {
-                            ChainedClassSequenceRule cr = (ChainedClassSequenceRule) r;
-                            int[] ica = cr.getClasses(icdt.getClassIndex(gi, ss.getClassMatchSet(gi)));
-                            if (matches(ss, icdt, ica, 0, rv)) {
-                                int[] bca = cr.getBacktrackClasses();
-                                if (matches(ss, bcdt, bca, -1, null)) {
-                                    int[] lca = cr.getLookaheadClasses();
-                                    if (matches(ss, lcdt, lca, rv[0], null)) {
-                                        return r.getLookups();
+                for (RuleSet rs : rsa) {
+                    if (rs != null) {
+                        Rule[] ra = rs.getRules();
+                        for (int i = 0, n = ra.length; i < n; i++) {
+                            Rule r = ra[i];
+                            if ((r != null) && (r instanceof ChainedClassSequenceRule)) {
+                                ChainedClassSequenceRule cr = (ChainedClassSequenceRule) r;
+                                int[] ica = cr.getClasses(icdt.getClassIndex(gi, ss.getClassMatchSet(gi)));
+                                if (matches(ss, icdt, ica, 0, rv)) {
+                                    int[] bca = cr.getBacktrackClasses();
+                                    if (matches(ss, bcdt, bca, -1, null)) {
+                                        int[] lca = cr.getLookaheadClasses();
+                                        if (matches(ss, lcdt, lca, rv[0], null)) {
+                                            return r.getLookups();
+                                        }
                                     }
                                 }
                             }
