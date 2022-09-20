@@ -41,7 +41,7 @@ import org.apache.pdfbox.util.SmallMap;
 public class COSDictionary extends COSBase implements COSUpdateInfo
 {
     private static final String PATH_SEPARATOR = "/";
-    private static final int MAP_TRESHOLD = 1000;
+    private static final int MAP_THRESHOLD = 1000;
     private boolean needToBeUpdated;
 
     /**
@@ -216,7 +216,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         else
         {
-            if (items instanceof SmallMap && items.size() >= MAP_TRESHOLD)
+            if (items instanceof SmallMap && items.size() >= MAP_THRESHOLD)
             {
                 items = new LinkedHashMap<COSName, COSBase>(items);
             }
@@ -1448,7 +1448,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void addAll(COSDictionary dict)
     {
-        if (items instanceof SmallMap && items.size() + dict.items.size() >= MAP_TRESHOLD)
+        if (items instanceof SmallMap && items.size() + dict.items.size() >= MAP_THRESHOLD)
         {
             items = new LinkedHashMap<COSName, COSBase>(items);
         }
