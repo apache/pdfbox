@@ -51,7 +51,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     private static final Log LOG = LogFactory.getLog(COSDictionary.class);
 
     private static final String PATH_SEPARATOR = "/";
-    private static final int MAP_TRESHOLD = 1000;
+    private static final int MAP_THRESHOLD = 1000;
 
     /**
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
@@ -205,7 +205,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         else
         {
-            if (items instanceof SmallMap && items.size() >= MAP_TRESHOLD)
+            if (items instanceof SmallMap && items.size() >= MAP_THRESHOLD)
             {
                 items = new LinkedHashMap<>(items);
             }
@@ -1272,7 +1272,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void addAll(COSDictionary dict)
     {
-        if (items instanceof SmallMap && items.size() + dict.items.size() >= MAP_TRESHOLD)
+        if (items instanceof SmallMap && items.size() + dict.items.size() >= MAP_THRESHOLD)
         {
             items = new LinkedHashMap<>(items);
         }
