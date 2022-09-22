@@ -136,7 +136,7 @@ abstract class TrueTypeEmbedder implements Subsetter
     /**
      * Returns true if the fsType in the OS/2 table permits embedding.
      */
-    boolean isEmbeddingPermitted(TrueTypeFont ttf) throws IOException
+    final boolean isEmbeddingPermitted(TrueTypeFont ttf) throws IOException
     {
         if (ttf.getOS2Windows() != null)
         {
