@@ -108,7 +108,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * @param closeTTF whether to close the ttf parameter after embedding. Must be true when the ttf
      * parameter was created in the load() method, false when the ttf parameter was passed to the
      * load() method.
-     * @param vertical
+     * @param vertical whether to enable vertical substitutions.
      * @throws IOException
      */
     private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset,
@@ -192,6 +192,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * @param randomAccessRead source of a TrueType font.
      * @param embedSubset True if the font will be subset before embedding. Set this to false when creating a font for
      * AcroForm.
+     * @param vertical whether to enable vertical substitutions.
      * @return A Type0 font with a CIDFontType2 descendant.
      * @throws IOException If there is an error reading the font stream.
      */
@@ -406,7 +407,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     }
 
     /**
-     * Returns the PostScript name of the font. if (!((COSDictionary) descendantFontDictBase).contai
+     * Returns the PostScript name of the font.
      */
     public String getBaseFont()
     {

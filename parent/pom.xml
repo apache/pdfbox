@@ -63,7 +63,7 @@
             <dependency>
 	            <groupId>org.junit.jupiter</groupId>
 	            <artifactId>junit-jupiter</artifactId>
-	            <version>5.9.0</version>
+	            <version>5.9.1</version>
 	            <scope>test</scope>
             </dependency>
             <dependency>
@@ -370,7 +370,7 @@
                 <plugin>
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
-                    <version>0.14</version>
+                    <version>0.15</version>
                     <configuration>
                         <excludes>
                             <exclude>release.properties</exclude>

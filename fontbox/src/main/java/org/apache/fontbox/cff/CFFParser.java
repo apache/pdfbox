@@ -530,6 +530,10 @@ public class CFFParser
         int charStringsOffset = charStringsEntry.getNumber(0).intValue();
         input.setPosition(charStringsOffset);
         byte[][] charStringsIndex = readIndexData(input);
+        if (charStringsIndex == null)
+        {
+            throw new IOException("CharStringsIndex is missing");
+        }
         
         // charset
         DictData.Entry charsetEntry = topDict.getEntry("charset");
@@ -1318,7 +1322,7 @@ public class CFFParser
                 return operands;
             }
 
-            public List<Number> getDelta()
+	          public List<Number> getDelta()
             {
                 if (operands.size() > 0)
                 {
@@ -1326,7 +1330,6 @@ public class CFFParser
                     Number first = operands.get(0);
                     result.add(first);
                     int prevSum = first.intValue();
-
                     for (int i = 1; i < operands.size(); i++)
                     {
                         Number current = operands.get(i);
@@ -1334,7 +1337,6 @@ public class CFFParser
                         result.add(sum);
                         prevSum = sum;
                     }
-
                     return result;
                 }
                 else

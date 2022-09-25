@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     private static final Log LOG = LogFactory.getLog(COSDictionary.class);
 
     private static final String PATH_SEPARATOR = "/";
+    private static final int MAP_THRESHOLD = 1000;
 
     /**
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
@@ -73,7 +75,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public COSDictionary(COSDictionary dict)
     {
         updateState = new COSUpdateState(this);
-        items.putAll(dict.items);
+        addAll(dict);
     }
 
     /**
@@ -206,14 +208,12 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         else
         {
-            boolean changed = !(items.containsKey(value) && items.get(key) == value);
-
-            items.put(key, value);
-
-            if (changed)
+            if (items instanceof SmallMap && items.size() >= MAP_THRESHOLD)
             {
-                getUpdateState().update(value);
+                items = new LinkedHashMap<>(items);
             }
+            items.put(key, value);
+            getUpdateState().update(value);
         }
     }
 
@@ -1273,11 +1273,15 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * This will add all of the dictionaries keys/values to this dictionary. Existing key/value pairs will be
      * overwritten.
      *
-     * @param dic The dictionaries to get the key/value pairs from.
+     * @param dict The dictionaries to get the key/value pairs from.
      */
-    public void addAll(COSDictionary dic)
+    public void addAll(COSDictionary dict)
     {
-        dic.forEach(this::setItem);
+        if (items instanceof SmallMap && items.size() + dict.items.size() >= MAP_THRESHOLD)
+        {
+            items = new LinkedHashMap<>(items);
+        }
+        items.putAll(dict.items);
     }
 
     /**
@@ -1421,5 +1425,49 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     {
         return updateState;
     }
-    
+
+    /**
+     * Collects all indirect objects numbers within this dictionary and all included dictionaries. It is used to avoid
+     * mixed up object numbers wwhen importing an existing page to another pdf.
+     * 
+     * Expert use only. You might run into an endless recursion if choosing a wrong starting point.
+     * 
+     * @param indirectObjects a list of already found indirect objects.
+     * 
+     */
+    public void getIndirectObjectKeys(List<COSObjectKey> indirectObjects)
+    {
+        // avoid endless recursions
+        if (indirectObjects == null || (getKey() != null && indirectObjects.contains(getKey())))
+        {
+            return;
+        }
+        for (COSBase cosBase : items.values())
+        {
+            COSDictionary dictionary = null;
+            if (cosBase instanceof COSObject)
+            {
+                // add indirect object key and dereference object
+                if (cosBase.getKey() != null && !indirectObjects.contains(cosBase.getKey()))
+                {
+                    indirectObjects.add(cosBase.getKey());
+                    COSBase referencedObject = ((COSObject) cosBase).getObject();
+                    if (referencedObject instanceof COSDictionary)
+                    {
+                        dictionary = (COSDictionary) referencedObject;
+                    }
+                }
+            }
+            else if (cosBase instanceof COSDictionary)
+            {
+                dictionary = (COSDictionary) cosBase;
+            }
+            if (dictionary != null)
+            {
+                // descend to included dictionary to collect all included indirect objects
+                dictionary.getIndirectObjectKeys(indirectObjects);
+            }
+        }
+    }
+
 }
