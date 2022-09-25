@@ -370,7 +370,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
      * 
      * @param inputStream the InputStream holding the data to be copied
      * 
-     * @return the RandomAccessReadBufer holding the data of the InputStream
+     * @return the RandomAccessReadBuffer holding the data of the InputStream
      * @throws IOException if something went wrong while copying the data
      */
     public static RandomAccessReadBuffer createBufferFromStream(InputStream inputStream) throws IOException
