@@ -1428,7 +1428,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
 
     /**
      * Collects all indirect objects numbers within this dictionary and all included dictionaries. It is used to avoid
-     * mixed up object numbers wwhen importing an existing page to another pdf.
+     * mixed up object numbers when importing an existing page to another pdf.
      * 
      * Expert use only. You might run into an endless recursion if choosing a wrong starting point.
      * 
