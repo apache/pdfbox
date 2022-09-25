@@ -122,8 +122,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void retainAll( Collection<COSBase> objectsList )
     {
-        objects.retainAll( objectsList );
-        getUpdateState().update();
+        if (objects.retainAll(objectsList))
+        {
+            getUpdateState().update();
+        }
     }
 
     /**
@@ -133,8 +135,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void addAll( Collection<COSBase> objectsList )
     {
-        objects.addAll( objectsList );
-        getUpdateState().update(objectsList);
+        if (objects.addAll(objectsList))
+        {
+            getUpdateState().update(objectsList);
+        }
     }
 
     /**
@@ -146,8 +150,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     {
         if( objectList != null )
         {
-            objects.addAll( objectList.objects );
-            getUpdateState().update(objectList);
+            if (objects.addAll(objectList.objects))
+            {
+                getUpdateState().update(objectList);
+            }
         }
     }
 
@@ -160,8 +166,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void addAll( int i, Collection<COSBase> objectList )
     {
-        objects.addAll( i, objectList );
-        getUpdateState().update(objectList);
+        if (objects.addAll(i, objectList))
+        {
+            getUpdateState().update(objectList);
+        }
     }
 
     /**
