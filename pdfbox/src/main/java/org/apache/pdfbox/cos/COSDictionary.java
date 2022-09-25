@@ -984,7 +984,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be an integer. If the
-     * dictionary value is null then the defaultvalue will be returned.
+     * dictionary value is null then the default value will be returned.
      *
      * @param key The key to the item in the dictionary.
      * @param defaultValue The value to return if the dictionary item is null.
