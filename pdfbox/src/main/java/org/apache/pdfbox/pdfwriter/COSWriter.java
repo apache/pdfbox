@@ -1156,33 +1156,7 @@ public class COSWriter implements ICOSVisitor
     @Override
     public void visitFromDictionary(COSDictionary obj) throws IOException
     {
-        if (!reachedSignature && incrementalUpdate)
-        {
-            COSBase itemType = obj.getItem(COSName.TYPE);
-            if (COSName.SIG.equals(itemType) || COSName.DOC_TIME_STAMP.equals(itemType))
-            {
-                COSArray byteRange = obj.getCOSArray(COSName.BYTERANGE);
-                if (byteRange != null && byteRange.size() == 4)
-                {
-                    COSBase base2 = byteRange.get(2);
-                    COSBase base3 = byteRange.get(3);
-                    if (base2 instanceof COSInteger && base3 instanceof COSInteger)
-                    {
-                        long br2 = ((COSInteger) base2).longValue();
-                        long br3 = ((COSInteger) base3).longValue();
-                        if (br2 + br3 > incrementalInput.length())
-                        {
-                            reachedSignature = true;
-                        }
-                        else
-                        {
-                            LOG.warn("An existing signature is part of incremental saving near offset " + 
-                                    getStandardOutput().getPos());
-                        }
-                    }
-                }
-            }
-        }
+        detectPossibleSignature(obj);
         getStandardOutput().write(DICT_OPEN);
         getStandardOutput().writeEOL();
         for (Map.Entry<COSName, COSBase> entry : obj.entrySet())
@@ -1265,6 +1239,37 @@ public class COSWriter implements ICOSVisitor
         }
         getStandardOutput().write(DICT_CLOSE);
         getStandardOutput().writeEOL();
+    }
+
+    private void detectPossibleSignature(COSDictionary obj) throws IOException
+    {
+        if (!reachedSignature && incrementalUpdate)
+        {
+            COSBase itemType = obj.getItem(COSName.TYPE);
+            if (COSName.SIG.equals(itemType) || COSName.DOC_TIME_STAMP.equals(itemType))
+            {
+                COSArray byteRange = obj.getCOSArray(COSName.BYTERANGE);
+                if (byteRange != null && byteRange.size() == 4)
+                {
+                    COSBase base2 = byteRange.get(2);
+                    COSBase base3 = byteRange.get(3);
+                    if (base2 instanceof COSInteger && base3 instanceof COSInteger)
+                    {
+                        long br2 = ((COSInteger) base2).longValue();
+                        long br3 = ((COSInteger) base3).longValue();
+                        if (br2 + br3 > incrementalInput.length())
+                        {
+                            reachedSignature = true;
+                        }
+                        else
+                        {
+                            LOG.warn("An existing signature is part of incremental saving near offset " +
+                                    getStandardOutput().getPos());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
