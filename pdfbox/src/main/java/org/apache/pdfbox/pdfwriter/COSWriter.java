@@ -41,9 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -88,11 +85,6 @@ import org.apache.pdfbox.util.Hex;
  */
 public class COSWriter implements ICOSVisitor
 {
-    /**
-     * Logging.
-     */
-    private static final Log LOG = LogFactory.getLog(COSWriter.class);
-
     /**
      * The dictionary open token.
      */
@@ -1260,11 +1252,6 @@ public class COSWriter implements ICOSVisitor
                         if (br2 + br3 > incrementalInput.length())
                         {
                             reachedSignature = true;
-                        }
-                        else
-                        {
-                            LOG.warn("An existing signature is part of incremental saving near offset " +
-                                    getStandardOutput().getPos());
                         }
                     }
                 }
