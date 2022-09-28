@@ -41,6 +41,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -85,6 +88,11 @@ import org.apache.pdfbox.util.Hex;
  */
 public class COSWriter implements ICOSVisitor
 {
+    /**
+     * Logging.
+     */
+    private static final Log LOG = LogFactory.getLog(COSWriter.class);
+
     /**
      * The dictionary open token.
      */
@@ -885,7 +893,8 @@ public class COSWriter implements ICOSVisitor
         {
             throw new IOException("Can't write new byteRange '" + byteRange + 
                     "' not enough space: byteRange.length(): " + byteRange.length() + 
-                    ", byteRangeLength: " + byteRangeLength);
+                    ", byteRangeLength: " + byteRangeLength +
+                    ", byteRangeOffset: " + byteRangeOffset);
         }
 
         // copy the new incremental data into a buffer (e.g. signature dict, trailer)
@@ -1147,14 +1156,33 @@ public class COSWriter implements ICOSVisitor
     @Override
     public void visitFromDictionary(COSDictionary obj) throws IOException
     {
-        if (!reachedSignature)
+        if (!reachedSignature && incrementalUpdate)
         {
             COSBase itemType = obj.getItem(COSName.TYPE);
             if (COSName.SIG.equals(itemType) || COSName.DOC_TIME_STAMP.equals(itemType))
             {
-                reachedSignature = true;
+                COSArray byteRange = obj.getCOSArray(COSName.BYTERANGE);
+                if (byteRange != null && byteRange.size() == 4)
+                {
+                    COSBase base2 = byteRange.get(2);
+                    COSBase base3 = byteRange.get(3);
+                    if (base2 instanceof COSInteger && base3 instanceof COSInteger)
+                    {
+                        long br2 = ((COSInteger) base2).longValue();
+                        long br3 = ((COSInteger) base3).longValue();
+                        if (br2 + br3 > incrementalInput.length())
+                        {
+                            reachedSignature = true;
+                        }
+                        else
+                        {
+                            LOG.warn("An existing signature is part of incremental saving near offset " + 
+                                    getStandardOutput().getPos());
+                        }
+                    }
+                }
             }
-        }        
+        }
         getStandardOutput().write(DICT_OPEN);
         getStandardOutput().writeEOL();
         for (Map.Entry<COSName, COSBase> entry : obj.entrySet())
