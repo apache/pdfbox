@@ -37,7 +37,7 @@ public class Type2CharString extends Type1CharString
     private float nominalWidthX = 0;
     private int pathCount = 0;
     private final int gid;
-    //todo think about to use an CharStringCommand(8) as static final field
+
     /**
      * Constructor.
      * @param font Parent CFF font
@@ -183,13 +183,15 @@ public class Type2CharString extends Type1CharString
             int dy = 0;
             for (int i = 0; i < 5; i++)
             {
-                dx += numbers.get(i * 2).intValue();
-                dy += numbers.get(i * 2 + 1).intValue();
+                int i2 = i * 2;
+                dx += numbers.get(i2).intValue();
+                dy += numbers.get(i2 + 1).intValue();
             }
             Number[] first = subArray(numbers,0, 6);
+            boolean dxIsBigger = Math.abs(dx) > Math.abs(dy);
             Number[] second = new Number[]{numbers.get(6), numbers.get(7), numbers.get(8),
-                    numbers.get(9), Math.abs(dx) > Math.abs(dy) ? numbers.get(10) : -dx,
-                    Math.abs(dx) > Math.abs(dy) ? -dy : numbers.get(10)};
+                    numbers.get(9), dxIsBigger ? numbers.get(10) : -dx,
+                    dxIsBigger ? -dy : numbers.get(10)};
             addCommand(first, CharStringCommand.COMMAND_RRCURVETO);
             addCommand(second, CharStringCommand.COMMAND_RRCURVETO);
             break;
