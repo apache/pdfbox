@@ -557,11 +557,11 @@ public final class TTFSubsetter
             {
                 is.close();
             }
-            if (glyphIdsToAdd != null)
+            hasNested = glyphIdsToAdd != null;
+            if (hasNested)
             {
                 glyphIds.addAll(glyphIdsToAdd);
             }
-            hasNested = glyphIdsToAdd != null;
         }
         while (hasNested);
     }
