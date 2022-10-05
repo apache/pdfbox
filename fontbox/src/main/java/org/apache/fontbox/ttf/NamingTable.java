@@ -135,7 +135,7 @@ public class NamingTable extends TTFTable
             Map<Integer, String> languageLookup = encodingLookup.get(nr.getPlatformEncodingId());
             if (languageLookup == null)
             {
-                languageLookup = new HashMap<>();
+                languageLookup = new HashMap<>(1);
                 encodingLookup.put(nr.getPlatformEncodingId(), languageLookup);
             }
             // language id / string
