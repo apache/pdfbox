@@ -263,10 +263,10 @@ public class GlyphSubstitutionTable extends TTFTable
         int lookupType = data.readUnsignedShort();
         int lookupFlag = data.readUnsignedShort();
         int subTableCount = data.readUnsignedShort();
-        int[] subTableOffets = new int[subTableCount];
+        int[] subTableOffsets = new int[subTableCount];
         for (int i = 0; i < subTableCount; i++)
         {
-            subTableOffets[i] = data.readUnsignedShort();
+            subTableOffsets[i] = data.readUnsignedShort();
         }
 
         int markFilteringSet;
@@ -286,7 +286,7 @@ public class GlyphSubstitutionTable extends TTFTable
             // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#SS
             for (int i = 0; i < subTableCount; i++)
             {
-                subTables[i] = readLookupSubTable(data, offset + subTableOffets[i]);
+                subTables[i] = readLookupSubTable(data, offset + subTableOffsets[i]);
             }
             break;
         case 4:
@@ -294,7 +294,7 @@ public class GlyphSubstitutionTable extends TTFTable
             // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#LS
             for (int i = 0; i < subTableCount; i++)
             {
-                subTables[i] = readLigatureSubstitutionSubtable(data, offset + subTableOffets[i]);
+                subTables[i] = readLigatureSubstitutionSubtable(data, offset + subTableOffsets[i]);
             }
             break;
         default:
