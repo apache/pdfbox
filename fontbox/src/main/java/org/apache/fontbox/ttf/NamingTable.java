@@ -204,7 +204,7 @@ public class NamingTable extends TTFTable
     }
 
     /**
-     * Returns a name from the table, or null it it does not exist.
+     * Returns a name from the table, or null if it does not exist.
      *
      * @param nameId Name ID from NameRecord constants.
      * @param platformId Platform ID from NameRecord constants.
