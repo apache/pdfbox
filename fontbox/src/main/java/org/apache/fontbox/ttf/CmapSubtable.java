@@ -470,7 +470,7 @@ public class CmapSubtable implements CmapLookup
                 List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(value);
                 if (mappedValues == null)
                 {
-                    mappedValues = new ArrayList<>();
+                    mappedValues = new ArrayList<>(2);
                     glyphIdToCharacterCodeMultiple.put(value, mappedValues);
                     mappedValues.add(glyphIdToCharacterCode[value]);
                     // mark value as multiple mapping
