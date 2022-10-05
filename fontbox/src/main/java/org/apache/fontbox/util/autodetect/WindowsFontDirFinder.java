@@ -38,7 +38,7 @@ public class WindowsFontDirFinder implements FontDirFinder
     private static final Log LOG = LogFactory.getLog(WindowsFontDirFinder.class);
 
     /**
-     * Attempts to read windir environment variable on windows (disclaimer: This is a bit dirty but seems to work
+     * Attempts to read windir environment variable on Windows (disclaimer: This is a bit dirty but seems to work
      * nicely).
      */
     private String getWinDir(String osName) throws IOException
