@@ -403,7 +403,7 @@ public class CFFParser
                     exponentMissing = false;
                     break;
                 case 0xa:
-                    sb.append(".");
+                    sb.append('.');
                     break;
                 case 0xb:
                     if (hasExponent)
@@ -411,7 +411,7 @@ public class CFFParser
                         LOG.warn("duplicate 'E' ignored after " + sb);
                         break;
                     }
-                    sb.append("E");
+                    sb.append('E');
                     exponentMissing = true;
                     hasExponent = true;
                     break;
@@ -428,7 +428,7 @@ public class CFFParser
                 case 0xd:
                     break;
                 case 0xe:
-                    sb.append("-");
+                    sb.append('-');
                     break;
                 case 0xf:
                     done = true;
@@ -444,7 +444,7 @@ public class CFFParser
             // the exponent is missing, just append "0" to avoid an exception
             // not sure if 0 is the correct value, but it seems to fit
             // see PDFBOX-1522
-            sb.append("0");
+            sb.append('0');
         }
         if (sb.length() == 0)
         {
