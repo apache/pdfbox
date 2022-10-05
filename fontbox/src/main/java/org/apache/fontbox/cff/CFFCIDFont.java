@@ -19,7 +19,7 @@ package org.apache.fontbox.cff;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -38,8 +38,8 @@ public class CFFCIDFont extends CFFFont
     private String ordering;
     private int supplement;
 
-    private List<Map<String, Object>> fontDictionaries = new LinkedList<>();
-    private List<Map<String, Object>> privateDictionaries = new LinkedList<>();
+    private List<Map<String, Object>> fontDictionaries = Collections.emptyList();
+    private List<Map<String, Object>> privateDictionaries = Collections.emptyList();
     private FDSelect fdSelect;
 
     private final Map<Integer, CIDKeyedType2CharString> charStringCache =
