@@ -91,11 +91,11 @@ class OverlayTest
              Overlay overlay = new Overlay())
         {
             Map<Integer, String> specificPageOverlayMap = new HashMap<>();
+            Assertions.assertThrows(IllegalArgumentException.class, () -> overlay.overlay(specificPageOverlayMap));
             specificPageOverlayMap.put(1, new File(IN_DIR, "rot0.pdf").getAbsolutePath());
             specificPageOverlayMap.put(2, new File(IN_DIR, "rot90.pdf").getAbsolutePath());
             specificPageOverlayMap.put(3, new File(IN_DIR, "rot180.pdf").getAbsolutePath());
             specificPageOverlayMap.put(4, new File(IN_DIR, "rot270.pdf").getAbsolutePath());
-            Assertions.assertThrows(IllegalArgumentException.class, () -> overlay.overlay(new HashMap<>()));
             overlay.setInputPDF(baseDocument);
             try (PDDocument overlayedResultPDF = overlay.overlay(specificPageOverlayMap))
             {
