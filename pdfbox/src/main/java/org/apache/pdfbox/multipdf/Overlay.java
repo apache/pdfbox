@@ -66,8 +66,8 @@ public class Overlay implements Closeable
     private LayoutPage oddPageOverlayPage;
     private LayoutPage evenPageOverlayPage;
 
-    private final Set<PDDocument> openDocuments = new HashSet<PDDocument>();
-    private Map<Integer, LayoutPage> specificPageOverlayPage = new HashMap<Integer, LayoutPage>();
+    private final Set<PDDocument> openDocumentsSet = new HashSet<PDDocument>();
+    private Map<Integer, LayoutPage> specificPageOverlayLayoutPageMap = new HashMap<Integer, LayoutPage>();
 
     private Position position = Position.BACKGROUND;
 
@@ -111,10 +111,6 @@ public class Overlay implements Closeable
      */
     public PDDocument overlay(Map<Integer, String> specificPageOverlayMap) throws IOException
     {
-        if (inputPDFDocument == null)
-        {
-            throw new IllegalArgumentException("No input document");
-        }
         Map<String, LayoutPage> layouts = new HashMap<String, LayoutPage>();
         String path;
         loadPDFs();
@@ -127,9 +123,9 @@ public class Overlay implements Closeable
                 PDDocument doc = loadPDF(path);
                 layoutPage = getLayoutPage(doc);
                 layouts.put(path, layoutPage);
-                openDocuments.add(doc);
+                openDocumentsSet.add(doc);
             }
-            specificPageOverlayPage.put(e.getKey(), layoutPage);
+            specificPageOverlayLayoutPageMap.put(e.getKey(), layoutPage);
         }
         processPages(inputPDFDocument);
         return inputPDFDocument;
@@ -139,7 +135,7 @@ public class Overlay implements Closeable
      * This will add overlays documents to a document. If you created the overlay documents with
      * subsetted fonts, you need to save them first so that the subsetting gets done.
      *
-     * @param specificPageOverlayDocuments Optional map of overlay documents for specific pages. The
+     * @param specificPageOverlayDocumentMap Optional map of overlay documents for specific pages. The
      * page numbers are 1-based. The map must be empty (but not null) if no specific mappings are
      * used.
      *
@@ -149,15 +145,15 @@ public class Overlay implements Closeable
      *
      * @throws IOException if something went wrong
      */
-    public PDDocument overlayDocuments(Map<Integer, PDDocument> specificPageOverlayDocuments) throws IOException
+    public PDDocument overlayDocuments(Map<Integer, PDDocument> specificPageOverlayDocumentMap) throws IOException
     {
         loadPDFs();
-        for (Map.Entry<Integer, PDDocument> e : specificPageOverlayDocuments.entrySet())
+        for (Map.Entry<Integer, PDDocument> e : specificPageOverlayDocumentMap.entrySet())
         {
             PDDocument doc = e.getValue();
             if (doc != null)
             {
-                specificPageOverlayPage.put(e.getKey(), getLayoutPage(doc));
+                specificPageOverlayLayoutPageMap.put(e.getKey(), getLayoutPage(doc));
             }
         }
         processPages(inputPDFDocument);
@@ -196,12 +192,12 @@ public class Overlay implements Closeable
         {
             evenPageOverlay.close();
         }
-        for (PDDocument doc : openDocuments)
+        for (PDDocument doc : openDocumentsSet)
         {
             doc.close();
         }
-        openDocuments.clear();
-        specificPageOverlayPage.clear();
+        openDocumentsSet.clear();
+        specificPageOverlayLayoutPageMap.clear();
     }
 
     private void loadPDFs() throws IOException
@@ -210,6 +206,10 @@ public class Overlay implements Closeable
         if (inputFileName != null)
         {
             inputPDFDocument = loadPDF(inputFileName);
+        }
+        if (inputPDFDocument == null)
+        {
+            throw new IllegalArgumentException("No input document");
         }
         // default overlay PDF
         if (defaultOverlayFilename != null)
@@ -263,9 +263,9 @@ public class Overlay implements Closeable
         }
         if (allPagesOverlay != null)
         {
-            specificPageOverlayPage = getLayoutPages(allPagesOverlay);
+            specificPageOverlayLayoutPageMap = getLayoutPages(allPagesOverlay);
             useAllOverlayPages = true;
-            numberOfOverlayPages = specificPageOverlayPage.size();
+            numberOfOverlayPages = specificPageOverlayLayoutPageMap.size();
         }
     }
     
@@ -460,9 +460,9 @@ public class Overlay implements Closeable
     private LayoutPage getLayoutPage(int pageNumber, int numberOfPages)
     {
         LayoutPage layoutPage = null;
-        if (!useAllOverlayPages && specificPageOverlayPage.containsKey(pageNumber))
+        if (!useAllOverlayPages && specificPageOverlayLayoutPageMap.containsKey(pageNumber))
         {
-            layoutPage = specificPageOverlayPage.get(pageNumber);
+            layoutPage = specificPageOverlayLayoutPageMap.get(pageNumber);
         }
         else if ((pageNumber == 1) && (firstPageOverlayPage != null))
         {
@@ -487,7 +487,7 @@ public class Overlay implements Closeable
         else if (useAllOverlayPages)
         {
             int usePageNum = (pageNumber -1 ) % numberOfOverlayPages;
-            layoutPage = specificPageOverlayPage.get(usePageNum);
+            layoutPage = specificPageOverlayLayoutPageMap.get(usePageNum);
         }
         return layoutPage;
     }
