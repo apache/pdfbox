@@ -67,9 +67,9 @@ class OverlayTest
     private void testRotatedOverlay(int rotation) throws IOException
     {
         // do the overlaying
-        try (PDDocument baseDocument = Loader.loadPDF(new File(IN_DIR, "OverlayTestBaseRot0.pdf")))
+        try (PDDocument baseDocument = Loader.loadPDF(new File(IN_DIR, "OverlayTestBaseRot0.pdf"));
+             Overlay overlay = new Overlay())
         {
-            Overlay overlay = new Overlay();
             overlay.setInputPDF(baseDocument);
             try (PDDocument overlayDocument = Loader.loadPDF(new File(IN_DIR, "rot" + rotation + ".pdf")))
             {
