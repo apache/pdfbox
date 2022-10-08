@@ -120,7 +120,8 @@ public class Overlay implements Closeable
             if (layoutPage == null)
             {
                 PDDocument doc = loadPDF(path);
-                layouts.put(path, getLayoutPage(doc));
+                layoutPage = getLayoutPage(doc);
+                layouts.put(path, layoutPage);
                 openDocuments.add(doc);
             }
             specificPageOverlayPage.put(e.getKey(), layoutPage);
