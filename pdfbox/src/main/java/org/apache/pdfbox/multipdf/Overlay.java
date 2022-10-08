@@ -98,7 +98,7 @@ public class Overlay implements Closeable
     /**
      * This will add overlays to a document.
      *
-     * @param specificPageOverlayFile Optional map of overlay files of which the first page will be
+     * @param specificPageOverlayMap Optional map of overlay files of which the first page will be
      * used for specific pages of the input document. The page numbers are 1-based. The map must be
      * empty (but not null) if no specific mappings are used.
      *
@@ -106,14 +106,19 @@ public class Overlay implements Closeable
      * the input document was passed by {@link #setInputPDF(PDDocument) setInputPDF(PDDocument)}
      * then it is that object that is returned.
      *
-     * @throws IOException if something went wrong
+     * @throws IOException if something went wrong.
+     * @throws IllegalArgumentException if the input document is missing.
      */
-    public PDDocument overlay(Map<Integer, String> specificPageOverlayFile) throws IOException
+    public PDDocument overlay(Map<Integer, String> specificPageOverlayMap) throws IOException
     {
+        if (inputPDFDocument == null)
+        {
+            throw new IllegalArgumentException("No input document");
+        }
         Map<String, LayoutPage> layouts = new HashMap<String, LayoutPage>();
         String path;
         loadPDFs();
-        for (Map.Entry<Integer, String> e : specificPageOverlayFile.entrySet())
+        for (Map.Entry<Integer, String> e : specificPageOverlayMap.entrySet())
         {
             path = e.getValue();
             LayoutPage layoutPage = layouts.get(path);
