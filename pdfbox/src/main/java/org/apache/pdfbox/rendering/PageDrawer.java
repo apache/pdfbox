@@ -2024,11 +2024,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             nestedHiddenOCGCount++;
             return;
         }
-        if (tag == null || getPage().getResources() == null)
+        if (tag == null || getResources() == null)
         {
             return;
         }
-        if (isHiddenOCG(getPage().getResources().getProperties(tag)))
+        if (isHiddenOCG(getResources().getProperties(tag)))
         {
             nestedHiddenOCGCount = 1;
         }
