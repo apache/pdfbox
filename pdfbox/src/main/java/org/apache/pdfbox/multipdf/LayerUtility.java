@@ -62,12 +62,12 @@ public class LayerUtility
 
     /**
      * Creates a new instance.
-     * @param document the PDF document to modify
+     * @param targetDoc the PDF document to modify
      */
-    public LayerUtility(PDDocument document)
+    public LayerUtility(PDDocument targetDoc)
     {
-        this.targetDoc = document;
-        this.cloner = new PDFCloneUtility(document);
+        this.targetDoc = targetDoc;
+        this.cloner = new PDFCloneUtility(targetDoc);
     }
 
     /**
