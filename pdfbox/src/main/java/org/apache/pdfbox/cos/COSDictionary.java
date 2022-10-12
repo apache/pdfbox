@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -1432,35 +1433,57 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void getIndirectObjectKeys(List<COSObjectKey> indirectObjects)
     {
-        // avoid endless recursions
-        if (indirectObjects == null || (getKey() != null && indirectObjects.contains(getKey())))
+        if (indirectObjects == null)
         {
             return;
         }
-        for (COSBase cosBase : items.values())
+        COSObjectKey key = getKey();
+        if (key != null)
         {
-            COSDictionary dictionary = null;
+            // avoid endless recursions
+            if (indirectObjects.contains(key))
+            {
+                return;
+            }
+            else
+            {
+                indirectObjects.add(key);
+            }
+        }
+        for (Entry<COSName, COSBase> entry : items.entrySet())
+        {
+            COSBase cosBase = entry.getValue();
+            COSObjectKey cosBaseKey = cosBase.getKey();
+            // avoid endless recursions
+            if (COSName.PARENT.equals(entry.getKey())
+                    || (cosBaseKey != null && indirectObjects.contains(cosBaseKey)))
+            {
+                continue;
+            }
             if (cosBase instanceof COSObject)
             {
-                // add indirect object key and dereference object
-                if (cosBase.getKey() != null && !indirectObjects.contains(cosBase.getKey()))
+                // dereference object
+                COSBase referencedObject = ((COSObject) cosBase).getObject();
+                if (referencedObject instanceof COSDictionary)
                 {
-                    indirectObjects.add(cosBase.getKey());
-                    COSBase referencedObject = ((COSObject) cosBase).getObject();
-                    if (referencedObject instanceof COSDictionary)
-                    {
-                        dictionary = (COSDictionary) referencedObject;
-                    }
+                    // descend to included dictionary to collect all included indirect objects
+                    ((COSDictionary) referencedObject).getIndirectObjectKeys(indirectObjects);
+                }
+                else if (referencedObject instanceof COSArray)
+                {
+                    // descend to included array to collect all included indirect objects
+                    ((COSArray) referencedObject).getIndirectObjectKeys(indirectObjects);
                 }
             }
             else if (cosBase instanceof COSDictionary)
             {
-                dictionary = (COSDictionary) cosBase;
-            }
-            if (dictionary != null)
-            {
                 // descend to included dictionary to collect all included indirect objects
-                dictionary.getIndirectObjectKeys(indirectObjects);
+                ((COSDictionary) cosBase).getIndirectObjectKeys(indirectObjects);
+            }
+            else if (cosBase instanceof COSArray)
+            {
+                // descend to included array to collect all included indirect objects
+                ((COSArray) cosBase).getIndirectObjectKeys(indirectObjects);
             }
         }
     }

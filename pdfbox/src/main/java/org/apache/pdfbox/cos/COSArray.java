@@ -731,5 +731,69 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     {
         return updateState;
     }
-    
+
+    /**
+     * Collects all indirect objects numbers within this COSArray and all included dictionaries. It is used to avoid
+     * mixed up object numbers when importing an existing page to another pdf.
+     * 
+     * Expert use only. You might run into an endless recursion if choosing a wrong starting point.
+     * 
+     * @param indirectObjects a list of already found indirect objects.
+     * 
+     */
+    public void getIndirectObjectKeys(List<COSObjectKey> indirectObjects)
+    {
+        if (indirectObjects == null)
+        {
+            return;
+        }
+        COSObjectKey key = getKey();
+        if (key != null)
+        {
+            // avoid endless recursions
+            if (indirectObjects.contains(key))
+            {
+                return;
+            }
+            else
+            {
+                indirectObjects.add(key);
+            }
+        }
+
+        for (COSBase cosBase : objects)
+        {
+            COSObjectKey cosBaseKey = cosBase.getKey();
+            if (cosBaseKey != null && indirectObjects.contains(cosBaseKey))
+            {
+                continue;
+            }
+            if (cosBase instanceof COSObject)
+            {
+                // dereference object
+                COSBase referencedObject = ((COSObject) cosBase).getObject();
+                if (referencedObject instanceof COSDictionary)
+                {
+                    // descend to included dictionary to collect all included indirect objects
+                    ((COSDictionary) referencedObject).getIndirectObjectKeys(indirectObjects);
+                }
+                else if (referencedObject instanceof COSArray)
+                {
+                    // descend to included array to collect all included indirect objects
+                    ((COSArray) referencedObject).getIndirectObjectKeys(indirectObjects);
+                }
+            }
+            else if (cosBase instanceof COSDictionary)
+            {
+                // descend to included dictionary to collect all included indirect objects
+                ((COSDictionary) cosBase).getIndirectObjectKeys(indirectObjects);
+            }
+            else if (cosBase instanceof COSArray)
+            {
+                // descend to included array to collect all included indirect objects
+                ((COSArray) cosBase).getIndirectObjectKeys(indirectObjects);
+            }
+        }
+    }
+
 }
