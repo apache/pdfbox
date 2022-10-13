@@ -127,7 +127,14 @@ public final class PdfaExtensionHelper
     private static void populatePDFASchemaType(XMPMetadata meta, PDFASchemaType st, TypeMapping tm)
             throws XmpParsingException
     {
-        String namespaceUri = st.getNamespaceURI().trim();
+        String namespaceUri = st.getNamespaceURI();
+        if (namespaceUri == null)
+        {
+            // PDFBOX-5525
+            throw new XmpParsingException(ErrorType.RequiredProperty,
+                    "Missing pdfaSchema:namespaceURI in type definition");
+        }
+        namespaceUri = namespaceUri.trim();
         String prefix = st.getPrefixValue();
         ArrayProperty properties = st.getProperty();
         ArrayProperty valueTypes = st.getValueType();
