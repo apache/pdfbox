@@ -233,7 +233,7 @@ public class PDFText2HTML extends PDFTextStripper
         // write non-ASCII as named entities
         if ((character < 32) || (character > 126))
         {
-            builder.append("&#").append((int) character).append(";");
+            builder.append("&#").append((int) character).append(';');
         }
         else
         {

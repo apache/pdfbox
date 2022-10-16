@@ -169,7 +169,7 @@ public class TextToPDF
                     {
                         if (addSpace)
                         {
-                            nextLineToDraw.append(" ");
+                            nextLineToDraw.append(' ');
                         }
                         else
                         {
