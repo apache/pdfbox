@@ -550,7 +550,7 @@ public class Overlay implements Closeable
         for (double v : flatmatrix)
         {
             overlayStream.append(float2String((float) v));
-            overlayStream.append(" ");
+            overlayStream.append(' ');
         }
         overlayStream.append(" cm\n");
 
