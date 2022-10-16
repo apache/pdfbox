@@ -90,8 +90,8 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
     Encoding encoding = null;
     int paintType;
     int fontType;
-    List<Number> fontMatrix = new ArrayList<>();
-    List<Number> fontBBox = new ArrayList<>();
+    List<Number> fontMatrix = Collections.emptyList();
+    List<Number> fontBBox = Collections.emptyList();
     int uniqueID;
     float strokeWidth;
     String fontID = "";
@@ -108,17 +108,17 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
     float underlineThickness;
 
     // Private dictionary
-    List<Number> blueValues = new ArrayList<>();
-    List<Number> otherBlues = new ArrayList<>();
-    List<Number> familyBlues = new ArrayList<>();
-    List<Number> familyOtherBlues = new ArrayList<>();
+    List<Number> blueValues = Collections.emptyList();
+    List<Number> otherBlues = Collections.emptyList();
+    List<Number> familyBlues = Collections.emptyList();
+    List<Number> familyOtherBlues = Collections.emptyList();
     float blueScale;
     int blueShift;
     int blueFuzz;
-    List<Number> stdHW = new ArrayList<>();
-    List<Number> stdVW = new ArrayList<>();
-    List<Number> stemSnapH = new ArrayList<>();
-    List<Number> stemSnapV = new ArrayList<>();
+    List<Number> stdHW = Collections.emptyList();
+    List<Number> stdVW = Collections.emptyList();
+    List<Number> stemSnapH = Collections.emptyList();
+    List<Number> stemSnapV = Collections.emptyList();
     boolean forceBold;
     int languageGroup;
 
@@ -263,6 +263,7 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
      * 
      * @return the font matrix
      */
+    @Override
     public List<Number> getFontMatrix()
     {
         return Collections.unmodifiableList(fontMatrix);
