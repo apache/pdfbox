@@ -686,6 +686,7 @@ public class PDDocument implements Closeable
     public PDPage importPage(PDPage page) throws IOException
     {
         PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()), resourceCache);
+        importedPage.getCOSObject().removeItem(COSName.PARENT);
         PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
         importedPage.setContents(dest);
         addPage(importedPage);
@@ -711,7 +712,7 @@ public class PDDocument implements Closeable
         List<COSObjectKey> indirectObjectKeys = new ArrayList<>();
         importedPage.getCOSObject().getIndirectObjectKeys(indirectObjectKeys);
         long highestImportedNumber = indirectObjectKeys.stream().map(COSObjectKey::getNumber)
-                    .max(Long::compare).get();
+                .max(Long::compare).orElse(0L);
         long highestXRefObjectNumber = getDocument().getHighestXRefObjectNumber();
         getDocument().setHighestXRefObjectNumber(
                 Math.max(highestXRefObjectNumber, highestImportedNumber));

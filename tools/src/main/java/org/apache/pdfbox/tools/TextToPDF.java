@@ -257,7 +257,7 @@ public class TextToPDF implements Callable<Integer>
                     {
                         if (addSpace)
                         {
-                            nextLineToDraw.append(" ");
+                            nextLineToDraw.append(' ');
                         }
                         else
                         {

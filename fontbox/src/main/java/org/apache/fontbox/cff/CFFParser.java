@@ -1322,27 +1322,17 @@ public class CFFParser
                 return operands;
             }
 
-	          public List<Number> getDelta()
+            public List<Number> getDelta()
             {
-                if (operands.size() > 0)
+                List<Number> result = new ArrayList<>(operands);
+                for (int i = 1; i < result.size(); i++)
                 {
-                    List<Number> result = new ArrayList<>(operands.size());
-                    Number first = operands.get(0);
-                    result.add(first);
-                    int prevSum = first.intValue();
-                    for (int i = 1; i < operands.size(); i++)
-                    {
-                        Number current = operands.get(i);
-                        int sum = prevSum + current.intValue();
-                        result.add(sum);
-                        prevSum = sum;
-                    }
-                    return result;
+                    Number previous = result.get(i - 1);
+                    Number current = result.get(i);
+                    int sum = previous.intValue() + current.intValue();
+                    result.set(i, sum);
                 }
-                else
-                {
-                    return new ArrayList<>();
-                }
+                return result;
             }
 
             @Override

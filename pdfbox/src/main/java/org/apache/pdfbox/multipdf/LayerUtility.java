@@ -62,12 +62,12 @@ public class LayerUtility
 
     /**
      * Creates a new instance.
-     * @param document the PDF document to modify
+     * @param targetDoc the PDF document to modify
      */
-    public LayerUtility(PDDocument document)
+    public LayerUtility(PDDocument targetDoc)
     {
-        this.targetDoc = document;
-        this.cloner = new PDFCloneUtility(document);
+        this.targetDoc = targetDoc;
+        this.cloner = new PDFCloneUtility(targetDoc);
     }
 
     /**
@@ -136,7 +136,7 @@ public class LayerUtility
      * make sure that the graphics state is reset.
      * 
      * @param sourceDoc the source PDF document that contains the page to be copied
-     * @param pageNumber the page number of the page to be copied
+     * @param pageNumber the 0-based page number of the page to be copied
      * @return a Form XObject containing the original page's content
      * @throws IOException if an I/O error occurs
      */

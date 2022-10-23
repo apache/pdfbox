@@ -43,7 +43,7 @@ public final class Type1FontUtil
             String string = Integer.toHexString(aByte & 0xff);
             if (string.length() == 1)
             {
-                sb.append("0");
+                sb.append('0');
             }
             sb.append(string.toUpperCase(Locale.US));
         }

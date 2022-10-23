@@ -263,6 +263,7 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
      * 
      * @return the font matrix
      */
+    @Override
     public List<Number> getFontMatrix()
     {
         return Collections.unmodifiableList(fontMatrix);

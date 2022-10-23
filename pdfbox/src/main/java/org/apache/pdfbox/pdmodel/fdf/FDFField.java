@@ -791,7 +791,7 @@ public class FDFField implements COSObjectable
             default:
                 if (c > 0x7e)
                 {
-                    escapedXML.append("&#").append((int) c).append(";");
+                    escapedXML.append("&#").append((int) c).append(';');
                 }
                 else
                 {
