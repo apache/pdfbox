@@ -19,7 +19,9 @@ package org.apache.pdfbox.io;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,6 +76,8 @@ public class ScratchFile implements Closeable
     private final int maxPageCount;
     private final boolean useScratchFile;
     private final boolean maxMainMemoryIsRestricted;
+
+    private final List<ScratchFileBuffer> buffers = new ArrayList<>();
 
     private volatile boolean isClosed = false;
     
@@ -422,9 +426,21 @@ public class ScratchFile implements Closeable
      */
     public RandomAccess createBuffer() throws IOException
     {
-        return new ScratchFileBuffer(this);
+        ScratchFileBuffer newBuffer = new ScratchFileBuffer(this);
+        synchronized (buffers)
+        {
+            buffers.add(newBuffer);
+        }
+        return newBuffer;
     }
 
+    void removeBuffer(ScratchFileBuffer buffer)
+    {
+        synchronized (buffers)
+        {
+            buffers.remove(buffer);
+        }
+    }
     /**
      * Allows a buffer which is cleared/closed to release its pages to be re-used.
      * 
@@ -473,6 +489,14 @@ public class ScratchFile implements Closeable
         
             isClosed = true;
 
+            for (ScratchFileBuffer buffer : buffers)
+            {
+                if (buffer != null && !buffer.isClosed())
+                {
+                    buffer.close(false);
+                }
+            }
+            buffers.clear();
             if (raf != null)
             {
                 try
