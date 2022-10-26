@@ -20,7 +20,9 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,6 +77,8 @@ public class ScratchFile implements Closeable
     private final int maxPageCount;
     private final boolean useScratchFile;
     private final boolean maxMainMemoryIsRestricted;
+
+    private final List<ScratchFileBuffer> buffers = new ArrayList<ScratchFileBuffer>();
 
     private volatile boolean isClosed = false;
     
@@ -421,7 +425,20 @@ public class ScratchFile implements Closeable
      */
     public RandomAccess createBuffer() throws IOException
     {
-        return new ScratchFileBuffer(this);
+        ScratchFileBuffer newBuffer = new ScratchFileBuffer(this);
+        synchronized (buffers)
+        {
+            buffers.add(newBuffer);
+        }
+        return newBuffer;
+    }
+
+    void removeBuffer(ScratchFileBuffer buffer)
+    {
+        synchronized (buffers)
+        {
+            buffers.remove(buffer);
+        }
     }
 
     /**
@@ -436,7 +453,7 @@ public class ScratchFile implements Closeable
      */
     public RandomAccess createBuffer(InputStream input) throws IOException
     {
-        ScratchFileBuffer buf = new ScratchFileBuffer(this);
+        RandomAccess buf = createBuffer();
         
         byte[] byteBuffer = new byte[8192];
         int bytesRead;
@@ -496,6 +513,15 @@ public class ScratchFile implements Closeable
             }
         
             isClosed = true;
+
+            for (ScratchFileBuffer buffer : buffers)
+            {
+                if (buffer != null && !buffer.isClosed())
+                {
+                    buffer.close(false);
+                }
+            }
+            buffers.clear();
 
             if (raf != null)
             {
