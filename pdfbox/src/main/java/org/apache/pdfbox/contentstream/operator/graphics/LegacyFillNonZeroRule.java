@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.contentstream.operator.graphics;
 
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
@@ -26,6 +27,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
  */
 public final class LegacyFillNonZeroRule extends FillNonZeroRule
 {
+    public LegacyFillNonZeroRule(PDFGraphicsStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public String getName()
     {

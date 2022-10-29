@@ -108,7 +108,6 @@ public abstract class PDFStreamEngine
      */
     public final void addOperator(OperatorProcessor op)
     {
-        op.setContext(this);
         operators.put(op.getName(), op);
     }
 
@@ -893,7 +892,6 @@ public abstract class PDFStreamEngine
         OperatorProcessor processor = operators.get(name);
         if (processor != null)
         {
-            processor.setContext(this);
             try
             {
                 processor.process(operator, operands);

@@ -21,6 +21,8 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import java.io.IOException;
+
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
@@ -32,6 +34,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
  */
 public class ShowTextAdjusted extends OperatorProcessor
 {
+    public ShowTextAdjusted(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -44,6 +51,7 @@ public class ShowTextAdjusted extends OperatorProcessor
         {
             return;
         }
+        PDFStreamEngine context = getContext();
         if (context.getTextMatrix() == null)
         {
             // ignore: outside of BT...ET

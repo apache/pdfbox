@@ -19,6 +19,8 @@ package org.apache.pdfbox.contentstream.operator.text;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -35,6 +37,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
  */
 public class MoveTextSetLeading extends OperatorProcessor
 {
+    public MoveTextSetLeading(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -53,6 +60,7 @@ public class MoveTextSetLeading extends OperatorProcessor
         
         List<COSBase> args = new ArrayList<>();
         args.add(new COSFloat(-y.floatValue()));
+        PDFStreamEngine context = getContext();
         context.processOperator(OperatorName.SET_TEXT_LEADING, args);
         context.processOperator(OperatorName.MOVE_TEXT, arguments);
     }

@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -38,6 +38,11 @@ public class SetLineDashPattern extends OperatorProcessor
 {
     private static final Log LOG = LogFactory.getLog(SetLineDashPattern.class);
     
+    public SetLineDashPattern(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws MissingOperandException
     {
@@ -75,7 +80,7 @@ public class SetLineDashPattern extends OperatorProcessor
                 break;
             }
         }
-        context.setLineDashPattern(dashArray, dashPhase);
+        getContext().setLineDashPattern(dashArray, dashPhase);
     }
 
     @Override

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 
@@ -30,10 +31,15 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
  */
 public final class EndPath extends GraphicsOperatorProcessor
 {
+    public EndPath(PDFGraphicsStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        context.endPath();
+        getGraphicsContext().endPath();
     }
 
     @Override

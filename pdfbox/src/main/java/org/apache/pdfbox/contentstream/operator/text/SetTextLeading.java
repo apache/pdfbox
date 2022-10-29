@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.text;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
@@ -33,6 +34,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
  */
 public class SetTextLeading extends OperatorProcessor
 {
+    public SetTextLeading(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -46,7 +52,7 @@ public class SetTextLeading extends OperatorProcessor
             return;
         }
         COSNumber leading = (COSNumber) base;
-        context.getGraphicsState().getTextState().setLeading( leading.floatValue() );
+        getContext().getGraphicsState().getTextState().setLeading(leading.floatValue());
     }
 
     @Override

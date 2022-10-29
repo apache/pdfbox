@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.text;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
@@ -33,6 +34,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
  */
 public class SetCharSpacing extends OperatorProcessor
 {
+    public SetCharSpacing(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -48,7 +54,8 @@ public class SetCharSpacing extends OperatorProcessor
         if (charSpacing instanceof COSNumber)
         {
             COSNumber characterSpacing = (COSNumber)charSpacing;
-            context.getGraphicsState().getTextState().setCharacterSpacing(characterSpacing.floatValue());
+            getContext().getGraphicsState().getTextState()
+                    .setCharacterSpacing(characterSpacing.floatValue());
         }
     }
 

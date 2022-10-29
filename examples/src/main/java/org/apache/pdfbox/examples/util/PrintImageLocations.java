@@ -54,12 +54,12 @@ public class PrintImageLocations extends PDFStreamEngine
      */
     public PrintImageLocations() throws IOException
     {
-        addOperator(new Concatenate());
-        addOperator(new DrawObject());
-        addOperator(new SetGraphicsStateParameters());
-        addOperator(new Save());
-        addOperator(new Restore());
-        addOperator(new SetMatrix());
+        addOperator(new Concatenate(this));
+        addOperator(new DrawObject(this));
+        addOperator(new SetGraphicsStateParameters(this));
+        addOperator(new Save(this));
+        addOperator(new Restore(this));
+        addOperator(new SetMatrix(this));
     }
 
     /**

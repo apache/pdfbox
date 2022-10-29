@@ -24,6 +24,8 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 import java.io.IOException;
+
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 /**
@@ -33,6 +35,11 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
  */
 public class ShowTextLineAndSpace extends OperatorProcessor
 {
+    public ShowTextLineAndSpace(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -40,6 +47,7 @@ public class ShowTextLineAndSpace extends OperatorProcessor
         {
             throw new MissingOperandException(operator, arguments);
         }
+        PDFStreamEngine context = getContext();
         context.processOperator(OperatorName.SET_WORD_SPACING, arguments.subList(0, 1));
         context.processOperator(OperatorName.SET_CHAR_SPACING, arguments.subList(1, 2));
         context.processOperator(OperatorName.SHOW_TEXT_LINE, arguments.subList(2, 3));

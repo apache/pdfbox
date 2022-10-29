@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
@@ -32,6 +33,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
  */
 public class BeginMarkedContentSequence extends OperatorProcessor
 {
+    public BeginMarkedContentSequence(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -43,7 +49,7 @@ public class BeginMarkedContentSequence extends OperatorProcessor
                 tag = (COSName) argument;
             }
         }
-        context.beginMarkedContentSequence(tag, null);
+        getContext().beginMarkedContentSequence(tag, null);
     }
 
     @Override

@@ -18,6 +18,7 @@ package org.apache.pdfbox.contentstream.operator.state;
 
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
@@ -34,6 +35,11 @@ import java.io.IOException;
  */
 public class SetLineWidth extends OperatorProcessor
 {
+    public SetLineWidth(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -42,7 +48,7 @@ public class SetLineWidth extends OperatorProcessor
             throw new MissingOperandException(operator, arguments);
         }
         COSNumber width = (COSNumber) arguments.get(0);
-        context.getGraphicsState().setLineWidth(width.floatValue());
+        getContext().getGraphicsState().setLineWidth(width.floatValue());
     }
 
     @Override

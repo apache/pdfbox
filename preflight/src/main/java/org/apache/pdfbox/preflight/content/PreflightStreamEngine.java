@@ -113,101 +113,101 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         this.processedPage = page;
 
         // Graphics operators
-        addOperator(new SetLineWidth());
-        addOperator(new Concatenate());
+        addOperator(new SetLineWidth(this));
+        addOperator(new Concatenate(this));
 
-        addOperator(new SetStrokingColorSpace());
-        addOperator(new SetNonStrokingColorSpace());
-        addOperator(new SetLineDashPattern());
-        addOperator(new DrawObject());
+        addOperator(new SetStrokingColorSpace(this));
+        addOperator(new SetNonStrokingColorSpace(this));
+        addOperator(new SetLineDashPattern(this));
+        addOperator(new DrawObject(this));
 
-        addOperator(new SetLineJoinStyle());
-        addOperator(new SetLineCapStyle());
-        addOperator(new SetStrokingDeviceCMYKColor());
-        addOperator(new SetNonStrokingDeviceCMYKColor());
+        addOperator(new SetLineJoinStyle(this));
+        addOperator(new SetLineCapStyle(this));
+        addOperator(new SetStrokingDeviceCMYKColor(this));
+        addOperator(new SetNonStrokingDeviceCMYKColor(this));
 
-        addOperator(new SetNonStrokingDeviceRGBColor());
-        addOperator(new SetStrokingDeviceRGBColor());
+        addOperator(new SetNonStrokingDeviceRGBColor(this));
+        addOperator(new SetStrokingDeviceRGBColor(this));
 
-        addOperator(new SetNonStrokingDeviceGrayColor());
-        addOperator(new SetStrokingDeviceGrayColor());
+        addOperator(new SetNonStrokingDeviceGrayColor(this));
+        addOperator(new SetStrokingDeviceGrayColor(this));
 
-        addOperator(new SetStrokingColor());
-        addOperator(new SetStrokingColorN());
-        addOperator(new SetNonStrokingColor());
-        addOperator(new SetNonStrokingColorN());
+        addOperator(new SetStrokingColor(this));
+        addOperator(new SetStrokingColorN(this));
+        addOperator(new SetNonStrokingColor(this));
+        addOperator(new SetNonStrokingColorN(this));
 
         // Graphics state
-        addOperator(new Restore());
-        addOperator(new Save());
+        addOperator(new Restore(this));
+        addOperator(new Save(this));
 
         // Text operators
-        addOperator(new BeginText());
-        addOperator(new EndText());
-        addOperator(new SetGraphicsStateParameters());
-        addOperator(new SetFontAndSize());
-        addOperator(new SetTextRenderingMode());
-        addOperator(new SetMatrix());
-        addOperator(new MoveText());
-        addOperator(new NextLine());
-        addOperator(new MoveTextSetLeading());
-        addOperator(new SetCharSpacing());
-        addOperator(new SetTextLeading());
-        addOperator(new SetTextRise());
-        addOperator(new SetWordSpacing());
-        addOperator(new SetTextHorizontalScaling());
+        addOperator(new BeginText(this));
+        addOperator(new EndText(this));
+        addOperator(new SetGraphicsStateParameters(this));
+        addOperator(new SetFontAndSize(this));
+        addOperator(new SetTextRenderingMode(this));
+        addOperator(new SetMatrix(this));
+        addOperator(new MoveText(this));
+        addOperator(new NextLine(this));
+        addOperator(new MoveTextSetLeading(this));
+        addOperator(new SetCharSpacing(this));
+        addOperator(new SetTextLeading(this));
+        addOperator(new SetTextRise(this));
+        addOperator(new SetWordSpacing(this));
+        addOperator(new SetTextHorizontalScaling(this));
 
         /*
          * Do not use the PDFBox Operator, because of the PageDrawer class cast Or because the Operator doesn't exist
          */
 
-        addOperator(new StubOperator(OperatorName.LINE_TO));
-        addOperator(new StubOperator(OperatorName.APPEND_RECT));
-        addOperator(new StubOperator(OperatorName.CURVE_TO));
-        addOperator(new StubOperator(OperatorName.CURVE_TO_REPLICATE_FINAL_POINT));
-        addOperator(new StubOperator(OperatorName.CURVE_TO_REPLICATE_INITIAL_POINT));
-        addOperator(new StubOperator(OperatorName.ENDPATH));
-        addOperator(new StubOperator(OperatorName.BEGIN_INLINE_IMAGE));
-        addOperator(new StubOperator(OperatorName.BEGIN_INLINE_IMAGE_DATA));
-        addOperator(new StubOperator(OperatorName.END_INLINE_IMAGE));
-        addOperator(new StubOperator(OperatorName.MOVE_TO));
-        addOperator(new StubOperator(OperatorName.CLIP_EVEN_ODD));
-        addOperator(new StubOperator(OperatorName.CLIP_NON_ZERO));
-        addOperator(new StubOperator(OperatorName.CLOSE_PATH));
+        addOperator(new StubOperator(this, OperatorName.LINE_TO));
+        addOperator(new StubOperator(this, OperatorName.APPEND_RECT));
+        addOperator(new StubOperator(this, OperatorName.CURVE_TO));
+        addOperator(new StubOperator(this, OperatorName.CURVE_TO_REPLICATE_FINAL_POINT));
+        addOperator(new StubOperator(this, OperatorName.CURVE_TO_REPLICATE_INITIAL_POINT));
+        addOperator(new StubOperator(this, OperatorName.ENDPATH));
+        addOperator(new StubOperator(this, OperatorName.BEGIN_INLINE_IMAGE));
+        addOperator(new StubOperator(this, OperatorName.BEGIN_INLINE_IMAGE_DATA));
+        addOperator(new StubOperator(this, OperatorName.END_INLINE_IMAGE));
+        addOperator(new StubOperator(this, OperatorName.MOVE_TO));
+        addOperator(new StubOperator(this, OperatorName.CLIP_EVEN_ODD));
+        addOperator(new StubOperator(this, OperatorName.CLIP_NON_ZERO));
+        addOperator(new StubOperator(this, OperatorName.CLOSE_PATH));
 
-        addOperator(new StubOperator(OperatorName.SHOW_TEXT));
-        addOperator(new StubOperator(OperatorName.SHOW_TEXT_ADJUSTED));
-        addOperator(new StubOperator(OperatorName.SHOW_TEXT_LINE));
-        addOperator(new StubOperator(OperatorName.SHOW_TEXT_LINE_AND_SPACE));
+        addOperator(new StubOperator(this, OperatorName.SHOW_TEXT));
+        addOperator(new StubOperator(this, OperatorName.SHOW_TEXT_ADJUSTED));
+        addOperator(new StubOperator(this, OperatorName.SHOW_TEXT_LINE));
+        addOperator(new StubOperator(this, OperatorName.SHOW_TEXT_LINE_AND_SPACE));
 
-        addOperator(new StubOperator(OperatorName.CLOSE_FILL_NON_ZERO_AND_STROKE));
-        addOperator(new StubOperator(OperatorName.FILL_NON_ZERO_AND_STROKE));
-        addOperator(new StubOperator(OperatorName.CLOSE_FILL_EVEN_ODD_AND_STROKE));
-        addOperator(new StubOperator(OperatorName.FILL_EVEN_ODD_AND_STROKE));
+        addOperator(new StubOperator(this, OperatorName.CLOSE_FILL_NON_ZERO_AND_STROKE));
+        addOperator(new StubOperator(this, OperatorName.FILL_NON_ZERO_AND_STROKE));
+        addOperator(new StubOperator(this, OperatorName.CLOSE_FILL_EVEN_ODD_AND_STROKE));
+        addOperator(new StubOperator(this, OperatorName.FILL_EVEN_ODD_AND_STROKE));
 
-        addOperator(new StubOperator(OperatorName.BEGIN_MARKED_CONTENT_SEQ));
-        addOperator(new StubOperator(OperatorName.BEGIN_MARKED_CONTENT));
-        addOperator(new StubOperator(OperatorName.MARKED_CONTENT_POINT_WITH_PROPS));
-        addOperator(new StubOperator(OperatorName.END_MARKED_CONTENT));
-        addOperator(new StubOperator(OperatorName.BEGIN_COMPATIBILITY_SECTION));
-        addOperator(new StubOperator(OperatorName.END_COMPATIBILITY_SECTION));
+        addOperator(new StubOperator(this, OperatorName.BEGIN_MARKED_CONTENT_SEQ));
+        addOperator(new StubOperator(this, OperatorName.BEGIN_MARKED_CONTENT));
+        addOperator(new StubOperator(this, OperatorName.MARKED_CONTENT_POINT_WITH_PROPS));
+        addOperator(new StubOperator(this, OperatorName.END_MARKED_CONTENT));
+        addOperator(new StubOperator(this, OperatorName.BEGIN_COMPATIBILITY_SECTION));
+        addOperator(new StubOperator(this, OperatorName.END_COMPATIBILITY_SECTION));
 
-        addOperator(new StubOperator(OperatorName.TYPE3_D0));
-        addOperator(new StubOperator(OperatorName.TYPE3_D1));
+        addOperator(new StubOperator(this, OperatorName.TYPE3_D0));
+        addOperator(new StubOperator(this, OperatorName.TYPE3_D1));
 
-        addOperator(new StubOperator(OperatorName.FILL_NON_ZERO));
-        addOperator(new StubOperator(OperatorName.LEGACY_FILL_NON_ZERO));
-        addOperator(new StubOperator(OperatorName.FILL_EVEN_ODD));
+        addOperator(new StubOperator(this, OperatorName.FILL_NON_ZERO));
+        addOperator(new StubOperator(this, OperatorName.LEGACY_FILL_NON_ZERO));
+        addOperator(new StubOperator(this, OperatorName.FILL_EVEN_ODD));
 
-        addOperator(new StubOperator(OperatorName.SET_LINE_MITERLIMIT));
-        addOperator(new StubOperator(OperatorName.MARKED_CONTENT_POINT));
+        addOperator(new StubOperator(this, OperatorName.SET_LINE_MITERLIMIT));
+        addOperator(new StubOperator(this, OperatorName.MARKED_CONTENT_POINT));
 
-        addOperator(new StubOperator(OperatorName.SET_FLATNESS));
+        addOperator(new StubOperator(this, OperatorName.SET_FLATNESS));
 
-        addOperator(new StubOperator(OperatorName.SET_RENDERINGINTENT));
-        addOperator(new StubOperator(OperatorName.CLOSE_AND_STROKE));
-        addOperator(new StubOperator(OperatorName.STROKE_PATH));
-        addOperator(new StubOperator(OperatorName.SHADING_FILL));
+        addOperator(new StubOperator(this, OperatorName.SET_RENDERINGINTENT));
+        addOperator(new StubOperator(this, OperatorName.CLOSE_AND_STROKE));
+        addOperator(new StubOperator(this, OperatorName.STROKE_PATH));
+        addOperator(new StubOperator(this, OperatorName.SHADING_FILL));
     }
 
     /**

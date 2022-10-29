@@ -19,6 +19,8 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.List;
+
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -33,6 +35,12 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
  */
 public final class AppendRectangleToPath extends GraphicsOperatorProcessor
 {
+
+    public AppendRectangleToPath(PDFGraphicsStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -56,6 +64,7 @@ public final class AppendRectangleToPath extends GraphicsOperatorProcessor
         float x2 = w.floatValue() + x1;
         float y2 = h.floatValue() + y1;
 
+        PDFGraphicsStreamEngine context = getGraphicsContext();
         Point2D p0 = context.transformedPoint(x1, y1);
         Point2D p1 = context.transformedPoint(x2, y1);
         Point2D p2 = context.transformedPoint(x2, y2);

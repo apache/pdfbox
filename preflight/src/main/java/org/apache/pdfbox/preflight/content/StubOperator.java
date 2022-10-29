@@ -45,6 +45,7 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
@@ -90,8 +91,9 @@ public class StubOperator extends OperatorProcessor
     private static final List<String> CHECK_ARRAY_OPERANDS = Arrays.asList( //
             OperatorName.SHOW_TEXT_ADJUSTED);
 
-    public StubOperator(String name)
+    public StubOperator(PDFStreamEngine context, String name)
     {
+        super(context);
         this.name = name;
     }
 

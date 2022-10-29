@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
@@ -32,6 +33,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
  */
 public final class ShadingFill extends GraphicsOperatorProcessor
 {
+    public ShadingFill(PDFGraphicsStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -39,7 +45,7 @@ public final class ShadingFill extends GraphicsOperatorProcessor
         {
             throw new MissingOperandException(operator, operands);
         }
-        context.shadingFill((COSName) operands.get(0));
+        getGraphicsContext().shadingFill((COSName) operands.get(0));
     }
 
     @Override

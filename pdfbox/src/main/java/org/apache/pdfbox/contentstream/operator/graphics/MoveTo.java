@@ -19,6 +19,8 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.List;
+
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -33,6 +35,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
  */
 public final class MoveTo extends GraphicsOperatorProcessor
 {
+    public MoveTo(PDFGraphicsStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -52,6 +59,7 @@ public final class MoveTo extends GraphicsOperatorProcessor
         }
         COSNumber x = (COSNumber) base0;
         COSNumber y = (COSNumber) base1;
+        PDFGraphicsStreamEngine context = getGraphicsContext();
         Point2D.Float pos = context.transformedPoint(x.floatValue(), y.floatValue());
         context.moveTo(pos.x, pos.y);
     }

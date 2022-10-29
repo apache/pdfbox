@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.color;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 
@@ -33,9 +34,15 @@ import java.util.List;
  */
 public class SetNonStrokingDeviceCMYKColor extends SetNonStrokingColor
 {
+    public SetNonStrokingDeviceCMYKColor(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
+        PDFStreamEngine context = getContext();
         PDColorSpace cs = context.getResources().getColorSpace(COSName.DEVICECMYK);
         context.getGraphicsState().setNonStrokingColorSpace(cs);
         super.process(operator, arguments);

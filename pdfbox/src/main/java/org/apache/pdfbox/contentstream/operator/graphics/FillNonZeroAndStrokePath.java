@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 
@@ -33,10 +34,15 @@ import java.io.IOException;
  */
 public class FillNonZeroAndStrokePath extends GraphicsOperatorProcessor
 {
+    public FillNonZeroAndStrokePath(PDFGraphicsStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        context.fillAndStrokePath(Path2D.WIND_NON_ZERO);
+        getGraphicsContext().fillAndStrokePath(Path2D.WIND_NON_ZERO);
     }
 
     @Override
