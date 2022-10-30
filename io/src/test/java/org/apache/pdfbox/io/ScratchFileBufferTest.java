@@ -17,7 +17,11 @@
 package org.apache.pdfbox.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.EOFException;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -44,7 +48,7 @@ class ScratchFileBufferTest
     {
         try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
         {
-            ScratchFileBuffer scratchFileBuffer = new ScratchFileBuffer(scratchFile);
+            RandomAccess scratchFileBuffer = scratchFile.createBuffer();
             byte[] bytes = new byte[PAGE_SIZE];
             for (int i = 0; i < NUM_ITERATIONS; i++)
             {
@@ -60,4 +64,109 @@ class ScratchFileBufferTest
             }
         }
     }
+
+    @Test
+    void testBufferLength() throws IOException
+    {
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        {
+            byte[] bytes = new byte[PAGE_SIZE];
+            RandomAccess scratchFileBuffer1 = scratchFile.createBuffer();
+            scratchFileBuffer1.write(bytes);
+            assertEquals(PAGE_SIZE, scratchFileBuffer1.length());
+        }
+    }
+
+    @Test
+    void testBufferSeek() throws IOException
+    {
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        {
+            byte[] bytes = new byte[PAGE_SIZE];
+            RandomAccess scratchFileBuffer1 = scratchFile.createBuffer();
+            scratchFileBuffer1.write(bytes);
+            assertThrows(IOException.class, () -> scratchFileBuffer1.seek(-1));
+            assertThrows(EOFException.class, () -> scratchFileBuffer1.seek(PAGE_SIZE + 1));
+        }
+    }
+
+    @Test
+    void testBufferEOF() throws IOException
+    {
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        {
+            byte[] bytes = new byte[PAGE_SIZE];
+            RandomAccess scratchFileBuffer1 = scratchFile.createBuffer();
+            scratchFileBuffer1.write(bytes);
+            scratchFileBuffer1.seek(0);
+            assertFalse(scratchFileBuffer1.isEOF());
+            scratchFileBuffer1.seek(PAGE_SIZE);
+            assertTrue(scratchFileBuffer1.isEOF());
+        }
+    }
+
+    @Test
+    void testAlreadyClose() throws IOException
+    {
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        {
+            byte[] bytes = new byte[PAGE_SIZE];
+            RandomAccess scratchFileBuffer = scratchFile.createBuffer();
+            scratchFileBuffer.write(bytes);
+            scratchFileBuffer.close();
+            assertThrows(IOException.class, () -> scratchFileBuffer.seek(0));
+        }
+    }
+
+    @Test
+    void testBuffersClosed() throws IOException
+    {
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        {
+            byte[] bytes = new byte[PAGE_SIZE];
+            RandomAccess scratchFileBuffer1 = scratchFile.createBuffer();
+            scratchFileBuffer1.write(bytes);
+            RandomAccess scratchFileBuffer2 = scratchFile.createBuffer();
+            scratchFileBuffer2.write(bytes);
+            RandomAccess scratchFileBuffer3 = scratchFile.createBuffer();
+            scratchFileBuffer3.write(bytes);
+            RandomAccess scratchFileBuffer4 = scratchFile.createBuffer();
+            scratchFileBuffer4.write(bytes);
+
+            // close two of the buffers explicitly
+            scratchFileBuffer1.close();
+            scratchFileBuffer3.close();
+
+            // check status
+            assertTrue(scratchFileBuffer1.isClosed());
+            assertFalse(scratchFileBuffer2.isClosed());
+            assertTrue(scratchFileBuffer3.isClosed());
+            assertFalse(scratchFileBuffer4.isClosed());
+
+            // closing ScratchFile shall close all remaining buffers which aren't closed yet
+            scratchFile.close();
+            assertTrue(scratchFileBuffer2.isClosed());
+            assertTrue(scratchFileBuffer4.isClosed());
+        }
+    }
+
+    @Test
+    void testView() throws IOException
+    {
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        {
+            RandomAccess scratchFileBuffer = scratchFile.createBuffer();
+            byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            scratchFileBuffer.write(inputValues);
+            try (RandomAccessReadView view = scratchFileBuffer.createView(3, 5))
+            {
+                assertEquals(0, view.getPosition());
+                assertEquals(3, view.read());
+                assertEquals(4, view.read());
+                assertEquals(5, view.read());
+                assertEquals(3, view.getPosition());
+            }
+        }
+    }
+
 }
