@@ -49,7 +49,8 @@ public class Loader
     /**
      * This will load a document from a file.
      *
-     * @param filename The name of the file to load.
+     * @param filename The name of the file to load. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used
+     * to read the file.
      *
      * @return The document that was loaded.
      *
@@ -63,7 +64,8 @@ public class Loader
     /**
      * This will load a document from a file.
      *
-     * @param file The name of the file to load.
+     * @param file The name of the file to load. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to
+     * read the file.
      *
      * @return The document that was loaded.
      *
@@ -82,7 +84,8 @@ public class Loader
      * This will load a document from an input stream. The stream is loaded to the memory to establish random access to
      * the data.
      *
-     * @param input The stream that contains the document.
+     * @param input The stream that contains the document. To read the stream
+     * {@link org.apache.pdfbox.io.RandomAccessReadBuffer} is used
      *
      * @return The document that was loaded.
      *
@@ -139,10 +142,12 @@ public class Loader
     {
         return new FDFDocument(XMLUtil.parse(input));
     }
+    
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
      * 
-     * @param input byte array that contains the document.
+     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffered} is used
+     * to read the data.
      * 
      * @return loaded document
      * 
@@ -153,10 +158,12 @@ public class Loader
     {
         return Loader.loadPDF(input, "");
     }
+    
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
      * 
-     * @param input byte array that contains the document.
+     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffered} is used
+     * to read the data.
      * @param password password to be used for decryption
      * 
      * @return loaded document
@@ -168,10 +175,12 @@ public class Loader
     {
         return Loader.loadPDF(input, password, null, null);
     }
+    
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
      * 
-     * @param input byte array that contains the document.
+     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffered} is used
+     * to read the data.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
@@ -186,14 +195,16 @@ public class Loader
     {
         return Loader.loadPDF(input, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
     }
+    
     /**
      * Parses a PDF.
      * 
-     * @param input byte array that contains the document.
+     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffered} is used
+     * to read the data.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams
+     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
      * 
      * @return loaded document
      * 
@@ -217,10 +228,12 @@ public class Loader
             throw ioe;
         }
     }
+    
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
      * 
-     * @param file file to be loaded
+     * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
+     * file.
      * 
      * @return loaded document
      * 
@@ -231,11 +244,13 @@ public class Loader
     {
         return Loader.loadPDF(file, "", MemoryUsageSetting.setupMainMemoryOnly());
     }
+    
     /**
      * Parses a PDF.
      * 
-     * @param file file to be loaded
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
+     * file.
+     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
      * 
      * @return loaded document
      * 
@@ -246,10 +261,12 @@ public class Loader
     {
         return Loader.loadPDF(file, "", null, null, memUsageSetting);
     }
+    
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
      * 
-     * @param file file to be loaded
+     * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
+     * file.
      * @param password password to be used for decryption
      * 
      * @return loaded document
@@ -261,12 +278,14 @@ public class Loader
     {
         return Loader.loadPDF(file, password, null, null, MemoryUsageSetting.setupMainMemoryOnly());
     }
+    
     /**
      * Parses a PDF.
      * 
-     * @param file file to be loaded
+     * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
+     * file.
      * @param password password to be used for decryption
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
      * 
      * @return loaded document
      * 
@@ -278,10 +297,12 @@ public class Loader
     {
         return Loader.loadPDF(file, password, null, null, memUsageSetting);
     }
+    
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
      * 
-     * @param file file to be loaded
+     * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
+     * file.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
@@ -295,14 +316,16 @@ public class Loader
     {
         return Loader.loadPDF(file, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
     }
+    
     /**
      * Parses a PDF.
      * 
-     * @param file file to be loaded
+     * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
+     * file.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
      * 
      * @return loaded document
      * 
