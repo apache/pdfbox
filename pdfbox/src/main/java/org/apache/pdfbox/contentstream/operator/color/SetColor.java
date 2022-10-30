@@ -37,7 +37,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
  */
 public abstract class SetColor extends OperatorProcessor
 {
-    public SetColor(PDFStreamEngine context)
+    protected SetColor(PDFStreamEngine context)
     {
         super(context);
     }

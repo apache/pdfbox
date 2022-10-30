@@ -27,7 +27,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public abstract class GraphicsOperatorProcessor extends OperatorProcessor
 {
 
-    public GraphicsOperatorProcessor(PDFGraphicsStreamEngine context)
+    protected GraphicsOperatorProcessor(PDFGraphicsStreamEngine context)
     {
         super(context);
     }
