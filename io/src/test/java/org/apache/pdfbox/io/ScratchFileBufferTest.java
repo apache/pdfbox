@@ -46,7 +46,7 @@ class ScratchFileBufferTest
     @Test
     void testEOFBugInSeek() throws IOException
     {
-        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly()))
         {
             RandomAccess scratchFileBuffer = scratchFile.createBuffer();
             byte[] bytes = new byte[PAGE_SIZE];
@@ -68,7 +68,7 @@ class ScratchFileBufferTest
     @Test
     void testBufferLength() throws IOException
     {
-        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly()))
         {
             byte[] bytes = new byte[PAGE_SIZE];
             RandomAccess scratchFileBuffer1 = scratchFile.createBuffer();
@@ -80,7 +80,7 @@ class ScratchFileBufferTest
     @Test
     void testBufferSeek() throws IOException
     {
-        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly()))
         {
             byte[] bytes = new byte[PAGE_SIZE];
             RandomAccess scratchFileBuffer1 = scratchFile.createBuffer();
@@ -93,7 +93,7 @@ class ScratchFileBufferTest
     @Test
     void testBufferEOF() throws IOException
     {
-        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly()))
         {
             byte[] bytes = new byte[PAGE_SIZE];
             RandomAccess scratchFileBuffer1 = scratchFile.createBuffer();
@@ -108,7 +108,7 @@ class ScratchFileBufferTest
     @Test
     void testAlreadyClose() throws IOException
     {
-        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly()))
         {
             byte[] bytes = new byte[PAGE_SIZE];
             RandomAccess scratchFileBuffer = scratchFile.createBuffer();
@@ -121,7 +121,7 @@ class ScratchFileBufferTest
     @Test
     void testBuffersClosed() throws IOException
     {
-        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly()))
         {
             byte[] bytes = new byte[PAGE_SIZE];
             RandomAccess scratchFileBuffer1 = scratchFile.createBuffer();
@@ -153,7 +153,7 @@ class ScratchFileBufferTest
     @Test
     void testView() throws IOException
     {
-        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
+        try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly()))
         {
             RandomAccess scratchFileBuffer = scratchFile.createBuffer();
             byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
