@@ -37,7 +37,7 @@ public class GSUBTableDebugger
     private static final String LOHIT_BENGALI_FONT_FILE = "/ttf/Lohit-Bengali.ttf";
 
     @Test
-    public void printLohitBengaliTTF() 
+    void printLohitBengaliTTF()
     {
         try
         {
