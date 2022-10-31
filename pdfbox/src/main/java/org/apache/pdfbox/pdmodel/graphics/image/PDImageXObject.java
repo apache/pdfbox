@@ -462,13 +462,13 @@ public final class PDImageXObject extends PDXObject implements PDImage
         if (softMask != null)
         {
             image = applyMask(SampledImageReader.getRGBImage(this, region, subsampling, getColorKeyMask()),
-                    softMask.getOpaqueImage(), softMask.getInterpolate(), true, extractMatte(softMask));
+                    softMask.getOpaqueImage(region, subsampling), softMask.getInterpolate(), true, extractMatte(softMask));
         }
         // explicit mask - to be applied only if /ImageMask true
         else if (mask != null && mask.isStencil())
         {
             image = applyMask(SampledImageReader.getRGBImage(this, region, subsampling, getColorKeyMask()),
-                    mask.getOpaqueImage(), mask.getInterpolate(), false, null);
+                    mask.getOpaqueImage(region, subsampling), mask.getInterpolate(), false, null);
         }
         else
         {
@@ -542,18 +542,22 @@ public final class PDImageXObject extends PDXObject implements PDImage
     /**
      * Returns an RGB buffered image containing the opaque image stream without any masks applied.
      * If this Image XObject is a mask then the buffered image will contain the raw mask.
+     * @param region The region of the source image to get, or null if the entire image is needed.
+     *               The actual region will be clipped to the dimensions of the source image.
+     * @param subsampling The amount of rows and columns to advance for every output pixel, a value
+     * of 1 meaning every pixel will be read. It must not be larger than the image width or height.
      * @return the image without any masks applied
      * @throws IOException if the image cannot be read
      */
-    public BufferedImage getOpaqueImage() throws IOException
+    public BufferedImage getOpaqueImage(Rectangle region, int subsampling) throws IOException
     {
-        return SampledImageReader.getRGBImage(this, null);
+        return SampledImageReader.getRGBImage(this, null, subsampling, null);
     }
 
     /**
      * @param image The image to apply the mask to as alpha channel.
      * @param mask A mask image in 8 bit Gray. Even for a stencil mask image due to
-     * {@link #getOpaqueImage()} and {@link SampledImageReader}'s {@code from1Bit()} special
+     * {@link #getOpaqueImage(Rectangle, int)} )} and {@link SampledImageReader}'s {@code from1Bit()} special
      * handling of DeviceGray.
      * @param interpolateMask interpolation flag of the mask image.
      * @param isSoft {@code true} if a soft mask. If not stencil mask, then alpha will be inverted
