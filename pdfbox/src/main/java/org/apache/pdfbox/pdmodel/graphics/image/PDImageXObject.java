@@ -551,7 +551,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public BufferedImage getOpaqueImage(Rectangle region, int subsampling) throws IOException
     {
-        return SampledImageReader.getRGBImage(this, null, subsampling, null);
+        return SampledImageReader.getRGBImage(this, region, subsampling, null);
     }
 
     /**
