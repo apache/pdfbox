@@ -352,7 +352,9 @@ public class PDFMergerUtility
     private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting,
             CompressParameters compressParameters) throws IOException
     {
-        try (PDDocument destination = new PDDocument(memUsageSetting))
+        MemoryUsageSetting memoryUsageSetting = memUsageSetting != null ? memUsageSetting
+                : MemoryUsageSetting.setupMainMemoryOnly();
+        try (PDDocument destination = new PDDocument(memoryUsageSetting))
         {
             PDFCloneUtility cloner = new PDFCloneUtility(destination);
             PDPageTree destinationPageTree = destination.getPages(); // cache PageTree
@@ -363,12 +365,11 @@ public class PDFMergerUtility
                 {
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = Loader.loadPDF((File) sourceObject, memUsageSetting);
+                        sourceDoc = Loader.loadPDF((File) sourceObject);
                     }
                     else
                     {
-                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject,
-                                memUsageSetting);
+                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
                     }
                     for (PDPage page : sourceDoc.getPages())
                     {
@@ -410,11 +411,10 @@ public class PDFMergerUtility
     
     
     /**
-     * Merge the list of source documents, saving the result in the destination
-     * file.
+     * Merge the list of source documents, saving the result in the destination file.
      *
-     * @param memUsageSetting defines how memory is used for buffering PDF streams;
-     *                        in case of <code>null</code> unrestricted main memory is used 
+     * @param memUsageSetting defines how memory is used for buffering PDF streams; in case of <code>null</code>
+     * unrestricted main memory is used
      * 
      * @throws IOException If there is an error saving the document.
      */
@@ -430,22 +430,20 @@ public class PDFMergerUtility
             // - there's a way to see which errors occurred
 
             List<PDDocument> tobeclosed = new ArrayList<>(sources.size());
-            MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
-                    memUsageSetting.getPartitionedCopy(sources.size()+1) :
-                    MemoryUsageSetting.setupMainMemoryOnly();
-            try (PDDocument destination = new PDDocument(partitionedMemSetting))
+            MemoryUsageSetting memoryUsageSetting = memUsageSetting != null ? memUsageSetting
+                    : MemoryUsageSetting.setupMainMemoryOnly();
+            try (PDDocument destination = new PDDocument(memoryUsageSetting))
             {
                 for (Object sourceObject : sources)
                 {
                     PDDocument sourceDoc = null;
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = Loader.loadPDF((File) sourceObject, partitionedMemSetting);
+                        sourceDoc = Loader.loadPDF((File) sourceObject);
                     }
                     else
                     {
-                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject,
-                                partitionedMemSetting);
+                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
                     }
                     tobeclosed.add(sourceDoc);
                     appendDocument(destination, sourceDoc);
