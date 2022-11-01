@@ -186,17 +186,6 @@ public class PDFMergerUtility
         this.documentMergeMode = theDocumentMergeMode;
     }
 
-    
-    /**
-     * Set the mode to be used for merging the documents
-     * 
-     * {@link DocumentMergeMode}
-     */
-    public void setAcroFormMergeMode(DocumentMergeMode theDocumentMergeMode)
-    {
-        this.documentMergeMode = theDocumentMergeMode;
-    }
-
     /**
      * Get the name of the destination file.
      *
