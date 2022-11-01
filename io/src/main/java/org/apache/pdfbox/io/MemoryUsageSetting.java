@@ -18,6 +18,8 @@ package org.apache.pdfbox.io;
 
 import java.io.File;
 
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
+
 /**
  * Controls how memory/temporary files are used for
  * buffering streams etc.
@@ -37,7 +39,14 @@ public final class MemoryUsageSetting
     
     /** directory to be used for scratch file */
     private File tempDir;
-    
+
+    /**
+     * Implementation of the function to create an instance of ScratchFile using the current settings.
+     */
+    public final StreamCacheCreateFunction streamCache = () -> {
+        return new ScratchFile(this);
+    };
+
     /**
      * Private constructor for setup buffering memory usage called by one of the setup methods.
      * 
