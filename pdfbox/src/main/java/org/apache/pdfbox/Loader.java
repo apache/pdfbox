@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.FDFParser;
@@ -193,7 +193,7 @@ public class Loader
     public static PDDocument loadPDF(byte[] input, String password, InputStream keyStore, String alias)
             throws IOException
     {
-        return Loader.loadPDF(input, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
+        return Loader.loadPDF(input, password, keyStore, alias, IOUtils.createMemoryOnlyStreamCache());
     }
     
     /**
@@ -204,7 +204,8 @@ public class Loader
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache to be used for buffering
+     * new/altered PDF streams
      * 
      * @return loaded document
      * 
@@ -212,14 +213,14 @@ public class Loader
      * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument loadPDF(byte[] input, String password, InputStream keyStore, String alias,
-            MemoryUsageSetting memUsageSetting) throws IOException
+            StreamCacheCreateFunction streamCacheCreateFunction) throws IOException
     {
         RandomAccessRead source = null;
         try
         {
             // RandomAccessRead is not closed here, may be needed for signing
             source = new RandomAccessReadBuffer(input);
-            PDFParser parser = new PDFParser(source, password, keyStore, alias, memUsageSetting);
+            PDFParser parser = new PDFParser(source, password, keyStore, alias, streamCacheCreateFunction);
             return parser.parse();
         }
         catch (IOException ioe)
@@ -242,7 +243,7 @@ public class Loader
      */
     public static PDDocument loadPDF(File file) throws IOException
     {
-        return Loader.loadPDF(file, "", MemoryUsageSetting.setupMainMemoryOnly());
+        return Loader.loadPDF(file, "", IOUtils.createMemoryOnlyStreamCache());
     }
     
     /**
@@ -250,16 +251,18 @@ public class Loader
      * 
      * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
      * file.
-     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache to be used for buffering
+     * new/altered PDF streams
      * 
      * @return loaded document
      * 
      * @throws InvalidPasswordException If the file required a non-empty password.
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadPDF(File file, MemoryUsageSetting memUsageSetting) throws IOException
+    public static PDDocument loadPDF(File file, StreamCacheCreateFunction streamCacheCreateFunction)
+            throws IOException
     {
-        return Loader.loadPDF(file, "", null, null, memUsageSetting);
+        return Loader.loadPDF(file, "", null, null, streamCacheCreateFunction);
     }
     
     /**
@@ -276,7 +279,7 @@ public class Loader
      */
     public static PDDocument loadPDF(File file, String password) throws IOException
     {
-        return Loader.loadPDF(file, password, null, null, MemoryUsageSetting.setupMainMemoryOnly());
+        return Loader.loadPDF(file, password, null, null, IOUtils.createMemoryOnlyStreamCache());
     }
     
     /**
@@ -285,17 +288,19 @@ public class Loader
      * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
      * file.
      * @param password password to be used for decryption
-     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
+     * @param streamCacheCreateFunctiona function to create an instance of a stream cache to be used for buffering
+     * new/altered PDF streams
      * 
      * @return loaded document
      * 
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadPDF(File file, String password, MemoryUsageSetting memUsageSetting)
+    public static PDDocument loadPDF(File file, String password,
+            StreamCacheCreateFunction streamCacheCreateFunction)
             throws IOException
     {
-        return Loader.loadPDF(file, password, null, null, memUsageSetting);
+        return Loader.loadPDF(file, password, null, null, streamCacheCreateFunction);
     }
     
     /**
@@ -314,7 +319,7 @@ public class Loader
     public static PDDocument loadPDF(File file, String password, InputStream keyStore, String alias)
             throws IOException
     {
-        return Loader.loadPDF(file, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
+        return Loader.loadPDF(file, password, keyStore, alias, IOUtils.createMemoryOnlyStreamCache());
     }
     
     /**
@@ -325,21 +330,22 @@ public class Loader
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache to be used for buffering
+     * new/altered PDF streams
      * 
      * @return loaded document
      * 
      * @throws IOException in case of a file reading or parsing error
      */
     public static PDDocument loadPDF(File file, String password, InputStream keyStore, String alias,
-            MemoryUsageSetting memUsageSetting) throws IOException
+            StreamCacheCreateFunction streamCacheCreateFunction) throws IOException
     {
         RandomAccessRead raFile = null;
         try
         {
             // RandomAccessRead is not closed here, may be needed for signing
             raFile = new RandomAccessReadBufferedFile(file);
-            return Loader.loadPDF(raFile, password, keyStore, alias, memUsageSetting);
+            return Loader.loadPDF(raFile, password, keyStore, alias, streamCacheCreateFunction);
         }
         catch (IOException ioe)
         {
@@ -360,25 +366,26 @@ public class Loader
      */
     public static PDDocument loadPDF(RandomAccessRead randomAccessRead) throws IOException
     {
-        return Loader.loadPDF(randomAccessRead, "", null, null,
-                MemoryUsageSetting.setupMainMemoryOnly());
+        return Loader.loadPDF(randomAccessRead, "", null, null, IOUtils.createMemoryOnlyStreamCache());
     }
 
     /**
      * Parses a PDF.
      * 
      * @param randomAccessRead random access read representing the pdf to be loaded
-     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache to be used for buffering
+     * new/altered PDF streams
      * 
      * @return loaded document
      * 
      * @throws InvalidPasswordException If the PDF required a non-empty password.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument loadPDF(RandomAccessRead randomAccessRead, MemoryUsageSetting memUsageSetting)
+    public static PDDocument loadPDF(RandomAccessRead randomAccessRead,
+            StreamCacheCreateFunction streamCacheCreateFunction)
             throws IOException
     {
-        return Loader.loadPDF(randomAccessRead, "", null, null, memUsageSetting);
+        return Loader.loadPDF(randomAccessRead, "", null, null, streamCacheCreateFunction);
     }
 
     /**
@@ -395,7 +402,7 @@ public class Loader
     public static PDDocument loadPDF(RandomAccessRead randomAccessRead, String password) throws IOException
     {
         return Loader.loadPDF(randomAccessRead, password, null, null,
-                MemoryUsageSetting.setupMainMemoryOnly());
+                IOUtils.createMemoryOnlyStreamCache());
     }
 
     /**
@@ -414,7 +421,7 @@ public class Loader
             String alias) throws IOException
     {
         return Loader.loadPDF(randomAccessRead, password, keyStore, alias,
-                MemoryUsageSetting.setupMainMemoryOnly());
+                IOUtils.createMemoryOnlyStreamCache());
     }
 
     /**
@@ -422,7 +429,8 @@ public class Loader
      *
      * @param randomAccessRead random access read representing the pdf to be loaded
      * @param password password to be used for decryption
-     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache to be used for buffering
+     * new/altered PDF streams
      * 
      * @return loaded document
      * 
@@ -430,9 +438,9 @@ public class Loader
      * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument loadPDF(RandomAccessRead randomAccessRead, String password,
-            MemoryUsageSetting memUsageSetting) throws IOException
+            StreamCacheCreateFunction streamCacheCreateFunction) throws IOException
     {
-        return Loader.loadPDF(randomAccessRead, password, null, null, memUsageSetting);
+        return Loader.loadPDF(randomAccessRead, password, null, null, streamCacheCreateFunction);
     }
 
     /**
@@ -442,18 +450,19 @@ public class Loader
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used for buffering new/altered PDF streams
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache to be used for buffering
+     * new/altered PDF streams
      * 
      * @return loaded document
      * 
      * @throws IOException in case of a file reading or parsing error
      */
     public static PDDocument loadPDF(RandomAccessRead randomAccessRead, String password,
-            InputStream keyStore, String alias, MemoryUsageSetting memUsageSetting)
+            InputStream keyStore, String alias, StreamCacheCreateFunction streamCacheCreateFunction)
             throws IOException
     {
         PDFParser parser = new PDFParser(randomAccessRead, password, keyStore, alias,
-                memUsageSetting);
+                streamCacheCreateFunction);
         return parser.parse();
     }
 

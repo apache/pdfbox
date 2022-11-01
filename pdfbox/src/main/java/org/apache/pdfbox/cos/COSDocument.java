@@ -28,8 +28,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.MemoryUsageSetting;
-import org.apache.pdfbox.io.ScratchFile;
+import org.apache.pdfbox.io.RandomAccessStreamCache;
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 
 /**
  * This is the in-memory representation of the PDF document.  You need to call
@@ -82,7 +82,7 @@ public class COSDocument extends COSBase implements Closeable
 
     private boolean isXRefStream;
 
-    private ScratchFile scratchFile;
+    private RandomAccessStreamCache streamCache;
 
     /**
      * Used for incremental saving, to avoid XRef object numbers from being reused.
@@ -98,7 +98,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument()
     {
-        this(MemoryUsageSetting.setupMainMemoryOnly());
+        this(IOUtils.createMemoryOnlyStreamCache());
     }
 
     /**
@@ -108,48 +108,66 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(ICOSParser parser)
     {
-        this(MemoryUsageSetting.setupMainMemoryOnly(), parser);
+        this(IOUtils.createMemoryOnlyStreamCache(), parser);
     }
 
     /**
-     * Constructor that will use the provided memory settings for storage of the PDF streams.
+     * Constructor that will use the provided function to create a stream cache for the storage of the PDF streams.
      *
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache
      * 
      */
-    public COSDocument(MemoryUsageSetting memUsageSetting)
+    public COSDocument(StreamCacheCreateFunction streamCacheCreateFunction)
     {
-        this(memUsageSetting, null);
+        this(streamCacheCreateFunction, null);
     }
 
     /**
-     * Constructor that will use the provided memory settings for storage of the PDF streams.
+     * Constructor that will use the provided function to create a stream cache for the storage of the PDF streams.
      *
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * @param streamCache a function to create an instance of a stream cache
      * @param parser Parser to be used to parse the document on demand
      * 
      */
-    public COSDocument(MemoryUsageSetting memUsageSetting, ICOSParser parser)
+    public COSDocument(StreamCacheCreateFunction streamCacheCreateFunction, ICOSParser parser)
     {
-        try
-        {
-            if (memUsageSetting != null)
-            {
-                scratchFile = new ScratchFile(memUsageSetting);
-            }
-            else
-            {
-                scratchFile = ScratchFile.getMainMemoryOnlyInstance();
-            }
-        }
-        catch (IOException ioe)
-        {
-            LOG.warn("Error initializing scratch file: " + ioe.getMessage()
-                    + ". Fall back to main memory usage only.", ioe);
-
-            scratchFile = ScratchFile.getMainMemoryOnlyInstance();
-        }
+        this.streamCache = getStreamCache(streamCacheCreateFunction);
         this.parser = parser;
+    }
+
+    private RandomAccessStreamCache getStreamCache(StreamCacheCreateFunction streamCacheCreateFunction)
+    {
+        if (streamCache == null)
+        {
+            try
+            {
+                if (streamCacheCreateFunction != null)
+                {
+                    streamCache = streamCacheCreateFunction.create();
+                }
+            }
+            catch (IOException e)
+            {
+                LOG.warn(
+                        "An error occured when creating stream cache. Using memory only cache as fallback.",
+                        e);
+            }
+            finally
+            {
+                if (streamCacheCreateFunction != null)
+                {
+                    try
+                    {
+                        streamCache = IOUtils.createMemoryOnlyStreamCache().create();
+                    }
+                    catch (IOException e)
+                    {
+                        LOG.warn("An error occured when creating stream cache for fallback.", e);
+                    }
+                }
+            }
+        }
+        return streamCache;
     }
 
     /**
@@ -159,7 +177,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSStream createCOSStream()
     {
-        COSStream stream = new COSStream(scratchFile);
+        COSStream stream = new COSStream(streamCache);
         // collect all COSStreams so that they can be closed when closing the COSDocument.
         // This is limited to newly created pdfs as all COSStreams of an existing pdf are
         // collected within the map objectPool
@@ -180,7 +198,7 @@ public class COSDocument extends COSBase implements Closeable
     public COSStream createCOSStream(COSDictionary dictionary, long startPosition,
             long streamLength) throws IOException
     {
-        COSStream stream = new COSStream(scratchFile,
+        COSStream stream = new COSStream(streamCache,
                 parser.createRandomAccessReadView(startPosition, streamLength));
         dictionary.forEach(stream::setItem);
         return stream;
@@ -440,9 +458,10 @@ public class COSDocument extends COSBase implements Closeable
             firstException = IOUtils.closeAndLogException(stream, LOG, "COSStream", firstException);
         }
 
-        if (scratchFile != null)
+        if (streamCache != null)
         {
-            firstException = IOUtils.closeAndLogException(scratchFile, LOG, "ScratchFile", firstException);
+            firstException = IOUtils.closeAndLogException(streamCache, LOG, "Stream Cache",
+                    firstException);
         }
         closed = true;
 

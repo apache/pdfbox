@@ -32,7 +32,7 @@ import java.util.Calendar;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -56,7 +56,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
     private PDVisibleSignDesigner visibleSignDesigner;
     private final PDVisibleSigProperties visibleSignatureProperties = new PDVisibleSigProperties();
     private boolean lateExternalSigning = false;
-    private MemoryUsageSetting memoryUsageSetting = MemoryUsageSetting.setupMainMemoryOnly();
+    private StreamCacheCreateFunction streamCache = IOUtils.createMemoryOnlyStreamCache();
     private PDDocument doc = null;
 
     public boolean isLateExternalSigning()
@@ -77,23 +77,23 @@ public class CreateVisibleSignature extends CreateSignatureBase
     }
 
     /**
-     * Get the memory usage setting.
+     * Get the function to be used to create an instance of the choosen stream cache.
      *
-     * @return the memory usage setting.
+     * @return the function to be used to create an instance of the choosen stream cache
      */
-    public MemoryUsageSetting getMemoryUsageSetting()
+    public StreamCacheCreateFunction getStreamCacheCreateFunction()
     {
-        return memoryUsageSetting;
+        return streamCache;
     }
 
     /**
-     * Set the memory usage setting.
+     * Set the function to be used to create an instance of the choosen stream cache.
      *
-     * @param memoryUsageSetting the memory usage setting.
+     * @param streamCache the function to be used to create an instance of the choosen stream cache
      */
-    public void setMemoryUsageSetting(MemoryUsageSetting memoryUsageSetting)
+    public void setStreamCacheCreateFunction(StreamCacheCreateFunction streamCache)
     {
-        this.memoryUsageSetting = memoryUsageSetting;
+        this.streamCache = streamCache;
     }
 
     /**
@@ -111,7 +111,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
             InputStream imageStream, int page) 
             throws IOException
     {
-        doc = Loader.loadPDF(new File(filename), memoryUsageSetting);
+        doc = Loader.loadPDF(new File(filename), streamCache);
         visibleSignDesigner = new PDVisibleSignDesigner(doc, imageStream, page);
         visibleSignDesigner.xAxis(x).yAxis(y).zoom(zoomPercent).adjustForRotation();
     }
@@ -216,7 +216,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // creating output document and prepare the IO streams.
         if (doc == null)
         {
-            doc = Loader.loadPDF(inputFile, memoryUsageSetting);
+            doc = Loader.loadPDF(inputFile, streamCache);
         }
 
         // call SigUtils.checkCrossReferenceTable(doc) if Adobe complains

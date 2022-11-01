@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -84,7 +83,7 @@ public class PDFMergerExample
             pdfMerger.setDestinationMetadata(xmpMetadata);
 
             LOG.info("Merging " + sources.size() + " source documents into one PDF");
-            pdfMerger.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+            pdfMerger.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
             LOG.info("PDF merge successful, size = {" + mergedPDFOutputStream.size() + "} bytes");
 
             return new ByteArrayInputStream(mergedPDFOutputStream.toByteArray());

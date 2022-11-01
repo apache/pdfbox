@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.concurrent.Callable;
 
-import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 
 import picocli.CommandLine;
@@ -73,7 +73,7 @@ public final class PDFMerger implements Callable<Integer>
             }
 
             merger.setDestinationFileName(outfile.getAbsolutePath());
-            merger.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+            merger.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
         }
         catch (IOException ioe)
         {

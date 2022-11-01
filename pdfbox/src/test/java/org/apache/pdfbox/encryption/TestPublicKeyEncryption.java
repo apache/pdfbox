@@ -35,7 +35,7 @@ import java.util.Collection;
 import javax.crypto.Cipher;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -282,7 +282,7 @@ class TestPublicKeyEncryption
             throws IOException, NoSuchAlgorithmException
     {
         PDDocument doc2 = Loader.loadPDF(file, decryptionPassword,
-                keyStore, null, MemoryUsageSetting.setupMainMemoryOnly());
+                keyStore, null, IOUtils.createMemoryOnlyStreamCache());
         assertEquals(text, new PDFTextStripper().getText(doc2),
                 "Extracted text is different");
         assertEquals(producer, doc2.getDocumentInformation().getProducer(),
@@ -386,7 +386,7 @@ class TestPublicKeyEncryption
                 RandomAccessReadBuffer.createBufferFromStream(
                         TestPublicKeyEncryption.class.getResourceAsStream("AES128ExposedMeta.pdf")), //
                 "", TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-5249.p12"), //
-                "test", MemoryUsageSetting.setupMainMemoryOnly()))
+                "test", IOUtils.createMemoryOnlyStreamCache()))
         {
             assertEquals("PublicKeySecurityHandler",
                     doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
@@ -410,7 +410,7 @@ class TestPublicKeyEncryption
                 RandomAccessReadBuffer.createBufferFromStream(
                         TestPublicKeyEncryption.class.getResourceAsStream("AES256ExposedMeta.pdf")), //
                 "", TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-5249.p12"), //
-                "test", MemoryUsageSetting.setupMainMemoryOnly()))
+                "test", IOUtils.createMemoryOnlyStreamCache()))
         {
             assertEquals("PublicKeySecurityHandler",
                     doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
