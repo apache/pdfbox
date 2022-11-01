@@ -186,17 +186,6 @@ public class PDFMergerUtility
         this.documentMergeMode = theDocumentMergeMode;
     }
 
-    
-    /**
-     * Set the mode to be used for merging the documents
-     * 
-     * {@link DocumentMergeMode}
-     */
-    public void setAcroFormMergeMode(DocumentMergeMode theDocumentMergeMode)
-    {
-        this.documentMergeMode = theDocumentMergeMode;
-    }
-
     /**
      * Get the name of the destination file.
      *
@@ -363,7 +352,7 @@ public class PDFMergerUtility
     private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting,
             CompressParameters compressParameters) throws IOException
     {
-        try (PDDocument destination = new PDDocument(memUsageSetting))
+        try (PDDocument destination = new PDDocument(memUsageSetting.streamCache))
         {
             PDFCloneUtility cloner = new PDFCloneUtility(destination);
             PDPageTree destinationPageTree = destination.getPages(); // cache PageTree
@@ -374,12 +363,13 @@ public class PDFMergerUtility
                 {
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = Loader.loadPDF((File) sourceObject, memUsageSetting);
+                        sourceDoc = Loader.loadPDF((File) sourceObject,
+                                memUsageSetting.streamCache);
                     }
                     else
                     {
                         sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject,
-                                memUsageSetting);
+                                memUsageSetting.streamCache);
                     }
                     for (PDPage page : sourceDoc.getPages())
                     {
@@ -444,19 +434,21 @@ public class PDFMergerUtility
             MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
                     memUsageSetting.getPartitionedCopy(sources.size()+1) :
                     MemoryUsageSetting.setupMainMemoryOnly();
-            try (PDDocument destination = new PDDocument(partitionedMemSetting))
+            try (PDDocument destination = new PDDocument(
+                    partitionedMemSetting.streamCache))
             {
                 for (Object sourceObject : sources)
                 {
                     PDDocument sourceDoc = null;
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = Loader.loadPDF((File) sourceObject, partitionedMemSetting);
+                        sourceDoc = Loader.loadPDF((File) sourceObject,
+                                partitionedMemSetting.streamCache);
                     }
                     else
                     {
                         sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject,
-                                partitionedMemSetting);
+                                partitionedMemSetting.streamCache);
                     }
                     tobeclosed.add(sourceDoc);
                     appendDocument(destination, sourceDoc);
