@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -56,24 +56,24 @@ public class Splitter
 
     private int currentPageNumber;
 
-    private MemoryUsageSetting memoryUsageSetting = null;
+    private StreamCacheCreateFunction streamCacheCreateFunction = null;
 
     /**
-     * @return the current memory setting.
+     * @return the current function to be used to create an instance of stream cache.
      */
-    public MemoryUsageSetting getMemoryUsageSetting()
+    public StreamCacheCreateFunction getStreamCacheCreateFunction()
     {
-        return memoryUsageSetting;
+        return streamCacheCreateFunction;
     }
 
     /**
-     * Set the memory setting.
+     * Set the current function to be used to create an instance of stream cache.
      * 
-     * @param memoryUsageSetting The memory setting.
+     * @param streamCacheCreateFunction the current function to be used to create an instance of stream cache.
      */
-    public void setMemoryUsageSetting(MemoryUsageSetting memoryUsageSetting)
+    public void setStreamCacheCreateFunction(StreamCacheCreateFunction streamCacheCreateFunction)
     {
-        this.memoryUsageSetting = memoryUsageSetting;
+        this.streamCacheCreateFunction = streamCacheCreateFunction;
     }
 
     /**
@@ -217,8 +217,7 @@ public class Splitter
      */
     protected PDDocument createNewDocument() throws IOException
     {
-        PDDocument document = memoryUsageSetting == null ?
-                                new PDDocument() : new PDDocument(memoryUsageSetting);
+        PDDocument document = streamCacheCreateFunction != null ? new PDDocument(streamCacheCreateFunction) : new PDDocument();
         document.getDocument().setVersion(getSourceDocument().getVersion());
         PDDocumentInformation sourceDocumentInformation = getSourceDocument().getDocumentInformation();
         if (sourceDocumentInformation != null)

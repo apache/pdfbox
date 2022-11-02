@@ -26,7 +26,7 @@ import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessOutputStream;
-import org.apache.pdfbox.io.ScratchFile;
+import org.apache.pdfbox.io.RandomAccessStreamCache;
 
 /**
  * An OutputStream which writes to an encoded COS stream.
@@ -37,7 +37,7 @@ public final class COSOutputStream extends FilterOutputStream
 {
     private final List<Filter> filters;
     private final COSDictionary parameters;
-    private final ScratchFile scratchFile;
+    private final RandomAccessStreamCache streamCache;
     private RandomAccess buffer;
 
     /**
@@ -46,17 +46,17 @@ public final class COSOutputStream extends FilterOutputStream
      * @param filters Filters to apply.
      * @param parameters Filter parameters.
      * @param output Encoded stream.
-     * @param scratchFile Scratch file to use.
+     * @param streamCache Stream cache to use.
      * 
      * @throws IOException If there was an error creating a temporary buffer
      */
     COSOutputStream(List<Filter> filters, COSDictionary parameters, OutputStream output,
-                    ScratchFile scratchFile) throws IOException
+            RandomAccessStreamCache streamCache) throws IOException
     {
         super(output);
         this.filters = filters;
         this.parameters = parameters;
-        this.scratchFile = scratchFile;
+        this.streamCache = streamCache;
 
         if (filters.isEmpty())
         {
@@ -64,7 +64,7 @@ public final class COSOutputStream extends FilterOutputStream
         }
         else
         {
-            this.buffer = scratchFile.createBuffer();
+            this.buffer = streamCache.createBuffer();
         }
     }
 
@@ -140,7 +140,7 @@ public final class COSOutputStream extends FilterOutputStream
                             }
                             else
                             {
-                                RandomAccess filteredBuffer = scratchFile.createBuffer();
+                                RandomAccess filteredBuffer = streamCache.createBuffer();
                                 try (OutputStream filteredOut = new RandomAccessOutputStream(filteredBuffer))
                                 {
                                     filters.get(i).encode(unfilteredIn, filteredOut, parameters, i);

@@ -27,8 +27,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
@@ -85,18 +85,18 @@ public class PDFParser extends COSParser
      * @param decryptionPassword password to be used for decryption.
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * @param streamCacheCreateFunction a function to create an instance of the stream cache
      *
      * @throws IOException If something went wrong.
      */
     public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
-            String alias, MemoryUsageSetting memUsageSetting) throws IOException
+            String alias, StreamCacheCreateFunction streamCacheCreateFunction) throws IOException
     {
         super(source, decryptionPassword, keyStore, alias);
-        init(memUsageSetting);
+        init(streamCacheCreateFunction);
     }
 
-    private void init(MemoryUsageSetting memUsageSetting)
+    private void init(StreamCacheCreateFunction streamCacheCreateFunction)
     {
         String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
         if (eofLookupRangeStr != null)
@@ -111,7 +111,7 @@ public class PDFParser extends COSParser
                         + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
             }
         }
-        document = new COSDocument(memUsageSetting, this);
+        document = new COSDocument(streamCacheCreateFunction, this);
     }
     
     /**

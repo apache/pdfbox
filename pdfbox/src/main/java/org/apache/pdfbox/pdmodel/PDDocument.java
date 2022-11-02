@@ -47,8 +47,8 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
@@ -157,18 +157,17 @@ public class PDDocument implements Closeable
      */
     public PDDocument()
     {
-        this(MemoryUsageSetting.setupMainMemoryOnly());
+        this(IOUtils.createMemoryOnlyStreamCache());
     }
 
     /**
-     * Creates an empty PDF document.
-     * You need to add at least one page for the document to be valid.
+     * Creates an empty PDF document. You need to add at least one page for the document to be valid.
      *
-     * @param memUsageSetting defines how memory is used for buffering PDF streams 
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache for buffering PDF streams
      */
-    public PDDocument(MemoryUsageSetting memUsageSetting)
+    public PDDocument(StreamCacheCreateFunction streamCacheCreateFunction)
     {
-        document = new COSDocument(memUsageSetting);
+        document = new COSDocument(streamCacheCreateFunction);
         document.getDocumentState().setParsing(false);
         pdfSource = null;
 

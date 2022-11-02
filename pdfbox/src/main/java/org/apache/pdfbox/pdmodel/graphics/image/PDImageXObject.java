@@ -462,7 +462,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
         if (softMask != null)
         {
             image = applyMask(SampledImageReader.getRGBImage(this, region, subsampling, getColorKeyMask()),
-                    softMask.getOpaqueImage(region, subsampling), softMask.getInterpolate(), true, extractMatte(softMask));
+                    softMask.getOpaqueImage(region, subsampling), softMask.getInterpolate(), true,
+                    extractMatte(softMask));
         }
         // explicit mask - to be applied only if /ImageMask true
         else if (mask != null && mask.isStencil())
@@ -540,12 +541,27 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
 
     /**
-     * Returns an RGB buffered image containing the opaque image stream without any masks applied.
-     * If this Image XObject is a mask then the buffered image will contain the raw mask.
-     * @param region The region of the source image to get, or null if the entire image is needed.
-     *               The actual region will be clipped to the dimensions of the source image.
-     * @param subsampling The amount of rows and columns to advance for every output pixel, a value
-     * of 1 meaning every pixel will be read. It must not be larger than the image width or height.
+     * Returns an RGB buffered image containing the opaque image stream without any masks applied. If this Image XObject
+     * is a mask then the buffered image will contain the raw mask.
+     * 
+     * @return the image without any masks applied
+     * @throws IOException if the image cannot be read
+     */
+    public BufferedImage getOpaqueImage(Rectangle region, int subsampling) throws IOException
+    {
+        return getOpaqueImage(null, 1);
+    }
+
+    /**
+     * Returns an RGB buffered image containing the opaque image stream without any masks applied. If this Image XObject
+     * is a mask then the buffered image will contain the raw mask.
+     * 
+     * @param region The region of the source image to get, or null if the entire image is needed. The actual region
+     * will be clipped to the dimensions of the source image.
+     * 
+     * @param subsampling The amount of rows and columns to advance for every output pixel, a value of 1 meaning every
+     * pixel will be read. It must not be larger than the image width or height.
+     * 
      * @return the image without any masks applied
      * @throws IOException if the image cannot be read
      */

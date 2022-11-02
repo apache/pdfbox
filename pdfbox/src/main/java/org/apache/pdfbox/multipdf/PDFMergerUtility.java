@@ -42,8 +42,8 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -186,17 +186,6 @@ public class PDFMergerUtility
         this.documentMergeMode = theDocumentMergeMode;
     }
 
-    
-    /**
-     * Set the mode to be used for merging the documents
-     * 
-     * {@link DocumentMergeMode}
-     */
-    public void setAcroFormMergeMode(DocumentMergeMode theDocumentMergeMode)
-    {
-        this.documentMergeMode = theDocumentMergeMode;
-    }
-
     /**
      * Get the name of the destination file.
      *
@@ -238,8 +227,9 @@ public class PDFMergerUtility
     }
 
     /**
-     * Get the destination document information that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
-     * }. The default is null, which means that it is ignored.
+     * Get the destination document information that is to be set in
+     * {@link #mergeDocuments(org.apache.pdfbox.io.StreamCacheCreateFunction) }. The default is null, which means that
+     * it is ignored.
      *
      * @return The destination document information.
      */
@@ -249,8 +239,9 @@ public class PDFMergerUtility
     }
 
     /**
-     * Set the destination document information that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
-     * }. The default is null, which means that it is ignored.
+     * Set the destination document information that is to be set in
+     * {@link #mergeDocuments(org.apache.pdfbox.io.StreamCacheCreateFunction) }. The default is null, which means that
+     * it is ignored.
      *
      * @param info The destination document information.
      */
@@ -260,8 +251,9 @@ public class PDFMergerUtility
     }
 
     /**
-     * Set the destination metadata that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
-     * }. The default is null, which means that it is ignored.
+     * Set the destination metadata that is to be set in
+     * {@link #mergeDocuments(org.apache.pdfbox.io.StreamCacheCreateFunction) }. The default is null, which means that
+     * it is ignored.
      *
      * @return The destination metadata.
      */
@@ -271,8 +263,9 @@ public class PDFMergerUtility
     }
 
     /**
-     * Set the destination metadata that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
-     * }. The default is null, which means that it is ignored.
+     * Set the destination metadata that is to be set in
+     * {@link #mergeDocuments(org.apache.pdfbox.io.StreamCacheCreateFunction) }. The default is null, which means that
+     * it is ignored.
      *
      * @param meta The destination metadata.
      */
@@ -326,44 +319,46 @@ public class PDFMergerUtility
     }
 
     /**
-     * Merge the list of source documents, saving the result in the destination
-     * file.
+     * Merge the list of source documents, saving the result in the destination file.
      *
-     * @param memUsageSetting defines how memory is used for buffering PDF streams;
-     *                        in case of <code>null</code> unrestricted main memory is used 
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache; in case of <code>null</code>
+     * unrestricted main memory is used
      * 
      * @throws IOException If there is an error saving the document.
      */
-    public void mergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
+    public void mergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction) throws IOException
     {
-        mergeDocuments(memUsageSetting, CompressParameters.DEFAULT_COMPRESSION);
+        mergeDocuments(streamCacheCreateFunction, CompressParameters.DEFAULT_COMPRESSION);
     }
 
     /**
      * Merge the list of source documents, saving the result in the destination file.
      *
-     * @param memUsageSetting defines how memory is used for buffering PDF streams; in case of <code>null</code>
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache; in case of <code>null</code>
      * unrestricted main memory is used
      * @param compressParameters defines if compressed object streams are enabled
      * 
      * @throws IOException If there is an error saving the document.
      */
-    public void mergeDocuments(MemoryUsageSetting memUsageSetting, CompressParameters compressParameters) throws IOException
+    public void mergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
+            CompressParameters compressParameters) throws IOException
     {
         if (documentMergeMode == DocumentMergeMode.PDFBOX_LEGACY_MODE)
         {
-            legacyMergeDocuments(memUsageSetting, compressParameters);
+            legacyMergeDocuments(streamCacheCreateFunction, compressParameters);
         }
         else if (documentMergeMode == DocumentMergeMode.OPTIMIZE_RESOURCES_MODE)
         {
-            optimizedMergeDocuments(memUsageSetting, compressParameters);
+            optimizedMergeDocuments(streamCacheCreateFunction, compressParameters);
         }
     }
     
-    private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting,
+    private void optimizedMergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
             CompressParameters compressParameters) throws IOException
     {
-        try (PDDocument destination = new PDDocument(memUsageSetting))
+        StreamCacheCreateFunction strmCacheFunc = streamCacheCreateFunction != null ? streamCacheCreateFunction
+                : IOUtils.createMemoryOnlyStreamCache();
+        try (PDDocument destination = new PDDocument(strmCacheFunc))
         {
             PDFCloneUtility cloner = new PDFCloneUtility(destination);
             PDPageTree destinationPageTree = destination.getPages(); // cache PageTree
@@ -374,12 +369,11 @@ public class PDFMergerUtility
                 {
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = Loader.loadPDF((File) sourceObject, memUsageSetting);
+                        sourceDoc = Loader.loadPDF((File) sourceObject);
                     }
                     else
                     {
-                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject,
-                                memUsageSetting);
+                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
                     }
                     for (PDPage page : sourceDoc.getPages())
                     {
@@ -421,15 +415,14 @@ public class PDFMergerUtility
     
     
     /**
-     * Merge the list of source documents, saving the result in the destination
-     * file.
+     * Merge the list of source documents, saving the result in the destination file.
      *
-     * @param memUsageSetting defines how memory is used for buffering PDF streams;
-     *                        in case of <code>null</code> unrestricted main memory is used 
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache; in case of <code>null</code>
+     * unrestricted main memory is used
      * 
      * @throws IOException If there is an error saving the document.
      */
-    private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting,
+    private void legacyMergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
             CompressParameters compressParameters) throws IOException
     {
         if (!sources.isEmpty())
@@ -441,22 +434,20 @@ public class PDFMergerUtility
             // - there's a way to see which errors occurred
 
             List<PDDocument> tobeclosed = new ArrayList<>(sources.size());
-            MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
-                    memUsageSetting.getPartitionedCopy(sources.size()+1) :
-                    MemoryUsageSetting.setupMainMemoryOnly();
-            try (PDDocument destination = new PDDocument(partitionedMemSetting))
+            StreamCacheCreateFunction strmCacheFunc = streamCacheCreateFunction != null ? streamCacheCreateFunction
+                    : IOUtils.createMemoryOnlyStreamCache();
+            try (PDDocument destination = new PDDocument(strmCacheFunc))
             {
                 for (Object sourceObject : sources)
                 {
                     PDDocument sourceDoc = null;
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = Loader.loadPDF((File) sourceObject, partitionedMemSetting);
+                        sourceDoc = Loader.loadPDF((File) sourceObject);
                     }
                     else
                     {
-                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject,
-                                partitionedMemSetting);
+                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
                     }
                     tobeclosed.add(sourceDoc);
                     appendDocument(destination, sourceDoc);

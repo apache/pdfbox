@@ -18,6 +18,8 @@ package org.apache.pdfbox.io;
 
 import java.io.File;
 
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
+
 /**
  * Controls how memory/temporary files are used for
  * buffering streams etc.
@@ -37,7 +39,14 @@ public final class MemoryUsageSetting
     
     /** directory to be used for scratch file */
     private File tempDir;
-    
+
+    /**
+     * Implementation of the function to create an instance of ScratchFile using the current settings.
+     */
+    public final StreamCacheCreateFunction streamCache = () -> {
+        return new ScratchFile(this);
+    };
+
     /**
      * Private constructor for setup buffering memory usage called by one of the setup methods.
      * 
@@ -163,30 +172,6 @@ public final class MemoryUsageSetting
         return new MemoryUsageSetting(true, true, maxMainMemoryBytes, maxStorageBytes);
     }
 
-    /**
-     * Returns a copy of this instance with the maximum memory/storage restriction
-     * divided by the provided number of parallel uses.
-     * 
-     * @param parallelUseCount specifies the number of parallel usages for the setting to
-     *                         be returned
-     *                         
-     * @return a copy from this instance with the maximum memory/storage restrictions
-     *         adjusted to the multiple usage
-     */
-    public MemoryUsageSetting getPartitionedCopy(int parallelUseCount)
-    {
-        long newMaxMainMemoryBytes = maxMainMemoryBytes <= 0 ? maxMainMemoryBytes : 
-                                                               maxMainMemoryBytes / parallelUseCount;
-        long newMaxStorageBytes = maxStorageBytes <= 0 ? maxStorageBytes :
-                                                         maxStorageBytes / parallelUseCount;
-                
-        MemoryUsageSetting copy = new MemoryUsageSetting( useMainMemory, useTempFile,
-                                                          newMaxMainMemoryBytes, newMaxStorageBytes );
-        copy.tempDir = tempDir;
-        
-        return copy;
-    }
-    
     /**
      * Sets directory to be used for temporary files.
      * 

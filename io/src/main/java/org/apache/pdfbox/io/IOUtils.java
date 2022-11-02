@@ -46,6 +46,7 @@ import java.util.function.Consumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 
 /**
  * This class contains various I/O-related methods.
@@ -307,4 +308,25 @@ public final class IOUtils
         };
     }
 
+    /**
+     * Provides a function to create an instance of a memory only StreamCache using unrestricted main memory.
+     * ScratchFile is used as current default implementation.
+     * 
+     * @return a function to create an instance of a memory only StreamCache using unrestricted main memory
+     */
+    public static StreamCacheCreateFunction createMemoryOnlyStreamCache()
+    {
+        return MemoryUsageSetting.setupMainMemoryOnly().streamCache;
+    }
+
+    /**
+     * Provides a function to create an instance of a temp file only StreamCache using unrestricted size. ScratchFile is
+     * used as current default implementation.
+     * 
+     * @return a function to create an instance of a temp file only StreamCache using unrestricted size
+     */
+    public static StreamCacheCreateFunction createTempFileOnlyStreamCache()
+    {
+        return MemoryUsageSetting.setupTempFileOnly().streamCache;
+    }
 }
