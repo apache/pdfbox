@@ -100,7 +100,7 @@ public class ValidateXImage
             writeOk = ImageIO.write(ximage.getImage(), format, new NullOutputStream());
             assertTrue(writeOk);
         }
-        writeOk = ImageIO.write(ximage.getOpaqueImage(), format, new NullOutputStream());
+        writeOk = ImageIO.write(ximage.getOpaqueImage(null, 1), format, new NullOutputStream());
         assertTrue(writeOk);
     }
     
