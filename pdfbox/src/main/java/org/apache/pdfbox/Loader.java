@@ -146,7 +146,7 @@ public class Loader
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
      * 
-     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffered} is used
+     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffer} is used
      * to read the data.
      * 
      * @return loaded document
@@ -162,7 +162,7 @@ public class Loader
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
      * 
-     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffered} is used
+     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffer} is used
      * to read the data.
      * @param password password to be used for decryption
      * 
@@ -179,7 +179,7 @@ public class Loader
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
      * 
-     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffered} is used
+     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffer} is used
      * to read the data.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
@@ -199,7 +199,7 @@ public class Loader
     /**
      * Parses a PDF.
      * 
-     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffered} is used
+     * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffer} is used
      * to read the data.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
@@ -288,7 +288,7 @@ public class Loader
      * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
      * file.
      * @param password password to be used for decryption
-     * @param streamCacheCreateFunctiona function to create an instance of a stream cache to be used for buffering
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache to be used for buffering
      * new/altered PDF streams
      * 
      * @return loaded document

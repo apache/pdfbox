@@ -125,7 +125,7 @@ public class COSDocument extends COSBase implements Closeable
     /**
      * Constructor that will use the provided function to create a stream cache for the storage of the PDF streams.
      *
-     * @param streamCache a function to create an instance of a stream cache
+     * @param streamCacheCreateFunction a function to create an instance of a stream cache
      * @param parser Parser to be used to parse the document on demand
      * 
      */
