@@ -101,6 +101,8 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
 
     /**
      * Constructor.
+     * 
+     * @param page the page the content stream belongs to
      */
     protected PDFGraphicsStreamEngine(PDPage page)
     {
@@ -175,6 +177,8 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
 
     /**
      * Returns the page.
+     * 
+     * @return the current page
      */
     protected final PDPage getPage()
     {
