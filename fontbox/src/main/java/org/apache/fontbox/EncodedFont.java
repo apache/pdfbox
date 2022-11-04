@@ -17,7 +17,6 @@
 
 package org.apache.fontbox;
 
-import java.io.IOException;
 import org.apache.fontbox.encoding.Encoding;
 
 /**
@@ -29,6 +28,8 @@ public interface EncodedFont
 {
     /**
      * Returns the PostScript Encoding vector for the font.
+     * 
+     * @return the encoding
      */
-    Encoding getEncoding() throws IOException;
+    Encoding getEncoding();
 }
