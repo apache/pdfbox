@@ -34,6 +34,8 @@ public abstract class OperatorProcessor
 
     /**
      * Creates a new OperatorProcessor.
+     * 
+     * @param context the processing context to be used
      */
     protected OperatorProcessor(PDFStreamEngine context)
     {
@@ -60,6 +62,8 @@ public abstract class OperatorProcessor
 
     /**
      * Returns the name of this operator, e.g. "BI".
+     * 
+     * @return the name of the operator
      */
     public abstract String getName();
     
@@ -68,7 +72,7 @@ public abstract class OperatorProcessor
      *
      * @param operands The operands list.
      * @param clazz The expected class.
-     * @return the boolean
+     * @return true if all operands list elements are an instance of the given class
      */
     public boolean checkArrayTypesClass(List<COSBase> operands, Class<?> clazz)
     {

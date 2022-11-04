@@ -167,6 +167,8 @@ public final class COSString extends COSBase
 
     /**
      * Returns true if the string is to be written in hex form.
+     * 
+     * @return true if the COSString is written in hex form
      */
     public boolean getForceHexForm()
     {
@@ -175,6 +177,8 @@ public final class COSString extends COSBase
 
     /**
      * Returns the content of this string as a PDF <i>text string</i>.
+     * 
+     * @return the PDF string representation of the COSString
      */
     public String getString()
     {
@@ -199,6 +203,8 @@ public final class COSString extends COSBase
 
     /**
      * Returns the content of this string as a PDF <i>ASCII string</i>.
+     * 
+     * @return the ASCII string representation of the COSString
      */
     public String getASCII()
     {
@@ -208,6 +214,8 @@ public final class COSString extends COSBase
 
     /**
      * Returns the raw bytes of the string using a new byte array. Best used with a PDF <i>byte string</i>.
+     * 
+     * @return a clone of the underlying byte[] representation of the COSString
      */
     public byte[] getBytes()
     {

@@ -109,6 +109,8 @@ public final class COSInputStream extends FilterInputStream
     
     /**
      * Returns the result of the last filter, for use by repair mechanisms.
+     * 
+     * @return the result of the last filter
      */
     public DecodeResult getDecodeResult()
     {

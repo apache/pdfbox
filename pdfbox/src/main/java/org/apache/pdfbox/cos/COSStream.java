@@ -390,6 +390,8 @@ public class COSStream extends COSDictionary implements Closeable
     
     /**
      * Returns the contents of the stream as a PDF "text string".
+     * 
+     * @return the PDF string representation of the stream content
      */
     public String toTextString()
     {
@@ -415,10 +417,10 @@ public class COSStream extends COSDictionary implements Closeable
     /**
      * {@inheritDoc}
      *
-     * Called by PDFBox when the PDDocument is closed, this closes the stream and removes the data.
-     * You will usually not need this.
+     * Called by PDFBox when the PDDocument is closed, this closes the stream and removes the data. You will usually not
+     * need this.
      *
-     * @throws IOException
+     * @throws IOException if something went wrong when closing the stream
      */
     @Override
     public void close() throws IOException
