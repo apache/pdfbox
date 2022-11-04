@@ -35,6 +35,7 @@ public interface CFFCharset
      *
      * @param gid GID
      * @param sid SID
+     * @param name the postscript name of the glyph
      */
     public abstract void addSID(int gid, int sid, String name);
 

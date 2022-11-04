@@ -50,7 +50,8 @@ public class CFFCIDFont extends CFFFont
 
     /**
      * Returns the registry value.
-     * * @return the registry
+     * 
+     * @return the registry
      */
     public String getRegistry() 
     {
