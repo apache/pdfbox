@@ -128,7 +128,10 @@ public class TrueTypeFont implements FontBoxFont, Closeable
 
     /**
      * Returns the raw bytes of the given table.
+     * 
      * @param table the table to read.
+     * @return the raw bytes of the given table
+     * 
      * @throws IOException if there was an error accessing the table.
      */
     public byte[] getTableBytes(TTFTable table) throws IOException
@@ -508,11 +511,13 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     }
 
     /**
-     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
-     * by which this is accomplished are implementation-dependent."
+     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means by which this is
+     * accomplished are implementation-dependent."
      *
      * The returned cmap will perform glyph substitution.
      *
+     * @return cmap to perform glyph substitution
+     * 
      * @throws IOException if the font could not be read
      */
     public CmapLookup getUnicodeCmapLookup() throws IOException
@@ -521,12 +526,14 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     }
 
     /**
-     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
-     * by which this is accomplished are implementation-dependent."
+     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means by which this is
+     * accomplished are implementation-dependent."
      *
      * The returned cmap will perform glyph substitution.
      *
      * @param isStrict False if we allow falling back to any cmap, even if it's not Unicode.
+     * @return cmap to perform glyph substitution
+     * 
      * @throws IOException if the font could not be read, or there is no Unicode cmap
      */
     public CmapLookup getUnicodeCmapLookup(boolean isStrict) throws IOException
@@ -600,7 +607,11 @@ public class TrueTypeFont implements FontBoxFont, Closeable
 
     /**
      * Returns the GID for the given PostScript name, if the "post" table is present.
+     * 
      * @param name the PostScript name.
+     * @return the GID for the given PostScript name
+     * 
+     * @throws IOException if the font data could not be read
      */
     public int nameToGID(String name) throws IOException
     {
@@ -626,6 +637,12 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         return 0;
     }
 
+    /**
+     * Returns the GSubData of the GlyphSubstitutionTable if present.
+     * 
+     * @return the GSubData of the GlyphSubstitutionTable
+     * @throws IOException if the font data could not be read
+     */
     public GsubData getGsubData() throws IOException
     {
         GlyphSubstitutionTable table = getGsub();

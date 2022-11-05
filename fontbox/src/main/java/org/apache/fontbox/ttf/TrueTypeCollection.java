@@ -100,7 +100,7 @@ public class TrueTypeCollection implements Closeable
      * Run the callback for each TT font in the collection.
      * 
      * @param trueTypeFontProcessor the object with the callback method.
-     * @throws IOException 
+     * @throws IOException if something went wrong when calling the TrueTypeFontProcessor
      */
     public void processAllFonts(TrueTypeFontProcessor trueTypeFontProcessor) throws IOException
     {
@@ -132,7 +132,7 @@ public class TrueTypeCollection implements Closeable
      * 
      * @param name The postscript name of the font.
      * @return The found font, nor null if none is found.
-     * @throws IOException 
+     * @throws IOException if there is an error reading the font data
      */
     public TrueTypeFont getFontByName(String name) throws IOException
     {

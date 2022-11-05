@@ -332,12 +332,12 @@ public final class OpenTypeScript
     /**
      * Obtain the OpenType script tags associated with the given Unicode codepoint.
      *
-     * The result may contain the special value {@code #INHERITED}, which indicates that the
-     * codepoint's script can only be determined by its context.
+     * The result may contain the special value {@code #INHERITED}, which indicates that the codepoint's script can only
+     * be determined by its context.
      *
      * Unknown codepoints are mapped to {@code #TAG_DEFAULT}.
      *
-     * @param codePoint
+     * @param codePoint the unicode codepoint of the OpenType script tag
      * @return An array of four-char script tags
      */
     public static String[] getScriptTags(int codePoint)

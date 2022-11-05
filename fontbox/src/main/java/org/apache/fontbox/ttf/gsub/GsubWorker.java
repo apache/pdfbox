@@ -32,6 +32,9 @@ public interface GsubWorker
      * Applies language-specific transforms including GSUB and any other pre or post-processing necessary for displaying
      * Glyphs correctly.
      * 
+     * @param originalGlyphIds list of original glyph IDs
+     * @return list of transformed glyph IDs
+     * 
      */
     List<Integer> applyTransforms(List<Integer> originalGlyphIds);
 

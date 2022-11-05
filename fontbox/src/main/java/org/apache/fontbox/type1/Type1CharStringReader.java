@@ -30,6 +30,7 @@ public interface Type1CharStringReader
     /**
      * Returns the Type 1 CharString for the character with the given name.
      *
+     * @param name the character name of the Type1 charstring
      * @return Type 1 CharString
      * @throws IOException if something went wrong
      */

@@ -46,6 +46,8 @@ public enum Language
      * ScriptNames form the basis of identification of the language. This method gets the ScriptNames that the given
      * Language supports, in the order of preference, Index 0 being the most preferred. These names should match the
      * {@link ScriptRecord} in the GSUB system.
+     * 
+     * @return an array containing all supported languages
      */
     public String[] getScriptNames()
     {
