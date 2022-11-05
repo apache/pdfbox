@@ -64,6 +64,7 @@ public class Type1CharStringParser
      *
      * @param bytes the given mapping as byte array
      * @param subrs list of local subroutines
+     * @param glyphName name of the current glyph
      * @return the Type1 sequence
      * @throws IOException if an error occurs during reading
      */

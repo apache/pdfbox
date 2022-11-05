@@ -107,6 +107,11 @@ public class CmapTable extends TTFTable
 
     /**
      * Returns the subtable, if any, for the given platform and encoding.
+     * 
+     * @param platformId the ID of the given platform
+     * @param platformEncodingId the ID of the given encoding
+     * 
+     * @return the subtable, if any, or null
      */
     public CmapSubtable getSubtable(int platformId, int platformEncodingId)
     {
