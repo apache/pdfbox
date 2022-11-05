@@ -174,7 +174,7 @@ public class CharStringCommand
      * 
      * @param values array of values
      * 
-     * @rerturn CharStringCommand represented by the given values
+     * @return CharStringCommand represented by the given values
      */
     public static CharStringCommand getInstance(int[] values)
     {
@@ -230,7 +230,7 @@ public class CharStringCommand
     @Override
     public String toString()
     {
-        String str = null;
+        String str;
         if (type2KeyWord != null)
         {
             str = type2KeyWord.toString();
