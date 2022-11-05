@@ -137,6 +137,8 @@ public final class TTFSubsetter
      * Returns the map of new -&gt; old GIDs.
      * 
      * @return the GID map
+     * 
+     * @throws IOException if the font data could not be read
      */
     public Map<Integer, Integer> getGIDMap() throws IOException
     {
