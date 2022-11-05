@@ -27,14 +27,18 @@ public interface DataInput
 {
 
     /**
-     * Determines if there are any bytes left to read or not. 
+     * Determines if there are any bytes left to read or not.
+     * 
      * @return true if there are any bytes left to read
+     * @throws IOException if an error occurs during reading
      */
     public boolean hasRemaining() throws IOException;
 
     /**
      * Returns the current position.
+     * 
      * @return current position
+     * @throws IOException if an error occurs during reading
      */
     public int getPosition() throws IOException;
 

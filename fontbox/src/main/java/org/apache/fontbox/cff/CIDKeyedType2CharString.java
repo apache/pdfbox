@@ -50,6 +50,8 @@ public class CIDKeyedType2CharString extends Type2CharString
 
     /**
      * Returns the CID (character id) of this charstring.
+     * 
+     * @return the CID of this charstring
      */
     public int getCID()
     {

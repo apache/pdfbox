@@ -59,6 +59,8 @@ public class CFFParser
     {
         /**
          * Returns the source bytes. May be called more than once.
+         * 
+         * @return the source data as byte array
          */
         byte[] getBytes() throws IOException;
     }
@@ -81,7 +83,7 @@ public class CFFParser
     /**
      * Parse CFF font using a RandomAccessRead as input.
      * 
-     * @param randomAccessRead
+     * @param randomAccessRead the source to be parsed
      * @return the parsed CFF fonts
      * @throws IOException If there is an error reading from the stream
      */
@@ -105,7 +107,7 @@ public class CFFParser
     /**
      * Parse CFF font using a DataInput as input.
      * 
-     * @param input
+     * @param input the source to be parsed
      * @return the parsed CFF fonts
      * @throws IOException If there is an error reading from the stream
      */

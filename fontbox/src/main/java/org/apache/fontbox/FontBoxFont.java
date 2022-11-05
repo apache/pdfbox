@@ -59,6 +59,7 @@ public interface FontBoxFont
     /**
      * Returns the path for the character with the given name.
      *
+     * @param name PostScript glyph name
      * @return glyph path
      * @throws IOException if the path could not be read
      */
@@ -67,6 +68,7 @@ public interface FontBoxFont
     /**
      * Returns the advance width for the character with the given name.
      *
+     * @param name PostScript glyph name
      * @return glyph advance width
      * @throws IOException if the path could not be read
      */

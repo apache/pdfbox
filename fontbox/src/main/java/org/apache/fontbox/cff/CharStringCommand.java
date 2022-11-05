@@ -147,6 +147,7 @@ public class CharStringCommand
      * Get an instance of the CharStringCommand represented by the given value.
      * 
      * @param b0 value
+     * @return CharStringCommand represented by the given value
      */
     public static CharStringCommand getInstance(int b0)
     {
@@ -159,6 +160,8 @@ public class CharStringCommand
      * 
      * @param b0 value1
      * @param b1 value2
+     * 
+     * @return CharStringCommand represented by the given two values
      */
     public static CharStringCommand getInstance(int b0, int b1)
     {
@@ -170,6 +173,8 @@ public class CharStringCommand
      * Get an instance of the CharStringCommand represented by the given array.
      * 
      * @param values array of values
+     * 
+     * @rerturn CharStringCommand represented by the given values
      */
     public static CharStringCommand getInstance(int[] values)
     {
