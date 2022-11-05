@@ -32,6 +32,7 @@ public interface RandomAccessStreamCache extends Closeable
          * Creates an instance of a RandomAccessStreamCache.
          *
          * @return the stream cache.
+         * @throws IOException if something went wrong
          */
         RandomAccessStreamCache create() throws IOException;
     }

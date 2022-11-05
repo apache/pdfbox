@@ -53,6 +53,8 @@ public interface RandomAccessWrite extends Closeable
 
     /**
      * Clears all data of the buffer.
+     * 
+     * @throws IOException If there is an error while clearing the data.
      */
     void clear() throws IOException;
 }

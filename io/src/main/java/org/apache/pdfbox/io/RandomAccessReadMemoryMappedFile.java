@@ -46,6 +46,10 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
 
     /**
      * Default constructor.
+     * 
+     * @param filename the filename of the file to be read
+     * 
+     * @throws IOException If there is an IO error opening the file.
      */
     public RandomAccessReadMemoryMappedFile(String filename) throws IOException
     {
@@ -54,6 +58,10 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
 
     /**
      * Default constructor.
+     * 
+     * @param file the file to be read
+     * 
+     * @throws IOException If there is an IO error opening the file.
      */
     public RandomAccessReadMemoryMappedFile(File file) throws IOException
     {

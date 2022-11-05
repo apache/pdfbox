@@ -187,7 +187,7 @@ public final class IOUtils
      * buffers hold a lock on the underlying file until GC is executes and this in turns result in an error if the user
      * tries to move or delete the file.
      * 
-     * @param buf
+     * @param buf the buffer to be unmapped
      */
     public static void unmap(ByteBuffer buf)
     {
