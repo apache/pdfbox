@@ -91,6 +91,7 @@ public class COSStream extends COSDictionary implements Closeable
      * stored in the given scratch file.
      *
      * @param streamCache Stream cache for writing stream data.
+     * @param randomAccessReadView source for the data to be read
      * @throws IOException if the length of the random access view isn't available
      */
     public COSStream(RandomAccessStreamCache streamCache, RandomAccessReadView randomAccessReadView)

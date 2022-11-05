@@ -150,6 +150,8 @@ public class PDFMergerUtility
      * Get the merge mode to be used for merging AcroForms between documents
      * 
      * {@link AcroFormMergeMode}
+     * 
+     * @return the current AcroFormMergeMode
      */
     public AcroFormMergeMode getAcroFormMergeMode()
     {
@@ -160,6 +162,9 @@ public class PDFMergerUtility
      * Set the merge mode to be used for merging AcroForms between documents
      * 
      * {@link AcroFormMergeMode}
+     * 
+     * @param theAcroFormMergeMode AcroFormMergeMode to be used
+     * 
      */
     public void setAcroFormMergeMode(AcroFormMergeMode theAcroFormMergeMode)
     {
@@ -170,6 +175,8 @@ public class PDFMergerUtility
      * Get the merge mode to be used for merging documents
      * 
      * {@link DocumentMergeMode}
+     * 
+     * @return the curretn DocumentMergeMode
      */
     public DocumentMergeMode getDocumentMergeMode()
     {
@@ -180,6 +187,8 @@ public class PDFMergerUtility
      * Set the merge mode to be used for merging documents
      * 
      * {@link DocumentMergeMode}
+     * 
+     * @param theDocumentMergeMode DocumentMergeMode to be used
      */
     public void setDocumentMergeMode(DocumentMergeMode theDocumentMergeMode)
     {

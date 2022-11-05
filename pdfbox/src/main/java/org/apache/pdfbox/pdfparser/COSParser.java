@@ -175,7 +175,8 @@ public class COSParser extends BaseParser implements ICOSParser
      * @param password password to be used for decryption.
      * @param keyStore key store to be used for decryption when using public key security
      * @param keyAlias alias to be used for decryption when using public key security
-     * 
+     *
+     * @throws IOException if the source data could not be read
      */
     public COSParser(RandomAccessRead source, String password, InputStream keyStore,
             String keyAlias) throws IOException
