@@ -43,9 +43,7 @@ public final class MemoryUsageSetting
     /**
      * Implementation of the function to create an instance of ScratchFile using the current settings.
      */
-    public final StreamCacheCreateFunction streamCache = () -> {
-        return new ScratchFile(this);
-    };
+    public final StreamCacheCreateFunction streamCache = () -> new ScratchFile(this);
 
     /**
      * Private constructor for setup buffering memory usage called by one of the setup methods.
