@@ -886,11 +886,11 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * For internal PDFBox use when creating PDF documents: register a TrueTypeFont to make sure it
-     * is closed when the PDDocument is closed to avoid memory leaks. Users don't have to call this
-     * method, it is done by the appropriate PDFont classes.
+     * For internal PDFBox use when creating PDF documents: register a TrueTypeFont to make sure it is closed when the
+     * PDDocument is closed to avoid memory leaks. Users don't have to call this method, it is done by the appropriate
+     * PDFont classes.
      *
-     * @param ttf
+     * @param ttf the TrueTypeFont to be registered
      */
     public void registerTrueTypeFontForClosing(TrueTypeFont ttf)
     {
@@ -1410,6 +1410,8 @@ public class PDDocument implements Closeable
 
     /**
      * Returns the resource cache associated with this document, or null if there is none.
+     * 
+     * @return the resource cache of the document
      */
     public ResourceCache getResourceCache()
     {
