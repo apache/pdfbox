@@ -17,7 +17,6 @@
 
 package org.apache.pdfbox.pdmodel;
 
-import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +59,7 @@ public class DefaultResourceCache implements ResourceCache
             new HashMap<>();
 
     @Override
-    public PDFont getFont(COSObject indirect) throws IOException
+    public PDFont getFont(COSObject indirect)
     {
         SoftReference<PDFont> font = fonts.get(indirect);
         if (font != null)
@@ -71,13 +70,13 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDFont font) throws IOException
+    public void put(COSObject indirect, PDFont font)
     {
         fonts.put(indirect, new SoftReference<>(font));
     }
 
     @Override
-    public PDColorSpace getColorSpace(COSObject indirect) throws IOException
+    public PDColorSpace getColorSpace(COSObject indirect)
     {
         SoftReference<PDColorSpace> colorSpace = colorSpaces.get(indirect);
         if (colorSpace != null)
@@ -88,7 +87,7 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDColorSpace colorSpace) throws IOException
+    public void put(COSObject indirect, PDColorSpace colorSpace)
     {
         colorSpaces.put(indirect, new SoftReference<>(colorSpace));
     }
@@ -111,7 +110,7 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public PDShading getShading(COSObject indirect) throws IOException
+    public PDShading getShading(COSObject indirect)
     {
         SoftReference<PDShading> shading = shadings.get(indirect);
         if (shading != null)
@@ -122,13 +121,13 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDShading shading) throws IOException
+    public void put(COSObject indirect, PDShading shading)
     {
         shadings.put(indirect, new SoftReference<>(shading));
     }
 
     @Override
-    public PDAbstractPattern getPattern(COSObject indirect) throws IOException
+    public PDAbstractPattern getPattern(COSObject indirect)
     {
         SoftReference<PDAbstractPattern> pattern = patterns.get(indirect);
         if (pattern != null)
@@ -139,7 +138,7 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDAbstractPattern pattern) throws IOException
+    public void put(COSObject indirect, PDAbstractPattern pattern)
     {
         patterns.put(indirect, new SoftReference<>(pattern));
     }
@@ -162,7 +161,7 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public PDXObject getXObject(COSObject indirect) throws IOException
+    public PDXObject getXObject(COSObject indirect)
     {
         SoftReference<PDXObject> xobject = xobjects.get(indirect);
         if (xobject != null)
@@ -173,7 +172,7 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
-    public void put(COSObject indirect, PDXObject xobject) throws IOException
+    public void put(COSObject indirect, PDXObject xobject)
     {
         xobjects.put(indirect, new SoftReference<>(xobject));
     }
