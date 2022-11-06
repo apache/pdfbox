@@ -101,7 +101,7 @@ public interface ResourceCache
      * Puts the given indirect color space resource in the cache.
      * 
      * @param indirect the indirect reference of the colorspace to be cached
-     * @param font the colorspace to be cached
+     * @param colorSpace the colorspace to be cached
      */
     void put(COSObject indirect, PDColorSpace colorSpace);
 
@@ -109,7 +109,7 @@ public interface ResourceCache
      * Puts the given indirect extended graphics state resource in the cache.
      * 
      * @param indirect the indirect reference of the extended graphics state to be cached
-     * @param font the extended graphics state to be cached
+     * @param extGState the extended graphics state to be cached
      */
     void put(COSObject indirect, PDExtendedGraphicsState extGState);
 
@@ -117,7 +117,7 @@ public interface ResourceCache
      * Puts the given indirect shading resource in the cache.
      * 
      * @param indirect the indirect reference of the shading to be cached
-     * @param font the shading to be cached
+     * @param shading the shading to be cached
      */
     void put(COSObject indirect, PDShading shading);
 
@@ -125,7 +125,7 @@ public interface ResourceCache
      * Puts the given indirect pattern resource in the cache.
      * 
      * @param indirect the indirect reference of the pattern to be cached
-     * @param font the pattern to be cached
+     * @param pattern the pattern to be cached
      */
     void put(COSObject indirect, PDAbstractPattern pattern);
 
@@ -133,7 +133,7 @@ public interface ResourceCache
      * Puts the given indirect property list resource in the cache.
      * 
      * @param indirect the indirect reference of the property list to be cached
-     * @param font the property list to be cached
+     * @param propertyList the property list to be cached
      */
     void put(COSObject indirect, PDPropertyList propertyList);
     
@@ -141,7 +141,7 @@ public interface ResourceCache
      * Puts the given indirect XObject resource in the cache.
      * 
      * @param indirect the indirect reference of the XObject to be cached
-     * @param font the XObject to be cached
+     * @param xobject the XObject to be cached
      */
     void put(COSObject indirect, PDXObject xobject);
 }

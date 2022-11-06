@@ -1594,12 +1594,12 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
-     * Set the text rise value, i.e. move the baseline up or down. This is useful for drawing
-     * superscripts or subscripts.
+     * Set the text rise value, i.e. move the baseline up or down. This is useful for drawing superscripts or
+     * subscripts.
      *
-     * @param rise Specifies the distance, in unscaled text space units, to move the baseline up or
-     * down from its default location. 0 restores the default location.
-     * @throws IOException
+     * @param rise Specifies the distance, in unscaled text space units, to move the baseline up or down from its
+     * default location. 0 restores the default location.
+     * @throws IOException If the content stream could not be written.
      */
     public void setTextRise(float rise) throws IOException
     {

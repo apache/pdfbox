@@ -1041,22 +1041,21 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
     }
 
     /**
-     * Sets the style of the border drawn on each edge of a table cell
-     * (TBorderStyle). The values should be of:
+     * Sets the style of the border drawn on each edge of a table cell (TBorderStyle). The values should be of:
      * <ul>
-     *   <li>{@link #BORDER_STYLE_NONE},</li>
-     *   <li>{@link #BORDER_STYLE_HIDDEN},</li>
-     *   <li>{@link #BORDER_STYLE_DOTTED},</li>
-     *   <li>{@link #BORDER_STYLE_DASHED},</li>
-     *   <li>{@link #BORDER_STYLE_SOLID},</li>
-     *   <li>{@link #BORDER_STYLE_DOUBLE},</li>
-     *   <li>{@link #BORDER_STYLE_GROOVE},</li>
-     *   <li>{@link #BORDER_STYLE_RIDGE},</li>
-     *   <li>{@link #BORDER_STYLE_INSET},</li>
-     *   <li>{@link #BORDER_STYLE_OUTSET}.</li>
+     * <li>{@link #BORDER_STYLE_NONE},</li>
+     * <li>{@link #BORDER_STYLE_HIDDEN},</li>
+     * <li>{@link #BORDER_STYLE_DOTTED},</li>
+     * <li>{@link #BORDER_STYLE_DASHED},</li>
+     * <li>{@link #BORDER_STYLE_SOLID},</li>
+     * <li>{@link #BORDER_STYLE_DOUBLE},</li>
+     * <li>{@link #BORDER_STYLE_GROOVE},</li>
+     * <li>{@link #BORDER_STYLE_RIDGE},</li>
+     * <li>{@link #BORDER_STYLE_INSET},</li>
+     * <li>{@link #BORDER_STYLE_OUTSET}.</li>
      * </ul>
      * 
-     * @param tBorderStyles
+     * @param tBorderStyles the table border styles
      */
     public void setTBorderStyles(String[] tBorderStyles)
     {
