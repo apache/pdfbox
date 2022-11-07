@@ -176,7 +176,7 @@ public class PDFMergerUtility
      * 
      * {@link DocumentMergeMode}
      * 
-     * @return the curretn DocumentMergeMode
+     * @return the current DocumentMergeMode
      */
     public DocumentMergeMode getDocumentMergeMode()
     {
