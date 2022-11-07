@@ -51,6 +51,7 @@ public interface PDVectorFont
      *
      * @param code character code in a PDF. Not to be confused with unicode.
      * @return true if this font contains a glyph for the given character code
+     * @throws java.io.IOException if the font could not be read
      */
     boolean hasGlyph(int code) throws IOException;
 }

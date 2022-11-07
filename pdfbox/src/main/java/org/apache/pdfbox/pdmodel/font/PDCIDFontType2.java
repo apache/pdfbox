@@ -60,7 +60,7 @@ public class PDCIDFontType2 extends PDCIDFont
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
      * @param parent The parent font.
-     * @throws IOException
+     * @throws IOException if the font could not be read
      */
     public PDCIDFontType2(COSDictionary fontDictionary, PDType0Font parent) throws IOException
     {
@@ -73,7 +73,7 @@ public class PDCIDFontType2 extends PDCIDFont
      * @param fontDictionary The font dictionary according to the PDF specification.
      * @param parent The parent font.
      * @param trueTypeFont The true type font used to create the parent font
-     * @throws IOException
+     * @throws IOException if the font could not be read
      */
     public PDCIDFontType2(COSDictionary fontDictionary, PDType0Font parent, TrueTypeFont trueTypeFont) throws IOException
     {
@@ -224,7 +224,7 @@ public class PDCIDFontType2 extends PDCIDFont
      *
      * @param code character code
      * @return GID
-     * @throws IOException
+     * @throws IOException if the mapping could not be read
      */
     @Override
     public int codeToGID(int code) throws IOException
@@ -404,8 +404,9 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     /**
-     * Returns the embedded or substituted TrueType font. May be an OpenType font if the font is
-     * not embedded.
+     * Returns the embedded or substituted TrueType font. May be an OpenType font if the font is not embedded.
+     * 
+     * @return the embedded or substituted TrueType font
      */
     public TrueTypeFont getTrueTypeFont()
     {

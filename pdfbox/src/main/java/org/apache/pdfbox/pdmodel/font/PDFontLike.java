@@ -83,6 +83,7 @@ public interface PDFontLike
      * 
      * @param code character code
      * @return the height of the given character
+     * @throws IOException if the height could not be read
      * 
      * @deprecated Use {@link #getBoundingBox() getBoundingBox()}.{@link BoundingBox#getHeight() getHeight()} instead.
      */
@@ -99,6 +100,8 @@ public interface PDFontLike
      *
      * @param code character code
      * @return the width of the given character
+     * 
+     * @throws IOException if the width could not be read
      */
     float getWidth(int code) throws IOException;
 

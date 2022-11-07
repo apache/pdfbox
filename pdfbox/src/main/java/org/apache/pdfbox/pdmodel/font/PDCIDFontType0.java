@@ -68,6 +68,8 @@ public class PDCIDFontType0 extends PDCIDFont
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
      * @param parent The parent font.
+     * 
+     * @throws IOException if the font could not be read
      */
     public PDCIDFontType0(COSDictionary fontDictionary, PDType0Font parent) throws IOException
     {
@@ -237,6 +239,8 @@ public class PDCIDFontType0 extends PDCIDFont
 
     /**
      * Returns the embedded CFF CIDFont, or null if the substitute is not a CFF font.
+     * 
+     * @return the embedded CFF CIDFont or null
      */
     public CFFFont getCFFFont()
     {
@@ -256,6 +260,8 @@ public class PDCIDFontType0 extends PDCIDFont
 
     /**
      * Returns the embedded or substituted font.
+     * 
+     * @return the embedded or substituted font
      */
     public FontBoxFont getFontBoxFont()
     {

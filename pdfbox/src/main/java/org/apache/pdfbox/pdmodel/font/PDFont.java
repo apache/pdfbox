@@ -168,6 +168,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
     /**
      * Returns the AFM if this is a Standard 14 font.
+     * 
+     * @return the AFM
      */
     protected final FontMetrics getStandard14AFM()
     {
@@ -183,7 +185,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     /**
      * Sets the font descriptor when embedding a font.
      *
-     * @param fontDescriptor
+     * @param fontDescriptor font descriptor of the embedded font
      */
     protected final void setFontDescriptor(PDFontDescriptor fontDescriptor)
     {
@@ -194,7 +196,9 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * Reads a CMap given a COS Stream or Name. May return null if a predefined CMap does not exist.
      *
      * @param base COSName or COSStream
-     * @throws IOException
+     * @return the CMap if present
+     * 
+     * @throws IOException if the CMap could not be read
      */
     protected final CMap readCMap(COSBase base) throws IOException
     {
@@ -231,12 +235,12 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     }
 
     /**
-     * Returns the displacement vector (w0, w1) in text space, for the given character.
-     * For horizontal text only the x component is used, for vertical text only the y component.
+     * Returns the displacement vector (w0, w1) in text space, for the given character. For horizontal text only the x
+     * component is used, for vertical text only the y component.
      *
      * @param code character code
      * @return displacement vector
-     * @throws IOException
+     * @throws IOException if the data could not be read
      */
     public Vector getDisplacement(int code) throws IOException
     {
@@ -500,6 +504,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
     /**
      * This will get the subtype of font.
+     * 
+     * @return the subtype
      */
     public String getSubType()
     {
@@ -580,11 +586,15 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
     /**
      * Returns true if the font uses vertical writing mode.
+     * 
+     * @return true if the font uses vertical writing mode
      */
     public abstract boolean isVertical();
 
     /**
      * Returns true if this font is one of the "Standard 14" fonts and receives special handling.
+     * 
+     * @return true if this font is one of the "Standard 14" fonts
      */
     public boolean isStandard14()
     {
@@ -616,6 +626,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
     /**
      * Returns true if this font will be subset when embedded.
+     * 
+     * @return true if this font will be subset when embedded
      */
     public abstract boolean willBeSubset();
 
