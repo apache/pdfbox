@@ -37,6 +37,8 @@ public class FontMapping<T extends FontBoxFont>
 
     /**
      * Returns the mapped, FontBox font. This is never null.
+     * 
+     * @return the mapped font
      */
     public T getFont()
     {
@@ -44,8 +46,10 @@ public class FontMapping<T extends FontBoxFont>
     }
 
     /**
-     * Returns true if the mapped font is a fallback, i.e. a substitute based on basic font style,
-     * such as bold/italic, rather than font name.
+     * Returns true if the mapped font is a fallback, i.e. a substitute based on basic font style, such as bold/italic,
+     * rather than font name.
+     * 
+     * @return true if the mapped font is a fallback
      */
     public boolean isFallback()
     {

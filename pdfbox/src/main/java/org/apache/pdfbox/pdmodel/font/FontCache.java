@@ -34,6 +34,9 @@ public final class FontCache
 
     /**
      * Adds the given FontBox font to the cache.
+     * 
+     * @param info the FontInfo to be used as key
+     * @param font the font to be cached
      */
     public void addFont(FontInfo info, FontBoxFont font)
     {
@@ -42,6 +45,10 @@ public final class FontCache
 
     /**
      * Returns the FontBox font associated with the given FontInfo.
+     * 
+     * @param info the FontInfo of the cached font
+     * 
+     * @return the cached font if available, otherwise null
      */
     public FontBoxFont getFont(FontInfo info)
     {

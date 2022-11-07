@@ -214,6 +214,7 @@ public final class PDResources implements COSObjectable
      * Returns true if the given color space name exists in these resources.
      *
      * @param name Name of the color space resource.
+     * @return true if the given color space name exists in these resources, otherwise false
      */
     public boolean hasColorSpace(COSName name)
     {
@@ -824,6 +825,8 @@ public final class PDResources implements COSObjectable
 
     /**
      * Returns the resource cache associated with the Resources, or null if there is none.
+     * 
+     * @return the resource cache associated with the resources, or null
      */
     public ResourceCache getResourceCache()
     {

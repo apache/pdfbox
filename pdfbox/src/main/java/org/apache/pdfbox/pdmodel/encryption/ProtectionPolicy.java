@@ -76,11 +76,10 @@ public abstract class ProtectionPolicy
     }
 
     /**
-     * Set whether AES encryption is preferred when several encryption methods are available for the
-     * chosen key length. The default is false. This setting is only relevant if the key length is
-     * 128 bits.
+     * Set whether AES encryption is preferred when several encryption methods are available for the chosen key length.
+     * The default is false. This setting is only relevant if the key length is 128 bits.
      *
-     * @param preferAES
+     * @param preferAES indicates whether AES encryption is preferred or not
      */
     public void setPreferAES(boolean preferAES)
     {

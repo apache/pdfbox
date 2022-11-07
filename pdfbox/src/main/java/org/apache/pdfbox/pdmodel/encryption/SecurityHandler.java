@@ -675,8 +675,9 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     }
 
     /**
-     * Getter of the property <tt>keyLength</tt>.
-     * @return  Returns the keyLength in bits.
+     * Getter of the property keyLength.
+     * 
+     * @return Returns the keyLength in bits.
      */
     public int getKeyLength()
     {
@@ -684,9 +685,9 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     }
 
     /**
-     * Setter of the property <tt>keyLength</tt>.
+     * Setter of the property keyLength.
      *
-     * @param keyLen  The keyLength to set in bits.
+     * @param keyLen The keyLength to set in bits.
      */
     public void setKeyLength(int keyLen)
     {

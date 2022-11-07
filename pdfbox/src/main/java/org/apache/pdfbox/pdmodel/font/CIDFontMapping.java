@@ -38,6 +38,8 @@ public final class CIDFontMapping extends FontMapping<OpenTypeFont>
 
     /**
      * Returns a TrueType font when isCIDFont() is true, otherwise null.
+     * 
+     * @return the mapped TrueType font or null
      */
     public FontBoxFont getTrueTypeFont()
     {
@@ -46,6 +48,8 @@ public final class CIDFontMapping extends FontMapping<OpenTypeFont>
 
     /**
      * Returns true if this is a CID font.
+     * 
+     * @return true if the mapped font is a CID font
      */
     public boolean isCIDFont()
     {
