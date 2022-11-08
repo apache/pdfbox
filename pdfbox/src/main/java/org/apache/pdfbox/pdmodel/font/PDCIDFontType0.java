@@ -276,10 +276,12 @@ public class PDCIDFontType0 extends PDCIDFont
     }
 
     /**
-     * Returns the Type 2 charstring for the given CID, or null if the substituted font does not
-     * contain Type 2 charstrings.
+     * Returns the Type 2 charstring for the given CID, or null if the substituted font does not contain Type 2
+     * charstrings.
      *
      * @param cid CID
+     * @return the Type 2 charstring for the given CID or null
+     * 
      * @throws IOException if the charstring could not be read
      */
     public Type2CharString getType2CharString(int cid) throws IOException

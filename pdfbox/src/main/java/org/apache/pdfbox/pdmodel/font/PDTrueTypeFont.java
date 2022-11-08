@@ -93,6 +93,8 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
      * Creates a new TrueType font from a Font dictionary.
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * 
+     * @throws IOException if the font could not be created
      */
     public PDTrueTypeFont(COSDictionary fontDictionary) throws IOException
     {
@@ -242,6 +244,8 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
 
     /**
      * Returns the PostScript name of the font.
+     * 
+     * @return the PostScript name of the font
      */
     public final String getBaseFont()
     {
@@ -345,6 +349,8 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
 
     /**
      * Returns the embedded or substituted TrueType font.
+     * 
+     * @return the embedded or substituted TrueType font
      */
     public TrueTypeFont getTrueTypeFont()
     {
@@ -430,6 +436,10 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
 
     /**
      * Inverts the font's code -&gt; GID mapping. Any duplicate (GID -&gt; code) mappings will be lost.
+     * 
+     * @return the GID for the given code
+     * 
+     * @throws IOException if the data could not be read
      */
     protected Map<Integer, Integer> getGIDToCode() throws IOException
     {
@@ -565,7 +575,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
      *
      * @param code character code
      * @return GID (glyph index)
-     * @throws java.io.IOException
+     * @throws IOException if the data could not be read
      */
     public int codeToGID(int code) throws IOException
     {
