@@ -226,6 +226,8 @@ public interface PDImage extends COSObjectable
 
     /**
      * Sets the Interpolate flag, true for high-quality image scaling.
+     * 
+     * @param value true for high-quality image scaling
      */
     void setInterpolate(boolean value);
 

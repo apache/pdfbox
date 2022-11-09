@@ -189,7 +189,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
      * @param rangeY dest range for Y
      * @param colRangeTab dest range array for colors
      * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @param xfrom the affine transformation
+     * @param xform the affine transformation
      * @return a new vertex with the flag and the interpolated values
      * @throws IOException if something went wrong
      */
