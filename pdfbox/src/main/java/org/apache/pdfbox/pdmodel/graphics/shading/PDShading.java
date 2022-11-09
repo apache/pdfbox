@@ -200,10 +200,10 @@ public abstract class PDShading implements COSObjectable
     /**
      * Calculate a bounding rectangle around the areas of this shading context.
      * 
-     * @param xform
-     * @param matrix
+     * @param xform the affine transformation
+     * @param matrix the pattern matrix
      * @return Bounding rectangle or null, if not supported by this shading type.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if the bounds could not be created
      */
     public Rectangle2D getBounds(AffineTransform xform, Matrix matrix) throws IOException
     {

@@ -81,7 +81,9 @@ public class PDFormXObject extends PDXObject implements PDContentStream
 
     /**
      * Creates a Form XObject for reading.
+     * 
      * @param stream The XObject stream
+     * @param cache the cache to be used for the resources
      */
     public PDFormXObject(COSStream stream, ResourceCache cache)
     {

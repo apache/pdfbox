@@ -739,8 +739,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     /**
      * Returns the Mask Image XObject associated with this image, or null if there is none.
+     * 
      * @return Mask Image XObject
-     * @throws java.io.IOException
+     * @throws java.io.IOException if the mask data could not be read
      */
     public PDImageXObject getMask() throws IOException
     {
@@ -773,8 +774,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     /**
      * Returns the Soft Mask Image XObject associated with this image, or null if there is none.
+     * 
      * @return the SMask Image XObject, or null.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if the soft mask data could not be read
      */
     public PDImageXObject getSoftMask() throws IOException
     {
