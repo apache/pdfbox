@@ -39,8 +39,8 @@ public class DictionaryEncoding extends Encoding
     /**
      * Creates a new DictionaryEncoding for embedding.
      *
-     * @param baseEncoding
-     * @param differences
+     * @param baseEncoding the base encoding of this encoding
+     * @param differences the differences of this encoding with regard to the base encoding
      */
     public DictionaryEncoding(COSName baseEncoding, COSArray differences)
     {
@@ -156,6 +156,8 @@ public class DictionaryEncoding extends Encoding
 
     /**
      * Returns the base encoding. Will be null for Type 3 fonts.
+     * 
+     * @return the base encoding or null
      */
     public Encoding getBaseEncoding()
     {
@@ -164,6 +166,8 @@ public class DictionaryEncoding extends Encoding
 
     /**
      * Returns the Differences array.
+     * 
+     * @return a map containing all differences
      */
     public Map<Integer, String> getDifferences()
     {

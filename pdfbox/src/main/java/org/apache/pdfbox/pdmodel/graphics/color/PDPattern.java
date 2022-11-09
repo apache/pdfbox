@@ -129,6 +129,8 @@ public final class PDPattern extends PDSpecialColorSpace
 
     /**
      * Returns the underlying color space, if this is an uncolored tiling pattern, otherwise null.
+     * 
+     * @return the underlying color space or null
      */
     public PDColorSpace getUnderlyingColorSpace()
     {

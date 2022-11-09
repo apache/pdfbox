@@ -45,7 +45,7 @@ public class PDXObject implements COSObjectable
      * Creates a new XObject instance of the appropriate type for the COS stream.
      *
      * @param base The stream which is wrapped by this XObject.
-     * @param resources
+     * @param resources the resources of this XObject
      * @return A new XObject instance.
      * @throws java.io.IOException if there is an error creating the XObject.
      */
@@ -91,8 +91,9 @@ public class PDXObject implements COSObjectable
 
     /**
      * Creates a new XObject from the given stream and subtype.
+     * 
      * @param stream The stream to read.
-     * @param subtype
+     * @param subtype the subtype to be used for this XObject
      */
     protected PDXObject(COSStream stream, COSName subtype)
     {
@@ -104,8 +105,9 @@ public class PDXObject implements COSObjectable
 
     /**
      * Creates a new XObject from the given stream and subtype.
+     * 
      * @param stream The stream to read.
-     * @param subtype
+     * @param subtype the subtype to be used for this XObject
      */
     protected PDXObject(PDStream stream, COSName subtype)
     {

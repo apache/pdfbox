@@ -147,6 +147,8 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
 
     /**
      * Returns the PostScript name of the font.
+     * 
+     * @return the PostScript name of the font
      */
     public final String getBaseFont()
     {

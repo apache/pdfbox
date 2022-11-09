@@ -31,6 +31,7 @@ public class Type1Encoding extends Encoding
      * Creates an encoding from the given FontBox encoding.
      *
      * @param encoding FontBox encoding
+     * @return the encoding created from the given FontBox encoding
      */
     public static Type1Encoding fromFontBox(org.apache.fontbox.encoding.Encoding encoding)
     {
