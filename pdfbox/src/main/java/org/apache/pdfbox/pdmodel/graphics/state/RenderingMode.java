@@ -79,6 +79,8 @@ public enum RenderingMode
 
     /**
      * Returns the integer value of this mode, as used in a PDF file.
+     * 
+     * @return the integer value of this mode
      */
     public int intValue()
     {
@@ -86,7 +88,9 @@ public enum RenderingMode
     }
 
     /**
-     * Returns true is this mode fills text.
+     * Returns true if this mode fills text.
+     * 
+     * @return true if this mode fills text
      */
     public boolean isFill()
     {
@@ -97,7 +101,9 @@ public enum RenderingMode
     }
 
     /**
-     * Returns true is this mode strokes text.
+     * Returns true if this mode strokes text.
+     * 
+     * @return true if this mode strokes text
      */
     public boolean isStroke()
     {
@@ -108,7 +114,9 @@ public enum RenderingMode
     }
 
     /**
-     * Returns true is this mode clips text.
+     * Returns true if this mode clips text.
+     * 
+     * @return true if this mode clips text
      */
     public boolean isClip()
     {

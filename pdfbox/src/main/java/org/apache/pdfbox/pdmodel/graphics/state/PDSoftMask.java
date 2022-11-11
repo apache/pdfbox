@@ -41,6 +41,8 @@ public final class PDSoftMask implements COSObjectable
      * Creates a new soft mask.
      *
      * @param dictionary SMask
+     * 
+     * @return the newly created instance of PDSoftMask
      */
     public static PDSoftMask create(COSBase dictionary)
     {
@@ -98,6 +100,8 @@ public final class PDSoftMask implements COSObjectable
 
     /**
      * Returns the subtype of the soft mask (Alpha, Luminosity) - S entry
+     * 
+     * @return the subtype of the soft mask
      */
     public COSName getSubType()
     {
@@ -112,7 +116,7 @@ public final class PDSoftMask implements COSObjectable
      * Returns the G entry of the soft mask object
      * 
      * @return form containing the transparency group
-     * @throws IOException
+     * @throws IOException if the group could not be read
      */
     public PDTransparencyGroup getGroup() throws IOException
     {
@@ -133,6 +137,8 @@ public final class PDSoftMask implements COSObjectable
 
     /**
      * Returns the backdrop color.
+     * 
+     * @return the backdrop color
      */
     public COSArray getBackdropColor()
     {
@@ -145,6 +151,8 @@ public final class PDSoftMask implements COSObjectable
 
     /**
      * Returns the transfer function.
+     * 
+     * @return the transfer function
      * @throws IOException If we are unable to create the PDFunction object.
      */
     public PDFunction getTransferFunction() throws IOException
@@ -163,7 +171,7 @@ public final class PDSoftMask implements COSObjectable
     /**
      * Set the CTM that is valid at the time the ExtGState was activated.
      *
-     * @param ctm
+     * @param ctm the transformation matrix
      */
     void setInitialTransformationMatrix(Matrix ctm)
     {
@@ -173,6 +181,7 @@ public final class PDSoftMask implements COSObjectable
     /**
      * Returns the CTM at the time the ExtGState was activated.
      *
+     * @return the transformation matrix
      */
     public Matrix getInitialTransformationMatrix()
     {
