@@ -153,9 +153,13 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                         || COSName.IDENTITY_H.equals(encoding) //
                         || COSName.IDENTITY_V.equals(encoding))
                 {
-                    // assume that if encoding is identity, then the reverse is also true
-                    cmap = CMapManager.getPredefinedCMap(COSName.IDENTITY_H.getName());
-                    LOG.warn("Using predefined identity CMap instead");
+                    COSDictionary encodingDict = dict.getCOSDictionary(COSName.ENCODING);
+                    if (encodingDict == null || !encodingDict.containsKey(COSName.DIFFERENCES))
+                    {
+                        // assume that if encoding is identity, then the reverse is also true
+                        cmap = CMapManager.getPredefinedCMap(COSName.IDENTITY_H.getName());
+                        LOG.warn("Using predefined identity CMap instead");
+                    }
                 }
             }
         }
