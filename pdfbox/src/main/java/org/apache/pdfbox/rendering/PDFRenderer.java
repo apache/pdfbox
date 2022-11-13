@@ -165,11 +165,10 @@ public class PDFRenderer
     }
 
     /**
-     * Set the rendering hints. Use this to influence rendering quality and speed. If you don't set
-     * them yourself or pass null, PDFBox will decide <b><u>at runtime</u></b> depending on the
-     * destination.
+     * Set the rendering hints. Use this to influence rendering quality and speed. If you don't set them yourself or
+     * pass null, PDFBox will decide <b><u>at runtime</u></b> depending on the destination.
      *
-     * @param renderingHints
+     * @param renderingHints rendering hints to be used to influence rendering quality and speed
      */
     public void setRenderingHints(RenderingHints renderingHints)
     {
@@ -187,12 +186,11 @@ public class PDFRenderer
     }
 
     /**
-     * Set the image downscaling optimization threshold. This must be a value between 0 and 1. When
-     * rendering downscaled images and rendering hints are set to bicubic+quality and the scaling is
-     * smaller than the threshold, a more quality-optimized but slower method will be used. The
-     * default is 0.5 which is a good compromise.
+     * Set the image downscaling optimization threshold. This must be a value between 0 and 1. When rendering downscaled
+     * images and rendering hints are set to bicubic+quality and the scaling is smaller than the threshold, a more
+     * quality-optimized but slower method will be used. The default is 0.5 which is a good compromise.
      *
-     * @param imageDownscalingOptimizationThreshold
+     * @param imageDownscalingOptimizationThreshold image downscaling optimization threshold
      */
     public void setImageDownscalingOptimizationThreshold(float imageDownscalingOptimizationThreshold)
     {
@@ -533,6 +531,11 @@ public class PDFRenderer
 
     /**
      * Returns a new PageDrawer instance, using the given parameters. May be overridden.
+     * 
+     * @param parameters parameters to be used when creating the PageDrawer instance
+     * @return a new PageDrawer instance
+     * 
+     * @throws IOException id the PageDrawer instance could not be created
      */
     protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
     {

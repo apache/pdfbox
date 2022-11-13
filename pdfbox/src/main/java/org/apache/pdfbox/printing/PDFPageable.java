@@ -105,11 +105,10 @@ public final class PDFPageable extends Book
     }
 
     /**
-     * Set the rendering hints. Use this to influence rendering quality and speed. If you don't set
-     * them yourself or pass null, PDFBox will decide <b><u>at runtime</u></b> depending on the
-     * destination.
+     * Set the rendering hints. Use this to influence rendering quality and speed. If you don't set them yourself or
+     * pass null, PDFBox will decide <b><u>at runtime</u></b> depending on the destination.
      *
-     * @param renderingHints
+     * @param renderingHints rendering hints to be used to influence rendering quality and speed
      */
     public void setRenderingHints(RenderingHints renderingHints)
     {

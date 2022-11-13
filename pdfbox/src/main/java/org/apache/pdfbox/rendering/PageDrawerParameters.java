@@ -54,6 +54,8 @@ public final class PageDrawerParameters
 
     /**
      * Returns the page.
+     * 
+     * @return the page
      */
     public PDPage getPage()
     {
@@ -62,6 +64,8 @@ public final class PageDrawerParameters
     
     /**
      * Returns the renderer.
+     * 
+     * @return the renderer
      */
     PDFRenderer getRenderer()
     {
@@ -70,6 +74,8 @@ public final class PageDrawerParameters
 
     /**
      * Returns whether to allow subsampling of images.
+     * 
+     * @return true if subsampling of images os allowed
      */
     public boolean isSubsamplingAllowed()
     {

@@ -74,11 +74,11 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     /**
-     * Creates a PDDocument and adds the page parameter to it and keeps this as a template in the
-     * PDF template Structure.
+     * Creates a PDDocument and adds the page parameter to it and keeps this as a template in the PDF template
+     * Structure.
      *
-     * @param page
-     * @throws IOException
+     * @param page the page to be added
+     * @throws IOException if the document could not be created
      */
     @Override
     public void createTemplate(PDPage page) throws IOException

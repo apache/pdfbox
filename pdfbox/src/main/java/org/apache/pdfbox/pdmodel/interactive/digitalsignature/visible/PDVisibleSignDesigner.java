@@ -60,7 +60,7 @@ public class PDVisibleSignDesigner
      * @param filename Path of the PDF file
      * @param imageStream image as a stream
      * @param page The 1-based page number for which the page size should be calculated.
-     * @throws IOException
+     * @throws IOException if the new instance of PDVisibleSignDesigner could not be created
      */
     public PDVisibleSignDesigner(String filename, InputStream imageStream, int page)
             throws IOException
@@ -78,7 +78,7 @@ public class PDVisibleSignDesigner
      * @param documentSource Original PDF document as RandomAccessRead
      * @param imageStream Image as a stream
      * @param page The 1-based page number for which the page size should be calculated.
-     * @throws IOException
+     * @throws IOException if the new instance of PDVisibleSignDesigner could not be created
      */
     public PDVisibleSignDesigner(RandomAccessRead documentSource, InputStream imageStream, int page)
             throws IOException
@@ -108,9 +108,9 @@ public class PDVisibleSignDesigner
      * Constructor.
      *
      * @param filename Path of the PDF file
-     * @param image
+     * @param image the image to be used for the visible signature
      * @param page The 1-based page number for which the page size should be calculated.
-     * @throws IOException
+     * @throws IOException if the new instance of PDVisibleSignDesigner could not be created
      */
     public PDVisibleSignDesigner(String filename, BufferedImage image, int page)
             throws IOException
@@ -126,9 +126,9 @@ public class PDVisibleSignDesigner
      * Constructor.
      *
      * @param documentSource Original PDF document as RandomAccessRead
-     * @param image
+     * @param image the image to be used for the visible signature
      * @param page The 1-based page number for which the page size should be calculated.
-     * @throws IOException
+     * @throws IOException if the new instance of PDVisibleSignDesigner could not be created
      */
     public PDVisibleSignDesigner(RandomAccessRead documentSource, BufferedImage image, int page)
             throws IOException
@@ -144,7 +144,7 @@ public class PDVisibleSignDesigner
      * Constructor.
      *
      * @param document Already created PDDocument of your PDF document.
-     * @param image
+     * @param image the image to be used for the visible signature
      * @param page The 1-based page number for which the page size should be calculated.
      */
     public PDVisibleSignDesigner(PDDocument document, BufferedImage image, int page)
@@ -157,7 +157,7 @@ public class PDVisibleSignDesigner
      * Constructor usable for signing existing signature fields.
      *
      * @param imageStream image as a stream
-     * @throws IOException
+     * @throws IOException if the new instance of PDVisibleSignDesigner could not be created
      */
     public PDVisibleSignDesigner(InputStream imageStream) throws IOException
     {
@@ -265,7 +265,7 @@ public class PDVisibleSignDesigner
      *
      * @param path Path of the image file.
      * @return Visible Signature Configuration Object
-     * @throws IOException
+     * @throws IOException if the image for the signature could not be set
      */
     public PDVisibleSignDesigner signatureImage(String path) throws IOException
     {
@@ -305,7 +305,7 @@ public class PDVisibleSignDesigner
     }
 
     /**
-     *
+     * 
      * @return xAxis - gets x coordinates
      */
     public float getxAxis()
@@ -335,7 +335,7 @@ public class PDVisibleSignDesigner
 
     /**
      *
-     * @param yAxis
+     * @param yAxis y coordinate
      * @return Visible Signature Configuration Object
      */
     public PDVisibleSignDesigner yAxis(float yAxis)
@@ -417,7 +417,7 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param signatureFieldName
+     * @param signatureFieldName the name of the signature field
      * @return Visible Signature Configuration Object
      */
     public PDVisibleSignDesigner signatureFieldName(String signatureFieldName)
@@ -471,7 +471,7 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param affineTransform
+     * @param affineTransform the affine transformation
      * @return Visible Signature Configuration Object
      */
     public PDVisibleSignDesigner transform(AffineTransform affineTransform)
@@ -492,7 +492,7 @@ public class PDVisibleSignDesigner
     /**
      * Sets formatter PDRectangle
      * 
-     * @param formatterRectangleParameters
+     * @param formatterRectangleParameters rectangle parameter of the formatter
      * @return Visible Signature Configuration Object
      */
     public PDVisibleSignDesigner formatterRectangleParameters(int[] formatterRectangleParameters)
@@ -541,7 +541,7 @@ public class PDVisibleSignDesigner
 
    /**
     * 
-    * @param imageSizeInPercents
+    * @param imageSizeInPercents image size in percents
     */
     public void imageSizeInPercents(float imageSizeInPercents)
     {
