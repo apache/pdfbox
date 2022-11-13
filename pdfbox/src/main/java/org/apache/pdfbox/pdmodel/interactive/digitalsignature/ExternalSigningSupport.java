@@ -30,6 +30,8 @@ public interface ExternalSigningSupport
      * Get PDF content to be signed. Obtained InputStream must be closed after use.
      *
      * @return content stream
+     * 
+     * @throws IOException if the content could not be read
      */
     InputStream getContent() throws IOException;
 

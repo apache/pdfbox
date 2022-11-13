@@ -41,7 +41,7 @@ public class PDAppearanceEntry implements COSObjectable
     /**
      * Constructor for reading.
      * 
-     * @param entry
+     * @param entry the dictionary of the appearance entry
      */
     public PDAppearanceEntry(COSDictionary entry)
     {
@@ -56,6 +56,8 @@ public class PDAppearanceEntry implements COSObjectable
 
     /**
      * Returns true if this entry is an appearance subdictionary.
+     * 
+     * @return true if this entry is an appearance subdictionary
      */
     public boolean isSubDictionary()
     {
@@ -64,6 +66,8 @@ public class PDAppearanceEntry implements COSObjectable
 
     /**
      * Returns true if this entry is an appearance stream.
+     * 
+     * @return true if this entry is an appearance stream
      */
     public boolean isStream()
     {
@@ -73,6 +77,8 @@ public class PDAppearanceEntry implements COSObjectable
     /**
      * Returns the entry as an appearance stream.
      *
+     * @return the entry as an appearance stream
+     * 
      * @throws IllegalStateException if this entry is not an appearance stream
      */
     public PDAppearanceStream getAppearanceStream()
@@ -87,6 +93,8 @@ public class PDAppearanceEntry implements COSObjectable
     /**
      * Returns the entry as an appearance subdictionary.
      *
+     * @return the entry as an appearance subdictionary
+     * 
      * @throws IllegalStateException if this entry is not an appearance subdictionary
      */
     public Map<COSName, PDAppearanceStream> getSubDictionary()

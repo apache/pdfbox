@@ -213,6 +213,8 @@ public class PDSeedValueCertificate implements COSObjectable
 
     /**
      * Returns list of byte arrays that contains DER-encoded X.509v3 certificates
+     * 
+     * @return list of byte arrays containing DER-encoded X.509v3 certificates
      */
     public List<byte[]> getSubject()
     {
@@ -266,9 +268,10 @@ public class PDSeedValueCertificate implements COSObjectable
     }
 
     /**
-     * Returns list of maps that contains subject distinguished names like [(cn: John Doe, o: Doe),
-     * (cn: John Smith)] both keys are typically of the form 'cn', 'o', 'email', '2.5.4.43'; and
-     * values are text strings.
+     * Returns list of maps that contains subject distinguished names like [(cn: John Doe, o: Doe), (cn: John Smith)]
+     * both keys are typically of the form 'cn', 'o', 'email', '2.5.4.43'; and values are text strings.
+     * 
+     * @return list maps that contains subject distinguished names
      */
     public List<Map<String, String>> getSubjectDN()
     {
@@ -316,9 +319,9 @@ public class PDSeedValueCertificate implements COSObjectable
     }
 
     /**
-     * Returns list of key usages of certificate strings where each string is 9 characters long and
-     * each character is one of these values {0, 1, X} 0 for must not set, 1 for must set, X for
-     * don't care. each index in the string represents a key usage:
+     * Returns list of key usages of certificate strings where each string is 9 characters long and each character is
+     * one of these values {0, 1, X} 0 for must not set, 1 for must set, X for don't care. each index in the string
+     * represents a key usage:
      * <ol>
      * <li>digitalSignature</li>
      * <li>non-Repudiation</li>
@@ -330,6 +333,8 @@ public class PDSeedValueCertificate implements COSObjectable
      * <li>encipherOnly</li>
      * <li>decipherOnly</li>
      * </ol>
+     * 
+     * @return list of key usages of certificate strings
      */
     public List<String> getKeyUsage()
     {
@@ -447,6 +452,8 @@ public class PDSeedValueCertificate implements COSObjectable
 
     /**
      * Returns list of array of bytes of DER-encoded X.509v3 certificates
+     * 
+     * @return list of array of bytes of DER-encoded X.509v3 certificates
      */
     public List<byte[]> getIssuer()
     {
@@ -499,8 +506,10 @@ public class PDSeedValueCertificate implements COSObjectable
     }
 
     /**
-     * Returns A list of array of bytes that contain Object Identifiers (OIDs) of the certificate
-     * policies that must be present in the signing certificate
+     * Returns A list of array of bytes that contain Object Identifiers (OIDs) of the certificate policies that must be
+     * present in the signing certificate
+     * 
+     * @return list of array of bytes that contain Object Identifiers of the certificate policies
      */
     public List<byte[]> getOID()
     {
@@ -523,7 +532,7 @@ public class PDSeedValueCertificate implements COSObjectable
     /**
      * works like {@link #setOID(List)} but for one object
      *
-     * @param oid
+     * @param oid Object Identifier of a certificate policy to be added
      */
     public void addOID(byte[] oid)
     {
@@ -539,7 +548,7 @@ public class PDSeedValueCertificate implements COSObjectable
     /**
      * removes an OID from the list
      *
-     * @param oid
+     * @param oid Object Identifier of the certificate policy to be removed
      */
     public void removeOID(byte[] oid)
     {
@@ -552,6 +561,8 @@ public class PDSeedValueCertificate implements COSObjectable
 
     /**
      * returns String of the URL
+     * 
+     * @return string of the URL
      */
     public String getURL()
     {
