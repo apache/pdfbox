@@ -651,7 +651,7 @@ public final class PDAcroForm implements COSObjectable
     /**
      * Set a handler to support JavaScript actions in the form.
      * 
-     * @return scriptingHandler a handler to support JavaScript actions in the form
+     * @return scriptingHandler the handler to support JavaScript actions in the form
      */
     public ScriptingHandler getScriptingHandler()
     {
@@ -661,7 +661,7 @@ public final class PDAcroForm implements COSObjectable
     /**
      * Set a handler to support JavaScript actions in the form.
      * 
-     * @param scriptingHandler
+     * @param scriptingHandler a handler to support JavaScript actions in the form
      */
     public void setScriptingHandler(ScriptingHandler scriptingHandler)
     {
