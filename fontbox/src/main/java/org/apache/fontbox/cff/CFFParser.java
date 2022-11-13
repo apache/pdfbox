@@ -61,6 +61,7 @@ public class CFFParser
          * Returns the source bytes. May be called more than once.
          * 
          * @return the source data as byte array
+         * @throws IOException if the data could not be read
          */
         byte[] getBytes() throws IOException;
     }
