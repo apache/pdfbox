@@ -132,7 +132,7 @@ public class TiffSchema extends XMPSchema
     /**
      * Return the Artist property as String
      *
-     * @return string
+     * @return the Artist property
      */
     public String getArtist()
     {
@@ -143,7 +143,7 @@ public class TiffSchema extends XMPSchema
     /**
      * Set the name of the artist
      *
-     * @param text
+     * @param text the name of the artist
      */
     public void setArtist(String text)
     {

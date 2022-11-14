@@ -64,7 +64,7 @@ public final class DomHelper
     /**
      * Return the first child element of the element parameter. If there is no child, null is returned
      * 
-     * @param description
+     * @param description the parent element
      * @return the first child element. Might be null.
      */
     public static Element getFirstChildElement(Element description)
