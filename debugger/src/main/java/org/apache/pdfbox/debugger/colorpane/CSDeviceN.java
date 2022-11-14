@@ -46,6 +46,8 @@ public class CSDeviceN
      * Constructor
      *
      * @param array COSArray instance that holds the DeviceN color space
+     * 
+     * @throws IOException if the instance could not be created
      */
     public CSDeviceN(COSArray array) throws IOException
     {

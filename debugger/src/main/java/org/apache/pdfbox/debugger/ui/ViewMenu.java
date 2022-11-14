@@ -130,7 +130,7 @@ public class ViewMenu extends MenuBase
     /**
      * Tell whether the "Extract Text" menu entry was hit.
      *
-     * @param actionEvent
+     * @param actionEvent the action event
      * @return true if the "Extract Text" menu entry was hit.
      */
     public static boolean isExtractTextEvent(ActionEvent actionEvent)
@@ -151,7 +151,7 @@ public class ViewMenu extends MenuBase
     /**
      * Tell whether the "Repair AcroForm" menu entry was hit.
      *
-     * @param actionEvent
+     * @param actionEvent the action event
      * @return true if the "Repair AcroForm" menu entry was hit.
      */
     public static boolean isRepairAcroformEvent(ActionEvent actionEvent)

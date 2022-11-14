@@ -31,6 +31,7 @@ public final class PrintDpiMenu extends MenuBase
     @SuppressWarnings("squid:MaximumInheritanceDepth")
     private static class PrintDpiMenuItem extends JRadioButtonMenuItem
     {
+        private static final long serialVersionUID = -475209538362541000L;
         private final int dpi;
 
         PrintDpiMenuItem(String text, int dpi)
@@ -79,7 +80,8 @@ public final class PrintDpiMenu extends MenuBase
     /**
      * Set the dpi selection.
      *
-     * @param selection
+     * @param selection the selected DPI value
+     * 
      * @throws IllegalArgumentException if the parameter doesn't belong to a dpi menu item.
      */
     public void changeDpiSelection(int selection)
