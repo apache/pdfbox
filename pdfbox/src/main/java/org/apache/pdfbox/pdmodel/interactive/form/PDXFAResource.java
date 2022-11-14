@@ -61,19 +61,16 @@ public final class PDXFAResource implements COSObjectable
     /**
      * Get the XFA content as byte array.
      * 
-     * The XFA is either a stream containing the entire XFA resource
-     * or an array specifying individual packets that together make
-     * up the XFA resource.
+     * The XFA is either a stream containing the entire XFA resource or an array specifying individual packets that
+     * together make up the XFA resource.
      * 
-     * A packet is a pair of a string and stream. The string contains
-     * the name of the XML element and the stream contains the complete
-     * text of this XML element. Each packet represents a complete XML
-     * element, with the exception of the first and last packet,
-     * which specify begin and end tags for the xdp:xdp element.
-     * [IS0 32000-1:2008: 12.7.8]
+     * A packet is a pair of a string and stream. The string contains the name of the XML element and the stream
+     * contains the complete text of this XML element. Each packet represents a complete XML element, with the exception
+     * of the first and last packet, which specify begin and end tags for the xdp:xdp element. [IS0 32000-1:2008:
+     * 12.7.8]
      * 
      * @return the XFA content
-     * @throws IOException 
+     * @throws IOException if the XFA content could not be created
      */    
     public byte[] getBytes() throws IOException 
     {

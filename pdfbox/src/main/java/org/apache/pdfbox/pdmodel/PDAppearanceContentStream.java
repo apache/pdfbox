@@ -77,10 +77,11 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * Set the stroking color.
      * 
      * <p>
-     * The command is only emitted if the color is not null and the number of
-     * components is &gt; 0.
+     * The command is only emitted if the color is not null and the number of components is &gt; 0.
      * 
      * @param color The colorspace to write.
+     * @return true if the stroking color was set successfully
+     * 
      * @throws IOException If there is an error writing to the content stream.
      * @see PDAbstractContentStream#setStrokingColor(PDColor)
      */
@@ -136,10 +137,11 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * Set the non stroking color.
      * 
      * <p>
-     * The command is only emitted if the color is not null and the number of
-     * components is &gt; 0.
+     * The command is only emitted if the color is not null and the number of components is &gt; 0.
      * 
      * @param color The colorspace to write.
+     * @return true if the non stroking color was set successfully
+     * 
      * @throws IOException If there is an error writing to the content stream.
      * @see PDAbstractContentStream#setNonStrokingColor(PDColor)
      */

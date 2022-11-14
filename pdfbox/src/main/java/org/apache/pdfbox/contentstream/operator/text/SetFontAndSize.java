@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -41,6 +41,11 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 public class SetFontAndSize extends OperatorProcessor
 {
     private static final Log LOG = LogFactory.getLog(SetFontAndSize.class);
+
+    public SetFontAndSize(PDFStreamEngine context)
+    {
+        super(context);
+    }
 
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
@@ -62,6 +67,7 @@ public class SetFontAndSize extends OperatorProcessor
         }
         COSName fontName = (COSName) base0;
         float fontSize = ((COSNumber) base1).floatValue();
+        PDFStreamEngine context = getContext();
         context.getGraphicsState().getTextState().setFontSize(fontSize);
         PDFont font = context.getResources().getFont(fontName);
         if (font == null)

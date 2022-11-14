@@ -152,7 +152,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
      *
      * @param doc PDF document to write to
      * @param pfbIn PFB file stream
-     * @throws IOException
+     * @throws IOException if the font could not be read
      */
     public PDType1Font(PDDocument doc, InputStream pfbIn) throws IOException
     {
@@ -164,8 +164,8 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
      *
      * @param doc PDF document to write to
      * @param pfbIn PFB file stream
-     * @param encoding
-     * @throws IOException
+     * @param encoding encoding to be used for the font
+     * @throws IOException if the font could not be read
      */
     public PDType1Font(PDDocument doc, InputStream pfbIn, Encoding encoding) throws IOException
     {
@@ -365,6 +365,8 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
 
     /**
      * Returns the PostScript name of the font.
+     * 
+     * @return the PostScript name of the font
      */
     public final String getBaseFont()
     {
@@ -512,6 +514,8 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
 
     /**
      * Returns the embedded or substituted Type 1 font, or null if there is none.
+     * 
+     * @return the embedded or substituted Type 1 font or null
      */
     public Type1Font getType1Font()
     {

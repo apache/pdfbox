@@ -57,6 +57,8 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
 
     /**
      * Lazy load the ICC profile, because it's slow.
+     * 
+     * @throws IOException if the ICC profile could not be initialized
      */
     protected void init() throws IOException
     {

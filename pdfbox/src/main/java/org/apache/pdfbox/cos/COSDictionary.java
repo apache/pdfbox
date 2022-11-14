@@ -1238,10 +1238,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * Convenience method that calls
-     * {@link Map#forEach(java.util.function.BiConsumer) Map.forEach(BiConsumer)}.
+     * Convenience method that calls {@link Map#forEach(java.util.function.BiConsumer) Map.forEach(BiConsumer)}.
      *
-     * @param action
+     * @param action The action to be performed for each entry
+     * 
      */
     public void forEach(BiConsumer<? super COSName, ? super COSBase> action)
     {

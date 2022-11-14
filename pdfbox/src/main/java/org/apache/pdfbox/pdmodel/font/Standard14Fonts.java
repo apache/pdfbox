@@ -217,6 +217,8 @@ public final class Standard14Fonts
 
     /**
      * Returns the set of known font names, including aliases.
+     * 
+     * @return the set of known font names
      */
     public static Set<String> getNames()
     {
@@ -263,6 +265,8 @@ public final class Standard14Fonts
      * @param baseName name of the standard 14 font
      * @param glyphName name of glyph
      * @return the mapped font
+     * 
+     * @throws IOException if the data could not be read
      */
     public static GeneralPath getGlyphPath(FontName baseName, String glyphName) throws IOException
     {

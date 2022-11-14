@@ -25,6 +25,8 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 import java.io.IOException;
+
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 /**
@@ -33,6 +35,11 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
  */
 public class SetLineJoinStyle extends OperatorProcessor
 {
+    public SetLineJoinStyle(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -41,7 +48,7 @@ public class SetLineJoinStyle extends OperatorProcessor
             throw new MissingOperandException(operator, arguments);
         }
         int lineJoinStyle = ((COSNumber)arguments.get( 0 )).intValue();
-        context.getGraphicsState().setLineJoin( lineJoinStyle );
+        getContext().getGraphicsState().setLineJoin(lineJoinStyle);
     }
 
     @Override

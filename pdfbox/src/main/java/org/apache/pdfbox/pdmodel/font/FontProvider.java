@@ -26,13 +26,17 @@ import java.util.List;
 public abstract class FontProvider
 {
     /**
-     * Returns a string containing debugging information. This will be written to the log if no
-     * suitable fonts are found and no fallback fonts are available. May be null.
+     * Returns a string containing debugging information. This will be written to the log if no suitable fonts are found
+     * and no fallback fonts are available. May be null.
+     * 
+     * @return string with debug information or null
      */
     public abstract String toDebugString();
 
     /**
      * Returns a list of information about fonts on the system.
+     * 
+     * @return a list of FntInfo instances for all fonts on the system
      */
     public abstract List<? extends FontInfo> getFontInfo();
 }

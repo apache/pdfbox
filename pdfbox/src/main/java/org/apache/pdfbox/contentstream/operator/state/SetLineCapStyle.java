@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.state;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -32,6 +33,11 @@ import org.apache.pdfbox.cos.COSNumber;
  */
 public class SetLineCapStyle extends OperatorProcessor
 {
+    public SetLineCapStyle(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -40,7 +46,7 @@ public class SetLineCapStyle extends OperatorProcessor
             throw new MissingOperandException(operator, arguments);
         }
         int lineCapStyle = ((COSNumber)arguments.get( 0 )).intValue();
-        context.getGraphicsState().setLineCap( lineCapStyle );
+        getContext().getGraphicsState().setLineCap(lineCapStyle);
     }
 
     @Override

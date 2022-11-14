@@ -35,9 +35,11 @@ public abstract class CFFEncoding extends Encoding
 
     /**
      * Adds a new code/SID combination to the encoding.
+     * 
      * @param code the given code
-     * @param sid This parameter will not be used
-     * @param name The name of the character.
+     * @param sid the given SID
+     * @param name glyph name
+     * 
      */
     public void add(int code, int sid, String name)
     {
@@ -46,6 +48,10 @@ public abstract class CFFEncoding extends Encoding
 
     /**
      * For use by subclasses only.
+     * 
+     * @param code the given code
+     * @param sid the given SID
+     * 
      */
     protected void add(int code, int sid)
     {

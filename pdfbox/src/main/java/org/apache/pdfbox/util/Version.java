@@ -42,6 +42,8 @@ public final class Version
 
     /**
      * Returns the version of PDFBox.
+     * 
+     * @return the version of PDFBox
      */
     public static String getVersion()
     {

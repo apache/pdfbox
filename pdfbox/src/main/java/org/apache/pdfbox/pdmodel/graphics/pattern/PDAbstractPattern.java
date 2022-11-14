@@ -128,6 +128,8 @@ public abstract class PDAbstractPattern implements COSObjectable
 
     /**
      * Returns the pattern matrix, or the identity matrix is none is available.
+     * 
+     * @return the pattern matrix
      */
     public Matrix getMatrix()
     {

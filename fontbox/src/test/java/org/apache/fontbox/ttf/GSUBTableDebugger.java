@@ -17,6 +17,8 @@
 
 package org.apache.fontbox.ttf;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 
 import org.apache.fontbox.ttf.gsub.GSUBTablePrintUtil;
@@ -35,26 +37,33 @@ public class GSUBTableDebugger
     private static final String LOHIT_BENGALI_FONT_FILE = "/ttf/Lohit-Bengali.ttf";
 
     @Test
-    public void printLohitBengaliTTF() throws IOException
+    void printLohitBengaliTTF()
     {
-        RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(
-                GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE));
-        RandomAccessReadDataStream randomAccessReadBufferDataStream = new RandomAccessReadDataStream(
-                randomAccessReadBuffer);
-
-        randomAccessReadBufferDataStream.seek(GlyphSubstitutionTableTest.DATA_POSITION_FOR_GSUB_TABLE);
-
-        GlyphSubstitutionTable glyphSubstitutionTable = new GlyphSubstitutionTable();
-
-        glyphSubstitutionTable.read(null, randomAccessReadBufferDataStream);
-
-        TrueTypeFont trueTypeFont = new TTFParser()
-                .parse(new RandomAccessReadBuffer(
-                        GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE)));
-
-        GsubData gsubData = glyphSubstitutionTable.getGsubData();
-        new GSUBTablePrintUtil().printCharacterToGlyph(gsubData,
-                trueTypeFont.getUnicodeCmapLookup());
+        try
+        {
+            RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(
+                    GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE));
+            RandomAccessReadDataStream randomAccessReadBufferDataStream = new RandomAccessReadDataStream(
+                    randomAccessReadBuffer);
+    
+            randomAccessReadBufferDataStream.seek(GlyphSubstitutionTableTest.DATA_POSITION_FOR_GSUB_TABLE);
+    
+            GlyphSubstitutionTable glyphSubstitutionTable = new GlyphSubstitutionTable();
+    
+            glyphSubstitutionTable.read(null, randomAccessReadBufferDataStream);
+    
+            TrueTypeFont trueTypeFont = new TTFParser()
+                    .parse(new RandomAccessReadBuffer(
+                            GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE)));
+    
+            GsubData gsubData = glyphSubstitutionTable.getGsubData();
+            new GSUBTablePrintUtil().printCharacterToGlyph(gsubData,
+                    trueTypeFont.getUnicodeCmapLookup());
+        }
+        catch (IOException exception)
+        {
+            fail(exception);
+        }
     }
 
 }

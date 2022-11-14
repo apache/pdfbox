@@ -58,6 +58,8 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
 
     /**
      * Default constructor.
+     * 
+     * @param owner the owner of the attributes
      */
     public PDExportFormatAttributeObject(String owner)
     {

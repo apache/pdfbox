@@ -138,6 +138,7 @@ public abstract class Encoding implements COSObjectable
      * Determines if the encoding has a mapping for the given name value.
      * 
      * @param name PostScript glyph name
+     * @return true if the encoding has a mapping for the given name value
      */
     public boolean contains(String name)
     {
@@ -148,6 +149,8 @@ public abstract class Encoding implements COSObjectable
      * Determines if the encoding has a mapping for the given code value.
      * 
      * @param code character code
+     * @return if the encoding has a mapping for the given code value
+     * 
      */
     public boolean contains(int code)
     {
@@ -172,6 +175,8 @@ public abstract class Encoding implements COSObjectable
 
     /**
      * Returns the name of this encoding.
+     * 
+     * @return the name of the encoding
      */
     public abstract String getEncodingName();
 }

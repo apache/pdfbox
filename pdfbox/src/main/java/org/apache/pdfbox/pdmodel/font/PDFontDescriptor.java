@@ -655,6 +655,8 @@ public final class PDFontDescriptor implements COSObjectable
 
     /**
      * Returns true if widths are present in the font descriptor.
+     * 
+     * @return true if widths are present in the font descriptor
      */
     public boolean hasWidths()
     {
@@ -663,6 +665,8 @@ public final class PDFontDescriptor implements COSObjectable
 
     /**
      * Returns true if the missing widths entry is present in the font descriptor.
+     * 
+     * @return true if the missing widths entry is present in the font descriptor
      */
     public boolean hasMissingWidth()
     {

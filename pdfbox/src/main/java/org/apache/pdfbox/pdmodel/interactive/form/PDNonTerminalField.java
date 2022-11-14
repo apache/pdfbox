@@ -178,8 +178,11 @@ public class PDNonTerminalField extends PDField
     /**
      * Returns the COSBase value of the "V" entry.
      *
-     * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
-     * the local value, without inheritance.
+     * <p>
+     * <b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns the local value,
+     * without inheritance.
+     * 
+     * @return the COSBase value of the "V" entry
      */
     public COSBase getValue()
     {
@@ -200,12 +203,13 @@ public class PDNonTerminalField extends PDField
     }
 
     /**
-     * Sets the value of this field. This may be of any kind which is valid for this field's
-     * children.
+     * Sets the value of this field. This may be of any kind which is valid for this field's children.
      *
-     * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
-     * the local value, without inheritance.
-     * @param object
+     * <p>
+     * <b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns the local value,
+     * without inheritance.
+     * 
+     * @param object the new value
      */
     public void setValue(COSBase object)
     {
@@ -229,11 +233,13 @@ public class PDNonTerminalField extends PDField
     }
 
     /**
-     * Returns the default value of this field. This may be of any kind which is valid for this field's
-     * children.
+     * Returns the default value of this field. This may be of any kind which is valid for this field's children.
      *
-     * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
-     * the local value, without inheritance.
+     * <p>
+     * <b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns the local value,
+     * without inheritance.
+     * 
+     * @return the new default value
      */
     public COSBase getDefaultValue()
     {
@@ -241,12 +247,13 @@ public class PDNonTerminalField extends PDField
     }
 
     /**
-     * Sets the default of this field. This may be of any kind which is valid for this field's
-     * children.
+     * Sets the default of this field. This may be of any kind which is valid for this field's children.
      *
-     * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
-     * the local value, without inheritance.
-     * @param value
+     * <p>
+     * <b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns the local value,
+     * without inheritance.
+     * 
+     * @param value the default value
      */
     public void setDefaultValue(COSBase value)
     {

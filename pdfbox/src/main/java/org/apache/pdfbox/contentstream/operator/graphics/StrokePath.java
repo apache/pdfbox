@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 
@@ -31,10 +32,15 @@ import java.io.IOException;
  */
 public final class StrokePath extends GraphicsOperatorProcessor
 {
+    public StrokePath(PDFGraphicsStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        context.strokePath();
+        getGraphicsContext().strokePath();
     }
 
     @Override

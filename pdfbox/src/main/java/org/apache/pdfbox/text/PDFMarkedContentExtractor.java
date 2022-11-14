@@ -59,10 +59,10 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
      */
     public PDFMarkedContentExtractor(String encoding)
     {
-        addOperator(new BeginMarkedContentSequenceWithProperties());
-        addOperator(new BeginMarkedContentSequence());
-        addOperator(new EndMarkedContentSequence());
-        addOperator(new DrawObject());
+        addOperator(new BeginMarkedContentSequenceWithProperties(this));
+        addOperator(new BeginMarkedContentSequence(this));
+        addOperator(new EndMarkedContentSequence(this));
+        addOperator(new DrawObject(this));
         // todo: DP - Marked Content Point
         // todo: MP - Marked Content Point with Properties
     }

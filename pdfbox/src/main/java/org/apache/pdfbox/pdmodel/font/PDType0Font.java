@@ -408,6 +408,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
 
     /**
      * Returns the PostScript name of the font.
+     * 
+     * @return the PostScript name of the font
      */
     public String getBaseFont()
     {
@@ -416,6 +418,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
 
     /**
      * Returns the descendant font.
+     * 
+     * @return the descendant font
      */
     public PDCIDFont getDescendantFont()
     {
@@ -424,6 +428,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
 
     /**
      * Returns the font's CMap.
+     * 
+     * @return the font's CMap
      */
     public CMap getCMap()
     {
@@ -432,6 +438,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
 
     /**
      * Returns the font's UCS2 CMap, only present this font uses a predefined CMap.
+     * 
+     * @return the font's UCS2 CMap if present
      */
     public CMap getCMapUCS2()
     {
@@ -621,7 +629,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * Returns the CID for the given character code. If not found then CID 0 is returned.
      *
      * @param code character code
-     * @return CID
+     * @return CID for the given character code
      */
     public int codeToCID(int code)
     {
@@ -632,7 +640,9 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * Returns the GID for the given character code.
      *
      * @param code character code
-     * @return GID
+     * @return GID for the given character code
+     * 
+     * @throws IOException if the data could not be read
      */
     public int codeToGID(int code) throws IOException
     {
@@ -681,16 +691,32 @@ public class PDType0Font extends PDFont implements PDVectorFont
         return descendantFont.hasGlyph(code);
     }
 
+    /**
+     * Returns the GSubData if present.
+     * 
+     * @return the GSubData if present
+     */
     public GsubData getGsubData()
     {
         return gsubData;
     }
 
+    /**
+     * Returns the encoded value for the given glyph ID.
+     * 
+     * @param glyphId the ID of the glyph to be encoded
+     * @return the encoded glyph ID
+     */
     public byte[] encodeGlyphId(int glyphId)
     {
         return descendantFont.encodeGlyphId(glyphId);
     }
 
+    /**
+     * Returns the CMap lookup table if present.
+     * 
+     * @return the CMap lookup table if present
+     */
     public CmapLookup getCmapLookup()
     {
         return cmapLookup;

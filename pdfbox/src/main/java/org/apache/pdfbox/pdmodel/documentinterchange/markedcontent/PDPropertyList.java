@@ -33,7 +33,9 @@ public class PDPropertyList implements COSObjectable
 
     /**
      * Creates a property list from the given dictionary.
+     * 
      * @param dict COS dictionary
+     * @return a new instance of a PDPropertyList using the given dictionary
      */
     public static PDPropertyList create(COSDictionary dict)
     {
@@ -63,6 +65,8 @@ public class PDPropertyList implements COSObjectable
 
     /**
      * Constructor for subclasses.
+     * 
+     * @param dict the dictionary to be used to create an instance of PDPropertyList
      */
     protected PDPropertyList(COSDictionary dict)
     {

@@ -40,7 +40,9 @@ public class PDTransparencyGroup extends PDFormXObject
 
     /**
      * Creates a Transparency Group for reading.
+     * 
      * @param stream The XObject stream
+     * @param cache the cache to be used for the resources
      */
     public PDTransparencyGroup(COSStream stream, ResourceCache cache)
     {

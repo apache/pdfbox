@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.contentstream.operator.color;
 
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -27,6 +28,11 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
  */
 public class SetStrokingColor extends SetColor
 {
+    public SetStrokingColor(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     /**
      * Returns the stroking color.
      * @return The stroking color.
@@ -34,7 +40,7 @@ public class SetStrokingColor extends SetColor
     @Override
     protected PDColor getColor()
     {
-        return context.getGraphicsState().getStrokingColor();
+        return getContext().getGraphicsState().getStrokingColor();
     }
 
     /**
@@ -44,7 +50,7 @@ public class SetStrokingColor extends SetColor
     @Override
     protected void setColor(PDColor color)
     {
-        context.getGraphicsState().setStrokingColor(color);
+        getContext().getGraphicsState().setStrokingColor(color);
     }
 
     /**
@@ -54,7 +60,7 @@ public class SetStrokingColor extends SetColor
     @Override
     protected PDColorSpace getColorSpace()
     {
-        return context.getGraphicsState().getStrokingColorSpace();
+        return getContext().getGraphicsState().getStrokingColorSpace();
     }
 
     @Override

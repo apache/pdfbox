@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -42,6 +43,11 @@ public class DrawObject extends OperatorProcessor
 {
     private static final Log LOG = LogFactory.getLog(DrawObject.class);
 
+    public DrawObject(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -55,6 +61,7 @@ public class DrawObject extends OperatorProcessor
             return;
         }
         COSName name = (COSName) base0;
+        PDFStreamEngine context = getContext();
         PDXObject xobject = context.getResources().getXObject(name);
         ((PDFMarkedContentExtractor) context).xobject(xobject);
 

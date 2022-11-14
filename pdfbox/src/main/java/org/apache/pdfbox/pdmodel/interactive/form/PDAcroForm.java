@@ -166,16 +166,21 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * This will flatten all form fields.
-     *
-     * <p>Flattening a form field will take the current appearance and make that part
-     * of the pages content stream. All form fields and annotations associated are removed.</p>
-     *
-     * <p>Invisible and hidden fields will be skipped and will not become part of the
-     * page content stream</p>
-     *
-     * <p>The appearances for the form fields widgets will <strong>not</strong> be generated<p>
-     *
-     * @throws IOException
+     * 
+     * <p>
+     * Flattening a form field will take the current appearance and make that part of the pages content stream. All form
+     * fields and annotations associated are removed.
+     * </p>
+     * 
+     * <p>
+     * Invisible and hidden fields will be skipped and will not become part of the page content stream
+     * </p>
+     * 
+     * <p>
+     * The appearances for the form fields widgets will <strong>not</strong> be generated
+     * </p>
+     * 
+     * @throws IOException if something went wrong flattening the fields
      */
     public void flatten() throws IOException
     {
@@ -198,16 +203,19 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * This will flatten the specified form fields.
-     *
-     * <p>Flattening a form field will take the current appearance and make that part
-     * of the pages content stream. All form fields and annotations associated are removed.</p>
-     *
-     * <p>Invisible and hidden fields will be skipped and will not become part of the
-     * page content stream</p>
-     *
-     * @param fields
+     * 
+     * <p>
+     * Flattening a form field will take the current appearance and make that part of the pages content stream. All form
+     * fields and annotations associated are removed.
+     * </p>
+     * 
+     * <p>
+     * Invisible and hidden fields will be skipped and will not become part of the page content stream
+     * </p>
+     * 
+     * @param fields a list of fields to be flattened
      * @param refreshAppearances if set to true the appearances for the form field widgets will be updated
-     * @throws IOException
+     * @throws IOException if something went wrong flattening the fields
      */
     public void flatten(List<PDField> fields, boolean refreshAppearances) throws IOException
     {
@@ -316,10 +324,9 @@ public final class PDAcroForm implements COSObjectable
     }
 
     /**
-     * Refreshes the appearance streams and appearance dictionaries for
-     * the widget annotations of all fields.
-     *
-     * @throws IOException if the appearance couldn't be generated
+     * Refreshes the appearance streams and appearance dictionaries for the widget annotations of all fields.
+     * 
+     * @throws IOException if the appearance streams could not be refreshed
      */
     public void refreshAppearances() throws IOException
     {
@@ -333,11 +340,10 @@ public final class PDAcroForm implements COSObjectable
     }
 
     /**
-     * Refreshes the appearance streams and appearance dictionaries for
-     * the widget annotations of the specified fields.
-     *
-     * @param fields List of PDField instances.
-     * @throws IOException if the appearance couldn't be generated
+     * Refreshes the appearance streams and appearance dictionaries for the widget annotations of the specified fields.
+     * 
+     * @param fields a list of fields to be refreshed
+     * @throws IOException if the appearance streams could not be refreshed
      */
     public void refreshAppearances(List<PDField> fields) throws IOException
     {
@@ -399,6 +405,8 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Returns an iterator which walks all fields in the field tree, in order.
+     * 
+     * @return an iterator which walks all fields in the field tree
      */
     public Iterator<PDField> getFieldIterator()
     {
@@ -407,6 +415,8 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Return the field tree representing all form fields
+     * 
+     * @return the field tree representing all form fields
      */
     public PDFieldTree getFieldTree()
     {
@@ -637,8 +647,8 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Set a handler to support JavaScript actions in the form.
-     *
-     * @return scriptingHandler
+     * 
+     * @return scriptingHandler the handler to support JavaScript actions in the form
      */
     public ScriptingHandler getScriptingHandler()
     {
@@ -647,8 +657,8 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Set a handler to support JavaScript actions in the form.
-     *
-     * @param scriptingHandler
+     * 
+     * @param scriptingHandler a handler to support JavaScript actions in the form
      */
     public void setScriptingHandler(ScriptingHandler scriptingHandler)
     {

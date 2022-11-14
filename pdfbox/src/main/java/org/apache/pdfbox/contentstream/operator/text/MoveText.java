@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -37,6 +38,11 @@ public class MoveText extends OperatorProcessor
 {
     private static final Log LOG = LogFactory.getLog(MoveText.class);
 
+    public MoveText(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws MissingOperandException
     {
@@ -44,6 +50,7 @@ public class MoveText extends OperatorProcessor
         {
             throw new MissingOperandException(operator, arguments);
         }
+        PDFStreamEngine context = getContext();
         Matrix textLineMatrix = context.getTextLineMatrix();
         if (textLineMatrix == null)
         {

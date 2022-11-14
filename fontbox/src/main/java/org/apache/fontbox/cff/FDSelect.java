@@ -23,6 +23,8 @@ public interface FDSelect
      * Returns the Font DICT index for the given GID.
      * 
      * @param gid GID
+     * 
+     * @return the font dictionary index of the given GID
      */
     public abstract int getFDIndex(int gid);
 }

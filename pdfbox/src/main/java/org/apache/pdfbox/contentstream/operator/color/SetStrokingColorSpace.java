@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
@@ -34,6 +35,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
  */
 public class SetStrokingColorSpace extends OperatorProcessor
 {
+    public SetStrokingColorSpace(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -46,6 +52,7 @@ public class SetStrokingColorSpace extends OperatorProcessor
         {
             return;
         }
+        PDFStreamEngine context = getContext();
         PDColorSpace cs = context.getResources().getColorSpace((COSName) base);
         context.getGraphicsState().setStrokingColorSpace(cs);
         context.getGraphicsState().setStrokingColor(cs.getInitialColor());

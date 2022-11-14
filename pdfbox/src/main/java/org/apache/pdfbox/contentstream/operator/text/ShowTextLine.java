@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.text;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
@@ -32,9 +33,15 @@ import java.io.IOException;
  */
 public class ShowTextLine extends OperatorProcessor
 {
+    public ShowTextLine(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
+        PDFStreamEngine context = getContext();
         context.processOperator(OperatorName.NEXT_LINE, null);
         context.processOperator(OperatorName.SHOW_TEXT, arguments);
     }

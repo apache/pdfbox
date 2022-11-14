@@ -100,6 +100,8 @@ public class PDSignatureField extends PDTerminalField
      * Sets the value of this field to be the given signature.
      * 
      * @param value is the PDSignatureField
+     * 
+     * @throws IOException if the new value could not be applied
      */
     public void setValue(PDSignature value) throws IOException
     {

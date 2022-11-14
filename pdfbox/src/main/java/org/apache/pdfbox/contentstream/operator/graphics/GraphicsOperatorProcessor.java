@@ -17,7 +17,6 @@
 package org.apache.pdfbox.contentstream.operator.graphics;
 
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
-import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
@@ -27,13 +26,19 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
  */
 public abstract class GraphicsOperatorProcessor extends OperatorProcessor
 {
-    /** The processing context. */
-    protected PDFGraphicsStreamEngine context;
 
-    @Override
-    public void setContext(PDFStreamEngine context)
+    protected GraphicsOperatorProcessor(PDFGraphicsStreamEngine context)
     {
-        super.setContext(context);
-        this.context = (PDFGraphicsStreamEngine)context;
+        super(context);
+    }
+
+    /**
+     * GraphicsOperatorProcessor uses a spezialized engine.
+     * 
+     * @return PDFGraphicsStreamEngine to be used for processing
+     */
+    protected PDFGraphicsStreamEngine getGraphicsContext()
+    {
+        return (PDFGraphicsStreamEngine) getContext();
     }
 }

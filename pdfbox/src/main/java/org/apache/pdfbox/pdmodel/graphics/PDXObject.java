@@ -44,27 +44,8 @@ public class PDXObject implements COSObjectable
     /**
      * Creates a new XObject instance of the appropriate type for the COS stream.
      *
-     * @param stream The stream which is wrapped by this XObject.
-     * @param resources
-     * @return A new XObject instance.
-     * @throws java.io.IOException if there is an error creating the XObject.
-     */
-    public static PDXObject createXObject(COSStream stream, PDResources resources) throws IOException
-    {
-        if (stream == null)
-        {
-            // TODO throw an exception?
-            return null;
-        }
-
-        return getPdxObject(stream, resources);
-    }
-
-    /**
-     * Creates a new XObject instance of the appropriate type for the COS stream.
-     *
      * @param base The stream which is wrapped by this XObject.
-     * @param resources
+     * @param resources the resources of this XObject
      * @return A new XObject instance.
      * @throws java.io.IOException if there is an error creating the XObject.
      */
@@ -81,11 +62,7 @@ public class PDXObject implements COSObjectable
             throw new IOException("Unexpected object type: " + base.getClass().getName());
         }
 
-        return getPdxObject((COSStream)base, resources);
-    }
-
-    private static PDXObject getPdxObject(COSStream stream, PDResources resources) throws IOException
-    {
+        COSStream stream = (COSStream)base;
         String subtype = stream.getNameAsString(COSName.SUBTYPE);
 
         if (COSName.IMAGE.getName().equals(subtype))
@@ -114,8 +91,9 @@ public class PDXObject implements COSObjectable
 
     /**
      * Creates a new XObject from the given stream and subtype.
+     * 
      * @param stream The stream to read.
-     * @param subtype
+     * @param subtype the subtype to be used for this XObject
      */
     protected PDXObject(COSStream stream, COSName subtype)
     {
@@ -127,8 +105,9 @@ public class PDXObject implements COSObjectable
 
     /**
      * Creates a new XObject from the given stream and subtype.
+     * 
      * @param stream The stream to read.
-     * @param subtype
+     * @param subtype the subtype to be used for this XObject
      */
     protected PDXObject(PDStream stream, COSName subtype)
     {

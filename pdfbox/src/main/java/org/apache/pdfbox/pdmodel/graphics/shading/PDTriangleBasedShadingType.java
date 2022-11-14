@@ -109,6 +109,8 @@ abstract class PDTriangleBasedShadingType extends PDShading
      * The number of color components of this shading.
      *
      * @return number of color components of this shading
+     * 
+     * @throws IOException if the data could not be read
      */
     public int getNumberOfColorComponents() throws IOException
     {
@@ -187,6 +189,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
      * @param rangeY dest range for Y
      * @param colRangeTab dest range array for colors
      * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @param xform the affine transformation
      * @return a new vertex with the flag and the interpolated values
      * @throws IOException if something went wrong
      */

@@ -59,7 +59,8 @@ public class PDVisibleSigProperties
 
     /**
      * Sets signer name
-     * @param signerName
+     * 
+     * @param signerName the signer name
      * @return the visible signature properties.
      */
     public PDVisibleSigProperties signerName(String signerName)
@@ -69,7 +70,8 @@ public class PDVisibleSigProperties
     }
 
     /**
-     * Gets signer locations
+     * Gets signer location
+     * 
      * @return - location
      */
     public String getSignerLocation()
@@ -79,7 +81,8 @@ public class PDVisibleSigProperties
 
     /**
      * Sets location
-     * @param signerLocation
+     * 
+     * @param signerLocation the new signer location
      * @return the visible signature properties.
      */
     public PDVisibleSigProperties signerLocation(String signerLocation)
@@ -99,7 +102,8 @@ public class PDVisibleSigProperties
 
     /**
      * sets reason of signing
-     * @param signatureReason
+     * 
+     * @param signatureReason the reason of signing
      * @return the visible signature properties.
      */
     public PDVisibleSigProperties signatureReason(String signatureReason)
@@ -161,7 +165,8 @@ public class PDVisibleSigProperties
 
     /**
      * sets visible signature to be added or not
-     * @param visualSignEnabled
+     * 
+     * @param visualSignEnabled if true the visible signature is added
      * @return the visible signature properties.
      */
     public PDVisibleSigProperties visualSignEnabled(boolean visualSignEnabled)
@@ -181,7 +186,8 @@ public class PDVisibleSigProperties
 
     /**
      * Sets visible signature configuration Object
-     * @param pdVisibleSignature
+     * 
+     * @param pdVisibleSignature the new visible signature configuration
      * @return the visible signature properties.
      */
     public PDVisibleSigProperties setPdVisibleSignature(PDVisibleSignDesigner pdVisibleSignature)
@@ -201,7 +207,8 @@ public class PDVisibleSigProperties
 
     /**
      * sets configuration object of visible signature
-     * @param visibleSignature
+     * 
+     * @param visibleSignature the stream of the visible signature
      */
     public void setVisibleSignature(InputStream visibleSignature)
     {

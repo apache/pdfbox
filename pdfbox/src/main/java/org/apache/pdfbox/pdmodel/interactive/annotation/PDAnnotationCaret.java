@@ -98,7 +98,7 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param appearanceHandler
+     * @param appearanceHandler custom appearance handler
      */
     public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {

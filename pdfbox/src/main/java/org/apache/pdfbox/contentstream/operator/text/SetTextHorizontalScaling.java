@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.text;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -33,6 +34,11 @@ import org.apache.pdfbox.cos.COSNumber;
  */
 public class SetTextHorizontalScaling extends OperatorProcessor
 {
+    public SetTextHorizontalScaling(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -47,7 +53,7 @@ public class SetTextHorizontalScaling extends OperatorProcessor
             return;
         }
         COSNumber scaling = (COSNumber) base;
-        context.getGraphicsState().getTextState().setHorizontalScaling(scaling.floatValue());
+        getContext().getGraphicsState().getTextState().setHorizontalScaling(scaling.floatValue());
     }
 
     @Override

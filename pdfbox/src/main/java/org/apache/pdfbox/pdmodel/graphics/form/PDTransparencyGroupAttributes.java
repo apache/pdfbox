@@ -62,7 +62,7 @@ public final class PDTransparencyGroupAttributes implements COSObjectable
      * Returns the group color space or null if it isn't defined.
      *
      * @return the group color space.
-     * @throws IOException
+     * @throws IOException if the colorspace could not be created
      */
     public PDColorSpace getColorSpace() throws IOException
     {
@@ -74,7 +74,7 @@ public final class PDTransparencyGroupAttributes implements COSObjectable
      *
      * @param resources useful for its cache. Can be null.
      * @return the group color space.
-     * @throws IOException
+     * @throws IOException if the colorspace could not be created
      */
     public PDColorSpace getColorSpace(PDResources resources) throws IOException
     {
@@ -86,8 +86,10 @@ public final class PDTransparencyGroupAttributes implements COSObjectable
     }
 
     /**
-     * Returns true if this group is isolated. Isolated groups begin with the fully transparent
-     * image, non-isolated begin with the current backdrop.
+     * Returns true if this group is isolated. Isolated groups begin with the fully transparent image, non-isolated
+     * begin with the current backdrop.
+     * 
+     * @return true if this group is isolated
      */
     public boolean isIsolated()
     {
@@ -95,8 +97,10 @@ public final class PDTransparencyGroupAttributes implements COSObjectable
     }
 
     /**
-     * Returns true if this group is a knockout. A knockout group blends with original backdrop,
-     * a non-knockout group blends with the current backdrop.
+     * Returns true if this group is a knockout. A knockout group blends with original backdrop, a non-knockout group
+     * blends with the current backdrop.
+     * 
+     * @return true if this group is a knockout
      */
     public boolean isKnockout()
     {

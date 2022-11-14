@@ -280,7 +280,7 @@ public class PDGraphicsState implements Cloneable
     /**
      * Sets the current soft mask
      *
-     * @param softMask
+     * @param softMask soft mask
      */
     public void setSoftMask(PDSoftMask softMask)
     {
@@ -300,7 +300,7 @@ public class PDGraphicsState implements Cloneable
     /**
      * Sets the blend mode in the current graphics state
      *
-     * @param blendMode
+     * @param blendMode blend mode
      * @throws IllegalArgumentException if blendMode is null.
      */
     public void setBlendMode(BlendMode blendMode)

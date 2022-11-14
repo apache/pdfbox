@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 
@@ -31,10 +32,15 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
  */
 public class ClipNonZeroRule extends GraphicsOperatorProcessor
 {
+    public ClipNonZeroRule(PDFGraphicsStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        context.clip(Path2D.WIND_NON_ZERO);
+        getGraphicsContext().clip(Path2D.WIND_NON_ZERO);
     }
 
     @Override

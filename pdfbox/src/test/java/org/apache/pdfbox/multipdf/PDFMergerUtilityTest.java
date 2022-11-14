@@ -37,8 +37,8 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
-
-import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -97,13 +97,13 @@ class PDFMergerUtilityTest
         checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
                 "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf",
                 "GlobalResourceMergeTestResult1.pdf", 
-                MemoryUsageSetting.setupMainMemoryOnly());
+                IOUtils.createMemoryOnlyStreamCache());
         
         // once again, with scratch file
         checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
                 "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf",
                 "GlobalResourceMergeTestResult2.pdf", 
-                MemoryUsageSetting.setupTempFileOnly());
+                IOUtils.createTempFileOnlyStreamCache());
     }
 
     // see PDFBOX-2893
@@ -113,13 +113,13 @@ class PDFMergerUtilityTest
         checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.pdf",
                 "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
                 "GlobalResourceMergeTestResult3.pdf",
-                MemoryUsageSetting.setupMainMemoryOnly());
+                IOUtils.createMemoryOnlyStreamCache());
 
         // once again, with scratch file
         checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.pdf",
                 "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
                 "GlobalResourceMergeTestResult4.pdf",
-                MemoryUsageSetting.setupTempFileOnly());
+                IOUtils.createTempFileOnlyStreamCache());
     }
     
     /**
@@ -135,13 +135,13 @@ class PDFMergerUtilityTest
         checkMergeIdentical("jpegrgb.pdf",
                 "multitiff.pdf",
                 "JpegMultiMergeTestResult.pdf",
-                MemoryUsageSetting.setupMainMemoryOnly());
+                IOUtils.createMemoryOnlyStreamCache());
 
         // once again, with scratch file
         checkMergeIdentical("jpegrgb.pdf",
                 "multitiff.pdf",
                 "JpegMultiMergeTestResult.pdf",
-                MemoryUsageSetting.setupTempFileOnly());
+                IOUtils.createTempFileOnlyStreamCache());
     }
 
     /**
@@ -176,7 +176,7 @@ class PDFMergerUtilityTest
         pdfMergerUtility.addSource(new File(TARGETTESTDIR, "MergerOpenActionTest1.pdf"));
         pdfMergerUtility.addSource(new File(TARGETTESTDIR, "MergerOpenActionTest2.pdf"));
         pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + "MergerOpenActionTestResult.pdf");
-        pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+        pdfMergerUtility.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
 
         try (PDDocument mergedDoc = Loader
                 .loadPDF(new File(TARGETTESTDIR, "MergerOpenActionTestResult.pdf")))
@@ -701,7 +701,7 @@ class PDFMergerUtilityTest
             merger.addSource(inFile1);
             merger.addSource(inFile2);
 
-            merger.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+            merger.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
         }
 
         Files.delete(inFile1.toPath());
@@ -721,7 +721,7 @@ class PDFMergerUtilityTest
         pdfMergerUtility.addSource(new File(SRCDIR, "PDFA3A.pdf"));
         pdfMergerUtility.addSource(new File(SRCDIR, "PDFA3A.pdf"));
         pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + "PDFA3A-merged2.pdf");
-        pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+        pdfMergerUtility.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
 
         checkParts(new File(TARGETTESTDIR + "PDFA3A-merged2.pdf"));
     }
@@ -739,7 +739,7 @@ class PDFMergerUtilityTest
         pdfMergerUtility.addSource(new File(SRCDIR, "PDFA3A.pdf"));
         pdfMergerUtility.addSource(new File(SRCDIR, "PDFA3A.pdf"));
         pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + "PDFA3A-merged3.pdf");
-        pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+        pdfMergerUtility.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
 
         checkParts(new File(TARGETTESTDIR + "PDFA3A-merged3.pdf"));
     }
@@ -928,7 +928,7 @@ class PDFMergerUtilityTest
 
     // checks that the result file of a merge has the same rendering as the two source files
     private void checkMergeIdentical(String filename1, String filename2, String mergeFilename, 
-            MemoryUsageSetting memUsageSetting)
+            StreamCacheCreateFunction streamCache)
             throws IOException
     {
         int src1PageCount;
@@ -961,7 +961,7 @@ class PDFMergerUtilityTest
         pdfMergerUtility.addSource(new File(SRCDIR, filename1));
         pdfMergerUtility.addSource(new File(SRCDIR, filename2));
         pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + mergeFilename);
-        pdfMergerUtility.mergeDocuments(memUsageSetting);
+        pdfMergerUtility.mergeDocuments(streamCache);
 
         try (PDDocument mergedDoc = Loader.loadPDF(new File(TARGETTESTDIR, mergeFilename),
                 (String) null))

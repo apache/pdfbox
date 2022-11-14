@@ -428,6 +428,8 @@ public final class Matrix implements Cloneable
      *
      * @param a The matrix to copy.
      * @param b The matrix to concatenate.
+     * 
+     * @return a copy of the first matrix with the second matrix concatenated
      */
     public static Matrix concatenate(Matrix a, Matrix b)
     {
@@ -494,7 +496,9 @@ public final class Matrix implements Cloneable
     /**
      * Returns the x-scaling element of this matrix.
      * 
-     * @see #getScalingFactorX() 
+     * @see #getScalingFactorX()
+     * 
+     * @return the x-scaling element of the matrix
      */
     public float getScaleX()
     {
@@ -503,6 +507,8 @@ public final class Matrix implements Cloneable
 
     /**
      * Returns the y-shear element of this matrix.
+     * 
+     * @return the y-shear element of the matrix
      */
     public float getShearY()
     {
@@ -511,6 +517,8 @@ public final class Matrix implements Cloneable
 
     /**
      * Returns the x-shear element of this matrix.
+     * 
+     * @return the x-sheard element of the matrix
      */
     public float getShearX()
     {
@@ -521,6 +529,8 @@ public final class Matrix implements Cloneable
      * Returns the y-scaling element of this matrix.
      *
      * @see #getScalingFactorY()
+     * 
+     * @return the y-scaling element of the matrix
      */
     public float getScaleY()
     {
@@ -529,6 +539,8 @@ public final class Matrix implements Cloneable
 
     /**
      * Returns the x-translation element of this matrix.
+     * 
+     * @return the x-translation element of the matrix
      */
     public float getTranslateX()
     {
@@ -537,6 +549,8 @@ public final class Matrix implements Cloneable
 
     /**
      * Returns the y-translation element of this matrix.
+     * 
+     * @return the y-translation element of the matrix
      */
     public float getTranslateY()
     {
@@ -544,10 +558,10 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Returns a COS array which represent the geometric relevant
-     * components of the matrix. The last column of the matrix is ignored,
-     * only the first two columns are returned. This is analog to the
-     * Matrix(COSArray) constructor.
+     * Returns a COS array which represent the geometric relevant components of the matrix. The last column of the
+     * matrix is ignored, only the first two columns are returned. This is analog to the Matrix(COSArray) constructor.
+     * 
+     * @return a COSArray representing the geometric relevant components of the matrix
      */
     public COSArray toCOSArray()
     {

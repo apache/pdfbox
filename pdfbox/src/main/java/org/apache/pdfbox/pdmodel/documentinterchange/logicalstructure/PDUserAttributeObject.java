@@ -46,6 +46,7 @@ public class PDUserAttributeObject extends PDAttributeObject
     }
 
     /**
+     * Constructor
      * 
      * @param dictionary the dictionary
      */
@@ -118,7 +119,9 @@ public class PDUserAttributeObject extends PDAttributeObject
     }
 
     /**
-     * @param userProperty  
+     * Notify a possible change of user properties.
+     * 
+     * @param userProperty the user property which might have be changed
      */
     public void userPropertyChanged(PDUserProperty userProperty)
     {

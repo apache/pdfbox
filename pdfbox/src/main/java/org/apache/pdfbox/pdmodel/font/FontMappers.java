@@ -38,6 +38,8 @@ public final class FontMappers
     
     /**
      * Returns the singleton FontMapper instance.
+     * 
+     * @return a singleton FontMapper instance
      */
     public static FontMapper instance()
     {
@@ -50,6 +52,8 @@ public final class FontMappers
     
     /**
      * Sets the singleton FontMapper instance.
+     * 
+     * @param fontMapper the singleton FontMapper instance to be stored
      */
     public static synchronized void set(FontMapper fontMapper)
     {

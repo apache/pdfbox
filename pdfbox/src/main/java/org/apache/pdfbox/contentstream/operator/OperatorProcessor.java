@@ -30,31 +30,26 @@ import java.io.IOException;
 public abstract class OperatorProcessor
 {
     /** The processing context. */
-    protected PDFStreamEngine context;
+    private final PDFStreamEngine context;
 
     /**
      * Creates a new OperatorProcessor.
+     * 
+     * @param context the processing context to be used
      */
-    protected OperatorProcessor()
+    protected OperatorProcessor(PDFStreamEngine context)
     {
+        this.context = context;
     }
 
     /**
      * Returns the processing context.
+     * 
      * @return the processing context
      */
     protected final PDFStreamEngine getContext()
     {
         return context;
-    }
-
-    /**
-     * Sets the processing context.
-     * @param context the processing context.
-     */
-    public void setContext(PDFStreamEngine context)
-    {
-        this.context = context;
     }
 
     /**
@@ -67,6 +62,8 @@ public abstract class OperatorProcessor
 
     /**
      * Returns the name of this operator, e.g. "BI".
+     * 
+     * @return the name of the operator
      */
     public abstract String getName();
     
@@ -75,7 +72,7 @@ public abstract class OperatorProcessor
      *
      * @param operands The operands list.
      * @param clazz The expected class.
-     * @return the boolean
+     * @return true if all operands list elements are an instance of the given class
      */
     public boolean checkArrayTypesClass(List<COSBase> operands, Class<?> clazz)
     {

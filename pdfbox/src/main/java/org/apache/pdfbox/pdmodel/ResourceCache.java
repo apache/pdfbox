@@ -17,7 +17,6 @@
 
 package org.apache.pdfbox.pdmodel;
 
-import java.io.IOException;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -36,72 +35,113 @@ public interface ResourceCache
 {
     /**
      * Returns the font resource for the given indirect object, if it is in the cache.
+     * 
+     * @param indirect the indirect reference of the font to be returned
+     * @return the cached instance of the referenced font, if available
      */
-    PDFont getFont(COSObject indirect) throws IOException;
+    PDFont getFont(COSObject indirect);
 
     /**
      * Returns the color space resource for the given indirect object, if it is in the cache.
+     * 
+     * @param indirect the indirect reference of the colorspace to be returned
+     * @return the cached instance of the referenced colorspace, if available
      */
-    PDColorSpace getColorSpace(COSObject indirect) throws IOException;
+    PDColorSpace getColorSpace(COSObject indirect);
 
     /**
-     * Returns the external graphics state resource for the given indirect object, if it is in the
-     * cache.
+     * Returns the extended graphics state resource for the given indirect object, if it is in the cache.
+     * 
+     * @param indirect the indirect reference of the extended graphics state to be returned
+     * @return the cached instance of the referenced extended graphics state, if available
      */
     PDExtendedGraphicsState getExtGState(COSObject indirect);
         
     /**
      * Returns the shading resource for the given indirect object, if it is in the cache.
+     * 
+     * @param indirect the indirect reference of the shading to be returned
+     * @return the cached instance of the referenced shading, if available
      */
-    PDShading getShading(COSObject indirect) throws IOException;
+    PDShading getShading(COSObject indirect);
     
     /**
-     *Returns the pattern resource for the given indirect object, if it is in the cache.
+     * Returns the pattern resource for the given indirect object, if it is in the cache.
+     *
+     * @param indirect the indirect reference of the pattern to be returned
+     * @return the cached instance of the referenced pattern, if available
      */
-    PDAbstractPattern getPattern(COSObject indirect) throws IOException;
+    PDAbstractPattern getPattern(COSObject indirect);
         
     /**
      * Returns the property list resource for the given indirect object, if it is in the cache.
+     * 
+     * @param indirect the indirect reference of the property list to be returned
+     * @return the cached instance of the referenced property list, if available
      */
     PDPropertyList getProperties(COSObject indirect);
         
     /**
      * Returns the XObject resource for the given indirect object, if it is in the cache.
+     * 
+     * @param indirect the indirect reference of the XObject to be returned
+     * @return the cached instance of the referenced XObject, if available
      */
-    PDXObject getXObject(COSObject indirect) throws IOException;
+    PDXObject getXObject(COSObject indirect);
 
     /**
      * Puts the given indirect font resource in the cache.
+     * 
+     * @param indirect the indirect reference of the font to be cached
+     * @param font the font to be cached
      */
-    void put(COSObject indirect, PDFont font) throws IOException;
+    void put(COSObject indirect, PDFont font);
 
     /**
      * Puts the given indirect color space resource in the cache.
+     * 
+     * @param indirect the indirect reference of the colorspace to be cached
+     * @param colorSpace the colorspace to be cached
      */
-    void put(COSObject indirect, PDColorSpace colorSpace) throws IOException;
+    void put(COSObject indirect, PDColorSpace colorSpace);
 
     /**
      * Puts the given indirect extended graphics state resource in the cache.
+     * 
+     * @param indirect the indirect reference of the extended graphics state to be cached
+     * @param extGState the extended graphics state to be cached
      */
     void put(COSObject indirect, PDExtendedGraphicsState extGState);
 
     /**
      * Puts the given indirect shading resource in the cache.
+     * 
+     * @param indirect the indirect reference of the shading to be cached
+     * @param shading the shading to be cached
      */
-    void put(COSObject indirect, PDShading shading) throws IOException;
+    void put(COSObject indirect, PDShading shading);
 
     /**
      * Puts the given indirect pattern resource in the cache.
+     * 
+     * @param indirect the indirect reference of the pattern to be cached
+     * @param pattern the pattern to be cached
      */
-    void put(COSObject indirect, PDAbstractPattern pattern) throws IOException;
+    void put(COSObject indirect, PDAbstractPattern pattern);
 
     /**
      * Puts the given indirect property list resource in the cache.
+     * 
+     * @param indirect the indirect reference of the property list to be cached
+     * @param propertyList the property list to be cached
      */
     void put(COSObject indirect, PDPropertyList propertyList);
     
     /**
      * Puts the given indirect XObject resource in the cache.
+     * 
+     * @param indirect the indirect reference of the XObject to be cached
+     * @param xobject the XObject to be cached
      */
-    void put(COSObject indirect, PDXObject xobject) throws IOException;
+    void put(COSObject indirect, PDXObject xobject);
 }

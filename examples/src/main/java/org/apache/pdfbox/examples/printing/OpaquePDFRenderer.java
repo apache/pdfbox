@@ -26,6 +26,7 @@ import javax.print.PrintServiceLookup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -95,7 +96,7 @@ public class OpaquePDFRenderer extends PDFRenderer
         public OpaquePageDrawer(PageDrawerParameters parameters) throws IOException
         {
             super(parameters);
-            addOperator(new OpaqueDrawObject());
+            addOperator(new OpaqueDrawObject(this));
         }
     }
 
@@ -103,6 +104,10 @@ public class OpaquePDFRenderer extends PDFRenderer
     // but doesn't call showTransparencyGroup
     private static class OpaqueDrawObject extends GraphicsOperatorProcessor
     {
+        public OpaqueDrawObject(PDFGraphicsStreamEngine context)
+        {
+            super(context);
+        }
 
         private static final Log LOG = LogFactory.getLog(OpaqueDrawObject.class);
 
@@ -119,6 +124,7 @@ public class OpaquePDFRenderer extends PDFRenderer
                 return;
             }
             COSName objectName = (COSName) base0;
+            PDFGraphicsStreamEngine context = getGraphicsContext();
             PDXObject xobject = context.getResources().getXObject(objectName);
 
             if (xobject == null)

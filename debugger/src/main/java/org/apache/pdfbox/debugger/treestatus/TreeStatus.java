@@ -62,7 +62,8 @@ public final class TreeStatus
 
     /**
      * Provides TreePath for a given status string. In case of invalid string returns null.
-     * @param statusString
+     * 
+     * @param statusString the status string of the TreePath
      * @return path.
      */
     public TreePath getPathForString(String statusString)

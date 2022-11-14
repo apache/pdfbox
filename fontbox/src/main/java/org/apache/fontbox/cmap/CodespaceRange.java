@@ -29,14 +29,14 @@ public class CodespaceRange
     
     /**
      * Creates a new instance of CodespaceRange. The length of both arrays has to be the same.<br>
-     * For one byte ranges startBytes and endBytes define a linear range of values. Double byte values define a rectangular
-     * range not a linear range. Examples: <br>
+     * For one byte ranges startBytes and endBytes define a linear range of values. Double byte values define a
+     * rectangular range not a linear range. Examples: <br>
      * &lt;00&gt; &lt;20&gt; defines a linear range from 0x00 up to 0x20.<br>
-     * &lt;8140&gt; to &lt;9FFC&gt; defines a rectangular range. The high byte has to be within 0x81 and 0x9F and the low
-     * byte has to be within 0x40 and 0xFC
+     * &lt;8140&gt; to &lt;9FFC&gt; defines a rectangular range. The high byte has to be within 0x81 and 0x9F and the
+     * low byte has to be within 0x40 and 0xFC
      * 
-     * @param startBytes
-     * @param endBytes
+     * @param startBytes start of the range
+     * @param endBytes start of the range
      */
     public CodespaceRange(byte[] startBytes, byte[] endBytes)
     {
@@ -72,6 +72,10 @@ public class CodespaceRange
 
     /**
      * Returns true if the given code bytes match this codespace range.
+     * 
+     * @param code the code bytes to be matched
+     * 
+     * @return true if the given code bytes match this codespace range
      */
     public boolean matches(byte[] code)
     {
@@ -80,6 +84,11 @@ public class CodespaceRange
 
     /**
      * Returns true if the given number of code bytes match this codespace range.
+     *
+     * @param code the code bytes to be matched
+     * @param codeLen the code length to be used for matching
+     * 
+     * @return true if the given number of code bytes match this codespace range
      */
     public boolean isFullMatch(byte[] code, int codeLen)
     {

@@ -45,7 +45,11 @@ public class SmallMap<K, V> implements Map<K, V>
     {
     }
     
-    /** Creates map filled with entries from provided map. */
+    /**
+     * Creates map filled with entries from provided map.
+     * 
+     * @param initMap the map whose mappings are to be placed in this map
+     */
     public SmallMap(Map<? extends K, ? extends V> initMap)
     {
         putAll(initMap);

@@ -60,6 +60,8 @@ public class Type2CharString extends Type1CharString
 
     /**
      * Return the GID (glyph id) of this charstring.
+     * 
+     * @return the GID of this charstring
      */
     public int getGID()
     {

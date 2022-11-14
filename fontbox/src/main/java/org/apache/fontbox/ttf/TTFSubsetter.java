@@ -67,6 +67,8 @@ public final class TTFSubsetter
      * Creates a subsetter for the given font.
      *
      * @param ttf the font to be subset
+     * 
+     * @throws IOException if there is an error reading the font data
      */
     public TTFSubsetter(TrueTypeFont ttf) throws IOException
     {
@@ -78,6 +80,8 @@ public final class TTFSubsetter
      * 
      * @param ttf the font to be subset
      * @param tables optional tables to keep if present
+     * 
+     * @throws IOException if there is an error reading the font data
      */
     public TTFSubsetter(TrueTypeFont ttf, List<String> tables) throws IOException
     {
@@ -97,7 +101,7 @@ public final class TTFSubsetter
     /**
      * Sets the prefix to add to the font's PostScript name.
      *
-     * @param prefix
+     * @param prefix to be used as prefix for the PostScript name of the font
      */
     public void setPrefix(String prefix)
     {
@@ -131,6 +135,10 @@ public final class TTFSubsetter
 
     /**
      * Returns the map of new -&gt; old GIDs.
+     * 
+     * @return the GID map
+     * 
+     * @throws IOException if the font data could not be read
      */
     public Map<Integer, Integer> getGIDMap() throws IOException
     {
@@ -1032,7 +1040,7 @@ public final class TTFSubsetter
             for (Map.Entry<String, byte[]> entry : tables.entrySet())
             {
                 checksum += writeTableHeader(out, entry.getKey(), offset, entry.getValue());
-                offset += (entry.getValue().length + 3) / 4 * 4;
+                offset += (entry.getValue().length + 3L) / 4 * 4;
             }
             checksum = 0xB1B0AFBAL - (checksum & 0xffffffffL);
 

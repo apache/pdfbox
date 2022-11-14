@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
@@ -37,6 +38,11 @@ public class CurveToReplicateInitialPoint extends GraphicsOperatorProcessor
 {
     private static final Log LOG = LogFactory.getLog(CurveToReplicateInitialPoint.class);
     
+    public CurveToReplicateInitialPoint(PDFGraphicsStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -53,6 +59,7 @@ public class CurveToReplicateInitialPoint extends GraphicsOperatorProcessor
         COSNumber x3 = (COSNumber)operands.get(2);
         COSNumber y3 = (COSNumber)operands.get(3);
 
+        PDFGraphicsStreamEngine context = getGraphicsContext();
         Point2D currentPoint = context.getCurrentPoint();
 
         Point2D.Float point2 = context.transformedPoint(x2.floatValue(), y2.floatValue());

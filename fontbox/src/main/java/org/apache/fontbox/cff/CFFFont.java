@@ -150,6 +150,10 @@ public abstract class CFFFont implements FontBoxFont
     
     /**
      * Returns the CFF data.
+     * 
+     * @return the cff data as byte array
+     * 
+     * @throws IOException if the data could not be read
      */
     public byte[] getData() throws IOException
     {
@@ -158,6 +162,8 @@ public abstract class CFFFont implements FontBoxFont
     
     /**
      * Returns the number of charstrings in the font.
+     * 
+     * @return the number of charstrings
      */
     public int getNumCharStrings()
     {
@@ -188,6 +194,9 @@ public abstract class CFFFont implements FontBoxFont
      * Returns the Type 2 charstring for the given CID.
      *
      * @param cidOrGid CID for CIFFont, or GID for Type 1 font
+     * 
+     * @return the Type2 charstring of the given cid/gid
+     * 
      * @throws IOException if the charstring could not be read
      */
     public abstract Type2CharString getType2CharString(int cidOrGid) throws IOException;

@@ -212,6 +212,8 @@ public class PDPage implements COSObjectable, PDContentStream
 
     /**
      * Returns true if this page has one or more content streams.
+     * 
+     * @return true if the page has a non empty content stream, otherwise false
      */
     public boolean hasContents()
     {
@@ -299,8 +301,10 @@ public class PDPage implements COSObjectable, PDContentStream
     }
 
     /**
-     * A rectangle, expressed in default user space units, defining the boundaries of the physical
-     * medium on which the page is intended to be displayed or printed.
+     * A rectangle, expressed in default user space units, defining the boundaries of the physical medium on which the
+     * page is intended to be displayed or printed.
+     * 
+     * @return the media box of the page
      */
     public PDRectangle getMediaBox()
     {
@@ -339,9 +343,10 @@ public class PDPage implements COSObjectable, PDContentStream
     }
 
     /**
-     * A rectangle, expressed in default user space units, defining the visible region of default
-     * user space. When the page is displayed or printed, its contents are to be clipped (cropped)
-     * to this rectangle.
+     * A rectangle, expressed in default user space units, defining the visible region of default user space. When the
+     * page is displayed or printed, its contents are to be clipped (cropped) to this rectangle.
+     * 
+     * @return the cropbox of the page
      */
     public PDRectangle getCropBox()
     {
@@ -715,6 +720,8 @@ public class PDPage implements COSObjectable, PDContentStream
 
     /**
      * Returns the resource cache associated with this page, or null if there is none.
+     * 
+     * @return the resource cache of the current page
      */
     public ResourceCache getResourceCache()
     {

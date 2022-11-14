@@ -19,6 +19,8 @@ package org.apache.pdfbox.contentstream.operator.state;
 
 import java.io.IOException;
 import java.util.List;
+
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
@@ -33,6 +35,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
  */
 public class SetFlatness extends OperatorProcessor
 {
+    public SetFlatness(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -45,7 +52,7 @@ public class SetFlatness extends OperatorProcessor
             return;
         }
         COSNumber value = (COSNumber) operands.get(0);
-        context.getGraphicsState().setFlatness(value.floatValue());
+        getContext().getGraphicsState().setFlatness(value.floatValue());
     }
 
     @Override

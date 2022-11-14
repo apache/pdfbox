@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
@@ -33,6 +34,11 @@ import java.io.IOException;
  */
 public class SetTextRise extends OperatorProcessor
 {
+    public SetTextRise(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -46,7 +52,7 @@ public class SetTextRise extends OperatorProcessor
             return;
         }
         COSNumber rise = (COSNumber) base;
-        context.getGraphicsState().getTextState().setRise( rise.floatValue() );
+        getContext().getGraphicsState().getTextState().setRise(rise.floatValue());
     }
 
     @Override

@@ -65,6 +65,8 @@ public final class GlyphList
 
     /**
      * Returns the Adobe Glyph List (AGL).
+     * 
+     * @return the Adobe glyph list
      */
     public static GlyphList getAdobeGlyphList()
     {
@@ -73,6 +75,8 @@ public final class GlyphList
 
     /**
      * Returns the Zapf Dingbats glyph list.
+     * 
+     * @return the Zapf Dingbats glyph list
      */
     public static GlyphList getZapfDingbats()
     {

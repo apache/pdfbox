@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
@@ -37,6 +37,11 @@ public class DrawObject extends OperatorProcessor
 {
     private static final Log LOG = LogFactory.getLog(DrawObject.class);
 
+    public DrawObject(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -51,6 +56,7 @@ public class DrawObject extends OperatorProcessor
         }
         COSName name = (COSName) base0;
 
+        PDFStreamEngine context = getContext();
         if (context.getResources().isImageXObject(name))
         {
             // we're done here, don't decode images when doing text extraction

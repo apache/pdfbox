@@ -49,7 +49,7 @@ public class PDFTemplateCreator
     /**
      * Constructor.
      * 
-     * @param templateBuilder
+     * @param templateBuilder the template builder
      */
     public PDFTemplateCreator(PDFTemplateBuilder templateBuilder)
     {
@@ -59,6 +59,7 @@ public class PDFTemplateCreator
     /**
      * Returns the PDFTemplateStructure object.
      * 
+     * @return the template for the structure
      */
     public PDFTemplateStructure getPdfStructure()
     {
@@ -68,9 +69,9 @@ public class PDFTemplateCreator
     /**
      * Build a PDF with a visible signature step by step, and return it as a stream.
      *
-     * @param properties
-     * @return InputStream
-     * @throws IOException
+     * @param properties properties to be used for the creation
+     * @return InputStream stream containing the pdf holding the visible signature
+     * @throws IOException if the PDF could not be created
      */
     public InputStream buildPDF(PDVisibleSignDesigner properties) throws IOException
     {

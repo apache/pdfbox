@@ -634,17 +634,17 @@ public class GlyphSubstitutionTable extends TTFTable
     }
 
     /**
-     * Apply glyph substitutions to the supplied gid. The applicable substitutions are determined by
-     * the {@code scriptTags} which indicate the language of the gid, and by the list of
-     * {@code enabledFeatures}.
+     * Apply glyph substitutions to the supplied gid. The applicable substitutions are determined by the
+     * {@code scriptTags} which indicate the language of the gid, and by the list of {@code enabledFeatures}.
      *
-     * To ensure that a single gid isn't mapped to multiple substitutions, subsequent invocations
-     * with the same gid will return the same result as the first, regardless of script or enabled
-     * features.
+     * To ensure that a single gid isn't mapped to multiple substitutions, subsequent invocations with the same gid will
+     * return the same result as the first, regardless of script or enabled features.
      *
      * @param gid GID
      * @param scriptTags Script tags applicable to the gid (see {@link OpenTypeScript})
      * @param enabledFeatures list of features to apply
+     * 
+     * @return the id of the glyph substituion
      */
     public int getSubstitution(int gid, String[] scriptTags, List<String> enabledFeatures)
     {
@@ -674,13 +674,14 @@ public class GlyphSubstitutionTable extends TTFTable
     }
 
     /**
-     * For a substitute-gid (obtained from {@link #getSubstitution(int, String[], List)}), retrieve
-     * the original gid.
+     * For a substitute-gid (obtained from {@link #getSubstitution(int, String[], List)}), retrieve the original gid.
      *
-     * Only gids previously substituted by this instance can be un-substituted. If you are trying to
-     * unsubstitute before you substitute, something is wrong.
+     * Only gids previously substituted by this instance can be un-substituted. If you are trying to unsubstitute before
+     * you substitute, something is wrong.
      *
      * @param sgid Substitute GID
+     * 
+     * @return the original gid of a substitute-gid
      */
     public int getUnsubstitution(int sgid)
     {

@@ -31,16 +31,17 @@ public interface PDVectorFont
      * Returns the glyph path for the given character code.
      *
      * @param code character code in a PDF. Not to be confused with unicode.
+     * @return the glyph path for the given character code
      * @throws java.io.IOException if the font could not be read
      */
     GeneralPath getPath(int code) throws IOException;
 
     /**
-     * Returns the normalized glyph path for the given character code in a PDF. The resulting path
-     * is normalized to the PostScript 1000 unit square, and fallback glyphs are returned where
-     * appropriate, e.g. for missing glyphs.
+     * Returns the normalized glyph path for the given character code in a PDF. The resulting path is normalized to the
+     * PostScript 1000 unit square, and fallback glyphs are returned where appropriate, e.g. for missing glyphs.
      *
      * @param code character code in a PDF. Not to be confused with unicode.
+     * @return the normalized glyph path for the given character code
      * @throws java.io.IOException if the font could not be read
      */
     GeneralPath getNormalizedPath(int code) throws IOException;
@@ -49,6 +50,8 @@ public interface PDVectorFont
      * Returns true if this font contains a glyph for the given character code in a PDF.
      *
      * @param code character code in a PDF. Not to be confused with unicode.
+     * @return true if this font contains a glyph for the given character code
+     * @throws java.io.IOException if the font could not be read
      */
     boolean hasGlyph(int code) throws IOException;
 }

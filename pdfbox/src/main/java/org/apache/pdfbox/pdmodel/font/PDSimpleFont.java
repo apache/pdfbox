@@ -129,12 +129,16 @@ public abstract class PDSimpleFont extends PDFont
     /**
      * Called by readEncoding() if the encoding needs to be extracted from the font file.
      *
+     * @return encoding of the font
+     * 
      * @throws IOException if the font file could not be read.
      */
     protected abstract Encoding readEncodingFromFont() throws IOException;
 
     /**
-     * Returns the Encoding vector.
+     * Returns the Encoding.
+     * 
+     * @return encoding
      */
     public Encoding getEncoding()
     {
@@ -142,7 +146,9 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     /**
-     * Returns the Encoding vector.
+     * Returns the glyphlist.
+     * 
+     * @return the glyphlist
      */
     public GlyphList getGlyphList()
     {
@@ -150,8 +156,9 @@ public abstract class PDSimpleFont extends PDFont
     }
     
     /**
-     * Returns true the font is a symbolic (that is, it does not use the Adobe Standard Roman
-     * character set).
+     * Returns true if the font is a symbolic (that is, it does not use the Adobe Standard Roman character set).
+     * 
+     * @return true if the font is a symbolic
      */
     public final boolean isSymbolic()
     {
@@ -172,8 +179,9 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     /**
-     * Internal implementation of isSymbolic, allowing for the fact that the result may be
-     * indeterminate.
+     * Internal implementation of isSymbolic, allowing for the fact that the result may be indeterminate.
+     * 
+     * @return true if isSymbolic
      */
     protected Boolean isFontSymbolic()
     {
@@ -234,8 +242,9 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     /**
-     * Returns the value of the symbolic flag,  allowing for the fact that the result may be
-     * indeterminate.
+     * Returns the value of the symbolic flag, allowing for the fact that the result may be indeterminate.
+     * 
+     * @return the value of the isSymbolic flag form the font descriptor
      */
     protected final Boolean getSymbolicFlag()
     {
@@ -385,10 +394,12 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     /**
-     * Returns the path for the character with the given name. For some fonts, GIDs may be used
-     * instead of names when calling this method.
-     *
-     * @return glyph path
+     * Returns the path for the character with the given name. For some fonts, GIDs may be used instead of names when
+     * calling this method. *
+     * 
+     * @param name glyph name
+     * @return glyph path of the character with the given name
+     * 
      * @throws IOException if the path could not be read
      */
     public abstract GeneralPath getPath(String name) throws IOException;
@@ -396,12 +407,17 @@ public abstract class PDSimpleFont extends PDFont
     /**
      * Returns true if the font contains the character with the given name.
      *
+     * @param name glyph name
+     * @return true if the font contains the character with the given name
+     * 
      * @throws IOException if the path could not be read
      */
     public abstract boolean hasGlyph(String name) throws IOException;
 
     /**
      * Returns the embedded or system font used for rendering. This is never null.
+     * 
+     * @return the embedded or system font used for rendering
      */
     public abstract FontBoxFont getFontBoxFont();
 

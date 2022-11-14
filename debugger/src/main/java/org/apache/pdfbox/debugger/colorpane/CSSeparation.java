@@ -59,7 +59,7 @@ public class CSSeparation implements ChangeListener, ActionListener
      *
      * @param array COSArray instance of the Separation color space.
      * 
-     * @throws java.io.IOException
+     * @throws IOException if the instance could not be created
      */
     public CSSeparation(COSArray array) throws IOException
     {
@@ -194,7 +194,8 @@ public class CSSeparation implements ChangeListener, ActionListener
 
     /**
      * input changed in slider.
-     * @param changeEvent
+     * 
+     * @param changeEvent the event of the change
      */
     @Override
     public void stateChanged(ChangeEvent changeEvent)
@@ -214,7 +215,8 @@ public class CSSeparation implements ChangeListener, ActionListener
 
     /**
      * input changed in text field.
-     * @param actionEvent
+     * 
+     * @param actionEvent the event of the action
      */
     @Override
     public void actionPerformed(ActionEvent actionEvent)

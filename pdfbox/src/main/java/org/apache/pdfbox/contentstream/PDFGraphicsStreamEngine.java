@@ -101,80 +101,84 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
 
     /**
      * Constructor.
+     * 
+     * @param page the page the content stream belongs to
      */
     protected PDFGraphicsStreamEngine(PDPage page)
     {
         this.page = page;
 
-        addOperator(new CloseFillNonZeroAndStrokePath());
-        addOperator(new FillNonZeroAndStrokePath());
-        addOperator(new CloseFillEvenOddAndStrokePath());
-        addOperator(new FillEvenOddAndStrokePath());
-        addOperator(new BeginInlineImage());
-        addOperator(new BeginText());
-        addOperator(new CurveTo());
-        addOperator(new Concatenate());
-        addOperator(new SetStrokingColorSpace());
-        addOperator(new SetNonStrokingColorSpace());
-        addOperator(new SetLineDashPattern());
-        addOperator(new DrawObject()); // special graphics version
-        addOperator(new EndText());
-        addOperator(new FillNonZeroRule());
-        addOperator(new LegacyFillNonZeroRule());
-        addOperator(new FillEvenOddRule());
-        addOperator(new SetStrokingDeviceGrayColor());
-        addOperator(new SetNonStrokingDeviceGrayColor());
-        addOperator(new SetGraphicsStateParameters());
-        addOperator(new ClosePath());
-        addOperator(new SetFlatness());
-        addOperator(new SetLineJoinStyle());
-        addOperator(new SetLineCapStyle());
-        addOperator(new SetStrokingDeviceCMYKColor());
-        addOperator(new SetNonStrokingDeviceCMYKColor());
-        addOperator(new LineTo());
-        addOperator(new MoveTo());
-        addOperator(new SetLineMiterLimit());
-        addOperator(new EndPath());
-        addOperator(new Save());
-        addOperator(new Restore());
-        addOperator(new AppendRectangleToPath());
-        addOperator(new SetStrokingDeviceRGBColor());
-        addOperator(new SetNonStrokingDeviceRGBColor());
-        addOperator(new SetRenderingIntent());
-        addOperator(new CloseAndStrokePath());
-        addOperator(new StrokePath());
-        addOperator(new SetStrokingColor());
-        addOperator(new SetNonStrokingColor());
-        addOperator(new SetStrokingColorN());
-        addOperator(new SetNonStrokingColorN());
-        addOperator(new ShadingFill());
-        addOperator(new NextLine());
-        addOperator(new SetCharSpacing());
-        addOperator(new MoveText());
-        addOperator(new MoveTextSetLeading());
-        addOperator(new SetFontAndSize());
-        addOperator(new ShowText());
-        addOperator(new ShowTextAdjusted());
-        addOperator(new SetTextLeading());
-        addOperator(new SetMatrix());
-        addOperator(new SetTextRenderingMode());
-        addOperator(new SetTextRise());
-        addOperator(new SetWordSpacing());
-        addOperator(new SetTextHorizontalScaling());
-        addOperator(new CurveToReplicateInitialPoint());
-        addOperator(new SetLineWidth());
-        addOperator(new ClipNonZeroRule());
-        addOperator(new ClipEvenOddRule());
-        addOperator(new CurveToReplicateFinalPoint());
-        addOperator(new ShowTextLine());
-        addOperator(new ShowTextLineAndSpace());
-        addOperator(new BeginMarkedContentSequence());
-        addOperator(new BeginMarkedContentSequenceWithProperties());
-        addOperator(new EndMarkedContentSequence());
+        addOperator(new CloseFillNonZeroAndStrokePath(this));
+        addOperator(new FillNonZeroAndStrokePath(this));
+        addOperator(new CloseFillEvenOddAndStrokePath(this));
+        addOperator(new FillEvenOddAndStrokePath(this));
+        addOperator(new BeginInlineImage(this));
+        addOperator(new BeginText(this));
+        addOperator(new CurveTo(this));
+        addOperator(new Concatenate(this));
+        addOperator(new SetStrokingColorSpace(this));
+        addOperator(new SetNonStrokingColorSpace(this));
+        addOperator(new SetLineDashPattern(this));
+        addOperator(new DrawObject(this)); // special graphics version
+        addOperator(new EndText(this));
+        addOperator(new FillNonZeroRule(this));
+        addOperator(new LegacyFillNonZeroRule(this));
+        addOperator(new FillEvenOddRule(this));
+        addOperator(new SetStrokingDeviceGrayColor(this));
+        addOperator(new SetNonStrokingDeviceGrayColor(this));
+        addOperator(new SetGraphicsStateParameters(this));
+        addOperator(new ClosePath(this));
+        addOperator(new SetFlatness(this));
+        addOperator(new SetLineJoinStyle(this));
+        addOperator(new SetLineCapStyle(this));
+        addOperator(new SetStrokingDeviceCMYKColor(this));
+        addOperator(new SetNonStrokingDeviceCMYKColor(this));
+        addOperator(new LineTo(this));
+        addOperator(new MoveTo(this));
+        addOperator(new SetLineMiterLimit(this));
+        addOperator(new EndPath(this));
+        addOperator(new Save(this));
+        addOperator(new Restore(this));
+        addOperator(new AppendRectangleToPath(this));
+        addOperator(new SetStrokingDeviceRGBColor(this));
+        addOperator(new SetNonStrokingDeviceRGBColor(this));
+        addOperator(new SetRenderingIntent(this));
+        addOperator(new CloseAndStrokePath(this));
+        addOperator(new StrokePath(this));
+        addOperator(new SetStrokingColor(this));
+        addOperator(new SetNonStrokingColor(this));
+        addOperator(new SetStrokingColorN(this));
+        addOperator(new SetNonStrokingColorN(this));
+        addOperator(new ShadingFill(this));
+        addOperator(new NextLine(this));
+        addOperator(new SetCharSpacing(this));
+        addOperator(new MoveText(this));
+        addOperator(new MoveTextSetLeading(this));
+        addOperator(new SetFontAndSize(this));
+        addOperator(new ShowText(this));
+        addOperator(new ShowTextAdjusted(this));
+        addOperator(new SetTextLeading(this));
+        addOperator(new SetMatrix(this));
+        addOperator(new SetTextRenderingMode(this));
+        addOperator(new SetTextRise(this));
+        addOperator(new SetWordSpacing(this));
+        addOperator(new SetTextHorizontalScaling(this));
+        addOperator(new CurveToReplicateInitialPoint(this));
+        addOperator(new SetLineWidth(this));
+        addOperator(new ClipNonZeroRule(this));
+        addOperator(new ClipEvenOddRule(this));
+        addOperator(new CurveToReplicateFinalPoint(this));
+        addOperator(new ShowTextLine(this));
+        addOperator(new ShowTextLineAndSpace(this));
+        addOperator(new BeginMarkedContentSequence(this));
+        addOperator(new BeginMarkedContentSequenceWithProperties(this));
+        addOperator(new EndMarkedContentSequence(this));
     }
 
     /**
      * Returns the page.
+     * 
+     * @return the current page
      */
     protected final PDPage getPage()
     {
@@ -183,6 +187,13 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
 
     /**
      * Append a rectangle to the current path.
+     * 
+     * @param p0 starting coordinate of the rectangle
+     * @param p1 second coordinate of the rectangle
+     * @param p2 third coordinate of the rectangle
+     * @param p3 last coordinate of the rectangle
+     * 
+     * @throws IOException if the rectangle could not be appended
      */
     public abstract void appendRectangle(Point2D p0, Point2D p1,
                                          Point2D p2, Point2D p3) throws IOException;
@@ -191,29 +202,52 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
      * Draw the image.
      *
      * @param pdImage The image to draw.
+     * 
+     * @throws IOException if the image could not be drawn
      */
     public abstract void drawImage(PDImage pdImage) throws IOException;
 
     /**
-     * Modify the current clipping path by intersecting it with the current path.
-     * The clipping path will not be updated until the succeeding painting operator is called.
+     * Modify the current clipping path by intersecting it with the current path. The clipping path will not be updated
+     * until the succeeding painting operator is called.
      *
      * @param windingRule The winding rule which will be used for clipping.
+     * 
+     * @throws IOException if the clipping path could not be modified
      */
     public abstract void clip(int windingRule) throws IOException;
 
     /**
      * Starts a new path at (x,y).
+     * 
+     * @param x the x-coordinate to move to
+     * @param y the y-coordinate to move to
+     * 
+     * @throws IOException if the something went wrong when moving to the given coordinate
      */
     public abstract void moveTo(float x, float y) throws IOException;
 
     /**
      * Draws a line from the current point to (x,y).
+     * 
+     * @param x the X-coordinate of the ending-point of the line to be drawn
+     * @param y the Y-coordinate of the ending-point of the line to be drawn
+     * 
+     * @throws IOException if the line could not be drawn
      */
     public abstract void lineTo(float x, float y) throws IOException;
 
     /**
      * Draws a curve from the current point to (x3,y3) using (x1,y1) and (x2,y2) as control points.
+     * 
+     * @param x1 the X coordinate of the first B&eacute;zier control point
+     * @param y1 the Y coordinate of the first B&eacute;zier control point
+     * @param x2 the X coordinate of the second B&eacute;zier control point
+     * @param y2 the Y coordinate of the second B&eacute;zier control point
+     * @param x3 the X coordinate of the final end point
+     * @param y3 the Y coordinate of the final end point
+     * 
+     * @throws IOException if the curve could not be drawn
      */
     public abstract void curveTo(float x1, float y1,
                                  float x2, float y2,
@@ -221,16 +255,24 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
 
     /**
      * Returns the current point of the current path.
+     * 
+     * @return the current point or null
+     * 
+     * @throws IOException if the something went wrong when providing the current point
      */
     public abstract Point2D getCurrentPoint() throws IOException;
 
     /**
      * Closes the current path.
+     * 
+     * @throws IOException if the current path could not be closed
      */
     public abstract void closePath() throws IOException;
 
     /**
      * Ends the current path without filling or stroking it. The clipping path is updated here.
+     * 
+     * @throws IOException if the current path could not be ended
      */
     public abstract void endPath() throws IOException;
 
@@ -245,6 +287,8 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
      * Fill the path.
      *
      * @param windingRule The winding rule this path will use.
+     * 
+     * @throws IOException if the path could not be filled
      */
     public abstract void fillPath(int windingRule) throws IOException;
 
@@ -252,6 +296,8 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
      * Fills and then strokes the path.
      *
      * @param windingRule The winding rule this path will use.
+     * 
+     * @throws IOException if the path could not be filled and stroke
      */
     public abstract void fillAndStrokePath(int windingRule) throws IOException;
 
@@ -259,6 +305,8 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
      * Fill with Shading.
      *
      * @param shadingName The name of the Shading Dictionary to use for this fill instruction.
+     * 
+     * @throws IOException if the path could not be filled using the given shading
      */
     public abstract void shadingFill(COSName shadingName) throws IOException;
 }

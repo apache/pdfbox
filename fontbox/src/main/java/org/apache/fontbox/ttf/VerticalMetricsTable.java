@@ -102,6 +102,8 @@ public class VerticalMetricsTable extends TTFTable
      * Returns the top sidebearing for the given GID
      *
      * @param gid GID
+     * @return top sidebearing for the given GID
+     * 
      */
     public int getTopSideBearing(int gid)
     {
@@ -119,6 +121,7 @@ public class VerticalMetricsTable extends TTFTable
      * Returns the advance height for the given GID.
      *
      * @param gid GID
+     * @return advance height for the given GID
      */
     public int getAdvanceHeight(int gid)
     {

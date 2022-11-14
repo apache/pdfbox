@@ -33,6 +33,8 @@ public final class Vector
 
     /**
      * Returns the x magnitude.
+     * 
+     * @return the x magnitude
      */
     public float getX()
     {
@@ -41,6 +43,8 @@ public final class Vector
 
     /**
      * Returns the y magnitude.
+     * 
+     * @return the y magnitude
      */
     public float getY()
     {
@@ -51,6 +55,7 @@ public final class Vector
      * Returns a new vector scaled by both x and y.
      *
      * @param sxy x and y scale
+     * @return a new vector scaled by both x and y
      */
     public Vector scale(float sxy)
     {

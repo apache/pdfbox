@@ -572,7 +572,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     /**
      * Set the blending mode.
      * 
-     * @param bm 
+     * @param bm blend mode
      */
     public void setBlendMode(BlendMode bm)
     {

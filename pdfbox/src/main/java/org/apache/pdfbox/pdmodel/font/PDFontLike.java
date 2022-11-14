@@ -31,21 +31,31 @@ public interface PDFontLike
 {
     /**
      * Returns the name of this font, either the PostScript "BaseName" or the Type 3 "Name".
+     * 
+     * @return the name of the font
      */
     String getName();
 
     /**
      * Returns the font descriptor, may be null.
+     * 
+     * @return the font descriptor or null
      */
     PDFontDescriptor getFontDescriptor();
 
     /**
      * Returns the font matrix, which represents the transformation from glyph space to text space.
+     * 
+     * @return the font matrix
      */
     Matrix getFontMatrix();
 
     /**
      * Returns the font's bounding box.
+     * 
+     * @return the bounding box
+     * 
+     * @throws IOException if the bounding box could not be read
      */
     BoundingBox getBoundingBox() throws IOException;
 
@@ -60,41 +70,48 @@ public interface PDFontLike
     Vector getPositionVector(int code);
 
     /**
-     * Returns the height of the given character, in glyph space. This can be expensive to
-     * calculate. Results are only approximate.<p>
+     * Returns the height of the given character, in glyph space. This can be expensive to calculate. Results are only
+     * approximate.
+     * <p>
      * 
-     * Warning: This method is deprecated in PDFBox 2.0 because there is no meaningful value
-     * which it can return. The {@link #getWidth(int)} method returns the advance width of a glyph,
-     * but there is no corresponding advance height. The logical height of a character is the same
-     * for every character in a font, so if you want that, retrieve the font bbox's height. 
-     * Otherwise if you want the visual bounds of the glyph then call getPath(..) on the appropriate
-     * PDFont subclass to retrieve the glyph outline as a GeneralPath. See the cyan rectangles in
-     * the <b>DrawPrintTextLocations.java</b> example to see this in action.
+     * Warning: This method is deprecated in PDFBox 2.0 because there is no meaningful value which it can return. The
+     * {@link #getWidth(int)} method returns the advance width of a glyph, but there is no corresponding advance height.
+     * The logical height of a character is the same for every character in a font, so if you want that, retrieve the
+     * font bbox's height. Otherwise if you want the visual bounds of the glyph then call getPath(..) on the appropriate
+     * PDFont subclass to retrieve the glyph outline as a GeneralPath. See the cyan rectangles in the
+     * <b>DrawPrintTextLocations.java</b> example to see this in action.
      * 
      * @param code character code
-     * @deprecated Use
-     * {@link #getBoundingBox() getBoundingBox()}.{@link BoundingBox#getHeight() getHeight()}
-     * instead.
+     * @return the height of the given character
+     * @throws IOException if the height could not be read
+     * 
+     * @deprecated Use {@link #getBoundingBox() getBoundingBox()}.{@link BoundingBox#getHeight() getHeight()} instead.
      */
     @Deprecated
     float getHeight(int code) throws IOException;
 
     /**
-     * Returns the advance width of the given character, in glyph space.<p>
+     * Returns the advance width of the given character, in glyph space.
+     * <p>
      * 
-     * If you want the visual bounds of the glyph then call getPath(..) on the appropriate
-     * PDFont subclass to retrieve the glyph outline as a GeneralPath instead. See the cyan
-     * rectangles in the <b>DrawPrintTextLocations.java</b> example to see this in action.
+     * If you want the visual bounds of the glyph then call getPath(..) on the appropriate PDFont subclass to retrieve
+     * the glyph outline as a GeneralPath instead. See the cyan rectangles in the <b>DrawPrintTextLocations.java</b>
+     * example to see this in action.
      *
      * @param code character code
+     * @return the width of the given character
+     * 
+     * @throws IOException if the width could not be read
      */
     float getWidth(int code) throws IOException;
 
     /**
-     * Returns true if the Font dictionary specifies an explicit width for the given glyph.
-     * This includes Width, W but not default widths entries.
+     * Returns true if the Font dictionary specifies an explicit width for the given glyph. This includes Width, W but
+     * not default widths entries.
      * 
      * @param code character code
+     * @return true if the Font dictionary specifies an explicit width for the given glyph
+     * 
      * @throws IOException if the font could not be read
      */
     boolean hasExplicitWidth(int code) throws IOException;
@@ -110,11 +127,15 @@ public interface PDFontLike
 
     /**
      * Returns true if the font file is embedded in the PDF.
+     * 
+     * @return true if the font file is embedded in the PDF
      */
     boolean isEmbedded();
 
     /**
      * Returns true if the embedded font file is damaged.
+     * 
+     * @return true if the embedded font file is damaged
      */
     boolean isDamaged();
 

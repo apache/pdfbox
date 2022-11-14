@@ -108,7 +108,6 @@ public abstract class PDFStreamEngine
      */
     public final void addOperator(OperatorProcessor op)
     {
-        op.setContext(this);
         operators.put(op.getName(), op);
     }
 
@@ -192,8 +191,9 @@ public abstract class PDFStreamEngine
 
     /**
      * Processes a soft mask transparency group stream.
-     * @param group
-     * @throws IOException
+     * 
+     * @param group transparency group used for the soft mask
+     * @throws IOException if the transparency group cannot be processed
      */
     protected void processSoftMask(PDTransparencyGroup group) throws IOException
     {
@@ -206,8 +206,9 @@ public abstract class PDFStreamEngine
 
     /**
      * Processes a transparency group stream.
-     * @param group
-     * @throws IOException
+     * 
+     * @param group transparency group to be processed
+     * @throws IOException if the transparency group cannot be processed
      */
     protected void processTransparencyGroup(PDTransparencyGroup group) throws IOException
     {
@@ -470,7 +471,7 @@ public abstract class PDFStreamEngine
      * Process a child stream of the given page. Cannot be used with {@link #processPage(PDPage)}.
      *
      * @param contentStream the child content stream
-     * @param page
+     * @param page the page to be used for processing
      * @throws IOException if there is an exception while processing the stream
      */
     protected void processChildStream(PDContentStream contentStream, PDPage page) throws IOException
@@ -893,7 +894,6 @@ public abstract class PDFStreamEngine
         OperatorProcessor processor = operators.get(name);
         if (processor != null)
         {
-            processor.setContext(this);
             try
             {
                 processor.process(operator, operands);
@@ -914,6 +914,8 @@ public abstract class PDFStreamEngine
      *
      * @param operator The unknown operator.
      * @param operands The list of operands.
+     * 
+     * @throws IOException if there is an error processing the unsupported operator
      */
     protected void unsupportedOperator(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -925,29 +927,32 @@ public abstract class PDFStreamEngine
      *
      * @param operator The unknown operator.
      * @param operands The list of operands.
+     * @param exception the excpetion which occured when processing the operator
+     * 
+     * @throws IOException if there is an error processing the operator exception
      */
-    protected void operatorException(Operator operator, List<COSBase> operands, IOException e)
+    protected void operatorException(Operator operator, List<COSBase> operands, IOException exception)
             throws IOException
     {
-        if (e instanceof MissingOperandException ||
-            e instanceof MissingResourceException ||
-            e instanceof MissingImageReaderException)
+        if (exception instanceof MissingOperandException ||
+            exception instanceof MissingResourceException ||
+            exception instanceof MissingImageReaderException)
         {
-            LOG.error(e.getMessage());
+            LOG.error(exception.getMessage());
         }
-        else if (e instanceof EmptyGraphicsStackException)
+        else if (exception instanceof EmptyGraphicsStackException)
         {
-            LOG.warn(e.getMessage());
+            LOG.warn(exception.getMessage());
         }
         else if (operator.getName().equals("Do"))
         {
             // todo: this too forgiving, but PDFBox has always worked this way for DrawObject
             //       some careful refactoring is needed
-            LOG.warn(e.getMessage());
+            LOG.warn(exception.getMessage());
         }
         else
         {
-            throw e;
+            throw exception;
         }
     }
 
@@ -982,6 +987,9 @@ public abstract class PDFStreamEngine
 
     /**
      * Restores the entire graphics stack.
+     * 
+     * @param snapshot the graphics state to be restored
+     * 
      */
     protected final void restoreGraphicsStack(Deque<PDGraphicsState> snapshot)
     {
@@ -1062,6 +1070,8 @@ public abstract class PDFStreamEngine
 
     /**
      * Returns the current page.
+     * 
+     * @return the current page
      */
     public PDPage getCurrentPage()
     {
@@ -1070,6 +1080,8 @@ public abstract class PDFStreamEngine
 
     /**
      * Gets the stream's initial matrix.
+     * 
+     * @return the initial matrix
      */
     public Matrix getInitialMatrix()
     {
@@ -1078,6 +1090,11 @@ public abstract class PDFStreamEngine
 
     /**
      * Transforms a point using the CTM.
+     * 
+     * @param x the x-coordinate of the point to be transformed
+     * @param y the y-coordinate of the point to be transformed
+     * 
+     * @return the transformed point
      */
     public Point2D.Float transformedPoint(float x, float y)
     {
@@ -1089,6 +1106,10 @@ public abstract class PDFStreamEngine
 
     /**
      * Transforms a width using the CTM.
+     * 
+     * @param width the width to be transformed
+     * 
+     * @return the transformed width
      */
     protected float transformWidth(float width)
     {

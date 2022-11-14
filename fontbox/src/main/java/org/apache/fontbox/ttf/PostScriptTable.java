@@ -330,7 +330,11 @@ public class PostScriptTable extends TTFTable
     }
 
     /**
-     * @return Returns the glyph name.
+     * Returns the glyph name of the given GID.
+     * 
+     * @param gid the GID of the glyph name
+     * 
+     * @return the glyph name for the given glyph name or null
      */
     public String getName(int gid)
     {

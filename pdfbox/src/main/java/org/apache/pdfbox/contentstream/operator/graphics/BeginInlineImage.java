@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 
@@ -32,6 +33,11 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
  */
 public final class BeginInlineImage extends GraphicsOperatorProcessor
 {
+    public BeginInlineImage(PDFGraphicsStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -39,6 +45,7 @@ public final class BeginInlineImage extends GraphicsOperatorProcessor
         {
             return;
         }
+        PDFGraphicsStreamEngine context = getGraphicsContext();
         PDImage image = new PDInlineImage(operator.getImageParameters(),
                                           operator.getImageData(),
                                           context.getResources());

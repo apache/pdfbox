@@ -117,7 +117,7 @@ abstract class PDAbstractContentStream implements Closeable
      * Sets the maximum number of digits allowed for fractional numbers.
      * 
      * @see NumberFormat#setMaximumFractionDigits(int)
-     * @param fractionDigitsNumber
+     * @param fractionDigitsNumber the maximum number of digits allowed for fractional numbers
      */
     protected void setMaximumFractionDigits(int fractionDigitsNumber)
     {
@@ -1307,7 +1307,7 @@ abstract class PDAbstractContentStream implements Closeable
     /**
      * Begin a marked content sequence.
      *
-     * @param tag the tag
+     * @param tag the tag to be added to the content stream
      * @throws IOException If the content stream could not be written
      */
     public void beginMarkedContent(COSName tag) throws IOException
@@ -1317,11 +1317,10 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
-     * Begin a marked content sequence with a reference to an entry in the page resources'
-     * Properties dictionary.
+     * Begin a marked content sequence with a reference to an entry in the page resources' Properties dictionary.
      *
-     * @param tag the tag
-     * @param propertyList property list
+     * @param tag the tag to be added to the content stream
+     * @param propertyList property list to be added to the content stream
      * @throws IOException If the content stream could not be written
      */
     public void beginMarkedContent(COSName tag, PDPropertyList propertyList) throws IOException
@@ -1344,7 +1343,7 @@ abstract class PDAbstractContentStream implements Closeable
     /**
      * Set an extended graphics state.
      * 
-     * @param state The extended graphics state.
+     * @param state The extended graphics state to be added to the content stream
      * @throws IOException If the content stream could not be written.
      */
     public void setGraphicsStateParameters(PDExtendedGraphicsState state) throws IOException
@@ -1356,10 +1355,11 @@ abstract class PDAbstractContentStream implements Closeable
     /**
      * Write a comment line.
      *
-     * @param comment Comment string. Cannot be null.
+     * @param comment the comment to be added to the content stream
+     * 
      * @throws IOException If the content stream could not be written.
-     * @throws IllegalArgumentException If the comment contains a newline. This is not allowed,
-     * because the next line could be ordinary PDF content.
+     * @throws IllegalArgumentException If the comment contains a newline. This is not allowed, because the next line
+     * could be ordinary PDF content.
      */
     public void addComment(String comment) throws IOException
     {
@@ -1374,8 +1374,10 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes a real number to the content stream.
-     * @param real Operand as the real number.
-     * @throws java.io.IOException if an I/O error occurs.
+     * 
+     * @param real the real number to be added to the content stream
+     * 
+     * @throws IOException If the underlying stream has a problem being written to.
      * @throws IllegalArgumentException if the parameter is not a finite number
      */
     protected void writeOperand(float real) throws IOException
@@ -1400,8 +1402,9 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes an integer number to the content stream.
-     * @param integer Operand as the integer.
-     * @throws java.io.IOException if an I/O error occurs.
+     * 
+     * @param integer the integer to be added to the content stream
+     * @throws IOException If the underlying stream has a problem being written to.
      */
     protected void writeOperand(int integer) throws IOException
     {
@@ -1411,8 +1414,9 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes a COSName to the content stream.
-     * @param name Operand as the COSName. Cannot be null.
-     * @throws java.io.IOException if an I/O error occurs.
+     * 
+     * @param name the name to be added to the content stream
+     * @throws IOException If the underlying stream has a problem being written to.
      */
     protected void writeOperand(COSName name) throws IOException
     {
@@ -1422,38 +1426,31 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes a string to the content stream as ASCII.
-     * @param text Operator as the string. Cannot be null.
-     * @throws java.io.IOException if an I/O error occurs.
+     * 
+     * @param text the text to be added to the content stream followed by a newline
+     * @throws IOException If the underlying stream has a problem being written to.
      */
     protected void writeOperator(String text) throws IOException
     {
-        outputStream.write(text.getBytes(StandardCharsets.US_ASCII));
-        outputStream.write('\n');
+        write(text);
+        writeLine();
     }
 
     /**
      * Writes a string to the content stream as ASCII.
-     * @param text Content text. Cannot be null.
-     * @throws java.io.IOException if an I/O error occurs.
+     * 
+     * @param text the text to be added to the content stream
+     * @throws IOException If the underlying stream has a problem being written to.
      */
     protected void write(String text) throws IOException
     {
-        outputStream.write(text.getBytes(StandardCharsets.US_ASCII));
+        writeBytes(text.getBytes(StandardCharsets.US_ASCII));
     }
 
     /**
-     * Writes a byte[] to the content stream.
-     * @param data Byte array. Cannot be null.
-     * @throws java.io.IOException if an I/O error occurs.
-     */
-    protected void write(byte[] data) throws IOException
-    {
-        outputStream.write(data);
-    }
-    
-    /**
      * Writes a newline to the content stream as ASCII.
-     * @throws java.io.IOException if an I/O error occurs. In particular, an IOException may be thrown if the output stream has been closed.
+     * 
+     * @throws IOException If the underlying stream has a problem being written to.
      */
     protected void writeLine() throws IOException
     {
@@ -1462,8 +1459,9 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes binary data to the content stream.
-     * @param data Byte array. Cannot be null.
-     * @throws java.io.IOException if an I/O error occurs.
+     * 
+     * @param data as byte formatted to be added to the content stream
+     * @throws IOException If the underlying stream has a problem being written to.
      */
     protected void writeBytes(byte[] data) throws IOException
     {
@@ -1472,6 +1470,9 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes an AffineTransform to the content stream as an array.
+     * 
+     * @param transform AffineTransfrom to be added to the content stream
+     * @throws IOException If the underlying stream has a problem being written to.
      */
     private void writeAffineTransform(AffineTransform transform) throws IOException
     {
@@ -1595,12 +1596,12 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
-     * Set the text rise value, i.e. move the baseline up or down. This is useful for drawing
-     * superscripts or subscripts.
+     * Set the text rise value, i.e. move the baseline up or down. This is useful for drawing superscripts or
+     * subscripts.
      *
-     * @param rise Specifies the distance, in unscaled text space units, to move the baseline up or
-     * down from its default location. 0 restores the default location.
-     * @throws IOException if an I/O error occurs.
+     * @param rise Specifies the distance, in unscaled text space units, to move the baseline up or down from its
+     * default location. 0 restores the default location.
+     * @throws IOException If the content stream could not be written.
      */
     public void setTextRise(float rise) throws IOException
     {

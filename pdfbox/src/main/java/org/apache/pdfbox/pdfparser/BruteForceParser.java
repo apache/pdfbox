@@ -83,6 +83,7 @@ public class BruteForceParser extends COSParser
      * @param source input representing the pdf.
      * @param document the corresponding COS document
      * 
+     * @throws IOException if the source data could not be read
      */
     public BruteForceParser(RandomAccessRead source, COSDocument document) throws IOException
     {

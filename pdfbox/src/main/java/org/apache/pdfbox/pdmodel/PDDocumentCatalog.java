@@ -158,6 +158,8 @@ public class PDDocumentCatalog implements COSObjectable
 
     /**
      * Returns all pages in the document, as a page tree.
+     * 
+     * @return PDPageTree providing all pages of the document
      */
     public PDPageTree getPages()
     {
@@ -209,6 +211,8 @@ public class PDDocumentCatalog implements COSObjectable
 
     /**
      * Returns the document's article threads.
+     * 
+     * @return a list of all threads of the document
      */
     public List<PDThread> getThreads()
     {
@@ -455,6 +459,8 @@ public class PDDocumentCatalog implements COSObjectable
 
     /**
      * Returns the page display mode.
+     * 
+     * @return the PageMode of the document, if not present PageMode.USE_NONE is returned
      */
     public PageMode getPageMode()
     {
@@ -489,6 +495,8 @@ public class PDDocumentCatalog implements COSObjectable
 
     /**
      * Returns the page layout.
+     * 
+     * @return the PageLayout of the document, if not present PageLayout.SINGLE_PAGE is returned
      */
     public PageLayout getPageLayout()
     {
@@ -519,6 +527,8 @@ public class PDDocumentCatalog implements COSObjectable
 
     /**
      * Returns the document-level URI.
+     * 
+     * @return the document level URI if present, otherwise null
      */
     public PDURIDictionary getURI()
     {
@@ -538,6 +548,8 @@ public class PDDocumentCatalog implements COSObjectable
 
     /**
      * Get the document's structure tree root, or null if none exists.
+     * 
+     * @return the structure tree root if present, otherwise null
      */
     public PDStructureTreeRoot getStructureTreeRoot()
     {
@@ -557,6 +569,8 @@ public class PDDocumentCatalog implements COSObjectable
 
     /**
      * Returns the language for the document, or null.
+     * 
+     * @return the language of the document if present, otherwise null
      */
     public String getLanguage()
     {

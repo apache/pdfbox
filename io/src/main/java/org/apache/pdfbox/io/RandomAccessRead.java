@@ -59,10 +59,10 @@ public interface RandomAccessRead extends Closeable
     /**
      * Returns offset of next byte to be returned by a read method.
      * 
-     * @return offset of next byte which will be returned with next {@link #read()}
-     *         (if no more bytes are left it returns a value &gt;= length of source)
-     *         
-     * @throws IOException 
+     * @return offset of next byte which will be returned with next {@link #read()} (if no more bytes are left it
+     * returns a value &gt;= length of source)
+     * 
+     * @throws IOException If there was an error while getting the current position
      */
     long getPosition() throws IOException;
     
@@ -84,7 +84,9 @@ public interface RandomAccessRead extends Closeable
     long length() throws IOException;
 
     /**
-     * Returns true if this stream has been closed.
+     * Returns true if this source has been closed.
+     * 
+     * @return true is the source has been closed
      */
     boolean isClosed();
 

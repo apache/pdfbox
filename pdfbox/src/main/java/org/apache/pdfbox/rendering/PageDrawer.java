@@ -214,6 +214,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     
     /**
      * Returns the parent renderer.
+     * 
+     * @return the parent renderer
      */
     public final PDFRenderer getRenderer()
     {
@@ -222,6 +224,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     /**
      * Returns the underlying Graphics2D. May be null if drawPage has not yet been called.
+     * 
+     * @return the underlying Graphics2D
      */
     protected final Graphics2D getGraphics()
     {
@@ -230,6 +234,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     /**
      * Returns the current line path. This is reset to empty after each fill/stroke.
+     * 
+     * @return the current line path
      */
     protected final GeneralPath getLinePath()
     {
@@ -328,7 +334,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * Returns an AWT paint for the given PDColor.
      * 
      * @param color The color to get a paint for. This can be an actual color or a pattern.
-     * @throws IOException
+     * @return an AWT paint for the given PDColor
+     * 
+     * @throws IOException if the AWT paint could not be created
      */
     protected Paint getPaint(PDColor color) throws IOException
     {
@@ -672,7 +680,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * <a href="https://issues.apache.org/jira/browse/PDFBOX-5093">PDFBOX-5093</a> for more.
      *
      * @return The non-stroking AWT Paint.
-     * @throws IOException
+     * @throws IOException if the non-stroking AWT Paint could not be created
      */
     protected final Paint getNonStrokingPaint() throws IOException
     {
@@ -1528,9 +1536,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     /**
      * For advanced users, to extract the transparency group into a separate graphics device.
      * 
-     * @param form
-     * @param graphics
-     * @throws IOException 
+     * @param form the transparency group to be extracted
+     * @param graphics the target graphics device
+     * @throws IOException if the transparency group could not be extracted
      */
     protected void showTransparencyGroupOnGraphics(PDTransparencyGroup form, Graphics2D graphics)
         throws IOException

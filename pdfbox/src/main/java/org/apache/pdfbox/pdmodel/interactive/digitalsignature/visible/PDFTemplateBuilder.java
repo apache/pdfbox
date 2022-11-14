@@ -40,50 +40,50 @@ public interface PDFTemplateBuilder
 {
     /**
      * In order to create Affine Transform, using parameters.
-     * @param affineTransform
+     * 
+     * @param affineTransform the affine transformation to be used
      */
     void createAffineTransform(AffineTransform affineTransform);
 
     /**
      * Creates specified size page.
      * 
-     * @param properties
+     * @param properties page properties
      */
     void createPage(PDVisibleSignDesigner properties);
 
     /**
      * Creates template using page.
      * 
-     * @param page
-     * @throws IOException
+     * @param page page to be added
+     * @throws IOException if the template could not be created
      */
     void createTemplate(PDPage page) throws IOException;
 
     /**
      * Creates Acro forms in the template.
      * 
-     * @param template
+     * @param template the document the acroform is added to
      */
     void createAcroForm(PDDocument template);
 
     /**
      * Creates signature fields.
      * 
-     * @param acroForm
-     * @throws IOException
+     * @param acroForm the acroform the signature is added to
+     * @throws IOException if the signature could not be created
      */
     void createSignatureField(PDAcroForm acroForm) throws IOException;
 
     /**
-     * Creates the signature with the given name and assign it to the signature field parameter and
-     * assign the page parameter to the widget.
+     * Creates the signature with the given name and assign it to the signature field parameter and assign the page
+     * parameter to the widget.
      *
-     * @param pdSignatureField
-     * @param page
-     * @param signerName the name of the person or authority signing the document. According to the
-     * PDF specification, this value should be used only when it is not possible to extract the name
-     * from the signature.
-     * @throws IOException
+     * @param pdSignatureField the signature filed the signatur is added to
+     * @param page the page the widgt ist added to
+     * @param signerName the name of the person or authority signing the document. According to the PDF specification,
+     * this value should be used only when it is not possible to extract the name from the signature.
+     * @throws IOException if the signature could not be created
      */
     void createSignature(PDSignatureField pdSignatureField, PDPage page, String signerName)
             throws IOException;
@@ -91,9 +91,9 @@ public interface PDFTemplateBuilder
     /**
      * Create AcroForm Dictionary.
      * 
-     * @param acroForm
-     * @param signatureField
-     * @throws IOException
+     * @param acroForm the acroform the signature field is added to
+     * @param signatureField the signature filed to be added
+     * @throws IOException if the signature field could not be added
      */
     void createAcroFormDictionary(PDAcroForm acroForm, PDSignatureField signatureField)
             throws IOException;
@@ -101,9 +101,9 @@ public interface PDFTemplateBuilder
     /**
      * Creates SignatureRectangle.
      * 
-     * @param signatureField
-     * @param properties
-     * @throws IOException
+     * @param signatureField the signature field the rectangle is added to
+     * @param properties the properties used to create the rectangle
+     * @throws IOException if the rectangle could not be created
      */
     void createSignatureRectangle(PDSignatureField signatureField,
             PDVisibleSignDesigner properties) throws IOException;
@@ -115,24 +115,26 @@ public interface PDFTemplateBuilder
 
     /**
      * Creates signature image.
-     * @param template
-     * @param image
-     * @throws IOException
+     * 
+     * @param template the document the image is added to
+     * @param image to imager to be added
+     * @throws IOException if the image could not be added
      */
     void createSignatureImage(PDDocument template, BufferedImage image) throws IOException;
 
     /**
-     * An array of four numbers in the form coordinate system, giving the coordinates of the left,
-     * bottom, right, and top edges, respectively, of the form XObject’s bounding box. These
-     * boundaries shall be used to clip the form XObject and to determine its size for caching.
+     * An array of four numbers in the form coordinate system, giving the coordinates of the left, bottom, right, and
+     * top edges, respectively, of the form XObject’s bounding box. These boundaries shall be used to clip the form
+     * XObject and to determine its size for caching.
      *
-     * @param params
+     * @param params the parameters of the formatter rectangle
      */
     void createFormatterRectangle(int[] params);
 
     /**
+     * Create a holder for the form stream.
      * 
-     * @param template
+     * @param template the document to be used to create the new stream
      */
     void createHolderFormStream(PDDocument template);
 
@@ -144,9 +146,9 @@ public interface PDFTemplateBuilder
     /**
      * Creates Form
      * 
-     * @param holderFormResources
-     * @param holderFormStream
-     * @param bbox
+     * @param holderFormResources resources to be used for the form object
+     * @param holderFormStream the stream to be used for the form object
+     * @param bbox the bounding box of the form object
      */
     void createHolderForm(PDResources holderFormResources, PDStream holderFormStream,
             PDRectangle bbox);
@@ -154,16 +156,17 @@ public interface PDFTemplateBuilder
     /**
      * Creates appearance dictionary
      * 
-     * @param holderForml
-     * @param signatureField
-     * @throws IOException
+     * @param holderForml form object to be used for the appearance stream
+     * @param signatureField the signature field the appearance stream is added to
+     * @throws IOException if the appearance stream could not be created
      */
     void createAppearanceDictionary(PDFormXObject holderForml,
             PDSignatureField signatureField) throws IOException;
 
     /**
+     * Create a holder for the inner form stream.
      * 
-     * @param template
+     * @param template the document to be used to create the new stream
      */
     void createInnerFormStream(PDDocument template);
 
@@ -173,24 +176,27 @@ public interface PDFTemplateBuilder
     void createInnerFormResource();
 
     /**
+     * Creates InnerForm.
      * 
-     * @param innerFormResources
-     * @param innerFormStream
-     * @param bbox
+     * @param innerFormResources resources to be used for the inner form object
+     * @param innerFormStream the stream to be used for the inner form object
+     * @param bbox the bounding box of the inner form object
      */
     void createInnerForm(PDResources innerFormResources, PDStream innerFormStream, PDRectangle bbox);
 
     /**
+     * Insert given from as inner form.
      * 
-     * @param innerForm
-     * @param holderFormResources
+     * @param innerForm the form object to be inserted
+     * @param holderFormResources resources the fomr object is added to
      */
     void insertInnerFormToHolderResources(PDFormXObject innerForm,
             PDResources holderFormResources);
 
     /**
+     * Create image form stream.
      * 
-     * @param template
+     * @param template the document to be used to create the new stream
      */
     void createImageFormStream(PDDocument template);
 
@@ -202,13 +208,13 @@ public interface PDFTemplateBuilder
     /**
      * Creates Image form
      * 
-     * @param imageFormResources
-     * @param innerFormResource
-     * @param imageFormStream
-     * @param bbox
-     * @param affineTransform
-     * @param img
-     * @throws IOException
+     * @param imageFormResources the resources of the form object
+     * @param innerFormResource the resources the image object is added
+     * @param imageFormStream the stream of the form object
+     * @param bbox the bounding box of the form object
+     * @param affineTransform the matrix of the form object
+     * @param img the image object to be used for the form object
+     * @throws IOException if the form object could not be created
      */
     void createImageForm(PDResources imageFormResources, PDResources innerFormResource,
             PDStream imageFormStream, PDRectangle bbox, AffineTransform affineTransform,
@@ -217,9 +223,9 @@ public interface PDFTemplateBuilder
     /**
      * Creates the background layer form (n0).
      *
-     * @param innerFormResource
-     * @param bbox
-     * @throws IOException
+     * @param innerFormResource resources to be used for the form object
+     * @param bbox the bounding box of the form object
+     * @throws IOException if the form object could not be created
      */
     void createBackgroundLayerForm(PDResources innerFormResource, PDRectangle bbox)
             throws IOException;
@@ -227,12 +233,12 @@ public interface PDFTemplateBuilder
     /**
      * Inject procSetArray
      * 
-     * @param innerForm
-     * @param page
-     * @param innerFormResources
-     * @param imageFormResources
-     * @param holderFormResources
-     * @param procSet
+     * @param innerForm form object the given proc set array is added to
+     * @param page page the given proc set array is added to
+     * @param innerFormResources inner form resources the given proc set array is added to
+     * @param imageFormResources inner image resources the given proc set array is added to
+     * @param holderFormResources holder form resources the given proc set array is added to
+     * @param procSet the pro set array to be added
      */
     void injectProcSetArray(PDFormXObject innerForm, PDPage page,
             PDResources innerFormResources, PDResources imageFormResources,
@@ -241,14 +247,14 @@ public interface PDFTemplateBuilder
     /**
      * injects appearance streams
      * 
-     * @param holderFormStream
-     * @param innerFormStream
-     * @param imageFormStream
-     * @param imageFormName
-     * @param imageName
-     * @param innerFormName
-     * @param properties
-     * @throws IOException
+     * @param holderFormStream the holder form stream
+     * @param innerFormStream the inner form stream
+     * @param imageFormStream the image form stream
+     * @param imageFormName the name of the form image to be used
+     * @param imageName the name of the image to be used
+     * @param innerFormName the name of the form object to be used
+     * @param properties properties to be used to create the appearance stream
+     * @throws IOException if the appearance stream could not be created
      */
     void injectAppearanceStreams(PDStream holderFormStream, PDStream innerFormStream,
             PDStream imageFormStream, COSName imageFormName, COSName imageName,
@@ -257,31 +263,33 @@ public interface PDFTemplateBuilder
     /**
      * just to create visible signature
      * 
-     * @param template
+     * @param template the document holding the visible signatue
      */
     void createVisualSignature(PDDocument template);
 
     /**
      * adds Widget Dictionary
      * 
-     * @param signatureField
-     * @param holderFormResources
-     * @throws IOException
+     * @param signatureField the field to be used as widget dictionary
+     * @param holderFormResources the resources to be added to the widget dictionary
+     * @throws IOException if the widget dictionary could not be created
      */
     void createWidgetDictionary(PDSignatureField signatureField,
             PDResources holderFormResources) throws IOException;
 
     /**
+     * Resturns the PDF template Structure
      * 
-     * @return - PDF template Structure
+     * @return PDF template Structure
      */
     PDFTemplateStructure getStructure();
 
     /**
      * Closes template
      * 
-     * @param template
-     * @throws IOException
+     * @param template the document to be closed
+     * 
+     * @throws IOException if the document could not be closed
      */
     void closeTemplate(PDDocument template) throws IOException;
 }

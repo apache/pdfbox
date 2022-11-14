@@ -99,6 +99,8 @@ public class HorizontalMetricsTable extends TTFTable
      * Returns the advance width for the given GID.
      *
      * @param gid GID
+     * 
+     * @return the advance width of the given GID
      */
     public int getAdvanceWidth(int gid)
     {
@@ -122,6 +124,8 @@ public class HorizontalMetricsTable extends TTFTable
      * Returns the left side bearing for the given GID.
      *
      * @param gid GID
+     * 
+     * @return the left side bearing of the given GID
      */
     public int getLeftSideBearing(int gid)
     {

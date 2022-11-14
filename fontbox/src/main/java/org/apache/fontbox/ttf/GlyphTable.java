@@ -102,6 +102,9 @@ public class GlyphTable extends TTFTable
      * Returns the data for the glyph with the given GID.
      *
      * @param gid GID
+     * 
+     * @return data of the glyph with the given GID or null
+     * 
      * @throws IOException if the font cannot be read
      */
     public GlyphData getGlyph(int gid) throws IOException

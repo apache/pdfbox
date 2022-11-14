@@ -50,10 +50,9 @@ public class XmpParsingException extends Exception
     /**
      * Create an instance of XmpParsingException
      * 
-     * @param message
-     *            a description of the encountered problem
-     * @param cause
-     *            the cause of the exception
+     * @param error the error type
+     * @param message a description of the encountered problem
+     * @param cause the cause of the exception
      */
     public XmpParsingException(ErrorType error, String message, Throwable cause)
     {
@@ -64,8 +63,8 @@ public class XmpParsingException extends Exception
     /**
      * Create an instance of XmpParsingException
      * 
-     * @param message
-     *            a description of the encountered problem
+     * @param error the error type
+     * @param message a description of the encountered problem
      */
     public XmpParsingException(ErrorType error, String message)
     {
@@ -73,6 +72,11 @@ public class XmpParsingException extends Exception
         this.errorType = error;
     }
 
+    /**
+     * Returns the error type.
+     * 
+     * @return the error type
+     */
     public ErrorType getErrorType()
     {
         return errorType;

@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
@@ -33,12 +34,18 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
  */
 public class NextLine extends OperatorProcessor
 {
+    public NextLine(PDFStreamEngine context)
+    {
+        super(context);
+    }
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         //move to start of next text line
         List<COSBase> args = new ArrayList<>(2);
         args.add(new COSFloat(0f));
+        PDFStreamEngine context = getContext();
         // this must be -leading instead of just leading as written in the
         // specification (p.369) the acrobat reader seems to implement it the same way
         args.add(new COSFloat(-context.getGraphicsState().getTextState().getLeading()));

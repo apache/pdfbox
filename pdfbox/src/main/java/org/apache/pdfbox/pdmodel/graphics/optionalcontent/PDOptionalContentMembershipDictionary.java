@@ -112,7 +112,8 @@ public class PDOptionalContentMembershipDictionary extends PDPropertyList
 
     /**
      * Sets the visibility policy name. Valid names are AllOff, AllOn, AnyOff, AnyOn (default).
-     * @param visibilityPolicy 
+     * 
+     * @param visibilityPolicy the visibility policy name
      */
     public void setVisibilityPolicy(COSName visibilityPolicy)
     {

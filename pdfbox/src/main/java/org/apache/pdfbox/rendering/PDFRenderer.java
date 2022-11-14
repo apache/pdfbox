@@ -74,29 +74,6 @@ public class PDFRenderer
 
     /**
      * Creates a new PDFRenderer.
-     *
-     * @param pageTree the page tree of document to render. Use page tree with PDDocument instance (pageTree.getPDDocument()).
-     *
-     * @throws IllegalArgumentException If the page tree returned null as its document.
-     */
-    public PDFRenderer(PDPageTree pageTree)
-    {
-        this.document = pageTree.getPDDocument();
-
-        if (document == null)
-            throw new IllegalArgumentException("Document is null. Use page tree with PDDocument instance (pageTree.getPDDocument()).");
-
-        this.pageTree = pageTree;
-
-        if (!kcmsLogged)
-        {
-            suggestKCMS();
-            kcmsLogged = true;
-        }
-    }
-
-    /**
-     * Creates a new PDFRenderer.
      * @param document the document to render
      */
     public PDFRenderer(PDDocument document)
@@ -188,11 +165,10 @@ public class PDFRenderer
     }
 
     /**
-     * Set the rendering hints. Use this to influence rendering quality and speed. If you don't set
-     * them yourself or pass null, PDFBox will decide <b><u>at runtime</u></b> depending on the
-     * destination.
+     * Set the rendering hints. Use this to influence rendering quality and speed. If you don't set them yourself or
+     * pass null, PDFBox will decide <b><u>at runtime</u></b> depending on the destination.
      *
-     * @param renderingHints
+     * @param renderingHints rendering hints to be used to influence rendering quality and speed
      */
     public void setRenderingHints(RenderingHints renderingHints)
     {
@@ -210,12 +186,11 @@ public class PDFRenderer
     }
 
     /**
-     * Set the image downscaling optimization threshold. This must be a value between 0 and 1. When
-     * rendering downscaled images and rendering hints are set to bicubic+quality and the scaling is
-     * smaller than the threshold, a more quality-optimized but slower method will be used. The
-     * default is 0.5 which is a good compromise.
+     * Set the image downscaling optimization threshold. This must be a value between 0 and 1. When rendering downscaled
+     * images and rendering hints are set to bicubic+quality and the scaling is smaller than the threshold, a more
+     * quality-optimized but slower method will be used. The default is 0.5 which is a good compromise.
      *
-     * @param imageDownscalingOptimizationThreshold
+     * @param imageDownscalingOptimizationThreshold image downscaling optimization threshold
      */
     public void setImageDownscalingOptimizationThreshold(float imageDownscalingOptimizationThreshold)
     {
@@ -322,7 +297,7 @@ public class PDFRenderer
         if (imageType != ImageType.ARGB && hasBlendMode(page))
         {
             // PDFBOX-4095: if the PDF has blending on the top level, draw on transparent background
-            // Inspired from PDF.js: if a PDF page uses any blend modes other than Normal,
+            // Inspired from PDF.js: if a PDF page uses any blend modes other than Normal, 
             // PDF.js renders everything on a fully transparent RGBA canvas. 
             // Finally when the page has been rendered, PDF.js draws the RGBA canvas on a white canvas.
             bimType = BufferedImage.TYPE_INT_ARGB;
@@ -556,6 +531,11 @@ public class PDFRenderer
 
     /**
      * Returns a new PageDrawer instance, using the given parameters. May be overridden.
+     * 
+     * @param parameters parameters to be used when creating the PageDrawer instance
+     * @return a new PageDrawer instance
+     * 
+     * @throws IOException id the PageDrawer instance could not be created
      */
     protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
     {

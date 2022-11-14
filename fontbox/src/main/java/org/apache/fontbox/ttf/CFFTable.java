@@ -58,6 +58,8 @@ public class CFFTable extends TTFTable
 
     /**
      * Returns the CFF font, which is a compact representation of a PostScript Type 1, or CIDFont
+     * 
+     * @return the associated CFF font
      */
     public CFFFont getFont()
     {

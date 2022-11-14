@@ -60,18 +60,18 @@ public class PrintTextColors extends PDFTextStripper
      */
     public PrintTextColors() throws IOException
     {
-        addOperator(new SetStrokingColorSpace());
-        addOperator(new SetNonStrokingColorSpace());
-        addOperator(new SetStrokingDeviceCMYKColor());
-        addOperator(new SetNonStrokingDeviceCMYKColor());
-        addOperator(new SetNonStrokingDeviceRGBColor());
-        addOperator(new SetStrokingDeviceRGBColor());
-        addOperator(new SetNonStrokingDeviceGrayColor());
-        addOperator(new SetStrokingDeviceGrayColor());
-        addOperator(new SetStrokingColor());
-        addOperator(new SetStrokingColorN());
-        addOperator(new SetNonStrokingColor());
-        addOperator(new SetNonStrokingColorN());
+        addOperator(new SetStrokingColorSpace(this));
+        addOperator(new SetNonStrokingColorSpace(this));
+        addOperator(new SetStrokingDeviceCMYKColor(this));
+        addOperator(new SetNonStrokingDeviceCMYKColor(this));
+        addOperator(new SetNonStrokingDeviceRGBColor(this));
+        addOperator(new SetStrokingDeviceRGBColor(this));
+        addOperator(new SetNonStrokingDeviceGrayColor(this));
+        addOperator(new SetStrokingDeviceGrayColor(this));
+        addOperator(new SetStrokingColor(this));
+        addOperator(new SetStrokingColorN(this));
+        addOperator(new SetNonStrokingColor(this));
+        addOperator(new SetNonStrokingColorN(this));
     }
 
     /**

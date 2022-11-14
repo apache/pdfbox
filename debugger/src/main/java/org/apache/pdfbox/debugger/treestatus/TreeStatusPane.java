@@ -46,6 +46,8 @@ public class TreeStatusPane implements TreeSelectionListener
     private Border errorBorder;
     private final Action textInputAction = new AbstractAction()
     {
+        private static final long serialVersionUID = 3547209849264145654L;
+
         @Override
         public void actionPerformed(ActionEvent actionEvent)
         {
@@ -119,7 +121,8 @@ public class TreeStatusPane implements TreeSelectionListener
 
     /**
      * Tree selection change listener which updates status string.
-     * @param treeSelectionEvent
+     * 
+     * @param treeSelectionEvent the selection event
      */
 
     @Override

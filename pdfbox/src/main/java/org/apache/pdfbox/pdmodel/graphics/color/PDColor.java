@@ -208,6 +208,8 @@ public final class PDColor
 
     /**
      * Returns the color space in which this color value is defined.
+     * 
+     * @return the color space in which this color value is defined
      */
     public PDColorSpace getColorSpace()
     {

@@ -358,6 +358,8 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
 
     /**
      * Returns the CIDSystemInfo, or null if it is missing (which isn't allowed but could happen).
+     * 
+     * @return the CIDSystemInfo, or null
      */
     public PDCIDSystemInfo getCIDSystemInfo()
     {
@@ -378,7 +380,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
      *
      * @param code character code
      * @return GID
-     * @throws java.io.IOException
+     * @throws java.io.IOException if the mapping could not be read
      */
     public abstract int codeToGID(int code) throws IOException;
 

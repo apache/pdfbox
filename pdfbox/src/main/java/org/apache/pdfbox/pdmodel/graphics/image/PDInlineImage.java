@@ -334,6 +334,8 @@ public final class PDInlineImage implements PDImage
 
     /**
      * Returns the inline image data.
+     * 
+     * @return the inline image data
      */
     public byte[] getData()
     {

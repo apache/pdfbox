@@ -336,6 +336,8 @@ public class RadialShadingContext extends ShadingContext
 
     /**
      * Returns the coords values.
+     * 
+     * @return the coords values
      */
     public float[] getCoords()
     {
@@ -344,6 +346,8 @@ public class RadialShadingContext extends ShadingContext
 
     /**
      * Returns the domain values.
+     * 
+     * @return the domain values
      */
     public float[] getDomain()
     {
@@ -352,6 +356,8 @@ public class RadialShadingContext extends ShadingContext
 
     /**
      * Returns the extend values.
+     * 
+     * @return the extend values
      */
     public boolean[] getExtend()
     {
@@ -360,6 +366,8 @@ public class RadialShadingContext extends ShadingContext
 
     /**
      * Returns the function.
+     * 
+     * @return the function
      *
      * @throws java.io.IOException if we were not able to create the function.
      */

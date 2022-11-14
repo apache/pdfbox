@@ -52,7 +52,7 @@ public class PDFXRefStream
     /**
      * Create a fresh XRef stream like for a fresh file or an incremental update.
      * 
-     * @param cosDocument
+     * @param cosDocument the COSDocmernt to be used to create a new COSStream
      */
     public PDFXRefStream(COSDocument cosDocument)
     {

@@ -46,8 +46,9 @@ public class CSIndexed
 
     /**
      * Constructor.
+     * 
      * @param array COSArray instance for Indexed color space.
-     * @throws java.io.IOException
+     * @throws IOException if the instance could not be created
      */
     public CSIndexed(COSArray array) throws IOException
     {

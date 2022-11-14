@@ -41,7 +41,7 @@ public @interface PropertyType
      * get valuetype defined in this description that must be used to build properties descriptions in schema
      * descriptions
      * 
-     * 
+     * @return the property type
      */
 
     Types type();

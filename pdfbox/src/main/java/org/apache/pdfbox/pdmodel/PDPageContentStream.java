@@ -246,7 +246,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void appendRawCommands(byte[] commands) throws IOException
     {
-        write(commands);
+        writeBytes(commands);
     }
 
     /**
