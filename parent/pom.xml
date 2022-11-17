@@ -210,7 +210,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>7.2.1</version>
+                        <version>7.3.1</version>
                         <configuration>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                             <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
@@ -316,7 +316,7 @@
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId>
 	            <artifactId>animal-sniffer-maven-plugin</artifactId>
-	            <version>1.21</version>
+	            <version>1.22</version>
 	            <executions>
 	               <execution>
 	                  <id>check-java-version</id>
