@@ -58,7 +58,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jmh.version>1.35</jmh.version>
+        <jmh.version>1.36</jmh.version>
         <uberjar.name>benchmarks</uberjar.name>
     </properties>
 
