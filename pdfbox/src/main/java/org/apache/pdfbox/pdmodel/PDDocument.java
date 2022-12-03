@@ -427,10 +427,11 @@ public class PDDocument implements Closeable
         if (visualSignature == null)
         {
             prepareNonVisibleSignature(firstWidget);
-            return;
         }
-
-        prepareVisibleSignature(firstWidget, acroForm, visualSignature);
+        else
+        {
+            prepareVisibleSignature(firstWidget, acroForm, visualSignature);
+        }
 
         // Create Annotation / Field for signature
         List<PDAnnotation> annotations = page.getAnnotations();
