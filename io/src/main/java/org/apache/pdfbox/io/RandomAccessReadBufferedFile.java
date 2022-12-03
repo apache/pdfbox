@@ -21,8 +21,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Provides random access to portions of a file combined with buffered reading of content. Start of next bytes to read
@@ -38,6 +41,8 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     private static final int PAGE_SIZE = 1 << PAGE_SIZE_SHIFT;
     private static final long PAGE_OFFSET_MASK = -1L << PAGE_SIZE_SHIFT;
     private static final int MAX_CACHED_PAGES = 1000;
+
+    private static ThreadLocal<Map<String, ThreadLocalRandomAccessRead>> randomAccessFiles = new ThreadLocal<Map<String, ThreadLocalRandomAccessRead>>();
 
     private ByteBuffer lastRemovedCachePage = null;
 
@@ -92,6 +97,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
         this.file = file;
         fileChannel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
         fileLength = file.length();
+        randomAccessFiles.set(new ConcurrentHashMap<>(1));
         seek(0);
     }
 
@@ -225,9 +231,19 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     @Override
     public void close() throws IOException
     {
-        fileChannel.close();
-        pageCache.clear();
-        isClosed = true;
+        Map<String, ThreadLocalRandomAccessRead> map = randomAccessFiles.get();
+        ThreadLocalRandomAccessRead tlRandomAccessRead = map.get(file.toString());
+        if (tlRandomAccessRead != null)
+        {
+            tlRandomAccessRead.removeClosedViews();
+        }
+        if (tlRandomAccessRead == null || tlRandomAccessRead.allViewsClosed())
+        {
+            map.remove(file.toString());
+            fileChannel.close();
+            pageCache.clear();
+            isClosed = true;
+        }
     }
 
     @Override
@@ -258,7 +274,53 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
     {
         checkClosed();
-        return new RandomAccessReadView(new RandomAccessReadBufferedFile(file), startPosition,
-                streamLength, true);
+        Map<String, ThreadLocalRandomAccessRead> mapRandomAccessRead = randomAccessFiles.get();
+        ThreadLocalRandomAccessRead tlRandomAccessRead = mapRandomAccessRead.get(file.toString());
+        boolean newlyCreated = false;
+        if (tlRandomAccessRead == null || tlRandomAccessRead.getRandomAccessRead().isClosed())
+        {
+            tlRandomAccessRead = new ThreadLocalRandomAccessRead(
+                    new RandomAccessReadBufferedFile(file));
+            mapRandomAccessRead.put(file.toString(), tlRandomAccessRead);
+            newlyCreated = true;
+        }
+        RandomAccessReadView view = new RandomAccessReadView(
+                tlRandomAccessRead.getRandomAccessRead(), startPosition, streamLength,
+                newlyCreated);
+        tlRandomAccessRead.addRandomAccessView(view);
+        return view;
+    }
+
+    private class ThreadLocalRandomAccessRead
+    {
+        private final RandomAccessReadBufferedFile randomAccessReadBufferedFile;
+        private final HashSet<RandomAccessReadView> randomAccessViews;
+
+        ThreadLocalRandomAccessRead(RandomAccessReadBufferedFile randomAccessRead)
+        {
+            randomAccessReadBufferedFile = randomAccessRead;
+            randomAccessViews = new HashSet<>();
+        }
+
+        public RandomAccessReadBufferedFile getRandomAccessRead()
+        {
+            return randomAccessReadBufferedFile;
+        }
+
+        public boolean addRandomAccessView(RandomAccessReadView randomAccessReadView)
+        {
+            return randomAccessViews.add(randomAccessReadView);
+        }
+
+        public void removeClosedViews()
+        {
+            randomAccessViews.removeAll(randomAccessViews.stream()
+                    .filter(RandomAccessReadView::isClosed).collect(Collectors.toList()));
+        }
+
+        public boolean allViewsClosed()
+        {
+            return randomAccessViews.isEmpty();
+        }
     }
 }
