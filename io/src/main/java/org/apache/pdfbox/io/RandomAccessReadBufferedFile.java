@@ -232,14 +232,18 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     public void close() throws IOException
     {
         Map<String, ThreadLocalRandomAccessRead> map = randomAccessFiles.get();
-        ThreadLocalRandomAccessRead tlRandomAccessRead = map.get(file.toString());
+        ThreadLocalRandomAccessRead tlRandomAccessRead = //
+                map != null ? map.get(file.toString()) : null;
         if (tlRandomAccessRead != null)
         {
             tlRandomAccessRead.removeClosedViews();
         }
         if (tlRandomAccessRead == null || tlRandomAccessRead.allViewsClosed())
         {
-            map.remove(file.toString());
+            if (map != null)
+            {
+                map.remove(file.toString());
+            }
             fileChannel.close();
             pageCache.clear();
             isClosed = true;
@@ -275,6 +279,11 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     {
         checkClosed();
         Map<String, ThreadLocalRandomAccessRead> mapRandomAccessRead = randomAccessFiles.get();
+        if (mapRandomAccessRead == null)
+        {
+            mapRandomAccessRead = new ConcurrentHashMap<>(1);
+            randomAccessFiles.set(mapRandomAccessRead);
+        }
         ThreadLocalRandomAccessRead tlRandomAccessRead = mapRandomAccessRead.get(file.toString());
         boolean newlyCreated = false;
         if (tlRandomAccessRead == null || tlRandomAccessRead.getRandomAccessRead().isClosed())
