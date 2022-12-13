@@ -357,7 +357,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
                                         COSName imageName, COSName innerFormName,
                                         PDVisibleSignDesigner properties) throws IOException
     {
-        // TOD remove unsed parameter from interface??
+        // TODO remove unsed parameter from interface??
 
         // Use width and height of BBox as values for transformation matrix.
         int width = (int) this.getStructure().getFormatterRectangle().getWidth();
