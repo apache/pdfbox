@@ -79,7 +79,7 @@ public class NamingTable extends TTFTable
                 continue;
             }
             
-            data.seek(getOffset() + (2*3L)+numberOfNameRecords*2*6+nr.getStringOffset());
+            data.seek(getOffset() + (2L*3)+numberOfNameRecords*2L*6+nr.getStringOffset());
             int platform = nr.getPlatformId();
             int encoding = nr.getPlatformEncodingId();
             Charset charset = StandardCharsets.ISO_8859_1;

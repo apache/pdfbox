@@ -428,10 +428,11 @@ public class PDDocument implements Closeable
         if (visualSignature == null)
         {
             prepareNonVisibleSignature(firstWidget);
-            return;
         }
-
-        prepareVisibleSignature(firstWidget, acroForm, visualSignature);
+        else
+        {
+            prepareVisibleSignature(firstWidget, acroForm, visualSignature);
+        }
 
         // Create Annotation / Field for signature
         List<PDAnnotation> annotations = page.getAnnotations();
@@ -530,6 +531,21 @@ public class PDDocument implements Closeable
         return false;
     }
 
+    private void prepareNonVisibleSignature(PDAnnotationWidget firstWidget)
+    {
+        // "Signature fields that are not intended to be visible shall
+        // have an annotation rectangle that has zero height and width."
+        // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
+        firstWidget.setRectangle(new PDRectangle());
+        
+        // The visual appearance must also exist for an invisible signature but may be empty.
+        PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
+        PDAppearanceStream appearanceStream = new PDAppearanceStream(this);
+        appearanceStream.setBBox(new PDRectangle());
+        appearanceDictionary.setNormalAppearance(appearanceStream);
+        firstWidget.setAppearance(appearanceDictionary);
+    }
+
     private void prepareVisibleSignature(PDAnnotationWidget firstWidget, PDAcroForm acroForm, 
             COSDocument visualSignature)
     {
@@ -620,21 +636,6 @@ public class PDDocument implements Closeable
                 }
             }
         }
-    }
-
-    private void prepareNonVisibleSignature(PDAnnotationWidget firstWidget)
-    {
-        // "Signature fields that are not intended to be visible shall
-        // have an annotation rectangle that has zero height and width."
-        // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
-        firstWidget.setRectangle(new PDRectangle());
-        
-        // The visual appearance must also exist for an invisible signature but may be empty.
-        PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
-        PDAppearanceStream appearanceStream = new PDAppearanceStream(this);
-        appearanceStream.setBBox(new PDRectangle());
-        appearanceDictionary.setNormalAppearance(appearanceStream);
-        firstWidget.setAppearance(appearanceDictionary);
     }
 
     /**

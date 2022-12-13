@@ -1065,21 +1065,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 Paint paint = getNonStrokingPaint();
                 Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
                 Rectangle2D bounds = at.createTransformedShape(unitRect).getBounds2D();
-                GraphicsConfiguration deviceConfiguration = graphics.getDeviceConfiguration();
-                int w;
-                int h;
-                if (deviceConfiguration != null && deviceConfiguration.getBounds() != null)
-                {
-                    // PDFBOX-4690: bounds doesn't need to be larger than device bounds (OOM risk)
-                    Rectangle deviceBounds = deviceConfiguration.getBounds();
-                    w = (int) Math.ceil(Math.min(bounds.getWidth(), deviceBounds.getWidth()));
-                    h = (int) Math.ceil(Math.min(bounds.getHeight(), deviceBounds.getHeight()));
-                }
-                else
-                {
-                    w = (int) Math.ceil(bounds.getWidth());
-                    h = (int) Math.ceil(bounds.getHeight());
-                }
+                int w = (int) Math.ceil(bounds.getWidth());
+                int h = (int) Math.ceil(bounds.getHeight());
                 BufferedImage renderedPaint = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g = (Graphics2D) renderedPaint.getGraphics();
                 g.translate(-bounds.getMinX(), -bounds.getMinY());

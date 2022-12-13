@@ -631,6 +631,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
 
     /**
      * Returns the File menu.
+     * 
+     * @return the File menu
      */
     public JMenu getFindMenu()
     {
@@ -639,6 +641,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
 
     /**
      * Returns the Edit &gt; Find &gt; Find menu item.
+     * 
+     * @return the Find menu
      */
     public JMenuItem getFindMenuItem()
     {
@@ -647,6 +651,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     
     /**
      * Returns the Edit &gt; Find &gt; Find Next menu item.
+     * 
+     * @return the FindNext menu
      */
     public JMenuItem getFindNextMenuItem()
     {
@@ -655,6 +661,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
 
     /**
      * Returns the Edit &gt; Find &gt; Find Previous menu item.
+     * 
+     * @return the FindPrevious menu
      */
     public JMenuItem getFindPreviousMenuItem()
     {
@@ -1478,7 +1486,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     /**
      * Convenience method to get the page label if available.
      * 
-     * @param document
+     * @param document the current document
      * @param pageIndex 0-based page number.
      * @return a page label or null if not available.
      */
