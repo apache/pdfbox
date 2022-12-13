@@ -42,7 +42,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     private static final long PAGE_OFFSET_MASK = -1L << PAGE_SIZE_SHIFT;
     private static final int MAX_CACHED_PAGES = 1000;
 
-    private static ThreadLocal<Map<String, ThreadLocalRandomAccessRead>> randomAccessFiles = new ThreadLocal<Map<String, ThreadLocalRandomAccessRead>>();
+    private static final ThreadLocal<Map<String, ThreadLocalRandomAccessRead>> randomAccessFiles = new ThreadLocal<Map<String, ThreadLocalRandomAccessRead>>();
 
     private ByteBuffer lastRemovedCachePage = null;
 
