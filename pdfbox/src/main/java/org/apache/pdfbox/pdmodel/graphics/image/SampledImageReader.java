@@ -598,8 +598,16 @@ final class SampledImageReader
             BufferedImage colorKeyMask = null;
             if (colorKey != null)
             {
-                colorKeyRanges = colorKey.toFloatArray();
-                colorKeyMask = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                if (colorKey.size() >= numComponents * 2)
+                {
+                    colorKeyRanges = colorKey.toFloatArray();
+                    colorKeyMask = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                }
+                else
+                {
+                    LOG.warn("colorKey mask size is " + colorKey.size() +
+                             ", should be " + (numComponents * 2) + ", ignored");
+                }
             }
 
             // calculate row padding
