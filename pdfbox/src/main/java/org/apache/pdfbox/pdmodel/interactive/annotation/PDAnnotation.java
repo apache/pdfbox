@@ -855,8 +855,10 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will set the corresponding page for this annotation.
-     * 
+     * This will set the corresponding page for this annotation. This is optional but recommended.
+     * Not doing it <a href="https://stackoverflow.com/questions/74836898/">can cause trouble when
+     * PDFs get signed</a>.
+     *
      * @param page is the corresponding page
      */
     public void setPage(PDPage page)
