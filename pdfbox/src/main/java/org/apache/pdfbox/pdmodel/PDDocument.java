@@ -1394,6 +1394,12 @@ public class PDDocument implements Closeable
      * Other usages of this method are for experienced users only. You will usually never need it.
      * It is useful only if you are required to keep the current revision and append the changes. A
      * typical use case is changing a signed file without invalidating the signature.
+     * <p>
+     * If your modification includes annotations, make sure these link back to their page by calling
+     * {@link PDAnnotation#setPage(PDPage)}. Although this is optional,
+     * not doing it
+     * <a href="https://stackoverflow.com/questions/74836898/">can cause trouble when PDFs get
+     * signed</a>. (PDFBox already does this for signature widget annotations)
      *
      * @param output stream to write to. It will be closed when done. It
      * <i><b>must never</b></i> point to the source file or that one will be
@@ -1437,6 +1443,12 @@ public class PDDocument implements Closeable
      * getting changed, you need to have some understanding of the PDF specification, and look at
      * the saved file with an editor to verify that you are updating the correct objects. You should
      * also inspect the page and document structures of the file with PDFDebugger.
+     * <p>
+     * If your modification includes annotations, make sure these link back to their page by calling
+     * {@link PDAnnotation#setPage(PDPage)}. Although this is optional,
+     * not doing it
+     * <a href="https://stackoverflow.com/questions/74836898/">can cause trouble when PDFs get
+     * signed</a>. (PDFBox already does this for signature widget annotations)
      *
      * @param output stream to write to. It will be closed when done. It
      * <i><b>must never</b></i> point to the source file or that one will be harmed!
@@ -1466,9 +1478,6 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * <p>
-     * <b>(This is a new feature for 2.0.3. The API for external signing might change based on feedback after release!)</b>
-     * <p>
      * Save PDF incrementally without closing for external signature creation scenario. The general
      * sequence is:
      * <pre>
