@@ -328,7 +328,10 @@ public class PDFMergerUtility
     }
 
     /**
-     * Merge the list of source documents, saving the result in the destination file.
+     * Merge the list of source documents, saving the result in the destination file. The source
+     * list is not reset after merge. If you want to merge one document at a time, then it's better
+     * to use
+     * {@link #appendDocument(org.apache.pdfbox.pdmodel.PDDocument, org.apache.pdfbox.pdmodel.PDDocument)}.
      *
      * @param streamCacheCreateFunction a function to create an instance of a stream cache; in case of <code>null</code>
      * unrestricted main memory is used
@@ -341,7 +344,10 @@ public class PDFMergerUtility
     }
 
     /**
-     * Merge the list of source documents, saving the result in the destination file.
+     * Merge the list of source documents, saving the result in the destination file. The source
+     * list is not reset after merge. If you want to merge one document at a time, then it's better
+     * to use
+     * {@link #appendDocument(org.apache.pdfbox.pdmodel.PDDocument, org.apache.pdfbox.pdmodel.PDDocument)}.
      *
      * @param streamCacheCreateFunction a function to create an instance of a stream cache; in case of <code>null</code>
      * unrestricted main memory is used
