@@ -350,11 +350,16 @@ public class TextToPDF
                 InputStream is = new FileInputStream(args[args.length - 1]);
                 if (hasUtf8BOM)
                 {
-                    is.skip(3);
+                    long skipped = is.skip(3);
+                    if (skipped != 3)
+                    {
+                        throw new IOException("Could not skip 3 bytes, size changed?!");
+                    }
                 }
                 Reader reader = new InputStreamReader(is, charset);
                 app.createPDFFromText(doc, reader);
                 reader.close();
+                is.close();
                 doc.save(args[args.length - 2]);
             }
         }
