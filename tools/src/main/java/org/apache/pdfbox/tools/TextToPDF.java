@@ -171,14 +171,20 @@ public class TextToPDF implements Callable<Integer>
                     }
                 }
             }
-            InputStream is = new FileInputStream(infile);
-            if (hasUtf8BOM)
+            try (InputStream is = new FileInputStream(infile))
             {
-                is.skip(3);
-            }
-            try (Reader reader = new InputStreamReader(is, charset))
-            {
-                createPDFFromText(doc, reader);
+                if (hasUtf8BOM)
+                {
+                    long skipped = is.skip(3);
+                    if (skipped != 3)
+                    {
+                        throw new IOException("Could not skip 3 bytes, size changed?!");
+                    }
+                }
+                try (Reader reader = new InputStreamReader(is, charset))
+                {
+                    createPDFFromText(doc, reader);
+                }
             }
             doc.save(outfile);
         }
