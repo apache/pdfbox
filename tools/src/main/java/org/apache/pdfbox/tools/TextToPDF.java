@@ -324,9 +324,9 @@ public class TextToPDF
                     }
                 }
 
-                FileReader fileReader = new FileReader(args[args.length - 1]);
-                app.createPDFFromText(doc, fileReader);
-                fileReader.close();
+                Reader reader = new FileReader(args[args.length - 1]);
+                app.createPDFFromText(doc, reader);
+                reader.close();
                 doc.save(args[args.length - 2]);
             }
         }
