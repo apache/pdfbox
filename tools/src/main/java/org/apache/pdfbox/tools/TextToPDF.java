@@ -18,10 +18,14 @@ package org.apache.pdfbox.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -76,6 +80,9 @@ public class TextToPDF implements Callable<Integer>
 
     @Option(names = "-pageSize", description = "the page size to use. \nCandidates: ${COMPLETION-CANDIDATES} (default: ${DEFAULT-VALUE})")
     private PageSizes pageSize = PageSizes.LETTER;
+
+    @Option(names = "-charset", description = "the charset to use. \n(default: ${DEFAULT-VALUE})")
+    private Charset charset = Charset.defaultCharset();
 
     @Option(names = "-standardFont", 
         description = "the font to use for the text. Either this or -ttf should be specified but not both.\nCandidates: ${COMPLETION-CANDIDATES} (default: ${DEFAULT-VALUE})")
@@ -150,8 +157,26 @@ public class TextToPDF implements Callable<Integer>
             setFontSize(fontSize);
             setMediaBox(pageSize.getPageSize());
             setLandscape(landscape);
-
-            try (Reader reader = new FileReader(infile))
+            
+            boolean hasUtf8BOM = false;
+            if (charset.equals(StandardCharsets.UTF_8))
+            {
+                // check for utf8 BOM
+                // FileInputStream doesn't support mark/reset
+                try (InputStream is = new FileInputStream(infile))
+                {
+                    if (is.read() == 0xEF && is.read() == 0xBB && is.read() == 0xBF)
+                    {
+                        hasUtf8BOM = true;
+                    }
+                }
+            }
+            InputStream is = new FileInputStream(infile);
+            if (hasUtf8BOM)
+            {
+                is.skip(3);
+            }
+            try (Reader reader = new InputStreamReader(is, charset))
             {
                 createPDFFromText(doc, reader);
             }
