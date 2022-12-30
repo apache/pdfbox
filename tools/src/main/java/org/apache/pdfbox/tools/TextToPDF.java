@@ -18,9 +18,12 @@ package org.apache.pdfbox.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +35,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.util.Charsets;
 
 /**
  * This will take a text file and output a pdf with that text.
@@ -272,6 +276,8 @@ public class TextToPDF
      */
     public static void main(String[] args) throws IOException
     {
+        Charset charset = Charset.defaultCharset();
+
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
@@ -299,6 +305,11 @@ public class TextToPDF
                         PDFont font = PDType0Font.load( doc, new File( args[i]) );
                         app.setFont( font );
                     }
+                    else if( args[i].equals( "-charset" ))
+                    {
+                        i++;
+                        charset = Charset.forName(args[i]);
+                    }
                     else if( args[i].equals( "-fontSize" ))
                     {
                         i++;
@@ -324,7 +335,24 @@ public class TextToPDF
                     }
                 }
 
-                Reader reader = new FileReader(args[args.length - 1]);
+                boolean hasUtf8BOM = false;
+                if (charset.equals(Charsets.UTF_8))
+                {
+                    // check for utf8 BOM
+                    // FileInputStream doesn't support mark/reset
+                    InputStream is = new FileInputStream(args[args.length - 1]);
+                    if (is.read() == 0xEF && is.read() == 0xBB && is.read() == 0xBF)
+                    {
+                        hasUtf8BOM = true;
+                    }
+                    is.close();
+                }
+                InputStream is = new FileInputStream(args[args.length - 1]);
+                if (hasUtf8BOM)
+                {
+                    is.skip(3);
+                }
+                Reader reader = new InputStreamReader(is, charset);
                 app.createPDFFromText(doc, reader);
                 reader.close();
                 doc.save(args[args.length - 2]);
@@ -397,6 +425,7 @@ public class TextToPDF
             message.append("                         ").append(std14String).append("\n");
         }
         message.append("  -ttf <ttf file>      : The TTF font to use.\n");
+        message.append("  -charset <charset>   : default: ").append(Charset.defaultCharset()).append("\n");
         message.append("  -fontSize <fontSize> : default: ").append(DEFAULT_FONT_SIZE).append("\n");
         message.append("  -pageSize <pageSize> : Letter (default)\n");
         message.append("                         Legal\n");
