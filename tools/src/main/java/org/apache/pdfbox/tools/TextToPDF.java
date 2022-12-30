@@ -151,9 +151,9 @@ public class TextToPDF implements Callable<Integer>
             setMediaBox(pageSize.getPageSize());
             setLandscape(landscape);
 
-            try (FileReader fileReader = new FileReader(infile))
+            try (Reader reader = new FileReader(infile))
             {
-                createPDFFromText(doc, fileReader);
+                createPDFFromText(doc, reader);
             }
             doc.save(outfile);
         }
