@@ -48,14 +48,17 @@ public class PDFileAttachmentAppearanceHandler extends PDAbstractAppearanceHandl
     public void generateNormalAppearance()
     {
         PDAnnotationFileAttachment annotation = (PDAnnotationFileAttachment) getAnnotation();
-
+        PDRectangle rect = getRectangle();
+        if (rect == null)
+        {
+            return;
+        }
         try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
             setOpacity(contentStream, annotation.getConstantOpacity());
 
             // minimum code of PDTextAppearanceHandler.adjustRectAndBBox() 
             int size = 18;
-            PDRectangle rect = getRectangle();
             rect.setUpperRightX(rect.getLowerLeftX() + size);
             rect.setLowerLeftY(rect.getUpperRightY() - size);
             annotation.setRectangle(rect);
