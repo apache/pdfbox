@@ -774,7 +774,7 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             return objectStreamObject;
         }
-        final COSObjectKey objKey = new COSObjectKey(objstmObjNr, 0);
+        final COSObjectKey objKey = getObjectKey(objstmObjNr, 0);
         final COSBase objstmBaseObj = document.getObjectFromPool(objKey).getObject();
         if (objstmBaseObj instanceof COSStream)
         {
