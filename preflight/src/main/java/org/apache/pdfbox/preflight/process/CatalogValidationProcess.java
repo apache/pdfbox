@@ -271,39 +271,41 @@ public class CatalogValidationProcess extends AbstractProcess
      * @throws ValidationException
      */
     private void validateICCProfile(COSBase destOutputProfile,
-            Map<COSObjectKey, Boolean> mapDestOutputProfile,
-            PreflightContext ctx) throws ValidationException
-            {
+            Map<COSObjectKey, Boolean> mapDestOutputProfile, PreflightContext ctx)
+            throws ValidationException
+    {
         try
         {
             // destOutputProfile should be an instance of COSObject because of this is a object reference
-            if (destOutputProfile instanceof COSObject)
+            if (!(destOutputProfile instanceof COSObject))
             {
-                if (mapDestOutputProfile.containsKey(new COSObjectKey((COSObject) destOutputProfile)))
-                {
-                    // the profile is already checked. continue
-                    return;
-                }
-                else if (!mapDestOutputProfile.isEmpty())
-                {
-                    // A DestOutputProfile exits but it isn't the same, error
-                    addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_MULTIPLE,
-                            "More than one ICCProfile is defined: " + destOutputProfile));
-                    return;
-                }
-                // else the profile will be kept in the mapDestOutputProfile if it is valid
+                addValidationError(ctx,
+                        new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+                                "OutputIntent object should be a reference: " + destOutputProfile));
+                return;
             }
-            else
+
+            COSObject cosObj = (COSObject) destOutputProfile;
+            COSObjectKey key = new COSObjectKey(cosObj.getObjectNumber(),
+                    cosObj.getGenerationNumber());
+            if (mapDestOutputProfile.containsKey(key))
             {
-                addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-                        "OutputIntent object should be a reference: " + destOutputProfile));
+                // the profile is already checked. continue
+                return;
+            }
+            else if (!mapDestOutputProfile.isEmpty())
+            {
+                // A DestOutputProfile exits but it isn't the same, error
+                addValidationError(ctx,
+                        new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_MULTIPLE,
+                                "More than one ICCProfile is defined: " + destOutputProfile));
                 return;
             }
 
             // keep reference to avoid multiple profile definition
-            mapDestOutputProfile.put(new COSObjectKey((COSObject) destOutputProfile), true);
+            mapDestOutputProfile.put(key, true);
 
-            COSBase localDestOutputProfile = ((COSObject) destOutputProfile).getObject();
+            COSBase localDestOutputProfile = cosObj.getObject();
             if (!(localDestOutputProfile instanceof COSStream))
             {
                 addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,

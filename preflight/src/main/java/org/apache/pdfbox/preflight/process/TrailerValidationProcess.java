@@ -126,7 +126,8 @@ public class TrailerValidationProcess extends AbstractProcess
             // Search First and Last trailers according to offset position.
             for (COSObject co : xrefs)
             {
-                long offset = cosDocument.getXrefTable().get(new COSObjectKey(co));
+                long offset = cosDocument.getXrefTable()
+                        .get(new COSObjectKey(co.getObjectNumber(), co.getGenerationNumber()));
                 if (offset < min)
                 {
                     min = offset;

@@ -34,16 +34,6 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
     /**
      * Constructor.
      *
-     * @param object The object that this key will represent.
-     */
-    public COSObjectKey(COSObject object)
-    {
-        this(object.getObjectNumber(), object.getGenerationNumber());
-    }
-
-    /**
-     * Constructor.
-     *
      * @param num The object number.
      * @param gen The object generation number.
      */
