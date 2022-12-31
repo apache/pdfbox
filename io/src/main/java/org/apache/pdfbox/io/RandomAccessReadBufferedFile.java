@@ -272,9 +272,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
             randomAccessReadBufferedFile = new RandomAccessReadBufferedFile(file);
             rafCopies.put(currentThreadID, randomAccessReadBufferedFile);
         }
-        RandomAccessReadView view = new RandomAccessReadView(randomAccessReadBufferedFile,
-                startPosition, streamLength);
-        return view;
+        return new RandomAccessReadView(randomAccessReadBufferedFile, startPosition, streamLength);
     }
 
 }
