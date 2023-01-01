@@ -446,7 +446,8 @@ class ScratchFileBuffer implements RandomAccess
     @Override
     public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
     {
-        return new RandomAccessReadView(this, startPosition, streamLength);
+        throw new UnsupportedOperationException(
+                getClass().getName() + ".createView isn't supported.");
     }
 
 }

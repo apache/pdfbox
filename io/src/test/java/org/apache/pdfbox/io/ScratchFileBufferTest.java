@@ -158,14 +158,8 @@ class ScratchFileBufferTest
             RandomAccess scratchFileBuffer = scratchFile.createBuffer();
             byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             scratchFileBuffer.write(inputValues);
-            try (RandomAccessReadView view = scratchFileBuffer.createView(3, 5))
-            {
-                assertEquals(0, view.getPosition());
-                assertEquals(3, view.read());
-                assertEquals(4, view.read());
-                assertEquals(5, view.read());
-                assertEquals(3, view.getPosition());
-            }
+            assertThrows(UnsupportedOperationException.class,
+                    () -> scratchFileBuffer.createView(0, 10));
         }
     }
 
