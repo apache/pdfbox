@@ -160,11 +160,7 @@ public abstract class BaseParser
         Optional<COSObjectKey> foundKey = document.getXrefTable().keySet().stream()
                 .filter(k -> k.getNumber() == num && k.getGeneration() == gen) //
                 .findAny();
-        if (foundKey == null || !foundKey.isPresent())
-        {
-            return new COSObjectKey(num, gen);
-        }
-        return foundKey.get();
+        return foundKey.isPresent() ? foundKey.get() : new COSObjectKey(num, gen);
     }
 
     /**
