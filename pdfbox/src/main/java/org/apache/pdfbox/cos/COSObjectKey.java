@@ -30,6 +30,8 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
     // The lowest 16 bits hold the generation 0-65535
     // The rest is used for the number (even though 34 bit are sufficient for 10 digits)
     private final long numberAndGeneration;
+    // index within a compressed object stream if applicable otherwise -1
+    private final int streamIndex;
     
     /**
      * Constructor.
@@ -48,6 +50,28 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
             throw new IllegalArgumentException("Generation number must not be a negative value");
         }
         numberAndGeneration = num << NUMBER_OFFSET | (gen & GENERATION_MASK);
+        streamIndex = -1;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param num The object number.
+     * @param gen The object generation number.
+     * @param index The index within a compressed object stream
+     */
+    public COSObjectKey(long num, int gen, int index)
+    {
+        if (num < 0)
+        {
+            throw new IllegalArgumentException("Object number must not be a negative value");
+        }
+        if (gen < 0)
+        {
+            throw new IllegalArgumentException("Generation number must not be a negative value");
+        }
+        numberAndGeneration = num << NUMBER_OFFSET | (gen & GENERATION_MASK);
+        this.streamIndex = index;
     }
 
     /**
@@ -79,6 +103,16 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
     public long getNumber()
     {
         return numberAndGeneration >>> NUMBER_OFFSET;
+    }
+
+    /**
+     * The index within a compressed object stream.
+     * 
+     * @return the index within a compressed object stream if applicable otherwise -1
+     */
+    public int getStreamIndex()
+    {
+        return streamIndex;
     }
 
     /**

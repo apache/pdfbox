@@ -136,19 +136,19 @@ public class PDFXrefStreamParser extends BaseParser
             }
             // second field holds the offset (type 1) or the object stream number (type 2)
             long offset = parseValue(currLine, w[0], w[1]);
-            // third field holds the generation number for type 1 entries
-            int genNum = type == 1 ? (int) parseValue(currLine, w[0] + w[1], w[2]) : 0;
-            COSObjectKey objKey = new COSObjectKey(objID, genNum);
+            // third filed may hold the generation number (type1) or the index within a object stream (type2)
+            int thirdValue = (int) parseValue(currLine, w[0] + w[1], w[2]);
             if (type == 1)
             {
-                resolver.setXRef(objKey, offset);
+                // third field holds the generation number for type 1 entries
+                resolver.setXRef(new COSObjectKey(objID, thirdValue), offset);
             }
             else
             {
                 // For XRef aware parsers we have to know which objects contain object streams. We will store this
                 // information in normal xref mapping table but add object stream number with minus sign in order to
                 // distinguish from file offsets
-                resolver.setXRef(objKey, -offset);
+                resolver.setXRef(new COSObjectKey(objID, 0, thirdValue), -offset);
             }
         }
         close();
