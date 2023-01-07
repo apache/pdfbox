@@ -912,6 +912,7 @@ public abstract class BaseParser
             {
                 LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
                         + source.getPosition() + " (start offset: " + startOffset + ")");
+                return COSNull.NULL;
             }
         }
         return null;
