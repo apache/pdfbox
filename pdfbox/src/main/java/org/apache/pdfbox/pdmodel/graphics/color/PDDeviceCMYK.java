@@ -98,8 +98,8 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     {
         // Adobe Acrobat uses "U.S. Web Coated (SWOP) v2" as the default
         // CMYK profile, however it is not available under an open license.
-        // Instead, the "ISO Coated v2 300% (basICColor)" is used, which
-        // is an open alternative to the "ISO Coated v2 300% (ECI)" profile.
+        // Instead, the "CGATS001Compat-v2-micro" is used, which is an open
+        // alternative to the "U.S. Web Coated (SWOP) v2" profile.
 
         String resourceName = "/org/apache/pdfbox/resources/icc/CGATS001Compat-v2-micro.icc";
         InputStream resourceAsStream = PDDeviceCMYK.class.getResourceAsStream(resourceName);
