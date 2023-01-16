@@ -78,6 +78,8 @@ public class GlyphSubstitutionTable extends TTFTable
         scriptList = readScriptList(data, start + scriptListOffset);
         featureList = readFeatureList(data, start + featureListOffset);
         lookupList = readLookupList(data, start + lookupListOffset);
+
+        initialized = true;
     }
 
     LinkedHashMap<String, ScriptTable> readScriptList(TTFDataStream data, long offset) throws IOException
