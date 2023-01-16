@@ -76,7 +76,6 @@ public class GlyphSubstitutionTable extends TTFTable
 
     GlyphSubstitutionTable()
     {
-        super();
     }
 
     @Override
