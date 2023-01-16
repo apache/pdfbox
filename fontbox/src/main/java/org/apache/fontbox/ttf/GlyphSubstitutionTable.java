@@ -105,6 +105,8 @@ public class GlyphSubstitutionTable extends TTFTable
 
         gsubData = glyphSubstitutionDataExtractor
                 .getGsubData(scriptList, featureListTable, lookupListTable);
+
+        initialized = true;
     }
 
     private Map<String, ScriptTable> readScriptList(TTFDataStream data, long offset)
