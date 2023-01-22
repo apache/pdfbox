@@ -37,8 +37,7 @@ public class GsubWorkerFactory
         case BENGALI:
             return new GsubWorkerForBengali(cmapLookup, gsubData);
         default:
-            throw new UnsupportedOperationException(
-                    "The language " + gsubData.getLanguage() + " is not yet supported");
+            return new DefaultGsubWorker();
         }
 
     }
