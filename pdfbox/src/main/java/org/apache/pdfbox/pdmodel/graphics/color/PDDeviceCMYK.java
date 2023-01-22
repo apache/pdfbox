@@ -100,7 +100,7 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
         // CMYK profile, however it is not available under an open license.
         // Instead, the "CGATS001Compat-v2-micro" is used, which is an open
         // alternative to the "U.S. Web Coated (SWOP) v2" profile.
-
+        // https://github.com/saucecontrol/Compact-ICC-Profiles#cmyk
         String resourceName = "/org/apache/pdfbox/resources/icc/CGATS001Compat-v2-micro.icc";
         InputStream resourceAsStream = PDDeviceCMYK.class.getResourceAsStream(resourceName);
         if (resourceAsStream == null)
