@@ -261,7 +261,8 @@ public class GlyfCompositeDescript extends GlyfDescript
      * Gets a view to the composite components
      * @return unmodifiable list of this composite glyph's {@linkplain GlyfCompositeComp components}
      */
-    public List<GlyfCompositeComp> getComponentsView() {
+    public List<GlyfCompositeComp> getComponentsView()
+    {
         return Collections.unmodifiableList(components);
     }
 

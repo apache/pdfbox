@@ -16,39 +16,44 @@
  */
 package org.apache.fontbox.ttf;
 
-import org.apache.pdfbox.io.RandomAccessRead;
-import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 /**
  * @author Vladimir Plizga
  */
-class GlyfCompositeDescriptTest {
+class GlyfCompositeDescriptTest
+{
 
     @Test
     @DisplayName("getComponentsView() method returns read-only list of all glyph components")
-    void getComponentsView() throws IOException {
+    void getComponentsView() throws IOException
+    {
         // given
         OTFParser otfParser = new OTFParser();
         String fontPath = "src/test/resources/ttf/LiberationSans-Regular.ttf";
         OpenTypeFont font;
-        try (RandomAccessRead fontFile = new RandomAccessReadBufferedFile(fontPath)) {
+        try (RandomAccessRead fontFile = new RandomAccessReadBufferedFile(fontPath))
+        {
             font = otfParser.parse(fontFile);
         }
         GlyphTable glyphTable = font.getGlyph();
-        GlyphData aacuteGlyph = glyphTable.getGlyph(131);       // A acute
+        GlyphData aacuteGlyph = glyphTable.getGlyph(131); // A acute
 
         GlyphDescription glyphDescription = aacuteGlyph.getDescription();
-        assertTrue(glyphDescription.isComposite());         // consists of glyphs 36 & 2335
+        assertTrue(glyphDescription.isComposite()); // consists of glyphs 36 & 2335
 
         GlyfCompositeDescript compositeGlyphDescription = (GlyfCompositeDescript) glyphDescription;
 
@@ -59,9 +64,10 @@ class GlyfCompositeDescriptTest {
 
         // when
         List<GlyfCompositeComp> componentsView = compositeGlyphDescription.getComponentsView();
-        Executable viewModificationAttempt = () -> componentsView.add(new GlyfCompositeComp(fakeInputStream));
+        Executable viewModificationAttempt = () -> componentsView
+                .add(new GlyfCompositeComp(fakeInputStream));
 
-        //then
+        // then
         assertEquals(2, componentsView.size());
         assertThrows(UnsupportedOperationException.class, viewModificationAttempt);
     }
