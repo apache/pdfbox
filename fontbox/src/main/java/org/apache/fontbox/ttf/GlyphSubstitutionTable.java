@@ -715,16 +715,14 @@ public class GlyphSubstitutionTable extends TTFTable
      * @param scriptTag
      * a <a href="https://learn.microsoft.com/en-us/typography/opentype/spec/scripttags">script
      * tag</a> for which the data is needed
-     * @return GSUB data for the given script
-     * @throws IllegalArgumentException if no script with such tag supported by the font
+     * @return GSUB data for the given script or {@code null} if no such script in the font
      */
     public GsubData getGsubData(String scriptTag)
     {
         ScriptTable scriptTable = scriptList.get(scriptTag);
         if (scriptTable == null)
         {
-            throw new IllegalArgumentException(String.format("No script with tag '%s' found in " +
-                    "current font", scriptTag));
+            return null;
         }
 
         return new GlyphSubstitutionDataExtractor()

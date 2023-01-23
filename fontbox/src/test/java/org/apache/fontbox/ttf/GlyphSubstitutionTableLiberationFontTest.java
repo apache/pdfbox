@@ -20,6 +20,7 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.io.IOException;
@@ -77,6 +78,20 @@ class GlyphSubstitutionTableLiberationFontTest
         // then
         assertNotNull(gsubData);
         assertSame(GsubData.NO_DATA_FOUND, gsubData);
+    }
+
+    @Test
+    @DisplayName("getGsubData() for an unsupported script yields null")
+    void getGsubDataForUnsupportedScriptTag() throws IOException
+    {
+        // given
+        GlyphSubstitutionTable gsub = font.getGsub();
+
+        // when
+        GsubData gsubData = gsub.getGsubData("<some_non_existent_script_tag>");
+
+        //then
+        assertNull(gsubData);
     }
 
     @Test
