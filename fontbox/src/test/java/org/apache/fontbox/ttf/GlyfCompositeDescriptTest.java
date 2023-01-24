@@ -35,7 +35,7 @@ class GlyfCompositeDescriptTest
 {
 
     @Test
-    @DisplayName("getComponentsView() method returns read-only list of all glyph components")
+    @DisplayName("getComponents() method returns read-only list of all glyph components")
     void getComponentsView() throws IOException
     {
         // given
