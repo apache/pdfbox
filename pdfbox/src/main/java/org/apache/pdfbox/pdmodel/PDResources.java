@@ -104,6 +104,7 @@ public final class PDResources implements COSObjectable
      *
      * @param resourceDictionary The cos dictionary for this resource.
      * @param resourceCache The document's resource cache, may be null.
+     * @param directFontCache The document's direct font cache. Must be mutable
      */
     public PDResources(COSDictionary resourceDictionary, ResourceCache resourceCache,  Map <COSName, SoftReference<PDFont>> directFontCache)
     {
