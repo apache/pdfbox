@@ -157,7 +157,7 @@ public class GlyfCompositeComp
      * 
      * @param idx the first index
      */
-    public void setFirstIndex(int idx)
+    protected void setFirstIndex(int idx)
     {
         firstIndex = idx;
     }
@@ -177,7 +177,7 @@ public class GlyfCompositeComp
      * 
      * @param idx the index of the first contour
      */
-    public void setFirstContour(int idx)
+    protected void setFirstContour(int idx)
     {
         firstContour = idx;
     }

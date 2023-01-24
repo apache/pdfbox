@@ -84,14 +84,6 @@ public class GlyphData
     }
 
     /**
-     * @param boundingBoxValue The boundingBox to set.
-     */
-    public void setBoundingBox(BoundingBox boundingBoxValue)
-    {
-        this.boundingBox = boundingBoxValue;
-    }
-
-    /**
      * @return Returns the numberOfContours.
      */
     public short getNumberOfContours()
@@ -99,14 +91,6 @@ public class GlyphData
         return numberOfContours;
     }
 
-    /**
-     * @param numberOfContoursValue The numberOfContours to set.
-     */
-    public void setNumberOfContours(short numberOfContoursValue)
-    {
-        this.numberOfContours = numberOfContoursValue;
-    }
-   
     /**
      * Returns the description of the glyph.
      * @return the glyph description
