@@ -12,3 +12,8 @@ Copyright 1991-2015 Unicode, Inc.
 
 Includes parts of TwelveMonkeys ImageIO
 Copyright 2008-2016 Harald Kuhr
+
+Includes the CMYK ICC-profile (CGATS001Compat-v2-micro.icc) 
+https://github.com/saucecontrol/Compact-ICC-Profiles
+Released to the public domain under the Creative Commons CC0 license by Clinton Ingram, saucecontrol
+   
