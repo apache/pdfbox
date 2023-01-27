@@ -176,7 +176,7 @@ public class CFFCIDFont extends CFFFont
     private int getDefaultWidthX(int gid)
     {
         int fdArrayIndex = this.fdSelect.getFDIndex(gid);
-        if (fdArrayIndex == -1)
+        if (fdArrayIndex == -1 || fdArrayIndex >= this.privateDictionaries.size())
         {
             return 1000;
         }
@@ -192,7 +192,7 @@ public class CFFCIDFont extends CFFFont
     private int getNominalWidthX(int gid)
     {
         int fdArrayIndex = this.fdSelect.getFDIndex(gid);
-        if (fdArrayIndex == -1)
+        if (fdArrayIndex == -1 || fdArrayIndex >= this.privateDictionaries.size())
         {
             return 0;
         }
@@ -208,7 +208,7 @@ public class CFFCIDFont extends CFFFont
     private byte[][] getLocalSubrIndex(int gid)
     {
         int fdArrayIndex = this.fdSelect.getFDIndex(gid);
-        if (fdArrayIndex == -1)
+        if (fdArrayIndex == -1 || fdArrayIndex >= this.privateDictionaries.size())
         {
             return null;
         }
