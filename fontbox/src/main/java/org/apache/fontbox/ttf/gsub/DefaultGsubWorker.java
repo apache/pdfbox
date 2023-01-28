@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.ttf.gsub;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -38,6 +39,7 @@ class DefaultGsubWorker implements GsubWorker
     {
         LOG.warn(getClass().getSimpleName() + " class does not perform actual GSUB substitutions. "
                 + "Perhaps the selected language is not yet supported by the FontBox library.");
-        return originalGlyphIds;
+        // Make the result read-only to prevent accidental modifications of the source list
+        return Collections.unmodifiableList(originalGlyphIds);
     }
 }
