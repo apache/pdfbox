@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -699,6 +700,39 @@ public class GlyphSubstitutionTable extends TTFTable
     public GsubData getGsubData()
     {
         return gsubData;
+    }
+
+    /**
+     * Builds a new {@link GsubData} instance for given script tag. In contrast to neighbour {@link #getGsubData()}
+     * method, this one does not try to find the first supported language and load GSUB data for it. Instead, it fetches
+     * the data for the given {@code scriptTag} (if it's supported by the font) leaving the language unspecified. It
+     * means that even after successful reading of GSUB data, the actual glyph substitution may not work if there is no
+     * corresponding {@link GsubWorker} implementation for it.
+     *
+     * @implNote This method performs searching on every invocation (no results are cached)
+     * @param scriptTag a <a href="https://learn.microsoft.com/en-us/typography/opentype/spec/scripttags">script tag</a>
+     * for which the data is needed
+     * @return GSUB data for the given script or {@code null} if no such script in the font
+     */
+    public GsubData getGsubData(String scriptTag)
+    {
+        ScriptTable scriptTable = scriptList.get(scriptTag);
+        if (scriptTable == null)
+        {
+            return null;
+        }
+        return new GlyphSubstitutionDataExtractor().getGsubData(scriptTag, scriptTable,
+                featureListTable, lookupListTable);
+    }
+
+    /**
+     * @return a read-only view of the
+     * <a href="https://learn.microsoft.com/en-us/typography/opentype/spec/scripttags">script tags</a> for which this
+     * GSUB table has records
+     */
+    public Set<String> getSupportedScriptTags()
+    {
+        return Collections.unmodifiableSet(scriptList.keySet());
     }
 
     private RangeRecord readRangeRecord(TTFDataStream data) throws IOException

@@ -640,7 +640,9 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Returns the GSubData of the GlyphSubstitutionTable if present.
      * 
-     * @return the GSubData of the GlyphSubstitutionTable
+     * @ @return the GSubData of the GlyphSubstitutionTable or {@link GsubData#NO_DATA_FOUND} if either no GSUB data is
+     * available or its scripts are not supported
+     * 
      * @throws IOException if the font data could not be read
      */
     public GsubData getGsubData() throws IOException

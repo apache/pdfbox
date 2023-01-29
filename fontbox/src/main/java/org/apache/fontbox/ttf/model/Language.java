@@ -33,7 +33,15 @@ import org.apache.fontbox.ttf.table.common.ScriptRecord;
 public enum Language
 {
 
-    BENGALI(new String[] { "bng2", "beng" });
+    BENGALI(new String[] { "bng2", "beng" }),
+
+    /**
+     * An entry explicitly denoting the absence of any concrete language. May be useful when no actual glyph
+     * substitution is required but only the content of GSUB table is of interest.
+     *
+     * Must be the last one as it is not a language per se.
+     */
+    UNSPECIFIED(new String[0]);
 
     private final String[] scriptNames;
 
