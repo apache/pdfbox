@@ -697,6 +697,11 @@ public class GlyphSubstitutionTable extends TTFTable
         return gid;
     }
 
+    /**
+     * Returns a GsubData instance containing all scripts of the table.
+     * 
+     * @return the GsubData instance representing the table
+     */
     public GsubData getGsubData()
     {
         return gsubData;
@@ -707,9 +712,10 @@ public class GlyphSubstitutionTable extends TTFTable
      * method, this one does not try to find the first supported language and load GSUB data for it. Instead, it fetches
      * the data for the given {@code scriptTag} (if it's supported by the font) leaving the language unspecified. It
      * means that even after successful reading of GSUB data, the actual glyph substitution may not work if there is no
-     * corresponding {@link GsubWorker} implementation for it.
+     * corresponding {@link org.apache.fontbox.ttf.gsub.GsubWorker} implementation for it.
      *
-     * @implNote This method performs searching on every invocation (no results are cached)
+     * Note: This method performs searching on every invocation (no results are cached)
+     * 
      * @param scriptTag a <a href="https://learn.microsoft.com/en-us/typography/opentype/spec/scripttags">script tag</a>
      * for which the data is needed
      * @return GSUB data for the given script or {@code null} if no such script in the font
