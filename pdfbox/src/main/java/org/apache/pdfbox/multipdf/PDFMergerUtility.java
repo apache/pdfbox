@@ -47,7 +47,6 @@ import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.PDStructureElementNameTreeNode;
 import org.apache.pdfbox.pdmodel.PageMode;
-import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -815,8 +814,7 @@ public class PDFMergerUtility
         }
         Map<COSDictionary, COSDictionary> objMapping = new HashMap<>();
         int pageIndex = 0;
-        PDPageTree destinationPageTree = destination.getPages(); // cache PageTree
-        for (PDPage page : srcCatalog.getPages())
+        for (PDPage page : srcPageTree)
         {
             PDPage newPage = new PDPage(cloner.cloneForNewDocument(page.getCOSObject()));
             if (!mergeStructTree)
@@ -856,7 +854,7 @@ public class PDFMergerUtility
                 }
                 // TODO update mapping for XObjects
             }
-            destinationPageTree.add(newPage);
+            destPageTree.add(newPage);
             
             if (pageIndex == pageIndexOpenActionDest)
             {
