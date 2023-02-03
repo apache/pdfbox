@@ -1378,17 +1378,17 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             for (Map.Entry<COSName, COSBase> x : ((COSDictionary) base).entrySet())
             {
                 sb.append(x.getKey());
-                sb.append(":");
+                sb.append(':');
                 sb.append(getDictionaryString(x.getValue(), objs));
-                sb.append(";");
+                sb.append(';');
             }
-            sb.append("}");
+            sb.append('}');
             if (base instanceof COSStream)
             {
                 try (InputStream stream = ((COSStream) base).createRawInputStream())
                 {
                     byte[] b = IOUtils.toByteArray(stream);
-                    sb.append("COSStream{").append(Arrays.hashCode(b)).append("}");
+                    sb.append("COSStream{").append(Arrays.hashCode(b)).append('}');
                 }
             }
             return sb.toString();
@@ -1399,9 +1399,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             for (COSBase x : (COSArray) base)
             {
                 sb.append(getDictionaryString(x, objs));
-                sb.append(";");
+                sb.append(';');
             }
-            sb.append("}");
+            sb.append('}');
             return sb.toString();
         }
         if (base instanceof COSObject)
