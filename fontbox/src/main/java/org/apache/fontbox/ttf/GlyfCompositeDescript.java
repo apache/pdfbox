@@ -20,6 +20,7 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -254,6 +255,16 @@ public class GlyfCompositeDescript extends GlyfDescript
     public int getComponentCount()
     {
         return components.size();
+    }
+
+    /**
+     * Gets a view to the composite components.
+     * 
+     * @return unmodifiable list of this composite glyph's {@linkplain GlyfCompositeComp components}
+     */
+    public List<GlyfCompositeComp> getComponents()
+    {
+        return Collections.unmodifiableList(components);
     }
 
     private GlyfCompositeComp getCompositeComp(int i)

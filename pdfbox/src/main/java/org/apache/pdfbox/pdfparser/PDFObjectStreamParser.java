@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
 
 /**
@@ -116,19 +117,36 @@ public class PDFObjectStreamParser extends BaseParser
      * @return a map containing all parsed objects using the object number as key
      * @throws IOException if there is an error while parsing the stream
      */
-    public Map<Long, COSBase> parseAllObjects() throws IOException
+    public Map<COSObjectKey, COSBase> parseAllObjects() throws IOException
     {
-        Map<Long, COSBase> allObjects = new HashMap<>();
+        Map<COSObjectKey, COSBase> allObjects = new HashMap<>();
         try
         {
             Map<Integer, Long> objectNumbers = privateReadObjectOffsets();
+            // count the number of object numbers eliminating double entries
+            long numberOfObjNumbers = objectNumbers.values().stream().distinct().count();
+            // the usage of the index should be restricted to cases where more than one
+            // object use the same object number.
+            // there are malformed pdfs in the wild which would lead to false results if
+            // pdfbox always relies on the index if available. In most cases the object number
+            // is sufficient to choose the correct object
+            boolean indexNeeded = objectNumbers.size() > numberOfObjNumbers;
             long currentPosition = source.getPosition();
             if (firstObject > 0 && currentPosition < firstObject)
             {
                 source.skip(firstObject - (int) currentPosition);
             }
+            int index = 0;
             for (Entry<Integer, Long> entry : objectNumbers.entrySet())
             {
+                COSObjectKey objectKey = getObjectKey(entry.getValue(), 0);
+                // skip object if the index doesn't match
+                if (indexNeeded && objectKey.getStreamIndex() > -1
+                        && objectKey.getStreamIndex() != index)
+                {
+                    index++;
+                    continue;
+                }
                 int finalPosition = firstObject + entry.getKey();
                 currentPosition = source.getPosition();
                 if (finalPosition > 0 && currentPosition < finalPosition)
@@ -141,7 +159,8 @@ public class PDFObjectStreamParser extends BaseParser
                 {
                     streamObject.setDirect(false);
                 }
-                allObjects.put(entry.getValue(), streamObject);
+                allObjects.put(objectKey, streamObject);
+                index++;
             }
         }
         finally

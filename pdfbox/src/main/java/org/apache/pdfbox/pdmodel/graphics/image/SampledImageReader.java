@@ -416,7 +416,7 @@ final class SampledImageReader
             // and then simply shift bits out to the left, detecting set bits via sign 
             final boolean nosubsampling = currentSubsampling == 1;
             final int stride = (inputWidth + 7) / 8;
-            final int invert = colorSpace instanceof PDIndexed || decode[0] < decode[1] ? 0 : -1;
+            final int invert = decode[0] < decode[1] ? 0 : -1;
             final int endX = startx + scanWidth;
             final byte[] buff = new byte[stride];
             for (int y = 0; y < starty + scanHeight; y++)
@@ -598,8 +598,16 @@ final class SampledImageReader
             BufferedImage colorKeyMask = null;
             if (colorKey != null)
             {
-                colorKeyRanges = colorKey.toFloatArray();
-                colorKeyMask = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                if (colorKey.size() >= numComponents * 2)
+                {
+                    colorKeyRanges = colorKey.toFloatArray();
+                    colorKeyMask = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                }
+                else
+                {
+                    LOG.warn("colorKey mask size is " + colorKey.size() +
+                             ", should be " + (numComponents * 2) + ", ignored");
+                }
             }
 
             // calculate row padding

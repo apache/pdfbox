@@ -150,8 +150,10 @@ public class ActionManagerFactory
         {
             if (aDict instanceof COSObject)
             {
-                COSObjectKey cok = new COSObjectKey((COSObject) aDict);
-                COSDictionary indirectDict = (COSDictionary) ((COSObject) aDict).getObject();
+                COSObject cosObj = (COSObject) aDict;
+                COSObjectKey cok = new COSObjectKey(cosObj.getObjectNumber(),
+                        cosObj.getGenerationNumber());
+                COSDictionary indirectDict = (COSDictionary) cosObj.getObject();
                 if (!alreadyCreated.containsKey(cok))
                 {
                     result.add(createActionManager(ctx, indirectDict, additionActionKey));

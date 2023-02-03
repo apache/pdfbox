@@ -64,7 +64,28 @@ public class GlyphSubstitutionDataExtractor
         {
             return GsubData.NO_DATA_FOUND;
         }
+        return buildMapBackedGsubData(featureListTable, lookupListTable, scriptTableDetails);
+    }
 
+    /**
+     * Unlike {@link #getGsubData(Map, FeatureListTable, LookupListTable)}, this method doesn't iterate over supported
+     * {@link Language}'s searching for the first match with the scripts of the font. Instead, it unconditionally
+     * creates {@link ScriptTableDetails} instance with language left {@linkplain Language#UNSPECIFIED unspecified}.
+     * 
+     * @return {@link GsubData} instance built especially for the given {@code scriptName}
+     */
+    public GsubData getGsubData(String scriptName, ScriptTable scriptTable,
+            FeatureListTable featureListTable, LookupListTable lookupListTable)
+    {
+        ScriptTableDetails scriptTableDetails = new ScriptTableDetails(Language.UNSPECIFIED,
+                scriptName, scriptTable);
+
+        return buildMapBackedGsubData(featureListTable, lookupListTable, scriptTableDetails);
+    }
+
+    private MapBackedGsubData buildMapBackedGsubData(FeatureListTable featureListTable,
+            LookupListTable lookupListTable, ScriptTableDetails scriptTableDetails)
+    {
         ScriptTable scriptTable = scriptTableDetails.getScriptTable();
 
         Map<String, Map<List<Integer>, Integer>> gsubData = new LinkedHashMap<>();

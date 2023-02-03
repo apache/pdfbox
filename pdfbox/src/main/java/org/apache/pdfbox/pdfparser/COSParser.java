@@ -129,7 +129,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * Intermediate cache. Contains all objects of already read compressed object streams. Objects are removed after
      * dereferencing them.
      */
-    private final Map<Long, Map<Long, COSBase>> decompressedObjects = new HashMap<>();
+    private final Map<Long, Map<COSObjectKey, COSBase>> decompressedObjects = new HashMap<>();
 
     /**
      * The security handler.
@@ -765,16 +765,15 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected COSBase parseObjectStreamObject(long objstmObjNr, COSObjectKey key) throws IOException
     {
-        Map<Long, COSBase> streamObjects = decompressedObjects.computeIfAbsent(objstmObjNr,
+        Map<COSObjectKey, COSBase> streamObjects = decompressedObjects.computeIfAbsent(objstmObjNr,
                 n -> new HashMap<>());
         // did we already read the compressed object stream?
-        long keyNumber = key.getNumber();
-        COSBase objectStreamObject = streamObjects.remove(keyNumber);
+        COSBase objectStreamObject = streamObjects.remove(key);
         if (objectStreamObject != null)
         {
             return objectStreamObject;
         }
-        final COSObjectKey objKey = new COSObjectKey(objstmObjNr, 0);
+        final COSObjectKey objKey = getObjectKey(objstmObjNr, 0);
         final COSBase objstmBaseObj = document.getObjectFromPool(objKey).getObject();
         if (objstmBaseObj instanceof COSStream)
         {
@@ -782,18 +781,10 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj,
                         document);
-                for (Entry<Long, COSBase> entry : parser.parseAllObjects().entrySet())
-                {
-                    Long stmObjNumber = entry.getKey();
-                    if (keyNumber == stmObjNumber)
-                    {
-                        objectStreamObject = entry.getValue();
-                    }
-                    else
-                    {
-                        streamObjects.putIfAbsent(stmObjNumber, entry.getValue());
-                    }
-                }
+                Map<COSObjectKey, COSBase> allStreamObjects = parser.parseAllObjects();
+                objectStreamObject = allStreamObjects.remove(key);
+                allStreamObjects.entrySet().stream()
+                        .forEach(e -> streamObjects.putIfAbsent(e.getKey(), e.getValue()));
             }
             catch (IOException ex)
             {

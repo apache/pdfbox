@@ -23,6 +23,8 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -146,6 +148,27 @@ public abstract class BaseParser
     }
 
     /**
+     * Returns the object key for the given combination of object and generation number. The object key from the cross
+     * reference table/stream will be reused if available. Otherwise a newly created object will be returned.
+     * 
+     * @param num the given object number
+     * @param gen the given generation number
+     * 
+     * @return the COS object key
+     */
+    protected COSObjectKey getObjectKey(long num, int gen)
+    {
+        if (document == null || document.getXrefTable() == null)
+        {
+            return new COSObjectKey(num, gen);
+        }
+        Optional<COSObjectKey> foundKey = document.getXrefTable().keySet().stream()
+                .filter(k -> k.getNumber() == num && k.getGeneration() == gen) //
+                .findAny();
+        return foundKey.isPresent() ? foundKey.get() : new COSObjectKey(num, gen);
+    }
+
+    /**
      * This will parse a PDF dictionary value.
      *
      * @return The parsed Dictionary object.
@@ -190,7 +213,7 @@ public abstract class BaseParser
             return COSNull.NULL;
         }
         // dereference the object
-        return getObjectFromPool(new COSObjectKey(objNumber, genNumber));
+        return getObjectFromPool(getObjectKey(objNumber, genNumber));
     }
 
     private COSBase getObjectFromPool(COSObjectKey key) throws IOException
@@ -656,7 +679,7 @@ public abstract class BaseParser
                         COSInteger number = (COSInteger)po.remove( po.size() -1 );
                         if (number.longValue() >= 0 && genNumber.intValue() >= 0)
                         {
-                            COSObjectKey key = new COSObjectKey(number.longValue(),
+                            COSObjectKey key = getObjectKey(number.longValue(),
                                     genNumber.intValue());
                             pbo = getObjectFromPool(key);
                         }
@@ -882,16 +905,17 @@ public abstract class BaseParser
                             + " (start offset: " + startOffset + ")");
                 }
 
-                // if it's an endstream/endobj, we want to put it back so the caller will see it
-                if (ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
-                {
-                    source.rewind(badString.getBytes(StandardCharsets.ISO_8859_1).length);
-                }
-                else
-                {
-                    LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
-                            + source.getPosition() + " (start offset: " + startOffset + ")");
-                }
+            // if it's an endstream/endobj, we want to put it back so the caller will see it
+            if (ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
+            {
+                source.rewind(badString.getBytes(StandardCharsets.ISO_8859_1).length);
+            }
+            else
+            {
+                LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
+                        + source.getPosition() + " (start offset: " + startOffset + ")");
+                return COSNull.NULL;
+            }
         }
         return null;
     }
