@@ -354,6 +354,7 @@ public class COSParser extends BaseParser implements ICOSParser
                         try
                         {
                             parseXrefObjStream(prev, false);
+                            document.setHasHybridXRef();
                         }
                         catch (IOException ex)
                         {
@@ -439,7 +440,15 @@ public class COSParser extends BaseParser implements ICOSParser
         COSDictionary dict = parseCOSDictionary(false);
         try (COSStream xrefStream = parseCOSStream(dict))
         {
-            parseXrefStream(xrefStream, objByteOffset, isStandalone);
+            // the cross reference stream of a hybrid xref table will be added to the existing one
+            // and we must not override the offset and the trailer
+            if ( isStandalone )
+            {
+                xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
+                xrefTrailerResolver.setTrailer(xrefStream);
+            }
+            PDFXrefStreamParser parser = new PDFXrefStreamParser(xrefStream, document);
+            parser.parse(xrefTrailerResolver);
         }
 
         return dict.getLong(COSName.PREV);
@@ -1761,27 +1770,6 @@ public class COSParser extends BaseParser implements ICOSParser
             }
         }
         return true;
-    }
-
-    /**
-     * Fills XRefTrailerResolver with data of given stream.
-     * Stream must be of type XRef.
-     * @param stream the stream to be read
-     * @param objByteOffset the offset to start at
-     * @param isStandalone should be set to true if the stream is not part of a hybrid xref table
-     * @throws IOException if there is an error parsing the stream
-     */
-    private void parseXrefStream(COSStream stream, long objByteOffset, boolean isStandalone) throws IOException
-    {
-        // the cross reference stream of a hybrid xref table will be added to the existing one
-        // and we must not override the offset and the trailer
-        if ( isStandalone )
-        {
-            xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
-            xrefTrailerResolver.setTrailer( stream );
-        }        
-        PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, document);
-        parser.parse(xrefTrailerResolver);
     }
 
     /**
