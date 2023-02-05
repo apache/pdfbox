@@ -128,11 +128,11 @@ class AppearanceGeneratorHelper {
         // add font resources which might be available at the field
         // level but are not at the AcroForm level to the AcroForm
         // to match Adobe Reader/Acrobat behavior
-        if (field.getAcroForm().getDefaultResources() == null) {
+        PDResources acroFormResources = field.getAcroForm().getDefaultResources();
+        if (acroFormResources == null)
+        {
             return;
         }
-
-        PDResources acroFormResources = field.getAcroForm().getDefaultResources();
 
         for (PDAnnotationWidget widget : field.getWidgets())
         {
