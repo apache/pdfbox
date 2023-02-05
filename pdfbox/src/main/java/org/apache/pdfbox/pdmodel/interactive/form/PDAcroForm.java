@@ -20,6 +20,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +50,7 @@ import org.apache.pdfbox.pdmodel.fdf.FDFCatalog;
 import org.apache.pdfbox.pdmodel.fdf.FDFDictionary;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -73,6 +75,8 @@ public final class PDAcroForm implements COSObjectable
     private Map<String, PDField> fieldCache;
 
     private ScriptingHandler scriptingHandler;
+
+    private final Map<COSName, SoftReference<PDFont>> directFontCache = new HashMap<COSName, SoftReference<PDFont>>();
 
     /**
      * Constructor.
@@ -536,7 +540,8 @@ public final class PDAcroForm implements COSObjectable
         COSBase base = dictionary.getDictionaryObject(COSName.DR);
         if (base instanceof COSDictionary)
         {
-            retval = new PDResources((COSDictionary) base, document.getResourceCache());
+            retval = new PDResources((COSDictionary) base, document.getResourceCache(),
+                    directFontCache);
         }
         return retval;
     }
