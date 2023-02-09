@@ -171,6 +171,35 @@ public final class TextPosition
     }
 
     /**
+     * Same as {@link #getUnicode()} except that returned text is ensured to be
+     * visually ordered (i.e. same order you would see them displayed on screen when
+     * looking from left to right). This is important for Arabic where several
+     * unicode characters can be composed in one glyph with logical order (the order
+     * in which it would be normally typed from right to left).
+     * 
+     * @return The string on the screen in visual order.
+     */
+    public String getVisuallyOrderedUnicode()
+    {
+        final String text = getUnicode();
+        final int length = text.length();
+        for (int index = 0, nextIndex; index < length; index = nextIndex)
+        {
+            int codePoint = text.codePointAt(index);
+            nextIndex = index + Character.charCount(codePoint);
+            byte directionality = Character.getDirectionality(codePoint);
+            if (directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC
+                    // Even if the directionality is right to left, still there is no need to
+                    // reverse a single code-point
+                    && (index != 0 || nextIndex < length))
+            {
+                return new StringBuilder(text).reverse().toString();
+            }
+        }
+        return text;
+    }
+
+    /**
      * Return the internal PDF character codes of the glyphs in this text.
      *
      * @return an array of internal PDF character codes
