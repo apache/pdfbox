@@ -508,6 +508,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 {
                     IterativeMergeSort.sort(textList, comparator);
                 }
+                finally
+                {
+                    removeContainedSpaces(textList);
+                }
             }
 
             startArticle();
@@ -707,6 +711,34 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     {
         return within(y1, y2, .1f) || y2 <= y1 && y2 >= y1 - height1
                 || y1 <= y2 && y1 >= y2 - height2;
+    }
+
+    /**
+     * Remove all space characters if contained within the adjacent letters
+     */
+    private void removeContainedSpaces(List<TextPosition> textList)
+    {
+        TextPosition position, previousPosition;
+        Iterator<TextPosition> iterator = textList.iterator();
+        
+        if (!iterator.hasNext())
+        {
+            return;
+        }
+        previousPosition = iterator.next();
+        
+        while (iterator.hasNext()) 
+        {
+            position = iterator.next();
+            if (" ".equals(position.getUnicode()) && previousPosition.completelyContains(position))
+            {
+                iterator.remove();
+            }
+            else
+            {
+                previousPosition = position;
+            } 
+        }
     }
 
     /**
