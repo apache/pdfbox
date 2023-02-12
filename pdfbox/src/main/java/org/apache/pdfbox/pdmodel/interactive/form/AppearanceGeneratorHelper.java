@@ -130,10 +130,10 @@ class AppearanceGeneratorHelper
      */
     private void validateAndEnsureAcroFormResources()
     {
-        PDResources acroFormResources = field.getAcroForm().getDefaultResources();
         // add font resources which might be available at the field 
         // level but are not at the AcroForm level to the AcroForm
         // to match Adobe Reader/Acrobat behavior        
+        PDResources acroFormResources = field.getAcroForm().getDefaultResources();
         if (acroFormResources == null)
         {
             return;

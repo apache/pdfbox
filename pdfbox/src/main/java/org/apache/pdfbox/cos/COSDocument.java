@@ -82,6 +82,8 @@ public class COSDocument extends COSBase implements Closeable
 
     private boolean isXRefStream;
 
+    private boolean hasHybridXRef = false;
+
     private RandomAccessStreamCache streamCache;
 
     /**
@@ -562,6 +564,24 @@ public class COSDocument extends COSBase implements Closeable
         isXRefStream = isXRefStreamValue;
     }
     
+    /**
+     * Determines if the pdf has hybrid cross references, both plain tables and streams.
+     * 
+     * @return true if the pdf has hybrid cross references
+     */
+    public boolean hasHybridXRef()
+    {
+        return hasHybridXRef;
+    }
+
+    /**
+     * Marks the pdf as document using hybrid cross references.
+     */
+    public void setHasHybridXRef()
+    {
+        hasHybridXRef = true;
+    }
+
     /**
      * Returns the {@link COSDocumentState} of this {@link COSDocument}.
      *

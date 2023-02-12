@@ -714,9 +714,9 @@ public class COSWriter implements ICOSVisitor
         trailer.accept(this);
     }
 
-    private void doWriteXRefInc(COSDocument doc, boolean hasHybridXRef) throws IOException
+    private void doWriteXRefInc(COSDocument doc) throws IOException
     {
-        if (!doc.isXRefStream() || (hasHybridXRef && incrementalUpdate))
+        if (!doc.isXRefStream() || (doc.hasHybridXRef() && incrementalUpdate))
         {
             COSDictionary trailer = doc.getTrailer();
             trailer.setLong(COSName.PREV, doc.getStartXref());
@@ -1285,18 +1285,9 @@ public class COSWriter implements ICOSVisitor
             doWriteBody(doc);
         }
 
-        // get the previous trailer
-        COSDictionary trailer = doc.getTrailer();
-        boolean hasHybridXRef = false;
-
-        if (trailer != null)
-        {
-            hasHybridXRef = trailer.getLong(COSName.XREF_STM) != -1;
-        }
-
         if(incrementalUpdate || doc.isXRefStream())
         {
-            doWriteXRefInc(doc, hasHybridXRef);
+            doWriteXRefInc(doc);
         }
         else
         {

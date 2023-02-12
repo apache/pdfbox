@@ -54,8 +54,7 @@ public final class PDResources implements COSObjectable
     
     // PDFBOX-3442 cache fonts that are not indirect objects, as these aren't cached in ResourceCache
     // and this would result in huge memory footprint in text extraction
-    private final Map <COSName,SoftReference<PDFont>> directFontCache = 
-            new HashMap<>();
+    private final Map<COSName, SoftReference<PDFont>> directFontCache;
 
     /**
      * Constructor for embedding.
@@ -64,6 +63,7 @@ public final class PDResources implements COSObjectable
     {
         resources = new COSDictionary();
         cache = null;
+        directFontCache = new HashMap<COSName, SoftReference<PDFont>>();
     }
 
     /**
@@ -79,6 +79,7 @@ public final class PDResources implements COSObjectable
         }
         resources = resourceDictionary;
         cache = null;
+        directFontCache = new HashMap<COSName, SoftReference<PDFont>>();
     }
     
     /**
@@ -95,6 +96,30 @@ public final class PDResources implements COSObjectable
         }
         resources = resourceDictionary;
         cache = resourceCache;
+        directFontCache = new HashMap<COSName, SoftReference<PDFont>>();
+    }
+
+    /**
+     * Constructor for reading.
+     *
+     * @param resourceDictionary The cos dictionary for this resource.
+     * @param resourceCache The document's resource cache, may be null.
+     * @param directFontCache The document's direct font cache. Must be mutable
+     */
+    public PDResources(COSDictionary resourceDictionary, ResourceCache resourceCache,
+            Map<COSName, SoftReference<PDFont>> directFontCache)
+    {
+        if (resourceDictionary == null)
+        {
+            throw new IllegalArgumentException("resourceDictionary is null");
+        }
+        if (directFontCache == null)
+        {
+            throw new IllegalArgumentException("directFontCache is null");
+        }
+        resources = resourceDictionary;
+        cache = resourceCache;
+        this.directFontCache = directFontCache;
     }
 
     /**
