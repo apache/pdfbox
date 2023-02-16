@@ -39,7 +39,12 @@ public final class ShadingFill extends GraphicsOperatorProcessor
         {
             throw new MissingOperandException(operator, operands);
         }
-        context.shadingFill((COSName) operands.get(0));
+        COSBase base = operands.get(0);
+        if (!(base instanceof COSName))
+        {
+            throw new MissingOperandException(operator, operands);
+        }
+        context.shadingFill((COSName) base);
     }
 
     @Override
