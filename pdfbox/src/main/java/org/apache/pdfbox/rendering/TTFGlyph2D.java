@@ -161,6 +161,10 @@ final class TTFGlyph2D implements Glyph2D
                 if (hasScaling)
                 {
                     AffineTransform atScale = AffineTransform.getScaleInstance(scale, scale);
+
+                    // PDFBOX-5567: clone() to avoid repeated modification on cached path
+                    glyphPath = (GeneralPath) glyphPath.clone();
+
                     glyphPath.transform(atScale);
                 }
                 glyphs.put(gid, glyphPath);
