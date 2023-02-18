@@ -524,8 +524,6 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     @Override
     public GeneralPath getNormalizedPath(int code) throws IOException
     {
-        boolean hasScaling = ttf.getUnitsPerEm() != 1000;
-        float scale = 1000f / ttf.getUnitsPerEm();
         int gid = codeToGID(code);
 
         GeneralPath path = getPath(code);
@@ -541,14 +539,13 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             // empty glyph (e.g. space, newline)
             return new GeneralPath();
         }
-        else
+
+        if (ttf.getUnitsPerEm() != 1000)
         {
-            if (hasScaling)
-            {
-                path.transform(AffineTransform.getScaleInstance(scale, scale));
-            }
-            return path;
+            float scale = 1000f / ttf.getUnitsPerEm();
+            path.transform(AffineTransform.getScaleInstance(scale, scale));
         }
+        return path;
     }
 
     @Override
