@@ -543,6 +543,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         if (ttf.getUnitsPerEm() != 1000)
         {
             float scale = 1000f / ttf.getUnitsPerEm();
+            // path will have to be cloned if it is cached in the future, see PDFBOX-5567
             path.transform(AffineTransform.getScaleInstance(scale, scale));
         }
         return path;

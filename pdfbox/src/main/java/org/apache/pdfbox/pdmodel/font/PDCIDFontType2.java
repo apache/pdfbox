@@ -458,6 +458,10 @@ public class PDCIDFontType2 extends PDCIDFont
         if (ttf.getUnitsPerEm() != 1000)
         {
             float scale = 1000f / ttf.getUnitsPerEm();
+
+            // PDFBOX-5567: clone() to avoid repeated modification on cached path
+            path = (GeneralPath) path.clone(); 
+
             path.transform(AffineTransform.getScaleInstance(scale, scale));
         }
         return path;
