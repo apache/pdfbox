@@ -622,7 +622,6 @@ public class COSParser extends BaseParser implements ICOSParser
         COSBase referencedObject = null;
         if (offsetOrObjstmObNr != null)
         {
-
             if (offsetOrObjstmObNr > 0)
             {
                 referencedObject = parseFileObject(offsetOrObjstmObNr, objKey);
@@ -663,7 +662,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
         // test to circumvent loops with broken documents
         if (requireExistingNotCompressedObj
-                && ((offsetOrObjstmObNr == null) || (offsetOrObjstmObNr <= 0)))
+                && (offsetOrObjstmObNr == null || offsetOrObjstmObNr <= 0))
         {
             throw new IOException("Object must be defined and must not be compressed object: "
                     + objKey.getNumber() + ":" + objKey.getGeneration());
@@ -671,23 +670,23 @@ public class COSParser extends BaseParser implements ICOSParser
         return offsetOrObjstmObNr;
     }
 
-    private COSBase parseFileObject(Long offsetOrObjstmObNr, final COSObjectKey objKey)
+    private COSBase parseFileObject(Long objOffset, final COSObjectKey objKey)
             throws IOException
     {
-        // ---- go to object start
-        source.seek(offsetOrObjstmObNr);
+        // jump to the object start
+        source.seek(objOffset);
 
-        // ---- we must have an indirect object
+        // an indirect object starts with the object number/generation number
         final long readObjNr = readObjectNumber();
         final int readObjGen = readGenerationNumber();
         readExpectedString(OBJ_MARKER, true);
 
-        // ---- consistency check
-        if ((readObjNr != objKey.getNumber()) || (readObjGen != objKey.getGeneration()))
+        // consistency check
+        if (readObjNr != objKey.getNumber() || readObjGen != objKey.getGeneration())
         {
             throw new IOException("XREF for " + objKey.getNumber() + ":"
                     + objKey.getGeneration() + " points to wrong object: " + readObjNr
-                    + ":" + readObjGen + " at offset " + offsetOrObjstmObNr);
+                    + ":" + readObjGen + " at offset " + objOffset);
         }
 
         skipSpaces();
@@ -718,7 +717,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 // the combination of a dict and the stream/endstream
                 // forms a complete stream object
                 throw new IOException("Stream not preceded by dictionary (offset: "
-                        + offsetOrObjstmObNr + ").");
+                        + objOffset + ").");
             }
             skipSpaces();
             endObjectKey = readLine();
@@ -745,13 +744,13 @@ public class COSParser extends BaseParser implements ICOSParser
             if (isLenient)
             {
                 LOG.warn("Object (" + readObjNr + ":" + readObjGen + ") at offset "
-                        + offsetOrObjstmObNr + " does not end with 'endobj' but with '"
+                        + objOffset + " does not end with 'endobj' but with '"
                         + endObjectKey + "'");
             }
             else
             {
                 throw new IOException("Object (" + readObjNr + ":" + readObjGen
-                        + ") at offset " + offsetOrObjstmObNr
+                        + ") at offset " + objOffset
                         + " does not end with 'endobj' but with '" + endObjectKey + "'");
             }
         }
