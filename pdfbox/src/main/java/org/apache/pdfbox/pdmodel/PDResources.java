@@ -63,7 +63,7 @@ public final class PDResources implements COSObjectable
     {
         resources = new COSDictionary();
         cache = null;
-        directFontCache = new HashMap<COSName, SoftReference<PDFont>>();
+        directFontCache = new HashMap<>();
     }
 
     /**
@@ -79,7 +79,7 @@ public final class PDResources implements COSObjectable
         }
         resources = resourceDictionary;
         cache = null;
-        directFontCache = new HashMap<COSName, SoftReference<PDFont>>();
+        directFontCache = new HashMap<>();
     }
     
     /**
@@ -96,7 +96,7 @@ public final class PDResources implements COSObjectable
         }
         resources = resourceDictionary;
         cache = resourceCache;
-        directFontCache = new HashMap<COSName, SoftReference<PDFont>>();
+        directFontCache = new HashMap<>();
     }
 
     /**
