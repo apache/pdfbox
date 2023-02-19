@@ -149,12 +149,6 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected XrefTrailerResolver xrefTrailerResolver = new XrefTrailerResolver();
 
-
-    /**
-     * The prefix for the temp file being used. 
-     */
-    public static final String TMP_FILE_PREFIX = "tmpPDF";
-    
     /**
      * Default constructor.
      *
