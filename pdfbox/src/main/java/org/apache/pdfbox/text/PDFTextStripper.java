@@ -1931,11 +1931,12 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                     String normalized = Normalizer.normalize(
                             word.substring(q, q + 1), Normalizer.Form.NFKC).trim();
                     
+                    // Hebrew in Alphabetic Presentation Forms from FB1D to FB4F and
                     // Arabic Presentation Forms-A from FB50 to FDFF and
                     // Arabic Presentation Forms-B from FE70 to FEFF
-                    if (0xFB50 <= c && normalized.length() > 1)
+                    if (0xFB1D <= c && normalized.length() > 1)
                     {
-                        // Reverse the order of decomposed Arabic letters
+                        // Reverse the order of decomposed Hebrew and Arabic letters
                         normalized = new StringBuilder(normalized).reverse().toString();
                     }
                     builder.append(normalized);
