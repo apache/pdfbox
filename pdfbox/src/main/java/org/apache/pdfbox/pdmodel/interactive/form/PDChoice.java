@@ -162,8 +162,9 @@ public abstract class PDChoice extends PDVariableText
                 for (int i = 0; i<exportValues.size(); i++)
                 {
                     COSArray entry = new COSArray();
-                    entry.add(new COSString(keyValuePairs.get(i).getKey()));
-                    entry.add(new COSString(keyValuePairs.get(i).getValue()));
+                    KeyValue pair = keyValuePairs.get(i);
+                    entry.add(new COSString(pair.getKey()));
+                    entry.add(new COSString(pair.getValue()));
                     options.add(entry);
                 }
                 getCOSObject().setItem(COSName.OPT, options);
