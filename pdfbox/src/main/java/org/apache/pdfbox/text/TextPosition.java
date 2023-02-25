@@ -183,7 +183,8 @@ public final class TextPosition
     {
         final String text = getUnicode();
         final int length = text.length();
-        for (int index = 0, nextIndex; index < length; index = nextIndex)
+        int nextIndex;
+        for (int index = 0; index < length; index = nextIndex)
         {
             int codePoint = text.codePointAt(index);
             nextIndex = index + Character.charCount(codePoint);
