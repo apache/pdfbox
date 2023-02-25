@@ -1928,8 +1928,18 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 else
                 {
                     // Trim because some decompositions have an extra space, such as U+FC5E
-                    builder.append(Normalizer
-                            .normalize(word.substring(q, q + 1), Normalizer.Form.NFKC).trim());
+                    String normalized = Normalizer.normalize(
+                            word.substring(q, q + 1), Normalizer.Form.NFKC).trim();
+                    
+                    // Hebrew in Alphabetic Presentation Forms from FB1D to FB4F and
+                    // Arabic Presentation Forms-A from FB50 to FDFF and
+                    // Arabic Presentation Forms-B from FE70 to FEFF
+                    if (0xFB1D <= c && normalized.length() > 1)
+                    {
+                        // Reverse the order of decomposed Hebrew and Arabic letters
+                        normalized = new StringBuilder(normalized).reverse().toString();
+                    }
+                    builder.append(normalized);
                 }
                 p = q + 1;
             }
@@ -1963,7 +1973,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         else
         {
             TextPosition text = item.getTextPosition();
-            lineBuilder.append(text.getUnicode());
+            lineBuilder.append(text.getVisuallyOrderedUnicode());
             wordPositions.add(text);
         }
         return lineBuilder;
