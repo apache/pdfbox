@@ -203,10 +203,7 @@ public class COSArrayList<E> implements List<E>
         }
         else
         {
-            if(array != null)
-            {
-                array.add(((COSObjectable)o).getCOSObject());
-            }
+            array.add(((COSObjectable)o).getCOSObject());
         }
         return actual.add(o);
     }
