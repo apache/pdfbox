@@ -136,7 +136,6 @@ public class GlyphSubstitutionTable extends TTFTable
         data.seek(offset);
         int defaultLangSys = data.readUnsignedShort();
         int langSysCount = data.readUnsignedShort();
-        LangSysRecord[] langSysRecords = new LangSysRecord[langSysCount];
         String[] langSysTags = new String[langSysCount];
         int[] langSysOffsets = new int[langSysCount];
         for (int i = 0; i < langSysCount; i++)
