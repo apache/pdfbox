@@ -38,13 +38,11 @@ import org.apache.fontbox.ttf.table.common.CoverageTableFormat2;
 import org.apache.fontbox.ttf.table.common.FeatureListTable;
 import org.apache.fontbox.ttf.table.common.FeatureRecord;
 import org.apache.fontbox.ttf.table.common.FeatureTable;
-import org.apache.fontbox.ttf.table.common.LangSysRecord;
 import org.apache.fontbox.ttf.table.common.LangSysTable;
 import org.apache.fontbox.ttf.table.common.LookupListTable;
 import org.apache.fontbox.ttf.table.common.LookupSubTable;
 import org.apache.fontbox.ttf.table.common.LookupTable;
 import org.apache.fontbox.ttf.table.common.RangeRecord;
-import org.apache.fontbox.ttf.table.common.ScriptRecord;
 import org.apache.fontbox.ttf.table.common.ScriptTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureSetTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureTable;
@@ -125,8 +123,7 @@ public class GlyphSubstitutionTable extends TTFTable
         for (int i = 0; i < scriptCount; i++)
         {
             ScriptTable scriptTable = readScriptTable(data, offset + scriptOffsets[i]);
-            ScriptRecord scriptRecord = new ScriptRecord(scriptTags[i], scriptTable);
-            resultScriptList.put(scriptRecord.getScriptTag(), scriptRecord.getScriptTable());
+            resultScriptList.put(scriptTags[i], scriptTable);
         }
         return Collections.unmodifiableMap(resultScriptList);
     }
@@ -162,8 +159,7 @@ public class GlyphSubstitutionTable extends TTFTable
         for (int i = 0; i < langSysCount; i++)
         {
             LangSysTable langSysTable = readLangSysTable(data, offset + langSysOffsets[i]);
-            LangSysRecord langSysRecord = new LangSysRecord(langSysTags[i], langSysTable);
-            langSysTables.put(langSysRecord.getLangSysTag(), langSysRecord.getLangSysTable());
+            langSysTables.put(langSysTags[i], langSysTable);
         }
         return new ScriptTable(defaultLangSysTable, Collections.unmodifiableMap(langSysTables));
     }
