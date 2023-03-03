@@ -38,13 +38,11 @@ import org.apache.fontbox.ttf.table.common.CoverageTableFormat2;
 import org.apache.fontbox.ttf.table.common.FeatureListTable;
 import org.apache.fontbox.ttf.table.common.FeatureRecord;
 import org.apache.fontbox.ttf.table.common.FeatureTable;
-import org.apache.fontbox.ttf.table.common.LangSysRecord;
 import org.apache.fontbox.ttf.table.common.LangSysTable;
 import org.apache.fontbox.ttf.table.common.LookupListTable;
 import org.apache.fontbox.ttf.table.common.LookupSubTable;
 import org.apache.fontbox.ttf.table.common.LookupTable;
 import org.apache.fontbox.ttf.table.common.RangeRecord;
-import org.apache.fontbox.ttf.table.common.ScriptRecord;
 import org.apache.fontbox.ttf.table.common.ScriptTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureSetTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureTable;
@@ -114,9 +112,9 @@ public class GlyphSubstitutionTable extends TTFTable
     {
         data.seek(offset);
         int scriptCount = data.readUnsignedShort();
-        ScriptTable[] scriptTables = new ScriptTable[scriptCount];
         int[] scriptOffsets = new int[scriptCount];
         String[] scriptTags = new String[scriptCount];
+        Map<String, ScriptTable> resultScriptList = new LinkedHashMap<>(scriptCount);
         for (int i = 0; i < scriptCount; i++)
         {
             scriptTags[i] = data.readString(4);
@@ -124,12 +122,8 @@ public class GlyphSubstitutionTable extends TTFTable
         }
         for (int i = 0; i < scriptCount; i++)
         {
-            scriptTables[i] = readScriptTable(data, offset + scriptOffsets[i]);
-        }
-        Map<String, ScriptTable> resultScriptList = new LinkedHashMap<>(scriptCount);
-        for (int i = 0; i < scriptCount; i++)
-        {
-            resultScriptList.put(scriptTags[i], scriptTables[i]);
+            ScriptTable scriptTable = readScriptTable(data, offset + scriptOffsets[i]);
+            resultScriptList.put(scriptTags[i], scriptTable);
         }
         return resultScriptList;
     }
@@ -139,7 +133,6 @@ public class GlyphSubstitutionTable extends TTFTable
         data.seek(offset);
         int defaultLangSys = data.readUnsignedShort();
         int langSysCount = data.readUnsignedShort();
-        LangSysRecord[] langSysRecords = new LangSysRecord[langSysCount];
         String[] langSysTags = new String[langSysCount];
         int[] langSysOffsets = new int[langSysCount];
         for (int i = 0; i < langSysCount; i++)
@@ -162,16 +155,11 @@ public class GlyphSubstitutionTable extends TTFTable
         {
             defaultLangSysTable = readLangSysTable(data, offset + defaultLangSys);
         }
+        Map<String, LangSysTable> langSysTables = new LinkedHashMap<>(langSysCount);
         for (int i = 0; i < langSysCount; i++)
         {
             LangSysTable langSysTable = readLangSysTable(data, offset + langSysOffsets[i]);
-            langSysRecords[i] = new LangSysRecord(langSysTags[i], langSysTable);
-        }
-        Map<String, LangSysTable> langSysTables = new LinkedHashMap<>(langSysCount);
-        for (LangSysRecord langSysRecord : langSysRecords)
-        {
-            langSysTables.put(langSysRecord.getLangSysTag(),
-                    langSysRecord.getLangSysTable());
+            langSysTables.put(langSysTags[i], langSysTable);
         }
         return new ScriptTable(defaultLangSysTable, Collections.unmodifiableMap(langSysTables));
     }

@@ -73,7 +73,7 @@ public final class PDAcroForm implements COSObjectable
 
     private ScriptingHandler scriptingHandler;
 
-    private final Map<COSName, SoftReference<PDFont>> directFontCache = new HashMap<COSName, SoftReference<PDFont>>();
+    private final Map<COSName, SoftReference<PDFont>> directFontCache = new HashMap<>();
 
     /**
      * Constructor.
