@@ -412,12 +412,13 @@ public abstract class PDChoice extends PDVariableText
             {
                 throw new IllegalArgumentException("The list box does not allow multiple selections.");
             }
-            if (!getOptions().containsAll(values))
+            List<String> options = getOptions();
+            if (!options.containsAll(values))
             {
                 throw new IllegalArgumentException("The values are not contained in the selectable options.");
             }
             getCOSObject().setItem(COSName.V, COSArrayList.convertStringListToCOSStringCOSArray(values));
-            updateSelectedOptionsIndex(values);
+            updateSelectedOptionsIndex(values, options);
         }
         else
         {
@@ -477,10 +478,9 @@ public abstract class PDChoice extends PDVariableText
     /**
      * Update the 'I' key based on values set.
      */
-    private void updateSelectedOptionsIndex(List<String> values)
+    private void updateSelectedOptionsIndex(List<String> values, List<String> options)
     {
-        List<String> options = getOptions();
-        List<Integer> indices = new ArrayList<Integer>();
+        List<Integer> indices = new ArrayList<Integer>(values.size());
 
         for (String value : values)
         {
