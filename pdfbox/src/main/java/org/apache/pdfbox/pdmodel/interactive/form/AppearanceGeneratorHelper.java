@@ -455,8 +455,9 @@ class AppearanceGeneratorHelper {
         if (widget.getBorderStyle() != null) {
             borderWidth = widget.getBorderStyle().getWidth();
         }
-        PDRectangle clipRect = applyPadding(bbox, Math.max(1f, borderWidth));
-        PDRectangle contentRect = applyPadding(clipRect, Math.max(1f, borderWidth));
+        float padding = Math.max(1f, borderWidth);
+        PDRectangle clipRect = applyPadding(bbox, padding);
+        PDRectangle contentRect = applyPadding(clipRect, padding);
 
         contents.saveGraphicsState();
 
