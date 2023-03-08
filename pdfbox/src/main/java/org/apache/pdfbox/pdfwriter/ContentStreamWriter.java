@@ -112,6 +112,35 @@ public class ContentStreamWriter
         }
     }
 
+    private void writeObject(Operator op) throws IOException
+    {
+        if (op.getName().equals(OperatorName.BEGIN_INLINE_IMAGE))
+        {
+            output.write(OperatorName.BEGIN_INLINE_IMAGE.getBytes(StandardCharsets.ISO_8859_1));
+            output.write(EOL);
+            COSDictionary dic = op.getImageParameters();
+            for (COSName key : dic.keySet())
+            {
+                Object value = dic.getDictionaryObject(key);
+                key.writePDF(output);
+                output.write(SPACE);
+                writeObject(value);
+                output.write(EOL);
+            }
+            output.write(OperatorName.BEGIN_INLINE_IMAGE_DATA.getBytes(StandardCharsets.ISO_8859_1));
+            output.write(EOL);
+            output.write(op.getImageData());
+            output.write(EOL);
+            output.write(OperatorName.END_INLINE_IMAGE.getBytes(StandardCharsets.ISO_8859_1));
+            output.write(EOL);
+        }
+        else
+        {
+            output.write(op.getName().getBytes(StandardCharsets.ISO_8859_1));
+            output.write(EOL);
+        }
+    }
+
     private void writeObject( Object o ) throws IOException
     {
         if( o instanceof COSString )
@@ -167,32 +196,7 @@ public class ContentStreamWriter
         }
         else if( o instanceof Operator)
         {
-            Operator op = (Operator)o;
-            if( op.getName().equals( OperatorName.BEGIN_INLINE_IMAGE ) )
-            {
-                output.write( OperatorName.BEGIN_INLINE_IMAGE.getBytes(StandardCharsets.ISO_8859_1) );
-                output.write(EOL);
-                COSDictionary dic = op.getImageParameters();
-                for( COSName key : dic.keySet() )
-                {
-                    Object value = dic.getDictionaryObject( key );
-                    key.writePDF( output );
-                    output.write( SPACE );
-                    writeObject( value );
-                    output.write( EOL );
-                }
-                output.write( OperatorName.BEGIN_INLINE_IMAGE_DATA.getBytes(StandardCharsets.ISO_8859_1) );
-                output.write( EOL );
-                output.write( op.getImageData() );
-                output.write( EOL );
-                output.write( OperatorName.END_INLINE_IMAGE.getBytes(StandardCharsets.ISO_8859_1) );
-                output.write( EOL );
-            }
-            else
-            {
-                output.write( op.getName().getBytes(StandardCharsets.ISO_8859_1) );
-                output.write( EOL );
-            }
+            writeObject((Operator) o);
         }
         else if (o instanceof COSNull)
         {
