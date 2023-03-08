@@ -670,8 +670,7 @@ public class CmapSubtable implements CmapLookup
         }
         else
         {
-            codes = new ArrayList<>(1);
-            codes.add(code);
+            codes = Collections.singletonList(code);
         }
         return codes;
     }
