@@ -480,12 +480,11 @@ public final class TTFSubsetter
         long[] offsets = ttf.getIndexToLocation().getOffsets();
         do
         {
-            InputStream is = ttf.getOriginalData();
             Set<Integer> glyphIdsToAdd = null;
-            try
+            try (InputStream is = ttf.getOriginalData())
             {
                 long isResult = is.skip(g.getOffset());
-                
+
                 if (Long.compare(isResult, g.getOffset()) != 0)
                 {
                     LOG.debug("Tried skipping " + g.getOffset() + " bytes but skipped only " + isResult + " bytes");
@@ -561,15 +560,11 @@ public final class TTFSubsetter
                     lastOff = offsets[glyphId + 1];
                 }
             }
-            finally
-            {
-                is.close();
-            }
-            if (glyphIdsToAdd != null)
+            hasNested = glyphIdsToAdd != null;
+            if (hasNested)
             {
                 glyphIds.addAll(glyphIdsToAdd);
             }
-            hasNested = glyphIdsToAdd != null;
         }
         while (hasNested);
     }
