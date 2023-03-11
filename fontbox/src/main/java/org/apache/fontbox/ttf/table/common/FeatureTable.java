@@ -56,6 +56,6 @@ public class FeatureTable
     @Override
     public String toString()
     {
-        return String.format("FeatureTable[lookupListIndiciesCount=%d]", lookupListIndices.length);
+        return String.format("FeatureTable[lookupListIndicesCount=%d]", lookupListIndices.length);
     }
 }
