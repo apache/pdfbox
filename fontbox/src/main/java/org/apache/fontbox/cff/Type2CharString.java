@@ -191,9 +191,13 @@ public class Type2CharString extends Type1CharString
             }
             Number[] first = subArray(numbers,0, 6);
             boolean dxIsBigger = Math.abs(dx) > Math.abs(dy);
-            Number[] second = new Number[]{numbers.get(6), numbers.get(7), numbers.get(8),
-                    numbers.get(9), dxIsBigger ? numbers.get(10) : -dx,
-                    dxIsBigger ? -dy : numbers.get(10)};
+            Number[] second = new Number[]{
+                    numbers.get(6),
+                    numbers.get(7),
+                    numbers.get(8),
+                    numbers.get(9),
+                    (dxIsBigger ? numbers.get(10) : -dx),
+                    (dxIsBigger ? -dy : numbers.get(10))};
             addCommand(first, CharStringCommand.COMMAND_RRCURVETO);
             addCommand(second, CharStringCommand.COMMAND_RRCURVETO);
             break;

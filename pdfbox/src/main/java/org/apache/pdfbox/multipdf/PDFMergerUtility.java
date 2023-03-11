@@ -229,8 +229,8 @@ public class PDFMergerUtility
 
     /**
      * Get the destination document information that is to be set in
-     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }. The default is null, which means that
-     * it is ignored.
+     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }.
+     * The default is null, which means that it is ignored.
      *
      * @return The destination document information.
      */
@@ -241,8 +241,8 @@ public class PDFMergerUtility
 
     /**
      * Set the destination document information that is to be set in
-     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }. The default is null, which means that
-     * it is ignored.
+     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }.
+     * The default is null, which means that it is ignored.
      *
      * @param info The destination document information.
      */
@@ -253,8 +253,8 @@ public class PDFMergerUtility
 
     /**
      * Set the destination metadata that is to be set in
-     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }. The default is null, which means that
-     * it is ignored.
+     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }.
+     * The default is null, which means that it is ignored.
      *
      * @return The destination metadata.
      */
@@ -265,8 +265,8 @@ public class PDFMergerUtility
 
     /**
      * Set the destination metadata that is to be set in
-     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }. The default is null, which means that
-     * it is ignored.
+     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }.
+     * The default is null, which means that it is ignored.
      *
      * @param meta The destination metadata.
      */
