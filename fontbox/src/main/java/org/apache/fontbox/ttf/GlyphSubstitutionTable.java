@@ -652,7 +652,7 @@ public class GlyphSubstitutionTable extends TTFTable
         @Override
         public String toString()
         {
-            return String.format("FeatureTable[lookupListIndiciesCount=%d]",
+            return String.format("FeatureTable[lookupListIndicesCount=%d]",
                     lookupListIndices.length);
         }
     }
