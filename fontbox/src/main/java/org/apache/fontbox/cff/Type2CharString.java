@@ -186,9 +186,14 @@ public class Type2CharString extends Type1CharString
                 dy += numbers.get(i * 2 + 1).intValue();
             }
             List<Number> first = numbers.subList(0, 6);
-            List<Number> second = Arrays.asList(numbers.get(6), numbers.get(7), numbers.get(8),
-                    numbers.get(9), (Math.abs(dx) > Math.abs(dy) ? numbers.get(10) : -dx),
-                    (Math.abs(dx) > Math.abs(dy) ? -dy : numbers.get(10)));
+            boolean dxIsBigger = Math.abs(dx) > Math.abs(dy);
+            List<Number> second = Arrays.asList(
+                    numbers.get(6),
+                    numbers.get(7),
+                    numbers.get(8),
+                    numbers.get(9),
+                    (dxIsBigger ? numbers.get(10) : -dx),
+                    (dxIsBigger ? -dy : numbers.get(10)));
             addCommandList(Arrays.asList(first, second),
                     CharStringCommand.COMMAND_RRCURVETO);
             break;
