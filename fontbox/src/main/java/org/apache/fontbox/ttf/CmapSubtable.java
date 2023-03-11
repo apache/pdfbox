@@ -45,7 +45,7 @@ public class CmapSubtable implements CmapLookup
     private long subTableOffset;
     private int[] glyphIdToCharacterCode;
     private final Map<Integer, List<Integer>> glyphIdToCharacterCodeMultiple = new HashMap<Integer, List<Integer>>();
-    private Map<Integer, Integer> characterCodeToGlyphId= new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> characterCodeToGlyphId = Collections.emptyMap();
 
     /**
      * This will read the required data from the stream.
@@ -471,7 +471,7 @@ public class CmapSubtable implements CmapLookup
                 List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(entry.getValue());
                 if (mappedValues == null)
                 {
-                    mappedValues = new ArrayList<Integer>();
+                    mappedValues = new ArrayList<Integer>(2);
                     glyphIdToCharacterCodeMultiple.put(entry.getValue(), mappedValues);
                     mappedValues.add(glyphIdToCharacterCode[entry.getValue()]);
                     // mark value as multiple mapping
