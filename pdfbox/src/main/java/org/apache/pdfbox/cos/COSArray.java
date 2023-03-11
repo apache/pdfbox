@@ -108,7 +108,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will remove all of the objects in the collection.
+     * This will remove all objects in the collection.
      *
      * @param objectsList The list of objects to remove from the collection.
      */
@@ -121,7 +121,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * This will retain all of the objects in the collection.
+     * This will retain all objects in the collection.
      *
      * @param objectsList The list of objects to retain from the collection.
      */
