@@ -112,6 +112,22 @@ public class ContentStreamWriter
         }
     }
 
+    private void writeObject(Object o) throws IOException
+    {
+        if (o instanceof COSBase)
+        {
+            writeObject((COSBase) o);
+        }
+        else if (o instanceof Operator)
+        {
+            writeObject((Operator) o);
+        }
+        else
+        {
+            throw new IOException("Error:Unknown type in content stream:" + o);
+        }
+    }
+
     private void writeObject(Operator op) throws IOException
     {
         if (op.getName().equals(OperatorName.BEGIN_INLINE_IMAGE))
@@ -141,7 +157,7 @@ public class ContentStreamWriter
         }
     }
 
-    private void writeObject( Object o ) throws IOException
+    private void writeObject( COSBase o ) throws IOException
     {
         if( o instanceof COSString )
         {
@@ -193,10 +209,6 @@ public class ContentStreamWriter
             }
             output.write( COSWriter.DICT_CLOSE );
             output.write( SPACE );
-        }
-        else if( o instanceof Operator)
-        {
-            writeObject((Operator) o);
         }
         else if (o instanceof COSNull)
         {
