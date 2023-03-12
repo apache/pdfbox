@@ -172,7 +172,7 @@ public class COSWriterObjectStream
         {
             throw new IOException("Error: Unknown type in object stream:" + object);
         }
-        COSBase base = null;
+        COSBase base;
         if (object instanceof COSObject)
         {
             base = ((COSObject) object).getObject();
@@ -190,7 +190,7 @@ public class COSWriterObjectStream
         }
         else
         {
-            base = (COSBase) object;
+            base = object;
         }
         if (!topLevel && this.compressionPool.contains(base))
         {
