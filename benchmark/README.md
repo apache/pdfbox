@@ -19,9 +19,9 @@
 
 This module contains benchmarks written using [JMH](https://openjdk.java.net/projects/code-tools/jmh/) from OpenJDK.
 
-## Preparation uisng the Ghent PDF Output SuiteV50
+## Preparation using the Ghent PDF Output Suite V50
 
-As the Ghent PDF Output SuiteV50 can not be downloaded automatically as a license has to be agreed on the following steps need to be done prior to running `Rendering.renderGhentCMYK`:
+As the Ghent PDF Output Suite V50 can not be downloaded automatically as a license has to be agreed on the following steps need to be done prior to running `Rendering.renderGhentCMYK`:
 
 - select [Download](https://gwg.org/download/ghentpdfoutputsuitev50/) on the download page
 - unpack the ZIP file in the directory `target/pdfs` so that the directory `Ghent_PDF_Output_Suite_V50_Full` is on top
