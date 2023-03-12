@@ -603,46 +603,54 @@ class LosslessFactoryTest
     @Test
     void testCreateLosslessFromImageINT_BGR() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        try (PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
 
-        BufferedImage imgBgr = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_BGR);
-        Graphics2D graphics = imgBgr.createGraphics();
-        graphics.drawImage(image, 0, 0, null);
+            BufferedImage imgBgr = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_BGR);
+            Graphics2D graphics = imgBgr.createGraphics();
+            graphics.drawImage(image, 0, 0, null);
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgBgr);
-        validate(ximage, 8, imgBgr.getWidth(), imgBgr.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, imgBgr);
+            validate(ximage, 8, imgBgr.getWidth(), imgBgr.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+        }
     }
 
     @Test
     void testCreateLosslessFromImageINT_RGB() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        try (PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
 
-        BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = imgRgb.createGraphics();
-        graphics.drawImage(image, 0, 0, null);
+            BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics = imgRgb.createGraphics();
+            graphics.drawImage(image, 0, 0, null);
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
-        validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
+            validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+            graphics.dispose();
+        }
     }
 
     @Test
     void testCreateLosslessFromImageBYTE_3BGR() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        try (PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
 
-        BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-        Graphics2D graphics = imgRgb.createGraphics();
-        graphics.drawImage(image, 0, 0, null);
+            BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D graphics = imgRgb.createGraphics();
+            graphics.drawImage(image, 0, 0, null);
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
-        validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
+            validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+            graphics.dispose();
+        }
     }
 
     @Test
