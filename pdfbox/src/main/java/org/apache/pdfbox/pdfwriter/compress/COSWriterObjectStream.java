@@ -25,8 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -163,23 +161,18 @@ public class COSWriterObjectStream
      * @param topLevel True, if the currently written object is a top level entry of this object stream.
      * @throws IOException Shall be thrown, when an exception occurred for the write operation.
      */
-    private void writeObject(OutputStream output, Object object, boolean topLevel)
+    private void writeObject(OutputStream output, COSBase object, boolean topLevel)
             throws IOException
     {
         if (object == null)
         {
             return;
         }
-        if (object instanceof Operator)
-        {
-            writeOperator(output, (Operator) object);
-            return;
-        }
         if (!(object instanceof COSBase))
         {
             throw new IOException("Error: Unknown type in object stream:" + object);
         }
-        COSBase base = null;
+        COSBase base;
         if (object instanceof COSObject)
         {
             base = ((COSObject) object).getObject();
@@ -197,7 +190,7 @@ public class COSWriterObjectStream
         }
         else
         {
-            base = (COSBase) object;
+            base = object;
         }
         if (!topLevel && this.compressionPool.contains(base))
         {
@@ -382,35 +375,5 @@ public class COSWriterObjectStream
     {
         output.write("null".getBytes(StandardCharsets.ISO_8859_1));
         output.write(COSWriter.SPACE);
-    }
-
-    /**
-     * Write the given {@link Operator} to the given stream.
-     *
-     * @param output The stream, that shall be written to.
-     * @param operator The content, that shall be written.
-     */
-    private void writeOperator(OutputStream output, Operator operator) throws IOException
-    {
-        if (operator.getName().equals(OperatorName.BEGIN_INLINE_IMAGE))
-        {
-            output.write(OperatorName.BEGIN_INLINE_IMAGE.getBytes(StandardCharsets.ISO_8859_1));
-            COSDictionary dic = operator.getImageParameters();
-            for (COSName key : dic.keySet())
-            {
-                Object value = dic.getDictionaryObject(key);
-                key.writePDF(output);
-                output.write(COSWriter.SPACE);
-                writeObject(output, value, false);
-            }
-            output.write(
-                    OperatorName.BEGIN_INLINE_IMAGE_DATA.getBytes(StandardCharsets.ISO_8859_1));
-            output.write(operator.getImageData());
-            output.write(OperatorName.END_INLINE_IMAGE.getBytes(StandardCharsets.ISO_8859_1));
-        }
-        else
-        {
-            output.write(operator.getName().getBytes(StandardCharsets.ISO_8859_1));
-        }
     }
 }
