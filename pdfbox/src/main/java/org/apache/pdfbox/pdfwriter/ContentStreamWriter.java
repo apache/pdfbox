@@ -137,7 +137,7 @@ public class ContentStreamWriter
             COSDictionary dic = op.getImageParameters();
             for (COSName key : dic.keySet())
             {
-                Object value = dic.getDictionaryObject(key);
+                COSBase value = dic.getDictionaryObject(key);
                 key.writePDF(output);
                 output.write(SPACE);
                 writeObject(value);
