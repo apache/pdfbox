@@ -80,9 +80,8 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
     @Override
     public boolean equals(Object obj)
     {
-        COSObjectKey objToBeCompared = obj instanceof COSObjectKey ? (COSObjectKey)obj : null;
-        return objToBeCompared != null
-                && objToBeCompared.numberAndGeneration == numberAndGeneration;
+        return obj instanceof COSObjectKey
+                && ((COSObjectKey)obj).numberAndGeneration == numberAndGeneration;
     }
 
     /**
