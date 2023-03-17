@@ -39,9 +39,10 @@ import org.apache.pdfbox.preflight.parser.PreflightParser;
 
 public class InvalidFileTester
 {
+    private static final Log LOG = LogFactory.getLog(InvalidFileTester.class);
 
     /**
-     * where result information are pushed
+     * where result information pushed
      */
     protected OutputStream outputResult = null;
 
@@ -49,10 +50,6 @@ public class InvalidFileTester
      * carry the path of the file validated during current test
      */
     protected File path;
-
-    protected static Log staticLogger = LogFactory.getLog("Test");
-
-    protected Log logger = null;
 
     /**
      * Prepare the test for one file
@@ -62,7 +59,6 @@ public class InvalidFileTester
      */
     public InvalidFileTester(String resultKeyFile) throws Exception
     {
-        this.logger = LogFactory.getLog(this.getClass());
         before(resultKeyFile);
     }
 
@@ -70,7 +66,7 @@ public class InvalidFileTester
     {
         if (path == null)
         {
-            logger.warn("This is an empty test");
+            LOG.warn("This is an empty test");
             return;
         }
         ValidationResult result = PreflightParser.validate(path);
@@ -103,7 +99,7 @@ public class InvalidFileTester
         {
             if (expectedError == null)
             {
-                logger.info("File invalid as expected (no expected code) :"
+                LOG.info("File invalid as expected (no expected code) :"
                         + this.path.getAbsolutePath());
             }
             else if (!found)
