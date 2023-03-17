@@ -237,7 +237,7 @@ class TestCOSString extends TestCOSBase
         
         out.reset();
         COSWriter.writeString(string8Bit, out);
-        StringBuffer hex = new StringBuffer();
+        StringBuilder hex = new StringBuilder();
         for(char c : text8Bit.toCharArray())
         {
            hex.append( Integer.toHexString(c).toUpperCase() );
@@ -246,7 +246,7 @@ class TestCOSString extends TestCOSBase
         
         out.reset();
         COSWriter.writeString(stringHighBits, out);
-        hex = new StringBuffer();
+        hex = new StringBuilder();
         hex.append("FEFF"); // Byte Order Mark
         for(char c : textHighBits.toCharArray())
         {

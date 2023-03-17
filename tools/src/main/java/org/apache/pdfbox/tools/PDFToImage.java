@@ -113,7 +113,7 @@ public final class PDFToImage implements Callable<Integer>
             outputPrefix = FilenameUtils.removeExtension(infile.getAbsolutePath());
         }
 
-        if (getImageFormats().indexOf(imageFormat) == -1)
+        if (!getImageFormats().contains(imageFormat))
         {
             SYSERR.println( "Error: Invalid image format " + imageFormat + " - supported are: " + getImageFormats());
             return 2;
