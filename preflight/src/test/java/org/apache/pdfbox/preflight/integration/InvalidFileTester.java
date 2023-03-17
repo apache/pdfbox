@@ -42,7 +42,7 @@ public class InvalidFileTester
     private static final Log LOG = LogFactory.getLog(InvalidFileTester.class);
 
     /**
-     * where result information pushed
+     * where result information is pushed
      */
     protected OutputStream outputResult = null;
 
