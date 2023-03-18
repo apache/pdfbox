@@ -158,16 +158,7 @@ public class XmlResultParser
         Map<ValidationError,Integer> cleaned = new HashMap<>(errors.size());
         for (ValidationError ve: errors)
         {
-            Integer found = cleaned.get(ve);
-            if (found!=null)
-            {
-                cleaned.put(ve,found+1);
-            }
-            else
-            {
-                cleaned.put(ve,1);
-            }
-
+            cleaned.merge(ve, 1, Integer::sum);
         }
          return cleaned;
     }

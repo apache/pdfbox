@@ -1208,11 +1208,9 @@ public class COSParser extends BaseParser implements ICOSParser
                         xrefOffset.get(correctedKeyEntry.getKey()));
             }
         }
-        correctedKeys.entrySet().forEach(
-                // remove old invalid, as some might not be replaced
-                correctedKeyEntry -> xrefOffset.remove(correctedKeyEntry.getKey()));
-        correctedPointers.entrySet()
-                .forEach(pointer -> xrefOffset.put(pointer.getKey(), pointer.getValue()));
+        // remove old invalid, as some might not be replaced
+        correctedKeys.forEach((key, value) -> xrefOffset.remove(key));
+        xrefOffset.putAll(correctedPointers);
         return true;
     }
 

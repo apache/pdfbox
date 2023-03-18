@@ -793,12 +793,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             float textX = text.getX();
             float textY = text.getY();
             TreeMap<Float, TreeSet<Float>> sameTextCharacters = characterListMapping
-                    .get(textCharacter);
-            if (sameTextCharacters == null)
-            {
-                sameTextCharacters = new TreeMap<>();
-                characterListMapping.put(textCharacter, sameTextCharacters);
-            }
+                    .computeIfAbsent(textCharacter, k -> new TreeMap<>());
             // RDD - Here we compute the value that represents the end of the rendered
             // text. This value is used to determine whether subsequent text rendered
             // on the same line overwrites the current text.
@@ -825,12 +820,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             }
             if (!suppressCharacter)
             {
-                TreeSet<Float> ySet = sameTextCharacters.get(textX);
-                if (ySet == null)
-                {
-                    ySet = new TreeSet<>();
-                    sameTextCharacters.put(textX, ySet);
-                }
+                TreeSet<Float> ySet = sameTextCharacters.computeIfAbsent(textX, k -> new TreeSet<>());
                 ySet.add(textY);
                 showCharacter = true;
             }

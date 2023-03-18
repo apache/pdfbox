@@ -118,26 +118,11 @@ public class NamingTable extends TTFTable
         for (NameRecord nr : nameRecords)
         {
             // name id
-            Map<Integer, Map<Integer, Map<Integer, String>>> platformLookup = lookupTable.get(nr.getNameId());
-            if (platformLookup == null)
-            {
-                platformLookup = new HashMap<>(); 
-                lookupTable.put(nr.getNameId(), platformLookup);
-            }
+            Map<Integer, Map<Integer, Map<Integer, String>>> platformLookup = lookupTable.computeIfAbsent(nr.getNameId(), k -> new HashMap<>());
             // platform id
-            Map<Integer, Map<Integer, String>> encodingLookup = platformLookup.get(nr.getPlatformId());
-            if (encodingLookup == null)
-            {
-                encodingLookup = new HashMap<>();
-                platformLookup.put(nr.getPlatformId(), encodingLookup);
-            }
+            Map<Integer, Map<Integer, String>> encodingLookup = platformLookup.computeIfAbsent(nr.getPlatformId(), k -> new HashMap<>());
             // encoding id
-            Map<Integer, String> languageLookup = encodingLookup.get(nr.getPlatformEncodingId());
-            if (languageLookup == null)
-            {
-                languageLookup = new HashMap<>(1);
-                encodingLookup.put(nr.getPlatformEncodingId(), languageLookup);
-            }
+            Map<Integer, String> languageLookup = encodingLookup.computeIfAbsent(nr.getPlatformEncodingId(), k -> new HashMap<>(1));
             // language id / string
             languageLookup.put(nr.getLanguageId(), nr.getString());
         }
