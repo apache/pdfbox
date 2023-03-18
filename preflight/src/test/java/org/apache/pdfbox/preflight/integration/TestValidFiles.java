@@ -54,7 +54,7 @@ class TestValidFiles
 
     protected File path;
 
-    protected static final Log staticLogger = LogFactory.getLog("Test");
+    protected static final Log LOG = LogFactory.getLog(TestValidFiles.class);
 
     protected Log logger = null;
 
@@ -72,7 +72,7 @@ class TestValidFiles
         String isartor = System.getProperty(ISARTOR_FILES);
         if (isartor == null || isartor.isEmpty())
         {
-            staticLogger.warn(ISARTOR_FILES + " (where are isartor pdf files) is not defined.");
+            LOG.warn(ISARTOR_FILES + " (where are isartor pdf files) is not defined.");
             return stopIfExpected();
         }
         File root = new File(isartor);

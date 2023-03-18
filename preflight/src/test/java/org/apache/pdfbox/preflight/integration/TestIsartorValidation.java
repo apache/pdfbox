@@ -49,7 +49,7 @@ class TestIsartorValidation
 
     private static final String ISARTOR_FILES = "isartor.files";
 
-    protected static final Log staticLogger = LogFactory.getLog("Test");
+    protected static final Log LOG = LogFactory.getLog(TestIsartorValidation.class);
 
     private static InvalidFileTester tester;
 
@@ -85,7 +85,7 @@ class TestIsartorValidation
         String isartor = System.getProperty(ISARTOR_FILES);
         if (isartor == null)
         {
-            staticLogger.warn(ISARTOR_FILES + " (where are isartor pdf files) is not defined.");
+            LOG.warn(ISARTOR_FILES + " (where are isartor pdf files) is not defined.");
             return stopIfExpected();
         }
         File root = new File(isartor);
@@ -93,13 +93,13 @@ class TestIsartorValidation
         String expectedPath = System.getProperty(EXPECTED_ERRORS);
         if (expectedPath == null)
         {
-            staticLogger.warn("'expected.errors' not defined, so cannot execute tests");
+            LOG.warn("'expected.errors' not defined, so cannot execute tests");
             return stopIfExpected();
         }
         File expectedFile = new File(expectedPath);
         if (!expectedFile.exists() || !expectedFile.isFile())
         {
-            staticLogger.warn("'expected.errors' does not reference valid file, so cannot execute tests : "
+            LOG.warn("'expected.errors' does not reference valid file, so cannot execute tests : "
                     + expectedFile.getAbsolutePath());
             return stopIfExpected();
         }
