@@ -46,7 +46,7 @@ class BidiTest
     /**
      * Logger instance.
      */
-    private static final Log log = LogFactory.getLog(TestTextStripper.class);
+    private static final Log log = LogFactory.getLog(BidiTest.class);
     
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/text/");
     private static final File outDir = new File("target/test-output");
