@@ -66,18 +66,12 @@ public class LZWFilter extends Filter
             COSDictionary parameters, int index) throws IOException
     {
         COSDictionary decodeParams = getDecodeParams(parameters, index);
-        int earlyChange = decodeParams.getInt(COSName.EARLY_CHANGE, 1);
-
-        if (earlyChange != 0 && earlyChange != 1)
-        {
-            earlyChange = 1;
-        }
-
+        boolean earlyChange = decodeParams.getInt(COSName.EARLY_CHANGE, 1) != 0;
         doLZWDecode(encoded, Predictor.wrapPredictor(decoded, decodeParams), earlyChange);
         return new DecodeResult(parameters);
     }
 
-    private void doLZWDecode(InputStream encoded, OutputStream decoded, int earlyChange) throws IOException
+    private static void doLZWDecode(InputStream encoded, OutputStream decoded, boolean earlyChange) throws IOException
     {
         List<byte[]> codeTable = new ArrayList<>();
         int chunk = 9;
@@ -133,7 +127,7 @@ public class LZWFilter extends Filter
         decoded.flush();
     }
 
-    private void checkIndexBounds(List<byte[]> codeTable, long index, MemoryCacheImageInputStream in)
+    private static void checkIndexBounds(List<byte[]> codeTable, long index, MemoryCacheImageInputStream in)
             throws IOException
     {
         if (index < 0)
@@ -181,7 +175,7 @@ public class LZWFilter extends Filter
                     if (newFoundCode == -1)
                     {
                         // use previous
-                        chunk = calculateChunk(codeTable.size() - 1, 1);
+                        chunk = calculateChunk(codeTable.size() - 1, true);
                         out.writeBits(foundCode, chunk);
                         // create new table entry
                         codeTable.add(inputPattern);
@@ -204,7 +198,7 @@ public class LZWFilter extends Filter
             }
             if (foundCode != -1)
             {
-                chunk = calculateChunk(codeTable.size() - 1, 1);
+                chunk = calculateChunk(codeTable.size() - 1, true);
                 out.writeBits(foundCode, chunk);
             }
             
@@ -213,7 +207,7 @@ public class LZWFilter extends Filter
             // possibly adjusted the chunk. Therefore, the encoder must behave as
             // if the code table had just grown and thus it must be checked it is
             // needed to adjust the chunk, based on an increased table size parameter
-            chunk = calculateChunk(codeTable.size(), 1);
+            chunk = calculateChunk(codeTable.size(), true);
             
             out.writeBits(EOD, chunk);
             
@@ -226,50 +220,47 @@ public class LZWFilter extends Filter
     }
 
     /**
-     * Find the longest matching pattern in the code table.
+     * Find a matching pattern in the code table.
      *
      * @param codeTable The LZW code table.
      * @param pattern The pattern to be searched for.
-     * @return The index of the longest matching pattern or -1 if nothing is
-     * found.
+     * @return The index of the matching pattern or -1 if nothing is found.
      */
-    private int findPatternCode(List<byte[]> codeTable, byte[] pattern)
+    private static int findPatternCode(List<byte[]> codeTable, byte[] pattern)
     {
-        int foundCode = -1;
-        int foundLen = 0;
-        for (int i = codeTable.size() - 1; i >= 0; --i)
+        // for the first 256 entries, index matches value
+        if (pattern.length == 1)
         {
-            if (i <= EOD)
+            return pattern[0];
+        }
+
+        // no need to test the first 256 + 2 entries against longer patterns
+        for (int i = 257; i < codeTable.size(); i++)
+        {
+            if (Arrays.equals(codeTable.get(i), pattern))
             {
-                // we're in the single byte area
-                if (foundCode != -1)
-                {
-                    // we already found pattern with size > 1
-                    return foundCode; 
-                }
-                else if (pattern.length > 1)
-                {
-                    // we won't find anything here anyway
-                    return -1;
-                }
-            }
-            byte[] tryPattern = codeTable.get(i);
-            if ((foundCode != -1 || tryPattern.length > foundLen) && Arrays.equals(tryPattern, pattern))
-            {
-                foundCode = i;
-                foundLen = tryPattern.length;
+                return i;
             }
         }
-        return foundCode;
+
+        return -1;
     }
 
     /**
-     * Init the code table with 1 byte entries and the EOD and CLEAR_TABLE
-     * markers.
+     * Init the code table with 1 byte entries and the EOD and CLEAR_TABLE markers.
      */
-    private List<byte[]> createCodeTable()
+    private static List<byte[]> createCodeTable()
     {
         List<byte[]> codeTable = new ArrayList<>(4096);
+        codeTable.addAll(INITIAL_CODE_TABLE);
+        return codeTable;
+    }
+
+    private static final List<byte[]> INITIAL_CODE_TABLE = createInitialCodeTable();
+
+    private static List<byte[]> createInitialCodeTable()
+    {
+        List<byte[]> codeTable = new ArrayList<>(258);
         for (int i = 0; i < 256; ++i)
         {
             codeTable.add(new byte[] { (byte) (i & 0xFF) });
@@ -283,21 +274,22 @@ public class LZWFilter extends Filter
      * Calculate the appropriate chunk size
      *
      * @param tabSize the size of the code table
-     * @param earlyChange 0 or 1 for early chunk increase
+     * @param earlyChange true for early chunk increase
      *
      * @return a value between 9 and 12
      */
-    private int calculateChunk(int tabSize, int earlyChange)
+    private static int calculateChunk(int tabSize, boolean earlyChange)
     {
-        if (tabSize >= 2048 - earlyChange)
+        int i = tabSize + (earlyChange ? 1 : 0);
+        if (i >= 2048)
         {
             return 12;
         }
-        if (tabSize >= 1024 - earlyChange)
+        if (i >= 1024)
         {
             return 11;
         }
-        if (tabSize >= 512 - earlyChange)
+        if (i >= 512)
         {
             return 10;
         }
