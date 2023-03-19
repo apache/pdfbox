@@ -23,7 +23,8 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,8 +43,7 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
- * This class is used to contain parsing logic that will be used by both the
- * PDFParser and the COSStreamParser.
+ * This class is used to contain parsing logic that will be used by all parsers.
  *
  * @author Ben Litchfield
  */
@@ -56,6 +56,8 @@ public abstract class BaseParser
     static final int MAX_LENGTH_LONG = Long.toString(Long.MAX_VALUE).length();
 
     private final CharsetDecoder utf8Decoder = StandardCharsets.UTF_8.newDecoder();
+
+    private final Map<Integer, COSObjectKey> keyCache = new HashMap<>();
 
     /**
      * Log instance.
@@ -153,14 +155,23 @@ public abstract class BaseParser
      */
     protected COSObjectKey getObjectKey(long num, int gen)
     {
-        if (document == null || document.getXrefTable() == null)
+        if (document == null || document.getXrefTable().isEmpty())
         {
             return new COSObjectKey(num, gen);
         }
-        Optional<COSObjectKey> foundKey = document.getXrefTable().keySet().stream()
-                .filter(k -> k.getNumber() == num && k.getGeneration() == gen) //
-                .findAny();
-        return foundKey.isPresent() ? foundKey.get() : new COSObjectKey(num, gen);
+        // use a cache to get the COSObjectKey as iterating over the xref-table-map gets slow for big pdfs
+        // in the long run we have to overhaul the object pool or even better remove it
+        Map<COSObjectKey, Long> xrefTable = document.getXrefTable();
+        if (xrefTable.size() > keyCache.size())
+        {
+            for (COSObjectKey key : xrefTable.keySet())
+            {
+                keyCache.computeIfAbsent(key.hashCode(), k -> key);
+            }
+        }
+        int hashCode = Long.hashCode(COSObjectKey.computeInternalHash(num, gen));
+        COSObjectKey foundKey = keyCache.get(hashCode);
+        return foundKey != null ? foundKey : new COSObjectKey(num, gen);
     }
 
     /**
@@ -668,8 +679,10 @@ public abstract class BaseParser
             pbo = parseDirObject();
             if( pbo instanceof COSObject )
             {
+                // the current empty COSObject is replaced with the correct one
+                pbo = null;
                 // We have to check if the expected values are there or not PDFBOX-385
-                if (po.size() > 0 && po.get(po.size() - 1) instanceof COSInteger)
+                if (po.size() > 1 && po.get(po.size() - 1) instanceof COSInteger)
                 {
                     COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
                     if (po.size() > 0 && po.get(po.size() - 1) instanceof COSInteger)
@@ -685,25 +698,12 @@ public abstract class BaseParser
                         {
                             LOG.warn("Invalid value(s) for an object key " + number.longValue()
                                     + " " + genNumber.intValue());
-                            pbo = null;
                         }
                     }
-                    else
-                    {
-                        // the object reference is somehow wrong
-                        pbo = null;
-                    }
-                }
-                else
-                {
-                    pbo = null;
                 }
             }
-            if( pbo != null )
-            {
-                po.add( pbo );
-            }
-            else
+            // something went wrong
+            if (pbo == null)
             {
                 //it could be a bad object in the array which is just skipped
                 LOG.warn("Corrupt array element at offset " + source.getPosition()
@@ -723,6 +723,7 @@ public abstract class BaseParser
                     return po;
                 }
             }
+            po.add(pbo);
             skipSpaces();
         }
         // read ']'
