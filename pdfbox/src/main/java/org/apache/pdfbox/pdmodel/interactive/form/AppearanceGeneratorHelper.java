@@ -674,6 +674,7 @@ class AppearanceGeneratorHelper
     {
         return field instanceof PDTextField &&
                 ((PDTextField) field).isComb() &&
+                ((PDTextField) field).getMaxLen() != -1 &&
                 !((PDTextField) field).isMultiline() &&
                 !((PDTextField) field).isPassword() &&
                 !((PDTextField) field).isFileSelect();           
