@@ -624,8 +624,12 @@ class AppearanceGeneratorHelper {
      * @return the comb state
      */
     private boolean shallComb() {
-        return field instanceof PDTextField && ((PDTextField) field).isComb() && !((PDTextField) field).isMultiline()
-                && !((PDTextField) field).isPassword() && !((PDTextField) field).isFileSelect();
+        return field instanceof PDTextField && 
+                ((PDTextField) field).isComb() &&
+                ((PDTextField) field).getMaxLen() != -1 &&
+                !((PDTextField) field).isMultiline() &&
+                !((PDTextField) field).isPassword() &&
+                !((PDTextField) field).isFileSelect();
     }
 
     /**
