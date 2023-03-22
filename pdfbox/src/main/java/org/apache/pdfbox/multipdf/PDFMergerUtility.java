@@ -1450,7 +1450,7 @@ public class PDFMergerUtility
             for (PDField destField : destAcroForm.getFieldTree())
             {
                 String fieldName = destField.getPartialName();
-                if (fieldName.startsWith(prefix))
+                if (fieldName != null && fieldName.startsWith(prefix))
                 {
                     String suffix = fieldName.substring(prefixLength);
                     if (suffix.matches("\\d+"))
