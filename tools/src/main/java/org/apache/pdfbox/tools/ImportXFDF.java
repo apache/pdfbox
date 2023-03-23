@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -29,6 +30,7 @@ import picocli.CommandLine.Option;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.concurrent.Callable;
 
 
 /**
@@ -38,7 +40,7 @@ import java.io.PrintStream;
  * @author Ben Litchfield
  */
 @Command(name = "importxfdf", header = "Imports AcroForm form data from XFDF", versionProvider = Version.class, mixinStandardHelpOptions = true)
-public class ImportXFDF
+public class ImportXFDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
