@@ -1264,15 +1264,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
-     * Calculated the subsampling frequency for a given PDImage based on the current transformation
-     * and its calculated transform
+     * Calculates the subsampling frequency for a given PDImage based on the current transformation
+     * and its calculated transform. Extend this method if you want to use your own strategy.
      *
      * @param pdImage PDImage to be drawn
      * @param at Transform that will be applied to the image when drawing
      * @return The rounded-down ratio of image pixels to drawn pixels. Returned value will always be
      * >=1.
      */
-    private int getSubsampling(PDImage pdImage, AffineTransform at)
+    protected int getSubsampling(PDImage pdImage, AffineTransform at)
     {
         // calculate subsampling according to the resulting image size
         double scale = Math.abs(at.getDeterminant() * xform.getDeterminant());
