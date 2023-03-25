@@ -75,11 +75,20 @@ public class PDFTreeModel implements TreeModel
     }
 
     /**
-     * Adds a listener for the <code>TreeModelEvent</code>
-     * posted after the tree changes.
+     * Constructor to take the cross reference table of a document.
      *
-     * @param   l       the listener to add
-     * @see     #removeTreeModelListener
+     * @param xrefEntries The cross reference table to display in the tree.
+     */
+    public PDFTreeModel(XrefEntries xrefEntries)
+    {
+        root = xrefEntries;
+    }
+
+    /**
+     * Adds a listener for the <code>TreeModelEvent</code> posted after the tree changes.
+     *
+     * @param l the listener to add
+     * @see #removeTreeModelListener
      *
      */
     @Override
@@ -138,6 +147,19 @@ public class PDFTreeModel implements TreeModel
         {
             retval = ((DocumentEntry)parent).getPage(index);
         }
+        else if (parent instanceof XrefEntries)
+        {
+            retval = ((XrefEntries) parent).getXrefEntry(index);
+        }
+        else if (parent instanceof XrefEntry)
+        {
+            XrefEntry xrefEntry = (XrefEntry) parent;
+            ArrayEntry entry = new ArrayEntry();
+            entry.setIndex(index);
+            entry.setValue(xrefEntry.getObject());
+            entry.setItem(xrefEntry.getCOSObject());
+            retval = entry;
+        }
         else if( parent instanceof PageEntry)
         {
             retval = getChild(((PageEntry)parent).getDict(), index);
@@ -185,6 +207,14 @@ public class PDFTreeModel implements TreeModel
         else if( parent instanceof DocumentEntry )
         {
             retval = ((DocumentEntry)parent).getPageCount();
+        }
+        else if (parent instanceof XrefEntries)
+        {
+            retval = ((XrefEntries) parent).getXrefEntryCount();
+        }
+        else if (parent instanceof XrefEntry)
+        {
+            retval = 1;
         }
         else if( parent instanceof PageEntry)
         {
@@ -252,6 +282,14 @@ public class PDFTreeModel implements TreeModel
             {
                 retval = ((DocumentEntry)parent).indexOf( (PageEntry)child );
             }
+            else if (parent instanceof XrefEntries)
+            {
+                retval = (((XrefEntry) child).getIndex());
+            }
+            else if (parent instanceof XrefEntry)
+            {
+                retval = 0;
+            }
             else if( parent instanceof PageEntry)
             {
                 retval = getIndexOfChild(((PageEntry)parent).getDict(), child);
@@ -298,6 +336,9 @@ public class PDFTreeModel implements TreeModel
                  node instanceof COSArray ||
                  node instanceof COSDocument ||
                  node instanceof DocumentEntry ||
+                node instanceof XrefEntries
+                || (node instanceof XrefEntry && !isLeaf(((XrefEntry) node).getCOSObject()))
+                ||
                  node instanceof PageEntry ||
                  node instanceof COSObject ||
                  (node instanceof MapEntry && !isLeaf(((MapEntry)node).getValue()) ) ||

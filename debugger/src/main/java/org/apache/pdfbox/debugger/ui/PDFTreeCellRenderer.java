@@ -178,6 +178,14 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             result = nodeValue.toString();
         }
+        else if (nodeValue instanceof XrefEntries)
+        {
+            result = nodeValue.toString();
+        }
+        else if (nodeValue instanceof XrefEntry)
+        {
+            result = nodeValue.toString();
+        }
         return result;
     }
 
@@ -251,6 +259,11 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
                 isStream = entry.getValue() instanceof COSStream;
             }
         }
+        else if (nodeValue instanceof XrefEntry)
+        {
+            isIndirect = true;
+            isStream = false;
+        }
         
         if (isIndirect && !isStream)
         {
@@ -267,6 +280,10 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             MapEntry entry = (MapEntry) nodeValue;
             return lookupIcon(entry.getValue());
+        }
+        if (nodeValue instanceof XrefEntry)
+        {
+            return ICON_INDIRECT;
         }
         else if (nodeValue instanceof ArrayEntry)
         {
@@ -326,6 +343,10 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             return ICON_PAGE;
         }
+        else if (nodeValue instanceof COSObject)
+        {
+            return ICON_DICT;
+        }
         else
         {
             return null;
@@ -337,6 +358,8 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
      */
     private static class OverlayIcon extends ImageIcon
     {
+        private static final long serialVersionUID = 1343672579481297481L;
+
         private final ImageIcon base;
         private final List<ImageIcon> overlays;
 

@@ -107,6 +107,10 @@ public class Tree extends JTree
         {
             obj = ((ArrayEntry) obj).getValue();
         }
+        else if (obj instanceof XrefEntry)
+        {
+            obj = ((XrefEntry) obj).getObject();
+        }
 
         if (!(obj instanceof COSStream))
         {

@@ -117,8 +117,11 @@ import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.TextDialog;
 import org.apache.pdfbox.debugger.ui.Tree;
+import org.apache.pdfbox.debugger.ui.TreeViewMenu;
 import org.apache.pdfbox.debugger.ui.ViewMenu;
 import org.apache.pdfbox.debugger.ui.WindowPrefs;
+import org.apache.pdfbox.debugger.ui.XrefEntries;
+import org.apache.pdfbox.debugger.ui.XrefEntry;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
@@ -189,6 +192,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private JMenuItem findNextMenuItem;
     private JMenuItem findPreviousMenuItem;
 
+    // current view mode of the tree
+    private String treeViewMode = TreeViewMenu.VIEW_PAGES;
+
     // cli options
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
@@ -216,17 +222,28 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
      */
     public PDFDebugger()
     {
+        if (viewstructure)
+        {
+            treeViewMode = TreeViewMenu.VIEW_STRUCTURE;
+        }
     }
 
     /**
      * Constructor.
      *
-     * @param isPageMode true if pages are to be displayed, false if internal
-     *                   structure is to be displayed.
+     * @param initialViewMode initial view mode for the tree view on the left hand side.
+     * 
      */
-    public PDFDebugger(boolean isPageMode)
+    public PDFDebugger(String initialViewMode)
     {
-        viewstructure = !isPageMode;
+        if (TreeViewMenu.isValidViewMode(initialViewMode))
+        {
+            treeViewMode = initialViewMode;
+        }
+        else
+        {
+            SYSERR.println("Onknown view mode " + initialViewMode);
+        }
     }
 
     /**
@@ -297,16 +314,28 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         return 0;
     }
 
-    public boolean isPageMode()
+    /**
+     * Provide the current view mode of the tree view. see {@link TreeViewMenu} for valid values
+     */
+    public String getTreeViewMode()
     {
-        return !viewstructure;
+        return treeViewMode;
     }
-    
-    public void setPageMode(boolean isPageMode)
+
+    /**
+     * Set the current view mode of the tree view. see {@link TreeViewMenu} for valid values
+     * 
+     * @param the view mode to be set
+     * 
+     */
+    public void setTreeViewMode(String viewMode)
     {
-        viewstructure = !isPageMode;
+        if (TreeViewMenu.isValidViewMode(viewMode))
+        {
+            treeViewMode = viewMode;
+        }
     }
-    
+
     public boolean hasDocument()
     {
         return document != null;
@@ -762,6 +791,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                 
                 statusBar.getStatusLabel().setText("");
                 
+                if (selectedNode instanceof XrefEntry)
+                {
+                    jTextPane.setText(convertToString(selectedNode));
+                    return;
+                }
+
                 if (isPage(selectedNode))
                 {
                     showPage(selectedNode);
@@ -1167,6 +1202,10 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         {
             data = convertToString( ((ArrayEntry)selectedNode).getValue() );
         }
+        else if (selectedNode instanceof XrefEntry)
+        {
+            data = ((XrefEntry) selectedNode).toString();
+        }
         return data;
     }
     
@@ -1369,22 +1408,31 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
         statusPane.updateTreeStatus(treeStatus);
         
-        if (!viewstructure)
+        String treeViewMode = TreeViewMenu.getInstance().getTreeViewSelection();
+        if (TreeViewMenu.VIEW_PAGES.equals(treeViewMode))
         {
             File file = new File(currentFilePath);
             DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
             ZoomMenu.getInstance().resetZoom();
             RotationMenu.getInstance().setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
             ImageTypeMenu.getInstance().setImageTypeSelection(ImageTypeMenu.IMAGETYPE_RGB);
-            RenderDestinationMenu.getInstance().setRenderDestinationSelection(RenderDestinationMenu.RENDER_DESTINATION_EXPORT);
+            RenderDestinationMenu.getInstance()
+                    .setRenderDestinationSelection(RenderDestinationMenu.RENDER_DESTINATION_EXPORT);
             tree.setModel(new PDFTreeModel(documentEntry));
             // Root/Pages/Kids/[0] is not always the first page, so use the first row instead:
             tree.setSelectionPath(tree.getPathForRow(1));
         }
-        else
+        else if (TreeViewMenu.VIEW_STRUCTURE.equals(treeViewMode))
         {
             tree.setModel(new PDFTreeModel(document));
             tree.setSelectionPath(treeStatus.getPathForString("Root"));
+            tree.setSelectionPath(tree.getPathForRow(1));
+        }
+        else if (TreeViewMenu.VIEW_CROSS_REF_TABLE.equals(treeViewMode))
+        {
+            tree.setModel(new PDFTreeModel(new XrefEntries(document)));
+            tree.setSelectionPath(treeStatus.getPathForString("CRT"));
+            tree.setSelectionPath(tree.getPathForRow(1));
         }
     }
 
