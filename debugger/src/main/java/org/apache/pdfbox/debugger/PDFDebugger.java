@@ -1075,7 +1075,11 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         {
             // not to be used for /Thumb, even if it contains /Subtype /Image
             Object resourcesObj = path.getParentPath().getParentPath().getLastPathComponent();
-            resourcesDic = (COSDictionary) getUnderneathObject(resourcesObj);
+            // resources may be unreachable if the selected node is on the first level of a cross reference table
+            if (!(resourcesObj instanceof XrefEntries))
+            {
+                resourcesDic = (COSDictionary) getUnderneathObject(resourcesObj);
+            }
         }
         StreamPane streamPane = new StreamPane(stream, isContentStream, isThumb, resourcesDic);
         replaceRightComponent(streamPane.getPanel());
@@ -1083,11 +1087,18 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
 
     private void showFont(Object selectedNode, TreePath path)
     {
+        JPanel pane = null;
         COSName fontName = getNodeKey(selectedNode);
-        COSDictionary resourceDic = (COSDictionary) getUnderneathObject(path.getParentPath().getParentPath().getLastPathComponent());
+        // may be null if the selected node is on the first level of a cross reference table
+        if (fontName != null)
+        {
+            COSDictionary resourceDic = (COSDictionary) getUnderneathObject(
+                    path.getParentPath().getParentPath().getLastPathComponent());
 
-        FontEncodingPaneController fontEncodingPaneController = new FontEncodingPaneController(fontName, resourceDic);
-        JPanel pane = fontEncodingPaneController.getPane();
+            FontEncodingPaneController fontEncodingPaneController = new FontEncodingPaneController(
+                    fontName, resourceDic);
+            pane = fontEncodingPaneController.getPane();
+        }
         if (pane == null)
         {
             // unsupported font type
