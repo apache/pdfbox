@@ -793,6 +793,11 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                 
                 if (selectedNode instanceof XrefEntry)
                 {
+                    if (jSplitPane.getRightComponent() == null
+                            || !jSplitPane.getRightComponent().equals(jScrollPaneRight))
+                    {
+                        replaceRightComponent(jScrollPaneRight);
+                    }
                     jTextPane.setText(convertToString(selectedNode));
                     return;
                 }
@@ -1162,25 +1167,25 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         String data = null;
         if(selectedNode instanceof COSBoolean)
         {
-            data = "" + ((COSBoolean)selectedNode).getValue();
+            return "" + ((COSBoolean) selectedNode).getValue();
         }
-        else if( selectedNode instanceof COSFloat )
+        if (selectedNode instanceof COSFloat)
         {
-            data = "" + ((COSFloat)selectedNode).floatValue();
+            return "" + ((COSFloat) selectedNode).floatValue();
         }
-        else if( selectedNode instanceof COSNull )
+        if (selectedNode instanceof COSNull)
         {
-            data = "null";
+            return "null";
         }
-        else if( selectedNode instanceof COSInteger )
+        if (selectedNode instanceof COSInteger)
         {
-            data = "" + ((COSInteger)selectedNode).intValue();
+            return "" + ((COSInteger) selectedNode).intValue();
         }
-        else if( selectedNode instanceof COSName )
+        if (selectedNode instanceof COSName)
         {
-            data = "" + ((COSName)selectedNode).getName();
+            return "" + ((COSName) selectedNode).getName();
         }
-        else if( selectedNode instanceof COSString )
+        if (selectedNode instanceof COSString)
         {
             String text = ((COSString) selectedNode).getString();
             // display unprintable strings as hex
@@ -1192,16 +1197,16 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                     break;
                 }
             }
-            data = "" + text;
+            return text;
         }
-        else if( selectedNode instanceof COSStream )
+        if (selectedNode instanceof COSStream)
         {
             try
             {
                 COSStream stream = (COSStream) selectedNode;
                 try (InputStream in = stream.createInputStream())
                 {
-                    data = new String(IOUtils.toByteArray(in));
+                    return new String(IOUtils.toByteArray(in));
                 }
             }
             catch( IOException e )
@@ -1209,19 +1214,29 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                 throw new RuntimeException(e);
             }
         }
-        else if( selectedNode instanceof MapEntry )
+        if (selectedNode instanceof COSDictionary)
         {
-            data = convertToString( ((MapEntry)selectedNode).getValue() );
+            // just a placeholder, the values are shown within the tree on the left hand side
+            return "COSDictionary";
         }
-        else if( selectedNode instanceof ArrayEntry )
+        if (selectedNode instanceof COSArray)
         {
-            data = convertToString( ((ArrayEntry)selectedNode).getValue() );
+            // just a placeholder, the values are shown within the tree on the left hand side
+            return "COSArray";
         }
-        else if (selectedNode instanceof XrefEntry)
+        if (selectedNode instanceof MapEntry)
         {
-            data = ((XrefEntry) selectedNode).toString();
+            return convertToString(((MapEntry) selectedNode).getValue());
         }
-        return data;
+        if (selectedNode instanceof ArrayEntry)
+        {
+            return convertToString(((ArrayEntry) selectedNode).getValue());
+        }
+        if (selectedNode instanceof XrefEntry)
+        {
+            return ((XrefEntry) selectedNode).toString();
+        }
+        return null;
     }
     
     private void exitMenuItemActionPerformed(ActionEvent ignored)
