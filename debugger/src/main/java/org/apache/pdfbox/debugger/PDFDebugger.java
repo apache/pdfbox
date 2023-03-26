@@ -1145,6 +1145,10 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         {
             selectedNode = ((PageEntry) selectedNode).getDict();
         }
+        else if (selectedNode instanceof XrefEntry)
+        {
+            selectedNode = ((XrefEntry) selectedNode).getCOSObject();
+        }
 
         if (selectedNode instanceof COSObject)
         {
