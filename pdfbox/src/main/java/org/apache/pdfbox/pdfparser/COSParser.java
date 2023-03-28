@@ -2051,7 +2051,11 @@ public class COSParser extends BaseParser
                         securityHandler.decryptStream(stream, stmObjNumber, stmGenNumber);
                     }
                     PDFObjectStreamParser strmParser = new PDFObjectStreamParser(stream, document);
-                    objectNumbers = new ArrayList<Long>(nrOfObjects);
+                    // don't use "nrOfObjects" to initialize the list as a malformed pdf might
+                    // contain an invalid value which may lead to an out of memory exception
+                    // if the number is to big the following code will most likely fail hitting
+                    // the end of the stream prematurely
+                    objectNumbers = new ArrayList<Long>();
                     for (int i = 0; i < nrOfObjects; i++)
                     {
                         objectNumbers.add(strmParser.readObjectNumber());
