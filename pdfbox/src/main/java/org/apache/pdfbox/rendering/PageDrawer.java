@@ -1270,7 +1270,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * @param pdImage PDImage to be drawn
      * @param at Transform that will be applied to the image when drawing
      * @return The rounded-down ratio of image pixels to drawn pixels. Returned value will always be
-     * >=1.
+     * &gt;=1.
      */
     protected int getSubsampling(PDImage pdImage, AffineTransform at)
     {
