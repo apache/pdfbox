@@ -325,7 +325,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     /**
      * Set the current view mode of the tree view. see {@link TreeViewMenu} for valid values
      * 
-     * @param the view mode to be set
+     * @param viewMode the view mode to be set
      * 
      */
     public void setTreeViewMode(String viewMode)
