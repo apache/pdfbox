@@ -378,12 +378,18 @@ public abstract class BaseParser
         // The following cases are valid indicators for the end of the string
         // 1. Next line contains another COSObject: CR + LF + '/'
         // 2. COSDictionary ends in the next line: CR + LF + '>'
-        // 3. Next line contains another COSObject: CR + '/'
-        // 4. COSDictionary ends in the next line: CR + '>'
-        if (amountRead == 3 && nextThreeBytes[0] == ASCII_CR)
+        // 3. Next line contains another COSObject: LF + '/'
+        // 4. COSDictionary ends in the next line: LF + '>'
+        // 5. Next line contains another COSObject: CR + '/'
+        // 6. COSDictionary ends in the next line: CR + '>'
+        if (amountRead == 3)
         {
-            if ( (nextThreeBytes[1] == ASCII_LF && (nextThreeBytes[2] == '/') || nextThreeBytes[2] == '>')
-                    || nextThreeBytes[1] == '/' || nextThreeBytes[1] == '>')
+            if ((nextThreeBytes[0] == ASCII_CR || nextThreeBytes[0] == ASCII_LF
+                    && (nextThreeBytes[1] == '/' || nextThreeBytes[1] == '>')) //
+                    || //
+                    (nextThreeBytes[0] == ASCII_CR && nextThreeBytes[1] == ASCII_LF
+                            && nextThreeBytes[2] == '/' && nextThreeBytes[2] == '>') //
+            )
             {
                 braces = 0;
             }
