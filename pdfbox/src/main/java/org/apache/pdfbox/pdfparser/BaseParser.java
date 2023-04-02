@@ -384,7 +384,7 @@ public abstract class BaseParser
         // 6. COSDictionary ends in the next line: CR + '>'
         if (amountRead == 3)
         {
-            if ((nextThreeBytes[0] == ASCII_CR || nextThreeBytes[0] == ASCII_LF
+            if (((nextThreeBytes[0] == ASCII_CR || nextThreeBytes[0] == ASCII_LF)
                     && (nextThreeBytes[1] == '/' || nextThreeBytes[1] == '>')) //
                     || //
                     (nextThreeBytes[0] == ASCII_CR && nextThreeBytes[1] == ASCII_LF
