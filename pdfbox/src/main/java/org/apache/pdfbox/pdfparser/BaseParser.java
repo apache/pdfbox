@@ -388,7 +388,7 @@ public abstract class BaseParser
                     && (nextThreeBytes[1] == '/' || nextThreeBytes[1] == '>')) //
                     || //
                     (nextThreeBytes[0] == ASCII_CR && nextThreeBytes[1] == ASCII_LF
-                            && nextThreeBytes[2] == '/' && nextThreeBytes[2] == '>') //
+                            && (nextThreeBytes[2] == '/' || nextThreeBytes[2] == '>')) //
             )
             {
                 braces = 0;
