@@ -145,6 +145,7 @@ public class ScratchFile implements RandomAccessStreamCache
      * (same as <code>new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly())</code>).
      * 
      * @return instance configured to only use main memory with no size restriction
+     * or null if scratch file cannot be created
      */
     public static ScratchFile getMainMemoryOnlyInstance()
     {
@@ -166,8 +167,8 @@ public class ScratchFile implements RandomAccessStreamCache
      * @param maxMainMemoryBytes maximum number of main-memory to be used; <code>-1</code> for no restriction;
      * <code>0</code> will also be interpreted here as no restriction
      * 
-     * @return instance configured to only use main memory with no size restriction or null if cannot create scratch
-     * file
+     * @return instance configured to only use main memory with no size restriction
+     * or null if scratch file cannot be created
      */
     public static ScratchFile getMainMemoryOnlyInstance(long maxMainMemoryBytes)
     {
@@ -188,6 +189,7 @@ public class ScratchFile implements RandomAccessStreamCache
      * or by enlarging scratch file (may be created).
      * 
      * @return index of new page
+     * @throws IOException Maximum allowed scratch file memory exceeded.
      */
     int getNewPage() throws IOException
     {
@@ -315,7 +317,8 @@ public class ScratchFile implements RandomAccessStreamCache
      * 
      * @return byte array of size {@link #PAGE_SIZE} filled with page data read from file 
      * 
-     * @throws IOException
+     * @throws IOException in case page index is out of range or page was not written before
+     *                     or missing scratch file to read page from
      */
     byte[] readPage(int pageIdx) throws IOException
     {
