@@ -40,7 +40,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
+
 import java.net.URISyntaxException;
+
+import java.nio.file.Files;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,6 +60,7 @@ import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -238,13 +243,7 @@ class TestTextStripper
             log.info("Preparing to parse " + inFile.getName() + " for standard test");
         }
 
-        if (!outDir.exists()) 
-        {
-            if (!outDir.mkdirs()) 
-            {
-                throw (new Exception("Error creating " + outDir.getAbsolutePath() + " directory"));
-            }
-        }
+        Files.createDirectories(outDir.toPath());
 
         try (PDDocument document = Loader.loadPDF(inFile))
         {

@@ -420,11 +420,7 @@ public class MockHttpServer extends Thread {
 
         private void addRequestHeader(String line) {
             String[] parts = line.split(": ");
-            List<String> values = requestHeaders.get(parts[0]);
-            if (values == null) {
-                values = new ArrayList<>();
-                requestHeaders.put(parts[0], values);
-            }
+            List<String> values = requestHeaders.computeIfAbsent(parts[0], k -> new ArrayList<>());
             values.add(parts[1]);
         }
 

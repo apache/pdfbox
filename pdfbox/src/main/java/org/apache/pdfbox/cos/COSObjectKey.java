@@ -70,8 +70,20 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
         {
             throw new IllegalArgumentException("Generation number must not be a negative value");
         }
-        numberAndGeneration = num << NUMBER_OFFSET | (gen & GENERATION_MASK);
+        numberAndGeneration = computeInternalHash(num, gen);
         this.streamIndex = index;
+    }
+
+    /**
+     * Calculate the internal hash value for the given object number and generation number.
+     * 
+     * @param num the object number
+     * @param gen the generation number
+     * @return the internal hash for the given values
+     */
+    public static final long computeInternalHash(long num, int gen)
+    {
+        return num << NUMBER_OFFSET | (gen & GENERATION_MASK);
     }
 
     /**

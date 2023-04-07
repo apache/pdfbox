@@ -284,11 +284,11 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         COSArray ws = new COSArray();
         int prev = Integer.MIN_VALUE;
         // Use a sorted list to get an optimal width array  
-        Set<Integer> keys = cidToGid.keySet();
         HorizontalMetricsTable horizontalMetricsTable = ttf.getHorizontalMetrics();
-        for (int cid : keys)
+        for (Map.Entry<Integer, Integer> entry : cidToGid.entrySet())
         {
-            int gid = cidToGid.get(cid);
+            int cid = entry.getKey();
+            int gid = entry.getValue();
             long width = Math.round(horizontalMetricsTable.getAdvanceWidth(gid) * scaling);
             if (width == 1000)
             {

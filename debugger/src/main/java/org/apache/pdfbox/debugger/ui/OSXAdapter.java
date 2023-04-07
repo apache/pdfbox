@@ -165,7 +165,7 @@ public class OSXAdapter implements InvocationHandler
         // com.apple.eawt.Application reflectively
         try {
             Method enableAboutMethod = macOSXApplication.getClass().getDeclaredMethod("setEnabledAboutMenu", boolean.class);
-            enableAboutMethod.invoke(macOSXApplication, Boolean.valueOf(enableAboutMenu));
+            enableAboutMethod.invoke(macOSXApplication, enableAboutMenu);
         } catch (Exception ex) {
             System.err.println("OSXAdapter could not access the About Menu");
             throw new RuntimeException(ex);
@@ -296,7 +296,7 @@ public class OSXAdapter implements InvocationHandler
         if (result == null) {
             return true;
         }
-        return Boolean.valueOf(result.toString());
+        return Boolean.parseBoolean(result.toString());
     }
 
     // InvocationHandler implementation
@@ -323,7 +323,7 @@ public class OSXAdapter implements InvocationHandler
             try {
                 Method setHandledMethod = event.getClass().getDeclaredMethod("setHandled", boolean.class);
                 // If the target method returns a boolean, use that as a hint
-                setHandledMethod.invoke(event, Boolean.valueOf(handled));
+                setHandledMethod.invoke(event, handled);
             } catch (Exception ex) {
                 System.err.println("OSXAdapter was unable to handle an ApplicationEvent: " + event);
                 throw new RuntimeException(ex);

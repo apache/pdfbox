@@ -81,7 +81,7 @@ public class RealType extends AbstractSimpleProperty
         else if (value instanceof String)
         {
             // NumberFormatException is thrown (sub of InvalidArgumentException)
-            realValue = Float.valueOf((String) value);
+            realValue = Float.parseFloat((String) value);
         }
         else
         {

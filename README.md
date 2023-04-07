@@ -87,10 +87,10 @@ common issues are:
    only way to access the text is to use OCR. This may be a future
    enhancement.
 
-2. You get an error message like "java.io.IOException: Can't handle font width"
+2. You get an error message like `java.io.IOException: Can't handle font width`
    this MIGHT be due to the fact that you don't have the
-   org/apache/pdfbox/resources directory in your classpath. The easiest
-   solution is to simply include the apache-pdfbox-x.x.x.jar in your classpath.
+   **org/apache/pdfbox/resources** directory in your classpath. The easiest
+   solution is to include the **apache-pdfbox-x.x.x.jar** in your classpath.
 
 3. You get text that has the correct characters, but in the wrong
    order.  This mght be because you have not enabled sorting.  The text
@@ -98,7 +98,7 @@ common issues are:
    in the order that they are displayed on a page.  By default, PDFBox does 
    not sort the text.
 
-License (see also LICENSE.txt)
+License (see also [LICENSE.txt](https://github.com/apache/pdfbox/blob/trunk/LICENSE.txt))
 ------------------------------
 
 Collective work: Copyright 2015 The Apache Software Foundation.

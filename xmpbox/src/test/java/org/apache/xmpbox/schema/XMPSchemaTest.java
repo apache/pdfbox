@@ -209,7 +209,7 @@ class XMPSchemaTest
         schem.addUnqualifiedSequenceValue(seqprop, seqPropVal);
         schem.addSequenceDateValueAsSimple(seqdate, dateVal);
 
-        assertEquals(Boolean.valueOf(boolVal), schem.getBooleanProperty(prefSchem + bool).getValue());
+        assertEquals(boolVal, schem.getBooleanProperty(prefSchem + bool).getValue());
         assertEquals(dateVal, schem.getDateProperty(prefSchem + date).getValue());
         assertEquals("" + i, schem.getIntegerProperty(prefSchem + integ).getStringValue());
         assertEquals(langVal, schem.getUnqualifiedLanguagePropertyValue(langprop, lang));
@@ -218,7 +218,7 @@ class XMPSchemaTest
         assertTrue(schem.getUnqualifiedSequenceDateValueList(seqdate).contains(dateVal));
         assertTrue(schem.getUnqualifiedLanguagePropertyLanguagesValue(langprop).contains(lang));
 
-        assertEquals(boolVal, schem.getBooleanPropertyValueAsSimple(bool).booleanValue());
+        assertEquals(boolVal, schem.getBooleanPropertyValueAsSimple(bool));
         assertEquals(dateVal, schem.getDatePropertyValueAsSimple(date));
         assertEquals(i, schem.getIntegerPropertyValueAsSimple(integ));
         assertEquals(langVal, schem.getUnqualifiedLanguagePropertyValue(langprop, lang));
