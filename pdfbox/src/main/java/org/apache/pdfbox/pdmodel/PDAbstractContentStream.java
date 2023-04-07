@@ -1506,9 +1506,9 @@ abstract class PDAbstractContentStream implements Closeable
         return val < 0 || val > 255;
     }
 
-    private boolean isOutsideOneInterval(double val)
+    private boolean isOutsideOneInterval(float val)
     {
-        return val < 0 || val > 1;
+        return val < 0f || val > 1f;
     }
 
     protected void setStrokingColorSpaceStack(PDColorSpace colorSpace)
