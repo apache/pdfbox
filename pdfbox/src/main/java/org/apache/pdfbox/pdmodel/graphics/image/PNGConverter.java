@@ -392,7 +392,7 @@ final class PNGConverter
         if (state.iCCP != null || state.sRGB != null)
         {
             // We have got a color profile, which we must attach
-            COSStream cosStream = createCOSStreamwithIccProfile(document, colorSpace, state);
+            COSStream cosStream = createCOSStreamWithIccProfile(document, colorSpace, state);
             if (cosStream == null)
             {
                 return null;
@@ -406,7 +406,7 @@ final class PNGConverter
         return imageXObject;
     }
 
-    private static COSStream createCOSStreamwithIccProfile
+    private static COSStream createCOSStreamWithIccProfile
         (PDDocument document, PDColorSpace colorSpace, PNGConverterState state) throws IOException
     {
         COSStream cosStream = document.getDocument().createCOSStream();
