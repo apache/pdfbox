@@ -2030,8 +2030,22 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (invTable == null)
         {
             byte[] inv = new byte[256];
-            for (int i = 0; i < inv.length; i++)
+            for (int i = 0; i < 32; i++)
             {
+                inv[i] = (byte) (255 - i);
+                ++i;
+                inv[i] = (byte) (255 - i);
+                ++i;
+                inv[i] = (byte) (255 - i);
+                ++i;
+                inv[i] = (byte) (255 - i);
+                ++i;
+                inv[i] = (byte) (255 - i);
+                ++i;
+                inv[i] = (byte) (255 - i);
+                ++i;
+                inv[i] = (byte) (255 - i);
+                ++i;
                 inv[i] = (byte) (255 - i);
             }
             invTable = new ByteLookupTable(0, inv);
