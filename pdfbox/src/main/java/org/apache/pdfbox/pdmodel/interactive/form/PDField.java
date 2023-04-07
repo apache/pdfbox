@@ -409,7 +409,8 @@ public abstract class PDField implements COSObjectable
         {
             if (finalName != null)
             {
-                finalName = parentName + "." + finalName;
+                StringBuilder sb = new StringBuilder(parentName.length() + 1 + finalName.length());
+                finalName = sb.append(parentName).append('.').append(finalName).toString();
             }
             else
             {
