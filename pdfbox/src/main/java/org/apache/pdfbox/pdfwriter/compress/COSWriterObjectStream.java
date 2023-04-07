@@ -168,10 +168,6 @@ public class COSWriterObjectStream
         {
             return;
         }
-        if (!(object instanceof COSBase))
-        {
-            throw new IOException("Error: Unknown type in object stream:" + object);
-        }
         COSBase base;
         if (object instanceof COSObject)
         {
