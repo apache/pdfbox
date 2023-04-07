@@ -1471,7 +1471,7 @@ abstract class PDAbstractContentStream implements Closeable
     /**
      * Writes an AffineTransform to the content stream as an array.
      * 
-     * @param transform AffineTransfrom to be added to the content stream
+     * @param transform AffineTransform to be added to the content stream
      * @throws IOException If the underlying stream has a problem being written to.
      */
     private void writeAffineTransform(AffineTransform transform) throws IOException
