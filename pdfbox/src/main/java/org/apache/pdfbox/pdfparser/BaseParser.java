@@ -241,8 +241,16 @@ public abstract class BaseParser
                 }
             }
         }
-        readExpectedChar('>');
-        readExpectedChar('>');
+        try
+        {
+            readExpectedChar('>');
+            readExpectedChar('>');
+        }
+        catch (IOException exception)
+        {
+            LOG.warn("Invalid dictionary, can't find end of dictionary at offset "
+                    + seqSource.getPosition());
+        }
         return obj;
     }
 
