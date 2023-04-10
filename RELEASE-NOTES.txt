@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.27
+Release Notes -- Apache PDFBox -- Version 2.0.28
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.26 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.27 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,41 +14,41 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-4925] - Invalid stream Length validation in StreamValidationProcess
-[PDFBOX-5389] - To set compressed on buffered image while creating a PDF
-[PDFBOX-5403] - Blurry / distorted rendering
-[PDFBOX-5424] - java.lang.IndexOutOfBoundsException (2)
-[PDFBOX-5427] - PDFDebugger does not remove listeners for PagePane when opening new File
-[PDFBOX-5428] - PDFRenderer.renderImageWithDPI thows EOFException in PDF
-[PDFBOX-5429] - PDFCloneUtility.checkForRecursion breaks support for some existing PDFs
-[PDFBOX-5430] - PDFStreamEngine.showTextStrings with font switch
-[PDFBOX-5453] - ClassCastException (PDColor.java:66)
-[PDFBOX-5459] - NullPointerException in PDFunctionType3.eval()
-[PDFBOX-5460] - Deadlock in TrueTypeFont and RAFDataStream
-[PDFBOX-5463] - illegalArgumentException for rendering PDF (image extraction)
-[PDFBOX-5465] - NullPointerException in CmapSubtable.getCharCode
-[PDFBOX-5470] - PDActionEmbeddedGoTo does not accept a Destination with a page number or string
-[PDFBOX-5471] - NPE when Transparency Group is missing the BBox
-[PDFBOX-5484] - PDFRenderer does not render letters when converting page to image
-[PDFBOX-5488] - JPEG image rendered with wrong colors when using TwelveMonkeys
-[PDFBOX-5499] - Performance issue since 2.0.18
-[PDFBOX-5500] - NullPointerException in PDType0Font.readCode() if cMap is null
-[PDFBOX-5504] - NullPointerException in CFFParser.parseFont()
-[PDFBOX-5505] - IndexOutOfBoundsException in PDCIDFont.readWidths()
-[PDFBOX-5506] - IndexOutOfBoundsException in Type1Parser.java
-[PDFBOX-5507] - ClassCastException in CMapParser.parseBeginbfchar
-[PDFBOX-5508] - ClassCastException in PDXObject.createXObject()
-[PDFBOX-5509] - ClassCastException in PDAcroForm.getFields()
-[PDFBOX-5510] - ClassCastException in PDDocumentCatalog.getAcroForm()
-[PDFBOX-5511] - ClassCastException in PDResources.getIndirect()
-[PDFBOX-5513] - getPageLayout throws IllegalArgumentException for empty mode
-[PDFBOX-5514] - Font not found because of case issues
+[PDFBOX-4531] - Extraction of Arabic PDF has incorrect ordering of normalized ligatures
+[PDFBOX-5178] - Parsing differences between 2.0.23 and 2.0.24/3.0
+[PDFBOX-5521] - Signing tries to set byteRange of old signature
+[PDFBOX-5523] - Bug in org/apache/pdfbox/multipdf/Overlay#overlay(specificPageOverlayFile)
+[PDFBOX-5524] - Inactive OCGs shown when not top level
+[PDFBOX-5525] - Null pointer exception in PDFASchemaType.getNamespaceURI()
+[PDFBOX-5540] - export:text creates jibberish / malformed output
+[PDFBOX-5552] - ArrayIndexOutOfBounds in SampledImageReader.fromAny()
+[PDFBOX-5553] - PDFRenderer resulting image has black background
+[PDFBOX-5555] - NPE due to a malformed rectangle
+[PDFBOX-5557] - Fix meta markup in HTML generation
+[PDFBOX-5562] - ArrayIndexOutOfBoundsException in CFFCIDFont class
+[PDFBOX-5563] - Can't open PDF with PDFBox: java.awt.color.CMMException: LCMS error 13: Couldn't link the profiles
+[PDFBOX-5566] - ClassCastException in ShadingFill.process()
+[PDFBOX-5567] - Font gets smaller for each rendered page
+[PDFBOX-5572] - fix some logging inconsistencies
+[PDFBOX-5577] - NPE in PDFMergerUtility.acroFormLegacyMode()
+[PDFBOX-5582] - Avoid OOME when parsing an malformed pdf with a corrupted object stream
 
 Improvement
 
-[PDFBOX-5448] - Clarify access permission for high / low print quality
-[PDFBOX-5450] - Create Opaque PDFRenderer example
-[PDFBOX-5494] - "invalid object number value" is too scary
+[PDFBOX-5526] - Apply subsampling and region to masks
+[PDFBOX-5534] - Remove finalize from ScratchFileBuffer
+[PDFBOX-5549] - Invisible signature field is not referenced from /Annots dictionary of a Page
+[PDFBOX-5554] - Support charset parameter in TextToPDF
+[PDFBOX-5560] - Add a method to get the components of a composite glyph
+[PDFBOX-5564] - PDResource font cache improvement
+[PDFBOX-5565] - RFE: Comb flag warning
+[PDFBOX-5573] - fix unnecessary boxing/unboxing
+[PDFBOX-5575] - optimize LZWFilter
+[PDFBOX-5581] - renderer.setSubsamplingAllowed(true) causing the picture to blur
+
+Task
+
+[PDFBOX-5535] - Remove Travis build
 
 Release Contents
 ----------------
