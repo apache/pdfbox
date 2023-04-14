@@ -35,15 +35,15 @@ import org.apache.pdfbox.cos.COSObjectKey;
  */
 public class XrefEntries
 {
-    public static final String path = "CRT";
+    public static final String PATH = "CRT";
 
-    private final List<Entry<COSObjectKey, Long>> xrefEntries;
+    private final List<Entry<COSObjectKey, Long>> entries;
     private final COSDocument document;
     
     public XrefEntries(PDDocument document)
     {
         Map<COSObjectKey, Long> xrefTable = document.getDocument().getXrefTable();
-        xrefEntries = xrefTable.entrySet().stream()
+        entries = xrefTable.entrySet().stream()
                 .sorted(Comparator.comparingLong(e -> e.getKey().getNumber()))
                 .collect(Collectors.toList());
         this.document = document.getDocument();
@@ -51,31 +51,28 @@ public class XrefEntries
     
     public int getXrefEntryCount()
     {
-        return xrefEntries.size();
+        return entries.size();
     }
     
     public XrefEntry getXrefEntry(int index)
     {
-        Entry<COSObjectKey, Long> entry = xrefEntries.get(index);
+        Entry<COSObjectKey, Long> entry = entries.get(index);
         COSObject objectFromPool = document.getObjectFromPool(entry.getKey());
-
-        XrefEntry xrefEntry = new XrefEntry(index, entry.getKey(), entry.getValue(),
-                objectFromPool);
-        return xrefEntry;
+        return new XrefEntry(index, entry.getKey(), entry.getValue(), objectFromPool);
     }
 
     public int indexOf(XrefEntry xrefEntry)
     {
         COSObjectKey key = xrefEntry.getKey();
-        Entry<COSObjectKey, Long> entry = xrefEntries.stream().filter(e -> key.equals(e.getKey()))
+        Entry<COSObjectKey, Long> entry = entries.stream().filter(e -> key.equals(e.getKey()))
                 .findFirst().orElse(null);
-        return entry != null ? xrefEntries.indexOf(entry) : 0;
+        return entry != null ? entries.indexOf(entry) : 0;
     }
 
     @Override
     public String toString()
     {
-        return path;
+        return PATH;
     }
 
 }

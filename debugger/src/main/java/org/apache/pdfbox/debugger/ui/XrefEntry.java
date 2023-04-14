@@ -62,7 +62,7 @@ public class XrefEntry
 
     public String getPath()
     {
-        return XrefEntries.path + "/" + toString();
+        return XrefEntries.PATH + "/" + toString();
     }
 
     @Override

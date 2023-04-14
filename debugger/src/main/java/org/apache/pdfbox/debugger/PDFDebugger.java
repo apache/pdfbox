@@ -193,7 +193,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     private JMenuItem findPreviousMenuItem;
 
     // current view mode of the tree
-    private String treeViewMode = TreeViewMenu.VIEW_PAGES;
+    private String currentTreeViewMode = TreeViewMenu.VIEW_PAGES;
 
     // cli options
     // Expected for CLI app to write to System.out/System.err
@@ -224,7 +224,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     {
         if (viewstructure)
         {
-            treeViewMode = TreeViewMenu.VIEW_STRUCTURE;
+            currentTreeViewMode = TreeViewMenu.VIEW_STRUCTURE;
         }
     }
 
@@ -238,7 +238,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     {
         if (TreeViewMenu.isValidViewMode(initialViewMode))
         {
-            treeViewMode = initialViewMode;
+            currentTreeViewMode = initialViewMode;
         }
         else
         {
@@ -319,7 +319,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
      */
     public String getTreeViewMode()
     {
-        return treeViewMode;
+        return currentTreeViewMode;
     }
 
     /**
@@ -332,7 +332,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
     {
         if (TreeViewMenu.isValidViewMode(viewMode))
         {
-            treeViewMode = viewMode;
+            currentTreeViewMode = viewMode;
         }
     }
 

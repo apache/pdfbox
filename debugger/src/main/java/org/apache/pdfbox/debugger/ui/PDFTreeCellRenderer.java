@@ -262,7 +262,6 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         else if (nodeValue instanceof XrefEntry)
         {
             isIndirect = true;
-            isStream = false;
         }
         
         if (isIndirect && !isStream)
