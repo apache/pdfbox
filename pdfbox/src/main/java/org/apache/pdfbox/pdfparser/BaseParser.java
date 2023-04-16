@@ -930,13 +930,15 @@ public abstract class BaseParser
     private COSNumber parseCOSNumber() throws IOException
     {
         buffer.setLength(0);
-        char c = (char)source.read();
+        int ic = source.read();
+        char c = (char)ic;
         while (Character.isDigit(c) || c == '-' || c == '+' || c == '.' || c == 'E' || c == 'e')
         {
             buffer.append(c);
-            c = (char)source.read();
+            ic = source.read();
+            c = (char)ic;
         }
-        if (c != -1)
+        if (ic != -1)
         {
             source.rewind(1);
         }
