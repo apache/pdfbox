@@ -386,7 +386,7 @@ public class SmallMap<K, V> implements Map<K, V>
         Set<java.util.Map.Entry<K, V>> entries = new LinkedHashSet<>();
         for (int kIdx = 0; kIdx < mapArr.length; kIdx+=2)
         {
-            entries.add(new SmallMapEntry(kIdx,this));
+            entries.add(new SmallMapEntry<>(kIdx,this));
         }
         return Collections.unmodifiableSet( entries );
     }
