@@ -283,6 +283,18 @@ public class FDFField implements COSObjectable
     }
 
     /**
+     * You should pass in a string to set the value.
+     *
+     * @param value The value that should populate when imported.
+     */
+    public void setValue(String value)
+    {
+        COSBase cos = new COSString(value);
+
+        field.setItem(COSName.V, cos);
+    }
+
+    /**
      * You should pass in a string, or a java.util.List of strings to set the value.
      *
      * @param value The value that should populate when imported.
