@@ -256,6 +256,7 @@ public class PDVisibleSignDesigner
         switch (rotation)
         {
             case 90:
+            {
                 // https://stackoverflow.com/a/34359956/535646
                 float temp = yAxis;
                 yAxis = pageHeight - xAxis - imageWidth;
@@ -268,7 +269,7 @@ public class PDVisibleSignDesigner
                 imageHeight = imageWidth;
                 imageWidth = temp;
                 break;
-
+            }
             case 180:
                 float newX = pageWidth - xAxis - imageWidth;
                 float newY = pageHeight - yAxis - imageHeight;
@@ -279,7 +280,8 @@ public class PDVisibleSignDesigner
                 break;
 
             case 270:
-                temp = xAxis;
+            {
+                float temp = xAxis;
                 xAxis = pageWidth - yAxis - imageHeight;
                 yAxis = temp;
 
@@ -290,7 +292,7 @@ public class PDVisibleSignDesigner
                 imageHeight = imageWidth;
                 imageWidth = temp;
                 break;
-
+            }
             case 0:
             default:
                 break;
