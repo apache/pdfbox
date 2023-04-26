@@ -81,7 +81,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
      * @param gen the generation number
      * @return the internal hash for the given values
      */
-    public static final long computeInternalHash(long num, int gen)
+    public static long computeInternalHash(long num, int gen)
     {
         return num << NUMBER_OFFSET | (gen & GENERATION_MASK);
     }
