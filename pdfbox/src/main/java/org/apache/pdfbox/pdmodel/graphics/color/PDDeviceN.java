@@ -369,7 +369,8 @@ public class PDDeviceN extends PDSpecialColorSpace
         for (int c = 0; c < numColorants; c++)
         {
             PDColorSpace componentColorSpace;
-            boolean isProcessColorant = colorantToComponent[c] >= 0;
+            int componentIndex = colorantToComponent[c];
+            boolean isProcessColorant = componentIndex >= 0;
             if (isProcessColorant)
             {
                 // process color
@@ -393,7 +394,6 @@ public class PDDeviceN extends PDSpecialColorSpace
             if (isProcessColorant)
             {
                 // process color
-                int componentIndex = colorantToComponent[c];
                 componentSamples[componentIndex] = value[c];
             }
             else
