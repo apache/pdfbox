@@ -95,14 +95,17 @@ class GlyphRenderer
     {
         GeneralPath path = new GeneralPath();
         int start = 0;
-        List<Point> contour = new ArrayList<>();
+        List<Point> contour = null;
         for (int p = 0, len = points.length; p < len; ++p)
         {
             if (points[p].endOfContour)
             {
                 Point firstPoint = points[start];
                 Point lastPoint = points[p];
-                contour.clear();
+                if (contour == null)
+                {
+                    contour = new ArrayList<>(p);
+                }
                 for (int q = start; q <= p; ++q)
                 {
                     contour.add(points[q]);
@@ -144,6 +147,7 @@ class GlyphRenderer
                 }
                 path.closePath();            
                 start = p + 1;
+                contour.clear();
             }
         }
         return path;
