@@ -203,11 +203,16 @@ public class PDDeviceN extends PDSpecialColorSpace
         g.clearRect(0, 0, width, height);
         g.dispose();
 
+        int[] rgbChannel = new int[3];
+        int[] rgbComposite = new int[3];
+        int[] samples = new int[numColorants];
+
         // look up each colorant
         for (int c = 0; c < numColorants; c++)
         {
             PDColorSpace componentColorSpace;
-            if (colorantToComponent[c] >= 0)
+            int componentIndex = colorantToComponent[c];
+            if (componentIndex >= 0)
             {
                 // process color
                 componentColorSpace = processColorSpace;
@@ -229,10 +234,8 @@ public class PDDeviceN extends PDSpecialColorSpace
             WritableRaster componentRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
                 width, height, numberOfComponents, new Point(0, 0));
 
-            int[] samples = new int[numColorants];
             int[] componentSamples = new int[numberOfComponents];
-            boolean isProcessColorant = colorantToComponent[c] >= 0;
-            int componentIndex = colorantToComponent[c];
+            boolean isProcessColorant = componentIndex >= 0;
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -257,8 +260,6 @@ public class PDDeviceN extends PDSpecialColorSpace
             WritableRaster rgbComponentRaster = rgbComponentImage.getRaster();
 
             // combine the RGB component with the RGB composite raster
-            int[] rgbChannel = new int[3];
-            int[] rgbComposite = new int[3];
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
