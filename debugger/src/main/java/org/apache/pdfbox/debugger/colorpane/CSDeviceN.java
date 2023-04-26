@@ -65,9 +65,9 @@ public class CSDeviceN
      */
     private DeviceNColorant[] getColorantData() throws IOException
     {
-        int componentCount = deviceN.getNumberOfComponents();
-        DeviceNColorant[] colorants = new DeviceNColorant[componentCount];
         List<String> colorantNames = deviceN.getColorantNames();
+        int componentCount = colorantNames.size();
+        DeviceNColorant[] colorants = new DeviceNColorant[componentCount];
         for (int i = 0; i < componentCount; i++)
         {
             DeviceNColorant colorant = new DeviceNColorant();
