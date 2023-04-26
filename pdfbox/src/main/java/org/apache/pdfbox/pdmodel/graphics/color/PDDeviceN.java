@@ -95,10 +95,11 @@ public class PDDeviceN extends PDSpecialColorSpace
         {
             attributes = new PDDeviceNAttributes((COSDictionary)array.getObject(DEVICEN_ATTRIBUTES));
         }
-        initColorConversionCache();
+        List<String> colorantNames = getColorantNames();
+        initColorConversionCache(colorantNames);
 
         // set initial color space
-        int n = getNumberOfComponents();
+        int n = colorantNames.size();
         float[] initial = new float[n];
         for (int i = 0; i < n; i++)
         {
@@ -108,7 +109,7 @@ public class PDDeviceN extends PDSpecialColorSpace
     }
 
     // initializes the color conversion cache
-    private void initColorConversionCache() throws IOException
+    private void initColorConversionCache(List<String> colorantNames) throws IOException
     {
         // there's nothing to cache for non-attribute spaces
         if (attributes == null)
@@ -117,16 +118,10 @@ public class PDDeviceN extends PDSpecialColorSpace
         }
 
         // colorant names
-        List<String> colorantNames = getColorantNames();
         numColorants = colorantNames.size();
 
         // process components
         colorantToComponent = new int[numColorants];
-        for (int c = 0; c < numColorants; c++)
-        {
-            colorantToComponent[c] = -1;
-        }
-
         PDDeviceNProcess pdDeviceNProcess = attributes.getProcess();
         if (pdDeviceNProcess != null)
         {
@@ -140,6 +135,13 @@ public class PDDeviceN extends PDSpecialColorSpace
 
             // process color space
             processColorSpace = pdDeviceNProcess.getColorSpace();
+        }
+        else
+        {
+            for (int c = 0; c < numColorants; c++)
+            {
+                colorantToComponent[c] = -1;
+            }
         }
 
         // spot colorants
