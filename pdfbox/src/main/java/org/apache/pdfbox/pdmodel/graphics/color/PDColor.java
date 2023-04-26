@@ -106,6 +106,30 @@ public final class PDColor
         this.colorSpace = colorSpace;
     }
 
+    /**
+     * Creates a PDColor containing the given color component values.
+     * @param r red color component
+     * @param g green color component
+     * @param b blue color component
+     * @param colorSpace color space in which the components are defined
+     */
+    public PDColor(float r, float g, float b, PDColorSpace colorSpace)
+    {
+        this(colorSpace, new float[]{ r, g, b });
+    }
+
+    /**
+     * Creates a PDColor containing the given color component values.
+     * Use this constructor to create instance with color component values with length 1.
+     *
+     * @param component  value for the array of color component values
+     * @param colorSpace color space in which the pattern/components are defined
+     */
+    public PDColor(float component, PDColorSpace colorSpace)
+    {
+        this(colorSpace, new float[]{ component });
+    }
+
     private PDColor(PDColorSpace colorSpace, float[] components)
     {
         this.components = components;

@@ -70,7 +70,7 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
             if (color == null)
             {
                 // spec is unclear, but black is what Adobe does
-                color = PDColor.createWithoutCloningComponents(new float[] { 0 }, PDDeviceGray.INSTANCE);
+                color = new PDColor(0f, PDDeviceGray.INSTANCE);
             }
             boolean hasStroke = contentStream.setStrokingColorOnDemand(color);
 

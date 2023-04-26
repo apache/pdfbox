@@ -31,7 +31,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
 {
-    private final PDColor initialColor = PDColor.createWithoutCloningComponents(new float[] { 0 }, this);
+    private final PDColor initialColor = new PDColor(0f, this);
     
     // PDFBOX-4119: cache the results for much improved performance
     // cached values MUST be cloned, because they are modified by the caller.

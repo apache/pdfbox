@@ -31,7 +31,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
 {
-    private final PDColor initialColor = PDColor.createWithoutCloningComponents(new float[] { 0, 0, 0 }, this);
+    private final PDColor initialColor = new PDColor(0f, 0f, 0f, this);
 
     /**
      * Creates a new CalRGB color space.

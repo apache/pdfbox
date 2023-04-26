@@ -692,9 +692,10 @@ abstract class PDAbstractContentStream implements Closeable
      */
     public void setStrokingColor(Color color) throws IOException
     {
-        float[] components = new float[] {
-                color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f };
-        PDColor pdColor = PDColor.createWithoutCloningComponents(components, PDDeviceRGB.INSTANCE);
+        float red = color.getRed() / 255f;
+        float green = color.getGreen() / 255f;
+        float blue = color.getBlue() / 255f;
+        PDColor pdColor = new PDColor(red, green, blue, PDDeviceRGB.INSTANCE);
         setStrokingColor(pdColor);
     }
 
@@ -811,9 +812,10 @@ abstract class PDAbstractContentStream implements Closeable
      */
     public void setNonStrokingColor(Color color) throws IOException
     {
-        float[] components = new float[] {
-                color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f };
-        PDColor pdColor = PDColor.createWithoutCloningComponents(components, PDDeviceRGB.INSTANCE);
+        float red = color.getRed() / 255f;
+        float green = color.getGreen() / 255f;
+        float blue = color.getBlue() / 255f;
+        PDColor pdColor = new PDColor(red, green, blue, PDDeviceRGB.INSTANCE);
         setNonStrokingColor(pdColor);
     }
 
