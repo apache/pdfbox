@@ -97,8 +97,7 @@ public class TestFilters extends TestCase
                     if( filter instanceof DCTFilter ||
                         filter instanceof CCITTFaxFilter ||
                         filter instanceof JPXFilter ||
-                        filter instanceof JBIG2Filter ||
-                        filter instanceof RunLengthDecodeFilter )
+                        filter instanceof JBIG2Filter)
                         {
                             continue;
                         }
@@ -141,6 +140,35 @@ public class TestFilters extends TestCase
         Filter lzwFilter = FilterFactory.INSTANCE.getFilter(COSName.LZW_DECODE);
         byte[] byteArray = IOUtils.toByteArray(this.getClass().getResourceAsStream("PDFBOX-1977.bin"));
         checkEncodeDecode(lzwFilter, byteArray);
+    }
+
+    /**
+     * Test simple and corner cases (128 identical, 128 identical at the end) of RLE implementation.
+     * 128 non identical bytes likely to be caught in random testing.
+     *
+     * @throws IOException
+     */
+    public void testRLE() throws IOException
+    {
+        Filter rleFilter = FilterFactory.INSTANCE.getFilter(COSName.RUN_LENGTH_DECODE);
+        byte[] input0 = new byte[0];
+        checkEncodeDecode(rleFilter, input0);
+        byte[] input1 = new byte[] { 1, 2, 3, 4, 5, (byte) 128, (byte) 140, (byte) 180, (byte) 0xFF};
+        checkEncodeDecode(rleFilter, input1);
+        byte[] input2 = new byte[10];
+        checkEncodeDecode(rleFilter, input2);
+        byte[] input3 = new byte[128];
+        checkEncodeDecode(rleFilter, input3);
+        byte[] input4 = new byte[129];
+        checkEncodeDecode(rleFilter, input4);
+        byte[] input5 = new byte[128 + 128];
+        checkEncodeDecode(rleFilter, input5);
+        byte[] input6 = new byte[1];
+        checkEncodeDecode(rleFilter, input6);
+        byte[] input7 = new byte[] {1, 2};
+        checkEncodeDecode(rleFilter, input7);
+        byte[] input8 = new byte[2];
+        checkEncodeDecode(rleFilter, input8);
     }
 
     private void checkEncodeDecode(Filter filter, byte[] original) throws IOException

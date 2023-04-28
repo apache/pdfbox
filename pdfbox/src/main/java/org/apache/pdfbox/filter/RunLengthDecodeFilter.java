@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSDictionary;
  * reproducing the original text or binary data
  *
  * @author Ben Litchfield
+ * @author Tilman Hausherr
  */
 final class RunLengthDecodeFilter extends Filter
 {
@@ -79,6 +80,113 @@ final class RunLengthDecodeFilter extends Filter
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        LOG.warn("RunLengthDecodeFilter.encode is not implemented yet, skipping this stream.");
+        // Not used in PDFBox except for testing the decoder.
+        int lastVal = -1;
+        int byt;
+        int count = 0;
+        boolean equality = false;
+
+        // buffer for "unequal" runs, size between 2 and 128
+        byte[] buf = new byte[128];
+
+        while ((byt = input.read()) != -1)
+        {
+            if (lastVal == -1)
+            {
+                // first time
+                lastVal = byt;
+                count = 1;
+            }
+            else
+            {
+                if (count == 128)
+                {
+                    if (equality)
+                    {
+                        // max length of equals
+                        encoded.write(129); // = 257 - 128
+                        encoded.write(lastVal);
+                    }
+                    else
+                    {
+                        // max length of unequals
+                        encoded.write(127);
+                        encoded.write(buf, 0, 128);
+                    }
+                    equality = false;
+                    lastVal = byt;
+                    count = 1;
+                }
+                else if (count == 1)
+                {
+                    if (byt == lastVal)
+                    {
+                        equality = true;
+                    }
+                    else
+                    {
+                        buf[0] = (byte) lastVal;
+                        buf[1] = (byte) byt;
+                        lastVal = byt;
+                    }
+                    count = 2;
+                }
+                else
+                {
+                    // 1 < count < 128
+                    if (byt == lastVal)
+                    {
+                        if (equality)
+                        {
+                            ++count;
+                        }
+                        else
+                        {
+                            // write all we got except the last
+                            encoded.write(count - 2);
+                            encoded.write(buf, 0, count - 1);
+                            count = 2;
+                            equality = true;
+                        }
+                    }
+                    else
+                    {
+                        if (equality)
+                        {
+                            // equality ends here
+                            encoded.write(257 - count);
+                            encoded.write(lastVal);
+                            equality = false;
+                            count = 1;
+                        }
+                        else
+                        {
+                            buf[count] = (byte) byt;
+                            ++count;
+                        }
+                        lastVal = byt;
+                    }
+                }
+            }
+        }
+        if (count > 0)
+        {
+            if (count == 1)
+            {
+                encoded.write(0);
+                encoded.write(lastVal);
+            }
+            else if (equality)
+            {
+                encoded.write(257 - count);
+                encoded.write(lastVal);
+            }
+            else
+            {
+                encoded.write(count - 1);
+                encoded.write(buf, 0, count);
+            }
+        }
+        encoded.write(RUN_LENGTH_EOD);
     }
 }
