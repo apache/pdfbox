@@ -67,7 +67,7 @@ class GlyphSubstitutionTableLiberationFontTest
     }
 
     @Test
-    @DisplayName("getGsubData() with no args yields empty result ")
+    @DisplayName("getGsubData() with no args yields latn")
     void getGsubDataDefault() throws IOException
     {
         // given
@@ -76,8 +76,7 @@ class GlyphSubstitutionTableLiberationFontTest
         GsubData gsubData = font.getGsubData();
 
         // then
-        assertNotNull(gsubData);
-        assertSame(GsubData.NO_DATA_FOUND, gsubData);
+        assertEquals("latn", gsubData.getActiveScriptName());
     }
 
     @Test
