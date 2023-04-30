@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -81,11 +82,11 @@ public class GsubWorkerForBengali implements GsubWorker
         {
             if (!gsubData.isFeatureSupported(feature))
             {
-                LOG.debug("the feature " + feature + " was not found");
+                LOG.info("the feature " + feature + " was not found");
                 continue;
             }
 
-            LOG.debug("applying the feature " + feature);
+            LOG.info("applying the feature " + feature);
 
             ScriptFeature scriptFeature = gsubData.getFeature(feature);
 
@@ -145,9 +146,16 @@ public class GsubWorkerForBengali implements GsubWorker
     private List<Integer> applyGsubFeature(ScriptFeature scriptFeature,
             List<Integer> originalGlyphs)
     {
+        Set<List<Integer>> allGlyphIdsForSubstitution = scriptFeature.getAllGlyphIdsForSubstitution();
+        if (allGlyphIdsForSubstitution.isEmpty())
+        {
+            // not stopping here results in really weird output, the regex goes wild
+            LOG.debug("getAllGlyphIdsForSubstitution() for " + scriptFeature.getName() + " is empty");
+            return originalGlyphs;
+        }
 
         GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
-                scriptFeature.getAllGlyphIdsForSubstitution());
+                allGlyphIdsForSubstitution);
 
         List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
 
@@ -167,7 +175,7 @@ public class GsubWorkerForBengali implements GsubWorker
             }
         });
 
-        LOG.debug("originalGlyphs: " + originalGlyphs + ", gsubProcessedGlyphs: "
+        LOG.info("originalGlyphs: " + originalGlyphs + ", gsubProcessedGlyphs: "
                 + gsubProcessedGlyphs);
 
         return gsubProcessedGlyphs;
