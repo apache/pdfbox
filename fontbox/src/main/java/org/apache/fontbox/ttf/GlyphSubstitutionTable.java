@@ -247,6 +247,26 @@ public class GlyphSubstitutionTable extends TTFTable
         return new LookupListTable(lookupCount, lookupTables);
     }
 
+    private LookupSubTable readLookupSubtable(TTFDataStream data, long offset, int lookupType) throws IOException
+    {
+        switch (lookupType)
+        {
+            case 1:
+                // Single Substitution Subtable
+                // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#SS
+                return readSingleLookupSubTable(data, offset);
+            case 4:
+                // Ligature Substitution Subtable
+                // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#LS
+                return readLigatureSubstitutionSubtable(data, offset);
+            default:
+                // Other lookup types are not supported
+                LOG.debug("Type " + lookupType
+                        + " GSUB lookup table is not supported and will be ignored");
+                return null;
+        }
+    }
+
     private LookupTable readLookupTable(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
@@ -272,19 +292,27 @@ public class GlyphSubstitutionTable extends TTFTable
         switch (lookupType)
         {
         case 1:
-            // Single
-            // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#SS
+        case 4:
             for (int i = 0; i < subTableCount; i++)
             {
-                subTables[i] = readLookupSubTable(data, offset + subTableOffsets[i]);
+                subTables[i] = readLookupSubtable(data, offset + subTableOffsets[i], lookupType);
             }
             break;
-        case 4:
-            // Ligature Substitution Subtable
-            // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#LS
+        case 7:
+            // Extension Substitution
+            // https://learn.microsoft.com/en-us/typography/opentype/spec/gsub#ES
             for (int i = 0; i < subTableCount; i++)
             {
-                subTables[i] = readLigatureSubstitutionSubtable(data, offset + subTableOffsets[i]);
+                long baseOffset = data.getCurrentPosition();
+                int substFormat = data.readUnsignedShort(); // always 1
+                if (substFormat != 1)
+                {
+                    throw new IOException(
+                        "The expected SubstFormat for ExtensionSubstFormat1 subtable is 1");
+                }
+                int extensionLookupType = data.readUnsignedShort();
+                long extensionOffset = data.readUnsignedInt();
+                subTables[i] = readLookupSubtable(data, baseOffset + extensionOffset, extensionLookupType);
             }
             break;
         default:
@@ -295,7 +323,7 @@ public class GlyphSubstitutionTable extends TTFTable
         return new LookupTable(lookupType, lookupFlag, markFilteringSet, subTables);
     }
 
-    private LookupSubTable readLookupSubTable(TTFDataStream data, long offset) throws IOException
+    private LookupSubTable readSingleLookupSubTable(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
         int substFormat = data.readUnsignedShort();
