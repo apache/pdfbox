@@ -82,11 +82,11 @@ public class GsubWorkerForBengali implements GsubWorker
         {
             if (!gsubData.isFeatureSupported(feature))
             {
-                LOG.info("the feature " + feature + " was not found");
+                LOG.debug("the feature " + feature + " was not found");
                 continue;
             }
 
-            LOG.info("applying the feature " + feature);
+            LOG.debug("applying the feature " + feature);
 
             ScriptFeature scriptFeature = gsubData.getFeature(feature);
 
@@ -175,7 +175,7 @@ public class GsubWorkerForBengali implements GsubWorker
             }
         });
 
-        LOG.info("originalGlyphs: " + originalGlyphs + ", gsubProcessedGlyphs: "
+        LOG.debug("originalGlyphs: " + originalGlyphs + ", gsubProcessedGlyphs: "
                 + gsubProcessedGlyphs);
 
         return gsubProcessedGlyphs;
