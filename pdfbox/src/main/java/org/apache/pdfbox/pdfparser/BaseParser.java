@@ -406,8 +406,6 @@ public abstract class BaseParser
      *
      * The second bug was in this format /Title (c:\) /Producer
      *
-     * This patch moves this code out of the parseCOSString method, so it can be used twice.
-     *
      * @param bracesParameter the number of braces currently open.
      *
      * @return the corrected value of the brace counter
@@ -415,11 +413,21 @@ public abstract class BaseParser
      */
     private int checkForEndOfString(final int bracesParameter) throws IOException
     {
-        int braces = bracesParameter;
+        if (bracesParameter == 0)
+        {
+            return 0;
+        }
+        // Check the next 3 bytes if available
         byte[] nextThreeBytes = new byte[3];
         int amountRead = source.read(nextThreeBytes);
-
-        // Check the next 3 bytes if available
+        if (amountRead > 0)
+        {
+            source.rewind(amountRead);
+        }
+        if (amountRead < 3)
+        {
+            return bracesParameter;
+        }
         // The following cases are valid indicators for the end of the string
         // 1. Next line contains another COSObject: CR + LF + '/'
         // 2. COSDictionary ends in the next line: CR + LF + '>'
@@ -427,23 +435,16 @@ public abstract class BaseParser
         // 4. COSDictionary ends in the next line: LF + '>'
         // 5. Next line contains another COSObject: CR + '/'
         // 6. COSDictionary ends in the next line: CR + '>'
-        if (amountRead == 3)
+        if (((nextThreeBytes[0] == ASCII_CR || nextThreeBytes[0] == ASCII_LF)
+                && (nextThreeBytes[1] == '/' || nextThreeBytes[1] == '>')) //
+                || //
+                (nextThreeBytes[0] == ASCII_CR && nextThreeBytes[1] == ASCII_LF
+                        && (nextThreeBytes[2] == '/' || nextThreeBytes[2] == '>')) //
+        )
         {
-            if (((nextThreeBytes[0] == ASCII_CR || nextThreeBytes[0] == ASCII_LF)
-                    && (nextThreeBytes[1] == '/' || nextThreeBytes[1] == '>')) //
-                    || //
-                    (nextThreeBytes[0] == ASCII_CR && nextThreeBytes[1] == ASCII_LF
-                            && (nextThreeBytes[2] == '/' || nextThreeBytes[2] == '>')) //
-            )
-            {
-                braces = 0;
-            }
+            return 0;
         }
-        if (amountRead > 0)
-        {
-            source.rewind(amountRead);
-        }
-        return braces;
+        return bracesParameter;
     }
 
     /**
