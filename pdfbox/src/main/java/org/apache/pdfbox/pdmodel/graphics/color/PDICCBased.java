@@ -233,7 +233,8 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 }
 
                 // set initial colour
-                float[] initial = new float[getNumberOfComponents()];
+                int numOfComponents = getNumberOfComponents();
+                float[] initial = new float[numOfComponents];
                 for (int c = 0; c < initial.length; c++)
                 {
                     initial[c] = Math.max(0, getRangeForComponent(c).getMin());
@@ -247,7 +248,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 /// also triggers a ProfileDataException for PDFBOX-3549 with KCMS
                 // also triggers "CMMException: LCMS error 13" for PDFBOX-5563 with LCMS, but
                 // calling "new ComponentColorModel" doesn't
-                awtColorSpace.toRGB(new float[getNumberOfComponents()]);
+                awtColorSpace.toRGB(new float[numOfComponents]);
                 if (!IS_KCMS)
                 {
                     // PDFBOX-4015: this one triggers "CMMException: LCMS error 13" with LCMS
