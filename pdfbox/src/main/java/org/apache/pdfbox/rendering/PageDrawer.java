@@ -746,9 +746,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private float[] getDashArray(PDLineDashPattern dashPattern)
     {
         float[] dashArray = dashPattern.getDashArray();
-        int phase = dashPattern.getPhase();
         // avoid empty, infinite and NaN values (PDFBOX-3360)
-        if (dashArray.length == 0 || Float.isInfinite(phase) || Float.isNaN(phase))
+        if (dashArray.length == 0)
         {
             return null;
         }
