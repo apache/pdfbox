@@ -166,7 +166,7 @@ public abstract class BaseParser
         {
             for (COSObjectKey key : xrefTable.keySet())
             {
-                keyCache.computeIfAbsent(key.hashCode(), k -> key);
+                keyCache.putIfAbsent(key.hashCode(), key);
             }
         }
         int hashCode = Long.hashCode(COSObjectKey.computeInternalHash(num, gen));
