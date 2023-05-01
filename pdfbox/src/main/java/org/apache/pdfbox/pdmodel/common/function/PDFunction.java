@@ -348,6 +348,11 @@ public abstract class PDFunction implements COSObjectable
      */
     protected float interpolate(float x, float xRangeMin, float xRangeMax, float yRangeMin, float yRangeMax) 
     {
+        if (xRangeMax == xRangeMin)
+        {
+            // PDFBOX-5593 / PR #162
+            return yRangeMin;
+        }
         return yRangeMin + ((x - xRangeMin) * (yRangeMax - yRangeMin)/(xRangeMax - xRangeMin));
     }
 
