@@ -533,10 +533,6 @@ public class CFFParser
         int charStringsOffset = charStringsEntry.getNumber(0).intValue();
         input.setPosition(charStringsOffset);
         byte[][] charStringsIndex = readIndexData(input);
-        if (charStringsIndex == null)
-        {
-            throw new IOException("CharStringsIndex is missing");
-        }
         
         // charset
         DictData.Entry charsetEntry = topDict.getEntry("charset");
