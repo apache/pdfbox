@@ -583,7 +583,8 @@ public class CMapParser
                 Map<String, Object> result = new HashMap<String, Object>();
                 // we are reading a dictionary
                 Object key = parseNextToken(is);
-                while (key instanceof LiteralName && !MARK_END_OF_DICTIONARY.equals(key))
+                while (key instanceof LiteralName &&
+                    !MARK_END_OF_DICTIONARY.equals(((LiteralName) key).name))
                 {
                     Object value = parseNextToken(is);
                     result.put(((LiteralName) key).name, value);
