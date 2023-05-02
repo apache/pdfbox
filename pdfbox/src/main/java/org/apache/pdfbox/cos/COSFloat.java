@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class COSFloat extends COSNumber
 {
-    private Float value;
+    private final float value;
     private String valueAsString;
 
     /**
@@ -51,10 +51,13 @@ public class COSFloat extends COSNumber
      */
     public COSFloat( String aFloat ) throws IOException
     {
+        float parsedValue;
+        String stringValue = null;
         try
         {
-            value = Float.parseFloat(aFloat);
-            valueAsString = checkMinMaxValues() ? null : aFloat;
+            float f = Float.parseFloat(aFloat);
+            parsedValue = coerce(f);
+            stringValue = f == parsedValue ? aFloat : null;
         }
         catch( NumberFormatException e )
         {
@@ -77,44 +80,40 @@ public class COSFloat extends COSNumber
 
             try
             {
-                value = Float.parseFloat(aFloat);
-                checkMinMaxValues();
+                parsedValue = coerce(Float.parseFloat(aFloat));
             }
             catch (NumberFormatException e2)
             {
                 throw new IOException("Error expected floating point number actual='" + aFloat + "'", e2);
             }
         }
-
+        value = parsedValue;
+        valueAsString = stringValue;
     }
 
     /**
-     * Check and coerce the value field to be between MIN_NORMAL and MAX_VALUE. Returns "true" if the value was
-     * replaced.
+     * Check and coerce the value field to be between MIN_NORMAL and MAX_VALUE.
      * 
-     * @return true if the value was replaced
+     * @param floatValue the value to be checked
+     * @return the coerced value
      */
-    private boolean checkMinMaxValues()
+    private float coerce(float floatValue)
     {
-        if (value == Float.POSITIVE_INFINITY)
+        if (floatValue == Float.POSITIVE_INFINITY)
         {
-            value = Float.MAX_VALUE;
+            return Float.MAX_VALUE;
         }
-        else if (value == Float.NEGATIVE_INFINITY)
+        if (floatValue == Float.NEGATIVE_INFINITY)
         {
-            value = -Float.MAX_VALUE;
+            return -Float.MAX_VALUE;
         }
-        else if (Math.abs(value) < Float.MIN_NORMAL)
+        if (Math.abs(floatValue) < Float.MIN_NORMAL)
         {
             // values smaller than the smallest possible float value are converted to 0
             // see PDF spec, chapter 2 of Appendix C Implementation Limits
-            value = 0f;
+            return 0f;
         }
-        else
-        {
-            return false;
-        }
-        return true;
+        return floatValue;
     }
     
     /**
@@ -156,7 +155,7 @@ public class COSFloat extends COSNumber
     @Override
     public long longValue()
     {
-        return value.longValue();
+        return (long) value;
     }
 
     /**
@@ -167,7 +166,7 @@ public class COSFloat extends COSNumber
     @Override
     public int intValue()
     {
-        return value.intValue();
+        return (int) value;
     }
 
     /**
@@ -186,7 +185,7 @@ public class COSFloat extends COSNumber
     @Override
     public int hashCode()
     {
-        return value.hashCode();
+        return Float.hashCode(value);
     }
 
     /**
