@@ -633,7 +633,7 @@ public class TestCreateSignature
 
         expectedImage1 = new PDFRenderer(doc).renderImage(0);
 
-        // compare images, image must has changed
+        // compare images, image must have changed
         Assert.assertEquals(oldImage.getWidth(), expectedImage1.getWidth());
         Assert.assertEquals(oldImage.getHeight(), expectedImage1.getHeight());
         Assert.assertEquals(oldImage.getType(), expectedImage1.getType());
@@ -673,7 +673,7 @@ public class TestCreateSignature
         field.setValue("New Value 2");
         expectedImage2 = new PDFRenderer(doc).renderImage(0);
 
-        // compare images, image must has changed
+        // compare images, image must have changed
         Assert.assertEquals(oldImage.getWidth(), expectedImage2.getWidth());
         Assert.assertEquals(oldImage.getHeight(), expectedImage2.getHeight());
         Assert.assertEquals(oldImage.getType(), expectedImage2.getType());
