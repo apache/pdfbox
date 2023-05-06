@@ -738,7 +738,10 @@ public abstract class BaseParser
                     return po;
                 }
             }
-            po.add(pbo);
+            else
+            {
+                po.add(pbo);
+            }
             skipSpaces();
         }
         // read ']'
@@ -928,7 +931,7 @@ public abstract class BaseParser
             {
                 LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
                         + source.getPosition() + " (start offset: " + startOffset + ")");
-                return COSNull.NULL;
+                return this instanceof PDFStreamParser ? null : COSNull.NULL;
             }
         }
         return null;
