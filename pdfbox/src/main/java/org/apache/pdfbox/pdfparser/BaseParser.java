@@ -952,7 +952,7 @@ public abstract class BaseParser
             {
                 LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
                         + seqSource.getPosition() + " (start offset: " + startOffset + ")");
-                return COSNull.NULL;
+                return this instanceof PDFStreamParser ? null : COSNull.NULL;
             }
         }
         return null;
