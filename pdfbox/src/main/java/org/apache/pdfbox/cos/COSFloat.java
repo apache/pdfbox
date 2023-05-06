@@ -117,26 +117,6 @@ public class COSFloat extends COSNumber
     }
     
     /**
-     * If the string represents a floating point number, this will remove all trailing zeros
-     * 
-     * @param plainStringValue a decimal number
-     */
-    private String trimZeros(String plainStringValue)
-    {
-        int lastIndex = plainStringValue.lastIndexOf('.');
-        if (lastIndex > 0)
-        {
-            int i = plainStringValue.length() - 1;
-            while (i > lastIndex + 1 && plainStringValue.charAt(i) == '0')
-            {
-                i--;
-            }
-            return plainStringValue.substring(0, i + 1);
-        }
-        return plainStringValue;
-    }
-
-    /**
      * The value of the float object that this one wraps.
      *
      * @return The value of this object.
@@ -205,7 +185,10 @@ public class COSFloat extends COSNumber
     {
         if (valueAsString == null)
         {
-            valueAsString = trimZeros(new BigDecimal(String.valueOf(value)).toPlainString());
+            String s = String.valueOf(value);
+            boolean simpleFormat = s.indexOf('E') < 0;
+            valueAsString = simpleFormat ? s
+                    : new BigDecimal(s).stripTrailingZeros().toPlainString();
         }
         return valueAsString;
     }
