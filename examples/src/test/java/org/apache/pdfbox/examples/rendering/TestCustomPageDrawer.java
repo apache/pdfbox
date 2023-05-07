@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 class TestCustomPageDrawer
 {
     @Test
-    void testCreateGradientShading() throws IOException
+    void testCustomPageDrawer() throws IOException
     {
         CustomPageDrawer.main(new String[]{});
         BufferedImage bim = ImageIO.read(new File("target","custom-render.png"));
