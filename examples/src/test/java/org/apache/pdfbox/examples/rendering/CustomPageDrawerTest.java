@@ -34,7 +34,7 @@ import org.junit.Test;
 public class CustomPageDrawerTest
 {
     @Test
-    void testCreateGradientShading() throws IOException
+    public void testCreateGradientShading() throws IOException
     {
         CustomPageDrawer.main(new String[]{});
         BufferedImage bim = ImageIO.read(new File("target","custom-render.png"));
