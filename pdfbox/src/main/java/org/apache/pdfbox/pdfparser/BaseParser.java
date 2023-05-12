@@ -423,7 +423,6 @@ public abstract class BaseParser
             return 0;
         }
         // Check the next 3 bytes if available
-        byte[] nextThreeBytes = new byte[3];
         int amountRead = source.read(nextThreeBytes);
         if (amountRead > 0)
         {
