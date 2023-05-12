@@ -35,6 +35,7 @@ import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.PageDrawer;
@@ -62,7 +63,7 @@ public class CustomPageDrawer
         {
             PDFRenderer renderer = new MyPDFRenderer(doc);
             BufferedImage image = renderer.renderImage(0);
-            ImageIO.write(image, "PNG", new File("custom-render.png"));
+            ImageIO.write(image, "PNG", new File("target","custom-render.png"));
         }
     }
 
@@ -100,7 +101,8 @@ public class CustomPageDrawer
         protected Paint getPaint(PDColor color) throws IOException
         {
             // if this is the non-stroking color, find red, ignoring alpha channel
-            if (getGraphicsState().getNonStrokingColor() == color &&
+            if (!(color.getColorSpace() instanceof PDPattern) &&
+                getGraphicsState().getNonStrokingColor() == color &&
                 color.toRGB() == (Color.RED.getRGB() & 0x00FFFFFF))
             {
                 // replace it with blue

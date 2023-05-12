@@ -116,7 +116,16 @@ public class PDFStreamParser extends BaseParser
 
                 if (c == '<')
                 {
-                    return parseCOSDictionary(true);
+                    try
+                    {
+                        return parseCOSDictionary(true);
+                    }
+                    catch (IOException exception)
+                    {
+                        LOG.warn("Stop reading invalid dictionary from content stream at offset "
+                                + source.getPosition());
+                        return null;
+                    }
                 }
                 else
                 {
@@ -124,7 +133,16 @@ public class PDFStreamParser extends BaseParser
                 }
             case '[':
                 // array
-                return parseCOSArray();
+                try
+                {
+                    return parseCOSArray();
+                }
+                catch (IOException exception)
+                {
+                    LOG.warn("Stop reading invalid array from content stream at offset "
+                            + source.getPosition());
+                    return null;
+                }
             case '(':
                 // string
                 return parseCOSString();

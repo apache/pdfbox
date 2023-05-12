@@ -49,7 +49,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <bouncycastle.version>1.72</bouncycastle.version>
+        <bouncycastle.version>1.73</bouncycastle.version>
 
         <!-- This is a default value to avoid problems when running single tests
              see also https://stackoverflow.com/a/28695766/535646 
@@ -63,7 +63,7 @@
             <dependency>
 	            <groupId>org.junit.jupiter</groupId>
 	            <artifactId>junit-jupiter</artifactId>
-	            <version>5.9.2</version>
+	            <version>5.9.3</version>
 	            <scope>test</scope>
             </dependency>
             <dependency>
@@ -118,7 +118,7 @@
             <dependency>
                 <groupId>info.picocli</groupId>
                 <artifactId>picocli</artifactId>
-                <version>4.7.1</version>
+                <version>4.7.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -234,7 +234,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
+                <version>0.8.10</version>
                 <executions>
                     <execution>
                         <goals>

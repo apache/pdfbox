@@ -282,8 +282,16 @@ public abstract class BaseParser
                 }
             }
         }
-        readExpectedChar('>');
-        readExpectedChar('>');
+        try
+        {
+            readExpectedChar('>');
+            readExpectedChar('>');
+        }
+        catch (IOException exception)
+        {
+            LOG.warn("Invalid dictionary, can't find end of dictionary at offset "
+                    + source.getPosition());
+        }
         return obj;
     }
 
@@ -403,8 +411,6 @@ public abstract class BaseParser
      *
      * The second bug was in this format /Title (c:\) /Producer
      *
-     * This patch moves this code out of the parseCOSString method, so it can be used twice.
-     *
      * @param bracesParameter the number of braces currently open.
      *
      * @return the corrected value of the brace counter
@@ -412,10 +418,21 @@ public abstract class BaseParser
      */
     private int checkForEndOfString(final int bracesParameter, byte[] nextThreeBytes) throws IOException
     {
-        int braces = bracesParameter;
-        int amountRead = source.read(nextThreeBytes);
-
+        if (bracesParameter == 0)
+        {
+            return 0;
+        }
         // Check the next 3 bytes if available
+        byte[] nextThreeBytes = new byte[3];
+        int amountRead = source.read(nextThreeBytes);
+        if (amountRead > 0)
+        {
+            source.rewind(amountRead);
+        }
+        if (amountRead < 3)
+        {
+            return bracesParameter;
+        }
         // The following cases are valid indicators for the end of the string
         // 1. Next line contains another COSObject: CR + LF + '/'
         // 2. COSDictionary ends in the next line: CR + LF + '>'
@@ -423,23 +440,16 @@ public abstract class BaseParser
         // 4. COSDictionary ends in the next line: LF + '>'
         // 5. Next line contains another COSObject: CR + '/'
         // 6. COSDictionary ends in the next line: CR + '>'
-        if (amountRead == 3)
+        if (((nextThreeBytes[0] == ASCII_CR || nextThreeBytes[0] == ASCII_LF)
+                && (nextThreeBytes[1] == '/' || nextThreeBytes[1] == '>')) //
+                || //
+                (nextThreeBytes[0] == ASCII_CR && nextThreeBytes[1] == ASCII_LF
+                        && (nextThreeBytes[2] == '/' || nextThreeBytes[2] == '>')) //
+        )
         {
-            if (((nextThreeBytes[0] == ASCII_CR || nextThreeBytes[0] == ASCII_LF)
-                    && (nextThreeBytes[1] == '/' || nextThreeBytes[1] == '>')) //
-                    || //
-                    (nextThreeBytes[0] == ASCII_CR && nextThreeBytes[1] == ASCII_LF
-                            && (nextThreeBytes[2] == '/' || nextThreeBytes[2] == '>')) //
-            )
-            {
-                braces = 0;
-            }
+            return 0;
         }
-        if (amountRead > 0)
-        {
-            source.rewind(amountRead);
-        }
-        return braces;
+        return bracesParameter;
     }
 
     /**
@@ -731,7 +741,10 @@ public abstract class BaseParser
                     return po;
                 }
             }
-            po.add(pbo);
+            else
+            {
+                po.add(pbo);
+            }
             skipSpaces();
         }
         // read ']'
@@ -921,7 +934,7 @@ public abstract class BaseParser
             {
                 LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
                         + source.getPosition() + " (start offset: " + startOffset + ")");
-                return COSNull.NULL;
+                return this instanceof PDFStreamParser ? null : COSNull.NULL;
             }
         }
         return null;

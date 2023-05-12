@@ -149,7 +149,7 @@ public class PDSeparation extends PDSpecialColorSpace
             // PDFBOX-3622 - regular converter fails for Lab colorspaces
             return toRGBImage2(raster);
         }
-        
+
         int numAltComponents = alternateColorSpace.getNumberOfComponents();
 
         // use the tint transform to convert the sample into

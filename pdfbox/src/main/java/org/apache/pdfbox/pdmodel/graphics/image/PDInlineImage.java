@@ -82,15 +82,17 @@ public final class PDInlineImage implements PDImage
         {
             ByteArrayInputStream in = new ByteArrayInputStream(data);
             ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
+            byte[] ba = null;
             for (int i = 0; i < filters.size(); i++)
             {
                 // TODO handling of abbreviated names belongs here, rather than in other classes
                 out.reset();
                 Filter filter = FilterFactory.INSTANCE.getFilter(filters.get(i));
                 decodeResult = filter.decode(in, out, parameters, i);
-                in = new ByteArrayInputStream(out.toByteArray());
+                ba = out.toByteArray();
+                in = new ByteArrayInputStream(ba);
             }
-            this.decodedData = out.toByteArray();
+            this.decodedData = ba;
         }
 
         // repair parameters

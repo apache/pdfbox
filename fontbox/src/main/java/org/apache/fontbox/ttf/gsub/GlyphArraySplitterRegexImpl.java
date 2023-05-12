@@ -18,9 +18,9 @@
 package org.apache.fontbox.ttf.gsub;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * This is an in-efficient implementation based on regex, which helps split the array.
@@ -52,7 +52,16 @@ public class GlyphArraySplitterRegexImpl implements GlyphArraySplitter
 
     private Set<String> getMatchersAsStrings(Set<List<Integer>> matchers)
     {
-        Set<String> stringMatchers = new HashSet<>(matchers.size());
+        Set<String> stringMatchers = new TreeSet<>((String s1, String s2) ->
+        {
+            // comparator to ensure that strings with the same beginning
+            // put the larger string first        
+            if (s1.length() == s2.length())
+            {
+                return s2.compareTo(s1);
+            }
+            return s2.length() - s1.length();
+        });
         matchers.forEach(glyphIds -> stringMatchers.add(convertGlyphIdsToString(glyphIds)));
         return stringMatchers;
     }

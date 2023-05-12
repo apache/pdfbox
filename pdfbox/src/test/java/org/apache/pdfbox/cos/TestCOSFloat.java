@@ -347,7 +347,7 @@ class TestCOSFloat extends TestCOSNumber
     {
         double largeValue = Float.MAX_VALUE * 10d;
 
-        assertEquals(1, Double.compare(largeValue, Float.MIN_VALUE),
+        assertEquals(1, Double.compare(largeValue, Float.MAX_VALUE),
                 "Test must be performed with a value larger than Float.MAX_VALUE.");
 
         // 1.4012984643248171E-46

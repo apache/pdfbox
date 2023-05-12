@@ -71,14 +71,6 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         data.close();
     }
 
-    @Override
-    protected void finalize() throws Throwable
-    {
-        super.finalize();
-        // PDFBOX-4963: risk of memory leaks due to SoftReference in FontCache 
-        close();
-    }
-
     /**
      * @return Returns the version.
      */

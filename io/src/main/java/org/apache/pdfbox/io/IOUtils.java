@@ -193,7 +193,10 @@ public final class IOUtils
     {
         try
         {
-            UNMAPPER.ifPresent(u -> u.accept(buf));
+            if (buf != null)
+            {
+                UNMAPPER.ifPresent(u -> u.accept(buf));
+            }
         }
         catch (Exception e)
         {

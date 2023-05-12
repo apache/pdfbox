@@ -20,7 +20,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.Arrays;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -71,7 +70,6 @@ public class CSDeviceN
         for (int i = 0; i < componentCount; i++)
         {
             DeviceNColorant colorant = new DeviceNColorant();
-
             colorant.setName(colorantNames.get(i));
             float[] maximum = new float[componentCount];
             float[] minimum = new float[componentCount];

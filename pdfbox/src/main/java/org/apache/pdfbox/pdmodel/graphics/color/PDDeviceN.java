@@ -143,6 +143,13 @@ public class PDDeviceN extends PDSpecialColorSpace
                 colorantToComponent[c] = -1;
             }
         }
+        else
+        {
+            for (int c = 0; c < numColorants; c++)
+            {
+                colorantToComponent[c] = -1;
+            }
+        }
 
         // spot colorants
         spotColorSpaces = new PDSeparation[numColorants];

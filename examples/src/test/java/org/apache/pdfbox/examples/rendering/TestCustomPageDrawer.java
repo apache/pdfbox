@@ -15,33 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.pdfbox.examples.rendering;
 
-import org.apache.fontbox.ttf.CmapLookup;
-import org.apache.fontbox.ttf.model.GsubData;
-import org.apache.fontbox.ttf.model.Language;
+import java.awt.image.BufferedImage;
+
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
- * Gets a {@link Language} specific instance of a {@link GsubWorker}
- * 
- * @author Palash Ray
  *
+ * @author Tilman Hausherr
  */
-public class GsubWorkerFactory
+class TestCustomPageDrawer
 {
-
-    public GsubWorker getGsubWorker(CmapLookup cmapLookup, GsubData gsubData)
+    @Test
+    void testCustomPageDrawer() throws IOException
     {
-        switch (gsubData.getLanguage())
-        {
-        case BENGALI:
-            return new GsubWorkerForBengali(cmapLookup, gsubData);
-        case LATIN:
-            return new GsubWorkerForLatin(cmapLookup, gsubData);
-        default:
-            return new DefaultGsubWorker();
-        }
-
+        CustomPageDrawer.main(new String[]{});
+        BufferedImage bim = ImageIO.read(new File("target","custom-render.png"));
+        Assertions.assertNotNull(bim);
     }
-
 }

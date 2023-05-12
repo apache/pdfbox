@@ -412,8 +412,8 @@ final class PNGConverter
         int numberOfComponents = colorSpace.getNumberOfComponents();
         COSStream cosStream = document.getDocument().createCOSStream();
         cosStream.setInt(COSName.N, numberOfComponents);
-        cosStream.setItem(COSName.ALTERNATE, numberOfComponents
-                == 1 ? COSName.DEVICEGRAY : COSName.DEVICERGB);
+        cosStream.setItem(COSName.ALTERNATE, 
+                numberOfComponents == 1 ? COSName.DEVICEGRAY : COSName.DEVICERGB);
         cosStream.setItem(COSName.FILTER, COSName.FLATE_DECODE);
         if (state.iCCP != null)
         {

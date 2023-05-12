@@ -99,8 +99,11 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
         {
             fileChannel.close();
         }
-        Optional.ofNullable(unmapper).ifPresent(u -> u.accept(mappedByteBuffer));
-        mappedByteBuffer = null;
+        if (mappedByteBuffer != null)
+        {
+            Optional.ofNullable(unmapper).ifPresent(u -> u.accept(mappedByteBuffer));
+            mappedByteBuffer = null;
+        }
     }
 
     /**

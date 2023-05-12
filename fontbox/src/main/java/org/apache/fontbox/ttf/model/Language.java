@@ -33,6 +33,7 @@ public enum Language
 {
 
     BENGALI(new String[] { "bng2", "beng" }),
+    LATIN(new String[] { "latn" }),
 
     /**
      * An entry explicitly denoting the absence of any concrete language. May be useful when no actual glyph
