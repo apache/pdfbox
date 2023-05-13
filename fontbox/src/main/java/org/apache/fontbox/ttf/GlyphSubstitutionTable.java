@@ -264,7 +264,7 @@ public class GlyphSubstitutionTable extends TTFTable
                 LOG.debug("Type " + lookupType
                         + " GSUB lookup table is not supported and will be ignored");
                 return null;
-                //TODO next to support latin ligatures: implement type 6
+                //TODO next: implement type 6
                 // see e.g. readChainedContextualSubTable in Apache FOP
                 // https://github.com/apache/xmlgraphics-fop/blob/1323c2e3511eb23c7dd9b8fb74463af707fa972d/fop-core/src/main/java/org/apache/fop/complexscripts/fonts/OTFAdvancedTypographicTableReader.java#L898
         }
