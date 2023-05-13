@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class GsubWorkerForLatinTest
+class GsubWorkerForLatinTest
 {
     @Test
     void testApplyLigatures() throws IOException
