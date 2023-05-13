@@ -1282,6 +1282,27 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
             else
             {
+                GraphicsConfiguration graphicsConfiguration = graphics.getDeviceConfiguration();
+                int deviceType = GraphicsDevice.TYPE_RASTER_SCREEN;
+                if (graphicsConfiguration != null)
+                {
+                    GraphicsDevice graphicsDevice = graphicsConfiguration.getDevice();
+                    if (graphicsDevice != null)
+                    {
+                        deviceType = graphicsDevice.getType();
+                    }
+                }
+                if (deviceType == GraphicsDevice.TYPE_PRINTER &&
+                    image.getType() != BufferedImage.TYPE_4BYTE_ABGR)
+                {
+                    // PDFBOX-5601: avoid terrible output on printer unless TYPE_4BYTE_ABGR
+                    BufferedImage bim = new BufferedImage(
+                            image.getWidth(), image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+                    Graphics g = bim.getGraphics();
+                    g.drawImage(image, 0, 0, null);
+                    g.dispose();
+                    image = bim;
+                }
                 graphics.drawImage(image, imageTransform, null);
             }
         }
