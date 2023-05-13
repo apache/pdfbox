@@ -772,26 +772,35 @@ public class DomXmpParser
 
     private Element findDescriptionsParent(Element root) throws XmpParsingException
     {
-        // always <x:xmpmeta xmlns:x="adobe:ns:meta/">
-        expectNaming(root, "adobe:ns:meta/", "x", "xmpmeta");
-        // should only have one child
-        NodeList nl = root.getChildNodes();
-        if (nl.getLength() == 0)
+        Element rdfRdf;
+        // check if already rdf element, as xmpmeta wrapper can be optional
+        if (!XmpConstants.RDF_NAMESPACE.equals(root.getNamespaceURI()))
         {
-            // empty description
-            throw new XmpParsingException(ErrorType.Format, "No rdf description found in xmp");
+            // always <x:xmpmeta xmlns:x="adobe:ns:meta/">
+            expectNaming(root, "adobe:ns:meta/", "x", "xmpmeta");
+            // should only have one child
+            NodeList nl = root.getChildNodes();
+            if (nl.getLength() == 0)
+            {
+                // empty description
+                throw new XmpParsingException(ErrorType.Format, "No rdf description found in xmp");
+            }
+            else if (nl.getLength() > 1)
+            {
+                // only expect one element
+                throw new XmpParsingException(ErrorType.Format, "More than one element found in x:xmpmeta");
+            }
+            else if (!(root.getFirstChild() instanceof Element))
+            {
+                // should be an element
+                throw new XmpParsingException(ErrorType.Format, "x:xmpmeta does not contains rdf:RDF element");
+            } // else let's parse
+            rdfRdf = (Element) root.getFirstChild();
         }
-        else if (nl.getLength() > 1)
+        else
         {
-            // only expect one element
-            throw new XmpParsingException(ErrorType.Format, "More than one element found in x:xmpmeta");
+            rdfRdf = root;
         }
-        else if (!(root.getFirstChild() instanceof Element))
-        {
-            // should be an element
-            throw new XmpParsingException(ErrorType.Format, "x:xmpmeta does not contains rdf:RDF element");
-        } // else let's parse
-        Element rdfRdf = (Element) root.getFirstChild();
         // always <rdf:RDF
         // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
         expectNaming(rdfRdf, XmpConstants.RDF_NAMESPACE, XmpConstants.DEFAULT_RDF_PREFIX,
