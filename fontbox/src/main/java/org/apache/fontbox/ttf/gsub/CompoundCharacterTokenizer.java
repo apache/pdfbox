@@ -35,6 +35,13 @@ public class CompoundCharacterTokenizer
 {
     private final Pattern regexExpression;
 
+    /**
+     * Constructor. Calls getRegexFromTokens which returns strings like
+     * (_79_99_)|(_80_99_)|(_92_99_) and creates a regexp assigned to regexExpression. See the code
+     * in GlyphArraySplitterRegexImpl on how these strings were created.
+     *
+     * @param compoundWords A set of strings like _79_99_, _80_99_ or _92_99_ .
+     */
     public CompoundCharacterTokenizer(Set<String> compoundWords)
     {
         regexExpression = Pattern.compile(getRegexFromTokens(compoundWords));
@@ -53,7 +60,8 @@ public class CompoundCharacterTokenizer
 
         int lastIndexOfPrevMatch = 0;
 
-        while (regexMatcher.find())
+        while (regexMatcher.find()) // this is where the magic happens:
+                                    // the regexp is used to find a matching pattern for substitution
         {
             int beginIndexOfNextMatch = regexMatcher.start();
 
