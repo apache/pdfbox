@@ -155,9 +155,7 @@ public class PDSeparation extends PDSpecialColorSpace
         // use the tint transform to convert the sample into
         // the alternate color space (this is usually 1:many)
         WritableRaster altRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
-                raster.getWidth(), raster.getHeight(),
-                alternateColorSpace.getNumberOfComponents(),
-                new Point(0, 0));
+                raster.getWidth(), raster.getHeight(), numAltComponents, new Point(0, 0));
 
         int width = raster.getWidth();
         int height = raster.getHeight();
