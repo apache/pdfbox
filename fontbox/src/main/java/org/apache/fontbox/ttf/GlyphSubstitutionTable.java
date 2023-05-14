@@ -408,8 +408,8 @@ public class GlyphSubstitutionTable extends TTFTable
             int glyphCount = data.readUnsignedShort();
             for (int j = 0; j < glyphCount; ++j)
             {
-                int substituteGlyphIDs[] = data.readUnsignedShortArray(glyphCount);
-                sequenceTables[i] = new SequenceTable(glyphCount, substituteGlyphIDs);            
+                int[] substituteGlyphIDs = data.readUnsignedShortArray(glyphCount);
+                sequenceTables[i] = new SequenceTable(glyphCount, substituteGlyphIDs);
             }
         }
 
