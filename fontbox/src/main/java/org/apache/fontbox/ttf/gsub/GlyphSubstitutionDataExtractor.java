@@ -39,13 +39,16 @@ import org.apache.fontbox.ttf.table.common.ScriptTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureSetTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureTable;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeLigatureSubstitutionSubstFormat1;
+import org.apache.fontbox.ttf.table.gsub.LookupTypeMultipleSubstitutionFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat2;
+import org.apache.fontbox.ttf.table.gsub.SequenceTable;
 
 /**
- * This class has utility methods to extract meaningful data from the highly obfuscated GSUB Tables. This data is then
- * used to determine which combination of Glyphs or words have to be replaced.
- * 
+ * This class has utility methods to extract meaningful GsubData from the highly obfuscated GSUB
+ * Tables. This GsubData is then used to determine which combination of glyphs or words have to be
+ * replaced.
+ *
  * @author Palash Ray
  * 
  */
@@ -72,6 +75,10 @@ public class GlyphSubstitutionDataExtractor
      * {@link Language}'s searching for the first match with the scripts of the font. Instead, it unconditionally
      * creates {@link ScriptTableDetails} instance with language left {@linkplain Language#UNSPECIFIED unspecified}.
      * 
+     * @param scriptName
+     * @param scriptTable
+     * @param featureListTable
+     * @param lookupListTable
      * @return {@link GsubData} instance built especially for the given {@code scriptName}
      */
     public GsubData getGsubData(String scriptName, ScriptTable scriptTable,
@@ -176,6 +183,11 @@ public class GlyphSubstitutionDataExtractor
                 extractDataFromSingleSubstTableFormat2Table(glyphSubstitutionMap,
                         (LookupTypeSingleSubstFormat2) lookupSubTable);
             }
+            else if (lookupSubTable instanceof LookupTypeMultipleSubstitutionFormat1)
+            {
+                extractDataFromMultipleSubstitutionFormat1Table(glyphSubstitutionMap,
+                        (LookupTypeMultipleSubstitutionFormat1) lookupSubTable);
+            }
             else
             {
                 // usually null, due to being skipped in GlyphSubstitutionTable.readLookupTable()
@@ -220,6 +232,29 @@ public class GlyphSubstitutionDataExtractor
             putNewSubstitutionEntry(glyphSubstitutionMap, substituteGlyphId,
                     Collections.singletonList(coverageGlyphId));
         }
+    }
+
+    private void extractDataFromMultipleSubstitutionFormat1Table(
+            Map<List<Integer>, Integer> glyphSubstitutionMap,
+            LookupTypeMultipleSubstitutionFormat1 multipleSubstFormat1Subtable)
+    {
+        CoverageTable coverageTable = multipleSubstFormat1Subtable.getCoverageTable();
+
+        if (coverageTable.getSize() != multipleSubstFormat1Subtable.getSequenceTables().length)
+        {
+            throw new IllegalArgumentException(
+                    "The no. coverage table entries should be the same as the size of the sequencce tables");
+        }
+
+        for (int i = 0; i < coverageTable.getSize(); i++)
+        {
+            int coverageGlyphId = coverageTable.getGlyphId(i);
+            SequenceTable sequenceTable = multipleSubstFormat1Subtable.getSequenceTables()[i];
+            
+            //TODO implement storing this data
+            // (not possible at this time because the map value isn't a list)
+        }
+        
     }
 
     private void extractDataFromLigatureSubstitutionSubstFormat1Table(
