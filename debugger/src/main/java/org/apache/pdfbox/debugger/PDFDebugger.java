@@ -1470,6 +1470,7 @@ public class PDFDebugger extends JFrame
         };
         document = documentOpener.parse();
         printMenuItem.setEnabled(true);
+        printDpiMenu.setEnabled(true);
         reopenMenuItem.setEnabled(true);
         saveAsMenuItem.setEnabled(true);
 
