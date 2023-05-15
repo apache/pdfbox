@@ -128,7 +128,7 @@ public final class IOUtils
             }
             remaining -= bytesRead;
         }
-        return buffer.length - remaining;
+        return (long) buffer.length - remaining;
     }
 
     /**
