@@ -122,6 +122,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PageDrawer.class);
 
+    private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
+    private static final boolean IS_WINDOWS = OS_NAME.startsWith("windows");
+    private static final boolean IS_LINUX = OS_NAME.startsWith("linux");
+
     // parent document renderer - note: this is needed for not-yet-implemented resource caching
     private final PDFRenderer renderer;
     
@@ -1293,7 +1297,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     }
                 }
                 if (deviceType == GraphicsDevice.TYPE_PRINTER &&
-                    image.getType() != BufferedImage.TYPE_4BYTE_ABGR)
+                    image.getType() != BufferedImage.TYPE_4BYTE_ABGR &&
+                    (IS_WINDOWS || IS_LINUX))
                 {
                     // PDFBOX-5601: avoid terrible output on printer unless TYPE_4BYTE_ABGR
                     BufferedImage bim = new BufferedImage(
