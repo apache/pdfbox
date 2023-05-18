@@ -341,8 +341,23 @@ public class XMPMetadata
      * This method return the created schema to enter information.
      * 
      * @return schema added in order to work on it
+     * 
+     * @deprecated use {@link #createAndAddPDFAIdentificationSchema()}
      */
+    @Deprecated
     public PDFAIdentificationSchema createAndAddPFAIdentificationSchema()
+    {
+        return createAndAddPDFAIdentificationSchema();
+    }
+
+    /**
+     * Create and add a default PDFA Identification schema to this metadata.
+     * 
+     * This method return the created schema to enter information.
+     * 
+     * @return schema added in order to work on it
+     */
+    public PDFAIdentificationSchema createAndAddPDFAIdentificationSchema()
     {
         PDFAIdentificationSchema pdfAId = new PDFAIdentificationSchema(this);
         pdfAId.setAboutAsSimple("");

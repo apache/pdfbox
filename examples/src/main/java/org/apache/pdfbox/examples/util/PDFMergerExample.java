@@ -136,7 +136,7 @@ public class PDFMergerExample
         XMPMetadata xmpMetadata = XMPMetadata.createXMPMetadata();
 
         // PDF/A-1b properties
-        PDFAIdentificationSchema pdfaSchema = xmpMetadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaSchema = xmpMetadata.createAndAddPDFAIdentificationSchema();
         pdfaSchema.setPart(1);
         pdfaSchema.setConformance("B");
 

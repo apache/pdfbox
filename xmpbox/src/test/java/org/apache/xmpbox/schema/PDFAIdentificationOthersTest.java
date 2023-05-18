@@ -41,7 +41,7 @@ public class PDFAIdentificationOthersTest
     @Test
     public void testPDFAIdentification() throws Exception
     {
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
 
         Integer versionId = 1;
         String amdId = "2005";
@@ -68,7 +68,7 @@ public class PDFAIdentificationOthersTest
     @Test(expected = BadFieldValueException.class)
     public void testBadPDFAConformanceId() throws BadFieldValueException
     {
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         String conformance = "kiohiohiohiohio";
         pdfaid.setConformance(conformance);
     }
@@ -76,7 +76,7 @@ public class PDFAIdentificationOthersTest
     @Test(expected = IllegalArgumentException.class)
     public void testBadVersionIdValueType() throws Exception
     {
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         pdfaid.setPartValueWithString("1");
         pdfaid.setPartValueWithString("ojoj");
     }

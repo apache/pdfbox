@@ -41,7 +41,7 @@ public class PDFAIdentificationTest extends AbstractXMPSchemaTest
     public void initTempMetaData() throws Exception
     {
         metadata = XMPMetadata.createXMPMetadata();
-        schema = metadata.createAndAddPFAIdentificationSchema();
+        schema = metadata.createAndAddPDFAIdentificationSchema();
         schemaClass = PDFAIdentificationSchema.class;
     }
 

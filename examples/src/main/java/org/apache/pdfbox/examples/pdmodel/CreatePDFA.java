@@ -97,7 +97,7 @@ public final class CreatePDFA
                 DublinCoreSchema dc = xmp.createAndAddDublinCoreSchema();
                 dc.setTitle(file);
                 
-                PDFAIdentificationSchema id = xmp.createAndAddPFAIdentificationSchema();
+                PDFAIdentificationSchema id = xmp.createAndAddPDFAIdentificationSchema();
                 id.setPart(1);
                 id.setConformance("B");
                 

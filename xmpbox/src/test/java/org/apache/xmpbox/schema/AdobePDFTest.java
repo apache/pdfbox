@@ -98,7 +98,7 @@ public class AdobePDFTest extends AbstractXMPSchemaTest
     @Test(expected = BadFieldValueException.class)
     public void testBadPDFAConformanceId() throws BadFieldValueException
     {
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         String conformance = "kiohiohiohiohio";
         pdfaid.setConformance(conformance);
     }
