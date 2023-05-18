@@ -59,6 +59,10 @@ public final class PDFBox
             {
                 ExtractText.main(arguments);
             }
+            else if (command.equals("ExtractXMP"))
+            {
+                ExtractXMP.main(arguments);
+            }
             else if (command.equals("ExtractImages"))
             {
                 ExtractImages.main(arguments);
@@ -123,6 +127,7 @@ public final class PDFBox
                 + "  Decrypt\n"
                 + "  Encrypt\n"
                 + "  ExtractText\n"
+                + "  ExtractXMP\n"
                 + "  ExtractImages\n"
                 + "  OverlayPDF\n"
                 + "  PrintPDF\n"
