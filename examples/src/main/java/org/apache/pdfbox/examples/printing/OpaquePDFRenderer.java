@@ -67,7 +67,7 @@ public class OpaquePDFRenderer extends PDFRenderer
         // Also test with
         // https://github.com/qzind/tray/files/11432463/sample_file-1.pdf
         // (second page)
-        InputStream is = new URL("https://github.com/qzind/tray/files/11432463/sample_file-1.pdf").openStream();
+        InputStream is = new URL("https://github.com/qzind/tray/files/1749977/test.pdf").openStream();
         PDDocument doc = PDDocument.load(is);
         is.close();
         PDFRenderer renderer = new OpaquePDFRenderer(doc);
