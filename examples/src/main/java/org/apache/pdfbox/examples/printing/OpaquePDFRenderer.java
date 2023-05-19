@@ -174,7 +174,7 @@ public class OpaquePDFRenderer extends PDFRenderer
     // but resets ca and CA
     private static class OpaqueSetGraphicsStateParameters extends OperatorProcessor
     {
-        private static final Log LOG = LogFactory.getLog(org.apache.pdfbox.contentstream.operator.state.SetGraphicsStateParameters.class);
+        private static final Log LOG = LogFactory.getLog(OpaqueSetGraphicsStateParameters.class);
 
         public OpaqueSetGraphicsStateParameters(PDFStreamEngine context)
         {
