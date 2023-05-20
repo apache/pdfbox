@@ -64,7 +64,7 @@ import org.apache.pdfbox.rendering.PageDrawerParameters;
  */
 public class OpaquePDFRenderer extends PDFRenderer
 {
-
+    @SuppressWarnings("java:S1075")
     public static void main(String[] args) throws IOException, PrinterException, URISyntaxException
     {
         // PDF from the QZ Tray project, who reported this problem.
