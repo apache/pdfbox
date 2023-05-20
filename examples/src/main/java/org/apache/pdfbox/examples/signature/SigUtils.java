@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -362,12 +364,13 @@ public class SigUtils
      *
      * @throws GeneralSecurityException
      * @throws IOException 
+     * @throws URISyntaxException 
      */
     public static X509Certificate getTsaCertificate(String tsaUrl)
-            throws GeneralSecurityException, IOException
+            throws GeneralSecurityException, IOException, URISyntaxException
     {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        TSAClient tsaClient = new TSAClient(new URL(tsaUrl), null, null, digest);
+        TSAClient tsaClient = new TSAClient(new URI(tsaUrl).toURL(), null, null, digest);
         InputStream emptyStream = new ByteArrayInputStream(new byte[0]);
         TimeStampToken timeStampToken = tsaClient.getTimeStampToken(emptyStream);
         return getCertificateFromTimeStampToken(timeStampToken);
@@ -420,10 +423,11 @@ public class SigUtils
      * @param urlString
      * @return
      * @throws IOException 
+     * @throws URISyntaxException 
      */
-    public static InputStream openURL(String urlString) throws IOException
+    public static InputStream openURL(String urlString) throws IOException, URISyntaxException
     {
-        URL url = new URL(urlString);
+        URL url = new URI(urlString).toURL();
         if (!urlString.startsWith("http"))
         {
             // so that ftp is still supported
@@ -445,7 +449,7 @@ public class SigUtils
                 // change this code if you want to be more flexible (but think about security!)
                 LOG.info("redirection to " + location + " followed");
                 con.disconnect();
-                con = (HttpURLConnection) new URL(location).openConnection();
+                con = (HttpURLConnection) new URI(location).toURL().openConnection();
             }
             else
             {

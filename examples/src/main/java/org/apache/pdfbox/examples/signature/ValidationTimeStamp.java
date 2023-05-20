@@ -21,7 +21,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -56,13 +57,15 @@ public class ValidationTimeStamp
      * @param tsaUrl The url where TS-Request will be done.
      * @throws NoSuchAlgorithmException
      * @throws MalformedURLException
+     * @throws java.net.URISyntaxException
      */
-    public ValidationTimeStamp(String tsaUrl) throws NoSuchAlgorithmException, MalformedURLException
+    public ValidationTimeStamp(String tsaUrl)
+            throws NoSuchAlgorithmException, MalformedURLException, URISyntaxException
     {
         if (tsaUrl != null)
         {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            this.tsaClient = new TSAClient(new URL(tsaUrl), null, null, digest);
+            this.tsaClient = new TSAClient(new URI(tsaUrl).toURL(), null, null, digest);
         }
     }
 

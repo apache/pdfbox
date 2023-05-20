@@ -18,6 +18,7 @@ package org.apache.pdfbox.examples.signature;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -149,7 +150,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
             }
             return signedData.getEncoded();
         }
-        catch (GeneralSecurityException | CMSException | OperatorCreationException e)
+        catch (GeneralSecurityException | CMSException | OperatorCreationException | URISyntaxException e)
         {
             throw new IOException(e);
         }

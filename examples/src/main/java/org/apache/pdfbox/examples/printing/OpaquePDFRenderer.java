@@ -20,7 +20,8 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import javax.print.PrintServiceLookup;
 import org.apache.commons.logging.Log;
@@ -64,15 +65,15 @@ import org.apache.pdfbox.rendering.PageDrawerParameters;
 public class OpaquePDFRenderer extends PDFRenderer
 {
 
-    public static void main(String[] args) throws IOException, PrinterException
+    public static void main(String[] args) throws IOException, PrinterException, URISyntaxException
     {
         // PDF from the QZ Tray project, who reported this problem.
         // Also test with
         // https://github.com/qzind/tray/files/11432463/sample_file-1.pdf
         // (second page)
         try (PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
-                        new URL("https://github.com/qzind/tray/files/1749977/test.pdf")
-                                .openStream())))
+                        new URI("https://github.com/qzind/tray/files/1749977/test.pdf")
+                                .toURL().openStream())))
         {
             PDFRenderer renderer = new OpaquePDFRenderer(doc);
             Printable printable = new PDFPrintable(doc, Scaling.SCALE_TO_FIT, false, 0, true, renderer);

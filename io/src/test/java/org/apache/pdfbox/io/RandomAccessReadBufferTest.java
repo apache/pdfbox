@@ -25,7 +25,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -200,11 +203,11 @@ class RandomAccessReadBufferTest
     }
 
     @Test
-    void testPDFBOX5111() throws IOException
+    void testPDFBOX5111() throws IOException, URISyntaxException
     {
-        try (InputStream is = new URL(
+        try (InputStream is = new URI(
                 "https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf")
-                        .openStream();
+                        .toURL().openStream();
              RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(is))
         {
             assertEquals(34060, randomAccessSource.length());

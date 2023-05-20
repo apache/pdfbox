@@ -21,6 +21,7 @@ package org.apache.pdfbox.examples.signature.cert;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
@@ -188,7 +189,8 @@ public final class CertificateVerifier
         {
             throw cvex;
         }
-        catch (IOException | GeneralSecurityException | RevokedCertificateException | OCSPException ex)
+        catch (IOException | URISyntaxException |
+               GeneralSecurityException | RevokedCertificateException | OCSPException ex)
         {
             throw new CertificateVerificationException(
                     "Error verifying the certificate: "
@@ -200,7 +202,7 @@ public final class CertificateVerifier
                                          Set<X509Certificate> additionalCerts,
                                          Date signDate)
             throws IOException, CertificateVerificationException, OCSPException,
-                   RevokedCertificateException, GeneralSecurityException
+                   RevokedCertificateException, GeneralSecurityException, URISyntaxException
     {
         if (isSelfSigned(cert))
         {
@@ -225,7 +227,7 @@ public final class CertificateVerifier
     private static void checkRevocationsWithIssuer(X509Certificate cert, X509Certificate issuerCert,
             Set<X509Certificate> additionalCerts, Date signDate)
             throws OCSPException, CertificateVerificationException, RevokedCertificateException,
-            GeneralSecurityException, IOException
+            GeneralSecurityException, IOException, URISyntaxException
     {
         // Try checking the certificate through OCSP (faster than CRL)
         String ocspURL = extractOCSPURL(cert);
@@ -337,7 +339,7 @@ public final class CertificateVerifier
                 altCerts.forEach(altCert -> resultSet.add((X509Certificate) altCert));
                 LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) downloaded");
             }
-            catch (IOException ex)
+            catch (IOException | URISyntaxException ex)
             {
                 LOG.warn(urlString + " failure: " + ex.getMessage(), ex);
             }
@@ -450,11 +452,13 @@ public final class CertificateVerifier
      * @param additionalCerts
      * @throws RevokedCertificateException
      * @throws IOException
+     * @throws URISyntaxException
      * @throws OCSPException
      * @throws CertificateVerificationException
      */
     private static void verifyOCSP(OcspHelper ocspHelper, Set<X509Certificate> additionalCerts)
-            throws RevokedCertificateException, IOException, OCSPException, CertificateVerificationException
+            throws RevokedCertificateException, IOException, OCSPException,
+            CertificateVerificationException, URISyntaxException
     {
         Date now = Calendar.getInstance().getTime();
         OCSPResp ocspResponse;

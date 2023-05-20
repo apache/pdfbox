@@ -20,10 +20,14 @@ package org.apache.pdfbox.examples.signature.validation;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.net.URISyntaxException;
+
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -35,6 +39,7 @@ import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -296,7 +301,7 @@ public class CertInformationCollector
                 traverseChain(altIssuerCert, certInfo.alternativeCertChain, maxDepth - 1);
             }
         }
-        catch (IOException | CertificateException e)
+        catch (IOException | URISyntaxException | CertificateException e)
         {
             LOG.error("Error getting alternative issuer certificate from " + certInfo.issuerUrl, e);
         }

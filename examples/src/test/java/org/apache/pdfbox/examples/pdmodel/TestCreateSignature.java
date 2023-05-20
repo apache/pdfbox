@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
@@ -170,6 +171,7 @@ class TestCreateSignature
      * Signs a PDF using the "adbe.pkcs7.detached" SubFilter with the SHA-256 digest.
      *
      * @throws IOException
+     * @throws URISyntaxException
      * @throws GeneralSecurityException
      * @throws CMSException
      * @throws OperatorCreationException
@@ -180,7 +182,7 @@ class TestCreateSignature
 	@MethodSource("signingTypes")
     void testDetachedSHA256(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
-                   TSPException, CertificateVerificationException
+                   TSPException, CertificateVerificationException, URISyntaxException
     {
         // sign PDF
         CreateSignature signing = new CreateSignature(keyStore, PASSWORD.toCharArray());

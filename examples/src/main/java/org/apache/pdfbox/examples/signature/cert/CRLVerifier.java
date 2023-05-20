@@ -22,6 +22,7 @@ package org.apache.pdfbox.examples.signature.cert;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
@@ -234,7 +235,7 @@ public final class CRLVerifier
      */
     private static X509CRL downloadCRL(String crlURL) throws IOException,
             CertificateException, CRLException,
-            CertificateVerificationException, NamingException
+            CertificateVerificationException, NamingException, URISyntaxException
     {
         if (crlURL.startsWith("http://") || crlURL.startsWith("https://")
                 || crlURL.startsWith("ftp://"))
@@ -291,7 +292,7 @@ public final class CRLVerifier
      * http://crl.infonotary.com/crl/identity-ca.crl
      */
     public static X509CRL downloadCRLFromWeb(String crlURL)
-            throws IOException, CertificateException, CRLException
+            throws IOException, CertificateException, CRLException, URISyntaxException
     {
         try (InputStream crlStream = SigUtils.openURL(crlURL))
         {

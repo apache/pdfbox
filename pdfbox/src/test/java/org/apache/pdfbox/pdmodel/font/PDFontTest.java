@@ -270,14 +270,15 @@ class PDFontTest
     /**
      * Test using broken Type1C font.
      *
-     * @throws IOException 
+     * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testPDFox5048() throws IOException
+    void testPDFox5048() throws IOException, URISyntaxException
     {
         try (PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
-                new URL("https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf")
-                        .openStream())))
+                new URI("https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf")
+                        .toURL().openStream())))
         {
             PDPage page = doc.getPage(0);
             PDFont font = page.getResources().getFont(COSName.getPDFName("F70"));

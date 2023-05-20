@@ -38,7 +38,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -528,7 +529,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
             {
                 readPDFurl(urlString, "");
             }
-            catch (IOException e)
+            catch (IOException | URISyntaxException e)
             {
                 throw new RuntimeException(e);
             }
@@ -550,7 +551,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                     readPDFFile(currentFilePath, "");
                 }
             }
-            catch (IOException e)
+            catch (IOException | URISyntaxException e)
             {
                 new ErrorDialog(e).setVisible(true);
             }
@@ -707,7 +708,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         {
             readPDFFile(filename, "");
         }
-        catch (IOException e)
+        catch (IOException | URISyntaxException e)
         {
             new ErrorDialog(e).setVisible(true);
         }
@@ -774,7 +775,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException | URISyntaxException e)
         {
             new ErrorDialog(e).setVisible(true);
         }
@@ -1333,13 +1334,13 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
     }
 
-    private void readPDFFile(String filePath, String password) throws IOException
+    private void readPDFFile(String filePath, String password) throws IOException, URISyntaxException
     {
         File file = new File(filePath);
         readPDFFile(file, password);
     }
     
-    private void readPDFFile(final File file, String password) throws IOException
+    private void readPDFFile(final File file, String password) throws IOException, URISyntaxException
     {
         if( document != null )
         {
@@ -1386,8 +1387,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
         addRecentFileItems();
     }
-    
-    private void readPDFurl(final String urlString, String password) throws IOException
+
+    private void readPDFurl(final String urlString, String password)
+            throws IOException, URISyntaxException
     {
         if (document != null)
         {
@@ -1404,11 +1406,11 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         DocumentOpener documentOpener = new DocumentOpener(password)
         {
             @Override
-            PDDocument open() throws IOException
+            PDDocument open() throws IOException, URISyntaxException
             {
                 long t0 = System.nanoTime();
                 PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer
-                        .createBufferFromStream(new URL(urlString).openStream()), password);
+                        .createBufferFromStream(new URI(urlString).toURL().openStream()), password);
                 long t1 = System.nanoTime();
                 long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
                 LOG.info("Parsed in " + ms + " ms");
@@ -1433,7 +1435,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         }
         addRecentFileItems();
     }
-    
+
     public void initTree()
     {
         TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
@@ -1484,8 +1486,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
          * 
          * @return the PDDocument instance
          * @throws IOException Cannot read document
+         * @throws URISyntaxException
          */
-        abstract PDDocument open() throws IOException;
+        abstract PDDocument open() throws IOException, URISyntaxException;
 
         /**
          * Call this!
@@ -1493,7 +1496,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
          * @return the PDDocument instance
          * @throws IOException Cannot read document
          */
-        final PDDocument parse() throws IOException 
+        final PDDocument parse() throws IOException, URISyntaxException 
         {
             while (true)
             {
