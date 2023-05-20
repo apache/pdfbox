@@ -431,7 +431,7 @@ public class AddValidationInformation
      * 
      * @param certInfo the certificate info, for it to check CRL data.
      * @throws IOException
-     * @throws URIs
+     * @throws URISyntaxException
      * @throws RevokedCertificateException
      * @throws GeneralSecurityException
      * @throws CertificateVerificationException 
