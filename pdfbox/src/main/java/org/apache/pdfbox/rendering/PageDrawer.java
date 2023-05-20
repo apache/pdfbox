@@ -1300,7 +1300,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     image.getType() != BufferedImage.TYPE_4BYTE_ABGR &&
                     (IS_WINDOWS || IS_LINUX))
                 {
-                    // PDFBOX-5601: avoid terrible output on printer unless TYPE_4BYTE_ABGR
+                    // PDFBOX-5601, PDFBOX-4010, JDK-8308099, JDK-8191800:
+                    // workaround to avoid terrible / missing output on printer unless TYPE_4BYTE_ABGR
                     BufferedImage bim = new BufferedImage(
                             image.getWidth(), image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
                     Graphics g = bim.getGraphics();
