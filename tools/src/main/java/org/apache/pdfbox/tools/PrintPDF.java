@@ -22,13 +22,24 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
+import javax.print.DocFlavor;
 
 import javax.print.PrintService;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.Media;
+import javax.print.attribute.standard.MediaSizeName;
+import javax.print.attribute.standard.MediaTray;
+import javax.print.attribute.standard.Sides;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 import org.apache.pdfbox.printing.Orientation;
 import org.apache.pdfbox.printing.PDFPageable;
 
@@ -44,6 +55,34 @@ import picocli.CommandLine.Option;
 @Command(name = "printpdf", header = "Prints a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PrintPDF implements Callable<Integer>
 {
+    // We needs this helper class because the Sides class isn't a real enum class.
+    enum Duplex
+    {
+        simplex(0), duplex(1), tumble(2), document(3);
+
+        int num;
+
+        Duplex(int p)
+        {
+            num = p;
+        }
+        
+        Sides toSides()
+        {
+            switch (num)
+            {
+                case 0:
+                    return Sides.ONE_SIDED;
+                case 1:
+                    return Sides.DUPLEX;
+                case 2:
+                    return Sides.TUMBLE;
+                default:
+                    return null;
+            }
+        }
+    };
+
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
@@ -59,6 +98,15 @@ public final class PrintPDF implements Callable<Integer>
 
     @Option(names = "-orientation", description = "print using orientation [${COMPLETION-CANDIDATES}] (default: ${DEFAULT-VALUE}).")    
     private Orientation orientation = Orientation.AUTO;
+
+    @Option(names = "-duplex", description = "print using duplex [${COMPLETION-CANDIDATES}] (default: ${DEFAULT-VALUE}).")    
+    private Duplex duplex = Duplex.document;
+
+    @Option(names = "-tray", description = "print using tray.")    
+    private String tray;
+
+    @Option(names = "-mediaSize", description = "print using media size.")    
+    private String mediaSize;
 
     @Option(names = "-border", description = "print with border.")    
     private boolean border;
@@ -85,6 +133,7 @@ public final class PrintPDF implements Callable<Integer>
         System.exit(exitCode);
     }
 
+    @Override
     public Integer call()
     {
         RenderingHints renderingHints = null;
@@ -127,6 +176,50 @@ public final class PrintPDF implements Callable<Integer>
                     showAvailablePrinters();
                 }
             }
+
+            PrintService printService = printJob.getPrintService();
+            PrintRequestAttributeSet pras = createPrintRequestAttributeSet(document);
+
+            if (tray != null)
+            {
+                // find the object with the same name
+                boolean found = false;
+                for (Media media : getTraysFromPrintService(printService))
+                {
+                    if (tray.equals(media.toString()))
+                    {
+                        pras.add(media);
+                        found = true;
+                        break;
+                    }                            
+                }
+                if (!found)
+                {
+                    SYSERR.println("Tray '" + tray + "' not supported, ignored. Valid values: " +
+                            getTraysFromPrintService(printService));
+                }
+            }
+
+            if (mediaSize != null)
+            {
+                // find the object with the same name
+                boolean found = false;
+                for (Media media : getMediaSizesFromPrintService(printService))
+                {
+                    if (mediaSize.equals(media.toString()))
+                    {
+                        pras.add(media);
+                        found = true;
+                        break;
+                    }                            
+                }
+                if (!found)
+                {
+                    SYSERR.println("media size '" + mediaSize + "' not supported, ignored. Valid values: " +
+                            getMediaSizesFromPrintService(printService));
+                }
+            }
+
             PDFPageable pageable = new PDFPageable(document, orientation, border, dpi);
             pageable.setRenderingHints(renderingHints);
             printJob.setPageable(pageable);
@@ -136,9 +229,9 @@ public final class PrintPDF implements Callable<Integer>
             // which results in the image appearing in the middle of the page, and padded
             // when printing on XPS. Also PDFPageable.getPageFormat() won't be called.
 
-            if (silentPrint || printJob.printDialog())
+            if (silentPrint || printJob.printDialog(pras))
             {
-                printJob.print();
+                printJob.print(pras);
             }
         }
         catch (IOException | PrinterException ex)
@@ -149,6 +242,74 @@ public final class PrintPDF implements Callable<Integer>
         return 0;
     }
 
+    private static List<Media> getTraysFromPrintService(PrintService printService)
+    {
+        Media[] medias = (Media[]) printService.getSupportedAttributeValues(
+                Media.class, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
+        if (medias == null)
+        {
+            return Collections.emptyList();
+        }
+        List<Media> trayList = new ArrayList<>();
+        for (Media media : medias)
+        {
+            if (media instanceof MediaTray)
+            {
+                trayList.add(media);
+            }
+        }
+        return trayList;
+    }
+
+    private static List<Media> getMediaSizesFromPrintService(PrintService printService)
+    {
+        Media[] medias = (Media[]) printService.getSupportedAttributeValues(
+                Media.class, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
+        if (medias == null)
+        {
+            return Collections.emptyList();
+        }
+        List<Media> sizeList = new ArrayList<>();
+        for (Media media : medias)
+        {
+            if (media instanceof MediaSizeName)
+            {
+                sizeList.add(media);
+            }
+        }
+        return sizeList;
+    }
+
+    private PrintRequestAttributeSet createPrintRequestAttributeSet(final PDDocument document)
+    {
+        PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+        if (duplex.toSides() == null)
+        {
+            PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
+            if (vp != null && vp.getDuplex() != null)
+            {
+                String dp = vp.getDuplex();
+                if (PDViewerPreferences.DUPLEX.DuplexFlipLongEdge.toString().equals(dp))
+                {
+                    pras.add(Sides.TWO_SIDED_LONG_EDGE);
+                }
+                else if (PDViewerPreferences.DUPLEX.DuplexFlipShortEdge.toString().equals(dp))
+                {
+                    pras.add(Sides.TWO_SIDED_SHORT_EDGE);
+                }
+                else if (PDViewerPreferences.DUPLEX.Simplex.toString().equals(dp))
+                {
+                    pras.add(Sides.ONE_SIDED);
+                }
+            }
+        }
+        else
+        {
+            pras.add(duplex.toSides());
+        }
+        return pras;
+    }
+
     @Command(name = "listPrinters", description = "list available printers", helpCommand = true)
     private static void showAvailablePrinters()
     {
@@ -157,6 +318,8 @@ public final class PrintPDF implements Callable<Integer>
         for (PrintService printService : printServices)
         {
             SYSERR.println("    " + printService.getName());
+            SYSERR.println("        Sizes: " + getMediaSizesFromPrintService(printService));
+            SYSERR.println("        Trays: " + getTraysFromPrintService(printService));
         }
     }
 }
