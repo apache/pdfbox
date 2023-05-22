@@ -19,14 +19,28 @@ package org.apache.pdfbox.tools;
 import java.awt.RenderingHints;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+
 import java.io.File;
 import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.print.DocFlavor;
 import javax.print.PrintService;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.Media;
+import javax.print.attribute.standard.MediaSizeName;
+import javax.print.attribute.standard.MediaTray;
+import javax.print.attribute.standard.Sides;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 import org.apache.pdfbox.printing.Orientation;
 import org.apache.pdfbox.printing.PDFPageable;
 
@@ -45,6 +59,9 @@ public final class PrintPDF
     private static final String BORDER = "-border";
     private static final String DPI = "-dpi";
     private static final String NOCOLOROPT = "-noColorOpt";
+    private static final String DUPLEX = "-duplex";
+    private static final String TRAY = "-tray";
+    private static final String MEDIA_SIZE = "-mediaSize";
 
     /**
      * private constructor.
@@ -79,6 +96,9 @@ public final class PrintPDF
         orientationMap.put("landscape", Orientation.LANDSCAPE);
         orientationMap.put("portrait", Orientation.PORTRAIT);
         RenderingHints renderingHints = null;
+        String duplex = null;
+        String tray = null;
+        String mediaSize = null;
 
         for (int i = 0; i < args.length; i++)
         {
@@ -99,6 +119,33 @@ public final class PrintPDF
                     usage();
                 }
                 printerName = args[i];
+            }
+            else if (args[i].equals(DUPLEX))
+            {
+                i++;
+                if (i >= args.length)
+                {
+                    usage();
+                }
+                duplex = args[i];
+            }
+            else if (args[i].equals(TRAY))
+            {
+                i++;
+                if (i >= args.length)
+                {
+                    usage();
+                }
+                tray = args[i];
+            }
+            else if (args[i].equals(MEDIA_SIZE))
+            {
+                i++;
+                if (i >= args.length)
+                {
+                    usage();
+                }
+                mediaSize = args[i];
             }
             else if (args[i].equals(SILENT))
             {
@@ -169,21 +216,66 @@ public final class PrintPDF
             {
                 PrintService[] printServices = PrinterJob.lookupPrintServices();
                 boolean printerFound = false;
-                for (int i = 0; i < printServices.length; i++)
+                for (PrintService printService : printServices)
                 {
-                    if (printServices[i].getName().equals(printerName))
+                    if (printService.getName().equals(printerName))
                     {
-                        printJob.setPrintService(printServices[i]);
+                        printJob.setPrintService(printService);
                         printerFound = true;
                         break;
                     }
                 }
                 if (!printerFound)
                 {
-                    System.err.println("printer '" + printerName + "' not found, using default");
+                    System.err.println("printer '" + printerName + "' not found, using default '" +
+					      printJob.getPrintService().getName() + "'");
                     showAvailablePrinters();
                 }
             }
+
+            PrintService printService = printJob.getPrintService();
+            PrintRequestAttributeSet pras = createPrintRequestAttributeSet(document, duplex);
+
+            if (tray != null)
+            {
+                // find the object with the same name
+                boolean found = false;
+                for (Media media : getTraysFromPrintService(printService))
+                {
+                    if (tray.equals(media.toString()))
+                    {
+                        pras.add(media);
+                        found = true;
+                        break;
+                    }                            
+                }
+                if (!found)
+                {
+                    System.err.println("Tray '" + tray + "' not supported, ignored. Valid values: " +
+                            getTraysFromPrintService(printService));
+                }
+            }
+
+            if (mediaSize != null)
+            {
+                // find the object with the same name
+                boolean found = false;
+                for (Media media : getMediaSizesFromPrintService(printService))
+                {
+                    if (mediaSize.equals(media.toString()))
+                    {
+                        pras.add(media);
+                        found = true;
+                        break;
+                    }                            
+                }
+                if (!found)
+                {
+                    System.err.println("media size '" + mediaSize + "' not supported, ignored. Valid values: " +
+                            getMediaSizesFromPrintService(printService));
+                }
+            }
+            
             PDFPageable pageable = new PDFPageable(document, orientation, showPageBorder, dpi);
             pageable.setRenderingHints(renderingHints);
             printJob.setPageable(pageable);
@@ -193,9 +285,9 @@ public final class PrintPDF
             // which results in the image appearing in the middle of the page, and padded
             // when printing on XPS. Also PDFPageable.getPageFormat() won't be called.
 
-            if (silentPrint || printJob.printDialog())
+            if (silentPrint || printJob.printDialog(pras))
             {
-                printJob.print();
+                printJob.print(pras);
             }
         }
         finally
@@ -205,6 +297,87 @@ public final class PrintPDF
                 document.close();
             }
         }
+    }
+
+    private static List<Media> getTraysFromPrintService(PrintService printService)
+    {
+        Media[] medias = (Media[]) printService.getSupportedAttributeValues(
+                Media.class, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
+        if (medias == null)
+        {
+            return Collections.emptyList();
+        }
+        List<Media> trayList = new ArrayList<Media>();
+        for (Media media : medias)
+        {
+            if (media instanceof MediaTray)
+            {
+                trayList.add(media);
+            }
+        }
+        return trayList;
+    }
+
+    private static List<Media> getMediaSizesFromPrintService(PrintService printService)
+    {
+        Media[] medias = (Media[]) printService.getSupportedAttributeValues(
+                Media.class, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
+        if (medias == null)
+        {
+            return Collections.emptyList();
+        }
+        List<Media> sizeList = new ArrayList<Media>();
+        for (Media media : medias)
+        {
+            if (media instanceof MediaSizeName)
+            {
+                sizeList.add(media);
+            }
+        }
+        return sizeList;
+    }
+
+    private static PrintRequestAttributeSet createPrintRequestAttributeSet
+        (final PDDocument document, String duplex)
+    {
+        PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+        if (duplex == null || "document".equalsIgnoreCase(duplex))
+        {
+            PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
+            if (vp != null && vp.getDuplex() != null)
+            {
+                String dp = vp.getDuplex();
+                if (PDViewerPreferences.DUPLEX.DuplexFlipLongEdge.toString().equals(dp))
+                {
+                    pras.add(Sides.TWO_SIDED_LONG_EDGE);
+                }
+                else if (PDViewerPreferences.DUPLEX.DuplexFlipShortEdge.toString().equals(dp))
+                {
+                    pras.add(Sides.TWO_SIDED_SHORT_EDGE);
+                }
+                else if (PDViewerPreferences.DUPLEX.Simplex.toString().equals(dp))
+                {
+                    pras.add(Sides.ONE_SIDED);
+                }
+            }
+        }
+        else if (duplex.equalsIgnoreCase("duplex"))
+        {
+            pras.add(Sides.DUPLEX);
+        }
+        else if (duplex.equalsIgnoreCase("tumble"))
+        {
+            pras.add(Sides.TUMBLE);
+        }
+        else if (duplex.equalsIgnoreCase("simplex"))
+        {
+            pras.add(Sides.ONE_SIDED);
+        }
+        else
+        {
+            System.out.println("duplex setting '" + duplex + "' is ignored");
+        }
+        return pras;
     }
 
     /**
@@ -223,6 +396,9 @@ public final class PrintPDF
                 + "                                           specific dpi and then print\n"
                 + "  -noColorOpt                          : Disable color optimizations\n"
                 + "                                           (useful when printing barcodes)\n"
+                + "  -duplex SIMPLEX|DUPLEX|TUMBLE|DOCUMENT : Print using duplex (default: DOCUMENT)\n"
+                + "  -tray <tray>                         : Print using tray\n"
+                + "  -mediaSize <mediaSize>               : Print using media size name\n"
                 + "  -silentPrint                         : Print without printer dialog box\n";
         System.err.println(message);
         showAvailablePrinters();
@@ -236,6 +412,8 @@ public final class PrintPDF
         for (PrintService printService : printServices)
         {
             System.err.println("    " + printService.getName());
+            System.err.println("        Sizes: " + getMediaSizesFromPrintService(printService));
+            System.err.println("        Trays: " + getTraysFromPrintService(printService));
         }
     }
 }
