@@ -55,7 +55,7 @@ import picocli.CommandLine.Option;
 @Command(name = "printpdf", header = "Prints a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PrintPDF implements Callable<Integer>
 {
-    // We needs this helper class because the Sides class isn't a real enum class.
+    // We need this helper class because the Sides class isn't a real enum class.
     enum Duplex
     {
         SIMPLEX(0), DUPLEX(1), TUMBLE(2), DOCUMENT(3);
@@ -105,7 +105,7 @@ public final class PrintPDF implements Callable<Integer>
     @Option(names = "-tray", description = "print using tray.")    
     private String tray;
 
-    @Option(names = "-mediaSize", description = "print using media size.")    
+    @Option(names = "-mediaSize", description = "print using media size name.")    
     private String mediaSize;
 
     @Option(names = "-border", description = "print with border.")    
@@ -161,18 +161,19 @@ public final class PrintPDF implements Callable<Integer>
             {
                 PrintService[] printServices = PrinterJob.lookupPrintServices();
                 boolean printerFound = false;
-                for (int i = 0; i < printServices.length; i++)
+                for (PrintService printService : printServices)
                 {
-                    if (printServices[i].getName().equals(printerName))
+                    if (printService.getName().equals(printerName))
                     {
-                        printJob.setPrintService(printServices[i]);
+                        printJob.setPrintService(printService);
                         printerFound = true;
                         break;
                     }
                 }
                 if (!printerFound)
                 {
-                    SYSERR.println("printer '" + printerName + "' not found, using default");
+                    SYSERR.println("printer '" + printerName + "' not found, using default '" +
+                            printJob.getPrintService().getName() + "'");
                     showAvailablePrinters();
                 }
             }
