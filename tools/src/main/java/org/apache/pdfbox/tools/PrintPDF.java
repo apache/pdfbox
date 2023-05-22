@@ -58,7 +58,7 @@ public final class PrintPDF implements Callable<Integer>
     // We needs this helper class because the Sides class isn't a real enum class.
     enum Duplex
     {
-        simplex(0), duplex(1), tumble(2), document(3);
+        SIMPLEX(0), DUPLEX(1), TUMBLE(2), DOCUMENT(3);
 
         int num;
 
@@ -81,7 +81,7 @@ public final class PrintPDF implements Callable<Integer>
                     return null;
             }
         }
-    };
+    }
 
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
@@ -100,7 +100,7 @@ public final class PrintPDF implements Callable<Integer>
     private Orientation orientation = Orientation.AUTO;
 
     @Option(names = "-duplex", description = "print using duplex [${COMPLETION-CANDIDATES}] (default: ${DEFAULT-VALUE}).")    
-    private Duplex duplex = Duplex.document;
+    private Duplex duplex = Duplex.DOCUMENT;
 
     @Option(names = "-tray", description = "print using tray.")    
     private String tray;
