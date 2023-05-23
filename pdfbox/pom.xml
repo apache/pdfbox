@@ -43,7 +43,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
-            <artifactId>io</artifactId>
+            <artifactId>pdfbox-io</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
