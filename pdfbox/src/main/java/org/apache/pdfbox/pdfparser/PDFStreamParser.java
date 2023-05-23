@@ -98,7 +98,7 @@ public class PDFStreamParser extends BaseParser
         skipSpaces();
         if (source.isEOF())
         {
-            source.close();
+            close();
             return null;
         }
         char c = (char) source.peek();
@@ -124,6 +124,7 @@ public class PDFStreamParser extends BaseParser
                     {
                         LOG.warn("Stop reading invalid dictionary from content stream at offset "
                                 + source.getPosition());
+                        close();
                         return null;
                     }
                 }
@@ -141,6 +142,7 @@ public class PDFStreamParser extends BaseParser
                 {
                     LOG.warn("Stop reading invalid array from content stream at offset "
                             + source.getPosition());
+                    close();
                     return null;
                 }
             case '(':
@@ -253,8 +255,10 @@ public class PDFStreamParser extends BaseParser
                 String id = Character.toString((char) source.read()) + (char) source.read();
                 if (!id.equals(OperatorName.BEGIN_INLINE_IMAGE_DATA))
                 {
+                    long currentPosition = source.getPosition();
+                    close();
                     throw new IOException( "Error: Expected operator 'ID' actual='" + id +
-                            "' at stream offset " + source.getPosition());
+                            "' at stream offset " + currentPosition);
                 }
                 ByteArrayOutputStream imageData = new ByteArrayOutputStream();
                 if( isWhitespace() )
@@ -430,4 +434,18 @@ public class PDFStreamParser extends BaseParser
     {
         return isSpaceOrReturn(source.peek());
     }
+
+    /**
+     * Close the underlying resource.
+     * 
+     * @throws IOException if something went wrong
+     */
+    public void close() throws IOException
+    {
+        if (source != null && !source.isClosed())
+        {
+            source.close();
+        }
+    }
+
 }
