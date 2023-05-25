@@ -160,11 +160,13 @@ public class SigUtils
         COSDictionary sigDict = signature.getCOSObject();
 
         // DocMDP specific stuff
+        // all values in the signature dictionary shall be direct objects
         COSDictionary transformParameters = new COSDictionary();
         transformParameters.setItem(COSName.TYPE, COSName.TRANSFORM_PARAMS);
         transformParameters.setInt(COSName.P, accessPermissions);
         transformParameters.setName(COSName.V, "1.2");
         transformParameters.setNeedToBeUpdated(true);
+        transformParameters.setDirect(true);
 
         COSDictionary referenceDict = new COSDictionary();
         referenceDict.setItem(COSName.TYPE, COSName.SIG_REF);
@@ -172,11 +174,13 @@ public class SigUtils
         referenceDict.setItem(COSName.DIGEST_METHOD, COSName.getPDFName("SHA1"));
         referenceDict.setItem(COSName.TRANSFORM_PARAMS, transformParameters);
         referenceDict.setNeedToBeUpdated(true);
+        referenceDict.setDirect(true);
 
         COSArray referenceArray = new COSArray();
         referenceArray.add(referenceDict);
         sigDict.setItem(COSName.REFERENCE, referenceArray);
         referenceArray.setNeedToBeUpdated(true);
+        referenceArray.setDirect(true);
 
         // Catalog
         COSDictionary catalogDict = doc.getDocumentCatalog().getCOSObject();
