@@ -534,7 +534,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             if (!font.isEmbedded() && !font.isVertical() && !font.isStandard14() && font.hasExplicitWidth(code))
             {
                 float fontWidth = font.getWidthFromFont(code);
-                if (fontWidth > 0 && // ignore spaces
+                if (displacement.getX() > 0 && // PDFBOX-5611: ignore zero widths
+                        fontWidth > 0 && // ignore spaces
                         Math.abs(fontWidth - displacement.getX() * 1000) > 0.0001)
                 {
                     float pdfWidth = displacement.getX() * 1000;
