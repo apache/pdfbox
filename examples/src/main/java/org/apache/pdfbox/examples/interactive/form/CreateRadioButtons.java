@@ -81,6 +81,7 @@ public class CreateRadioButtons
             {
                 PDAnnotationWidget widget = new PDAnnotationWidget();
                 widget.setRectangle(new PDRectangle(30, PDRectangle.A4.getHeight() - 40 - i * 35, 30, 30));
+                widget.setPrinted(true);
                 widget.setAppearanceCharacteristics(appearanceCharacteristics);
                 PDBorderStyleDictionary borderStyleDictionary = new PDBorderStyleDictionary();
                 borderStyleDictionary.setWidth(2);
