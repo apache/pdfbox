@@ -86,7 +86,7 @@ public interface RandomAccessRead extends Closeable
     /**
      * Returns true if this source has been closed.
      * 
-     * @return true is the source has been closed
+     * @return true if the source has been closed
      */
     boolean isClosed();
 
