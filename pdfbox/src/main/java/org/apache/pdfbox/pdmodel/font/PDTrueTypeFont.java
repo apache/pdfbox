@@ -222,7 +222,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
 
             if (mapping.isFallback())
             {
-                LOG.warn("Using fallback font '" + ttfFont + "' for '" + getBaseFont() + "'");
+                LOG.warn("Using fallback font " + ttfFont + " for " + getBaseFont());
             }
         }
         ttf = ttfFont;
