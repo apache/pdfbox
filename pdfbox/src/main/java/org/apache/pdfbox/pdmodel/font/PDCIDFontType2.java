@@ -154,15 +154,21 @@ public class PDCIDFontType2 extends PDCIDFont
         else
         {
             ttfFont = (TrueTypeFont) mapping.getTrueTypeFont();
+            if (ttfFont == null)
+            {
+                // shouldn't happen?!
+                throw new IOException("mapping.getTrueTypeFont() returns null, please report");
+            }
         }
-        String name = ttfFont == null ? "(null)" : ttfFont.getName();
         if (mapping.isFallback())
         {
-            LOG.warn("Using fallback font " + name + " for CID-keyed TrueType font " + getBaseFont());
+            LOG.warn("Using fallback font " + ttfFont.getName() +
+                    " for CID-keyed TrueType font " + getBaseFont());
         }
-        else if (ttfFont != null)
+        else
         {
-            LOG.info("Using substitute font " + name + " for CID-keyed TrueType font " + getBaseFont());
+            LOG.info("Using substitute font " + ttfFont.getName() +
+                    " for CID-keyed TrueType font " + getBaseFont());
         }
         return ttfFont;
     }
