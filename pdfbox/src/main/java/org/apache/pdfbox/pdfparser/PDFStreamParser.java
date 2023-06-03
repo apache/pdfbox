@@ -135,6 +135,10 @@ public class PDFStreamParser extends BaseParser
      */
     public Object parseNextToken() throws IOException
     {
+        if (seqSource.isClosed())
+        {
+            return null;
+        }
         skipSpaces();
         if (seqSource.isEOF())
         {
@@ -272,7 +276,7 @@ public class PDFStreamParser extends BaseParser
                         if (!(value instanceof COSBase))
                         {
                             LOG.warn("Unexpected token in inline image dictionary at offset " +
-                                    seqSource.getPosition());
+                                    (seqSource.isClosed() ? "EOF" : seqSource.getPosition()));
                             break;
                         }
                         imageParams.setItem((COSName) nextToken, (COSBase) value);

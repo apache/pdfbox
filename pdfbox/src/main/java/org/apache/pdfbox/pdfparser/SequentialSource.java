@@ -112,4 +112,11 @@ interface SequentialSource extends Closeable
      * @throws IOException If there is an error reading the next byte.
      */
     boolean isEOF() throws IOException;
+
+    /**
+     * Returns true if this source has been closed.
+     *
+     * @return true if the source has been closed
+     */
+    boolean isClosed() throws IOException;
 }

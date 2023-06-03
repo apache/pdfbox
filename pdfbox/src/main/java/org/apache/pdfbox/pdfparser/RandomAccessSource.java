@@ -26,6 +26,7 @@ import org.apache.pdfbox.io.RandomAccessRead;
 final class RandomAccessSource implements SequentialSource
 {
     private final RandomAccessRead reader;
+    private boolean isOpen = true;
 
     /**
      * Constructor.
@@ -101,5 +102,12 @@ final class RandomAccessSource implements SequentialSource
     public void close() throws IOException
     {
         reader.close();
+        isOpen = false;
+    }
+    
+    @Override
+    public boolean isClosed() throws IOException
+    {
+        return !isOpen;
     }
 }
