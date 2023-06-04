@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  ! Licensed to the Apache Software Foundation (ASF) under one or more
  ! contributor license agreements.  See the NOTICE file distributed with
@@ -14,7 +16,7 @@
  ! See the License for the specific language governing permissions and
  ! limitations under the License.
  !-->
-<?xml version="1.0" encoding="UTF-8"?>
+
 <!-- https://logging.apache.org/log4j/2.x/manual/configuration.html 
      https://logging.apache.org/log4j/2.x/manual/appenders.html
 -->
