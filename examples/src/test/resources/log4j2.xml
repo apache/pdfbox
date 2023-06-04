@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://logging.apache.org/log4j/2.x/manual/configuration.html 
+     https://logging.apache.org/log4j/2.x/manual/appenders.html
+-->
+<Configuration>
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss} %-5p %C{2}:%L - %m%n"/>
+        </Console>
+        <RollingFile name="FILE" fileName="target/pdfbox.log" filePattern="target/pdfbox-%i.log">
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss} %-5p %C{2}:%L - %m%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="20 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="FILE"/>
+        </Root>
+    </Loggers>
+</Configuration>
