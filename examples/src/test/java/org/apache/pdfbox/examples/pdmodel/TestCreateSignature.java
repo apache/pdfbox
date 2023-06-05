@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,6 +53,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -59,6 +61,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -165,6 +169,28 @@ class TestCreateSignature
 
         // don't use the default file name, because it's used by other tests that run concurrently
         CreateSimpleForm.main(new String[] { SIMPLE_FORM_FILENAME });
+    }
+
+    /**
+     * Test whether local machine has the correct time. When this happens, other tests often fail
+     * with "OCSP answer is too old".
+     */
+    @Test
+    void testTimeDifference() throws IOException
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        
+        Date localTime = new Date();
+
+        // https://stackoverflow.com/questions/4442192/
+        NTPUDPClient timeClient = new NTPUDPClient();
+        InetAddress inetAddress = InetAddress.getByName("time.nist.gov");
+        TimeInfo timeInfo = timeClient.getTime(inetAddress);
+        long returnTime = timeInfo.getReturnTime();
+        System.out.println("NTP   time: " + sdf.format(new Date(returnTime)));
+        System.out.println("Local time: " + sdf.format(localTime));
+        long diff = Math.abs(localTime.getTime() - returnTime) / 1000;
+        assertTrue(diff < 15, "Local time is off by more than " + diff + " seconds");
     }
 
     /**
