@@ -37,7 +37,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
@@ -54,6 +56,8 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -61,6 +65,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.net.ssl.HttpsURLConnection;
+
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
 
@@ -93,7 +100,9 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.Hex;
+
 import org.apache.wink.client.MockHttpServer;
+
 import org.bouncycastle.asn1.BEROctetString;
 import org.bouncycastle.asn1.ocsp.OCSPResponseStatus;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -172,23 +181,54 @@ class TestCreateSignature
     }
 
     /**
-     * Test whether local machine has the correct time. When this happens, other tests often fail
-     * with "OCSP answer is too old".
+     * Test whether local machine has the correct time. If not, other tests may fail with "OCSP
+     * answer is too old".
      */
     @Test
     void testTimeDifference() throws IOException
     {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-        
+
         Date localTime = new Date();
 
         // https://stackoverflow.com/questions/4442192/
         NTPUDPClient timeClient = new NTPUDPClient();
         InetAddress inetAddress = InetAddress.getByName("time.nist.gov");
-        TimeInfo timeInfo = timeClient.getTime(inetAddress);
-        long returnTime = timeInfo.getReturnTime();
-        System.out.println("NTP   time: " + sdf.format(new Date(returnTime)));
-        System.out.println("Local time: " + sdf.format(localTime));
+        timeClient.setDefaultTimeout(5000);
+        TimeInfo timeInfo;
+        long returnTime;
+        try
+        {
+            timeInfo = timeClient.getTime(inetAddress);
+            returnTime = timeInfo.getReturnTime();
+        }
+        catch (SocketTimeoutException ex)
+        {
+            // Won't work behind a proxy. Nor on our CI :-(
+            System.out.println("Socket timeout when trying to get time from NTP server; trying google");
+
+            String dateString;
+            try
+            {
+                HttpsURLConnection con = (HttpsURLConnection) new URL("https://www.google.com/").openConnection();
+                if (con.getResponseCode() != HttpsURLConnection.HTTP_OK)
+                {
+                    System.out.println("Google returns " + con.getResponseCode());
+                    return;
+                }
+                dateString = con.getHeaderField("Date");
+                con.disconnect();
+            }
+            catch (IOException ioex)
+            {
+                System.out.println("failed to access google: " + ioex.getMessage());
+                return;
+            }
+            ZonedDateTime zdt = DateTimeFormatter.RFC_1123_DATE_TIME.parse(dateString, ZonedDateTime::from);
+            returnTime = Date.from(zdt.toInstant()).getTime();
+        }
+        System.out.println("Remote time: " + sdf.format(new Date(returnTime)));
+        System.out.println("Local  time: " + sdf.format(localTime));
         long diff = Math.abs(localTime.getTime() - returnTime) / 1000;
         assertTrue(diff < 15, "Local time is off by more than " + diff + " seconds");
     }
