@@ -73,6 +73,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
 
     private void readWidths()
     {
+        // see 9.7.4.3, "Glyph Metrics in CIDFonts"
         widths = new HashMap<>();
         COSArray wArray = dict.getCOSArray(COSName.W);
         if (wArray != null)

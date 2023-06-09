@@ -17,7 +17,9 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-import java.net.URL;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
@@ -38,14 +40,15 @@ class PDFieldTreeTest
      * PDFBOX-5044 stack overflow
      *
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void test5044() throws IOException
+    void test5044() throws IOException, URISyntaxException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016994/PDFBOX-4131-0.pdf";
 
         try (PDDocument doc = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm();

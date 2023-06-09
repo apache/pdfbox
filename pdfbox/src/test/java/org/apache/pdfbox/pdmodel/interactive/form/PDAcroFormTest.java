@@ -25,7 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -352,14 +353,15 @@ class PDAcroFormTest
      * PDFBOX-3777 Illegal Fields definition COSDictionary instead of Array
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testIllegalFieldsDefinition() throws IOException
+    void testIllegalFieldsDefinition() throws IOException, URISyntaxException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12866226/D1790B.PDF";
 
         try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
 

@@ -43,7 +43,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+
 import java.util.ConcurrentModificationException;
 
 class TestCOSIncrement
@@ -253,12 +257,13 @@ class TestCOSIncrement
      * YTW2VWJQTDAE67PGJT6GS7QSKW3GNUQR.pdf - test that this issues has been resolved.
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testConcurrentModification() throws IOException
+    void testConcurrentModification() throws IOException, URISyntaxException
     {
         URL pdfLocation = 
-            new URL("https://issues.apache.org/jira/secure/attachment/12891316/YTW2VWJQTDAE67PGJT6GS7QSKW3GNUQR.pdf");
+            new URI("https://issues.apache.org/jira/secure/attachment/12891316/YTW2VWJQTDAE67PGJT6GS7QSKW3GNUQR.pdf").toURL();
         
         try (PDDocument document = Loader
                 .loadPDF(RandomAccessReadBuffer.createBufferFromStream(pdfLocation.openStream())))

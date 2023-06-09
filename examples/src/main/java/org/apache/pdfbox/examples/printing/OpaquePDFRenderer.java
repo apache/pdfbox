@@ -20,16 +20,19 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import javax.print.PrintServiceLookup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
+import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 import org.apache.pdfbox.contentstream.operator.graphics.GraphicsOperatorProcessor;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
@@ -39,6 +42,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.printing.PDFPrintable;
 import org.apache.pdfbox.printing.Scaling;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -46,11 +50,12 @@ import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.rendering.PageDrawerParameters;
 
 /**
- * PDF documents with transparency groups are sometimes printed slowly and in poor quality, see
- * <a href="https://issues.apache.org/jira/browse/PDFBOX-4123">PDFBOX-4123</a>. If the transparency
- * groups aren't really needed (e.g. for most labels), we can use a custom PDFRenderer / PageDrawer
- * that uses a custom DrawObject class which doesn't call showTransparencyGroup() but only
- * showForm().
+ * PDF documents with transparency are sometimes printed slowly and in poor quality, see
+ * <a href="https://issues.apache.org/jira/browse/PDFBOX-4123">PDFBOX-4123</a> and
+ * <a href="https://issues.apache.org/jira/browse/PDFBOX-5605">PDFBOX-5605</a>. If the transparency
+ * isn't really needed (e.g. for most labels), we can use a custom PDFRenderer / PageDrawer that
+ * uses a custom DrawObject class which doesn't call showTransparencyGroup() but only showForm() and
+ * sets ca and CA to 1.
  * <p>
  * This OpaquePDFRenderer class object can be passed to the "long" constructor of
  * {@link PDFPrintable#PDFPrintable(org.apache.pdfbox.pdmodel.PDDocument, org.apache.pdfbox.printing.Scaling, boolean, float, boolean, org.apache.pdfbox.rendering.PDFRenderer)}.
@@ -59,13 +64,16 @@ import org.apache.pdfbox.rendering.PageDrawerParameters;
  */
 public class OpaquePDFRenderer extends PDFRenderer
 {
-
-    public static void main(String[] args) throws IOException, PrinterException
+    @SuppressWarnings("java:S1075")
+    public static void main(String[] args) throws IOException, PrinterException, URISyntaxException
     {
         // PDF from the QZ Tray project, who reported this problem.
+        // Also test with
+        // https://github.com/qzind/tray/files/11432463/sample_file-1.pdf
+        // (second page)
         try (PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
-                        new URL("https://github.com/qzind/tray/files/1749977/test.pdf")
-                                .openStream())))
+                        new URI("https://github.com/qzind/tray/files/1749977/test.pdf")
+                                .toURL().openStream())))
         {
             PDFRenderer renderer = new OpaquePDFRenderer(doc);
             Printable printable = new PDFPrintable(doc, Scaling.SCALE_TO_FIT, false, 0, true, renderer);
@@ -97,6 +105,7 @@ public class OpaquePDFRenderer extends PDFRenderer
         {
             super(parameters);
             addOperator(new OpaqueDrawObject(this));
+            addOperator(new OpaqueSetGraphicsStateParameters(this));
         }
     }
 
@@ -159,6 +168,51 @@ public class OpaquePDFRenderer extends PDFRenderer
         public String getName()
         {
             return OperatorName.DRAW_OBJECT;
+        }
+    }
+
+    // copied from org.apache.pdfbox.contentstream.operator.state.SetGraphicsStateParameters()
+    // but resets ca and CA
+    private static class OpaqueSetGraphicsStateParameters extends OperatorProcessor
+    {
+        private static final Log LOG = LogFactory.getLog(OpaqueSetGraphicsStateParameters.class);
+
+        public OpaqueSetGraphicsStateParameters(PDFStreamEngine context)
+        {
+            super(context);
+        }
+
+        @Override
+        public void process(Operator operator, List<COSBase> arguments) throws IOException
+        {
+            if (arguments.isEmpty())
+            {
+                throw new MissingOperandException(operator, arguments);
+            }
+            COSBase base0 = arguments.get(0);
+            if (!(base0 instanceof COSName))
+            {
+                return;
+            }
+
+            // set parameters from graphics state parameter dictionary
+            COSName graphicsName = (COSName) base0;
+            PDFStreamEngine context = getContext();
+            PDExtendedGraphicsState gs = context.getResources().getExtGState(graphicsName);
+            if (gs == null)
+            {
+                LOG.error("name for 'gs' operator not found in resources: /" + graphicsName.getName());
+                return;
+            }
+            gs.setNonStrokingAlphaConstant(1f);
+            gs.setStrokingAlphaConstant(1f);
+            gs.copyIntoGraphicsState(context.getGraphicsState());
+        }
+
+        @Override
+        public String getName()
+        {
+            return OperatorName.SET_GRAPHICS_STATE_PARAMS;
         }
     }
 }

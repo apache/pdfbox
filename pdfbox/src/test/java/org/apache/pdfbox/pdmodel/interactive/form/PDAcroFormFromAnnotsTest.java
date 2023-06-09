@@ -21,7 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
-import java.net.URL;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +40,7 @@ import org.apache.pdfbox.pdmodel.fixup.AbstractFixup;
 import org.apache.pdfbox.pdmodel.fixup.AcroFormDefaultFixup;
 import org.apache.pdfbox.pdmodel.fixup.processor.AcroFormOrphanWidgetsProcessor;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -48,28 +52,29 @@ class PDAcroFormFromAnnotsTest
     /**
      * PDFBOX-4985 AcroForms entry but empty Fields array 
      * 
-     * Using the default get acroform call with error correction
+     * Using the default get AcroForm call with error correction
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testFromAnnots4985DefaultMode() throws IOException
+    void testFromAnnots4985DefaultMode() throws IOException, URISyntaxException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
         String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13013384/POPPLER-806-acrobat.pdf";
 
-        int numFormFieldsByAcrobat = 0;
+        int numFormFieldsByAcrobat;
 
         try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer
-                .createBufferFromStream(new URL(acrobatSourceUrl).openStream())))
+                .createBufferFromStream(new URI(acrobatSourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(null);
             numFormFieldsByAcrobat = acroForm.getFields().size();
         }
                 
-        try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm 
@@ -87,18 +92,19 @@ class PDAcroFormFromAnnotsTest
      * Using the acroform call with error correction
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testFromAnnots4985CorrectionMode() throws IOException
+    void testFromAnnots4985CorrectionMode() throws IOException, URISyntaxException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
         String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13013384/POPPLER-806-acrobat.pdf";
 
-        int numFormFieldsByAcrobat = 0;
+        int numFormFieldsByAcrobat;
 
         try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer
-                .createBufferFromStream(new URL(acrobatSourceUrl).openStream())))
+                .createBufferFromStream(new URI(acrobatSourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(null);
@@ -106,7 +112,7 @@ class PDAcroFormFromAnnotsTest
         }
                 
         try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm 
@@ -124,17 +130,18 @@ class PDAcroFormFromAnnotsTest
      * Using the acroform call without error correction
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testFromAnnots4985WithoutCorrectionMode() throws IOException
+    void testFromAnnots4985WithoutCorrectionMode() throws IOException, URISyntaxException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
 
-        int numCosFormFields = 0;
+        int numCosFormFields;
                 
         try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm 
@@ -153,15 +160,16 @@ class PDAcroFormFromAnnotsTest
      * With the default correction nothing shall be added
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testFromAnnots3891DontCreateFields() throws IOException
+    void testFromAnnots3891DontCreateFields() throws IOException, URISyntaxException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
 
         try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm
@@ -179,21 +187,22 @@ class PDAcroFormFromAnnotsTest
      * Special fixup to create fields
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testFromAnnots3891CreateFields() throws IOException
+    void testFromAnnots3891CreateFields() throws IOException, URISyntaxException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
         String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13014447/merge-test-na-acrobat.pdf";
 
-        int numFormFieldsByAcrobat = 0;
+        int numFormFieldsByAcrobat;
 
         // will build the expected fields using the acrobat source document
         Map<String, PDField> fieldsByName = new HashMap<>();
 
         try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer
-                .createBufferFromStream(new URL(acrobatSourceUrl).openStream())))
+                .createBufferFromStream(new URI(acrobatSourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(null);
@@ -205,7 +214,7 @@ class PDAcroFormFromAnnotsTest
         }
 
         try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             // need to do a low level cos access as the PDModel access will build the AcroForm
@@ -233,9 +242,10 @@ class PDAcroFormFromAnnotsTest
      * which are taken from the widget normal appearance resources
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testFromAnnots3891ValidateFont() throws IOException
+    void testFromAnnots3891ValidateFont() throws IOException, URISyntaxException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
@@ -245,7 +255,7 @@ class PDAcroFormFromAnnotsTest
         Map<String, String> fontNames = new HashMap<>();
 
         try (PDDocument testPdf = Loader.loadPDF(RandomAccessReadBuffer
-                .createBufferFromStream(new URL(acrobatSourceUrl).openStream())))
+                .createBufferFromStream(new URI(acrobatSourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(null);
@@ -268,7 +278,7 @@ class PDAcroFormFromAnnotsTest
         }
 
         try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
@@ -295,14 +305,15 @@ class PDAcroFormFromAnnotsTest
      * PDFBOX-3891 null PDFieldFactory.createField 
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testFromAnnots3891NullField() throws IOException
+    void testFromAnnots3891NullField() throws IOException, URISyntaxException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016993/poppler-14433-0.pdf";
 
         try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             assertDoesNotThrow(() -> catalog.getAcroForm(new CreateFieldsFixup(testPdf)), "Getting the AcroForm shall not throw an exception");

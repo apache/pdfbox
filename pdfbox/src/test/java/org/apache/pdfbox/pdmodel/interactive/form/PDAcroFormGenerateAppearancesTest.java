@@ -20,7 +20,9 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.IOException;
-import java.net.URL;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
@@ -46,10 +48,10 @@ class PDAcroFormGenerateAppearancesTest
         // PDFBOX-5043 PaperMetaData
         "https://issues.apache.org/jira/secure/attachment/13016992/PDFBOX-3891-5.pdf"
     })
-    void testGetAcroForm(String sourceUrl) throws IOException
+    void testGetAcroForm(String sourceUrl) throws IOException, URISyntaxException
     {
         try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URL(sourceUrl).openStream())))
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
 

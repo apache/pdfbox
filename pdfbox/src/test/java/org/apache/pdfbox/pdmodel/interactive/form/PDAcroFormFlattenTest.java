@@ -25,7 +25,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -139,7 +140,8 @@ class PDAcroFormFlattenTest
         // disabled as there is a minimal difference which can not be seen visually on ci-builds
         // "https://issues.apache.org/jira/secure/attachment/13012242/PDFBOX-4958.pdf,PDFBOX-4958-flattened.pdf"
     })
-    void testFlatten(String sourceUrl, String targetFileName) throws IOException {
+    void testFlatten(String sourceUrl, String targetFileName) throws IOException, URISyntaxException
+    {
         flattenAndCompare(sourceUrl, targetFileName);
     }
 
@@ -168,7 +170,7 @@ class PDAcroFormFlattenTest
     }
 
     @Test
-    void flattenTestPDFBOX5254() throws IOException
+    void flattenTestPDFBOX5254() throws IOException, URISyntaxException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13005793/f1040sb%20test.pdf";
         String targetFileName = "PDFBOX-4889-5254.pdf";
@@ -206,8 +208,10 @@ class PDAcroFormFlattenTest
      * Flatten and compare with generated image samples.
      *
      * @throws IOException
+     * @throws URISyntaxException
      */
-    private static void flattenAndCompare(String sourceUrl, String targetFileName) throws IOException
+    private static void flattenAndCompare(String sourceUrl, String targetFileName)
+            throws IOException, URISyntaxException
     {
         generateSamples(sourceUrl,targetFileName);
 
@@ -241,8 +245,10 @@ class PDAcroFormFlattenTest
      * Generate the sample images to which the PDF will be compared after flatten.
      *
      * @throws IOException
+     * @throws URISyntaxException
      */
-    private static void generateSamples(String sourceUrl, String targetFile) throws IOException
+    private static void generateSamples(String sourceUrl, String targetFile)
+            throws IOException, URISyntaxException
     {
         getFromUrl(sourceUrl, targetFile);
 
@@ -267,10 +273,12 @@ class PDAcroFormFlattenTest
      * Get a PDF from URL and copy to file for processing.
      *
      * @throws IOException
+     * @throws URISyntaxException
      */
-    private static void getFromUrl(String sourceUrl, String targetFile) throws IOException
+    private static void getFromUrl(String sourceUrl, String targetFile)
+            throws IOException, URISyntaxException
     {
-        try (InputStream is = new URL(sourceUrl).openStream())
+        try (InputStream is = new URI(sourceUrl).toURL().openStream())
         {
             Files.copy(is, new File(IN_DIR, targetFile).toPath(), StandardCopyOption.REPLACE_EXISTING);
         }

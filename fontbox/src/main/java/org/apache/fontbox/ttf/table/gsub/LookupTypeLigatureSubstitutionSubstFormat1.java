@@ -45,7 +45,7 @@ public class LookupTypeLigatureSubstitutionSubstFormat1 extends LookupSubTable
     @Override
     public int doSubstitution(int gid, int coverageIndex)
     {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("not applicable");
     }
 
     public LigatureSetTable[] getLigatureSetTables()

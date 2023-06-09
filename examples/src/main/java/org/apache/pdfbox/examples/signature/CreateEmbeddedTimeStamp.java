@@ -22,14 +22,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import java.net.URISyntaxException;
+
 import java.nio.file.Files;
+
 import java.security.NoSuchAlgorithmException;
+
 import java.util.Arrays;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Hex;
+
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 
@@ -63,8 +69,9 @@ public class CreateEmbeddedTimeStamp
      * 
      * @param file the PDF file to sign and to overwrite
      * @throws IOException
+     * @throws URISyntaxException
      */
-    public void embedTimeStamp(File file) throws IOException
+    public void embedTimeStamp(File file) throws IOException, URISyntaxException
     {
         embedTimeStamp(file, file);
     }
@@ -75,8 +82,9 @@ public class CreateEmbeddedTimeStamp
      * @param inFile The pdf file possibly containing signatures
      * @param outFile Where the changed document will be saved
      * @throws IOException
+     * @throws URISyntaxException
      */
-    public void embedTimeStamp(File inFile, File outFile) throws IOException
+    public void embedTimeStamp(File inFile, File outFile) throws IOException, URISyntaxException
     {
         if (inFile == null || !inFile.exists())
         {
@@ -97,8 +105,9 @@ public class CreateEmbeddedTimeStamp
      * @param inFile The existing PDF file
      * @param outFile Where the new file will be written to
      * @throws IOException
+     * @throws URISyntaxException
      */
-    private void processTimeStamping(File inFile, File outFile) throws IOException
+    private void processTimeStamping(File inFile, File outFile) throws IOException, URISyntaxException
     {
         try
         {
@@ -127,9 +136,10 @@ public class CreateEmbeddedTimeStamp
      * @throws IOException
      * @throws CMSException
      * @throws NoSuchAlgorithmException
+     * @throws URISyntaxException
      */
     private void processRelevantSignatures(byte[] documentBytes)
-            throws IOException, CMSException, NoSuchAlgorithmException
+            throws IOException, CMSException, NoSuchAlgorithmException, URISyntaxException
     {
         signature = SigUtils.getLastRelevantSignature(document);
         if (signature == null)
@@ -184,7 +194,7 @@ public class CreateEmbeddedTimeStamp
         output.write(docBytes, byteRange[2] - 1, byteRange[3] + 1);
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args) throws IOException, URISyntaxException
     {
         if (args.length != 3)
         {

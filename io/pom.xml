@@ -27,7 +27,7 @@
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>io</artifactId>
+    <artifactId>pdfbox-io</artifactId>
     <packaging>bundle</packaging>
 
     <name>Apache PDFBox io</name>

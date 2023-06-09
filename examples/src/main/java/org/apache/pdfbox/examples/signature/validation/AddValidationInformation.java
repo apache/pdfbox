@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -324,7 +325,7 @@ public class AddValidationInformation
             addOcspData(certInfo);
             return true;
         }
-        catch (OCSPException | CertificateProccessingException | IOException e)
+        catch (OCSPException | CertificateProccessingException | IOException | URISyntaxException e)
         {
             LOG.error("Failed fetching OCSP at " + certInfo.getOcspUrl(), e);
             return false;
@@ -348,7 +349,8 @@ public class AddValidationInformation
         {
             addCrlRevocationInfo(certInfo);
         }
-        catch (GeneralSecurityException | IOException | RevokedCertificateException | CertificateVerificationException e)
+        catch (GeneralSecurityException | IOException | URISyntaxException |
+               RevokedCertificateException | CertificateVerificationException e)
         {
             LOG.warn("Failed fetching CRL", e);
             throw new IOException(e);
@@ -365,7 +367,7 @@ public class AddValidationInformation
      * @throws RevokedCertificateException
      */
     private void addOcspData(CertSignatureInformation certInfo) throws IOException, OCSPException,
-            CertificateProccessingException, RevokedCertificateException
+            CertificateProccessingException, RevokedCertificateException, URISyntaxException
     {
         if (ocspChecked.contains(certInfo.getCertificate()))
         {
@@ -429,13 +431,14 @@ public class AddValidationInformation
      * 
      * @param certInfo the certificate info, for it to check CRL data.
      * @throws IOException
+     * @throws URISyntaxException
      * @throws RevokedCertificateException
      * @throws GeneralSecurityException
      * @throws CertificateVerificationException 
      */
     private void addCrlRevocationInfo(CertSignatureInformation certInfo)
             throws IOException, RevokedCertificateException, GeneralSecurityException,
-            CertificateVerificationException
+            CertificateVerificationException, URISyntaxException
     {
         X509CRL crl = CRLVerifier.downloadCRLFromWeb(certInfo.getCrlUrl());
         X509Certificate issuerCertificate = certInfo.getIssuerCertificate();

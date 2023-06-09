@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.logging.Log;
@@ -134,7 +135,7 @@ public class CreateSignedTimeStamp implements SignatureInterface
             validation = new ValidationTimeStamp(tsaUrl);
             return validation.getTimeStampToken(content);
         }
-        catch (NoSuchAlgorithmException e)
+        catch (NoSuchAlgorithmException | URISyntaxException e)
         {
             LOG.error("Hashing-Algorithm not found for TimeStamping", e);
         }
