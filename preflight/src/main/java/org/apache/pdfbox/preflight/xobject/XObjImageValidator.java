@@ -110,6 +110,20 @@ public class XObjImageValidator extends AbstractXObjValidator
         }
     }
 
+    /**
+     * Valid values are 1, 2, 4 and 8, not 16, see
+     * <a href="https://github.com/veraPDF/veraPDF-library/issues/1344">here</a>.
+     */
+    protected void checkBPC()
+    {
+        int bpc = xImage.getBitsPerComponent();
+        if (bpc != 1 && bpc != 2 && bpc != 4 && bpc != 8)
+        {
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
+                    "Unexpected value " + bpc + " for BitsPerComponent key in image"));
+        }
+    }
+
     /*
      * According to the PDF Reference file, there are some specific rules on following fields ColorSpace, Mask,
      * ImageMask and BitsPerComponent. If ImageMask is set to true, ColorSpace and Mask entries are forbidden.
@@ -179,6 +193,7 @@ public class XObjImageValidator extends AbstractXObjValidator
         checkAlternates();
         checkInterpolate();
         checkIntent();
+        checkBPC();
 
         checkColorSpaceAndImageMask();
     }
