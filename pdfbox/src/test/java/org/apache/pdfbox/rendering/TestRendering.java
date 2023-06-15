@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 class TestRendering
 {
     private static final String INPUT_DIR = "src/test/resources/input/rendering";
-    private static final String OUTPUT_DIR = "target/test-output/rendering/";
+    private static final String OUTPUT_DIR = "target/test-output/rendering";
     private static final int MAX_NUM_FILES = 20;
 
     private static Collection<Arguments> data()
