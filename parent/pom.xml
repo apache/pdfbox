@@ -49,7 +49,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <bouncycastle.version>1.73</bouncycastle.version>
+        <bouncycastle.version>1.74</bouncycastle.version>
         <log4j2.version>2.20.0</log4j2.version>
 
         <!-- This is a default value to avoid problems when running single tests
