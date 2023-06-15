@@ -199,8 +199,22 @@ public abstract class PDFStreamEngine
         saveGraphicsState();
         Matrix softMaskCTM = getGraphicsState().getSoftMask().getInitialTransformationMatrix();
         getGraphicsState().setCurrentTransformationMatrix(softMaskCTM);
-        processTransparencyGroup(group);
-        restoreGraphicsState();
+
+        // PDFBOX-5621: save text matrices (softmasks may contain BT/ET)
+        Matrix textMatrixOld = textMatrix;
+        textMatrix = new Matrix();
+        Matrix textLineMatrixOld = textLineMatrix;
+        textLineMatrix = new Matrix();
+        try
+        {
+            processTransparencyGroup(group);
+        }
+        finally
+        {
+            textMatrix = textMatrixOld;
+            textLineMatrix = textLineMatrixOld;
+            restoreGraphicsState();
+        }
     }
 
     /**
