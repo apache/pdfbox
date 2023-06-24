@@ -198,11 +198,12 @@ public class PDFXrefStreamParser extends BaseParser
                 }
                 long sizeValue = ((COSInteger) base).longValue();
                 start[counter] = startValue;
-                end[counter++] = startValue + sizeValue;
+                end[counter] = startValue + sizeValue;
+                maxValue = Math.max(maxValue, end[counter]);
+                counter++;
             }
             currentNumber = start[0];
             currentEnd = end[0];
-            maxValue = end[counter - 1];
         }
 
         @Override
