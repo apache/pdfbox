@@ -19,9 +19,7 @@ package org.apache.pdfbox.pdmodel;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.SequenceInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,6 +33,7 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.SequenceRandomAccessRead;
@@ -155,27 +154,10 @@ public class PDPage implements COSObjectable, PDContentStream
     @Override
     public InputStream getContents() throws IOException
     {
-        COSBase base = page.getDictionaryObject(COSName.CONTENTS);
-        if (base instanceof COSStream)
+        RandomAccessRead contentsForRandomAccess = getContentsForRandomAccess();
+        if (contentsForRandomAccess != null)
         {
-            return ((COSStream)base).createInputStream();
-        }
-        else if (base instanceof COSArray && ((COSArray) base).size() > 0)
-        {
-            COSArray streams = (COSArray)base;
-            byte[] delimiter = new byte[] { '\n' };
-            List<InputStream> inputStreams = new ArrayList<>();
-            for (int i = 0; i < streams.size(); i++)
-            {
-                COSBase strm = streams.getObject(i);
-                if (strm instanceof COSStream)
-                {
-                    COSStream stream = (COSStream) strm;
-                    inputStreams.add(stream.createInputStream());
-                    inputStreams.add(new ByteArrayInputStream(delimiter));
-                }
-            }
-            return new SequenceInputStream(Collections.enumeration(inputStreams));
+            return new RandomAccessInputStream(contentsForRandomAccess);
         }
         return new ByteArrayInputStream(new byte[0]);
     }
@@ -186,7 +168,15 @@ public class PDPage implements COSObjectable, PDContentStream
         COSBase base = page.getDictionaryObject(COSName.CONTENTS);
         if (base instanceof COSStream)
         {
-            return ((COSStream) base).createView();
+            try
+            {
+                return ((COSStream) base).createView();
+            }
+            catch (IOException exception)
+            {
+                LOG.warn("skipped malformed content stream");
+                return new RandomAccessReadBuffer(new byte[] { '\n' });
+            }
         }
         else if (base instanceof COSArray && ((COSArray) base).size() > 0)
         {
@@ -198,8 +188,16 @@ public class PDPage implements COSObjectable, PDContentStream
                 COSBase strm = streams.getObject(i);
                 if (strm instanceof COSStream)
                 {
-                    inputStreams.add(((COSStream) strm).createView());
-                    inputStreams.add(new RandomAccessReadBuffer(delimiter));
+                    try
+                    {
+                        RandomAccessRead subStream = ((COSStream) strm).createView();
+                        inputStreams.add(subStream);
+                        inputStreams.add(new RandomAccessReadBuffer(delimiter));
+                    }
+                    catch (IOException exception)
+                    {
+                        LOG.warn("malformed substream of content stream skipped");
+                    }
                 }
             }
             if (!inputStreams.isEmpty())
