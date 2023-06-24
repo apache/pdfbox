@@ -25,6 +25,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -145,7 +146,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     @Override
     public InputStream getContents() throws IOException
     {
-        return getCOSObject().createInputStream();
+        return new RandomAccessInputStream(getContentsForRandomAccess());
     }
 
     @Override

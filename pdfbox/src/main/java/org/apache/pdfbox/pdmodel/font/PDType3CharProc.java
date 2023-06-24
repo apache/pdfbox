@@ -30,6 +30,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -75,7 +76,7 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
     @Override
     public InputStream getContents() throws IOException
     {
-        return charStream.createInputStream();
+        return new RandomAccessInputStream(getContentsForRandomAccess());
     }
 
     @Override
