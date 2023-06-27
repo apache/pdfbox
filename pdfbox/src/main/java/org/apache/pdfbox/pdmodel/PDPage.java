@@ -63,7 +63,9 @@ public class PDPage implements COSObjectable, PDContentStream
      * Log instance
      */
     private static final Log LOG = LogFactory.getLog(PDPage.class);
-    
+
+    private static final byte[] DELIMITER = new byte[] { '\n' };
+
     private final COSDictionary page;
     private PDResources pageResources;
     private ResourceCache resourceCache;
@@ -167,40 +169,38 @@ public class PDPage implements COSObjectable, PDContentStream
     @Override
     public RandomAccessRead getContentsForRandomAccess() throws IOException
     {
-        COSBase base = page.getDictionaryObject(COSName.CONTENTS);
-        if (base instanceof COSStream)
+        COSStream contentStream = page.getCOSStream(COSName.CONTENTS);
+        if (contentStream != null)
         {
             try
             {
-                return ((COSStream) base).createView();
+                return contentStream.createView();
             }
             catch (IOException exception)
             {
                 LOG.warn("skipped malformed content stream");
-                return new RandomAccessReadBuffer(new byte[] { '\n' });
+                return new RandomAccessReadBuffer(DELIMITER);
             }
         }
-        if (base instanceof COSArray && ((COSArray) base).size() > 0)
+        COSArray array = page.getCOSArray(COSName.CONTENTS);
+        if (array != null)
         {
-            byte[] delimiter = new byte[] { '\n' };
-            List<COSBase> streams = ((COSArray) base).toList().stream() //
-                    .map(o -> o instanceof COSObject ? ((COSObject) o).getObject() : (COSBase) o) //
+            List<COSStream> streams = array.toList().stream() //
+                    .map(o -> o instanceof COSObject ? ((COSObject) o).getObject() : o) //
+                    .filter(b -> b instanceof COSStream) //
+                    .map(b -> (COSStream) b) //
                     .collect(Collectors.toList());
             List<RandomAccessRead> inputStreams = new ArrayList<>();
-            streams.forEach(obj -> 
+            streams.forEach(stream ->
             {
-                if (obj instanceof COSStream)
+                try
                 {
-                    try
-                    {
-                        RandomAccessRead subStream = ((COSStream) obj).createView();
-                        inputStreams.add(subStream);
-                        inputStreams.add(new RandomAccessReadBuffer(delimiter));
-                    }
-                    catch (IOException exception)
-                    {
-                        LOG.warn("malformed substream of content stream skipped");
-                    }
+                    inputStreams.add(stream.createView());
+                    inputStreams.add(new RandomAccessReadBuffer(DELIMITER));
+                }
+                catch (IOException exception)
+                {
+                    LOG.warn("malformed substream of content stream skipped");
                 }
             });
             if (!inputStreams.isEmpty())
