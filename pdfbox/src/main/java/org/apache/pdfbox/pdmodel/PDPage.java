@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +33,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
@@ -178,19 +180,20 @@ public class PDPage implements COSObjectable, PDContentStream
                 return new RandomAccessReadBuffer(new byte[] { '\n' });
             }
         }
-        else if (base instanceof COSArray && ((COSArray) base).size() > 0)
+        if (base instanceof COSArray && ((COSArray) base).size() > 0)
         {
             byte[] delimiter = new byte[] { '\n' };
-            COSArray streams = (COSArray) base;
+            List<COSBase> streams = ((COSArray) base).toList().stream() //
+                    .map(o -> o instanceof COSObject ? ((COSObject) o).getObject() : (COSBase) o) //
+                    .collect(Collectors.toList());
             List<RandomAccessRead> inputStreams = new ArrayList<>();
-            for (int i = 0; i < streams.size(); i++)
+            streams.forEach(obj -> 
             {
-                COSBase strm = streams.getObject(i);
-                if (strm instanceof COSStream)
+                if (obj instanceof COSStream)
                 {
                     try
                     {
-                        RandomAccessRead subStream = ((COSStream) strm).createView();
+                        RandomAccessRead subStream = ((COSStream) obj).createView();
                         inputStreams.add(subStream);
                         inputStreams.add(new RandomAccessReadBuffer(delimiter));
                     }
@@ -199,7 +202,7 @@ public class PDPage implements COSObjectable, PDContentStream
                         LOG.warn("malformed substream of content stream skipped");
                     }
                 }
-            }
+            });
             if (!inputStreams.isEmpty())
             {
                 return new SequenceRandomAccessRead(inputStreams);
