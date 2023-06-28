@@ -1337,7 +1337,7 @@ public class PDFMergerUtility
             return;
         }
 
-        if (destField.getFieldType() == "Tx" && destField.getFieldType() == "Tx")
+        if ("Tx".equals(srcField.getFieldType()) && "Tx".equals(destField.getFieldType()))
         {
             // if the field already has multiple widgets we can add to the array
             if (destField.getCOSObject().containsKey(COSName.KIDS))
