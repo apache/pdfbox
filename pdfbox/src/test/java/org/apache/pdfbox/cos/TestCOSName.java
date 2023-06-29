@@ -17,23 +17,25 @@
 package org.apache.pdfbox.cos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class TestCOSName
 {
     /**
      * PDFBOX-4076: Check that characters outside of US_ASCII are not replaced with "?".
-     * 
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     @Test
     void PDFBox4076() throws IOException
@@ -46,7 +48,7 @@ class TestCOSName
             PDPage page = new PDPage();
             document.addPage(page);
             document.getDocumentCatalog().getCOSObject().setString(COSName.getPDFName(special), special);
-            
+
             document.save(baos);
         }
         try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
@@ -55,6 +57,50 @@ class TestCOSName
             assertTrue(catalogDict.containsKey(special));
             assertEquals(special, catalogDict.getString(special));
         }
+    }
+
+    /**
+     * Verify the parameters with which OutputStream.write(int) is invoked
+     * when calling writePDF on COSName.TYPE
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testBytesWrittenToOutputStreamForCOSNameType() throws IOException
+    {
+        // Arrange
+        COSName cosNameType = COSName.TYPE;
+        OutputStream mockOutputStream = Mockito.mock(OutputStream.class);
+
+        // Act
+        cosNameType.writePDF(mockOutputStream);
+
+        // Assert
+        verify(mockOutputStream, atLeastOnce()).write(47);
+        verify(mockOutputStream, atLeastOnce()).write(84);
+        verify(mockOutputStream, atLeastOnce()).write(121);
+        verify(mockOutputStream, atLeastOnce()).write(112);
+        verify(mockOutputStream, atLeastOnce()).write(101);
+    }
+
+    /**
+     * Verify the number of times OutputStream.write(int) is invoked
+     * when calling writePDF on COSName.TYPE
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testNumberOfBytesWrittenToOutputStreamForCOSNameType() throws IOException
+    {
+        // Arrange
+        COSName cosNameType = COSName.TYPE;
+        OutputStream mockOutputStream = Mockito.mock(OutputStream.class);
+
+        // Act
+        cosNameType.writePDF(mockOutputStream);
+
+        // Assert
+        verify(mockOutputStream, times(5)).write(anyInt());
     }
 
 }
