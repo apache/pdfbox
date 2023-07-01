@@ -43,7 +43,10 @@ public class PDRectangle implements COSObjectable
 
     /** A rectangle the size of U.S. Letter, 8.5" x 11". */
     public static final PDRectangle LETTER = new PDRectangle(8.5f * POINTS_PER_INCH,
-                                                             11f *POINTS_PER_INCH);
+                                                            11f *POINTS_PER_INCH);
+    /**  A rectangle the size of U.S. Tabloid, 11" x 17". */
+    public static final PDRectangle TABLOID = new PDRectangle(11f * POINTS_PER_INCH,
+                                                            17f * POINTS_PER_INCH);
     /**  A rectangle the size of U.S. Legal, 8.5" x 14". */
     public static final PDRectangle LEGAL = new PDRectangle(8.5f * POINTS_PER_INCH,
                                                             14f * POINTS_PER_INCH);
