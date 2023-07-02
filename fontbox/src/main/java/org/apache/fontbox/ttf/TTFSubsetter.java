@@ -375,22 +375,24 @@ public final class TTFSubsetter
         DataOutputStream out = new DataOutputStream(bos);
 
         MaximumProfileTable p = ttf.getMaximumProfile();
-        writeFixed(out, 1.0);
+        writeFixed(out, p.getVersion());
         writeUint16(out, glyphIds.size());
-        writeUint16(out, p.getMaxPoints());
-        writeUint16(out, p.getMaxContours());
-        writeUint16(out, p.getMaxCompositePoints());
-        writeUint16(out, p.getMaxCompositeContours());
-        writeUint16(out, p.getMaxZones());
-        writeUint16(out, p.getMaxTwilightPoints());
-        writeUint16(out, p.getMaxStorage());
-        writeUint16(out, p.getMaxFunctionDefs());
-        writeUint16(out, p.getMaxInstructionDefs());
-        writeUint16(out, p.getMaxStackElements());
-        writeUint16(out, p.getMaxSizeOfInstructions());
-        writeUint16(out, p.getMaxComponentElements());
-        writeUint16(out, p.getMaxComponentDepth());
-
+        if (p.getVersion() >= 1.0f)
+        {
+            writeUint16(out, p.getMaxPoints());
+            writeUint16(out, p.getMaxContours());
+            writeUint16(out, p.getMaxCompositePoints());
+            writeUint16(out, p.getMaxCompositeContours());
+            writeUint16(out, p.getMaxZones());
+            writeUint16(out, p.getMaxTwilightPoints());
+            writeUint16(out, p.getMaxStorage());
+            writeUint16(out, p.getMaxFunctionDefs());
+            writeUint16(out, p.getMaxInstructionDefs());
+            writeUint16(out, p.getMaxStackElements());
+            writeUint16(out, p.getMaxSizeOfInstructions());
+            writeUint16(out, p.getMaxComponentElements());
+            writeUint16(out, p.getMaxComponentDepth());
+        }
         out.flush();
         return bos.toByteArray();
     }

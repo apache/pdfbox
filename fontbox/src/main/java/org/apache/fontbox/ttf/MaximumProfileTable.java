@@ -274,19 +274,22 @@ public class MaximumProfileTable extends TTFTable
     {
         version = data.read32Fixed();
         numGlyphs = data.readUnsignedShort();
-        maxPoints = data.readUnsignedShort();
-        maxContours = data.readUnsignedShort();
-        maxCompositePoints = data.readUnsignedShort();
-        maxCompositeContours = data.readUnsignedShort();
-        maxZones = data.readUnsignedShort();
-        maxTwilightPoints = data.readUnsignedShort();
-        maxStorage = data.readUnsignedShort();
-        maxFunctionDefs = data.readUnsignedShort();
-        maxInstructionDefs = data.readUnsignedShort();
-        maxStackElements = data.readUnsignedShort();
-        maxSizeOfInstructions = data.readUnsignedShort();
-        maxComponentElements = data.readUnsignedShort();
-        maxComponentDepth = data.readUnsignedShort();
+        if (version >= 1.0f)
+        {
+            maxPoints = data.readUnsignedShort();
+            maxContours = data.readUnsignedShort();
+            maxCompositePoints = data.readUnsignedShort();
+            maxCompositeContours = data.readUnsignedShort();
+            maxZones = data.readUnsignedShort();
+            maxTwilightPoints = data.readUnsignedShort();
+            maxStorage = data.readUnsignedShort();
+            maxFunctionDefs = data.readUnsignedShort();
+            maxInstructionDefs = data.readUnsignedShort();
+            maxStackElements = data.readUnsignedShort();
+            maxSizeOfInstructions = data.readUnsignedShort();
+            maxComponentElements = data.readUnsignedShort();
+            maxComponentDepth = data.readUnsignedShort();
+        }
         initialized = true;
     }
 }
