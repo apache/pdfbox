@@ -170,7 +170,7 @@ public final class PDColor
      * Returns the packed RGB value for this color, if any.
      * @return RGB
      * @throws IOException if the color conversion fails
-     * @throws IllegalStateException if this color value is a pattern.
+     * @throws UnsupportedOperationException if this color value is a pattern.
      */
     public int toRGB() throws IOException
     {
