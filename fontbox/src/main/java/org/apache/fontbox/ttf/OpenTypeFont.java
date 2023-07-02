@@ -85,7 +85,7 @@ public class OpenTypeFont extends TrueTypeFont
      */
     public boolean isPostScript()
     {
-        return tables.containsKey(CFFTable.TAG);
+        return isPostScript || tables.containsKey(CFFTable.TAG) || tables.containsKey("CFF2");
     }
 
     /**
