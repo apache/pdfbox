@@ -25,6 +25,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.PDResources;
 
 /**
  * This class will extract one or more sequential pages and create a new document.
@@ -93,9 +94,10 @@ public class PageExtractor
         {
             PDPage page = pages.get(i - 1);
             PDPage imported = extractedDocument.importPage(page);
-            if (page.getResources() != null && !page.getCOSObject().containsKey(COSName.RESOURCES))
+            PDResources resources = page.getResources();
+            if (resources != null && !page.getCOSObject().containsKey(COSName.RESOURCES))
             {
-                imported.setResources(page.getResources());
+                imported.setResources(resources);
                 LOG.info("Resources imported in PageExtractor"); // follow-up to warning in importPage
             }
         }
