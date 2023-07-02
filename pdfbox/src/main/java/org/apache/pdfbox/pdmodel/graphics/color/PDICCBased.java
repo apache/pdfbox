@@ -41,6 +41,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
@@ -129,25 +130,26 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     {
         checkArray(iccArray);
         COSBase base = iccArray.get(1);
-        COSObject indirect = null;
-        if (base instanceof COSObject)
+        if (base instanceof COSObject && resources != null)
         {
-            indirect = (COSObject) base;
-        }
-        if (indirect != null && resources != null && resources.getResourceCache() != null)
-        {
-            PDColorSpace space = resources.getResourceCache().getColorSpace(indirect);
-            if (space instanceof PDICCBased)
+            ResourceCache resourceCache = resources.getResourceCache();
+            if (resourceCache != null)
             {
-                return (PDICCBased) space;
+                COSObject indirect = (COSObject) base;
+                PDColorSpace space = resourceCache.getColorSpace(indirect);
+                if (space instanceof PDICCBased)
+                {
+                    return (PDICCBased) space;
+                }
+                else
+                {
+                    PDICCBased newSpace = new PDICCBased(iccArray);
+                    resourceCache.put(indirect, newSpace);
+                    return newSpace;
+                }
             }
         }
-        PDICCBased space = new PDICCBased(iccArray);
-        if (indirect != null && resources != null && resources.getResourceCache() != null)
-        {
-            resources.getResourceCache().put(indirect, space);
-        }
-        return space;
+        return new PDICCBased(iccArray);
     }
 
     private static void checkArray(COSArray iccArray) throws IOException
