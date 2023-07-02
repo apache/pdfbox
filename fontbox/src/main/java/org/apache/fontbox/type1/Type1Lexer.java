@@ -363,11 +363,11 @@ class Type1Lexer
             int val;
             try
             {
-                val = Integer.parseInt(sb.toString(), Integer.parseInt(radix.toString()));
+                val = Integer.parseInt(sb.toString(), Integer.parseInt(radix));
             }
             catch (NumberFormatException ex)
             {
-                throw new IOException("Invalid number '" + sb.toString() + "'", ex);
+                throw new IOException("Invalid number '" + sb + "'", ex);
             }
             return new Token(Integer.toString(val), Token.INTEGER);
         }
