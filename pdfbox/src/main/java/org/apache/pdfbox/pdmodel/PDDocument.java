@@ -1366,13 +1366,8 @@ public class PDDocument implements Closeable
             throw new IOException("Cannot save a document which has been closed");
         }
 
-        // subset designated fonts
-        for (PDFont font : fontsToSubset)
-        {
-            font.subset();
-        }
-        fontsToSubset.clear();
-        
+        subsetDesignatedFonts();
+
         // save PDF
         COSWriter writer = new COSWriter(output);
         try
@@ -1383,6 +1378,15 @@ public class PDDocument implements Closeable
         {
             writer.close();
         }
+    }
+
+    private void subsetDesignatedFonts() throws IOException
+    {
+        for (PDFont font : fontsToSubset)
+        {
+            font.subset();
+        }
+        fontsToSubset.clear();
     }
 
     /**
@@ -1410,6 +1414,7 @@ public class PDDocument implements Closeable
     
     public void saveIncremental(OutputStream output) throws IOException
     {
+        subsetDesignatedFonts();
         COSWriter writer = null;
         try
         {
@@ -1458,6 +1463,7 @@ public class PDDocument implements Closeable
      */
     public void saveIncremental(OutputStream output, Set<COSDictionary> objectsToWrite) throws IOException
     {
+        subsetDesignatedFonts();
         if (pdfSource == null)
         {
             throw new IllegalStateException("document was not loaded from a file or a stream");
@@ -1515,6 +1521,7 @@ public class PDDocument implements Closeable
      */
     public ExternalSigningSupport saveIncrementalForExternalSigning(OutputStream output) throws IOException
     {
+        subsetDesignatedFonts();
         if (pdfSource == null)
         {
             throw new IllegalStateException("document was not loaded from a file or a stream");
