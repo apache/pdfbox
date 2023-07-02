@@ -137,10 +137,7 @@ public final class COSBoolean extends COSBase
      * {@inheritDoc}
      */
     public boolean equals(Object obj) {
-        if (obj instanceof COSBoolean) {
-            return this == obj;
-        }
-        return false;
+        return this == obj;
     }
 
     /**
