@@ -276,7 +276,7 @@ public abstract class PDColorSpace implements COSObjectable
         }
         else
         {
-            throw new IOException("Expected a name or array but got: " + colorSpace);
+            throw new IOException("COSDictionary have to contain COSName.COLORSPACE key");
         }
     }
 
