@@ -1027,16 +1027,21 @@ public class PDDocument implements Closeable
         // object stream compression requires a cross reference stream.
         document.setIsXRefStream(compressParameters != null //
                 && CompressParameters.NO_COMPRESSION != compressParameters);
+        subsetDesignatedFonts();
+
+        // save PDF
+        COSWriter writer = new COSWriter(output, compressParameters);
+        writer.write(this);
+    }
+
+    private void subsetDesignatedFonts() throws IOException
+    {
         // subset designated fonts
         for (PDFont font : fontsToSubset)
         {
             font.subset();
         }
         fontsToSubset.clear();
-
-        // save PDF
-        COSWriter writer = new COSWriter(output, compressParameters);
-        writer.write(this);
     }
 
     /**
@@ -1064,6 +1069,7 @@ public class PDDocument implements Closeable
      */
     public void saveIncremental(OutputStream output) throws IOException
     {
+        subsetDesignatedFonts();
         if (pdfSource == null)
         {
             throw new IllegalStateException("document was not loaded from a file or a stream");
@@ -1100,6 +1106,7 @@ public class PDDocument implements Closeable
      */
     public void saveIncremental(OutputStream output, Set<COSDictionary> objectsToWrite) throws IOException
     {
+        subsetDesignatedFonts();
         if (pdfSource == null)
         {
             throw new IllegalStateException("document was not loaded from a file or a stream");
@@ -1147,6 +1154,7 @@ public class PDDocument implements Closeable
      */
     public ExternalSigningSupport saveIncrementalForExternalSigning(OutputStream output) throws IOException
     {
+        subsetDesignatedFonts();
         if (pdfSource == null)
         {
             throw new IllegalStateException("document was not loaded from a file or a stream");
