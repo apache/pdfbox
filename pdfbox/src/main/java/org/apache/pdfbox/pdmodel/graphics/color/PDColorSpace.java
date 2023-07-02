@@ -73,7 +73,213 @@ public abstract class PDColorSpace implements COSObjectable
     {
         return create(colorSpace, resources, false);
     }
-    
+
+    /**
+     * Creates a color space given a COSObject. Abbreviated device color names are not supported
+     * here, please replace them first.
+     *
+     * @param colorSpace the color space COS object
+     * @param resources the current resources.
+     * @return a new color space
+     * @throws IOException if the color space is unknown or cannot be created
+     */
+    public static PDColorSpace create(COSObject colorSpace,
+                                      PDResources resources)
+                                      throws IOException
+    {
+        return createFromCOSObject(colorSpace, resources);
+    }
+
+    /**
+     * Creates a color space given a name. Abbreviated device color names are not supported
+     * here, please replace them first. This method is for PDFBox internal use only, others should
+     * use {@link #create(COSBase, PDResources)}.
+     *
+     * @param colorSpace the color space COS object
+     * @param resources the current resources.
+     * @param wasDefault if current color space was used by a default color space.
+     * @return a new color space.
+     * @throws MissingResourceException if the color space is missing in the resources dictionary
+     * @throws IOException if the color space is unknown or cannot be created.
+     */
+    public static PDColorSpace create(COSName colorSpace,
+                                      PDResources resources,
+                                      boolean wasDefault)
+                                      throws IOException
+    {
+        // default color spaces
+        if (resources != null)
+        {
+            COSName defaultName = null;
+            if (colorSpace.equals(COSName.DEVICECMYK) &&
+                resources.hasColorSpace(COSName.DEFAULT_CMYK))
+            {
+                defaultName = COSName.DEFAULT_CMYK;
+            }
+            else if (colorSpace.equals(COSName.DEVICERGB) &&
+                    resources.hasColorSpace(COSName.DEFAULT_RGB))
+            {
+                defaultName = COSName.DEFAULT_RGB;
+            }
+            else if (colorSpace.equals(COSName.DEVICEGRAY) &&
+                    resources.hasColorSpace(COSName.DEFAULT_GRAY))
+            {
+                defaultName = COSName.DEFAULT_GRAY;
+            }
+
+            if (resources.hasColorSpace(defaultName) && !wasDefault)
+            {
+                return resources.getColorSpace(defaultName, true);
+            }
+        }
+
+        // built-in color spaces
+        if (colorSpace == COSName.DEVICECMYK)
+        {
+            return PDDeviceCMYK.INSTANCE;
+        }
+        else if (colorSpace == COSName.DEVICERGB)
+        {
+            return PDDeviceRGB.INSTANCE;
+        }
+        else if (colorSpace == COSName.DEVICEGRAY)
+        {
+            return PDDeviceGray.INSTANCE;
+        }
+        else if (colorSpace == COSName.PATTERN)
+        {
+            return new PDPattern(resources);
+        }
+        else if (resources != null)
+        {
+            if (!resources.hasColorSpace(colorSpace))
+            {
+                throw new MissingResourceException("Missing color space: " + colorSpace.getName());
+            }
+            return resources.getColorSpace(colorSpace);
+        }
+        else
+        {
+            throw new MissingResourceException("Unknown color space: " + colorSpace.getName());
+        }
+    }
+
+    /**
+     * Creates a color space given an array. Abbreviated device color names are not supported
+     * here, please replace them first. This method is for PDFBox internal use only, others should
+     * use {@link #create(COSBase, PDResources)}.
+     *
+     * @param colorSpace the color space COS object
+     * @param resources the current resources.
+     * @param wasDefault if current color space was used by a default color space.
+     * @return a new color space.
+     * @throws MissingResourceException if the color space is missing in the resources dictionary
+     * @throws IOException if the color space is unknown or cannot be created.
+     */
+    public static PDColorSpace create(COSArray colorSpace,
+                                      PDResources resources,
+                                      boolean wasDefault)
+                                      throws IOException
+    {
+        if (colorSpace.size() == 0)
+        {
+            throw new IOException("Colorspace array is empty");
+        }
+        COSBase base = colorSpace.getObject(0);
+        if (!(base instanceof COSName))
+        {
+            throw new IOException("First element in colorspace array must be a name");
+        }
+        COSName name = (COSName) base;
+
+        // TODO cache these returned color spaces?
+
+        if (name == COSName.CALGRAY)
+        {
+            return new PDCalGray(colorSpace);
+        }
+        else if (name == COSName.CALRGB)
+        {
+            return new PDCalRGB(colorSpace);
+        }
+        else if (name == COSName.DEVICEN)
+        {
+            return new PDDeviceN(colorSpace);
+        }
+        else if (name == COSName.INDEXED)
+        {
+            return new PDIndexed(colorSpace, resources);
+        }
+        else if (name == COSName.SEPARATION)
+        {
+            return new PDSeparation(colorSpace);
+        }
+        else if (name == COSName.ICCBASED)
+        {
+            return PDICCBased.create(colorSpace, resources);
+        }
+        else if (name == COSName.LAB)
+        {
+            return new PDLab(colorSpace);
+        }
+        else if (name == COSName.PATTERN)
+        {
+            if (colorSpace.size() == 1)
+            {
+                return new PDPattern(resources);
+            }
+            else
+            {
+                return new PDPattern(resources, PDColorSpace.create(colorSpace.get(1)));
+            }
+        }
+        else if (name == COSName.DEVICECMYK ||
+                name == COSName.DEVICERGB ||
+                name == COSName.DEVICEGRAY)
+        {
+            // not allowed in an array, but we sometimes encounter these regardless
+            return create(name, resources, wasDefault);
+        }
+        else
+        {
+            throw new IOException("Invalid color space kind: " + name);
+        }
+    }
+
+    /**
+     * Creates a color space given a COSDictionary. Abbreviated device color names are not supported
+     * here, please replace them first. This method is for PDFBox internal use only, others should
+     * use {@link #create(COSBase, PDResources)}.
+     *
+     * @param colorSpace the color space COS object
+     * @param resources the current resources.
+     * @param wasDefault if current color space was used by a default color space.
+     * @return a new color space.
+     * @throws IOException if the color space is unknown or cannot be created.
+     */
+    public static PDColorSpace create(COSDictionary colorSpace,
+                                      PDResources resources,
+                                      boolean wasDefault)
+                                      throws IOException
+    {
+        if (colorSpace.containsKey(COSName.COLORSPACE))
+        {
+            // PDFBOX-4833: dictionary with /ColorSpace entry
+            COSBase base = colorSpace.getDictionaryObject(COSName.COLORSPACE);
+            if (base == colorSpace)
+            {
+                // PDFBOX-5315
+                throw new IOException("Recursion in colorspace: " +
+                        colorSpace.getItem(COSName.COLORSPACE) + " points to itself");
+            }
+            return create(base, resources, wasDefault);
+        }
+        else
+        {
+            throw new IOException("Expected a name or array but got: " + colorSpace);
+        }
+    }
+
     /**
      * Creates a color space given a name or array. Abbreviated device color names are not supported
      * here, please replace them first. This method is for PDFBox internal use only, others should
@@ -93,147 +299,19 @@ public abstract class PDColorSpace implements COSObjectable
     {
         if (colorSpace instanceof COSObject)
         {
-            return createFromCOSObject((COSObject) colorSpace, resources);
+            return create((COSObject) colorSpace, resources);
         }
         else if (colorSpace instanceof COSName)
         {
-            COSName name = (COSName)colorSpace;
-
-            // default color spaces
-            if (resources != null)
-            {
-                COSName defaultName = null;
-                if (name.equals(COSName.DEVICECMYK) &&
-                    resources.hasColorSpace(COSName.DEFAULT_CMYK))
-                {
-                    defaultName = COSName.DEFAULT_CMYK;
-                }
-                else if (name.equals(COSName.DEVICERGB) &&
-                         resources.hasColorSpace(COSName.DEFAULT_RGB))
-                {
-                    defaultName = COSName.DEFAULT_RGB;
-                }
-                else if (name.equals(COSName.DEVICEGRAY) &&
-                         resources.hasColorSpace(COSName.DEFAULT_GRAY))
-                {
-                    defaultName = COSName.DEFAULT_GRAY;
-                }
-
-                if (resources.hasColorSpace(defaultName) && !wasDefault)
-                {
-                    return resources.getColorSpace(defaultName, true);
-                }
-            }
-
-            // built-in color spaces
-            if (name == COSName.DEVICECMYK)
-            {
-                return PDDeviceCMYK.INSTANCE;
-            }
-            else if (name == COSName.DEVICERGB)
-            {
-                return PDDeviceRGB.INSTANCE;
-            }
-            else if (name == COSName.DEVICEGRAY)
-            {
-                return PDDeviceGray.INSTANCE;
-            }
-            else if (name == COSName.PATTERN)
-            {
-                return new PDPattern(resources);
-            }
-            else if (resources != null)
-            {
-                if (!resources.hasColorSpace(name))
-                {
-                    throw new MissingResourceException("Missing color space: " + name.getName());
-                }
-                return resources.getColorSpace(name);
-            }
-            else
-            {
-                throw new MissingResourceException("Unknown color space: " + name.getName());
-            }
+            return create((COSName) colorSpace, resources, wasDefault);
         }
         else if (colorSpace instanceof COSArray)
         {
-            COSArray array = (COSArray)colorSpace;
-            if (array.size() == 0)
-            {
-                throw new IOException("Colorspace array is empty");
-            }
-            COSBase base = array.getObject(0);
-            if (!(base instanceof COSName))
-            {
-                throw new IOException("First element in colorspace array must be a name");
-            }
-            COSName name = (COSName) base;
-
-            // TODO cache these returned color spaces?
-
-            if (name == COSName.CALGRAY)
-            {
-                return new PDCalGray(array);
-            }
-            else if (name == COSName.CALRGB)
-            {
-                return new PDCalRGB(array);
-            }
-            else if (name == COSName.DEVICEN)
-            {
-                return new PDDeviceN(array);
-            }
-            else if (name == COSName.INDEXED)
-            {
-                return new PDIndexed(array, resources);
-            }
-            else if (name == COSName.SEPARATION)
-            {
-                return new PDSeparation(array);
-            }
-            else if (name == COSName.ICCBASED)
-            {
-                return PDICCBased.create(array, resources);
-            }
-            else if (name == COSName.LAB)
-            {
-                return new PDLab(array);
-            }
-            else if (name == COSName.PATTERN)
-            {
-                if (array.size() == 1)
-                {
-                    return new PDPattern(resources);
-                }
-                else
-                {
-                    return new PDPattern(resources, PDColorSpace.create(array.get(1)));
-                }
-            }
-            else if (name == COSName.DEVICECMYK ||
-                     name == COSName.DEVICERGB ||
-                     name == COSName.DEVICEGRAY)
-            {
-                // not allowed in an array, but we sometimes encounter these regardless
-                return create(name, resources, wasDefault);
-            }
-            else
-            {
-                throw new IOException("Invalid color space kind: " + name);
-            }
+            return create((COSArray) colorSpace, resources, wasDefault);
         }
-        else if (colorSpace instanceof COSDictionary && 
-                ((COSDictionary) colorSpace).containsKey(COSName.COLORSPACE))
+        else if (colorSpace instanceof COSDictionary)
         {
-            // PDFBOX-4833: dictionary with /ColorSpace entry
-            COSBase base = ((COSDictionary) colorSpace).getDictionaryObject(COSName.COLORSPACE);
-            if (base == colorSpace)
-            {
-                // PDFBOX-5315
-                throw new IOException("Recursion in colorspace: " +
-                        ((COSDictionary) colorSpace).getItem(COSName.COLORSPACE) + " points to itself");
-            }
-            return create(base, resources, wasDefault);
+            return create((COSDictionary)colorSpace, resources, wasDefault);
         }
         else
         {
