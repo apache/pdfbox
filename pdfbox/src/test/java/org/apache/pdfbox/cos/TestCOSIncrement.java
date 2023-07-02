@@ -20,8 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import junit.framework.TestCase;
-
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -30,9 +28,12 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
-public abstract class TestCOSIncrement extends TestCase
+public class TestCOSIncrement
 {
     /**
      * Check that subsetting takes place in incremental saving.
