@@ -206,6 +206,10 @@ public class TTFParser
                 throw new IOException("'glyf' table is mandatory");
             }
         }
+        else if (!isOTF)
+        {
+            throw new IOException("True Type fonts using CFF outlines are not supported");
+        }
         
         if (font.getNaming() == null && !isEmbedded)
         {
