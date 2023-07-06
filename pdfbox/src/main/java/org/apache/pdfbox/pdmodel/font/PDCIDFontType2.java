@@ -128,6 +128,15 @@ public class PDCIDFontType2 extends PDCIDFont
                     fontIsDamaged = true;
                     LOG.warn("Could not read embedded OTF for font " + getBaseFont(), e);
                 }
+                if (ttfFont instanceof OpenTypeFont && !((OpenTypeFont) ttfFont).isSupportedOTF())
+                {
+                    // the OpenType font contains CFF2 outlines which are not supported yet
+                    ttfFont = null;
+                    fontIsDamaged = true;
+                    LOG.warn("Found an OpenType font using CFF2 outlines which are not supported "
+                            + fd.getFontName());
+                }
+
             }
             isEmbedded = ttfFont != null;
             isDamaged = fontIsDamaged;
