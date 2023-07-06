@@ -74,8 +74,15 @@ public class OpenTypeFont extends TrueTypeFont
     @Override
     public GeneralPath getPath(String name) throws IOException
     {
-        int gid = nameToGID(name);
-        return getCFF().getFont().getType2CharString(gid).getPath();
+        if (isPostScript && isSupportedOTF())
+        {
+            int gid = nameToGID(name);
+            return getCFF().getFont().getType2CharString(gid).getPath();
+        }
+        else
+        {
+            return super.getPath(name);
+        }
     }
 
     /**
@@ -86,6 +93,24 @@ public class OpenTypeFont extends TrueTypeFont
     public boolean isPostScript()
     {
         return isPostScript || tables.containsKey(CFFTable.TAG) || tables.containsKey("CFF2");
+    }
+
+    /**
+     * Returns true if this font is supported.
+     * 
+     * There are 3 kind of OpenType fonts, fonts using TrueType outlines, fonts using CFF outlines (version 1 and 2)
+     * 
+     * Fonts using CFF outlines version 2 aren't supported yet.
+     * 
+     * @return true if the font is supported
+     */
+    public boolean isSupportedOTF()
+    {
+        // OTF using CFF2 based outlines aren't yet supported
+        return !(isPostScript //
+                && !tables.containsKey(CFFTable.TAG) //
+                && tables.containsKey("CFF2") //
+        );
     }
 
     /**
