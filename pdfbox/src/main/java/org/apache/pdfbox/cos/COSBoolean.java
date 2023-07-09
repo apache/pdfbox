@@ -136,11 +136,9 @@ public final class COSBoolean extends COSBase
     /**
      * {@inheritDoc}
      */
-    public boolean equals(Object obj) {
-        if (obj instanceof COSBoolean) {
-            return value == ((COSBoolean)obj).getValue();
-        }
-        return false;
+    public boolean equals(Object obj)
+    {
+        return this == obj; // this is correct because there are only two COSBoolean objects.
     }
 
     /**
