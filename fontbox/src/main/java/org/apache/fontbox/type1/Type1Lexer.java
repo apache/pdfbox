@@ -366,7 +366,7 @@ class Type1Lexer
             }
             catch (NumberFormatException ex)
             {
-                throw new IOException("Invalid number '" + sb.toString() + "'", ex);
+                throw new IOException("Invalid number '" + sb + "'", ex);
             }
             return new Token(Integer.toString(val), Token.INTEGER);
         }
