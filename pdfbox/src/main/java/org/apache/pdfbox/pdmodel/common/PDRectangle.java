@@ -44,7 +44,11 @@ public class PDRectangle implements COSObjectable
     /** An immutable rectangle the size of U.S. Letter, 8.5" x 11". */
     @SuppressWarnings("java:S2390") // see also https://jira.sonarsource.com/browse/SONARJAVA-3580
     public static final PDRectangle LETTER = new PDImmutableRectangle(8.5f * POINTS_PER_INCH,
-                                                             11f *POINTS_PER_INCH);
+                                                            11f *POINTS_PER_INCH);
+    /**  An immutable rectangle the size of U.S. Tabloid, 11" x 17". */
+    @SuppressWarnings("java:S2390")
+    public static final PDRectangle TABLOID = new PDImmutableRectangle(11f * POINTS_PER_INCH,
+                                                            17f * POINTS_PER_INCH);
     /**  An immutable rectangle the size of U.S. Legal, 8.5" x 14". */
     @SuppressWarnings("java:S2390")
     public static final PDRectangle LEGAL = new PDImmutableRectangle(8.5f * POINTS_PER_INCH,

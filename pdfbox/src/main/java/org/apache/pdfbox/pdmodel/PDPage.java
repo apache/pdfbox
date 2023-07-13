@@ -19,11 +19,10 @@ package org.apache.pdfbox.pdmodel;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.SequenceInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,7 +33,9 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.SequenceRandomAccessRead;
@@ -62,7 +63,9 @@ public class PDPage implements COSObjectable, PDContentStream
      * Log instance
      */
     private static final Log LOG = LogFactory.getLog(PDPage.class);
-    
+
+    private static final byte[] DELIMITER = new byte[] { '\n' };
+
     private final COSDictionary page;
     private PDResources pageResources;
     private ResourceCache resourceCache;
@@ -155,27 +158,10 @@ public class PDPage implements COSObjectable, PDContentStream
     @Override
     public InputStream getContents() throws IOException
     {
-        COSBase base = page.getDictionaryObject(COSName.CONTENTS);
-        if (base instanceof COSStream)
+        RandomAccessRead contentsForRandomAccess = getContentsForRandomAccess();
+        if (contentsForRandomAccess != null)
         {
-            return ((COSStream)base).createInputStream();
-        }
-        else if (base instanceof COSArray && ((COSArray) base).size() > 0)
-        {
-            COSArray streams = (COSArray)base;
-            byte[] delimiter = new byte[] { '\n' };
-            List<InputStream> inputStreams = new ArrayList<>();
-            for (int i = 0; i < streams.size(); i++)
-            {
-                COSBase strm = streams.getObject(i);
-                if (strm instanceof COSStream)
-                {
-                    COSStream stream = (COSStream) strm;
-                    inputStreams.add(stream.createInputStream());
-                    inputStreams.add(new ByteArrayInputStream(delimiter));
-                }
-            }
-            return new SequenceInputStream(Collections.enumeration(inputStreams));
+            return new RandomAccessInputStream(contentsForRandomAccess);
         }
         return new ByteArrayInputStream(new byte[0]);
     }
@@ -183,25 +169,40 @@ public class PDPage implements COSObjectable, PDContentStream
     @Override
     public RandomAccessRead getContentsForRandomAccess() throws IOException
     {
-        COSBase base = page.getDictionaryObject(COSName.CONTENTS);
-        if (base instanceof COSStream)
+        COSStream contentStream = page.getCOSStream(COSName.CONTENTS);
+        if (contentStream != null)
         {
-            return ((COSStream) base).createView();
-        }
-        else if (base instanceof COSArray && ((COSArray) base).size() > 0)
-        {
-            byte[] delimiter = new byte[] { '\n' };
-            COSArray streams = (COSArray) base;
-            List<RandomAccessRead> inputStreams = new ArrayList<>();
-            for (int i = 0; i < streams.size(); i++)
+            try
             {
-                COSBase strm = streams.getObject(i);
-                if (strm instanceof COSStream)
-                {
-                    inputStreams.add(((COSStream) strm).createView());
-                    inputStreams.add(new RandomAccessReadBuffer(delimiter));
-                }
+                return contentStream.createView();
             }
+            catch (IOException exception)
+            {
+                LOG.warn("skipped malformed content stream");
+                return new RandomAccessReadBuffer(DELIMITER);
+            }
+        }
+        COSArray array = page.getCOSArray(COSName.CONTENTS);
+        if (array != null)
+        {
+            List<COSStream> streams = array.toList().stream() //
+                    .map(o -> o instanceof COSObject ? ((COSObject) o).getObject() : o) //
+                    .filter(COSStream.class::isInstance) //
+                    .map(b -> (COSStream) b) //
+                    .collect(Collectors.toList());
+            List<RandomAccessRead> inputStreams = new ArrayList<>();
+            streams.forEach(stream ->
+            {
+                try
+                {
+                    inputStreams.add(stream.createView());
+                    inputStreams.add(new RandomAccessReadBuffer(DELIMITER));
+                }
+                catch (IOException exception)
+                {
+                    LOG.warn("malformed substream of content stream skipped");
+                }
+            });
             if (!inputStreams.isEmpty())
             {
                 return new SequenceRandomAccessRead(inputStreams);

@@ -49,7 +49,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <bouncycastle.version>1.73</bouncycastle.version>
+        <bouncycastle.version>1.75</bouncycastle.version>
         <log4j2.version>2.20.0</log4j2.version>
 
         <!-- This is a default value to avoid problems when running single tests
@@ -64,7 +64,7 @@
             <dependency>
 	            <groupId>org.junit.jupiter</groupId>
 	            <artifactId>junit-jupiter</artifactId>
-	            <version>5.10.0-M1</version>
+	            <version>5.10.0-RC1</version>
 	            <scope>test</scope>
             </dependency>
             <dependency>
@@ -211,7 +211,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>8.2.1</version>
+                        <version>8.3.1</version>
                         <configuration>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                             <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
@@ -342,7 +342,7 @@
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
-                <version>1.7.0</version>
+                <version>1.6.8</version>
                 <configuration>
                     <skip>${skipTests}</skip>
                 </configuration>

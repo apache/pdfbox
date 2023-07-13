@@ -104,6 +104,7 @@ public class PDEncryption implements COSObjectable
     {
         if (securityHandler == null)
         {
+            // Don't change this text, it's used by Apache Tika (TIKA-4082)
             throw new IOException("No security handler for filter " + getFilter());
         }
         return securityHandler;

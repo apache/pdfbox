@@ -167,7 +167,8 @@ public class TTFParser
         }
 
         boolean hasCFF = font.tables.containsKey(CFFTable.TAG);
-        boolean isPostScript = allowCFF() && hasCFF;
+        boolean isOTF = font instanceof OpenTypeFont;
+        boolean isPostScript = isOTF ? ((OpenTypeFont) font).isPostScript() : hasCFF;
         
         HeaderTable head = font.getHeader();
         if (head == null)
@@ -196,21 +197,18 @@ public class TTFParser
 
         if (!isPostScript)
         {
-            String messageSuffix = "";
-            if (hasCFF)
+            if (font.getIndexToLocation() == null)
             {
-                messageSuffix = "; this an OpenType CFF font, but we expected a TrueType font here";
+                throw new IOException("'loca' table is mandatory");
             }
-            IndexToLocationTable loc = font.getIndexToLocation();
-            if (loc == null)
-            {
-                throw new IOException("'loca' table is mandatory" + messageSuffix);
-            }
-
             if (font.getGlyph() == null)
             {
-                throw new IOException("'glyf' table is mandatory" + messageSuffix);
+                throw new IOException("'glyf' table is mandatory");
             }
+        }
+        else if (!isOTF)
+        {
+            throw new IOException("True Type fonts using CFF outlines are not supported");
         }
         
         if (font.getNaming() == null && !isEmbedded)

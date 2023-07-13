@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import javax.imageio.ImageIO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,9 +62,6 @@ public class TestPDFToImage
      * Logger instance.
      */
     private static final Log LOG = LogFactory.getLog(TestPDFToImage.class);
-
-    static String inDir = "src/test/resources/input/rendering";
-    static String outDir = "target/test-output/rendering/";
 
     /**
      * Constructor.
@@ -175,9 +173,8 @@ public class TestPDFToImage
         LOG.info("Opening: " + file.getName());
         try
         {
-            new FileOutputStream(new File(outDir, file.getName() + ".parseerror")).close();
+            Files.createFile(new File(outDir, file.getName() + ".parseerror").toPath());
             document = Loader.loadPDF(file, (String) null);
-            String outputPrefix = outDir + '/' + file.getName() + "-";
             int numPages = document.getNumberOfPages();
             if (numPages < 1)
             {
@@ -187,32 +184,41 @@ public class TestPDFToImage
             else
             {
                 new File(outDir, file.getName() + ".parseerror").delete();
+                new File(outDir, file.getName() + ".parseerror").deleteOnExit();
             }
 
             LOG.info("Rendering: " + file.getName());
             PDFRenderer renderer = new PDFRenderer(document);
             for (int i = 0; i < numPages; i++)
             {
-                String fileName = outputPrefix + (i + 1) + ".png";
-                new FileOutputStream(new File(fileName + ".rendererror")).close();
+                String fileName = file.getName() + "-" + (i + 1) + ".png";
+                Files.createFile(new File(outDir, fileName + ".rendererror").toPath());
                 BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
-                new File(fileName + ".rendererror").delete();
+                new File(outDir, fileName + ".rendererror").delete();
+                new File(outDir, fileName + ".rendererror").deleteOnExit();
                 LOG.info("Writing: " + fileName);
-                new FileOutputStream(new File(fileName + ".writeerror")).close();
-                ImageIO.write(image, "PNG", new File(fileName));
-                new File(fileName + ".writeerror").delete();
+                Files.createFile(new File(outDir, fileName + ".writeerror").toPath());
+                boolean writeSuccess = ImageIO.write(image, "PNG", new File(outDir, fileName));
+                if (writeSuccess)
+                {
+                    new File(outDir, fileName + ".writeerror").delete();
+                    new File(outDir, fileName + ".writeerror").deleteOnExit();
+                }
             }
 
             // test to see whether file is destroyed in pdfbox
-            new FileOutputStream(new File(outDir, file.getName() + ".saveerror")).close();
+            Files.createFile(new File(outDir, file.getName() + ".saveerror").toPath());
             File tmpFile = File.createTempFile("pdfbox", ".pdf");
             document.setAllSecurityToBeRemoved(true);
             document.save(tmpFile);
             new File(outDir, file.getName() + ".saveerror").delete();
-            new FileOutputStream(new File(outDir, file.getName() + ".reloaderror")).close();
+            new File(outDir, file.getName() + ".saveerror").deleteOnExit();
+            Files.createFile(new File(outDir, file.getName() + ".reloaderror").toPath());
             Loader.loadPDF(tmpFile, (String) null).close();
             new File(outDir, file.getName() + ".reloaderror").delete();
+            new File(outDir, file.getName() + ".reloaderror").deleteOnExit();
             tmpFile.delete();
+            tmpFile.deleteOnExit();
         }
         catch (IOException e)
         {
@@ -233,7 +239,7 @@ public class TestPDFToImage
         //Now check the resulting files ... did we get identical PNG(s)?
         try
         {
-            new File(outDir + file.getName() + ".cmperror").delete();
+            new File(outDir, file.getName() + ".cmperror").delete();
 
             File[] outFiles = new File(outDir).listFiles(new FilenameFilter()
             {

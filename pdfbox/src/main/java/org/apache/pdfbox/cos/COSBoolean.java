@@ -136,8 +136,9 @@ public final class COSBoolean extends COSBase
     /**
      * {@inheritDoc}
      */
-    public boolean equals(Object obj) {
-        return this == obj;
+    public boolean equals(Object obj)
+    {
+        return this == obj; // this is correct because there are only two COSBoolean objects.
     }
 
     /**
