@@ -413,7 +413,7 @@ public class PDDocumentCatalog implements COSObjectable
     /**
      * Get the list of OutputIntents defined in the document.
      *
-     * @return The list of PDOutputIntent
+     * @return The list of PDOutputIntent, never null.
      */
     public List<PDOutputIntent> getOutputIntents()
     {
