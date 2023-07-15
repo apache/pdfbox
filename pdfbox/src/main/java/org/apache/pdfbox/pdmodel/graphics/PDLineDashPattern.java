@@ -52,6 +52,21 @@ public final class PDLineDashPattern implements COSObjectable
     public PDLineDashPattern(COSArray array, int phase)
     {
         this.array = array.toFloatArray();
+        // PDF 2.0 specification, 8.4.3.6 Line dash pattern:
+        // "If the dash phase is negative, it shall be incremented by twice the sum of all
+        // lengths in the dash array until it is positive"
+        if (phase < 0)
+        {
+            float sum = 0;
+            for (float f : this.array)
+            {
+                sum += f;
+            }
+            while (phase <= 0)
+            {
+                phase += sum * 2;
+            }
+        }
         this.phase = phase;
     }
 
