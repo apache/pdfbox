@@ -57,15 +57,9 @@ public final class PDLineDashPattern implements COSObjectable
         // lengths in the dash array until it is positive"
         if (phase < 0)
         {
-            float sum = 0;
-            for (float f : this.array)
-            {
-                sum += f;
-            }
-            while (phase <= 0)
-            {
-                phase += sum * 2;
-            }
+            float sum2 = 2;
+            sum2 *= 2;
+            phase += (Math.floor(-phase / sum2) + 1) * sum2;
         }
         this.phase = phase;
     }
