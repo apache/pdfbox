@@ -1072,26 +1072,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
     // Algorithm 2.A from ISO 32000-1
     private byte[] computeHash2A(byte[] password, byte[] salt, byte[] u) throws IOException
     {
-        byte[] userKey;
-        if (u == null)
-        {
-            userKey = new byte[0];
-        }
-        else if (u.length < 48)
-        {
-            throw new IOException("Bad U length");
-        }
-        else if (u.length > 48)
-        {
-            // must truncate
-            userKey = new byte[48];
-            System.arraycopy(u, 0, userKey, 0, 48);
-        }
-        else
-        {
-            userKey = u;
-        }
-
+        byte[] userKey = adjustUserKey(u);
         byte[] truncatedPassword = truncate127(password);
         byte[] input = concat(truncatedPassword, salt, userKey);
         return computeHash2B(input, truncatedPassword, userKey);
@@ -1172,12 +1153,32 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         }
     }
 
-    private static byte[] computeSHA256(byte[] input, byte[] password, byte[] userKey)
+    private static byte[] computeSHA256(byte[] input, byte[] password, byte[] userKey) throws IOException
     {
         MessageDigest md = MessageDigests.getSHA256();
         md.update(input);
         md.update(password);
-        return userKey == null ? md.digest() : md.digest(userKey);
+        return md.digest(adjustUserKey(userKey));
+    }
+
+    private static byte[] adjustUserKey(byte[] u) throws IOException
+    {
+        if (u == null)
+        {
+            return new byte[0];
+        }
+        if (u.length < 48)
+        {
+            throw new IOException("Bad U length");
+        }
+        if (u.length > 48)
+        {
+            // must truncate
+            byte[] userKey = new byte[48];
+            System.arraycopy(u, 0, userKey, 0, 48);
+            return userKey;
+        }
+        return u;
     }
 
     private static byte[] concat(byte[] a, byte[] b)
