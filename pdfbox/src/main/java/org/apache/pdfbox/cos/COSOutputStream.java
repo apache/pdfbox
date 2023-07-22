@@ -57,28 +57,13 @@ public final class COSOutputStream extends FilterOutputStream
         this.filters = filters;
         this.parameters = parameters;
         this.streamCache = streamCache;
-
-        if (filters.isEmpty())
-        {
-            this.buffer = null;
-        }
-        else
-        {
-            this.buffer = streamCache.createBuffer();
-        }
+        buffer = filters.isEmpty() ? null : streamCache.createBuffer();
     }
 
     @Override
     public void write(byte[] b) throws IOException
     {
-        if (buffer != null)
-        {
-            buffer.write(b);
-        }
-        else
-        {
-            super.write(b);
-        }
+        write(b, 0, b.length);
     }
 
     @Override
