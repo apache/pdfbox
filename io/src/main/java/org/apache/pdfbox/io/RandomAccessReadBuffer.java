@@ -29,19 +29,19 @@ import java.util.List;
 public class RandomAccessReadBuffer implements RandomAccessRead
 {
     // default chunk size is 4kb
-    private static final int DEFAULT_CHUNK_SIZE_4KB = 1 << 12;
+    protected static final int DEFAULT_CHUNK_SIZE_4KB = 1 << 12;
     // use the default chunk size
-    private int chunkSize = DEFAULT_CHUNK_SIZE_4KB;
+    protected int chunkSize = DEFAULT_CHUNK_SIZE_4KB;
     // list containing all chunks
     private final List<ByteBuffer> bufferList;
     // current chunk
-    private ByteBuffer currentBuffer;
+    protected ByteBuffer currentBuffer;
     // current pointer to the whole buffer
-    private long pointer = 0;
+    protected long pointer = 0;
     // current pointer for the current chunk
-    private int currentBufferPointer = 0;
+    protected int currentBufferPointer = 0;
     // size of the whole buffer
-    private long size = 0;
+    protected long size = 0;
     // current chunk list index
     private int bufferListIndex = 0;
     // maximum chunk list index
@@ -50,7 +50,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     /**
      * Default constructor.
      */
-    private RandomAccessReadBuffer()
+    protected RandomAccessReadBuffer()
     {
         this(DEFAULT_CHUNK_SIZE_4KB);
     }
@@ -58,7 +58,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     /**
      * Default constructor.
      */
-    private RandomAccessReadBuffer(int definedChunkSize)
+    protected RandomAccessReadBuffer(int definedChunkSize)
     {
         // starting with one chunk
         chunkSize = definedChunkSize;
@@ -177,6 +177,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
             currentBuffer = bufferList.get(bufferListIndex);
             currentBufferPointer = chunkSize > 0 ? (int) (size % chunkSize) : 0;
         }
+        currentBuffer.position(currentBufferPointer);
     }
 
     /**
@@ -294,7 +295,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     /**
      * create a new buffer chunk and adjust all pointers and indices.
      */
-    private void expandBuffer() throws IOException
+    protected void expandBuffer() throws IOException
     {
         if (bufferListMaxIndex > bufferListIndex)
         {
@@ -323,13 +324,14 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         }
         currentBufferPointer = 0;
         currentBuffer = bufferList.get(++bufferListIndex);
+        currentBuffer.rewind();
     }
     
     /**
      * Ensure that the RandomAccessBuffer is not closed
      * @throws IOException If RandomAccessBuffer already closed
      */
-    private void checkClosed() throws IOException
+    protected void checkClosed() throws IOException
     {
         if (currentBuffer == null)
         {
