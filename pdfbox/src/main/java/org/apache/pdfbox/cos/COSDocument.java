@@ -84,7 +84,7 @@ public class COSDocument extends COSBase implements Closeable
 
     private boolean hasHybridXRef = false;
 
-    private RandomAccessStreamCache streamCache;
+    private final RandomAccessStreamCache streamCache;
 
     /**
      * Used for incremental saving, to avoid XRef object numbers from being reused.
@@ -133,43 +133,35 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(StreamCacheCreateFunction streamCacheCreateFunction, ICOSParser parser)
     {
-        this.streamCache = getStreamCache(streamCacheCreateFunction);
+        streamCache = getStreamCache(streamCacheCreateFunction);
         this.parser = parser;
     }
 
     private RandomAccessStreamCache getStreamCache(StreamCacheCreateFunction streamCacheCreateFunction)
     {
-        if (streamCache == null)
+        if (streamCacheCreateFunction == null)
         {
-            try
-            {
-                if (streamCacheCreateFunction != null)
-                {
-                    streamCache = streamCacheCreateFunction.create();
-                }
-            }
-            catch (IOException e)
-            {
-                LOG.warn(
-                        "An error occured when creating stream cache. Using memory only cache as fallback.",
-                        e);
-            }
-            finally
-            {
-                if (streamCacheCreateFunction != null)
-                {
-                    try
-                    {
-                        streamCache = IOUtils.createMemoryOnlyStreamCache().create();
-                    }
-                    catch (IOException e)
-                    {
-                        LOG.warn("An error occured when creating stream cache for fallback.", e);
-                    }
-                }
-            }
+            return null;
         }
-        return streamCache;
+        try
+        {
+            return streamCacheCreateFunction.create();
+        }
+        catch (IOException exception1)
+        {
+            LOG.warn(
+                    "An error occured when creating stream cache. Using memory only cache as fallback.",
+                    exception1);
+        }
+        try
+        {
+            return IOUtils.createMemoryOnlyStreamCache().create();
+        }
+        catch (IOException exception2)
+        {
+            LOG.warn("An error occured when creating stream cache for fallback.", exception2);
+        }
+        return null;
     }
 
     /**
