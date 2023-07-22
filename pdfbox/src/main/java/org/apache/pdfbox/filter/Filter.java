@@ -19,7 +19,10 @@ package org.apache.pdfbox.filter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.zip.Deflater;
 
 import javax.imageio.ImageIO;
@@ -31,6 +34,12 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessInputStream;
+import org.apache.pdfbox.io.RandomAccessOutputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadWriteBuffer;
 
 /**
  * A filter for stream data.
@@ -178,4 +187,66 @@ public abstract class Filter
         }
         return Math.max(-1, Math.min(Deflater.BEST_COMPRESSION, compressionLevel));
     }
+
+    /**
+     * Decodes data, with optional DecodeOptions. Not all filters support all options, and so callers should check the
+     * options' <code>honored</code> flag to test if they were applied.
+     *
+     * @param encoded the input stream holding the encoded data
+     * @param filterList list of filters to be used for decoding
+     * @param parameters the parameters used for decoding
+     * @param options additional options for decoding
+     * @param results list of optional decoding results for each filter
+     * @return the decoded stream data
+     * @throws IOException if the stream cannot be decoded
+     */
+    public static RandomAccessRead decode(InputStream encoded, List<Filter> filterList,
+            COSDictionary parameters, DecodeOptions options, List<DecodeResult> results)
+            throws IOException
+    {
+        int length = parameters.getInt(COSName.LENGTH,
+                RandomAccessReadBuffer.DEFAULT_CHUNK_SIZE_4KB);
+        if (filterList.size() > 1)
+        {
+            Set<Filter> filterSet = new HashSet<>(filterList);
+            if (filterSet.size() != filterList.size())
+            {
+                throw new IOException("Duplicate");
+            }
+        }
+        InputStream input = encoded;
+        RandomAccessReadWriteBuffer randomAccessWriteBuffer = null;
+        OutputStream output = null;
+        // apply filters
+        for (int i = 0; i < filterList.size(); i++)
+        {
+            if (i > 0)
+            {
+                randomAccessWriteBuffer.seek(0);
+                input = new RandomAccessInputStream(randomAccessWriteBuffer);
+                length = (int) randomAccessWriteBuffer.length();
+            }
+            // we don't know the size of the decoded stream, just estimate a 4 times bigger size than the encoded stream
+            // use the estimated stream size as chunk size, use the default chunk size as limit to avoid to big values
+            randomAccessWriteBuffer = new RandomAccessReadWriteBuffer(
+                    Math.min(length << 2, RandomAccessReadBuffer.DEFAULT_CHUNK_SIZE_4KB));
+            output = new RandomAccessOutputStream(randomAccessWriteBuffer);
+            try
+            {
+                DecodeResult result = filterList.get(i).decode(input, output, parameters, i,
+                        options);
+                if (results != null)
+                {
+                    results.add(result);
+                }
+            }
+            finally
+            {
+                IOUtils.closeQuietly(input);
+            }
+        }
+        randomAccessWriteBuffer.seek(0);
+        return randomAccessWriteBuffer;
+    }
+    
 }

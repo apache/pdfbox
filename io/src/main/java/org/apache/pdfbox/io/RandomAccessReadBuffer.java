@@ -29,7 +29,7 @@ import java.util.List;
 public class RandomAccessReadBuffer implements RandomAccessRead
 {
     // default chunk size is 4kb
-    protected static final int DEFAULT_CHUNK_SIZE_4KB = 1 << 12;
+    public static final int DEFAULT_CHUNK_SIZE_4KB = 1 << 12;
     // use the default chunk size
     protected int chunkSize = DEFAULT_CHUNK_SIZE_4KB;
     // list containing all chunks

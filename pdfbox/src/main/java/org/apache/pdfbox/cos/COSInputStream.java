@@ -17,20 +17,18 @@
 
 package org.apache.pdfbox.cos;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
+import org.apache.pdfbox.io.RandomAccessInputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
  * An InputStream which reads from an encoded COS stream.
@@ -71,26 +69,9 @@ public final class COSInputStream extends FilterInputStream
         {
             return new COSInputStream(in, Collections.<DecodeResult>emptyList());
         }
-
         List<DecodeResult> results = new ArrayList<>(filters.size());
-        InputStream input = in;
-        if (filters.size() > 1)
-        {
-            Set<Filter> filterSet = new HashSet<>(filters);
-            if (filterSet.size() != filters.size())
-            {
-                throw new IOException("Duplicate");
-            }
-        }
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        // apply filters
-        for (int i = 0; i < filters.size(); i++)
-        {
-            output.reset();
-            results.add(filters.get(i).decode(input, output, parameters, i, options));
-            input = new ByteArrayInputStream(output.toByteArray());
-        }
-        return new COSInputStream(input, results);
+        RandomAccessRead decoded = Filter.decode(in, filters, parameters, options, results);
+        return new COSInputStream(new RandomAccessInputStream(decoded), results);
     }
 
     private final List<DecodeResult> decodeResults;

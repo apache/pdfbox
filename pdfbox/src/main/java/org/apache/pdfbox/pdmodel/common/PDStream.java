@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.common;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,6 +38,8 @@ import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessInputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 
@@ -205,31 +205,23 @@ public class PDStream implements COSObjectable
     public InputStream createInputStream(List<String> stopFilters) throws IOException
     {
         InputStream is = stream.createRawInputStream();
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        List<Filter> someFilters = new ArrayList<>();
         List<COSName> filters = getFilters();
-        for (int i = 0; i < filters.size(); i++)
+        for (COSName nextFilter : filters)
         {
-            COSName nextFilter = filters.get(i);
-            if ((stopFilters != null) && stopFilters.contains(nextFilter.getName()))
+            if (stopFilters != null && stopFilters.contains(nextFilter.getName()))
             {
                 break;
             }
-            else
-            {
-                Filter filter = FilterFactory.INSTANCE.getFilter(nextFilter);
-                try
-                {
-                    filter.decode(is, os, stream, i);
-                }
-                finally
-                {
-                    IOUtils.closeQuietly(is);
-                }
-                is = new ByteArrayInputStream(os.toByteArray());
-                os.reset();
-            }
+            someFilters.add(FilterFactory.INSTANCE.getFilter(nextFilter));
         }
-        return is;
+        if (someFilters.isEmpty())
+        {
+            return is;
+        }
+        RandomAccessRead decoded = Filter.decode(is, someFilters, getCOSObject(),
+                DecodeOptions.DEFAULT, null);
+        return new RandomAccessInputStream(decoded);
     }
 
     /**
