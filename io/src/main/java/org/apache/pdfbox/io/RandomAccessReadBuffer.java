@@ -388,4 +388,20 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         }
         return randomAccessRead;
     }
+
+    /**
+     * Reset to position 0 and remove all buffers but the first one.
+     */
+    protected void resetBuffers()
+    {
+        size = 0;
+        pointer = 0;
+        currentBuffer = bufferList.get(0);
+        currentBuffer.position(0);
+        currentBufferPointer = 0;
+        bufferListIndex = 0;
+        bufferListMaxIndex = 0;
+        bufferList.clear();
+        bufferList.add(currentBuffer);
+    }
 }

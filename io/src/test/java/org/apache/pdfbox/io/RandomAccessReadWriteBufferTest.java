@@ -45,6 +45,25 @@ class RandomAccessReadWriteBufferTest
     }
 
     @Test
+    void testClear() throws IOException
+    {
+        try (RandomAccess randomAccessReadWrite = new RandomAccessReadWriteBuffer(4))
+        {
+            randomAccessReadWrite.write(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            assertEquals(10, randomAccessReadWrite.length());
+            assertEquals(10, randomAccessReadWrite.getPosition());
+            randomAccessReadWrite.clear();
+            assertFalse(randomAccessReadWrite.isClosed());
+            assertEquals(0, randomAccessReadWrite.length());
+            assertEquals(0, randomAccessReadWrite.getPosition());
+        }
+        catch (Throwable throwable)
+        {
+            fail("Unexpected exception " + throwable.getMessage());
+        }
+    }
+
+    @Test
     void testLengthWriteByte() throws IOException
     {
         try (RandomAccess randomAccessReadWrite = new RandomAccessReadWriteBuffer())

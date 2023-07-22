@@ -46,7 +46,8 @@ public class RandomAccessReadWriteBuffer extends RandomAccessReadBuffer implemen
     @Override
     public void clear() throws IOException
     {
-        close();
+        checkClosed();
+        resetBuffers();
     }
 
     /**
