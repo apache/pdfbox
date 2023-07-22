@@ -53,6 +53,7 @@ import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
  */
 public final class IOUtils
 {
+    private static final StreamCacheCreateFunction streamCache = () -> new RandomAccessStreamCacheImpl();
 
     //TODO PDFBox should really use Apache Commons IO.
     private static final Optional<Consumer<ByteBuffer>> UNMAPPER;
@@ -313,13 +314,13 @@ public final class IOUtils
 
     /**
      * Provides a function to create an instance of a memory only StreamCache using unrestricted main memory.
-     * ScratchFile is used as current default implementation.
+     * RandomAccessReadWriteBuffer is used as current default implementation.
      * 
      * @return a function to create an instance of a memory only StreamCache using unrestricted main memory
      */
     public static StreamCacheCreateFunction createMemoryOnlyStreamCache()
     {
-        return MemoryUsageSetting.setupMainMemoryOnly().streamCache;
+        return streamCache;
     }
 
     /**
