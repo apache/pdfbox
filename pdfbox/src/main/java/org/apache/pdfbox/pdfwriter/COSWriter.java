@@ -1224,16 +1224,13 @@ public class COSWriter implements ICOSVisitor
                         byteRangeLength = getStandardOutput().getPos() - 1 - byteRangeOffset;
                         reachedSignature = false;
                     }
+                    else if (value instanceof COSArray)
+                    {
+                        writeArray((COSArray) value);
+                    }
                     else
                     {
-                        if (value instanceof COSArray)
-                        {
-                            writeArray((COSArray) value);
-                        }
-                        else
-                        {
-                            value.accept(this);
-                        }
+                        value.accept(this);
                     }
                 }
                 getStandardOutput().writeEOL();
