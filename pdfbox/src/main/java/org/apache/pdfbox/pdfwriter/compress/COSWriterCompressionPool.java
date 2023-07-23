@@ -153,7 +153,9 @@ public class COSWriterCompressionPool
     {
         COSBase base = current;
         if (current instanceof COSStream
-                || (current instanceof COSDictionary && !current.isDirect()))
+                || (current instanceof COSDictionary && !current.isDirect()) //
+                || (current instanceof COSArray && !current.isDirect()) //
+        )
         {
             base = addObjectToPool(base.getKey(), current);
         }
