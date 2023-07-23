@@ -584,6 +584,10 @@ public class COSParser extends BaseParser implements ICOSParser
     {
         long currentPos = source.getPosition();
         COSBase parsedObj = parseObjectDynamically(obj.getKey(), false);
+        if (parsedObj != null)
+        {
+            parsedObj.setDirect(false);
+        }
         if (currentPos > 0)
         {
             source.seek(currentPos);
