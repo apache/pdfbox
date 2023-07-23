@@ -220,6 +220,7 @@ public class PDDocumentCatalog implements COSObjectable
         if (array == null)
         {
             array = new COSArray();
+            array.setDirect(false);
             root.setItem(COSName.THREADS, array);
         }
         List<PDThread> pdObjects = new ArrayList<>(array.size());
@@ -237,7 +238,9 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public void setThreads(List<PDThread> threads)
     {
-        root.setItem(COSName.THREADS, new COSArray(threads));
+        COSArray threadsArray = new COSArray(threads);
+        threadsArray.setDirect(false);
+        root.setItem(COSName.THREADS, threadsArray);
     }
 
     /**
