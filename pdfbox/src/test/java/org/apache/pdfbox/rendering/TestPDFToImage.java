@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.file.Files;
 import javax.imageio.ImageIO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -173,7 +172,7 @@ public class TestPDFToImage
         LOG.info("Opening: " + file.getName());
         try
         {
-            Files.createFile(new File(outDir, file.getName() + ".parseerror").toPath());
+            new FileOutputStream(new File(outDir, file.getName() + ".parseerror")).close();
             document = Loader.loadPDF(file, (String) null);
             int numPages = document.getNumberOfPages();
             if (numPages < 1)
@@ -192,12 +191,12 @@ public class TestPDFToImage
             for (int i = 0; i < numPages; i++)
             {
                 String fileName = file.getName() + "-" + (i + 1) + ".png";
-                Files.createFile(new File(outDir, fileName + ".rendererror").toPath());
+                new FileOutputStream(new File(outDir, fileName + ".rendererror")).close();
                 BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
                 new File(outDir, fileName + ".rendererror").delete();
                 new File(outDir, fileName + ".rendererror").deleteOnExit();
                 LOG.info("Writing: " + fileName);
-                Files.createFile(new File(outDir, fileName + ".writeerror").toPath());
+                new FileOutputStream(new File(outDir, fileName + ".writeerror")).close();
                 boolean writeSuccess = ImageIO.write(image, "PNG", new File(outDir, fileName));
                 if (writeSuccess)
                 {
@@ -207,13 +206,13 @@ public class TestPDFToImage
             }
 
             // test to see whether file is destroyed in pdfbox
-            Files.createFile(new File(outDir, file.getName() + ".saveerror").toPath());
+            new FileOutputStream(new File(outDir, file.getName() + ".saveerror")).close();
             File tmpFile = File.createTempFile("pdfbox", ".pdf");
             document.setAllSecurityToBeRemoved(true);
             document.save(tmpFile);
             new File(outDir, file.getName() + ".saveerror").delete();
             new File(outDir, file.getName() + ".saveerror").deleteOnExit();
-            Files.createFile(new File(outDir, file.getName() + ".reloaderror").toPath());
+            new FileOutputStream(new File(outDir, file.getName() + ".reloaderror")).close();
             Loader.loadPDF(tmpFile, (String) null).close();
             new File(outDir, file.getName() + ".reloaderror").delete();
             new File(outDir, file.getName() + ".reloaderror").deleteOnExit();
