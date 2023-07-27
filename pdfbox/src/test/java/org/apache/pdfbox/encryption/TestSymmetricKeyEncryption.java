@@ -305,6 +305,19 @@ public class TestSymmetricKeyEncryption extends TestCase
         doc.close();
     }
 
+    /**
+     * test AESV3 with R=5 and excess bytes.
+     * 
+     * @throws IOException 
+     */
+    public void testPDFBox5639() throws IOException
+    {
+        File file = new File("target/pdfs", "PDFBOX-5639.pdf");
+        PDDocument document = PDDocument.load(file, "JUL2023rfi");
+        assertEquals(2, document.getNumberOfPages());
+        document.close();
+    }
+
     private void testSymmEncrForKeySize(int keyLength, boolean preferAES,
             int sizePriorToEncr, byte[] inputFileAsByteArray,
             String userpassword, String ownerpassword,
