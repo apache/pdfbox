@@ -729,6 +729,19 @@
                             <sha512>7c3d8bbc18654315d6341a277dcd5c66218b95c43baf190b6e32f77817d17bab421ef76f2c904b46c97f84c49b00d58525449cff970897010534d6aa2812a4e2</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-5639</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13061409/incorrect_password.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5639.pdf</outputFileName>
+                            <sha512>6904a5f8fe12599a4ca49914158024ebd3533cb2e1ef02127d9d99291c20e68c449cd40ba00f2a8d1295b083fcffd44b30ed1ce5a16bfcd0bb37a25f8581c67d</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
