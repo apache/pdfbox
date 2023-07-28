@@ -488,6 +488,8 @@ public class PDGraphicsState implements Cloneable
             clone.clippingPaths = clippingPaths; // not cloned, see intersectClippingPath
             clone.clippingCache = clippingCache;
             clone.isClippingPathDirty = false;
+            clone.textLineMatrix = textLineMatrix == null ? null : textLineMatrix.clone();
+            clone.textMatrix = textMatrix == null ? null : textMatrix.clone();
             return clone;
         }
         catch (CloneNotSupportedException e)
@@ -685,5 +687,28 @@ public class PDGraphicsState implements Cloneable
     public void setTransfer(COSBase transfer)
     {
         this.transfer = transfer;
+    }
+
+    private Matrix textMatrix = null;
+    private Matrix textLineMatrix = null;
+
+    public Matrix getTextLineMatrix()
+    {
+        return textLineMatrix;
+    }
+
+    public void setTextLineMatrix(Matrix value)
+    {
+        textLineMatrix = value;
+    }
+
+    public Matrix getTextMatrix()
+    {
+        return textMatrix;
+    }
+
+    public void setTextMatrix(Matrix value)
+    {
+        textMatrix = value;
     }
 }
