@@ -387,7 +387,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
                 || OperatorName.STROKING_COLOR_RGB.equals(operation))
                 && !validColorSpace(cs, ColorSpaceType.RGB))
         {
-            registerError("The operator \"" + operation + "\" can't be used with CMYK Profile",
+            registerError("The operator \"" + operation + "\" can't be used without RGB Color Profile",
                     ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB);
             return;
         }
@@ -395,7 +395,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
                 || OperatorName.STROKING_COLOR_CMYK.equals(operation))
                 && !validColorSpace(cs, ColorSpaceType.CMYK))
         {
-            registerError("The operator \"" + operation + "\" can't be used with RGB Profile",
+            registerError("The operator \"" + operation + "\" can't be used without CMYK Color Profile",
                     ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK);
             return;
         }
