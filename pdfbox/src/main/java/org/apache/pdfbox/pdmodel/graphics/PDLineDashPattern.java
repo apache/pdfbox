@@ -65,7 +65,7 @@ public final class PDLineDashPattern implements COSObjectable
             sum2 *= 2;
             if (sum2 > 0)
             {
-                phase += (Math.floor(-phase / sum2) + 1) * sum2;
+                phase += (-phase < sum2) ? sum2 : (Math.floor(-phase / sum2) + 1) * sum2;
             }
             else
             {
