@@ -171,7 +171,6 @@ public class PDFXrefStreamParser extends BaseParser
         private int currentRange = 0;
         private long currentEnd = 0;
         private long currentNumber = 0;
-        private long maxValue = 0;
 
         private ObjectNumbers(COSArray indexArray) throws IOException
         {
@@ -199,7 +198,6 @@ public class PDFXrefStreamParser extends BaseParser
                 long sizeValue = ((COSInteger) base).longValue();
                 start[counter] = startValue;
                 end[counter] = startValue + sizeValue;
-                maxValue = Math.max(maxValue, end[counter]);
                 counter++;
             }
             currentNumber = start[0];
@@ -209,19 +207,19 @@ public class PDFXrefStreamParser extends BaseParser
         @Override
         public boolean hasNext()
         {
-            return currentNumber < maxValue;
+            return currentRange < start.length || currentNumber < currentEnd;
         }
 
         @Override
         public Long next()
         {
-            if (currentNumber >= maxValue)
-            {
-                throw new NoSuchElementException();
-            }
             if (currentNumber < currentEnd)
             {
                 return currentNumber++;
+            }
+            if (currentRange >= start.length - 1)
+            {
+                throw new NoSuchElementException();
             }
             currentNumber = start[++currentRange];
             currentEnd = end[currentRange];
