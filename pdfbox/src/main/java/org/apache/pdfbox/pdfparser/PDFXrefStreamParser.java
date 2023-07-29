@@ -207,6 +207,10 @@ public class PDFXrefStreamParser extends BaseParser
         @Override
         public boolean hasNext()
         {
+            if (start.length == 1)
+            {
+                return currentNumber < currentEnd;
+            }
             return currentRange < start.length || currentNumber < currentEnd;
         }
 
