@@ -53,7 +53,7 @@ import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
  */
 public final class IOUtils
 {
-    private static final StreamCacheCreateFunction streamCache = () -> new RandomAccessStreamCacheImpl();
+    private static final StreamCacheCreateFunction streamCache = RandomAccessStreamCacheImpl::new;
 
     //TODO PDFBox should really use Apache Commons IO.
     private static final Optional<Consumer<ByteBuffer>> UNMAPPER;
