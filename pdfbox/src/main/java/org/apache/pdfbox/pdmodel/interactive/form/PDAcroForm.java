@@ -683,6 +683,51 @@ public final class PDAcroForm implements COSObjectable
         dictionary.setFlag(COSName.SIG_FLAGS, FLAG_APPEND_ONLY, appendOnly);
     }
 
+    /**
+     * Return the calculation order in which field values should be recalculated when the value of
+     * any field changes. (Read about "Trigger Events" in the PDF specification)
+     *
+     * @return field list.
+     */
+    public List<PDField> getCalcOrder()
+    {
+        COSArray co = dictionary.getCOSArray(COSName.CO);
+        if (co == null)
+        {
+            return Collections.emptyList();
+        }
+
+        PDFieldTree fieldTree = getFieldTree();
+
+        List<PDField> actuals = new ArrayList<>();
+        for (int i = 0; i < co.size(); i++)
+        {
+            COSBase item = co.getObject(i);
+            for (PDField field : fieldTree)
+            {
+                if (field.getCOSObject() == item)
+                {
+                    actuals.add(field);
+                    break;
+                }
+            }
+        }
+        return actuals;
+    }
+
+    /**
+     * Set the calculation order in which field values should be recalculated when the value of any
+     * field changes. (Read about "Trigger Events" in the PDF specification)
+     *
+     * @param fields The field list. Note that these objects are not identical to PDField objects
+     * retrieved from other methods, you'd need to call {@link #getCOSObject()} to check for
+     * identity.
+     */
+    public void setCalcOrder(List<PDField> fields)
+    {
+        dictionary.setItem(COSName.CO, new COSArray(fields));
+    }
+
     private Matrix resolveTransformationMatrix(PDAnnotation annotation, PDAppearanceStream appearanceStream)
     {
         // 1st step transform appearance stream bbox with appearance stream matrix
