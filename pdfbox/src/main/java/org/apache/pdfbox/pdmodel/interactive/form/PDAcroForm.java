@@ -687,7 +687,9 @@ public final class PDAcroForm implements COSObjectable
      * Return the calculation order in which field values should be recalculated when the value of
      * any field changes. (Read about "Trigger Events" in the PDF specification)
      *
-     * @return field list.
+     * @return field list. Note these objects are not identical to PDField objects
+     * retrieved from other methods, you'd need to call {@link #getCOSObject()} to check for
+     * identity; and the list is not backed by the /CO COSArray in the document.
      */
     public List<PDField> getCalcOrder()
     {
@@ -719,9 +721,7 @@ public final class PDAcroForm implements COSObjectable
      * Set the calculation order in which field values should be recalculated when the value of any
      * field changes. (Read about "Trigger Events" in the PDF specification)
      *
-     * @param fields The field list. Note that these objects are not identical to PDField objects
-     * retrieved from other methods, you'd need to call {@link #getCOSObject()} to check for
-     * identity.
+     * @param fields The field list.
      */
     public void setCalcOrder(List<PDField> fields)
     {
