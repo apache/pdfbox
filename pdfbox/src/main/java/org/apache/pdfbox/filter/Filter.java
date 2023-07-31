@@ -226,7 +226,7 @@ public abstract class Filter
                 input = new RandomAccessInputStream(randomAccessWriteBuffer);
                 length = (int) randomAccessWriteBuffer.length();
             }
-            // avoid invalid values;
+            // avoid invalid values
             length = length <= 0 ? RandomAccessReadBuffer.DEFAULT_CHUNK_SIZE_4KB : length;
             // we don't know the size of the decoded stream, just estimate a 4 times bigger size than the encoded stream
             // use the estimated stream size as chunk size, use the default chunk size as limit to avoid to big values
