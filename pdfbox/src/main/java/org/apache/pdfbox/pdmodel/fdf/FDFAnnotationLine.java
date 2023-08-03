@@ -44,7 +44,6 @@ public class FDFAnnotationLine extends FDFAnnotation
      */
     public FDFAnnotationLine()
     {
-        super();
         annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
@@ -130,27 +129,27 @@ public class FDFAnnotationLine extends FDFAnnotation
         }
 
         String caption = element.getAttribute("caption");
-        if (caption != null && !caption.isEmpty())
+        if ("yes".equals(caption))
         {
-            setCaption("yes".equals(caption));
-        }
+            setCaption(true);
 
-        String captionH = element.getAttribute("caption-offset-h");
-        if (captionH != null && !captionH.isEmpty())
-        {
-            setCaptionHorizontalOffset(Float.parseFloat(captionH));
-        }
+            String captionH = element.getAttribute("caption-offset-h");
+            if (captionH != null && !captionH.isEmpty())
+            {
+                setCaptionHorizontalOffset(Float.parseFloat(captionH));
+            }
 
-        String captionV = element.getAttribute("caption-offset-v");
-        if (captionV != null && !captionV.isEmpty())
-        {
-            setCaptionVerticalOffset(Float.parseFloat(captionV));
-        }
+            String captionV = element.getAttribute("caption-offset-v");
+            if (captionV != null && !captionV.isEmpty())
+            {
+                setCaptionVerticalOffset(Float.parseFloat(captionV));
+            }
 
-        String captionStyle = element.getAttribute("caption-style");
-        if (captionStyle != null && !captionStyle.isEmpty())
-        {
-            setCaptionStyle(captionStyle);
+            String captionStyle = element.getAttribute("caption-style");
+            if (captionStyle != null && !captionStyle.isEmpty())
+            {
+                setCaptionStyle(captionStyle);
+            }
         }
     }
 

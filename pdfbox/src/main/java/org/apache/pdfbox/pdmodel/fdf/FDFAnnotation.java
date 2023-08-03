@@ -228,7 +228,10 @@ public abstract class FDFAnnotation implements COSObjectable
             // not conforming to spec, but qoppa produces it and Adobe accepts it
             intent = element.getAttribute("IT");
         }
-        setIntent(intent);
+        if (!intent.isEmpty())
+        {
+            setIntent(intent);
+        }
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         try
@@ -269,21 +272,21 @@ public abstract class FDFAnnotation implements COSObjectable
                 switch (style)
                 {
                     case "dash":
-                        borderStyle.setStyle("D");
+                        borderStyle.setStyle(PDBorderStyleDictionary.STYLE_DASHED);
                         break;
                     case "bevelled":
-                        borderStyle.setStyle("B");
+                        borderStyle.setStyle(PDBorderStyleDictionary.STYLE_BEVELED);
                         break;
                     case "inset":
-                        borderStyle.setStyle("I");
+                        borderStyle.setStyle(PDBorderStyleDictionary.STYLE_INSET);
                         break;
                     case "underline":
-                        borderStyle.setStyle("U");
+                        borderStyle.setStyle(PDBorderStyleDictionary.STYLE_SOLID);
                         break;
                     case "cloudy":
-                        borderStyle.setStyle("S");
+                        borderStyle.setStyle(PDBorderStyleDictionary.STYLE_SOLID);
                         PDBorderEffectDictionary borderEffect = new PDBorderEffectDictionary();
-                        borderEffect.setStyle("C");
+                        borderEffect.setStyle(PDBorderEffectDictionary.STYLE_CLOUDY);
                         String intensity = element.getAttribute("intensity");
                         if (intensity != null && !intensity.isEmpty())
                         {
@@ -293,7 +296,7 @@ public abstract class FDFAnnotation implements COSObjectable
                         setBorderEffect(borderEffect);
                         break;
                     default:
-                        borderStyle.setStyle("S");
+                        borderStyle.setStyle(PDBorderStyleDictionary.STYLE_SOLID);
                         break;
                 }
             }
