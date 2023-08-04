@@ -15,6 +15,7 @@
  */
 package org.apache.pdfbox.util;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -171,18 +172,4 @@ class TestNumberFormatUtil
             }
         }
     }
-    
-    private void assertArrayEquals(byte[] expected, byte[] actual)
-    {
-        assertEquals(expected.length, actual.length, "Length of byte array not equal");
-        for (int idx = 0; idx < expected.length; idx++)
-        {
-            if (expected[idx] != actual[idx])
-            {
-                fail(String.format("Byte at index %d not equal. Expected '%02X' but got '%02X'",
-                        idx, expected[idx], actual[idx]));
-            }
-        }
-    }
-
 }
