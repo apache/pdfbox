@@ -726,6 +726,8 @@ public abstract class PDFStreamEngine
                 0, fontSize,                     // 0
                 0, textState.getRise());         // 1
 
+        Matrix textMatrix = getGraphicsState().getTextMatrix();
+
         // read the stream until it is empty
         InputStream in = new ByteArrayInputStream(string);
         while (in.available() > 0)
@@ -746,7 +748,7 @@ public abstract class PDFStreamEngine
 
             // text rendering matrix (text space -> device space)
             Matrix ctm = state.getCurrentTransformationMatrix();
-            Matrix textRenderingMatrix = parameters.multiply(getGraphicsState().getTextMatrix()).multiply(ctm);
+            Matrix textRenderingMatrix = parameters.multiply(textMatrix).multiply(ctm);
 
             // get glyph's position vector if this is vertical text
             // changes to vertical text should be tested with PDFBOX-2294 and PDFBOX-1422
@@ -780,7 +782,7 @@ public abstract class PDFStreamEngine
             }
 
             // update the text matrix
-            getGraphicsState().getTextMatrix().translate(tx, ty);
+            textMatrix.translate(tx, ty);
         }
     }
 
