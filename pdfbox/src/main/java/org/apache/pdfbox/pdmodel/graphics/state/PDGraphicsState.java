@@ -65,6 +65,8 @@ public class PDGraphicsState implements Cloneable
     private double alphaConstant = 1.0;
     private double nonStrokingAlphaConstant = 1.0;
     private boolean alphaSource = false;
+    private Matrix textMatrix = null;
+    private Matrix textLineMatrix = null;
 
     // DEVICE-DEPENDENT parameters
     private boolean overprint = false;
@@ -507,6 +509,8 @@ public class PDGraphicsState implements Cloneable
             clone.clippingPaths = clippingPaths; // not cloned, see intersectClippingPath
             clone.clippingCache = clippingCache;
             clone.isClippingPathDirty = false;
+            clone.textLineMatrix = textLineMatrix == null ? null : textLineMatrix.clone();
+            clone.textMatrix = textMatrix == null ? null : textMatrix.clone();
             return clone;
         }
         catch (CloneNotSupportedException e)
@@ -711,5 +715,37 @@ public class PDGraphicsState implements Cloneable
     public void setTransfer(COSBase transfer)
     {
         this.transfer = transfer;
+    }
+
+    /**
+     * @return Returns the textLineMatrix.
+     */
+    public Matrix getTextLineMatrix()
+    {
+        return textLineMatrix;
+    }
+
+    /**
+     * @param value The textLineMatrix to set.
+     */
+    public void setTextLineMatrix(Matrix value)
+    {
+        textLineMatrix = value;
+    }
+
+    /**
+     * @return Returns the textMatrix.
+     */
+    public Matrix getTextMatrix()
+    {
+        return textMatrix;
+    }
+
+    /**
+     * @param value The textMatrix to set.
+     */
+    public void setTextMatrix(Matrix value)
+    {
+        textMatrix = value;
     }
 }
