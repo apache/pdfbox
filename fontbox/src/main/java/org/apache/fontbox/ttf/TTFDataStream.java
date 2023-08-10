@@ -33,6 +33,8 @@ import org.apache.fontbox.util.Charsets;
  */
 abstract class TTFDataStream implements Closeable
 {
+    private static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+
     TTFDataStream()
     {
     }
@@ -211,7 +213,7 @@ abstract class TTFDataStream implements Closeable
     public Calendar readInternationalDate() throws IOException
     {
         long secondsSince1904 = readLong();
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar cal = Calendar.getInstance(TIMEZONE_UTC);
         cal.set(1904, 0, 1, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
         long millisFor1904 = cal.getTimeInMillis();
