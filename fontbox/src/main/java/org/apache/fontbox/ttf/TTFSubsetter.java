@@ -54,6 +54,8 @@ public final class TTFSubsetter
     
     private static final byte[] PAD_BUF = new byte[] { 0, 0, 0 };
 
+    private static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+
     private final TrueTypeFont ttf;
     private final CmapLookup unicodeCmap;
     private final SortedMap<Integer, Integer> uniToGID;
@@ -1084,7 +1086,7 @@ public final class TTFSubsetter
     private void writeLongDateTime(DataOutputStream out, Calendar calendar) throws IOException
     {
         // inverse operation of TTFDataStream.readInternationalDate()
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar cal = Calendar.getInstance(TIMEZONE_UTC);
         cal.set(1904, 0, 1, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
         long millisFor1904 = cal.getTimeInMillis();
