@@ -51,7 +51,11 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * @param key The key to the value that we are searching for.
      *
      * @return The pdf object that matches the key.
+     * 
+     * @deprecated This will be removed in 3.0. Call {@link #getObject()} to find out if it has the
+     * correct type and then call {@link #getDictionaryObject(org.apache.pdfbox.cos.COSName)}.
      */
+    @Deprecated
     public COSBase getDictionaryObject( COSName key )
     {
         COSBase retval =null;
@@ -68,7 +72,11 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * @param key The key to the value that we are searching for.
      *
      * @return The pdf object that matches the key.
+     * 
+     * @deprecated This will be removed in 3.0. Call {@link #getObject()} to find out if it has the
+     * correct type and then call {@link #getDictionaryObject(org.apache.pdfbox.cos.COSName)}.
      */
+    @Deprecated
     public COSBase getItem( COSName key )
     {
         COSBase retval =null;
