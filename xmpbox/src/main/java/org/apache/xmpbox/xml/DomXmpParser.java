@@ -598,6 +598,11 @@ public class DomXmpParser
         // Instantiate abstract structured type with hint from first element
         Element first = elements.get(0);
         PropertyType ctype = checkPropertyDefinition(xmp, DomHelper.getQName(first));
+        if (ctype == null)
+        {
+            throw new XmpParsingException(ErrorType.NoType, "ctype is null, first: " + first + 
+                    ", DomHelper.getQName(first): " + DomHelper.getQName(first));
+        }
         Types tt = ctype.type();
         AbstractStructuredType ast = instanciateStructured(tm, tt, descriptor.getLocalPart(), first.getNamespaceURI());
 
