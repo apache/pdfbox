@@ -211,7 +211,7 @@ public class PDFXrefStreamParser extends BaseParser
             {
                 return currentNumber < currentEnd;
             }
-            return currentRange < start.length || currentNumber < currentEnd;
+            return currentRange < start.length - 1 || currentNumber < currentEnd;
         }
 
         @Override
