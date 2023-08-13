@@ -220,8 +220,8 @@ public class GlyphSubstitutionDataExtractor
 
         if (coverageTable.getSize() != singleSubstTableFormat2.getSubstituteGlyphIDs().length)
         {
-            throw new IllegalArgumentException(
-                    "The no. coverage table entries should be the same as the size of the substituteGlyphIDs");
+            LOG.warn("The no. coverage table entries should be the same as the size of the substituteGlyphIDs");
+            return;
         }
 
         for (int i = 0; i < coverageTable.getSize(); i++)
@@ -242,8 +242,8 @@ public class GlyphSubstitutionDataExtractor
 
         if (coverageTable.getSize() != multipleSubstFormat1Subtable.getSequenceTables().length)
         {
-            throw new IllegalArgumentException(
-                    "The no. coverage table entries should be the same as the size of the sequencce tables");
+            LOG.warn("The no. coverage table entries should be the same as the size of the sequencce tables");
+            return;
         }
 
         for (int i = 0; i < coverageTable.getSize(); i++)
