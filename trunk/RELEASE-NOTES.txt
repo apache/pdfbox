@@ -1,0 +1,1384 @@
+Release Notes -- Apache PDFBox -- Version 3.0.0
+
+Introduction
+------------
+
+The Apache PDFBox library is an open source Java tool for working with PDF documents.
+
+This is the new major release 3.0.0 of PDFBox. This release contains a lot of improvements,
+fixes and refactorings.
+
+A migration guide is available at https://pdfbox.apache.org/3.0/migration.html. It is
+still a work in progress and we are happy to include any valuable feedback from our 
+community. 
+
+For more details on these changes and all the other fixes and improvements
+included in this release, please refer to the following issues on the
+PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
+
+Sub-task
+
+[PDFBOX-2859] - Support Incremental Update for forms
+[PDFBOX-2934] - Support smask /S /Alpha
+[PDFBOX-3302] - Explicit support for certification signatures
+[PDFBOX-3492] - Remove classic signing and keep external signing only
+[PDFBOX-3524] - signatureField.setValue() not implemented
+[PDFBOX-3525] - reference existing signature field when signing
+[PDFBOX-3671] - Adjust signature field for rotated pages
+[PDFBOX-3910] - Support auto font sizing in multiline text fields
+[PDFBOX-4029] - Rendering transparency groups in patterns
+[PDFBOX-4067] - Split PDAnnotationSquareCircle
+[PDFBOX-4070] - Split Polygon and Polyline annotation classes from Markup annotation
+[PDFBOX-4072] - Split Ink annotation class from Markup annotation
+[PDFBOX-4074] - Support quadpoints in link annotations
+[PDFBOX-4075] - Split highlight, underline, strikeout and squiggly from text markup annotation
+[PDFBOX-4079] - Split FreeText, Caret and Sound annotation classes from PDAnnotationMarkup
+[PDFBOX-4089] - Adjust box sizing calculation for Square annotation with empty /AP entry
+[PDFBOX-4092] - Support margin /RD getter and setter for Square, Circle, FreeText and Caret annotation
+[PDFBOX-4096] - Harmonize method names to set custom appearance handler
+[PDFBOX-4118] - Retain Exception in log output
+[PDFBOX-4122] - Resolve potential NPEs flagged by Sonar
+[PDFBOX-4134] - Resolve floating point comparisons flagged by Sonar
+[PDFBOX-4460] - Show URL or page destination in PDFDebugger on mouse move
+[PDFBOX-4703] - Support acroform /Ff flag for signature fields
+[PDFBOX-4723] - Add equals() and hashCode() to COS objects
+[PDFBOX-4731] - Support RenderDestination
+[PDFBOX-4732] - Support ImageType
+[PDFBOX-5277] - Add print dpi submenu
+[PDFBOX-5320] - Reduce HighResolutionImageIcons memory leaks
+[PDFBOX-5600] - applyGsubFeature() doesn't use the longest possible replacement
+
+Bug
+
+[PDFBOX-756] - Some characters from TeX-created files are mapped into ASCII range 1-31
+[PDFBOX-1031] - PDFMergerUtility - form fields disappear
+[PDFBOX-1065] - PDF Link Annotations not working after Merge - PDFBox version 1.6.0
+[PDFBOX-1100] - PDFMerger: Empty form fields
+[PDFBOX-1532] - extra space added to rotated text
+[PDFBOX-1662] - The Example RemoveAllText does not remove text from certain pdf
+[PDFBOX-1752] - Rendering PDF containing Jpeg2000 fails
+[PDFBOX-1842] - Warn if command-line pdf encryption destroys a pre-existing signature
+[PDFBOX-1878] - Tags are not being displayed in Adobe Acrobat Tags panel when merging pdfs
+[PDFBOX-1958] - image mask outline with shading pattern is invisible
+[PDFBOX-2019] - Annotations produced by Annotation.java example are not rendered correctly
+[PDFBOX-2142] - some /ICCBased colorspaces not rendered correctly
+[PDFBOX-2420] - DateConverter doesn't handle time zones outside -12 to +12 range properly
+[PDFBOX-2558] - Image missing
+[PDFBOX-2602] - Enhance command line tools
+[PDFBOX-2633] - saveIncremental java.lang.NullPointerException
+[PDFBOX-2685] - COS 'primitive' types are mutable
+[PDFBOX-2854] - TTFSubsetter NoSuchElementException
+[PDFBOX-2917] - PDF to Image, faint/dim Images
+[PDFBOX-2919] - org.apache.fontbox.cff.CFFParser.readEntry sometimes throws java.lang.IllegalArgumentException
+[PDFBOX-2984] - PDFTextStripper adds extra word/line delimiters when PDF page orientation is 180 degrees
+[PDFBOX-3000] - Transparency Group issues
+[PDFBOX-3165] - Tab characters in PDTextField cause error when using .flatten()
+[PDFBOX-3267] - Using threads results in different images
+[PDFBOX-3272] - Loaded fonts file descriptors open after closing document
+[PDFBOX-3273] - Fonts not rendered correctly
+[PDFBOX-3276] - Double encryption dictionary for files with XRef stream
+[PDFBOX-3279] - PDDocument.importPage creates two inputstreams
+[PDFBOX-3281] - HTML output wrongly specifies UTF-16 in header
+[PDFBOX-3284] - Big Pdf parsing to text - Out of memory
+[PDFBOX-3286] - Think I found a bad constant (TTF) value and constant use in PDFBox source
+[PDFBOX-3292] - Error reading stream, expected='endstream' actual='' in non-truncated files
+[PDFBOX-3297] - Infinite loop
+[PDFBOX-3298] - Can't show text (glyph) from ZapfDingbats font
+[PDFBOX-3299] - TIFF-files with FillOrder=2 can't be converted to PDF
+[PDFBOX-3300] - Space rendered as missing glyph
+[PDFBOX-3301] - NPE in PDAcroForm.flatten if a widget doesn't contain a /P entry
+[PDFBOX-3303] - setWidgets should set connection to parent
+[PDFBOX-3306] - SCALE_TO_FIT with DPI yields incorrect margins
+[PDFBOX-3308] - Missing endOfName chars
+[PDFBOX-3312] - NPE in saveIncremental() / fix javadoc
+[PDFBOX-3313] - Java 9 InaccessibleObjectException
+[PDFBOX-3315] - Dates falsely detected as different by preflight
+[PDFBOX-3317] - Merged PDF/A files no longer valid PDF/A
+[PDFBOX-3318] - IllegalArgumentException in PDPageTree constructor: root cannot be null
+[PDFBOX-3319] - Chinese character overlap other chinese character
+[PDFBOX-3326] - Issue in RenderingMode.isStroke method
+[PDFBOX-3327] - IndexOutOfBoundsException when retrieving kerning information
+[PDFBOX-3332] - Apache PDFBox Form Fill TrueType text spacing issue
+[PDFBOX-3333] - Wrong appearance generation for rotated AcroForms fields
+[PDFBOX-3335] - Issue while Merging PDF with Hidden Layers
+[PDFBOX-3336] - several errors in the incremental save
+[PDFBOX-3337] - Regression: NullPointerException in subsetting
+[PDFBOX-3338] - CCITT Fax decoder fails
+[PDFBOX-3339] - PDFDebugger shows wrong hex view for image
+[PDFBOX-3341] - currentAccessPermission.setReadOnly() not set in StandardSecurityHandler
+[PDFBOX-3344] - Caused by: java.lang.ClassCastException: org.apache.fontbox.ttf.OpenTypeFont can not be cast to org.apache.fontbox.cff.CFFFont
+[PDFBOX-3346] - Create example with empty signature
+[PDFBOX-3347] - COSName parsing doesn't handle ISO-8859-1 encoded bytes
+[PDFBOX-3348] - NPE in Type1Parser.parseBinary
+[PDFBOX-3351] - NPE when drawing annotation with empty border color array
+[PDFBOX-3354] - PDCIDFont.getAverageFontWidth always returns 0
+[PDFBOX-3355] - PDPageLabels.getLabelsByPageIndices() returns Uppercase letters for style a
+[PDFBOX-3359] - Drawing to Graphics2D / ScratchFileBuffer not closed
+[PDFBOX-3360] - java.lang.IllegalArgumentException: dash lengths all zero
+[PDFBOX-3362] - PageLayout.TwoColumnRight was Illegal
+[PDFBOX-3363] - Leftover file in temp directory when signing
+[PDFBOX-3368] - ContainsKey don't work for the Map<String, Object> returned by PDStructureTreeRoot.getRoleMap
+[PDFBOX-3369] - Error expected floating point number actual='0.00-35095424'
+[PDFBOX-3373] - Create example with empty signature incomplete
+[PDFBOX-3375] - Use a static lock for a singleton
+[PDFBOX-3377] - font caching never stops in AIX
+[PDFBOX-3379] - PDType0Font Subsetting Monospace DejaVuSansMono
+[PDFBOX-3386] - Downgrade maven-bundle-plugin to ensure jdk6 compatibility
+[PDFBOX-3395] - Throwing exception when PDF has unused empty fonts embedded.
+[PDFBOX-3396] - flattening AcroForm with visible sign field ETSI.CAdES.detached
+[PDFBOX-3401] - PDObjectReference getReferencedObject() returns null if referenced obj is not a COSStream
+[PDFBOX-3403] - IllegalArgumentException: Symbolic fonts must have a built-in encoding
+[PDFBOX-3404] - Threads using PDFBox getting stuck when using standard 14 fonts
+[PDFBOX-3408] - Correct validation of Widget Annotations for PDF/A-1
+[PDFBOX-3409] - TextToPDF drops leading spaces
+[PDFBOX-3411] - Incorrect embedding of non-subset fonts.
+[PDFBOX-3412] - Using fallback font 'TimesNewRomanPSMT' for 'Wingdings'
+[PDFBOX-3417] - Redundant/incorrect code in PDVisibleSignDesigner.java
+[PDFBOX-3419] - DublinCoreSchema.getDates always returns empty list
+[PDFBOX-3424] - Regression from 1.8.10: IOException: XREF for 171:0 points to wrong object: 173:0
+[PDFBOX-3426] - ExecutionException: java.lang.ArrayIndexOutOfBoundsException: 0
+[PDFBOX-3435] - Text extraction - words on same line detection failing in 2.x
+[PDFBOX-3439] - DomXmpParser fails to parse date
+[PDFBOX-3441] - NumberFormatException when loading large PDF file
+[PDFBOX-3446] - Infinite loop while parsing
+[PDFBOX-3447] - IllegalArgumentException: Dimensions (width=99999 height=99999) are too large
+[PDFBOX-3448] - NullPointerException at org.apache.pdfbox.pdmodel.common.COSArrayList.convertFloatCOSArrayToList
+[PDFBOX-3450] - ArrayIndexOutOfBoundsException at org.apache.fontbox.cmap.CMapParser.increment
+[PDFBOX-3457] - Glyphs rendered in wrong width
+[PDFBOX-3466] - Java 9 warnings
+[PDFBOX-3470] - Set border and background color in AcroForm field appearance
+[PDFBOX-3471] - XMP parsing fails if XMP contain comments
+[PDFBOX-3472] - NPE when PDF/A identification metadata does not contain ID
+[PDFBOX-3473] - IllegalArgumentException: resourceDictionary is null in PDFMerger (2)
+[PDFBOX-3475] - IllegalArgumentException: 2058 > -49861164 in PDType1Font.java
+[PDFBOX-3477] - CA and ca values should be clipped
+[PDFBOX-3479] - NPE in AppearanceGeneratorHelper.setAppearanceValue() if no rectangle in widget
+[PDFBOX-3481] - Localization in XRef generation results in unusable PDFs
+[PDFBOX-3485] - NullPointerException in PageDrawer.drawAnnotationLinkBorder() due to /Rect array containing indirect objects
+[PDFBOX-3486] - IllegalArgumentException for images without dimensions
+[PDFBOX-3487] - ClassCastException in COSWriter.write() when saving PDF
+[PDFBOX-3490] - NullPointerException in PDType1Font.generateBoundingBox
+[PDFBOX-3491] - NumberFormatException in CFFParser.readRealNumber
+[PDFBOX-3493] - AcroFormValidationProcess.validateField fails to check multiple widgets
+[PDFBOX-3498] - Unexpected spaces in text extraction
+[PDFBOX-3500] - Error expected floating point number actual='0.-262'
+[PDFBOX-3501] - java.lang.ArrayIndexOutOfBoundsException when rendering to bitonal image type
+[PDFBOX-3504] - Special characters issue
+[PDFBOX-3506] - Not able to read the custom metadata in trailer section
+[PDFBOX-3507] - Modern OS X doesn't show JMenuBar in PDFDebugger app
+[PDFBOX-3509] - DrawPrintTextLocations example fails with cropBox and rotated pages
+[PDFBOX-3510] - "java.io.IOException: Stream closed" while parsing a page without contents
+[PDFBOX-3511] - NullPointerException - missing glyph description
+[PDFBOX-3514] - Stackoverflow exception
+[PDFBOX-3515] - Problems with CourierStd font
+[PDFBOX-3517] - [Patch] CCITTFactory.createFromFile methods do not release lock on source file
+[PDFBOX-3519] - COSName is not ascii
+[PDFBOX-3520] - Security manager fails
+[PDFBOX-3521] - FontProvider not thread safe
+[PDFBOX-3526] - DataFormatException: invalid stored block lengths
+[PDFBOX-3530] - WriteDecodedDoc slow due to decoding images
+[PDFBOX-3531] - LCMS error 13: Couldn't link the profiles
+[PDFBOX-3532] - Java 6 errors
+[PDFBOX-3533] - IOException "expected number, actual=COSArray{...}" on a valid PDF
+[PDFBOX-3534] - NPE if an AcroForm field's child cosdict is null
+[PDFBOX-3535] - ClassCastException in PDAnnotationLink.getAction()
+[PDFBOX-3536] - IOException "Invalid dictionary, found: 'r' but expected: '/' at offset 1148" on a valid PDF
+[PDFBOX-3538] - IOException over NumberFormatException on a valid PDF
+[PDFBOX-3540] - Trailer Syntax error, ID is different in the first and the last trailer - for PDF with incremental updates
+[PDFBOX-3545] - COSParser.parseXref failing if startXrefOffset over pdf size
+[PDFBOX-3546] - IOException over DataFormatException, "invalid stored block lengths" on a valid PDF
+[PDFBOX-3549] - Can't read embedded ICC 4 profile (Invalid profile sequence)
+[PDFBOX-3551] - CLI Decrypt broken, only allows 1 argument
+[PDFBOX-3553] - IOException "Expected root dictionary, but got this: COSInt{971}" on a valid PDF
+[PDFBOX-3555] - FlateFilter.decode cause native memory leaks
+[PDFBOX-3556] - Error "Error getting header version: %PDF--33" on a valid document
+[PDFBOX-3558] - NPE in JBig2Filter if BitsPerComponent is missing
+[PDFBOX-3559] - ExtractImages does not apply masks in some jpegs
+[PDFBOX-3560] - PDPattern.getCOSObject() always returns null
+[PDFBOX-3561] - PDTilingPattern not initialized correctly
+[PDFBOX-3562] - PDFBox hangs indefinately when rendering certain files
+[PDFBOX-3566] - ClassCastException in JPEGFactory.createFromImage()
+[PDFBOX-3569] - Performance regression in PDColorSpace#toRGBImageAWT
+[PDFBOX-3570] - JDK-8054565 Java 8 close contract issue
+[PDFBOX-3571] - sRGB Color Space Profile is subject to 3rd party copyright
+[PDFBOX-3572] - AES-Decryption with Bouncycastle throws NullPointerException
+[PDFBOX-3579] - Giant glyphs when rendering embedded fonts
+[PDFBOX-3587] - Flatten not working on attached pdf form
+[PDFBOX-3590] - AccessPermission not applied
+[PDFBOX-3594] - Use PDOutlineItem#findDestinationPage() cannot get PDPage, return was null
+[PDFBOX-3596] - FDFDocument.loadXFDF not working
+[PDFBOX-3605] - Infinite Read Loop in BufferedRandomAccesssFile
+[PDFBOX-3607] - Font with name containing cache separator
+[PDFBOX-3608] - byte/short tiff tags not read correctly
+[PDFBOX-3609] - ClassCastException in PDCIDFont.readWidths()
+[PDFBOX-3610] - ArrayIndexOutOfBoundsException in PDICCBased.loadICCProfile()
+[PDFBOX-3615] - Multiply transparency not anti-aliased
+[PDFBOX-3619] - TextStripper red bounds not shown correctly in rotated text
+[PDFBOX-3622] - DCTDecode image with separation colorspace not rendered correctly
+[PDFBOX-3625] - Use correct file encoding when saving fdf data
+[PDFBOX-3626] - StackOverflowException on a valid PDF
+[PDFBOX-3627] - "/Prev loop at offset 77418" on a valid document
+[PDFBOX-3628] - BadPaddingException on a valid document
+[PDFBOX-3631] - Signature interoperability issue / visible signature not visible on some viewers
+[PDFBOX-3634] - getSuffix() returns null for JBIG2
+[PDFBOX-3638] - NullPointerException when setting form field value
+[PDFBOX-3639] - FDF does not parse: Missing root object specification in trailer.
+[PDFBOX-3640] - java.awt.geom.NoninvertibleTransformException: Determinant is -0.0
+[PDFBOX-3641] - ICC_ColorSpace usage is not thread safe
+[PDFBOX-3642] - java.lang.ClassCastException is thrown when flattening form with a picture
+[PDFBOX-3644] - PrintURLs example doesn't detect all URLs
+[PDFBOX-3646] - Annotations parsed from XFDF containing ampersand characters are not properly imported
+[PDFBOX-3647] - Shading cut off
+[PDFBOX-3648] - EOFException parsing PDFs with invalid xref offsets
+[PDFBOX-3653] - NegativeArraySizeException thrown when converting PDF to Image (in TilingPaint.java)
+[PDFBOX-3654] - Parse error reading embedded Type1 font
+[PDFBOX-3656] - Problem when setting COSName.Off on radio button
+[PDFBOX-3657] - Image rendering fails (1 bit per component image)
+[PDFBOX-3659] - Can't create text with PDFType1Font.ZAPF_DINGBATS or PDFType1Font.SYMBOL without installed fonts
+[PDFBOX-3661] - Problem With Malformed xref
+[PDFBOX-3663] - NullPointerException when signing a PDF with AcroForm and no fields
+[PDFBOX-3664] - Iterate on all acroform fields, not just on root fields for signing
+[PDFBOX-3665] - PDFBox text and images are blurry on HiDPI display
+[PDFBOX-3668] - COSParser can't detect length of stream and then PDFRenderer does not render pages at some files
+[PDFBOX-3672] - Exception on font PDType1Font.ZAPF_DINGBATS
+[PDFBOX-3673] - Filled form fields appear gray instead of black after flatten
+[PDFBOX-3676] - Bad glyph rendering of type 1 font
+[PDFBOX-3677] - NullPointerException in Type1Parser.read
+[PDFBOX-3681] - Text not rendered in mode 7 (3)
+[PDFBOX-3682] - Wrong value stored for a radio button with an /Opts entry
+[PDFBOX-3683] - Unexpected behavior when setting value for radio button with /Opts entry
+[PDFBOX-3684] - PDFBox StackOverflowError on malformed files when merging
+[PDFBOX-3685] - ClassCastException in SetMatrix() operator processor
+[PDFBOX-3686] - IllegalArgumentException: Color parameter outside of expected range: Red Green Blue
+[PDFBOX-3687] - PDFBox doesn't respect different setting of /DA at PDAnnotationWidget level to /DA at PDField level
+[PDFBOX-3691] - ClassCastException in SetStrokingColorSpace.process
+[PDFBOX-3692] - ArrayIndexOutOfBoundsException in SetTextRenderingMode.process
+[PDFBOX-3693] - IllegalArgumentException in Type2CharString.java
+[PDFBOX-3694] - java.io.IOException: Image stream is empty for inline image (2)
+[PDFBOX-3695] - ClassCastException in SetRenderingIntent.process
+[PDFBOX-3698] - Static Initialization Deadlock between COSNumber/COSInteger
+[PDFBOX-3700] - OutOfMemoryException converting PDF to TIFF Images
+[PDFBOX-3702] - ArrayIndexOutOfBoundsException in CCITTFaxDecoderStream.decode2D
+[PDFBOX-3703] - ArrayIndexOutOfBoundsException in PDDeviceRGB.toRGB()
+[PDFBOX-3705] - PDFBox PDF Print Operation eliminates (prints blank) MS Word Table tiling pattern
+[PDFBOX-3708] - hasGlyph() contradicts encode()
+[PDFBOX-3712] - PDFBox goes into an infinite loop with this PDF
+[PDFBOX-3714] - PDF with blanks at the beginning can't be parsed
+[PDFBOX-3723] - FDFField.getValue() doesn't return the values in line with the Javadoc.
+[PDFBOX-3724] - Wrong size in rendering of some artifacts
+[PDFBOX-3726] - NPE when setting the field value in an AcroForm and the NormalAppearance entry exists but is COSNull
+[PDFBOX-3727] - "premature EOF, image will be incomplete"
+[PDFBOX-3728] - org.apache.pdfbox.cos.COSDictionary cannot be cast to org.apache.pdfbox.cos.COSStream
+[PDFBOX-3731] - IOException: Found Token[kind=NAME, text=bind] but expected ND at offset 91
+[PDFBOX-3732] - IllegalArgumentException when refreshing an appearance and no font resources are defined
+[PDFBOX-3733] - image added to pdf by tool AddImageToPDF is turn-overed
+[PDFBOX-3738] - Signature not visible on Acrobat
+[PDFBOX-3739] - ImageWriterIterator.next() and ImageReaderIterator.next() can return null
+[PDFBOX-3740] - Standard 14 and Encoding
+[PDFBOX-3741] - usage of default colorspace not checked by preflight
+[PDFBOX-3742] - Unknown dir object c='>' cInt=62 peek='>' peekInt=62
+[PDFBOX-3743] - Running GC between signing and saving document closes stream
+[PDFBOX-3745] - Wrong character width
+[PDFBOX-3747] - CmapSubtable#getCharCodes provides values in random order
+[PDFBOX-3748] - java.lang.UnsupportedOperationException: Kerning table version 0 format 2 not yet supported.
+[PDFBOX-3750] - java.util.zip.DataFormatException when parsing a PDF
+[PDFBOX-3751] - Flattening a pdf with refreshAppearances set to true causes a NullPointerException
+[PDFBOX-3752] - PDVariableText text color changes to be the same as the background color after flattening
+[PDFBOX-3753] - setting a RadioButton with export values does not update the appearance
+[PDFBOX-3754] - Skip << >> in type1 font parser
+[PDFBOX-3755] - ClassCastException in PDColor constructor: org.apache.pdfbox.cos.COSNull cannot be cast to org.apache.pdfbox.cos.COSNumber
+[PDFBOX-3757] - TTFSubsetter scrambles PostScript names and unicode codepoints when subset contains diaeresis
+[PDFBOX-3761] - Exception in thread "main" java.lang.NullPointerException
+[PDFBOX-3769] - Cannot read JBIG2 image when JBIG2-Image-Decoder is in path
+[PDFBOX-3775] - Merge documents fails due to IllegalArgumentException
+[PDFBOX-3777] - org.apache.pdfbox.cos.COSDictionary cannot be cast to org.apache.pdfbox.cos.COSArray
+[PDFBOX-3781] - Existing AcroForm default resources is overwritten by signing code
+[PDFBOX-3783] - java.io.IOException: Expected root dictionary, but got this: COSNull{}
+[PDFBOX-3784] - Inline image incorrectly parsed
+[PDFBOX-3788] - java.lang.RuntimeException: java.io.IOException: Catalog cannot be found
+[PDFBOX-3789] - Some text missing in rendering
+[PDFBOX-3791] - Long rendering time
+[PDFBOX-3795] - PDFMergeUtility error invalid stored block lengths
+[PDFBOX-3798] - Truncated file has first page empty
+[PDFBOX-3799] - Problem in TextPosition's hashCode
+[PDFBOX-3806] - Nullpointer exception in getLeftSideBearing
+[PDFBOX-3807] - CMapParser NullPointerException
+[PDFBOX-3811] - Problem with calling "saveIncrementalForExternalSigning" more than once in the same document
+[PDFBOX-3813] - PDF Box crash when using PDFToImage or PDFDebug
+[PDFBOX-3817] - Signature form names not standard
+[PDFBOX-3819] - TrueType glyphs not displayed in rendering on Windows 10
+[PDFBOX-3821] - Newly added MDP functionality breaks PDFs <1.5
+[PDFBOX-3826] - NPE if RAFDataStream.getCurrentPosition() when TrueTypeFont created from file is reused
+[PDFBOX-3827] - Setting empty values on listbox keeps marked item
+[PDFBOX-3829] - ExtractImages fails for JPX images
+[PDFBOX-3832] - PDFBox Won't Embed a Font for a Form Field if Field is Empty
+[PDFBOX-3833] - Characters in wrong order
+[PDFBOX-3835] - Wrap long words for multiline text fields
+[PDFBOX-3836] - PDFToImage: Text missing or background box stacks over
+[PDFBOX-3838] - NPE in PatchMeshesShadingContext.readPatch()
+[PDFBOX-3839] - AIOOB in PDResources.getFont()
+[PDFBOX-3845] - Could not find referenced cmap stream H
+[PDFBOX-3847] - code has bug
+[PDFBOX-3849] - COSParser crashed with corrupt PDF
+[PDFBOX-3850] - DrawPrintTextLocations should limit bbox paint to font bbox when type 3 font has incorrect large glyph bbox
+[PDFBOX-3852] - Overlay a pdf file which is 750 pages ends up in OutOfMemoryError
+[PDFBOX-3855] - NPE in CFFParser.parse()
+[PDFBOX-3857] - Can not extract exported values for PDRadioButton
+[PDFBOX-3858] - Optimize 1 component DeviceN colorspace
+[PDFBOX-3861] - ClassCastException: org.apache.pdfbox.cos.COSStream cannot be cast to org.apache.pdfbox.cos.COSString
+[PDFBOX-3864] - UTF16 encoded string to PDFDocEncoding
+[PDFBOX-3867] - IndexOutOfBoundsException on CMapParser
+[PDFBOX-3881] - Handling of Byte Order Mark with Metadata-Fields
+[PDFBOX-3884] - GlyphList registers "wrong" Adobe name for "U+02DC SMALL TILDE"
+[PDFBOX-3887] - Getting a "DataFormatException: invalid distance too far back" exception for the attached file
+[PDFBOX-3891] - Missing data if document is merged with itself
+[PDFBOX-3894] - NPE on org.apache.pdfbox.pdmodel.PDPageTree.isPageTreeNode
+[PDFBOX-3896] - UnsupportedOperationException
+[PDFBOX-3898] - AcroFields' PDTextField (and others?) can have kids
+[PDFBOX-3909] - End of inline image not detected
+[PDFBOX-3913] - Japanese URI improperly decoded
+[PDFBOX-3914] - LayerUtility ignores OCProperties on import
+[PDFBOX-3916] - NPE on org.apache.pdfbox.pdmodel.font.PDType0Font.readEncoding
+[PDFBOX-3919] - Infinite loop while parsing (2)
+[PDFBOX-3923] - Expected a long type at offset 52152, instead got 'xref'
+[PDFBOX-3925] - QUADDING constants no longer public
+[PDFBOX-3928] - IllegalArgumentException: root cannot be null with truncated file
+[PDFBOX-3929] - Border style dictionary width ignored by Adobe Reader when float
+[PDFBOX-3930] - replace deprecated TBSCertificateStructure
+[PDFBOX-3932] - Image with predictor 15 not rendered correctly
+[PDFBOX-3934] - Page missing
+[PDFBOX-3935] - DataFormatException: invalid stored block lengths
+[PDFBOX-3936] - IllegalArgumentException: root cannot be null with truncated file (2)
+[PDFBOX-3937] - NPE in PDCIDFontType2 constructor
+[PDFBOX-3940] - Lost metadata in 2.0.8-SNAPSHOT
+[PDFBOX-3942] - ClassCastException in getOptionalContentGroups
+[PDFBOX-3943] - /Helv entry in /DR not created if /DR exists
+[PDFBOX-3946] - NPE in PDActionURI.getURI() if URI doesn't exist
+[PDFBOX-3947] - ArrayIndexOutOfBoundsException in bfSearchForObjStreams
+[PDFBOX-3948] - NumberFormatException in bfSearchForObjStreams
+[PDFBOX-3949] - NPE in bfSearchForObjStreams
+[PDFBOX-3950] - NPE in PageIterator.enqueueKids
+[PDFBOX-3953] - StackOverflowError in org.apache.pdfbox.pdmodel.PDPageTree.getKids
+[PDFBOX-3955] - new -- very slow processing on truncated PDF
+[PDFBOX-3956] - Truncated pdf can't be repaired anymore
+[PDFBOX-3957] - Pages lost
+[PDFBOX-3958] - UTF-16 (BE) URI improperly decoded
+[PDFBOX-3959] - DataFormatException: invalid code lengths set with truncated file
+[PDFBOX-3963] - ClassCastException in PDCIDFont.readVerticalDisplacements()
+[PDFBOX-3965] - Truetype Font glyphs not rendered
+[PDFBOX-3967] - IllegalArgumentException: Illegal Capacity: -1
+[PDFBOX-3969] - Splitting starts counting for cutting out pages wrongly
+[PDFBOX-3972] - Incorrect page after merge for OpenAction with GoTo page destination
+[PDFBOX-3973] - OCG Layers partly lost after merge
+[PDFBOX-3976] - NPE in bfSearchForTrailer
+[PDFBOX-3977] - /Info dictionary no longer available
+[PDFBOX-3978] - IllegalStateException on saveIncrementalForExternalSigning
+[PDFBOX-3979] - NullPointerException on Type1Parser.readCharStrings(Type1Parser.java:713)
+[PDFBOX-3994] - ClassCastException in COSParser.bfSearchForTrailer
+[PDFBOX-3997] - Cannot encode strings with of surrogate pairs
+[PDFBOX-3999] - Merge failed to clone tags
+[PDFBOX-4001] - Rendering LineFeed (No Unicode mapping for .notdef (10))
+[PDFBOX-4002] - Layer Utility - Text not being displayed when overlaying
+[PDFBOX-4003] - Can't retrieve number tree from structure tree
+[PDFBOX-4005] - Incorrect use of PDNumberTreeNode in PDPageLabels
+[PDFBOX-4009] - Structure tree lost when merging from the command line
+[PDFBOX-4010] - A (rotated) barcode is missing from a pdf when printed
+[PDFBOX-4011] - BBox in signature forms has wrong order
+[PDFBOX-4012] - PDF with incremental save is shown blank
+[PDFBOX-4013] - Java 9/macOS: Debugger App does not start (NoSuchMethodException)
+[PDFBOX-4015] - java.awt.color.CMMException: LCMS error 13: Couldn't link the profiles
+[PDFBOX-4017] - Symbol font glyphs not found on Windows 10 fall creators update
+[PDFBOX-4018] - NPE in sanitizeType in org.apache.pdfbox.pdmodel.PDPageTree
+[PDFBOX-4021] - Font missing when building from source makes build fail
+[PDFBOX-4027] - IndexOutOfBoundsException when XObject form matrix has only 5 elements
+[PDFBOX-4030] - ClassCastException when matrix array has indirect objects
+[PDFBOX-4038] - CFF font Blue values and other delta encoded lists read incorrectly
+[PDFBOX-4043] - ExtractImages doesn't extract images from PDPatterns
+[PDFBOX-4044] - Unable to process overlay on Cognos PDF documents
+[PDFBOX-4058] - High memory consumption when extracting image from PDF file
+[PDFBOX-4060] - Slow rendering of PDF file with DeviceN jpeg file
+[PDFBOX-4061] - ClassCastException PDActionJavaScript cannot be cast to PDDestination
+[PDFBOX-4064] - cm operator has 7 numbers
+[PDFBOX-4066] - Merging documents with nested fields duplicates child fields
+[PDFBOX-4083] - Line annotation /LL, /LLE and /LLO have wrong default values
+[PDFBOX-4084] - Can't draw PDFs while ANNOTS is COSStream instead of COSArray
+[PDFBOX-4085] - COSString cannot be cast to COSDictionary error
+[PDFBOX-4088] - Root/StructTreeRoot/K/S must be name, not string (merge)
+[PDFBOX-4091] - Cannot analyze signatures : Wrong type of referenced length object COSObject
+[PDFBOX-4093] - illegible characters in rendered image
+[PDFBOX-4097] - Compressed object will lost when brute force search failed to handle compressed streams
+[PDFBOX-4103] - Optional Content Groups with same names can't have different visibility
+[PDFBOX-4105] - Copyright 2011 adam
+[PDFBOX-4107] - NPE at PDFMergerUtility
+[PDFBOX-4108] - /Length1 not needed for /CIDToGIDMap
+[PDFBOX-4113] - Debugger file open dialog has incorrect filter on Mac
+[PDFBOX-4114] - ICCBased color spaces wrong color output
+[PDFBOX-4115] - Problem creating PDF with German text using embedded Type1 (PFB) font
+[PDFBOX-4125] - FDFField.writeXML KO with String
+[PDFBOX-4129] - Deleted fonts not detected when checking cache
+[PDFBOX-4131] - Stack overflow in fields
+[PDFBOX-4132] - Unknown dir object c=')' cInt=41 peek=')' peekInt=41 at offset 2701
+[PDFBOX-4140] - Crash when repeating flag is outside of range.
+[PDFBOX-4146] - Patch: Fix for appearance of visible signature
+[PDFBOX-4149] - PDF consisting on one page with 5 MB renders until the end of time using renderImageWithDPI
+[PDFBOX-4151] - FlateFilter, LZWFilter with predictor causes double memory usage
+[PDFBOX-4153] - Outlines missing in some versions, not in others
+[PDFBOX-4155] - Password Security with Unicode needs SASLprep
+[PDFBOX-4157] - Flatten ne positonne pas bien le 1er champs si Image avant
+[PDFBOX-4158] - COSDocument and PDFMerger may not close all IO resources if closing of one fails
+[PDFBOX-4162] - OutOfMemoryError in PDExtendedGraphicsState#getLineDashPattern
+[PDFBOX-4163] - Java 11 compile error
+[PDFBOX-4164] - NPE in PDFDebugger when expanding page subtree
+[PDFBOX-4167] - OutOfMemoryError on FlateFilter - Deflater.end() is missing
+[PDFBOX-4169] - PDFPrintable has subsampling but it can not be used
+[PDFBOX-4172] - Flatten fails on first form element only
+[PDFBOX-4176] - PDImageXObject doesn't support TIFF although JavaDoc says it does
+[PDFBOX-4179] - Preflight test fails: Parameter 'directory' is not a directory
+[PDFBOX-4180] - TextToPDF Does Not Explicitly Close Reader objects
+[PDFBOX-4181] - GlyphList.toUnicode not secured for concurrent access
+[PDFBOX-4185] - Fetching options for PDChoice causes ClassCastException
+[PDFBOX-4193] - StackOverflow
+[PDFBOX-4195] - Valid XMP Metadata TimeZone not accepted
+[PDFBOX-4197] - PDStructureElement.getAttributes() ignores reference objects
+[PDFBOX-4200] - DataFormatException: invalid code lengths set when rendering image
+[PDFBOX-4204] - Problem when merging PDF 1.4 and PDF 1.1 Documents
+[PDFBOX-4207] - Coordinates shown in PDFDebugger are incorrect on HiDPI displays
+[PDFBOX-4218] - image with stencil mask appears interpolated
+[PDFBOX-4219] - Multithreading problem when rendering several documents with Standard 14 fonts
+[PDFBOX-4222] - PDFMergerUtility: java.lang.ClassCastException: org.apache.pdfbox.cos.COSDictionary cannot be cast to org.apache.pdfbox.cos.COSNumber
+[PDFBOX-4223] - PDFMergerUtility: java.io.IOException: Error: can't convert to Destination COSArray{[COSName{XYZ}]}
+[PDFBOX-4227] - java.util.zip.DataFormatException: invalid distance too far back
+[PDFBOX-4228] - PDFBox crashes when a Type3 font don't have an embedded encoding.
+[PDFBOX-4230] - NullpointerException in CmapSubtable
+[PDFBOX-4233] - Flatten does not work properly on field with type 0 font
+[PDFBOX-4235] - NPE when setting the DA of a PDTextField
+[PDFBOX-4241] - PDDocument.save double-closes stream causing exceptions with well-behaving streams
+[PDFBOX-4242] - Fontbox does not close file descriptor when loading fonts.
+[PDFBOX-4245] - wrong rendering of the transparency group at the specific position on a page
+[PDFBOX-4248] - NPE when rendering a PDF with annotations using a g2d from Batik
+[PDFBOX-4254] - PDDocument.close() might ignore throwing an Exception
+[PDFBOX-4267] - Incorrect rendering when /Matte entry
+[PDFBOX-4268] - Japanese text displayed as barcode
+[PDFBOX-4270] - Image in field disappears after flattening
+[PDFBOX-4276] - Multiply blend mode not detected
+[PDFBOX-4278] - Type 3 font .notdef-named glyph missing in rendering
+[PDFBOX-4279] - ArrayIndexOutOfBoundsException in PDDeviceGray.toRGB
+[PDFBOX-4283] - Allowing Rectangles with additional elements
+[PDFBOX-4288] - needless adding while parsing dictionary objects
+[PDFBOX-4291] - JavaDoc on website is marked as being in German
+[PDFBOX-4292] - Validation fails if ModifyDate and ModDate are specified using different time zones
+[PDFBOX-4298] - NullPointerException when doing overlay
+[PDFBOX-4299] - ArrayIndexOutOfBoundsException in CmapSubtable.processSubtype2
+[PDFBOX-4301] - ClassCastException in PDExtendedGraphicsState
+[PDFBOX-4302] - ToUnicode CMap is not written correctly when the entry count is just 100.
+[PDFBOX-4303] - Helv and ZaDb overridden
+[PDFBOX-4305] - Log message not in english
+[PDFBOX-4306] - Image clipping area rounding error
+[PDFBOX-4307] - ClassCastException in PDDocumentCatalog.getDocumentOutline if 'outlines' is not a dictionary
+[PDFBOX-4308] - PDDocument protect changes color palette
+[PDFBOX-4315] - PDFBox info message when not using it
+[PDFBOX-4316] - RemoveAllText does not delete all parameters with " operator
+[PDFBOX-4318] - PDFont.encode results change on identical input
+[PDFBOX-4319] - Parsing 100000 page pdf is slow
+[PDFBOX-4321] - PDDocument.save(OutputStream) shouldn't close the output stream
+[PDFBOX-4322] - Extract Text feature is not working for some part of PDF
+[PDFBOX-4326] - PDF with JPEG2000 image can't be rendered
+[PDFBOX-4327] - NullPointerException in PDFStreamEngine.processSoftMask() when running ExtractImages
+[PDFBOX-4330] - NumberFormatException in CFFParser.readRealNumber()
+[PDFBOX-4331] - Make jdk9 profile activation automatic
+[PDFBOX-4333] - ClassCastException when loading PDF
+[PDFBOX-4336] - "CMap is invalid" exception thrown
+[PDFBOX-4338] - ArrayIndexOutOfBoundsException in COSParser
+[PDFBOX-4339] - NullPointerException in COSParser
+[PDFBOX-4343] - Prevent calling addSignature twice
+[PDFBOX-4345] - FDFAnnotation.richContentsToString does not evaluate text nodes which have siblings in the XML
+[PDFBOX-4347] - ArrayIndexOutOfBoundsException in PDFXrefStreamParser
+[PDFBOX-4348] - ClassCastException in COSParser
+[PDFBOX-4349] - ClassCastException in COSParser
+[PDFBOX-4350] - IllegalArgumentException in PDFObjectStreamParser
+[PDFBOX-4351] - IndexOutOfBoundsException when reading from InputStreamSource
+[PDFBOX-4352] - NullPointerException in COSParser
+[PDFBOX-4353] - NullPointerException in PDFXrefStreamParser
+[PDFBOX-4354] - NumberFormatException in COSParser
+[PDFBOX-4355] - PDFTextStripperByArea dies on Chinese/Japanese files
+[PDFBOX-4357] - IllegalArgumentException "root cannot be null"
+[PDFBOX-4359] - Bad sizing of signature field inside rotated page
+[PDFBOX-4360] - ArrayIndexOutOfBoundsException in ASCIIHexFilter
+[PDFBOX-4361] - ArrayIndexOutOfBoundsException in COSParser
+[PDFBOX-4366] - NullPointerException in PDButton.updateByValue() when appearance missing
+[PDFBOX-4367] - Error expected floating point number actual='18-5'
+[PDFBOX-4372] - Stack overflow around PDFStreamEngine.processStream
+[PDFBOX-4374] - Switch from log4j to slf4j
+[PDFBOX-4377] - Verify CRL in AddValidation example
+[PDFBOX-4381] - Revocation CRL check should be done at signing time in AddValidation example
+[PDFBOX-4383] - PDFMergerUtility seems to leave source file open
+[PDFBOX-4384] - PDF/A Document Validation out of memory
+[PDFBOX-4392] - PDF completely blow up the RAM on amazon instances
+[PDFBOX-4393] - PDF signature invalid after second interactive field signed
+[PDFBOX-4395] - Accent positioning in Type1 fonts
+[PDFBOX-4398] - getLastSignatureDictionary modifies internal structure of PDDocument
+[PDFBOX-4399] - Disabled optional content groups are rendered
+[PDFBOX-4400] - jlink loading police.afm files
+[PDFBOX-4406] - PrintBookmarks does not support named destinations
+[PDFBOX-4407] - ParentTree Objects do not match KArray objects after merge
+[PDFBOX-4408] - Object StructParent property does not match entry in parent tree
+[PDFBOX-4415] - Structure tree RoleMap isn't merged
+[PDFBOX-4416] - Structure tree IDTree isn't merged
+[PDFBOX-4417] - Merged file has several structure trees
+[PDFBOX-4418] - ParentTree can't be merged if it has several levels
+[PDFBOX-4419] - Merging doesn't consider MarkInfo properly
+[PDFBOX-4421] - Add support for AES128 encryption for public key
+[PDFBOX-4422] - PDF with OutputIntent with alternative colorspace with incorrect component count validates
+[PDFBOX-4423] - Merge test checkWithNumberTree() fails when widget has no StructParent
+[PDFBOX-4428] - pdfbox called by Lotus Notes/Domino agent can't load afm fonts
+[PDFBOX-4429] - Bogus /StructParent(s) entries are kept when merging with file that has a structure tree
+[PDFBOX-4430] - Missing transformation in flatterning when an XObject is used as appearance of a form field
+[PDFBOX-4435] - Poor quality printing of PDF label
+[PDFBOX-4436] - Error opening encrypted PDF in Acrobat IOS/Android
+[PDFBOX-4437] - Import XFDF stamp annotation loses appearance
+[PDFBOX-4444] - NPE in PDNumberTreeNode.convertCOSToPD()
+[PDFBOX-4445] - Language and Viewer Preferences are not properly merged
+[PDFBOX-4446] - Tolerate some incorrect Xref in PDF file
+[PDFBOX-4449] - Rotated pages produce matrix value like -0.999999999999999 instead of -1
+[PDFBOX-4450] - java.lang.OutOfMemoryError when validating pdf
+[PDFBOX-4451] - ArrayIndexOutOfBoundsException in PDRectangle constructor
+[PDFBOX-4452] - ClassCastException in PDPageTree
+[PDFBOX-4453] - Encrypted string not decrypted
+[PDFBOX-4456] - PrintPDF doesn't support 1:1 printer name matching
+[PDFBOX-4459] - PDPageDestination.retrievePageNumber() returns 0 on isolated page
+[PDFBOX-4461] - PDFunctionType0.eval() damages its input
+[PDFBOX-4466] - Signature without /Type /Sig can't be read
+[PDFBOX-4470] - Red areas around text when converting a pdf to png with pdfbox
+[PDFBOX-4473] - OS2WindowsMetricsTable.FSTYPE_EDITIBLE should be 8 instead of 4
+[PDFBOX-4474] - NPE in Type1Parser.readValue()
+[PDFBOX-4475] - PDFMergerUtility is very slow, almost in dead loop
+[PDFBOX-4476] - Need handle the NullPointerException in PDPageTree
+[PDFBOX-4477] - Large encrypted file takes days to be parsed
+[PDFBOX-4478] - Import XFDF stamp annotation has malformed appearance
+[PDFBOX-4480] - Problem extracting text in newline characters and spaces beetween words
+[PDFBOX-4485] - Adobe reader on android can not see attachments
+[PDFBOX-4487] - Cannot set documentMergeMode
+[PDFBOX-4488] - NegativeArraySizeException with image with extreme width
+[PDFBOX-4490] - .getNumberofPages() returns incorrect value
+[PDFBOX-4492] - JVM crashes on PDFRenderer.renderImage
+[PDFBOX-4493] - InputStream not closed after reading
+[PDFBOX-4494] - Problem with google noto bold font and hungarian characters
+[PDFBOX-4495] - Expected number, actual=COSFloat
+[PDFBOX-4496] - OCG enablement with string parameter is not well defined
+[PDFBOX-4497] - dash phase start should be float
+[PDFBOX-4500] - K Array order in structure tree reversed when merging
+[PDFBOX-4503] - Width 0 during pdf rendering
+[PDFBOX-4504] - Warnings when structure tree RoleMap is merged if the key is already existing in destination directory
+[PDFBOX-4513] - FDFAnnotationStamp fails to parse some appearance streams
+[PDFBOX-4516] - PDFBox text and images are blurry even after rendering with high DPI
+[PDFBOX-4517] - Unable to decrypt PDF with String and Stream filter to identity
+[PDFBOX-4518] - NegativeArraySizeException thrown when converting PDF to Image
+[PDFBOX-4520] - PDFBox PDFToImage shows black bars on scanned text
+[PDFBOX-4521] - Missing Info value from file trailer: org.apache.pdfbox.cos.COSName cannot be cast to org.apache.pdfbox.cos.COSDictionary
+[PDFBOX-4525] - PDF completely blow up the RAM on RedHat
+[PDFBOX-4526] - Optional Content Membership Dictionaries (OCMD) not supported
+[PDFBOX-4531] - Extraction of Arabic PDF has incorrect ordering of normalized ligatures
+[PDFBOX-4535] - java.lang.ClassCastException in PDImageXObject.getMask()
+[PDFBOX-4540] - COSWriter sometimes retrieves wrong ObjectKey
+[PDFBOX-4543] - PDLineDashPattern fails as float[] is converted to List<float[]> instead of List<Float>
+[PDFBOX-4549] - No Unicode mapping
+[PDFBOX-4550] - Poor performance with corrupt ToUnicode stream
+[PDFBOX-4551] - Prevent printing from CL applications when not authorized
+[PDFBOX-4553] - Break of backward compatibility from 2.0.14 to 2.0.15
+[PDFBOX-4568] - Field text poorly vertically aligned
+[PDFBOX-4571] - IllegalArgumentException: illegal line join value
+[PDFBOX-4579] - IndexOutOfBoundsException when setting DefaultFontProvider in FontMapper
+[PDFBOX-4580] - PDFTextStripper::getText() lead to OutOfMemoryError: Java heap space
+[PDFBOX-4581] - Exception XRSurfaceData.getRaster not implemented yet on Swing, Linux
+[PDFBOX-4585] - remove message "OpenType Layout tables used in font ... are not implemented"
+[PDFBOX-4586] - Annotation widgets without AP not detected by preflight
+[PDFBOX-4587] - SASLPrep declares that u2070E is private use
+[PDFBOX-4589] - PDPageContent stream warns about overwriting in overwrite mode
+[PDFBOX-4592] - Preflight does not check process colorspace in DeviceN
+[PDFBOX-4595] - PDCIDFontType0 getHeight return 0
+[PDFBOX-4596] - Overlays with /Rotate value appear rotated in result file
+[PDFBOX-4604] - Used type0 for cyrillic, losting font on android
+[PDFBOX-4607] - Transparent 16 bit image doesn't display in Adobe Reader
+[PDFBOX-4608] - ImageToPDF fails with single image
+[PDFBOX-4610] - Copy&Paste in IOUtils.closeAndLogException()'s Javadoc
+[PDFBOX-4611] - PDF validates despite wrong /Alternate in ICC colorspace
+[PDFBOX-4615] - AppearanceGeneratorHelper.setAppearanceValue doesn't set the bounding box on the appearance stream correctly
+[PDFBOX-4617] - PDButton.setValue and PDButton.getOnValueForWidget cannot handle radios with duplicate names and choices
+[PDFBOX-4622] - Various exceptions in TTFParser.parse
+[PDFBOX-4623] - COSParser: Infinite recursion
+[PDFBOX-4626] - ArrayIndexOutOfBounds exceptions in CmapSubtable parsing
+[PDFBOX-4631] - NPE due to bounding box not being set on PDAppearanceStream
+[PDFBOX-4636] - "There has been a widget with a missing page reference" and non widget annotation gets flattened
+[PDFBOX-4638] - no field content after PDAcroForm.refreshAppearances() call if BBox empty
+[PDFBOX-4646] - PDFToImage not working with certain formfields
+[PDFBOX-4654] - PDFToImage shows reader image formats in usage
+[PDFBOX-4655] - ImageIOUtil.WriteImage creates huge PNG images when used with default quality on jdk11
+[PDFBOX-4659] - PDFBOX-3531 has re-appeared when trying to use  "sun.java2d.cmm.kcms.KcmsServiceProvider" in JAVA 1.8_222
+[PDFBOX-4661] - Regression No Unicode mapping with Identity-H font
+[PDFBOX-4662] - ClassCastException: org.bouncycastle.asn1.DLTaggedObject cannot be cast to org.bouncycastle.asn1.DERTaggedObject
+[PDFBOX-4666] - StackOverflowError with PDFTextStripper.getText()
+[PDFBOX-4667] - Issue in FontMapperImpl#isCharSetMatch when font codePageRange is -1
+[PDFBOX-4670] - ArrayIndexOutOfBoundsException thrown parsing malformed TTF files
+[PDFBOX-4672] - Draws the attachment image to the PDF document, and the image displays as a black block
+[PDFBOX-4674] - PDF Page Render Background Image has Gray Smudges
+[PDFBOX-4678] - Use PDFontFactory. CreateDefaultFont font to render text, the exported PDF document has a mistake
+[PDFBOX-4683] - Could not find referenced cmap stream Adobe-Japan1-7
+[PDFBOX-4687] - "Iterator.next()" methods should throw "NoSuchElementException"
+[PDFBOX-4688] - "BigDecimal(double)" should not be used
+[PDFBOX-4693] - PDF documents with rotated form field(90° degrees in my case) that apply form flattening appear squ
+[PDFBOX-4696] - Endless loop in OCSP certificate check
+[PDFBOX-4701] - TextPosition.equal() fails after getDir()
+[PDFBOX-4706] - support /UserUnit
+[PDFBOX-4711] - java.lang.ClassCastException: org.apache.pdfbox.cos.COSDictionary cannot be cast to org.apache.pdfbox.cos.COSStream
+[PDFBOX-4712] - Appearance dictionary should not be empty
+[PDFBOX-4713] - /AS is required if /AP contains a subdictionary
+[PDFBOX-4716] - ipag00303.php does not exist, mvn clean install!
+[PDFBOX-4720] - cmap entries "<0000> <FFFF> <0000>" are cut
+[PDFBOX-4722] - TestTextStripper doesn't detect when less output
+[PDFBOX-4724] - Wrong calculation of position in InputStreamSource#readFully
+[PDFBOX-4727] - ExtractEmbeddedFiles.java example uses name tree keys as file names
+[PDFBOX-4729] - Wrong position of text in PDTextField with multiline
+[PDFBOX-4730] - /OC in form and image XObjects not handled
+[PDFBOX-4738] - getDocument().getObjects() returns nothing for split result documents
+[PDFBOX-4741] - NullPointerException in PlainText constructor
+[PDFBOX-4742] - Incorrect handling of float Infinity and NaN
+[PDFBOX-4745] - COSObjectKey.hashCode doesn't work for generation numbers > 0
+[PDFBOX-4749] - Text Extraction leads to weird result - toUnicodeCMap is 'AdHoc-UCS'
+[PDFBOX-4750] - java.io.IOException: Error:Unknown type in content stream:COSNull{}
+[PDFBOX-4753] - NumberFormatException while parsing a certain PDF document
+[PDFBOX-4755] - Fonts improperly rendered
+[PDFBOX-4756] - ScratchFileBuffer seek beyond the last page
+[PDFBOX-4760] - wordSeparator not being inserted when word ends with " "
+[PDFBOX-4761] - Alignment Issue in textfield
+[PDFBOX-4763] - Can't get inline image raw data
+[PDFBOX-4765] - NPE in ExtractImages.ImageGraphicsEngine().run()
+[PDFBOX-4771] - JPEG image with transparency can't be extracted
+[PDFBOX-4778] - Avoid illegal matrix values
+[PDFBOX-4783] - empty annotation appearance BBox brings "Multiplying two matrices produces illegal values"
+[PDFBOX-4788] - Flattening fields results in non-widget annotations being removed
+[PDFBOX-4793] - Questionable fallback font for some embedded chinese fonts
+[PDFBOX-4794] - NPE in ExtractImages.ImageGraphicsEngine().run() (2)
+[PDFBOX-4799] - isartor-6-2-2-t02-fail-a.pdf fails on jdk15 with ArrayIndexOutOfBoundsException
+[PDFBOX-4800] - Parsing of numbers does not always terminate at actual end of number
+[PDFBOX-4801] - ArrayIndexOutOfBoundsException in PDICCBased.toRGB()
+[PDFBOX-4803] - XMPSchema#getUnqualifiedArrayList throws a different exception
+[PDFBOX-4807] - COSString cannot be cast to COSDictionary
+[PDFBOX-4811] - Glyphs getting lost when rendering
+[PDFBOX-4814] - Wrong COSType for OCProperties after merge
+[PDFBOX-4817] - Generated XMP Metadata with other XSLT processor are XML invalid
+[PDFBOX-4819] - Optional Content Membership Dictionaries (OCMD) incorrect
+[PDFBOX-4821] - My PDF document is not printed correctly. Rendering it works.
+[PDFBOX-4822] - Off-by-one error in PDSignature.getConvertedContents()
+[PDFBOX-4824] - NullpointerException with PDFDebugger
+[PDFBOX-4825] - PDPushButton.getOnValues() throws IllegalStateException
+[PDFBOX-4828] - Encode a text using the vertical type of the font in the attachment, which succeeded in version 2.0.12 but failed in version 2.0.19
+[PDFBOX-4831] - Rounding errors when rendering non-interleaved binary CCITT image at 1:1 scale cause gray pixels in output
+[PDFBOX-4833] - PDColorSpace#create IOException, expected a name or array but got COSDictionary
+[PDFBOX-4849] - FlateFilter Inflater leaks
+[PDFBOX-4850] - Image rendering issue
+[PDFBOX-4851] - Image rendering issue 2
+[PDFBOX-4860] - Preflight doesn't catch repetition of elements in XMP
+[PDFBOX-4863] - Bitmapped fonts are rendered very blurry
+[PDFBOX-4866] - java.lang.IndexOutOfBoundsException
+[PDFBOX-4871] - java.lang.ArrayIndexOutOfBoundsException: 3
+[PDFBOX-4872] - java.lang.ClassCastException: org.apache.fontbox.cmap.CMapParser$Operator cannot be cast to java.lang.Number
+[PDFBOX-4878] - Call to DictionaryEncoding.getEncoding () throws NullPointerException for some PDF's
+[PDFBOX-4880] - NullPointerException in TrueTypeEmbedder.createFontDescriptor() with OCR-B font
+[PDFBOX-4882] - Two conditions are always false in TrueTypeEmbedder.isEmbeddingPermitted
+[PDFBOX-4883] - COSFloat is extremely slow
+[PDFBOX-4887] - Using the same font fully embedded in plain text and PDTextField, it throws an exception in PDTextField.setValue
+[PDFBOX-4889] - Cannot flatten this file.
+[PDFBOX-4890] - Stack overflow in BufferedRandomAccessFile.read() while creating font cache
+[PDFBOX-4891] - nbspace missing in WinAnsiEncoding and MacRomanEncoding
+[PDFBOX-4893] - PDF file shows changing exceptions when opened with PDFDebugger
+[PDFBOX-4894] - Invalid file offsets for PDF files larger than 2G
+[PDFBOX-4898] - Pattern-colored stencil mask not interpolating when scaling
+[PDFBOX-4900] - PDFBox Rendering of PDF Page incorrect when using the special None Named Separation
+[PDFBOX-4902] - PDF/A validation fails when system time zone has minutes
+[PDFBOX-4904] - Bold text leads to wrong order - Text extraction
+[PDFBOX-4906] - PDOptionalContentProperties hasGroup can null pointer if OCGs data is missing
+[PDFBOX-4907] - Signature not detected by Acrobat Reader
+[PDFBOX-4913] - ArrayIndexOutOfBoundsException in ShadingContext.convertToRGB()
+[PDFBOX-4915] - "Page tree root must be a dictionary" on PDDocument.load
+[PDFBOX-4920] - OCSP validation takes very long in ci build
+[PDFBOX-4923] - IllegalArgumentException: The start and the end values must not have different lengths
+[PDFBOX-4924] - ArrayIndexOutOfBoundsException in PreflightParser.checkPdfHeader
+[PDFBOX-4930] - Font thickness issue when we use PDFBox for generating images from PDF
+[PDFBOX-4934] - Could not find referenced cmap stream Adobe-Japan1-XXXX
+[PDFBOX-4941] - PDRadioButton.getSelectedExportValues() always returns the first entry
+[PDFBOX-4944] - Built-in fonts are reporting nbsp char as having zero width.
+[PDFBOX-4946] - ArrayIndexOutOfBoundsException while trying to get text from a page
+[PDFBOX-4947] - UnsupportedOperationException when using FontMapperImpl.addSubstitute()
+[PDFBOX-4949] - "W n" applied to non existent path produces empty clipping result
+[PDFBOX-4955] - Flattened form-fields are rendered at the bottom of the page
+[PDFBOX-4956] - COSName.hashCode initialized after put to cache, instead before
+[PDFBOX-4958] - AcroForm flatten - correct calculation of appearence position
+[PDFBOX-4959] - ClassCastException: org.apache.pdfbox.cos.COSStream cannot be cast to org.apache.pdfbox.cos.COSNumber
+[PDFBOX-4964] - PDFDebugger Text View for Streams hides errors
+[PDFBOX-4969] - java.lang.IndexOutOfBoundsException
+[PDFBOX-4984] - Widget Quadding ignored
+[PDFBOX-4988] - Space rendered as missing glyph (2)
+[PDFBOX-4997] - Incremental update adds certain objects not marked as needing update
+[PDFBOX-4999] - Dangerous COSDictionary.addAll(COSDictionary) method
+[PDFBOX-5002] - PDFTextStripper sometimes fuses two words on different lines
+[PDFBOX-5005] - Resource missing at https://ipafont.ipa.go.jp/
+[PDFBOX-5016] - PDButton set subtype methods don't reset toggled subtype
+[PDFBOX-5019] - IllegalArgumentException: miter limit < 1
+[PDFBOX-5021] - Cyan glyph contours missing in PDFDebugger
+[PDFBOX-5028] - Partial field names must not contain period characters
+[PDFBOX-5033] - CFF FontParser exits with illegal offset in font
+[PDFBOX-5040] - Typo in NameRecord table LANGUGAE -> LANGUAGE
+[PDFBOX-5041] - NullPointerException in AppearanceGeneratorHelper.insertGeneratedAppearance
+[PDFBOX-5042] - IllegalArgumentException when generation of appearances fails
+[PDFBOX-5043] - StringIndexOutOfBoundsException in refreshAppearances()
+[PDFBOX-5044] - Stack overflow in PDFieldTree.enqueueKids()
+[PDFBOX-5046] - StringIndexOutOfBoundsException when doing DateConverter.parseDate()
+[PDFBOX-5048] - NullPointerException in PDType1CFont.getStringWidth() and PDType1CFont.getHeight()
+[PDFBOX-5050] - NullPointerexception in AcroFormOrphanWidgetsProcessor.resolveNonRootField()
+[PDFBOX-5051] - Slow rendering for specific PDF file
+[PDFBOX-5060] - AcroForm PDTextField formatting lost when setting value
+[PDFBOX-5063] - testCreateCheckBox fails on travis / github
+[PDFBOX-5072] - java.lang.IndexOutOfBoundsException
+[PDFBOX-5078] - Failure to modify cropBox when splitting a PDF Page vertically into 2 pieces
+[PDFBOX-5080] - Type1Parser.parseASCII throws inconsistent exceptions
+[PDFBOX-5081] - CFFParser.ByteSource.readRealNumber can better throw IOException
+[PDFBOX-5086] - DataFormatException after saving
+[PDFBOX-5090] - Missing text extraction under certain conditions starting with apache pdfbox 2.0.18
+[PDFBOX-5091] - Performance issue when converting PDF to image after upgrading from PDFBox 2.0.20 to 2.0.21
+[PDFBOX-5094] - Wrong glyph when rendering a symbolic TTF font with WinANSIEncoding
+[PDFBOX-5100] - Sometimes unneeded message "Removed /IDTree from /Names dictionary, doesn't belong there"
+[PDFBOX-5104] - ArrayIndexOutOfBoundsException in isOwnerPassword
+[PDFBOX-5105] - IllegalArgumentException in computeEncryptedKeyRev56
+[PDFBOX-5106] - IllegalArgumentException in PDFObjectStreamParser.privateReadObjectNumbers
+[PDFBOX-5107] - ClassCastException in COSStream.getFilterList
+[PDFBOX-5108] - ArrayIndexOutOfBoundsException in PDFXrefStreamParser.parseValue
+[PDFBOX-5111] - Premature EOF in RandomAccessReadBuffer using an InputStream
+[PDFBOX-5115] - U+00AD ('sfthyphen') is not available in this font Times-Roman encoding: WinAnsiEncoding
+[PDFBOX-5123] - OS2WindowsMetricsTable "version" variable confused with OpenType specification version
+[PDFBOX-5124] - Improperly declared OS2WindowsMetricsTable version (v0 table declard as v3) in embedded font stops parsing with EOFException
+[PDFBOX-5134] - Very slow rendering on PageDrawer.shadingFill
+[PDFBOX-5135] - Glyphs missed in rendering
+[PDFBOX-5137] - Wrong classification of an JPEG image leading to a blank image added to a pdf document
+[PDFBOX-5138] - Embedded files not extracted from PDF files with multilevel EmbeddedFiles tree
+[PDFBOX-5149] - 3.0.0-RC1: PDFCloneUtility is no longer accessible
+[PDFBOX-5150] - 3.0.0-RC1: PDComboBox.setValue() throws IllegalArgumentException: /DA is a required entry
+[PDFBOX-5151] - Issue with COSObjectKey::fixGeneration
+[PDFBOX-5155] - Error extracting text from PDF - Can't read the embedded Type1 font FDFBJU+NewsGothic
+[PDFBOX-5156] - Error in identification of PDF comment symbol % as a token separator with PDF names
+[PDFBOX-5158] - Infinite loop on corrupted PDF in 3.0.0-SNAPSHOT
+[PDFBOX-5159] - module not visible in PDFBox 3.0 RC1
+[PDFBOX-5160] - IllegalArgumentException: Empty list if /Contents has null element
+[PDFBOX-5161] - Content stream parse error that doesn't happen when content stream is parsed alone
+[PDFBOX-5162] - Text extraction lost
+[PDFBOX-5163] - Stack overflow when reading a corrupt dictionary
+[PDFBOX-5168] - dash pattern [0] should be invisible
+[PDFBOX-5170] - Compression creates issue with Page structure
+[PDFBOX-5175] - Behaviour change in 2.0.20 due to use of IOUtils.populateBuffer in SecurityHandler.prepareAESInitializationVector leading to IOException for certain PDF
+[PDFBOX-5176] - java.io.IOException: Page tree root must be a dictionary
+[PDFBOX-5178] - Parsing differences between 2.0.23 and 2.0.24/3.0
+[PDFBOX-5181] - pdfbox-app doesn't run in a headless environment
+[PDFBOX-5187] - TSAClient with username+password
+[PDFBOX-5188] - COSOutputStream.flush doesn't call super
+[PDFBOX-5190] - BaseParser: stack overflow when reading a corrupt pdf
+[PDFBOX-5191] - isEmbeddingPermitted() is too restrictive on TTFs with OS2 table versions 0-2
+[PDFBOX-5192] - Wild rendering when repeating truetype glyph flag is outside of range
+[PDFBOX-5193] - v2.0.22 and v3.0.0-RC1 PDF Debugger app crashes with java.lang.NullPointerException
+[PDFBOX-5194] - CreateCheckBox example draws too large, clipped checkmark
+[PDFBOX-5196] - Wrong color space detected for some Jpeg images
+[PDFBOX-5199] - Possible memory leak after calling decode filter
+[PDFBOX-5203] - TestCreateSignature.testCreateSignedTimeStamp checkLTV build test fail
+[PDFBOX-5204] - Ink annotation not rendered
+[PDFBOX-5207] - Page not rendered / extracted, Unknown type in array for TJ operation
+[PDFBOX-5214] - File generated differently depending on test call
+[PDFBOX-5226] - File saved with PDFBox can't be opened with Adobe Reader
+[PDFBOX-5227] - CreateVisibleSignature2 not working anymore
+[PDFBOX-5228] - ArrayIndexOutOfBoundsException: arraycopy: length -2 is negative in PDPanose.getPanose
+[PDFBOX-5232] - LayerUtility().importPageAsForm() doesn't return
+[PDFBOX-5236] - PDPageContentStream.setLineWidth(float) not allowed in text block
+[PDFBOX-5240] - preflight SMask entry check incorrect
+[PDFBOX-5243] - Second signature not visible when signing twice
+[PDFBOX-5257] - NumberFormatException in merge if fieldname is "dummyFieldName1#1"
+[PDFBOX-5261] - Signing a full scanned PDF causes "The signature byte range is invalid"
+[PDFBOX-5264] - FDFJavaScript.getDoc() always returns null or empty
+[PDFBOX-5265] - /Version /1.4 in newly generated PDFBox PDF
+[PDFBOX-5266] - Annotation shown with thick border
+[PDFBOX-5271] - Deeply nested drawings not shown
+[PDFBOX-5274] - Not existing rectangle appears on page image
+[PDFBOX-5275] - Not rendered (white) pages for given pdf
+[PDFBOX-5276] - Encryption on Split documents
+[PDFBOX-5278] - PDPage.getAnnotations() causes subsequent calls to PDDocument.getPages() to fail
+[PDFBOX-5281] - Error rendering png from PDF - Error at Type1Parser parseBinary for Type 1 Font
+[PDFBOX-5283] - No Content - xRef / Obj Parsing
+[PDFBOX-5285] - EOFException during TTF parsing
+[PDFBOX-5286] - Runtime degredation in RC1 and alpha2
+[PDFBOX-5294] - Incorrect rendering of Type3 character
+[PDFBOX-5297] - class org.apache.pdfbox.cos.COSName cannot be cast to class org.apache.pdfbox.cos.COSString
+[PDFBOX-5298] - unneeded / double code in PageExtractor
+[PDFBOX-5302] - When PDF is converted to an image, the image has a large black rectangle.
+[PDFBOX-5305] - Pdf-A/1b Validation
+[PDFBOX-5310] - Slow rendering for specific PDF File with small chunks 16x8
+[PDFBOX-5312] - Decryption for V4 fails when no Length entry is set in Encryption Dictionary
+[PDFBOX-5313] - `NullPointerException` when intersecting area with null clipping path
+[PDFBOX-5315] - Stack overflow in PDColorSpace.create()
+[PDFBOX-5317] - Splitter: Problematic /Info causes big files
+[PDFBOX-5318] - Resolution of ambiguities in inline images don't follow the standard
+[PDFBOX-5321] - Silent fail of PDTextField.setValue when font encoding missing
+[PDFBOX-5326] - TTFSubsetter incorrectly calculating 'searchRange'
+[PDFBOX-5328] - Failing to get multiple encodings from cmap table
+[PDFBOX-5331] - Text "820-01869-U-A" is omitted from PDF doc
+[PDFBOX-5333] - Wrong number of fonts leads to OOM-Exception
+[PDFBOX-5339] - A list of bugs found （70 bugs in total)
+[PDFBOX-5342] - Text size option for PDFBox Debugger
+[PDFBOX-5345] - IllegalArgumentException: Input buffer too short in StandardSecurityHandler.computeRC4key
+[PDFBOX-5352] - ArrayIndexOutOfBoundsException in PDSeparation.tintTransform()
+[PDFBOX-5359] - Operators "q" and "Q" should also preserve text matrices
+[PDFBOX-5360] - EOFException: Can't read 20 bytes
+[PDFBOX-5361] - Wrong datatype for OPM in PDExtendedGraphicsState
+[PDFBOX-5366] - Unhandled IOException thrown from BaseParser creates issue in PDFStreamEngine.processStreamOperators
+[PDFBOX-5372] - *LOADS of* "WARNING: key node000xxxxx already exists in destination IDTree"
+[PDFBOX-5373] - NullPointerException in PDRange.getMin()
+[PDFBOX-5376] - Image interpolation when there shouldn't be
+[PDFBOX-5377] - pDAcroForm.flatten() does not remove /SigFlags in /Catalog object
+[PDFBOX-5380] - Could not read embedded TTF for font
+[PDFBOX-5381] - Catalog object twice in signed file
+[PDFBOX-5387] - ToUnicodeWriter.writeTo allows byte overflow in bfrange operator
+[PDFBOX-5389] - To set compressed on buffered image while creating a PDF
+[PDFBOX-5390] - TextToPDF appends space to each line
+[PDFBOX-5393] - NegativeArraySizeException in pfb parser with 0 byte pfb font file
+[PDFBOX-5395] - Hangup in COSFilterInputStream.nextRange
+[PDFBOX-5397] - Certain PDF cannot be processed
+[PDFBOX-5398] - Parsing fails in 2.0.26 that worked in 2.0.25
+[PDFBOX-5399] - Object must be defined and must not be compressed object
+[PDFBOX-5401] - A carefully crafted pdf can trigger an infinite loop while parsing
+[PDFBOX-5402] - POCIDFontType2 (Wingdings) encode throws a NullPointerException
+[PDFBOX-5403] - Blurry / distorted rendering
+[PDFBOX-5410] - Possible loop detection is triggered in 2.0.26 but file works in 2.0.25
+[PDFBOX-5412] - IOException: object reference 112 0 R at offset 18355 in content stream
+[PDFBOX-5413] - Field text missing
+[PDFBOX-5418] - NPE during page render
+[PDFBOX-5419] - Parsing shows 1 empty page with 2.0.26 and 7 with 2.0.25
+[PDFBOX-5421] - Sonar build fails with NPE
+[PDFBOX-5424] - java.lang.IndexOutOfBoundsException (2)
+[PDFBOX-5425] - java.awt.color.CMMException: Unknown profile ID in Sonar build
+[PDFBOX-5428] - PDFRenderer.renderImageWithDPI thows EOFException in PDF
+[PDFBOX-5429] - PDFCloneUtility.checkForRecursion breaks support for some existing PDFs
+[PDFBOX-5430] - PDFStreamEngine.showTextStrings with font switch
+[PDFBOX-5444] - DataFormatException: invalid block type
+[PDFBOX-5446] - Split package org.apache.pdfbox.io
+[PDFBOX-5447] - Missing root object specification in trailer
+[PDFBOX-5452] - java.io.IOException: Number '18446744073709486079' is getting too long, stop reading at offset 9454
+[PDFBOX-5453] - ClassCastException (PDColor.java:66)
+[PDFBOX-5456] - java.lang.IllegalArgumentException: Generation number must not be a negative value
+[PDFBOX-5459] - NullPointerException in PDFunctionType3.eval()
+[PDFBOX-5460] - Deadlock in TrueTypeFont and RAFDataStream
+[PDFBOX-5463] - illegalArgumentException for rendering PDF (image extraction)
+[PDFBOX-5465] - NullPointerException in CmapSubtable.getCharCode
+[PDFBOX-5470] - PDActionEmbeddedGoTo does not accept a Destination with a page number or string
+[PDFBOX-5471] - NPE when Transparency Group is missing the BBox
+[PDFBOX-5484] - PDFRenderer does not render letters when converting page to image
+[PDFBOX-5485] - Stackoverflow writing out a subset of PDF pages - COSWriterObjectStream
+[PDFBOX-5486] - "RandomAccessBuffer already closed" when opening smaller fonts
+[PDFBOX-5488] - JPEG image rendered with wrong colors when using TwelveMonkeys
+[PDFBOX-5489] - Split result page missing dictionary after split
+[PDFBOX-5493] - Signature byte range is Invalid after singing
+[PDFBOX-5499] - Performance issue since 2.0.18
+[PDFBOX-5500] - NullPointerException in PDType0Font.readCode() if cMap is null
+[PDFBOX-5504] - NullPointerException in CFFParser.parseFont()
+[PDFBOX-5505] - IndexOutOfBoundsException in PDCIDFont.readWidths()
+[PDFBOX-5506] - IndexOutOfBoundsException in Type1Parser.java
+[PDFBOX-5509] - ClassCastException in PDAcroForm.getFields()
+[PDFBOX-5513] - getPageLayout throws IllegalArgumentException for empty mode
+[PDFBOX-5514] - Font not found because of case issues
+[PDFBOX-5518] - "Threads" array in Document Catalog should be an indirect reference
+[PDFBOX-5521] - Signing tries to set byteRange of old signature
+[PDFBOX-5523] - Bug in org/apache/pdfbox/multipdf/Overlay#overlay(specificPageOverlayFile)
+[PDFBOX-5524] - Inactive OCGs shown when not top level
+[PDFBOX-5525] - Null pointer exception in PDFASchemaType.getNamespaceURI()
+[PDFBOX-5540] - export:text creates jibberish / malformed output
+[PDFBOX-5551] - FoxHexOne Mutation PDF crashes both PDFBox 2.0.27 and 3.0.0.alpha3
+[PDFBOX-5552] - ArrayIndexOutOfBounds in SampledImageReader.fromAny()
+[PDFBOX-5553] - PDFRenderer resulting image has black background
+[PDFBOX-5555] - NPE due to a malformed rectangle
+[PDFBOX-5557] - Fix meta markup in HTML generation
+[PDFBOX-5562] - ArrayIndexOutOfBoundsException in CFFCIDFont class
+[PDFBOX-5563] - Can't open PDF with PDFBox: java.awt.color.CMMException: LCMS error 13: Couldn't link the profiles
+[PDFBOX-5566] - ClassCastException in ShadingFill.process()
+[PDFBOX-5567] - Font gets smaller for each rendered page
+[PDFBOX-5572] - fix some logging inconsistencies
+[PDFBOX-5577] - NPE in PDFMergerUtility.acroFormLegacyMode()
+[PDFBOX-5586] - NullPointerException when closing RandomAccessReadMemoryMappedFile more than once
+[PDFBOX-5587] - NullPointerException in PDTrueTypeFont.java getPath( )
+[PDFBOX-5591] - Parsing of XMP metadata without optional xmpmeta element
+[PDFBOX-5593] - Avoid division by 0 in shading function interpolation
+[PDFBOX-5596] - MyPageDrawer#getPaint may produce UnsupportedOperationException
+[PDFBOX-5601] - Barcode corrupted when printing document
+[PDFBOX-5604] - The text in some fonts is lost when converting pdf to image
+[PDFBOX-5606] - PDFTextStripper runs out of memory in 2.0.28 but not in 2.0.27 same code
+[PDFBOX-5609] - all values in the signature dictionary shall be direct objects
+[PDFBOX-5611] - Glyphs not rendered
+[PDFBOX-5612] - PDF with mangled font rendering in some environments
+[PDFBOX-5614] - RadioButtons disappear when printing PDF
+[PDFBOX-5620] - BitsPerComponent 16 not allowed in PDF/A-1b
+[PDFBOX-5621] - NullPointerException in PDFStreamEngine.showText
+[PDFBOX-5623] - Signature Image not Rendered starting with PDFBox 2.0.23 + patch provided
+[PDFBOX-5624] - Infinte loop when parsing Type1 font
+[PDFBOX-5627] - Fonts are not subsetted when saving incrementally
+[PDFBOX-5639] - Password protected PDF opens in GUI apps but PDFbox says invalid password
+[PDFBOX-5642] - Wrong error message "2.4.1 : Invalid Color space, The operator "rg" can't be used with CMYK Profile"
+[PDFBOX-5644] - Make FDF annotations more compliant with the specification
+[PDFBOX-5651] - Regression: NoSuchElementException in PDFXrefStreamParser
+[PDFBOX-5652] - IllegalArgumentException: The no. coverage table entries should be the same as the size of the substituteGlyphIDs
+[PDFBOX-5653] - The PageDrawer.strokePath method is blocked, and cpu100%
+
+New Feature
+
+[PDFBOX-45] - Support incremental save
+[PDFBOX-2626] - Regenerate field appearances if NeedAppearances is set prior to rendering
+[PDFBOX-2857] - Saving XFA document caused prompt saying Extended features has been disabled
+[PDFBOX-2858] - Saving document caused prompt saying Extended features has been disabled
+[PDFBOX-3198] - Visible Signature N2 layer / Support signature with text
+[PDFBOX-3410] - TextToPDF needs orientation control
+[PDFBOX-3563] - Create sample code for creating a PDF with patterns
+[PDFBOX-3669] - PDPageContentStream: Add setMiterLimit()
+[PDFBOX-4106] - Vertical text creation
+[PDFBOX-4117] - Implement GoToE action-type
+[PDFBOX-4189] - Enable PDF creation with Indian languages, by reading and utilizing the GSUB table
+[PDFBOX-4639] - Please add Automatic-Module-Name to MANIFEST.MF
+[PDFBOX-4656] - Switch trunk to java8 as minimum requirement
+[PDFBOX-4682] - NPE at PDSimpleFont.isStandard14()
+[PDFBOX-4721] - Move Apache PDFBox from a low-API model
+[PDFBOX-4847] - [PATCH] Allow to access raw image data and fix ICC profile embedding in PNGConverter
+[PDFBOX-4952] - PDF compression - object stream creation
+[PDFBOX-5314] - Additional `showTransparencyGroupOnGraphics()` method
+[PDFBOX-5329] - Add Benchmark Package
+[PDFBOX-5539] - Show CRT in PDFDebugger
+
+Improvement
+
+[PDFBOX-1848] - Time Stamp Document Level Sigature
+[PDFBOX-2092] - Very slow rendering of scanned document
+[PDFBOX-2538] - avoid "-1 : Unknown error" message in preflight
+[PDFBOX-2684] - Javadoc for COSBase.setNeedToBeUpdate
+[PDFBOX-2963] - Remove Bouncy Castle Provider Reference
+[PDFBOX-3017] - Improve document signing
+[PDFBOX-3065] - Right now PDFBOX does not permit to sign multiple files while calling an external signing service.
+[PDFBOX-3069] - Add code for CCITT compression
+[PDFBOX-3080] - TrueTypeFont synchronization
+[PDFBOX-3262] - AcroForm flattening will cause hidden fields become visible
+[PDFBOX-3275] - Show glyph bounds in DrawPrintTextLocations
+[PDFBOX-3289] - Wrong unit MM_PER_INCH in PDRectangle
+[PDFBOX-3295] - Improve parsing performance of object streams
+[PDFBOX-3305] - PDPageContentStream should allow drawing images at current position
+[PDFBOX-3307] - Enable AES128 encryption
+[PDFBOX-3316] - Add comment to PDF
+[PDFBOX-3323] - Cannot set destination meta data in PDFMergerUtility
+[PDFBOX-3324] - Complete PDActionSound
+[PDFBOX-3329] - Create PDFMergerUtility example with improved metadata handling
+[PDFBOX-3340] - Image decoded twice without a real need
+[PDFBOX-3342] - Add example to jump to a local page to AddAnnotations
+[PDFBOX-3352] - Calendar values are parsed with unknown timezones
+[PDFBOX-3356] - Create a field appearance for a new value if NeedApperances is true
+[PDFBOX-3364] - PDModel.getSignatureFields() only returns top level signature fields
+[PDFBOX-3366] - Align PDAnnotationXXX classes with the PDF spec terms
+[PDFBOX-3382] - pdf creation very slow
+[PDFBOX-3383] - Refactor to allow tsa timestamping for visible signatures
+[PDFBOX-3387] - AcroFrom fields (values) invisible when printing
+[PDFBOX-3391] - PDButton.getOnValues seems to be using the wrong source for getting the allowed values
+[PDFBOX-3393] - Javascript actions on form fields cause data to become hidden
+[PDFBOX-3397] - PDFDebugger shows XML Metadata in ISO-8859-1
+[PDFBOX-3405] - Display font size
+[PDFBOX-3414] - Add orientation parameter to PrintPDF command line tool
+[PDFBOX-3416] - CreateVisibleSignature example does not use the correct alias
+[PDFBOX-3418] - Slow string to hex conversion in ToUnicodeWriter
+[PDFBOX-3421] - Optimize float to string conversion in PDAbstractContentStream
+[PDFBOX-3432] - Optimize CID to GlyphId mapping (TTF)
+[PDFBOX-3433] - Optimize image conversion in LosslessFactory
+[PDFBOX-3442] - OOM for single page pdf file
+[PDFBOX-3458] - Using RenderingMode with PDPageContentStream
+[PDFBOX-3459] - Move Glyph2D functionality into PDFont subclasses
+[PDFBOX-3460] - Warn users not to use legacy code
+[PDFBOX-3461] - Improve handling of line breaking characters when setting AcroForm field values
+[PDFBOX-3476] - Updated to BouncyCastle 1.55
+[PDFBOX-3484] - Implement some caching of PDImageXObject
+[PDFBOX-3502] - add character spacing to content stream
+[PDFBOX-3529] - Read overprint attributes
+[PDFBOX-3537] - Create example of AcroForm creation with field that has two widgets
+[PDFBOX-3541] - Use /L entry to determine if a linearized file shall be treated as such for PDF/A validation
+[PDFBOX-3547] - [Patch] Improved signing of existing signature fields
+[PDFBOX-3552] - Allow external signing in two steps
+[PDFBOX-3564] - SoftMask needs consider colormodel of input Image
+[PDFBOX-3567] - Process softmasks in ExtractImages
+[PDFBOX-3576] - Add getter methods to TextPosition
+[PDFBOX-3589] - Double negative float
+[PDFBOX-3599] - Support 16 bit JPG2000 images
+[PDFBOX-3614] - Directly use the BouncyCastleProvider rather than installing it
+[PDFBOX-3618] - Helvetica in PDF/A - warn in PDType1Font.java about licensing issues
+[PDFBOX-3635] - Remove workaround to avoid SSLHandshakeException
+[PDFBOX-3652] - PDFMergerUtility: The source outline of merged PDF can be end up inside deep sub-outline if destination outline contain sub-outline
+[PDFBOX-3660] - Handling of invalid annotation border
+[PDFBOX-3667] - Handle Widget Annotations as Fields even if there is no AcroForm Fields entry
+[PDFBOX-3675] - PreflightParser can only use main mem for scratch
+[PDFBOX-3688] - Cache TilingPaint generation
+[PDFBOX-3696] - Undeprecate CCITTFactory.createFromRandomAccess()
+[PDFBOX-3722] - make font cache error message less scary
+[PDFBOX-3730] - Encapsulate outputStream into BufferedOutputStream in PDDocument.save()
+[PDFBOX-3735] - Update to Bouncy Castle 1.56
+[PDFBOX-3763] - Optimize SampledImageReader.getStencilImage()
+[PDFBOX-3768] - Optimize SampledImageReader.from1Bit()
+[PDFBOX-3770] - provide set of page indexes that have page label ranges
+[PDFBOX-3772] - Add COSBoolean(false) as option in PDDocumentCatalog's getOpenAction
+[PDFBOX-3779] - Add dpi and border parameter to PrintPDF command line utility
+[PDFBOX-3809] - PDAcroForm.flatten(PDField list, refreshAppearances boolean) flattens all form fields instead of specified ones.
+[PDFBOX-3812] - Support auto size font for multiline PDTextField
+[PDFBOX-3818] - Update Bouncy Castle and Levigo JBig2 in trunk
+[PDFBOX-3820] - [Patch] Improved signing of existing signature fields II
+[PDFBOX-3824] - Optimize TrueType font embedder
+[PDFBOX-3828] - Generate appearance stream for multiselect listboxes
+[PDFBOX-3854] - PDDeviceRGB.toRGBImage should return a RGB-Typed-Image
+[PDFBOX-3859] - Output destination page in PrintBookmarks example
+[PDFBOX-3860] - TilingPaint.getImage() should return an ARGB-Typed-Image
+[PDFBOX-3863] - Support duplex entry in ViewerPreferences
+[PDFBOX-3868] - Optimize usage of COSStream construction
+[PDFBOX-3869] - Splitter.createNewDocument() should be able to consider different MemoryUsageSetting configurations
+[PDFBOX-3878] - Improve and refactor RemoveAllText example
+[PDFBOX-3888] - Refactor COSParser
+[PDFBOX-3890] - The operator Tz is not available when creating new PDF using PDPageContentStream
+[PDFBOX-3897] - Avoid sRGB self-conversions
+[PDFBOX-3900] - Optimize PDSeparation for shadings
+[PDFBOX-3911] - Handle new line characters in single line text fields
+[PDFBOX-3920] - CIDSet should be PDF/A-2b compatible
+[PDFBOX-3927] - Support optional content in annotations
+[PDFBOX-3944] - ERROR "Can't read embedded ICC profile" is too scary
+[PDFBOX-3971] - Add Certificate Dictionary to seed value in signature field
+[PDFBOX-3982] - [Patch/RFC] Set maximum compression level on FlateFilter
+[PDFBOX-3983] - [Patch] Don't a allow a miter limit <= 0
+[PDFBOX-3984] - Add validation data of signer to document
+[PDFBOX-3992] - Implement show text with positioning operator (TJ)
+[PDFBOX-3998] - Inform the user when not using KCMS with jdk8 or higher + set KCMS in cli
+[PDFBOX-4020] - Into existing signature embedded signed timestamp for validation
+[PDFBOX-4022] - Cache ColorSpace instances in PDColorSpace.java
+[PDFBOX-4024] - YCbCr JPEGs not implemented
+[PDFBOX-4025] - Other page sizes than US Letter should be selectable in TextToPDF
+[PDFBOX-4040] - Get/set Viewports in PDPage
+[PDFBOX-4057] - Allow rendering with different X and Y scale
+[PDFBOX-4080] - Improve memory consumption of PDAbstractAppearanceHandler
+[PDFBOX-4095] - Non Separable Blend Modes implementation(HUE, SATURATION, COLOR, LUMINOSITY)
+[PDFBOX-4099] - Protect PDDocumentCatalog constructors
+[PDFBOX-4119] - KCMS takes too much time
+[PDFBOX-4121] - (-Dorg.apache.pdfbox.rendering.UsePureJavaCMYKConversion=true) takes much time
+[PDFBOX-4137] - Allow subsampled/downscaled rendering of images, and rendering subimages
+[PDFBOX-4139] - Optimize memory footprint of CID mappings within CMaps
+[PDFBOX-4142] - Don't use md5 checksum due to changes to the release distribuition policy
+[PDFBOX-4150] - Optimize clipping text rendering modes
+[PDFBOX-4156] - Possible optimization of SampledImageReader.from8bit by using InterleavedRaster
+[PDFBOX-4159] - PDFBox doesn't warn if Special graphics state operators are used in text mode
+[PDFBOX-4161] - Overlay class should allow user to influence transform
+[PDFBOX-4165] - Support IBM OS/400 font locations
+[PDFBOX-4168] - Add a setTextRise() method to PDPageContentStream
+[PDFBOX-4171] - getColorKeyMask() not needed for inline images
+[PDFBOX-4175] - Update apache parent pom
+[PDFBOX-4184] - [PATCH]: Support simple lossless compression of 16 bit RGB images
+[PDFBOX-4186] - Add quality option for compressed images to pdfbox-app
+[PDFBOX-4187] - Refactor LosslessFactory alpha
+[PDFBOX-4192] - Support subsampling in PDFToImage command line tool
+[PDFBOX-4198] - Remove one of three LiberationSans-Regular.ttf
+[PDFBOX-4231] - cache file fallback if not writable
+[PDFBOX-4237] - Don't use PD-level classes in COS-level classes
+[PDFBOX-4251] - Optimize AFMParser
+[PDFBOX-4253] - Optimize PDFunctionType3.eval()
+[PDFBOX-4256] - Return default value for CheckBox / RadioButton if /V entry is missing (widget /AS entries are present)
+[PDFBOX-4259] - Add polygon annotation to AddAnnotations.java example
+[PDFBOX-4260] - Reduce RAM requirement of COSOutputStream
+[PDFBOX-4263] - Check object key when signing
+[PDFBOX-4271] - Consistently using the same version of the download-maven-plugin
+[PDFBOX-4274] - Get rid of warning about prerequisites
+[PDFBOX-4285] - Expose the tiff compression type to the user.
+[PDFBOX-4289] - Double negative number
+[PDFBOX-4295] - Don't create intermediate streams when merging files
+[PDFBOX-4335] - Overlay should implement Closeable
+[PDFBOX-4341] - [Patch] PNGConverter: PNG bytes to PDImageXObject converter
+[PDFBOX-4363] - [Patch] Add a common interface PDShadingPaint for all shading paints
+[PDFBOX-4371] - Improve ExtractText utility so that it can extract rotated text automatically
+[PDFBOX-4375] - Change visibility of Overlay#loadPDF to protected
+[PDFBOX-4394] - Encrypt CLI default key length should be strong
+[PDFBOX-4397] - made enum fromString() less error-prone
+[PDFBOX-4411] - Support caching of ICC based color spaces
+[PDFBOX-4413] - Add support for AES256 encryption for public key
+[PDFBOX-4420] - Correct javadoc comment
+[PDFBOX-4434] - Create flexible CheckBox and RadioButtons example
+[PDFBOX-4447] - Support NoRotate flag when rendering annotations
+[PDFBOX-4455] - empty widget list of non terminal field should be non modifiable
+[PDFBOX-4457] - Multiple Fonts with fallback technology
+[PDFBOX-4458] - Subclasses of OperatorProcessor dont use constants
+[PDFBOX-4462] - Add watermark example
+[PDFBOX-4491] - slow rendering for PDF
+[PDFBOX-4502] - Performance issue with splitter and huge files
+[PDFBOX-4505] - CVE-2019-0228: possible XML External Entity (XXE) attack
+[PDFBOX-4508] - Unexpected slowness filling forms with CJK
+[PDFBOX-4509] - Font appears twice in resources of field widget
+[PDFBOX-4510] - Don't write identity matrix in form XObjects of field widgets appearance stream
+[PDFBOX-4519] - Reduce artefacts in shadings
+[PDFBOX-4522] - Resources cache should be passed to type 3 fonts
+[PDFBOX-4529] - ImageToPDF as Command Line
+[PDFBOX-4539] - Cache CharsetDecoder
+[PDFBOX-4544] - COSWriter.doWriteHeader(COSDocument) should use the document specified as parameter
+[PDFBOX-4548] - Update PDType1Font to make PDFBox GraalVM native mode ready
+[PDFBOX-4562] - Remove the usage of COSDocument.getCatalog
+[PDFBOX-4566] - Remove COSUtils from preflight
+[PDFBOX-4569] - Implement an ondemand Parser
+[PDFBOX-4578] - Overhaul StreamValidationProcess
+[PDFBOX-4588] - Move stream length validation to PreflightParser
+[PDFBOX-4594] - Multiline field text with auto font sizing should be size adjusted
+[PDFBOX-4597] - TextPosition.getX() vs getXDirAdj()
+[PDFBOX-4600] - Please clarify CTM terminology in Javadoc
+[PDFBOX-4632] - Create example of PDF creation with page labels
+[PDFBOX-4637] - improve exception message "IOException: Could not find font: /Helvetica"
+[PDFBOX-4641] - Keywords created using PDFBox are not visible in Acrobat
+[PDFBOX-4653] - Clarify what font is missing when not in resources
+[PDFBOX-4657] - Use smooth interpolation for stencils too
+[PDFBOX-4675] - PDImage.getCOSObject() for image types should always return at least COSDictionary
+[PDFBOX-4680] - Add test coverage to build with jacoco-maven-plugin
+[PDFBOX-4685] - Add example of usage of separation color (spot color)
+[PDFBOX-4686] - Add text to AcroForm examples
+[PDFBOX-4689] - Invisible Signature should have empty Appearance Dictionary
+[PDFBOX-4691] - JPEGFactory should not decode JPEG files when only meta data is needed
+[PDFBOX-4694] - LockedContents flag
+[PDFBOX-4695] - PDPropBuildDataDict missing setNonEFontNoWarn
+[PDFBOX-4710] - allow precise RGB stroke colors with setStrokingColor
+[PDFBOX-4734] - ExtractImages should create CCITT G4 compressed TIFF files when possible
+[PDFBOX-4735] - WriteDecodedDoc should create an xref table instead of an xref stream
+[PDFBOX-4752] - Don't store tokens within parser
+[PDFBOX-4762] - Inconsistent handling of incorrect data
+[PDFBOX-4766] - PDInlineImage.getSuffix() returns null
+[PDFBOX-4767] - getFilters() methods should return an empty list instead of null when possible
+[PDFBOX-4784] - Possibility to provide the SecureRandom to SecurityHandler
+[PDFBOX-4804] - Remove no longer needed parameter from PDFStreamEngine#show*Glyph
+[PDFBOX-4810] - Improve CodespaceRange to be in line with the spec
+[PDFBOX-4836] - Reduce the usage of ScatchFileBuffer when parsing a pdf
+[PDFBOX-4837] - RandomAccessBufferedFileInputStream doesn't have to extend an InputStream
+[PDFBOX-4838] - Make RandomAccessBuffer and RandomAccessFile read only
+[PDFBOX-4842] - RandomAccessBufferedFile: remove usage of an InputStream as source
+[PDFBOX-4844] - Pass resourceCache to patterns
+[PDFBOX-4845] - Merge org.apache.pdfbox.pdfparser.SequentialSource into org.apache.pdfbox.io.RandomAccessRead
+[PDFBOX-4853] - PDPageContentStream doesn't extend PDAbstractContentStream
+[PDFBOX-4855] - Add support for memory mapped file reading
+[PDFBOX-4869] - Reading standard 14 fonts is slow
+[PDFBOX-4875] - Lazy load standard 14 fonts, only if needed
+[PDFBOX-4877] - Matrix class performance improvements
+[PDFBOX-4895] - Faster COSNumber
+[PDFBOX-4896] - Don't save and restore graphic states around showGlyph in LegacyPDFStreamEngine
+[PDFBOX-4909] - Don't calculate font height for every glyph
+[PDFBOX-4916] - Use dedicated scale and translate operations instead of concatenate where possible
+[PDFBOX-4945] - RandomAccessReadBufferedFile: switch to java.nio
+[PDFBOX-4948] - Add substitute font "ZapfDingbatsITCbyBT-Regular" for ZapfDingbats
+[PDFBOX-4954] - Reduce the usage of COSArrayList
+[PDFBOX-4971] - Show "raw" pane for content streams in PDFDebugger
+[PDFBOX-4977] - Provide format action support capability for AcroForm field
+[PDFBOX-4985] - Render orphan annotation widgets
+[PDFBOX-4987] - CharStringCommand should use referenced string
+[PDFBOX-4990] - say which resource not found when a font is missing
+[PDFBOX-4991] - say when GlyphList is not found what was sought for
+[PDFBOX-4993] - if infile is missing, say which one
+[PDFBOX-4998] - Harmonize/fix behaviour when seeking to positions beyond EOF
+[PDFBOX-5000] - Allow PDFDebugger and PDF/A validation to skip AcroForm fix ups
+[PDFBOX-5001] - Refactor AFMParser
+[PDFBOX-5004] - Repair AcroForm in PDFDebugger
+[PDFBOX-5027] - Protect/Encrypt PDF with multiple certificates on command line
+[PDFBOX-5031] - Refactor COSParser: separate brute force parser
+[PDFBOX-5055] - Minor improvement
+[PDFBOX-5058] - Remove check for external glyphlist
+[PDFBOX-5093] - Pass PDFRenderer to PDFPrintable constructor
+[PDFBOX-5103] - Allow reuse of subsetted fonts by inverting the ToUnicode CMap
+[PDFBOX-5110] - improve performance in signature validation
+[PDFBOX-5112] - Add more checks to PDFXrefStreamParser and reduce memory footprint
+[PDFBOX-5116] - Add rotated box to ShowColorBoxes.java example
+[PDFBOX-5121] - Use StringBuilder for key in PDDeviceN.toRGBWithTintTransform()
+[PDFBOX-5122] - Don't use RGB loop in PDDeviceN.toRGBWithTintTransform()
+[PDFBOX-5136] - Remove COSDocument#finalize
+[PDFBOX-5141] - Create tests for HelloWorld examples
+[PDFBOX-5143] - Refactor/Simplify CFF parsing
+[PDFBOX-5145] - Faster PDImageXObject.applyMask
+[PDFBOX-5154] - Custom folder for fonts in FontMapper
+[PDFBOX-5157] - allow to make timestamp only signature "LTV"
+[PDFBOX-5164] - Create portable collection PDF
+[PDFBOX-5177] - Optimize memory footprint of PDFObjectStreamParser
+[PDFBOX-5183] - Add getter/setter for suppressDuplicateOverlappingText in PDFMarkedContentExtractor
+[PDFBOX-5200] - Cache PageTree in PDFPrintable
+[PDFBOX-5201] - Add Adobe Illustrator COSNames
+[PDFBOX-5208] - Make constructors of CIDSystemInfo and PDPanoseClassification public
+[PDFBOX-5224] - Optimize SampledImageReader.from1Bit()
+[PDFBOX-5229] - Optimize reading of masked images
+[PDFBOX-5239] - Support BGR for OpenCV and JavaCV
+[PDFBOX-5253] - Create PDImmutableRectangle class for fixed sizes
+[PDFBOX-5254] - Preserve indirect object reference when copying resources
+[PDFBOX-5255] - Create a separate maven module for org.apache.pdfbox.io
+[PDFBOX-5256] - PDFBox should use the quadding for fields with the comb flag
+[PDFBOX-5258] - Lazier clipping
+[PDFBOX-5263] - Suggestion: Signing actual document changes - Enhancing incremental saving
+[PDFBOX-5267] - LegacyPDFStreamEngine.glyphList loaded from disk on each instantiation rather than static final?
+[PDFBOX-5270] - Consider BaseParser.seqSource a protected member
+[PDFBOX-5308] - Prefer MergeSort over QuickSort and try native TimSort first (with explanation)
+[PDFBOX-5319] - Avoid creating Paint objects and filling when there is nothing to do
+[PDFBOX-5324] - support get unicode from embedded TrueTypeFont cmap
+[PDFBOX-5336] - Update liberation fonts
+[PDFBOX-5338] - Simplify ICOSVisitor interface, remove unused return value
+[PDFBOX-5347] - Create push button example
+[PDFBOX-5348] - FontMapper should also take into account the user's font directory on Windows operating systems
+[PDFBOX-5363] - Don't log warnings if there are not fonts to cache
+[PDFBOX-5379] - support multiple widgets in PDTerminalField.importFDF()
+[PDFBOX-5385] - Improve AddValidationInformation to handle exceptional situations better
+[PDFBOX-5388] - Avoid duplicate certificates in AddValidation example
+[PDFBOX-5394] - Render symbol for file attachment annotations
+[PDFBOX-5434] - Replace org.apache.fontbox.ttf.BufferedRandomAccessFile
+[PDFBOX-5435] - Use org.apache.pdfbox.io for TTFParser
+[PDFBOX-5441] - Use org.apache.pdfbox.io for CMapParser
+[PDFBOX-5448] - Clarify access permission for high / low print quality
+[PDFBOX-5450] - Create Opaque PDFRenderer example
+[PDFBOX-5451] - Avoid exposing underlying byte array
+[PDFBOX-5483] - Replace methods using an InputStream from Loader.loadPDF
+[PDFBOX-5494] - "invalid object number value" is too scary
+[PDFBOX-5496] - Update Bouncy Castle to jdk1.8
+[PDFBOX-5526] - Apply subsampling and region to masks
+[PDFBOX-5534] - Remove finalize from ScratchFileBuffer
+[PDFBOX-5536] - Refactor OperatorProcessor
+[PDFBOX-5537] - PDFMergerUtility: partioned memory settings no longer needed
+[PDFBOX-5538] - Introduce interface/functional interface to handle stream caches
+[PDFBOX-5549] - Invisible signature field is not referenced from /Annots dictionary of a Page
+[PDFBOX-5550] - reduce number of open files
+[PDFBOX-5554] - Support charset parameter in TextToPDF
+[PDFBOX-5558] - Use another icc-profile to achieve better results for CMYK-conversions
+[PDFBOX-5560] - Add a method to get the components of a composite glyph
+[PDFBOX-5564] - PDResource font cache improvement
+[PDFBOX-5565] - RFE: Comb flag warning
+[PDFBOX-5571] - Add duplex and tray parameters to PrintPDF
+[PDFBOX-5573] - fix unnecessary boxing/unboxing
+[PDFBOX-5574] - simplify map operations
+[PDFBOX-5575] - optimize LZWFilter
+[PDFBOX-5579] - Change COSFloat.value to primitive type, do not use BigDecimal if not necessary
+[PDFBOX-5581] - renderer.setSubsamplingAllowed(true) causing the picture to blur
+[PDFBOX-5592] - Support GSUB LookupType 7 (Extension Substitution Subtable Format 1)
+[PDFBOX-5594] - Remove finalize from TrueTypeFont
+[PDFBOX-5598] - Create command line utility to extract XMP data
+[PDFBOX-5599] - Support latin ligatures
+[PDFBOX-5603] - Support GSUB LookupType 2 (Multiple Substitution Format 1)
+[PDFBOX-5605] - Improve Opaque PDFRenderer example
+[PDFBOX-5608] - Rename new io module to pdfbox-io
+[PDFBOX-5618] - Use log4j2 for tests
+[PDFBOX-5619] - Check NTP time in signature tests
+[PDFBOX-5630] - Add PDRectangle#TABLOID paper size
+[PDFBOX-5631] - Support version 0.5 of MaximumProfileTable
+[PDFBOX-5632] - loca-table isn't mandatory for TTF/OTF-fonts using CFF outlines
+[PDFBOX-5634] - Supported rendering of OpenType fonts using CFF-based outlines
+[PDFBOX-5636] - Implement PDF 2.0 dash phase clarification
+[PDFBOX-5637] - Add getter and setter for the CO array under PDAcroForm
+[PDFBOX-5640] - Use RandomAccessReadWriteBuffer instead of ScratchFileBuffer by default
+[PDFBOX-5645] - Make UTC timezone static
+
+Test
+
+[PDFBOX-3539] - Close Document after printing
+[PDFBOX-4373] - Add additional unit tests
+[PDFBOX-4854] - Add test that font can be deleted after usage
+[PDFBOX-5017] - Switch trunk from junit4 to junit5
+
+Wish
+
+[PDFBOX-3468] - ERROR: dash lengths all zero, ignored
+[PDFBOX-4094] - Add support for a flag disabling the rendering of PDF annotations in PDFRenderer
+[PDFBOX-4515] - Support for Add Text Callout Annotation tool.
+[PDFBOX-4699] - ERROR FeatureRecord array not alphabetically sorted by FeatureTag
+[PDFBOX-4928] - Could the new rendering method of PageDrawer be optional?
+[PDFBOX-5198] - When merging multiple pdf ua documents, Tags become nested
+
+Task
+
+[PDFBOX-2852] - Improve code quality (2)
+[PDFBOX-3089] - Investigate why glyph path caching does not always cache glyph accesses
+[PDFBOX-3584] - Build and test PDFBox with JDK9
+[PDFBOX-3704] - Update CCITTFaxDecoderStream.java from twelvemonkeys
+[PDFBOX-3709] - delete deprecated API
+[PDFBOX-3736] - Switch the current 3.0.0 trunk to java 7
+[PDFBOX-3778] - Create sample code for creating a PDF with type 4 shading
+[PDFBOX-3823] - Question about forming a PDF document, including CMYK images for printing.
+[PDFBOX-3865] - Add OWASP dependency-check to build
+[PDFBOX-3873] - Fix text comparison in PDFontTest
+[PDFBOX-3938] - Add test from PDFBOX-2079 to 2.0 and trunk
+[PDFBOX-3974] - Add more parsing regression tests
+[PDFBOX-3991] - PDPageContentStream has sometimes float, sometimes double parameters
+[PDFBOX-4050] - Check user password when decrypting with owner password in build test
+[PDFBOX-4055] - Output info when PDFBox JBIG2 ImageIO is released
+[PDFBOX-4071] - Improve code quality (3)
+[PDFBOX-4112] - Build and test PDFBox with JDK10
+[PDFBOX-4135] - Modify PDFBox builds für Apache JBIG2 plugin
+[PDFBOX-4143] - repository-cached download of fontbox test files
+[PDFBOX-4170] - Update CCITTFaxDecoderStream.java from twelvemonkeys (2)
+[PDFBOX-4224] - Update jbig2 plugin usage to 3.0.1
+[PDFBOX-4281] - Replace Apache Wink dependency
+[PDFBOX-4340] - Get rid of DataSource objects
+[PDFBOX-4358] - Prevent stack overflow in COSDictionary.toString()
+[PDFBOX-4362] - Create simple text extraction example
+[PDFBOX-4388] - Update several tests to cache downloaded test files with download-maven-plugin
+[PDFBOX-4401] - Fine-tune KCMS warning message + update documentation
+[PDFBOX-4625] - remove Netbeans warning: Exporting non-public type through public API
+[PDFBOX-4757] - Enable as much PDAcroFormFlattenTest tests as possible
+[PDFBOX-4759] - Add tests for PDFBOX-4153 and PDFBOX-4490
+[PDFBOX-4813] - Remove catching NullPointerException
+[PDFBOX-4932] - Implement /RunLengthDecode encoder
+[PDFBOX-4933] - Correct PDFBOX-1777 to PDFBOX-1977 in tests
+[PDFBOX-4939] - Increase test coverage for AcroForm examples
+[PDFBOX-4940] - Increase code coverage for PDImageXObject tests
+[PDFBOX-5009] - Corrupt PDF can lead to a StackOverflow
+[PDFBOX-5030] - Create Migration guide for 3.0.0
+[PDFBOX-5045] - testFlattenOpenOfficeForm() has differences
+[PDFBOX-5057] - Review CCITTFaxDecoder updates
+[PDFBOX-5061] - Replace jaxb date DatatypeConverter with java.time
+[PDFBOX-5128] - Support parsing non standardized XMP
+[PDFBOX-5133] - Failing testFlattenPDFBox2469Filled on Ubuntu
+[PDFBOX-5153] - New flatefilter exception on Tika unit test files with 3.0.0-RC1
+[PDFBOX-5184] - Add test for PDFMarkedContentExtractor class
+[PDFBOX-5186] - Create test for CreateGradientShadingPDF
+[PDFBOX-5189] - Refactor ShadingContext class so that it implements PaintContext
+[PDFBOX-5215] - Add test for double visible signature on encrypted file
+[PDFBOX-5287] - Add test for comb fields adjustment
+[PDFBOX-5293] - Store x and y scaling factor
+[PDFBOX-5340] - Update CCITTFaxDecoderStream.java from twelvemonkeys (3)
+[PDFBOX-5341] - Enable GitHub CodeQL Scans for PDFBox Codebase
+[PDFBOX-5356] - Add test of PFB font
+[PDFBOX-5535] - Remove Travis build
+[PDFBOX-5595] - Slight regression on corrupt bug tracker file
+[PDFBOX-5607] - "new URL()" is deprecated in jdk20
+
+Release Contents
+----------------
+
+This release consists of a single source archive packaged as a zip file.
+The archive can be unpacked with the jar tool from your JDK installation.
+See the README.txt file for instructions on how to build this release.
+
+The source archive is accompanied by SHA512 checksums and a PGP signature
+that you can use to verify the authenticity of your download.
+The public key used for the PGP signature can be found at
+https://www.apache.org/dist/pdfbox/KEYS.
+
+About Apache PDFBox
+-------------------
+
+Apache PDFBox is an open source Java library for working with PDF documents.
+This project allows creation of new PDF documents, manipulation of existing
+documents and the ability to extract content from documents. Apache PDFBox
+also includes several command line utilities. Apache PDFBox is published
+under the Apache License, Version 2.0.
+
+For more information, visit https://pdfbox.apache.org/
+
+About The Apache Software Foundation
+------------------------------------
+
+Established in 1999, The Apache Software Foundation provides organizational,
+legal, and financial support for more than 100 freely-available,
+collaboratively-developed Open Source projects. The pragmatic Apache License
+enables individual and commercial users to easily deploy Apache software;
+the Foundation's intellectual property framework limits the legal exposure
+of its 2,500+ contributors.
+
+For more information, visit https://www.apache.org/

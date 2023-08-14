@@ -1,0 +1,338 @@
+#-------------------------------------------------------------------------------
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+# 
+#-------------------------------------------------------------------------------
+# filename=param1,param2... // comment
+
+isartor-6-1-2-t01-fail-a.pdf=1.1
+isartor-6-1-2-t02-fail-a.pdf=1.1
+isartor-6-1-3-t01-fail-a.pdf=1.4.1
+isartor-6-1-3-t02-fail-a.pdf=1.4.2
+isartor-6-1-3-t03-fail-a.pdf=1.4.10 // 1.4 due to JavaCC
+isartor-6-1-3-t04-fail-a.pdf=1.4.6 // Revoir le parser pour les linearized file (LIGNE VIDE qui encadre le body?????)
+isartor-6-1-4-t01-fail-a.pdf=1.3
+isartor-6-1-4-t02-fail-a.pdf=1.3
+isartor-6-1-6-t01-fail-a.pdf=1.0.11 // String Hex error - before was 1.2 due to JavaCC validation
+isartor-6-1-7-t01-fail-a.pdf=1.2.2 // Stream keyword must be followed by CR&LF or LF only- before was 1.2 due to JavaCC validation
+isartor-6-1-7-t02-fail-a.pdf=1.2.2
+isartor-6-1-7-t03-fail-a.pdf=1.2.5
+isartor-6-1-7-t04-fail-a.pdf=1.2.6
+isartor-6-1-7-t04-fail-b.pdf=1.2.6
+isartor-6-1-7-t04-fail-c.pdf=1.2.6
+isartor-6-1-8-t01-fail-a.pdf=1.2.1
+isartor-6-1-8-t02-fail-a.pdf=1.2.1
+isartor-6-1-8-t03-fail-a.pdf=1.2.1 // before was 1.2 due to JavaCC
+isartor-6-1-8-t04-fail-a.pdf=1.2.1
+isartor-6-1-8-t05-fail-a.pdf=1.2.1
+isartor-6-1-8-t06-fail-a.pdf=1.2.1
+isartor-6-1-10-t01-fail-a.pdf=1.2.7
+isartor-6-1-10-t01-fail-b.pdf=1.2.7
+isartor-6-1-10-t01-fail-c.pdf=1.2.7
+isartor-6-1-11-t01-fail-a.pdf=1.4.7
+isartor-6-1-11-t02-fail-a.pdf=1.4.7
+isartor-6-1-12-t01-fail-a.pdf=1.0.2 // 30 minutes en DEBUG
+isartor-6-1-12-t01-fail-b.pdf=1.0.3
+isartor-6-1-12-t01-fail-c.pdf=1.0.6
+isartor-6-1-12-t01-fail-d.pdf=1.0.6
+isartor-6-1-13-t01-fail-a.pdf=1.4.8
+isartor-6-2-2-t01-fail-a.pdf=2.1.3
+isartor-6-2-2-t02-fail-a.pdf=2.1.4
+isartor-6-2-2-t02-fail-b.pdf=2.1.6
+isartor-6-2-2-t03-fail-a.pdf=2.1.5
+isartor-6-2-10-t01-fail-a.pdf=1.2.10
+isartor-6-2-10-t01-fail-b.pdf=1.2.10
+isartor-6-2-10-t01-fail-c.pdf=1.2.10
+isartor-6-2-3-3-t01-fail-a.pdf=2.4.2
+isartor-6-2-3-3-t02-fail-a.pdf=2.4.1
+isartor-6-2-3-3-t02-fail-b.pdf=2.4.1
+isartor-6-2-3-3-t02-fail-c.pdf=2.4.3
+isartor-6-2-3-3-t02-fail-d.pdf=2.4.1
+isartor-6-2-3-3-t02-fail-e.pdf=2.4.3
+isartor-6-2-3-3-t02-fail-f.pdf=2.4.3
+isartor-6-2-3-3-t02-fail-g.pdf=2.4.3
+isartor-6-2-3-3-t02-fail-h.pdf=2.4.1
+isartor-6-2-3-3-t02-fail-i.pdf=2.4.1
+isartor-6-2-3-3-t02-fail-j.pdf=2.4.1
+isartor-6-2-3-3-t03-fail-a.pdf=2.4.2
+isartor-6-2-3-3-t03-fail-b.pdf=2.4.2
+isartor-6-2-3-3-t03-fail-c.pdf=2.4.3
+isartor-6-2-3-3-t03-fail-d.pdf=2.4.2
+isartor-6-2-3-3-t03-fail-e.pdf=2.4.3
+isartor-6-2-3-3-t04-fail-a.pdf=2.4.3
+isartor-6-2-3-3-t04-fail-b.pdf=2.4.3
+isartor-6-2-3-3-t04-fail-c.pdf=2.4.3
+isartor-6-2-3-3-t04-fail-d.pdf=2.4.3
+isartor-6-2-3-3-t05-fail-a.pdf=2.4.3  
+isartor-6-2-3-3-t05-fail-b.pdf=2.4.3
+isartor-6-2-3-4-t01-fail-a.pdf=2.4.3
+isartor-6-2-3-4-t01-fail-b.pdf=2.4.3
+isartor-6-2-4-t01-fail-a.pdf=2.3
+isartor-6-2-4-t02-fail-a.pdf=2.3
+isartor-6-2-4-t03-fail-a.pdf=2.3.2
+isartor-6-2-4-t04-fail-a.pdf=2.3.2
+isartor-6-2-5-t01-fail-a.pdf=2.3
+isartor-6-2-6-t01-fail-a.pdf=2.3
+isartor-6-2-7-t01-fail-a.pdf=2.3.2
+isartor-6-2-7-t02-fail-a.pdf=2.3.2
+isartor-6-2-8-t01-fail-a.pdf=2.3
+isartor-6-2-8-t01-fail-b.pdf=2.3
+isartor-6-2-8-t01-fail-c.pdf=2.3
+isartor-6-2-8-t01-fail-d.pdf=2.3
+isartor-6-2-8-t02-fail-a.pdf=2.3.2
+isartor-6-2-8-t02-fail-b.pdf=2.3.2
+isartor-6-2-8-t02-fail-c.pdf=2.3.2
+isartor-6-2-9-t01-fail-a.pdf=2.3.2
+isartor-6-3-2-t01-fail-a.pdf=3.2.2
+isartor-6-3-2-t01-fail-b.pdf=3.2.1
+isartor-6-3-2-t01-fail-c.pdf=3.2.3
+isartor-6-3-3-1-t01-fail-a.pdf=3.1.8
+isartor-6-3-3-1-t01-fail-b.pdf=3.1.8
+isartor-6-3-3-2-t01-fail-a.pdf=3.1.9
+isartor-6-3-3-3-t01-fail-a.pdf=3.1.7 // ---- Exception parce que PDFBox ne connait pas la CMap...
+isartor-6-3-3-3-t02-fail-a.pdf=3.1.10
+isartor-6-3-4-t01-fail-a.pdf=3.1.3
+isartor-6-3-4-t01-fail-b.pdf=3.1.3
+isartor-6-3-4-t01-fail-c.pdf=3.1.3
+isartor-6-3-4-t01-fail-d.pdf=3.1.3
+isartor-6-3-4-t01-fail-e.pdf=3.1.3
+# 5.3.1 check is not part of isartor, but N Appearance of a Btn widget must not be a stream, but an appearance subdictionary, see PDFBOX-3408
+# PDFTools validator agrees: "The appearance must have state dictionaries (subdictionaries to 'N')"
+isartor-6-3-4-t01-fail-f.pdf=3.1.3,5.3.1
+isartor-6-3-4-t01-fail-g.pdf=3.2.4 // Type3 Damage because the Type1 used as Resource isn't embedded 
+isartor-6-3-4-t01-fail-h.pdf=3.1.3
+isartor-6-3-5-t01-fail-a.pdf=3.3.1
+isartor-6-3-5-t01-fail-b.pdf=3.3.1
+isartor-6-3-5-t01-fail-c.pdf=3.3.1
+isartor-6-3-5-t01-fail-d.pdf=3.3.1
+isartor-6-3-5-t02-fail-a.pdf=3.1.4
+isartor-6-3-5-t03-fail-a.pdf=3.1.11
+isartor-6-3-6-t01-fail-a.pdf=3.1.6
+isartor-6-3-6-t01-fail-b.pdf=3.1.6
+isartor-6-3-6-t01-fail-c.pdf=3.1.6
+isartor-6-3-7-t01-fail-a.pdf=3.1.5
+isartor-6-3-7-t02-fail-a.pdf=3.1.5
+isartor-6-3-7-t03-fail-a.pdf=3.1.5
+isartor-6-4-t01-fail-a.pdf=4.1.1
+isartor-6-4-t01-fail-b.pdf=2.2.2
+isartor-6-4-t02-fail-a.pdf=2.2.1
+isartor-6-4-t03-fail-a.pdf=4.1.3
+isartor-6-4-t04-fail-a.pdf=4.1.2
+isartor-6-4-t05-fail-a.pdf=4.1.2
+isartor-6-5-2-t01-fail-a.pdf=5.2.1
+isartor-6-5-2-t01-fail-b.pdf=5.2.1
+isartor-6-5-2-t01-fail-c.pdf=5.2.1
+isartor-6-5-2-t01-fail-d.pdf=5.2.1
+isartor-6-5-2-t01-fail-e.pdf=5.2.1
+isartor-6-5-2-t01-fail-f.pdf=5.2.1
+isartor-6-5-2-t01-fail-g.pdf=5.2.1
+isartor-6-5-2-t01-fail-h.pdf=5.2.1
+isartor-6-5-2-t02-fail-a.pdf=1.2.9 // Should be 5.2.1 but FileSpec validated first and it contains EF
+isartor-6-5-2-t02-fail-b.pdf=5.2.1
+isartor-6-5-2-t02-fail-c.pdf=5.2.1
+isartor-6-5-3-t01-fail-a.pdf=5.3.2
+isartor-6-5-3-t02-fail-a.pdf=5.2.2 // F is optional according to PDF 1.7 or ISO 32000 --> missing will set the print flag to 0 so it is invalid 
+isartor-6-5-3-t02-fail-b.pdf=5.2.2
+isartor-6-5-3-t02-fail-c.pdf=5.2.2
+isartor-6-5-3-t02-fail-d.pdf=5.2.2
+isartor-6-5-3-t02-fail-e.pdf=5.2.2
+isartor-6-5-3-t03-fail-a.pdf=5.2.3
+isartor-6-5-3-t03-fail-b.pdf=5.2.3
+isartor-6-5-3-t03-fail-c.pdf=5.2.3
+isartor-6-5-3-t03-fail-d.pdf=5.2.3
+isartor-6-5-3-t04-fail-a.pdf=5.3.1
+isartor-6-5-3-t04-fail-b.pdf=5.3.1
+isartor-6-5-3-t04-fail-c.pdf=5.1.2
+isartor-6-5-3-t04-fail-d.pdf=5.3.1
+isartor-6-6-1-t01-fail-a.pdf=6.2.5
+isartor-6-6-1-t01-fail-b.pdf=6.2.5
+isartor-6-6-1-t01-fail-c.pdf=6.2.5
+isartor-6-6-1-t01-fail-d.pdf=6.2.5
+isartor-6-6-1-t01-fail-e.pdf=6.2.5
+isartor-6-6-1-t01-fail-f.pdf=6.2.5
+isartor-6-6-1-t01-fail-g.pdf=6.2.5
+isartor-6-6-1-t01-fail-h.pdf=6.2.5
+isartor-6-6-1-t01-fail-i.pdf=6.2.1
+isartor-6-6-1-t02-fail-a.pdf=6.2.5
+isartor-6-6-1-t02-fail-b.pdf=6.2.5
+isartor-6-6-1-t02-fail-c.pdf=6.2.5
+isartor-6-6-1-t02-fail-d.pdf=6.2.5
+isartor-6-6-1-t02-fail-e.pdf=6.2.5
+isartor-6-6-1-t02-fail-f.pdf=6.2.5
+isartor-6-6-1-t02-fail-g.pdf=6.2.5
+isartor-6-6-1-t02-fail-h.pdf=6.2.5
+isartor-6-6-1-t02-fail-i.pdf=6.2.1
+isartor-6-6-1-t03-fail-a.pdf=6.2.5
+isartor-6-6-1-t03-fail-b.pdf=6.2.5
+isartor-6-6-1-t03-fail-c.pdf=6.2.5
+isartor-6-6-1-t03-fail-d.pdf=6.2.5
+isartor-6-6-1-t03-fail-e.pdf=6.2.5
+isartor-6-6-1-t03-fail-f.pdf=6.2.5
+isartor-6-6-1-t03-fail-g.pdf=6.2.5
+isartor-6-6-1-t03-fail-h.pdf=6.2.5
+isartor-6-6-1-t03-fail-i.pdf=6.2.1
+isartor-6-6-1-t04-fail-a.pdf=6.2.5
+isartor-6-6-1-t04-fail-b.pdf=6.2.5
+isartor-6-6-1-t04-fail-c.pdf=6.2.5
+isartor-6-6-1-t04-fail-d.pdf=6.2.5
+isartor-6-6-1-t04-fail-e.pdf=6.2.5
+isartor-6-6-1-t04-fail-f.pdf=6.2.5
+isartor-6-6-1-t04-fail-g.pdf=6.2.5
+isartor-6-6-1-t04-fail-h.pdf=6.2.5
+isartor-6-6-1-t04-fail-i.pdf=6.2.1
+isartor-6-6-2-t01-fail-a.pdf=6.2.2
+isartor-6-7-11-t01-fail-a.pdf=7.11
+isartor-6-7-11-t01-fail-b.pdf=7.3 // Schema instancé grace au NSURI, donc si erroné erreur 7.3 (schema inconnu)
+isartor-6-7-11-t01-fail-c.pdf=7.11.1
+isartor-6-7-11-t01-fail-d.pdf=7.11.2
+isartor-6-7-2-t01-fail-a.pdf=7.1
+isartor-6-7-2-t02-fail-a.pdf=7.1
+isartor-6-7-2-t02-fail-b.pdf=7.1.1
+isartor-6-7-2-t02-fail-c.pdf=7.1 // 7.1.2 Impossible car Alt attendu et Text trouvé...
+isartor-6-7-2-t03-fail-a.pdf=1.2.7
+isartor-6-7-3-t01-fail-a.pdf=7.2
+isartor-6-7-3-t01-fail-b.pdf=7.2
+isartor-6-7-3-t01-fail-c.pdf=7.2
+isartor-6-7-5-t01-fail-a.pdf=7.0.0
+isartor-6-7-5-t02-fail-a.pdf=7.0.0
+isartor-6-7-8-t01-fail-a.pdf=7.3
+isartor-6-7-8-t02-fail-a.pdf=7.3 // 7.4.2 Impossible car NSPrefix utilisé pour identifier pdfschemaext. Ici il est vu comme un schema inconnu
+isartor-6-7-8-t02-fail-b.pdf=7.4.1 
+isartor-6-7-8-t02-fail-c.pdf=7.1 //traité comme probleme de format 
+isartor-6-7-8-t02-fail-d.pdf=7.1.1 // Property missing so Property unknown (7.1.1)
+isartor-6-7-8-t02-fail-e.pdf=7.5
+isartor-6-7-8-t02-fail-f.pdf=7.5
+isartor-6-7-8-t02-fail-g.pdf=7.6 
+isartor-6-7-8-t02-fail-h.pdf=7.5
+isartor-6-7-8-t02-fail-i.pdf=7.5
+isartor-6-7-8-t02-fail-j.pdf=7.6
+isartor-6-7-8-t02-fail-k.pdf=7.1 // valeur de type text simple au lieu d'un field de text... Ne passe pas ds le traitement du field...
+isartor-6-7-9-t01-fail-a.pdf=7.1
+isartor-6-9-t01-fail-a.pdf=1.2.3
+isartor-6-9-t02-fail-a.pdf=6.2.4
+isartor-6-9-t02-fail-b.pdf=6.2.2
+
+# Bavaria conforming
+Garamond.pdf=
+MotionMountain.pdf=
+images_to_pdfa.pdf=
+import_pdfa.pdf=
+pdfa1b.pdf=
+starter_pdfa.pdf=
+text_to_pdfa.pdf=
+transparent_stamp.pdf=
+04-Metadaten-KK.pdf=
+2002_28.pdf=
+ABNTNBR5298_1973.pdf=
+BIT2-2009.pdf=
+LT_demo.pdf=
+PBS7.pdf=
+PDFA_Conference_2009.pdf=
+Verbal_Dependencies.pdf=
+adobe7pie.pdf=
+allmbl-2009-01.pdf=
+beitraege_sorabistik.pdf=
+bley.pdf=
+braun_feudel.pdf=
+dms_signed.pdf=
+fmbl-2009-01.pdf=
+foerster_diss.pdf=
+isis09_04.pdf=
+jmbl-2009-01.pdf=
+kaiser_magister_fixed.pdf=
+koetter.pdf=
+kwmbl-2009-01.pdf=
+meister_dziourkevich.pdf=
+mgfn12_02_10.pdf=
+
+# See PDFBOX-2408 - this file is not correct
+mm_image2pdfa.pdf=1.2.1
+
+outcppxmp.pdf=
+paperG3_A1b.pdf=
+paperG8_A1b.pdf=
+pardes_10_a4.pdf=
+psgf1999_1.pdf=
+pueschel_etal_1987.pdf=
+schnurbein.pdf=
+signed_pdf.pdf=
+vjs_01.pdf=
+vjs_05_Art05.pdf=
+acmeemail_full.pdf=
+good0000.pdf=
+good0001.pdf=
+good0002.pdf=
+good0003.pdf=
+good0004.pdf=
+good0005.pdf=
+good0006.pdf=
+good0007.pdf=
+good0008.pdf=
+good0009.pdf=
+good0010.pdf=
+good0011.pdf=
+good0012.pdf=
+good0013.pdf=
+good0015.pdf=
+
+# Bavaria non conforming
+
+Pardes13_Art02.pdf=1.2.3
+hopf1971.pdf=3.1.2
+ide_diss_p1.pdf=1.0.1
+laschewsky_1.pdf=2.3.2,1.2.3
+laschewsky_2.pdf=1.2.3
+modules_acrobat9.pdf=2.1.2
+pardes14_Jid02_reduced.pdf=1.0.3
+stat_dis_30_fixed.pdf=3.1.2
+Funktionale_Varietaeten.pdf=3.1.4,3.1.11,7.3,2.4.2
+apogee.pdf=3.3.1
+bug1771.pdf=7.1,2.1.2,1.2.1,1.2.5,1.2.2
+empty_word.pdf=7.2
+literat.pdf=1.2.5,7.11
+nesrin.pdf=1.2.1,1.2.2,1.2.5
+paper56.pdf=7.3
+
+# Bavaria.xml contradicts itself about transparency groups; PDFTools reports them
+# According to http://www.pdfa.org/2011/08/pdfa-%E2%80%93-a-look-at-the-technical-side/ transparency is not permitted
+validierung_von_pdfa.pdf=1.4.9,3.1.4,2.2.1
+
+vwdb_95.pdf=1.2.5,7.3
+2001_28.pdf=7.1
+
+# See PDFBOX-2643 - Property stRef:instanceID is correct!
+PDFA_Conference_2009_nc.pdf=7.1
+
+# weird text "XMP not included in xpacket element" in Bavaria.xml probably meant to be "XMP not embedded in xpacket element"
+UCC.pdf=7.1
+
+# also has schema description missing for cc:license (http://creativecommons.org/ns#)
+# is not displayed because of other error that aborts XMP
+rolfs_diss_A1b.pdf=1.2.3,7.1
+
+terminanschreiben.pdf=7.1
+
+# Bavaria unclear
+
+PDFExportDialog2.pdf=
+Pardes13_Rez02.pdf=
+
+# <ptt:T_Real>IEEE754D,L,3A4901F387D31108</ptt:T_Real> because of <pdfaProperty:valueType>Real</pdfaProperty:valueType>
+good0016.pdf=7.1
+
+pdfa_article_v11.pdf=2.2.1
+wilhelm_diss_p1.pdf=7.1

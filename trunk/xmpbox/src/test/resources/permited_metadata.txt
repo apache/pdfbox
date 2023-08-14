@@ -1,0 +1,205 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# creation of this file based on :
+# http://www.adobe.com/content/dam/Adobe/en/devnet/livecycle/pdfs/readercomp_pdfa.pdf
+
+
+# Not managed MD
+# http://ns.adobe.com/xmp/Identifier/qual/1.0/xmpidq:Scheme
+# http://ns.adobe.com/exif/1.0/exif:MakerNote
+
+
+# managed MD
+http://purl.org/dc/elements/1.1/dc:contributor
+http://purl.org/dc/elements/1.1/dc:coverage
+http://purl.org/dc/elements/1.1/dc:creator
+http://purl.org/dc/elements/1.1/dc:date
+http://purl.org/dc/elements/1.1/dc:description
+http://purl.org/dc/elements/1.1/dc:format
+http://purl.org/dc/elements/1.1/dc:identifier
+http://purl.org/dc/elements/1.1/dc:language
+http://purl.org/dc/elements/1.1/dc:publisher
+http://purl.org/dc/elements/1.1/dc:relation
+http://purl.org/dc/elements/1.1/dc:rights
+http://purl.org/dc/elements/1.1/dc:source
+http://purl.org/dc/elements/1.1/dc:subject
+http://purl.org/dc/elements/1.1/dc:title
+http://purl.org/dc/elements/1.1/dc:type
+http://ns.adobe.com/xap/1.0/xmp:Advisory
+http://ns.adobe.com/xap/1.0/xmp:BaseURL
+http://ns.adobe.com/xap/1.0/xmp:CreateDate
+http://ns.adobe.com/xap/1.0/xmp:CreatorTool
+http://ns.adobe.com/xap/1.0/xmp:Identifier
+http://ns.adobe.com/xap/1.0/xmp:MetadataDate
+http://ns.adobe.com/xap/1.0/xmp:ModifierDate
+http://ns.adobe.com/xap/1.0/xmp:Nickname
+http://ns.adobe.com/xap/1.0/xmp:Thumbnails
+http://ns.adobe.com/xap/1.0/rights/xmpRights:Certificate
+http://ns.adobe.com/xap/1.0/rights/xmpRights:Marked
+http://ns.adobe.com/xap/1.0/rights/xmpRights:Owner
+http://ns.adobe.com/xap/1.0/rights/xmpRights:UsageTerms
+http://ns.adobe.com/xap/1.0/rights/xmpRights:WebStatement
+
+http://ns.adobe.com/xap/1.0/mm/xmpMM:DerivedFrom
+http://ns.adobe.com/xap/1.0/mm/xmpMM:DocumentID
+http://ns.adobe.com/xap/1.0/mm/xmpMM:History
+http://ns.adobe.com/xap/1.0/mm/xmpMM:ManagedFrom
+http://ns.adobe.com/xap/1.0/mm/xmpMM:Manager
+http://ns.adobe.com/xap/1.0/mm/xmpMM:ManageTo
+http://ns.adobe.com/xap/1.0/mm/xmpMM:ManageUI
+http://ns.adobe.com/xap/1.0/mm/xmpMM:ManagerVariant
+http://ns.adobe.com/xap/1.0/mm/xmpMM:RenditionClass
+http://ns.adobe.com/xap/1.0/mm/xmpMM:RenditionParams
+http://ns.adobe.com/xap/1.0/mm/xmpMM:VersionID
+http://ns.adobe.com/xap/1.0/mm/xmpMM:Versions
+http://ns.adobe.com/xap/1.0/mm/xmpMM:LastURL
+http://ns.adobe.com/xap/1.0/mm/xmpMM:RenditionOf
+http://ns.adobe.com/xap/1.0/mm/xmpMM:SaveID
+http://ns.adobe.com/xap/1.0/bj/xmpBJ:JobRef
+http://ns.adobe.com/pdf/1.3/pdf:Keywords
+http://ns.adobe.com/pdf/1.3/pdf:PDFVersion
+http://ns.adobe.com/pdf/1.3/pdf:Producer
+
+http://ns.adobe.com/xap/1.0/t/pg/xmpTPg:MaxPageSize
+http://ns.adobe.com/xap/1.0/t/pg/xmpTPg:NPages
+
+
+# in original file ns was http://ns.adobe.com/pdf/photoshop/1.0/
+# replaced by http://ns.adobe.com/photoshop/1.0/
+http://ns.adobe.com/photoshop/1.0/photoshop:AuthorsPosition
+http://ns.adobe.com/photoshop/1.0/photoshop:CaptionWriter
+http://ns.adobe.com/photoshop/1.0/photoshop:Category
+http://ns.adobe.com/photoshop/1.0/photoshop:City
+http://ns.adobe.com/photoshop/1.0/photoshop:Country
+http://ns.adobe.com/photoshop/1.0/photoshop:Credit
+http://ns.adobe.com/photoshop/1.0/photoshop:DateCreated
+http://ns.adobe.com/photoshop/1.0/photoshop:Headline
+http://ns.adobe.com/photoshop/1.0/photoshop:Instructions
+http://ns.adobe.com/photoshop/1.0/photoshop:Source
+http://ns.adobe.com/photoshop/1.0/photoshop:State
+http://ns.adobe.com/photoshop/1.0/photoshop:SupplementalCategories
+http://ns.adobe.com/photoshop/1.0/photoshop:TransmissionReference
+http://ns.adobe.com/photoshop/1.0/photoshop:Urgency
+
+# Tiff namespace
+http://ns.adobe.com/tiff/1.0/tiff:ImageWidth
+http://ns.adobe.com/tiff/1.0/tiff:ImageLength
+http://ns.adobe.com/tiff/1.0/tiff:BitsPerSample
+http://ns.adobe.com/tiff/1.0/tiff:Compression
+http://ns.adobe.com/tiff/1.0/tiff:PhotometricInterpretation
+http://ns.adobe.com/tiff/1.0/tiff:Orientation
+http://ns.adobe.com/tiff/1.0/tiff:SamplesPerPixel
+http://ns.adobe.com/tiff/1.0/tiff:PlanarConfiguration
+http://ns.adobe.com/tiff/1.0/tiff:YCbCrSubSampling
+http://ns.adobe.com/tiff/1.0/tiff:YCbCrPositioning
+http://ns.adobe.com/tiff/1.0/tiff:XResolution
+http://ns.adobe.com/tiff/1.0/tiff:YResolution
+http://ns.adobe.com/tiff/1.0/tiff:ResolutionUnit
+http://ns.adobe.com/tiff/1.0/tiff:TransferFunction
+http://ns.adobe.com/tiff/1.0/tiff:WhitePoint
+http://ns.adobe.com/tiff/1.0/tiff:PrimaryChromaticities
+http://ns.adobe.com/tiff/1.0/tiff:YCbCrCoefficients
+http://ns.adobe.com/tiff/1.0/tiff:ReferenceBlackWhite
+http://ns.adobe.com/tiff/1.0/tiff:DateTime
+http://ns.adobe.com/tiff/1.0/tiff:ImageDescription
+http://ns.adobe.com/tiff/1.0/tiff:Make
+http://ns.adobe.com/tiff/1.0/tiff:Model
+http://ns.adobe.com/tiff/1.0/tiff:Software
+http://ns.adobe.com/tiff/1.0/tiff:Artist
+http://ns.adobe.com/tiff/1.0/tiff:Copyright
+
+# Exif namespace
+http://ns.adobe.com/exif/1.0/exif:ExifVersion
+http://ns.adobe.com/exif/1.0/exif:FlashpixVersion
+http://ns.adobe.com/exif/1.0/exif:ColorSpace
+http://ns.adobe.com/exif/1.0/exif:ComponentsConfiguration
+http://ns.adobe.com/exif/1.0/exif:CompressedBitsPerPixel
+http://ns.adobe.com/exif/1.0/exif:PixelXDimension
+http://ns.adobe.com/exif/1.0/exif:PixelYDimension
+http://ns.adobe.com/exif/1.0/exif:UserComment
+http://ns.adobe.com/exif/1.0/exif:RelatedSoundFile
+http://ns.adobe.com/exif/1.0/exif:DateTimeOriginal
+http://ns.adobe.com/exif/1.0/exif:DateTimeDigitized
+http://ns.adobe.com/exif/1.0/exif:ExposureTime
+http://ns.adobe.com/exif/1.0/exif:FNumber
+http://ns.adobe.com/exif/1.0/exif:ExposureProgram
+http://ns.adobe.com/exif/1.0/exif:SpectralSensitivity
+http://ns.adobe.com/exif/1.0/exif:ISOSpeedRatings
+http://ns.adobe.com/exif/1.0/exif:OECF
+http://ns.adobe.com/exif/1.0/exif:ShutterSpeedValue
+http://ns.adobe.com/exif/1.0/exif:ApertureValue
+http://ns.adobe.com/exif/1.0/exif:BrightnessValue
+http://ns.adobe.com/exif/1.0/exif:ExposureBiasValue
+http://ns.adobe.com/exif/1.0/exif:MaxApertureValue
+http://ns.adobe.com/exif/1.0/exif:SubjectDistance
+http://ns.adobe.com/exif/1.0/exif:MeteringMode
+http://ns.adobe.com/exif/1.0/exif:LightSource
+http://ns.adobe.com/exif/1.0/exif:FocalLength
+http://ns.adobe.com/exif/1.0/exif:SubjectArea
+http://ns.adobe.com/exif/1.0/exif:FlashEnergy
+http://ns.adobe.com/exif/1.0/exif:FocalPlaneXResolution
+http://ns.adobe.com/exif/1.0/exif:FocalPlaneYResolution
+http://ns.adobe.com/exif/1.0/exif:FocalPlaneResolutionUnit
+http://ns.adobe.com/exif/1.0/exif:SubjectLocation
+http://ns.adobe.com/exif/1.0/exif:ExposureIndex
+http://ns.adobe.com/exif/1.0/exif:SensingMethod
+http://ns.adobe.com/exif/1.0/exif:FileSource
+http://ns.adobe.com/exif/1.0/exif:SceneType
+http://ns.adobe.com/exif/1.0/exif:CustomRendered
+http://ns.adobe.com/exif/1.0/exif:ExposureMode
+http://ns.adobe.com/exif/1.0/exif:WhiteBalance
+http://ns.adobe.com/exif/1.0/exif:DigitalZoomRatio
+http://ns.adobe.com/exif/1.0/exif:FocalLengthIn35mmFilm
+http://ns.adobe.com/exif/1.0/exif:SceneCaptureType
+http://ns.adobe.com/exif/1.0/exif:GainControl
+http://ns.adobe.com/exif/1.0/exif:Contrast
+http://ns.adobe.com/exif/1.0/exif:Saturation
+http://ns.adobe.com/exif/1.0/exif:Sharpness
+http://ns.adobe.com/exif/1.0/exif:SubjectDistanceRange
+http://ns.adobe.com/exif/1.0/exif:ImageUniqueID
+http://ns.adobe.com/exif/1.0/exif:GPSVersionID
+http://ns.adobe.com/exif/1.0/exif:GPSAltitudeRef
+http://ns.adobe.com/exif/1.0/exif:GPSAltitude
+http://ns.adobe.com/exif/1.0/exif:GPSTimeStamp
+http://ns.adobe.com/exif/1.0/exif:GPSSatellites
+http://ns.adobe.com/exif/1.0/exif:GPSStatus
+http://ns.adobe.com/exif/1.0/exif:GPSMeasureMode
+http://ns.adobe.com/exif/1.0/exif:GPSDOP
+http://ns.adobe.com/exif/1.0/exif:GPSSpeedRef
+http://ns.adobe.com/exif/1.0/exif:GPSSpeed
+http://ns.adobe.com/exif/1.0/exif:GPSTrackRef
+http://ns.adobe.com/exif/1.0/exif:GPSTrack
+http://ns.adobe.com/exif/1.0/exif:GPSImgDirectionRef
+http://ns.adobe.com/exif/1.0/exif:GPSImgDirection
+http://ns.adobe.com/exif/1.0/exif:GPSMapDatum
+http://ns.adobe.com/exif/1.0/exif:GPSDestBearingRef
+http://ns.adobe.com/exif/1.0/exif:GPSDestBearing
+http://ns.adobe.com/exif/1.0/exif:GPSDestDistanceRef
+http://ns.adobe.com/exif/1.0/exif:GPSDestDistance
+http://ns.adobe.com/exif/1.0/exif:GPSProcessingMethod
+http://ns.adobe.com/exif/1.0/exif:GPSAreaInformation
+http://ns.adobe.com/exif/1.0/exif:GPSDifferential
+http://ns.adobe.com/exif/1.0/exif:SpatialFrequencyResponse
+http://ns.adobe.com/exif/1.0/exif:CFAPattern
+http://ns.adobe.com/exif/1.0/exif:DeviceSettingDescription
+http://ns.adobe.com/exif/1.0/exif:Flash
+http://ns.adobe.com/exif/1.0/exif:GPSLatitude
+http://ns.adobe.com/exif/1.0/exif:GPSLongitude
+http://ns.adobe.com/exif/1.0/exif:GPSDestLatitude
+http://ns.adobe.com/exif/1.0/exif:GPSDestLongitude
+

@@ -1,0 +1,7 @@
+﻿Ich bin Marios test.
+$Anhang=/home/im/tmp/AGB.pdf$
+$Auftragsnummer=2004001452-001$
+$Mandant=1$
+$MailTo=mario@ops.co.at$
+$User=mario$
+Ende

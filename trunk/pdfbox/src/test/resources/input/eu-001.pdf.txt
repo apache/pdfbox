@@ -1,0 +1,199 @@
+﻿E-PRTR pollutants and their thresholds 
+ 
+A facility has to report data under E-PRTR if it fulfils the following criteria:  
+• the facility falls under at least one of the 65 E-PRTR economic activities. The 
+activities are also reported using a statistical classification of economic activities 
+(NACE rev 2)  
+• the facility has a capacity exceeding at least one of the E-PRTR capacity 
+thresholds  
+• the facility releases pollutants or transfers waste off-site which exceed specific 
+thresholds set out in Article 5 of the E-PRTR Regulation. These thresholds for 
+releases of pollutants are specified for each media - air, water and land - in Annex 
+II of the E-PRTR Regulation. 
+ 
+In the following tables you will find the 91 E-PRTR pollutants and their thresholds broken 
+down by the 7 groups used in all the searches of the E-PRTR website. 
+ 
+ 
+Greenhouse gases 
+ 
+ THRESHOLD FOR RELEASES 
+ to air 
+kg/year 
+to water 
+kg/year 
+to land 
+kg/year 
+Carbon dioxide (CO2) 100 million - - 
+Hydro-fluorocarbons (HFCs) 100 - - 
+Methane (CH4) 100 000 - - 
+Nitrous oxide (N2O) 10 000 - - 
+Perfluorocarbons (PFCs) 100 - - 
+Sulphur hexafluoride (SF6) 50 - - 
+ 
+Other gases 
+ 
+ THRESHOLD FOR RELEASES 
+ to air 
+kg/year 
+to water 
+kg/year 
+to land 
+kg/year 
+Ammonia (NH3) 10 000 - - 
+Carbon monoxide (CO) 500 000 - - 
+Chlorine and inorganic compounds 
+(as HCl) 10 000 - - 
+Chlorofluorocarbons (CFCs) 1 - - 
+Flourine and inorganic compounds 
+(as HF) 5 000 - - 
+Halons 1 - - 
+Hydrochlorofluorocarbons (HCFCs) 1 - - 
+Hydrogen Cyanide (HCN) 200 - - 
+Nitrogen oxides (NOx/NO2) 100 000 - - 
+Non-methane volatile organic 
+compounds (NMVOC) 100 000 - - 
+Sulphur oxides (SOx/SO2) 150 000 - - 
+ 
+Heavy metals 
+  
+ THRESHOLD FOR RELEASES 
+ to air 
+kg/year 
+to water 
+kg/year 
+to land 
+kg/year 
+Arsenic and compounds (as As) 20 5 5 
+Cadmium and compounds (as Cd) 10 5 5 
+Chromium and compounds (as Cr) 100 50 50 
+Copper and compounds (as Cu) 100 50 50 
+Lead and compounds (as Pb) 200 20 20 
+Mercury and compounds (as Hg) 10 1 1 
+Nickel and compounds (as Ni) 50 20 20 
+Zinc and compounds (as Zn) 200 100 100 
+ 
+Pesticides  
+ 
+ THRESHOLD FOR RELEASES 
+ to air 
+kg/year 
+to water 
+kg/year 
+to land 
+kg/year 
+1,2,3,4,5,6- hexachlorocyclohexane 
+(HCH) 10 1 1 
+Alachlor - 1 1 
+Aldrin 1 1 1 
+Atrazine - 1 1 
+Chlordane 1 1 1 
+Chlordecone 1 1 1 
+Chlorfenvinphos - 1 1 
+Chlorpyrifos - 1 1 
+DDT 1 1 1 
+Diuron - 1 1 
+Endosulphan - 1 1 
+Endrin 1 1 1 
+Heptachlor 1 1 1 
+Isodrin - 1 - 
+Isoproturon - 1 1 
+Lindane 1 1 1 
+Mirex 1 1 1 
+Simazine - 1 1 
+Toxaphene 1 1 1 
+Tributylin and compounds - 1 1 
+Trifluralin - 1 1 
+Triphenyltin and compounds - 1 1 
+ 
+Chlorinated organic substances  
+ 
+ THRESHOLD FOR RELEASES 
+ to air 
+kg/year 
+to water 
+kg/year 
+to land 
+kg/year 
+1,1,1-trichloroethane 100 - - 
+1,1,2,2-tetrachloroethane 50 - - 
+1,2-dichloroethane (EDC) 1 000 10 10 
+Brominated diphenylethers (PBDE) - 1 1 
+Chloro-alkanes, C10-C13 - 1 1 
+Dichloromethane (DCM) 1 000 10 10 
+Dieldrin 1 1 1 
+Halogenated Organic Compounds (AOX) - 1 000 1 000 
+Hexabromobifenyl 0,1 0,1 0,1 
+Hexachlorobenzene (HCB) 10 1 1 
+Hexachlorobutadiene (HCBD) - 1 1 
+PCDD+PCFD (Dioxins+furans) (as Teq) 0,0001 0,0001 0,0001 
+Pentachlorobenzene 1 1 1 
+Pentachlorophenol (PCP) 10 1 1 
+Polychlorinated biphenyls (PCB) 0,1 0,1 0,1 
+Tetrachloroethylene (PER) 2 000 10 - 
+Tetrachloromethane (TCM) 100 1 - 
+Trichlorobenzenes (TCBs) (all isomers) 10 1 - 
+Trichloroethylene 2 000 10 - 
+Trichloromethane 500 10 - 
+Vynil chloride 1 000 10 10 
+ 
+ 
+Other organic substances 
+ 
+ THRESHOLD FOR RELEASES 
+ to air 
+kg/year 
+to water 
+kg/year 
+to land 
+kg/year 
+Anthracene 50 1 1 
+Benzene 1 000 200 (as 
+BTEX) 
+200 (as 
+BTEX) 
+Benzo(g,h,i)perylene - 1 - 
+Di-(2-ethyl hexyl) phthalate (DEHP) 10 1 1 
+Ethyl benzene - 200 (as 
+BTEX) 
+200 (as 
+BTEX) 
+Ethylene oxide 1 000 10 10 
+Fluoranthene - 1 - 
+Naphthalene 100 10 10 
+Nonylphenol and Nonylphenol ethoxylates 
+(NP/NPEs) - 1 1 
+Octylphenols and octylphenol ethoxylates - 1 - 
+Organotin compounds (as total Sn) - 50 50 
+Phenols (as total C) - 20 20 
+Polycyclic Aromatic hydrocarbons (PAHs) 50 5 5 
+Toluene - 200 (as 
+BTEX) 
+200 (as 
+BTEX) 
+Total Organic Carbon (TOC) (as total C or 
+COD/3) - 50 000 - 
+Xylenes - 200 (as 
+BTEX) 
+200 (as 
+BTEX) 
+ 
+ 
+Inorganic substances 
+ 
+ THRESHOLD FOR RELEASES 
+ to air 
+kg/year 
+to water 
+kg/year 
+to land 
+kg/year 
+Asbestos 1 1 1 
+Chlorides (as total Cl) - 2 million 2 million 
+Cyanides (as total CN) - 50 50 
+Fluorides (as total F) - 2 000 2 000 
+Particulate matter (PM10) 50 000 - - 
+Total Nitrogen - 50 000 50 000 
+Total Phosphorus - 5 000 5 000 
+ 
+ 

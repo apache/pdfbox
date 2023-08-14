@@ -1,0 +1,115 @@
+%PDF-1.5
+%цдья
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Count 1
+/Kids [3 0 R]
+>>
+endobj
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/Resources <<
+/Font <<
+/F1 4 0 R
+>>
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+>>
+/MediaBox [0 0 595.32 841.92]
+/Contents 5 0 R
+/Group <<
+/Type /Group
+/S /Transparency
+/CS /DeviceRGB
+>>
+/Tabs /S
+/StructParents 0
+>>
+endobj
+4 0 obj
+<<
+/Type /Font
+/Subtype /TrueType
+/Name /F1
+/BaseFont /Arial
+/Encoding /WinAnsiEncoding
+/FontDescriptor 6 0 R
+/FirstChar 32
+/LastChar 65
+/Widths [278 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 556 556 556
+0 0 0 0 0 0 0 0 0 0
+0 0 0 667]
+>>
+endobj
+5 0 obj
+<<
+/Length 267
+>>
+stream
+                    BT
+/F1 20    Tf
+1 0 0 1 70     752    Tm
+0 g
+0 G
+[(A)] TJ
+  
+  
+1 0 0 1 84     752    Tm
+        
+  
+                           
+1 0 0 1 70     716    Tm
+          [(123)] TJ
+  
+  
+1 0 0 1 104.18 716.14 Tm
+             
+ET
+     
+endstream
+endobj
+6 0 obj
+<<
+/Type /FontDescriptor
+/FontName /Arial
+/Flags 32
+/ItalicAngle 0
+/Ascent 905
+/Descent -210
+/CapHeight 728
+/AvgWidth 441
+/MaxWidth 2665
+/FontWeight 400
+/XHeight 250
+/Leading 33
+/StemV 44
+/FontBBox [-665 -210 2000 728]
+>>
+endobj
+xref
+0 7
+0000000000 65535 f
+0000000015 00000 n
+0000000064 00000 n
+0000000121 00000 n
+0000000383 00000 n
+0000000626 00000 n
+0000000946 00000 n
+trailer
+<<
+/Size 7
+/Root 1 0 R
+/ID [<12DBB647E5ACEF46AE87654C3E56DBC0> <12DBB647E5ACEF46AE87654C3E56DBC0>]
+>>
+startxref
+1183
+%%EOF

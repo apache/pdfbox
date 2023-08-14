@@ -1,0 +1,57 @@
+<!-- ! Licensed to the Apache Software Foundation (ASF) under one or more 
+	! contributor license agreements. See the NOTICE file distributed with ! 
+	this work for additional information regarding copyright ownership. ! The 
+	ASF licenses this file to You under the Apache License, Version 2.0 ! (the 
+	"License"); you may not use this file except in compliance with ! the License. 
+	You may obtain a copy of the License at ! ! http://www.apache.org/licenses/LICENSE-2.0 
+	! ! Unless required by applicable law or agreed to in writing, software ! 
+	distributed under the License is distributed on an "AS IS" BASIS, ! WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. ! See the 
+	License for the specific language governing permissions and ! limitations 
+	under the License. ! -->
+<?xpacket begin='ï»¿' id='W5M0MpCehiHzreSzNTczkc9d'?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+		<rdf:Description rdf:about=""
+			xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/"
+			xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#"
+			xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#"
+			xmlns:pdfaType="http://www.aiim.org/pdfa/ns/type#" xmlns:pdfaField="http://www.aiim.org/pdfa/ns/field#">
+			<pdfaExtension:schemas>
+				<rdf:Bag>
+					<rdf:li rdf:parseType="Resource">
+						<pdfaSchema:schema>ACME E-Mail Schema</pdfaSchema:schema>
+						<pdfaSchema:namespaceURI>http://www.acme.com/ns/email/1/</pdfaSchema:namespaceURI>
+						<pdfaSchema:prefix>acmeemail</pdfaSchema:prefix>
+						<pdfaSchema:property>
+							<rdf:Seq>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>Delivery-Date</pdfaProperty:name>
+									<pdfaProperty:valueType>Date</pdfaProperty:valueType>
+									<pdfaProperty:category>internal</pdfaProperty:category>
+									<pdfaProperty:description>date of email delivery</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>From</pdfaProperty:name>
+									<pdfaProperty:valueType>mailaddress</pdfaProperty:valueType>
+									<pdfaProperty:category>internal</pdfaProperty:category>
+									<pdfaProperty:description>sender email address</pdfaProperty:description>
+								</rdf:li>
+							</rdf:Seq>
+						</pdfaSchema:property>
+					</rdf:li>
+				</rdf:Bag>
+			</pdfaExtension:schemas>
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:acmeemail="http://www.acme.com/ns/email/1/" xmlns:add="http://www.acme.com/ns/email/1/mailaddress/">
+			<acmeemail:Delivery-Date>2007-11-09T09:55:36+01:00</acmeemail:Delivery-Date>
+			<acmeemail:From rdf:parseType="Resource">
+				<add:name>John Doe</add:name>
+				<add:mailto>john@acme.com</add:mailto>
+			</acmeemail:From>
+		</rdf:Description>
+	</rdf:RDF>
+</x:xmpmeta>
+<?xpacket end='r'?>
+

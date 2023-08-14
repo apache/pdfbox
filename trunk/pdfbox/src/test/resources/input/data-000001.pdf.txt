@@ -1,0 +1,5 @@
+﻿Tue Jun  5 22:15:55 2001
+[California Time]
+Dynamic PDF CGI Demo
+pad-cache2-1.cache.telstra.net
+165.228.129.12

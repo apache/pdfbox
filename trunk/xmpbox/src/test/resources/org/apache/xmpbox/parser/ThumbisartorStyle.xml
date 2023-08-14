@@ -1,0 +1,120 @@
+<!-- ! Licensed to the Apache Software Foundation (ASF) under one or more 
+	! contributor license agreements. See the NOTICE file distributed with ! 
+	this work for additional information regarding copyright ownership. ! The 
+	ASF licenses this file to You under the Apache License, Version 2.0 ! (the 
+	"License"); you may not use this file except in compliance with ! the License. 
+	You may obtain a copy of the License at ! ! http://www.apache.org/licenses/LICENSE-2.0 
+	! ! Unless required by applicable law or agreed to in writing, software ! 
+	distributed under the License is distributed on an "AS IS" BASIS, ! WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. ! See the 
+	License for the specific language governing permissions and ! limitations 
+	under the License. ! -->
+<?xpacket begin="ï»¿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+		<rdf:Description rdf:about=""
+			xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">
+			<xmpMM:DocumentID>uuid:09C78666-2F91-3A9C-92AF-3691A6D594F7</xmpMM:DocumentID>
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:xmp="http://ns.adobe.com/xap/1.0/">
+			<xmp:ModifyDate>2008-01-18T16:59:54+01:00</xmp:ModifyDate>
+			<xmp:MetadataDate>2008-01-18T16:59:54+01:00</xmp:MetadataDate>
+			<xmp:CreateDate>2008-01-18T16:59:54+01:00</xmp:CreateDate>
+			<xmp:Thumbnails xmlns:xapGImg="http://ns.adobe.com/xap/1.0/g/img/">
+				<rdf:Alt>
+					<rdf:li rdf:parseType="Resource">
+							<xapGImg:height>162</xapGImg:height>
+							<xapGImg:width>216</xapGImg:width>
+							<xapGImg:format>JPEG</xapGImg:format>
+							<xapGImg:image>/9j/4AAQSkZJRgABAgEASABIAAD</xapGImg:image>
+					</rdf:li>
+					<rdf:li>
+						<rdf:Description>
+							<xapGImg:height>162</xapGImg:height>
+							<xapGImg:width>216</xapGImg:width>
+							<xapGImg:format>JPEG</xapGImg:format>
+							<xapGImg:image>/9j/4AAQSkZJRgABAgEASABIAAD</xapGImg:image>
+						</rdf:Description>
+					</rdf:li>
+				</rdf:Alt>
+			</xmp:Thumbnails>
+
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/"
+			xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#"
+			xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#"
+			xmlns:pdfaType="http://www.aiim.org/pdfa/ns/type#" xmlns:pdfaField="http://www.aiim.org/pdfa/ns/field#">
+			<pdfaExtension:schemas>
+				<rdf:Bag>
+					<rdf:li rdf:parseType="Resource">
+						<pdfaSchema:schema>ACME E-Mail Schema</pdfaSchema:schema>
+						<pdfaSchema:namespaceURI>http://www.acme.com/ns/email/1/</pdfaSchema:namespaceURI>
+						<pdfaSchema:prefix>acmeemail</pdfaSchema:prefix>
+						<pdfaSchema:property>
+							<rdf:Seq>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>Delivery-Date</pdfaProperty:name>
+									<pdfaProperty:valueType>Date</pdfaProperty:valueType>
+									<pdfaProperty:category>internal</pdfaProperty:category>
+									<pdfaProperty:description>date of email delivery</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>From</pdfaProperty:name>
+									<pdfaProperty:valueType>mailaddress</pdfaProperty:valueType>
+									<pdfaProperty:category>internal</pdfaProperty:category>
+									<pdfaProperty:description>sender email address</pdfaProperty:description>
+								</rdf:li>
+							</rdf:Seq>
+						</pdfaSchema:property>
+						<pdfaSchema:valueType>
+							<rdf:Seq>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaType:type>mailaddress</pdfaType:type>
+									<pdfaType:namespaceURI>http://www.acme.com/ns/email/1/mailaddress/</pdfaType:namespaceURI>
+									<pdfaType:description>mailaddress value</pdfaType:description>
+									<pdfaType:prefix>add</pdfaType:prefix>
+									<pdfaType:field>
+										<rdf:Seq>
+											<rdf:li rdf:parseType="Resource">
+												<pdfaField:name>name</pdfaField:name>
+												<pdfaField:valueType>Text</pdfaField:valueType>
+												<pdfaField:description>plaintext name</pdfaField:description>
+											</rdf:li>
+											<rdf:li rdf:parseType="Resource">
+												<pdfaField:name>mailto</pdfaField:name>
+												<pdfaField:valueType>Text</pdfaField:valueType>
+												<pdfaField:description>email address</pdfaField:description>
+											</rdf:li>
+										</rdf:Seq>
+									</pdfaType:field>
+								</rdf:li>
+							</rdf:Seq>
+						</pdfaSchema:valueType>
+					</rdf:li>
+				</rdf:Bag>
+			</pdfaExtension:schemas>
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:acmeemail="http://www.acme.com/ns/email/1/" xmlns:add="http://www.acme.com/ns/email/1/mailaddress/">
+			<acmeemail:Delivery-Date>2007-11-09T09:55:36+01:00</acmeemail:Delivery-Date>
+			<acmeemail:From rdf:parseType="Resource">
+				<add:name>John Doe</add:name>
+				<add:mailto>john@acme.com</add:mailto>
+			</acmeemail:From>
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">
+			<pdfaid:part>1</pdfaid:part>
+			<pdfaid:conformance>B</pdfaid:conformance>
+			<pdfaid:amd>1:2005</pdfaid:amd>
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:pdf="http://ns.adobe.com/pdf/1.3/">
+			<pdf:Producer>PDFlib Personalization Server 7.0.2p5 (Win32)</pdf:Producer>
+		</rdf:Description>
+	</rdf:RDF>
+</x:xmpmeta>
+<?xpacket end="r"?>
+
