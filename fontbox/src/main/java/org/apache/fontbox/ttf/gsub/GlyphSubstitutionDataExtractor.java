@@ -220,7 +220,9 @@ public class GlyphSubstitutionDataExtractor
 
         if (coverageTable.getSize() != singleSubstTableFormat2.getSubstituteGlyphIDs().length)
         {
-            LOG.warn("The no. coverage table entries should be the same as the size of the substituteGlyphIDs");
+            LOG.warn("The coverage table size (" + coverageTable.getSize() +
+                    ") should be the same as the count of the substituteGlyphIDs tables (" +
+                    singleSubstTableFormat2.getSubstituteGlyphIDs().length + ")");
             return;
         }
 
@@ -242,7 +244,9 @@ public class GlyphSubstitutionDataExtractor
 
         if (coverageTable.getSize() != multipleSubstFormat1Subtable.getSequenceTables().length)
         {
-            LOG.warn("The no. coverage table entries should be the same as the size of the sequencce tables");
+            LOG.warn("The coverage table size (" + coverageTable.getSize() +
+                    ") should be the same as the count of the sequence tables (" +
+                    multipleSubstFormat1Subtable.getSequenceTables().length + ")");
             return;
         }
 
