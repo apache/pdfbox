@@ -804,6 +804,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             LOG.warn("Miter limit must be >= 1, value " + miterLimit + " is ignored");
             miterLimit = 10;
         }
+        phaseStart = Math.max(phaseStart, Short.MAX_VALUE); // PDFBOX-5653
         return new BasicStroke(lineWidth, lineCap, lineJoin,
                                miterLimit, dashArray, phaseStart);
     }
