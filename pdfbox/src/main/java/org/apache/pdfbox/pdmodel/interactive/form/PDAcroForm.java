@@ -688,7 +688,7 @@ public final class PDAcroForm implements COSObjectable
      * any field changes. (Read about "Trigger Events" in the PDF specification)
      *
      * @return field list. Note these objects may not be identical to PDField objects retrieved from
-     * other methods (depending on cache setting). The best strategie is to call
+     * other methods (depending on cache setting). The best strategy is to call
      * {@link #getCOSObject()} to check for identity. The list is not backed by the /CO COSArray in
      * the document.
      */
