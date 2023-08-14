@@ -687,9 +687,10 @@ public final class PDAcroForm implements COSObjectable
      * Return the calculation order in which field values should be recalculated when the value of
      * any field changes. (Read about "Trigger Events" in the PDF specification)
      *
-     * @return field list. Note these objects are not identical to PDField objects
-     * retrieved from other methods, you'd need to call {@link #getCOSObject()} to check for
-     * identity; and the list is not backed by the /CO COSArray in the document.
+     * @return field list. Note these objects may not be identical to PDField objects retrieved from
+     * other methods (depending on cache setting). The best strategie is to call
+     * {@link #getCOSObject()} to check for identity. The list is not backed by the /CO COSArray in
+     * the document.
      */
     public List<PDField> getCalcOrder()
     {
@@ -699,13 +700,13 @@ public final class PDAcroForm implements COSObjectable
             return Collections.emptyList();
         }
 
-        PDFieldTree fieldTree = getFieldTree();
+        Iterable<PDField> fields = isCachingFields() ? fieldCache.values() : getFieldTree();
 
         List<PDField> actuals = new ArrayList<>();
         for (int i = 0; i < co.size(); i++)
         {
             COSBase item = co.getObject(i);
-            for (PDField field : fieldTree)
+            for (PDField field : fields)
             {
                 if (field.getCOSObject() == item)
                 {
