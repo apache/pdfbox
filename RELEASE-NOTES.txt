@@ -1,13 +1,12 @@
-Release Notes -- Apache PDFBox -- Version 3.0.0-beta1
+Release Notes -- Apache PDFBox -- Version 3.0.0
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is the first beta release candidate for the upcoming major release 3.0.0 of PDFBox.
-This release contains a lot of improvements, fixes and refactorings. The API is 
-supposed to be stable.
+This is the new major release 3.0.0 of PDFBox. This release contains a lot of improvements,
+fixes and refactorings.
 
 A migration guide is available at https://pdfbox.apache.org/3.0/migration.html. It is
 still a work in progress and we are happy to include any valuable feedback from our 
@@ -263,6 +262,7 @@ Bug
 [PDFBOX-3703] - ArrayIndexOutOfBoundsException in PDDeviceRGB.toRGB()
 [PDFBOX-3705] - PDFBox PDF Print Operation eliminates (prints blank) MS Word Table tiling pattern
 [PDFBOX-3708] - hasGlyph() contradicts encode()
+[PDFBOX-3712] - PDFBox goes into an infinite loop with this PDF
 [PDFBOX-3714] - PDF with blanks at the beginning can't be parsed
 [PDFBOX-3723] - FDFField.getValue() doesn't return the values in line with the Javadoc.
 [PDFBOX-3724] - Wrong size in rendering of some artifacts
@@ -831,6 +831,7 @@ Bug
 [PDFBOX-5342] - Text size option for PDFBox Debugger
 [PDFBOX-5345] - IllegalArgumentException: Input buffer too short in StandardSecurityHandler.computeRC4key
 [PDFBOX-5352] - ArrayIndexOutOfBoundsException in PDSeparation.tintTransform()
+[PDFBOX-5359] - Operators "q" and "Q" should also preserve text matrices
 [PDFBOX-5360] - EOFException: Can't read 20 bytes
 [PDFBOX-5361] - Wrong datatype for OPM in PDExtendedGraphicsState
 [PDFBOX-5366] - Unhandled IOException thrown from BaseParser creates issue in PDFStreamEngine.processStreamOperators
@@ -888,6 +889,7 @@ Bug
 [PDFBOX-5509] - ClassCastException in PDAcroForm.getFields()
 [PDFBOX-5513] - getPageLayout throws IllegalArgumentException for empty mode
 [PDFBOX-5514] - Font not found because of case issues
+[PDFBOX-5518] - "Threads" array in Document Catalog should be an indirect reference
 [PDFBOX-5521] - Signing tries to set byteRange of old signature
 [PDFBOX-5523] - Bug in org/apache/pdfbox/multipdf/Overlay#overlay(specificPageOverlayFile)
 [PDFBOX-5524] - Inactive OCGs shown when not top level
@@ -918,8 +920,15 @@ Bug
 [PDFBOX-5614] - RadioButtons disappear when printing PDF
 [PDFBOX-5620] - BitsPerComponent 16 not allowed in PDF/A-1b
 [PDFBOX-5621] - NullPointerException in PDFStreamEngine.showText
+[PDFBOX-5623] - Signature Image not Rendered starting with PDFBox 2.0.23 + patch provided
 [PDFBOX-5624] - Infinte loop when parsing Type1 font
 [PDFBOX-5627] - Fonts are not subsetted when saving incrementally
+[PDFBOX-5639] - Password protected PDF opens in GUI apps but PDFbox says invalid password
+[PDFBOX-5642] - Wrong error message "2.4.1 : Invalid Color space, The operator "rg" can't be used with CMYK Profile"
+[PDFBOX-5644] - Make FDF annotations more compliant with the specification
+[PDFBOX-5651] - Regression: NoSuchElementException in PDFXrefStreamParser
+[PDFBOX-5652] - IllegalArgumentException: The no. coverage table entries should be the same as the size of the substituteGlyphIDs
+[PDFBOX-5653] - The PageDrawer.strokePath method is blocked, and cpu100%
 
 New Feature
 
@@ -1260,6 +1269,10 @@ Improvement
 [PDFBOX-5631] - Support version 0.5 of MaximumProfileTable
 [PDFBOX-5632] - loca-table isn't mandatory for TTF/OTF-fonts using CFF outlines
 [PDFBOX-5634] - Supported rendering of OpenType fonts using CFF-based outlines
+[PDFBOX-5636] - Implement PDF 2.0 dash phase clarification
+[PDFBOX-5637] - Add getter and setter for the CO array under PDAcroForm
+[PDFBOX-5640] - Use RandomAccessReadWriteBuffer instead of ScratchFileBuffer by default
+[PDFBOX-5645] - Make UTC timezone static
 
 Test
 
@@ -1334,7 +1347,6 @@ Task
 [PDFBOX-5535] - Remove Travis build
 [PDFBOX-5595] - Slight regression on corrupt bug tracker file
 [PDFBOX-5607] - "new URL()" is deprecated in jdk20
-
 
 Release Contents
 ----------------
