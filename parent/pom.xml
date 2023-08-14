@@ -554,8 +554,8 @@
     </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/pdfbox/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/pdfbox/trunk</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/branches/3.0</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/branches/3.0</developerConnection>
+    <url>https://svn.apache.org/viewvc/maven/pom/branches/3.0</url>
   </scm>
 </project>
