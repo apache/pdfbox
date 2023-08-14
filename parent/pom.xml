@@ -29,7 +29,7 @@
 
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>PDFBox parent</name>
@@ -552,11 +552,4 @@
             </roles>
         </developer>
     </developers>
-
-
-  <scm>
-    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-apache-parent.git/pdfbox-parent/tags/3.0.0/pdfbox-parent</connection>
-    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-apache-parent.git/pdfbox-parent/tags/3.0.0/pdfbox-parent</developerConnection>
-    <url>https://github.com/apache/maven-apache-parent/tree/apache-29/pdfbox-parent/tags/3.0.0/pdfbox-parent</url>
-  </scm>
 </project>
