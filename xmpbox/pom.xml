@@ -20,8 +20,6 @@
 	<description>
     The Apache XmpBox library is an open source Java tool that implements Adobe's XMP(TM)
     specification. It can be used to parse, validate and create xmp contents.
-    It is mainly used by subproject preflight of Apache PDFBox. 
-    XmpBox is a subproject of Apache PDFBox.
   </description>
 
 	<parent>
