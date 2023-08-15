@@ -103,6 +103,7 @@
                       <fileset dir="${basedir}">
                         <include name="RELEASE-NOTES.txt" />
                         <include name="target/*-src.zip*" />
+                        <include name="io/target/*-${project.version}.jar*" />
                         <include name="fontbox/target/*-${project.version}.jar*" />
                         <include name="pdfbox/target/*-${project.version}.jar*" />
                         <include name="xmpbox/target/*-${project.version}.jar*" />
