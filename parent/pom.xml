@@ -126,60 +126,6 @@
 
     <profiles>
         <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod />
-            </properties>
-        </profile>
-        <!-- call mvn with -Pjdk9 or call with -Daddmod="...." -->
-        <profile>
-            <id>jdk9</id>
-            <!--
-            allows automatic activation when jdk9 or jdk10 are used
-            https://maven.apache.org/guides/introduction/introduction-to-profiles.html
-            https://maven.apache.org/enforcer/enforcer-rules/versionRanges.html
-            -->
-            <activation>
-                <jdk>[9,10]</jdk>
-            </activation>
-            <properties>
-                <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod />
-            </properties>
-        </profile>
-        <!-- need to specify release version so that if PDFBox is built with
-        &gt; Java 8, it can still be run with e.g. Java 6; PDFBOX-4715 -->
-        <profile>
-            <id>jdkGte9</id>
-            <activation>
-                <jdk>[1.9,)</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <release>8</release>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>jdk11</id>
-            <activation>
-                <jdk>[11,)</jdk>
-            </activation>
-            <properties>
-                <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-                <addmod />
-            </properties>
-        </profile>
-        <profile>
             <id>pedantic</id>
             <properties>
                 <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
@@ -264,17 +210,17 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <showDeprecation>true</showDeprecation>
-                    <target>1.8</target>
-                    <source>1.8</source>
+                    <target>11</target>
+                    <source>11</source>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
+                    <source>11</source>
                     <links>
-                        <link>https://docs.oracle.com/javase/8/docs/api/</link>
+                        <link>https://docs.oracle.com/en/java/javase/11/docs/api/</link>
                     </links>
                     <encoding>UTF-8</encoding>
                     <notimestamp>true</notimestamp>
