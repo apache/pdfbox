@@ -48,8 +48,6 @@
     <module>fontbox</module>
     <module>xmpbox</module>
     <module>pdfbox</module>
-    <module>preflight</module>
-    <module>preflight-app</module>
     <module>debugger</module>
     <module>tools</module>
     <module>app</module>
@@ -111,11 +109,9 @@
                         <include name="fontbox/target/*-${project.version}.jar*" />
                         <include name="pdfbox/target/*-${project.version}.jar*" />
                         <include name="xmpbox/target/*-${project.version}.jar*" />
-                        <include name="preflight/target/*-${project.version}.jar*" />
                         <include name="debugger/target/*-${project.version}.jar*" />
                         <include name="tools/target/*-${project.version}.jar*" />
                         <include name="app/target/*-${project.version}.jar*" />
-                        <include name="preflight-app/target/*-${project.version}.jar*" />
                         <include name="debugger-app/target/*-${project.version}.jar*" />
                       </fileset>
                     </copy>
