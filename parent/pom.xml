@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>29</version>
+        <version>30</version>
         <relativePath />
     </parent>
 
@@ -125,6 +125,16 @@
     </dependencyManagement>
 
     <profiles>
+         <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
+                <addmod />
+            </properties>
+        </profile>
         <profile>
             <id>pedantic</id>
             <properties>
