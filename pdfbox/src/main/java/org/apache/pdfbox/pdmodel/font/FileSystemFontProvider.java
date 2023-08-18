@@ -687,18 +687,22 @@ final class FileSystemFontProvider extends FontProvider
                 }
 
                 String format;
-                if (ttf instanceof OpenTypeFont && ((OpenTypeFont)ttf).isPostScript())
+                if (ttf instanceof OpenTypeFont && ((OpenTypeFont) ttf).isPostScript())
                 {
                     format = "OTF";
-                    CFFFont cff = ((OpenTypeFont)ttf).getCFF().getFont();
                     CIDSystemInfo ros = null;
-                    if (cff instanceof CFFCIDFont)
+                    OpenTypeFont otf = (OpenTypeFont) ttf;
+                    if (otf.isSupportedOTF() && otf.getCFF() != null)
                     {
-                        CFFCIDFont cidFont = (CFFCIDFont)cff;
-                        String registry = cidFont.getRegistry();
-                        String ordering = cidFont.getOrdering();
-                        int supplement = cidFont.getSupplement();
-                        ros = new CIDSystemInfo(registry, ordering, supplement);
+                        CFFFont cff = otf.getCFF().getFont();
+                        if (cff instanceof CFFCIDFont)
+                        {
+                            CFFCIDFont cidFont = (CFFCIDFont) cff;
+                            String registry = cidFont.getRegistry();
+                            String ordering = cidFont.getOrdering();
+                            int supplement = cidFont.getSupplement();
+                            ros = new CIDSystemInfo(registry, ordering, supplement);
+                        }
                     }
                     fontInfoList.add(new FSFontInfo(file, FontFormat.OTF, ttf.getName(), ros,
                             usWeightClass, sFamilyClass, ulCodePageRange1, ulCodePageRange2,
