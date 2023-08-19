@@ -231,6 +231,10 @@ final class SampledImageReader
         {
             throw new IOException(ex);
         }
+        catch (IllegalArgumentException ex)
+        {
+            throw new IOException(ex);
+        }
     }
 
     /**
@@ -271,6 +275,10 @@ final class SampledImageReader
             return raster;
         }
         catch (NegativeArraySizeException ex)
+        {
+            throw new IOException(ex);
+        }
+        catch (IllegalArgumentException ex)
         {
             throw new IOException(ex);
         }
