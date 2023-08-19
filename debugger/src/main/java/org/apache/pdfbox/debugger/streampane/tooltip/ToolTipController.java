@@ -132,7 +132,7 @@ public class ToolTipController
         {
             while (offset != -1)
             {
-                offset = Utilities.getPositionAbove(textComponent, offset, 0);
+                offset = Utilities.getPositionAbove(textComponent, offset, 0f);
                 String previousRowText = getRowText(offset);
                 if (previousRowText == null)
                 {
