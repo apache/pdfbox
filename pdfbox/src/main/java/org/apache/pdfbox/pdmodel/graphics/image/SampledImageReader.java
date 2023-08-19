@@ -218,7 +218,7 @@ final class SampledImageReader
             }
             return fromAny(pdImage, raster, colorKey, clipped, subsampling, width, height);
         }
-        catch (NegativeArraySizeException ex)
+        catch (NegativeArraySizeException | IllegalArgumentException ex)
         {
             throw new IOException(ex);
         }
@@ -261,7 +261,7 @@ final class SampledImageReader
             readRasterFromAny(pdImage, raster);
             return raster;
         }
-        catch (NegativeArraySizeException ex)
+        catch (NegativeArraySizeException | IllegalArgumentException ex)
         {
             throw new IOException(ex);
         }
