@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -383,7 +384,7 @@ public class PDSignature implements COSObjectable
         }
         is.close();
 
-        return COSString.parseHex(baos.toString("ISO-8859-1")).getBytes();
+        return COSString.parseHex(baos.toString(StandardCharsets.ISO_8859_1)).getBytes();
     }
 
     /**
