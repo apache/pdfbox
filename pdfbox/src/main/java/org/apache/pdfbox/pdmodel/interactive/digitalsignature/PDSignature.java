@@ -384,7 +384,7 @@ public class PDSignature implements COSObjectable
         }
         is.close();
 
-        return COSString.parseHex(baos.toString(StandardCharsets.ISO_8859_1)).getBytes();
+        return COSString.parseHex(baos.toString(StandardCharsets.ISO_8859_1.name())).getBytes();
     }
 
     /**
