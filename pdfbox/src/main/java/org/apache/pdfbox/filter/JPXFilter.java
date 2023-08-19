@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 package org.apache.pdfbox.filter;
+
+import java.awt.Graphics2D;
+import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -30,6 +33,10 @@ import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
@@ -51,6 +58,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
  */
 public final class JPXFilter extends Filter
 {
+    private static final Log LOG = LogFactory.getLog(JPXFilter.class);
+
     /**
      * {@inheritDoc}
      */
@@ -165,6 +174,18 @@ public final class JPXFilter extends Filter
                     // has 3 colors despite that there is only 1 color per pixel
                     // in raster
                     result.setColorSpace(new PDJPXColorSpace(ColorSpace.getInstance(ColorSpace.CS_GRAY)));
+                }
+                else if (image.getTransparency() == Transparency.TRANSLUCENT &&
+                         parameters.getInt(COSName.SMASK_IN_DATA) > 0)
+                {
+                    LOG.warn("JPEG2000 SMaskInData is not supported, returning opaque image");
+                    BufferedImage bim = new BufferedImage(
+                            image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+                    Graphics2D g2d = (Graphics2D) bim.getGraphics();
+                    g2d.drawImage(image, 0, 0, null);
+                    g2d.dispose();
+                    image = bim;
+                    result.setColorSpace(new PDJPXColorSpace(image.getColorModel().getColorSpace()));
                 }
                 else
                 {
