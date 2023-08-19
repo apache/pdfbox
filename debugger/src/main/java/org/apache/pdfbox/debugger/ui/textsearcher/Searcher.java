@@ -18,6 +18,7 @@
 package org.apache.pdfbox.debugger.ui.textsearcher;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -192,7 +193,7 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
     {
         try
         {
-            textComponent.scrollRectToVisible(textComponent.modelToView(offset));
+            textComponent.scrollRectToVisible((Rectangle) textComponent.modelToView2D(offset));
         }
         catch (BadLocationException e)
         {

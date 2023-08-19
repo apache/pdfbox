@@ -97,7 +97,7 @@ class StreamTextView implements MouseMotionListener, AncestorListener
     {
         if (tTController != null)
         {
-            int offset = textPane.viewToModel(mouseEvent.getPoint());
+            int offset = textPane.viewToModel2D(mouseEvent.getPoint());
             textPane.setToolTipText(tTController.getToolTip(offset, textPane));
         }
     }
