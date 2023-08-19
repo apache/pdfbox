@@ -268,7 +268,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>
         {
             // can't be initialized earlier because it's an awt call which would fail when
             // PDFBox.main runs on a headless system
-            shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+            shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             if (System.getProperty("apple.laf.useScreenMenuBar") == null)
