@@ -203,7 +203,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>8.3.1</version>
+                        <version>8.4.0</version>
                         <configuration>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                             <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
@@ -310,6 +310,9 @@
 	               </execution>
 	            </executions>
                 </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
@@ -319,9 +322,6 @@
                         <skip>${skipTests}</skip>
                     </configuration>
                 </plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
                 <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <executions>
