@@ -35,6 +35,7 @@ import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.font.encoding.MacRomanEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.ZapfDingbatsEncoding;
 
 /**
  * A simple font. Simple fonts use a PostScript encoding vector.
@@ -88,11 +89,21 @@ public abstract class PDSimpleFont extends PDFont
         if (encodingBase instanceof COSName)
         {
             COSName encodingName = (COSName) encodingBase;
-            this.encoding = Encoding.getInstance(encodingName);
-            if (this.encoding == null)
+            if (FontName.ZAPF_DINGBATS.getName().equals(getName()) && !isEmbedded())
             {
-                LOG.warn("Unknown encoding: " + encodingName.getName());
-                this.encoding = readEncodingFromFont(); // fallback
+                // PDFBOX- and PDF.js issue 16464: ignore other encodings
+                // this segment will work only if readEncoding() is called after the data
+                // for getName() and isEmbedded() is available
+                this.encoding = ZapfDingbatsEncoding.INSTANCE;
+            }
+            else
+            {
+                this.encoding = Encoding.getInstance(encodingName);
+                if (this.encoding == null)
+                {
+                    LOG.warn("Unknown encoding: " + encodingName.getName());
+                    this.encoding = readEncodingFromFont(); // fallback
+                }
             }
         }
         else if (encodingBase instanceof COSDictionary)
