@@ -39,11 +39,11 @@ import javax.swing.event.AncestorListener;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
-import java.awt.DisplayMode;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -277,10 +277,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void startExtracting()
     {
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        DisplayMode dm = gd.getDisplayMode();
-        int screenWidth = dm.getWidth();
-        int screenHeight = dm.getHeight();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = (int) screenSize.getWidth();
+        int screenHeight = (int) screenSize.getHeight();
 
         TextDialog textDialog = TextDialog.instance();
         textDialog.setSize(screenWidth / 3, screenHeight / 3);
@@ -290,6 +289,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         Point locationOnScreen = getPanel().getLocationOnScreen();
         int x = Math.min(locationOnScreen.x + getPanel().getWidth() / 2, screenWidth * 3 / 4);
         int y = Math.min(locationOnScreen.y + getPanel().getHeight() / 2, screenHeight * 3 / 4);
+        x = Math.max(0, x);
+        y = Math.max(0, y);
         textDialog.setLocation(x, y);
 
         try
