@@ -23,6 +23,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -1626,15 +1627,32 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     {
         try
         {
-            JDialog dialog = new JDialog(this, title);
+            JDialog dialog = new JDialog(this, title, true);
             JEditorPane editor = new JEditorPane(resource);
             editor.setContentType("text/html");
             editor.setEditable(false);
             editor.setBackground(Color.WHITE);
             editor.setPreferredSize(new Dimension(400, 250));
+
+            // put it in the middle of the parent, but not outside of the screen
+            // GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+            // doesn't work give the numbers we need
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            double screenWidth = screenSize.getWidth();
+            double screenHeight = screenSize.getHeight();
+            Rectangle parentBounds = this.getBounds();
             editor.addHyperlinkListener(this);
             dialog.add(editor);
             dialog.pack();
+
+            int x = (int) (parentBounds.getX() + (parentBounds.getWidth() - editor.getWidth()) / 2);
+            int y = (int) (parentBounds.getY() + (parentBounds.getHeight() - editor.getHeight()) / 2);
+            x = (int) Math.min(x, screenWidth * 3 / 4);
+            y = (int) Math.min(y, screenHeight * 3 / 4);
+            x = Math.max(0, x);
+            y = Math.max(0, y);
+            dialog.setLocation(x, y);
+
             dialog.setVisible(true);
         }
         catch (IOException ex)
