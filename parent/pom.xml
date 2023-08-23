@@ -228,6 +228,7 @@
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
+                    <sourcepath>src/main/java</sourcepath>
                     <source>11</source>
                     <links>
                         <link>https://docs.oracle.com/en/java/javase/11/docs/api/</link>
@@ -283,7 +284,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.4.0</version>
                     <executions>
                         <execution>
                             <goals>
