@@ -455,14 +455,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
         JMenuItem item = new JMenuItem("About PDFBox", KeyEvent.VK_A);
         item.setActionCommand("about");
-        item.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent ae)
-            {
-                textDialog("About Apache PDFBox", PDFDebugger.class.getResource("about.html"));
-            }
-        });
+        item.addActionListener(actionEvent ->
+                textDialog("About Apache PDFBox", PDFDebugger.class.getResource("about.html")));
         help.add(item);
 
         menuBar.add(help);
