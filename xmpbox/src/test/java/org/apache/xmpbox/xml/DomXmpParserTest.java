@@ -23,13 +23,17 @@ package org.apache.xmpbox.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.xmpbox.XMPMetadata;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Tilman Hausherr
  */
-public class DomXmpParserTest
+class DomXmpParserTest
 {
     public DomXmpParserTest()
     {
@@ -42,7 +46,8 @@ public class DomXmpParserTest
         {
             DomXmpParser dxp = new DomXmpParser();
             dxp.setStrictParsing(false);
-            dxp.parse(fis);
+            XMPMetadata xmp = dxp.parse(fis);
+            Assertions.assertNotNull(xmp);
         }
     }
 }
