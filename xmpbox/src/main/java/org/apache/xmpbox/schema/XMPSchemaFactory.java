@@ -21,8 +21,6 @@
 
 package org.apache.xmpbox.schema;
 
-import java.lang.reflect.Constructor;
-
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.PropertiesDescription;
 import org.apache.xmpbox.type.PropertyType;
@@ -41,8 +39,6 @@ public class XMPSchemaFactory
     private final Class<? extends XMPSchema> schemaClass;
 
     private final PropertiesDescription propDef;
-
-    private String nsName;
 
     /**
      * Factory Constructor for basic known schemas
@@ -103,7 +99,7 @@ public class XMPSchemaFactory
         if (schemaClass == XMPSchema.class)
         {
             argsClass = new Class[] { XMPMetadata.class, String.class, String.class };
-            schemaArgs = new Object[] { metadata, namespace, nsName };
+            schemaArgs = new Object[] { metadata, namespace, prefix };
         }
         else if (prefix != null && !"".equals(prefix))
         {
