@@ -41,8 +41,6 @@ public class XMPSchemaFactory
 
     private final PropertiesDescription propDef;
 
-    private String nsName;
-
     /**
      * Factory Constructor for basic known schemas
      * 
@@ -102,7 +100,7 @@ public class XMPSchemaFactory
         if (schemaClass == XMPSchema.class)
         {
             argsClass = new Class[] { XMPMetadata.class, String.class, String.class };
-            schemaArgs = new Object[] { metadata, namespace, nsName };
+            schemaArgs = new Object[] { metadata, namespace, prefix };
         }
         else if (prefix != null && !"".equals(prefix))
         {
