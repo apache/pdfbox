@@ -446,6 +446,7 @@ public class PDFStreamParser extends BaseParser
             nextChar != '<' &&
             nextChar != '(' &&
             nextChar != '/' &&
+            nextChar != '%' &&
             (nextChar < '0' ||
              nextChar > '9' ) )
         {
