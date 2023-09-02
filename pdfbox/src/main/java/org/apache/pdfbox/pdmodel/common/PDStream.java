@@ -406,7 +406,7 @@ public class PDStream implements COSObjectable
     {
         try (InputStream is = createInputStream())
         {
-            return IOUtils.toByteArray(is);
+            return is.readAllBytes();
         }
     }
     

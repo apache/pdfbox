@@ -24,7 +24,6 @@ import java.io.InputStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.w3c.dom.Document;
 
@@ -112,7 +111,7 @@ public final class PDXFAResource implements COSObjectable
     {
         try (final InputStream is = stream.createInputStream())
         {
-            return IOUtils.toByteArray(is);
+            return is.readAllBytes();
         }
     }
     

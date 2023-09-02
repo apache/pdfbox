@@ -364,7 +364,7 @@ public class COSStream extends COSDictionary implements Closeable
     {
         try (InputStream input = createInputStream())
         {
-            byte[] array = IOUtils.toByteArray(input);
+            byte[] array = input.readAllBytes();
             COSString string = new COSString(array);
             return string.getString();
         }

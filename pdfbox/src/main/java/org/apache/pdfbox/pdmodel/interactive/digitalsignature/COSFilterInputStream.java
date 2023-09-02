@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.apache.pdfbox.io.IOUtils;
-
 /**
  * A filtered stream that includes the bytes that are in the (begin,length) intervals passed in the
  * constructor.
@@ -80,7 +78,7 @@ public class COSFilterInputStream extends FilterInputStream
 
     public byte[] toByteArray() throws IOException
     {
-        return IOUtils.toByteArray(this);
+        return readAllBytes();
     }
 
     private void calculateRanges(int[] byteRange)

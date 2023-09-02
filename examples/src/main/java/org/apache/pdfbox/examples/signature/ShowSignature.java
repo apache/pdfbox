@@ -55,7 +55,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -666,7 +665,7 @@ public final class ShowSignature
                 COSStream cosStream = (COSStream) streamObj.getObject();
                 try (InputStream is = cosStream.createInputStream())
                 {
-                    byte[] streamBytes = IOUtils.toByteArray(is);
+                    byte[] streamBytes = is.readAllBytes();
                     System.out.println(description + " (" + elements.indexOf(streamObj) + "): "
                         + Hex.getString(streamBytes));
                 }

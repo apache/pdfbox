@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
@@ -62,7 +61,7 @@ class RandomAccessReadDataStream extends TTFDataStream
      */
     RandomAccessReadDataStream(InputStream inputStream) throws IOException
     {
-        data = IOUtils.toByteArray(inputStream);
+        data = inputStream.readAllBytes();
         length = data.length;
     }
 

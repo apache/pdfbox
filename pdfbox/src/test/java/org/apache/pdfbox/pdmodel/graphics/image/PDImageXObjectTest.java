@@ -23,9 +23,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import javax.imageio.ImageIO;
-import org.apache.pdfbox.io.IOUtils;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -271,7 +272,8 @@ class PDImageXObjectTest
         try (PDDocument doc = new PDDocument())
         {
             File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-            byte[] byteArray = IOUtils.toByteArray(new FileInputStream(file));
+            InputStream in = new FileInputStream(file);
+            byte[] byteArray = in.readAllBytes();
             PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, null);
             
             BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
@@ -288,7 +290,8 @@ class PDImageXObjectTest
         try (PDDocument doc = new PDDocument())
         {
             File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-            byte[] byteArray = IOUtils.toByteArray(new FileInputStream(file));
+            InputStream in = new FileInputStream(file);
+            byte[] byteArray = in.readAllBytes();
             PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, null);
             
             PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
@@ -304,7 +307,8 @@ class PDImageXObjectTest
         try (PDDocument doc = new PDDocument())
         {
             File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-            byte[] byteArray = IOUtils.toByteArray(new FileInputStream(file));
+            InputStream in = new FileInputStream(file);
+            byte[] byteArray = in.readAllBytes();
             PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, null);
             
             PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));

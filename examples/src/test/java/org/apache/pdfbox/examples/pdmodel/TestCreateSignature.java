@@ -599,7 +599,7 @@ class TestCreateSignature
                 // verify that all getContents() methods returns the same content
                 try (FileInputStream fis = new FileInputStream(signedFile))
                 {
-                    byte[] contents2 = sig.getContents(IOUtils.toByteArray(fis));
+                    byte[] contents2 = sig.getContents(((InputStream) fis).readAllBytes());
                     assertArrayEquals(contents, contents2);
                 }
                 byte[] contents3 = sig.getContents(new FileInputStream(signedFile));
@@ -659,7 +659,7 @@ class TestCreateSignature
     private String calculateDigestString(InputStream inputStream) throws NoSuchAlgorithmException, IOException
     {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
-        return Hex.getString(md.digest(IOUtils.toByteArray(inputStream)));
+        return Hex.getString(md.digest(inputStream.readAllBytes()));
     }
 
     /**
@@ -953,7 +953,7 @@ class TestCreateSignature
                 COSStream certStream = (COSStream) sigCertArray.getObject(i);
                 try (InputStream is = certStream.createInputStream())
                 {
-                    sigCertHolderSetFromVRIArray.add(new X509CertificateHolder(IOUtils.toByteArray(is)));
+                    sigCertHolderSetFromVRIArray.add(new X509CertificateHolder(is.readAllBytes()));
                 }
             }
             for (X509CertificateHolder holder : certificateHolderSet)
@@ -1041,7 +1041,7 @@ class TestCreateSignature
                 X509CertificateHolder certHolder2;
                 try (InputStream is2 = certStream.createInputStream())
                 {
-                    certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
+                    certHolder2 = new X509CertificateHolder(is2.readAllBytes());
                 }
                 
                 assertEquals(certHolder2, new X509CertificateHolder(crlIssuerCert.getEncoded()),
@@ -1082,7 +1082,7 @@ class TestCreateSignature
                 X509CertificateHolder certHolder2;
                 try (InputStream is2 = certStream.createInputStream())
                 {
-                    certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
+                    certHolder2 = new X509CertificateHolder(is2.readAllBytes());
                 }
 
                 assertEquals(certHolder2, ocspCertHolder, "OCSP certificate is not in the VRI array");
@@ -1121,7 +1121,7 @@ class TestCreateSignature
             doc.setDocumentId(12345l);
             ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(baos);
             // invoke external signature service
-            return IOUtils.toByteArray(externalSigning.getContent());
+            return externalSigning.getContent().readAllBytes();
         }
         finally
         {

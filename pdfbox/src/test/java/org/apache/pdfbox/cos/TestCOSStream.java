@@ -19,16 +19,12 @@ package org.apache.pdfbox.cos;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
-import org.apache.pdfbox.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -200,14 +196,16 @@ class TestCOSStream
 
     private void validateEncoded(COSStream stream, byte[] expected) throws IOException
     {
-        byte[] decoded = IOUtils.toByteArray(stream.createRawInputStream());
+        InputStream in = stream.createRawInputStream();
+        byte[] decoded = in.readAllBytes();
         stream.close();
         assertTrue(Arrays.equals(expected, decoded), "Encoded data doesn't match input");
     }
 
     private void validateDecoded(COSStream stream, byte[] expected) throws IOException
     {
-        byte[] encoded = IOUtils.toByteArray(stream.createInputStream());
+        InputStream in = stream.createInputStream();
+        byte[] encoded = in.readAllBytes();
         stream.close();
         assertTrue(Arrays.equals(expected, encoded), "Decoded data doesn't match input");
     }

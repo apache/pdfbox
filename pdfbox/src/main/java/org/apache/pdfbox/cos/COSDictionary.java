@@ -32,7 +32,6 @@ import java.util.function.BiConsumer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
 import org.apache.pdfbox.util.SmallMap;
@@ -1382,7 +1381,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             {
                 try (InputStream stream = ((COSStream) base).createRawInputStream())
                 {
-                    byte[] b = IOUtils.toByteArray(stream);
+                    byte[] b = stream.readAllBytes();
                     sb.append("COSStream{").append(Arrays.hashCode(b)).append("}");
                 }
             }

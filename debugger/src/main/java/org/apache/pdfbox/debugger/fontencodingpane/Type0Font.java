@@ -117,7 +117,7 @@ class Type0Font extends FontPane
         if (stream != null)
         {
             InputStream is = stream.createInputStream();
-            byte[] mapAsBytes = IOUtils.toByteArray(is);
+            byte[] mapAsBytes = is.readAllBytes();
             IOUtils.closeQuietly(is);
             int numberOfInts = mapAsBytes.length / 2;
             cid2gid = new Object[numberOfInts][4];

@@ -27,6 +27,7 @@ import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,7 +35,6 @@ import java.util.Hashtable;
 import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -168,7 +168,8 @@ class PNGConverterTest
     {
         try (PDDocument doc = new PDDocument())
         {
-            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
+            InputStream in = PNGConverterTest.class.getResourceAsStream(name);
+            byte[] imageBytes = in.readAllBytes();
             PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertNull(pdImageXObject);
         }
@@ -178,7 +179,8 @@ class PNGConverterTest
     {
         try (PDDocument doc = new PDDocument())
         {
-            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
+            InputStream in = PNGConverterTest.class.getResourceAsStream(name);
+            byte[] imageBytes = in.readAllBytes();
             PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertNotNull(pdImageXObject);
             
@@ -369,7 +371,8 @@ class PNGConverterTest
 
         try (PDDocument doc = new PDDocument())
         {
-            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream("929316.png"));
+            InputStream in = PNGConverterTest.class.getResourceAsStream("929316.png");
+            byte[] imageBytes = in.readAllBytes();
             PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertEquals(COSName.PERCEPTUAL, pdImageXObject.getCOSObject().getItem(COSName.INTENT));
 

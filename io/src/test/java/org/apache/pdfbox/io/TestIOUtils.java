@@ -49,7 +49,7 @@ class TestIOUtils
         InputStream in = new ByteArrayInputStream(data);
         count = IOUtils.populateBuffer(in, buffer);
         assertEquals(10, count);
-        byte[] leftOver = IOUtils.toByteArray(in);
+        byte[] leftOver = in.readAllBytes();
         assertEquals(2, leftOver.length);
 
         buffer = new byte[data.length + 2]; //Buffer too big
