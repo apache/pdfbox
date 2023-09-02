@@ -135,7 +135,6 @@ import org.apache.pdfbox.debugger.ui.XrefEntries;
 import org.apache.pdfbox.debugger.ui.XrefEntry;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.filter.FilterFactory;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
@@ -1665,7 +1664,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                 try (InputStream stream = url.openStream())
                 {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    IOUtils.copy(stream, baos);
+                    stream.transferTo(baos);
                     JEditorPane editor
                             = new JEditorPane("text/plain", baos.toString(StandardCharsets.UTF_8));
                     editor.setEditable(false);

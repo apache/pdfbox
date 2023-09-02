@@ -26,7 +26,6 @@ import java.util.zip.Inflater;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.io.IOUtils;
 
 /**
  * Decompresses data encoded using the zlib/deflate compression method,
@@ -129,7 +128,7 @@ final class FlateFilter extends Filter
         Deflater deflater = new Deflater(compressionLevel);
         try (DeflaterOutputStream out = new DeflaterOutputStream(encoded,deflater))
         {
-            IOUtils.copy(input, out);
+            input.transferTo(out);
         }
         encoded.flush();
         deflater.end();

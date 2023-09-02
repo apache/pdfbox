@@ -49,7 +49,6 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.DecodeResult;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -173,7 +172,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         COSStream stream = document.getDocument().createCOSStream();
         try (OutputStream output = stream.createRawOutputStream())
         {
-            IOUtils.copy(rawInput, output);
+            rawInput.transferTo(output);
         }
         return stream;
     }

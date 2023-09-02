@@ -31,7 +31,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -148,7 +147,7 @@ public class PDFCloneUtility
         try (OutputStream output = newStream.createRawOutputStream();
                 InputStream input = stream.createRawInputStream())
         {
-            IOUtils.copy(input, output);
+            input.transferTo(output);
         }
         clonedVersion.put(stream, newStream);
         for (Map.Entry<COSName, COSBase> entry : stream.entrySet())

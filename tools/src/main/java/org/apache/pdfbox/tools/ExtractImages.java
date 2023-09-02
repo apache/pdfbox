@@ -384,7 +384,7 @@ public final class ExtractImages implements Callable<Integer>
                     {
                         // RGB or Gray colorspace: get and write the unmodified JPEG stream
                         InputStream data = pdImage.createInputStream(JPEG);
-                        IOUtils.copy(data, imageOutput);
+                        data.transferTo(imageOutput);
                         IOUtils.closeQuietly(data);
                     }
                     else
@@ -407,7 +407,7 @@ public final class ExtractImages implements Callable<Integer>
                         // RGB or Gray colorspace: get and write the unmodified JPEG2000 stream
                         InputStream data = pdImage.createInputStream(
                                 Collections.singletonList(COSName.JPX_DECODE.getName()));
-                        IOUtils.copy(data, imageOutput);
+                        data.transferTo(imageOutput);
                         IOUtils.closeQuietly(data);
                     }
                     else

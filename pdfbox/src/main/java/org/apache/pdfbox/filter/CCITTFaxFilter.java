@@ -23,7 +23,6 @@ import java.io.PushbackInputStream;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.IOUtils;
 
 /**
  * Decodes image data that has been encoded using either Group 3 or Group 4
@@ -151,6 +150,6 @@ final class CCITTFaxFilter extends Filter
         int rows = parameters.getInt(COSName.ROWS);
         CCITTFaxEncoderStream ccittFaxEncoderStream = 
                 new CCITTFaxEncoderStream(encoded, cols, rows, TIFFExtension.FILL_LEFT_TO_RIGHT);
-        IOUtils.copy(input, ccittFaxEncoderStream);
+        input.transferTo(ccittFaxEncoderStream);
     }
 }

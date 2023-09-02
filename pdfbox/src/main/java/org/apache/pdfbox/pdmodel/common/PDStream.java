@@ -37,7 +37,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -134,7 +133,7 @@ public class PDStream implements COSObjectable
         stream = doc.getDocument().createCOSStream();
         try (OutputStream output = stream.createOutputStream(filters))
         {
-            IOUtils.copy(input, output);
+            input.transferTo(output);
         }
         finally
         {

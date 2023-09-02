@@ -22,7 +22,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.debugger.treestatus.TreeStatus;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 import javax.swing.JMenuItem;
@@ -301,7 +300,7 @@ public class Tree extends JTree
                 try (InputStream is = cosStream.createInputStream();
                         FileOutputStream os = new FileOutputStream(temp))
                 {
-                    IOUtils.copy(is, os);
+                    is.transferTo(os);
                 }
                 Desktop.getDesktop().open(temp);
             }

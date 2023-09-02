@@ -26,7 +26,6 @@ import java.io.OutputStream;
 import java.util.Map;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
@@ -124,7 +123,7 @@ class EndstreamFilterStreamTest
             File f = new File(d, spec.getFile());
             try (OutputStream os = new FileOutputStream(f))
             {
-                IOUtils.copy(input, os);
+                input.transferTo(os);
             }
             assertEquals(17660, f.length());
         }
