@@ -57,6 +57,7 @@ class Type0Font extends FontPane
             Map<String, String> attributes = new LinkedHashMap<>();
             attributes.put("Font", descendantFont.getName());
             attributes.put("CIDs", Integer.toString(cidtogid.length));
+            attributes.put("Embedded", Boolean.toString(descendantFont.isEmbedded()));
 
             view = new FontEncodingView(cidtogid, attributes, 
                     new String[]{"CID", "GID", "Unicode Character", "Glyph"}, getYBounds(cidtogid, 3));
@@ -69,6 +70,7 @@ class Type0Font extends FontPane
             attributes.put("CIDs", Integer.toString(tab.length));
             attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
             attributes.put("Standard 14", Boolean.toString(parentFont.isStandard14()));
+            attributes.put("Embedded", Boolean.toString(descendantFont.isEmbedded()));
 
             view = new FontEncodingView(tab, attributes, 
                     new String[]{"Code", "CID", "GID", "Unicode Character", "Glyph"}, getYBounds(tab, 4));
