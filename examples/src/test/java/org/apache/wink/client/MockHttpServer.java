@@ -41,8 +41,6 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.pdfbox.io.IOUtils;
-
 /**
  * Copied from
  * http://svn.apache.org/repos/asf/wink/trunk/wink-component-test-support/src/main/java/org/apache/wink/client/MockHttpServer.java
@@ -335,8 +333,7 @@ public class MockHttpServer extends Thread {
                 return;
             }
             int contentLen = Integer.parseInt(contentLength);
-            byte[] bytes = new byte[contentLen];
-            IOUtils.populateBuffer(is, bytes);
+            byte[] bytes = is.readNBytes(contentLen);
             requestContent.write(bytes);
         }
 

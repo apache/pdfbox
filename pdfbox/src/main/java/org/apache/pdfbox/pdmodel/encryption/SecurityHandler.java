@@ -406,7 +406,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         if (decrypt)
         {
             // read IV from stream
-            int ivSize = (int) IOUtils.populateBuffer(data, iv);
+            int ivSize = data.readNBytes(iv, 0, iv.length);
             if (ivSize == 0)
             {
                 return false;
@@ -515,10 +515,11 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
             // PDFBOX-3229 check case where metadata is not encrypted despite /EncryptMetadata missing
             try (InputStream is = stream.createRawInputStream())
             {
-                buf = new byte[10];
-                long isResult = IOUtils.populateBuffer(is, buf);
+                int nBytes = 10;
+                buf = is.readNBytes(nBytes);
+                int isResult = buf.length;
 
-                if (Long.compare(isResult, buf.length) != 0)
+                if (buf.length != nBytes)
                 {
                     LOG.debug("Tried reading " + buf.length + " bytes but only " + isResult + " bytes read");
                 }

@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.filter.DecodeOptions;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
@@ -98,7 +97,7 @@ final class SampledImageReader
             for (int y = 0; y < height; y++)
             {
                 int x = 0;
-                int readLen = (int) IOUtils.populateBuffer(iis, buff);
+                int readLen = iis.readNBytes(buff, 0, buff.length);
                 for (int r = 0; r < rowLen && r < readLen; r++)
                 {
                     int byteValue = buff[r];
@@ -421,7 +420,7 @@ final class SampledImageReader
             final byte[] buff = new byte[stride];
             for (int y = 0; y < starty + scanHeight; y++)
             {
-                int read = (int) IOUtils.populateBuffer(iis, buff);
+                int read = iis.readNBytes(buff, 0, buff.length);
                 if (y >= starty && y % currentSubsampling == 0)
                 {
                     int x = startx;
@@ -498,8 +497,8 @@ final class SampledImageReader
             if (startx == 0 && starty == 0 && scanWidth == width && scanHeight == height && currentSubsampling == 1)
             {
                 // we just need to copy all sample data, then convert to RGB image.
-                long inputResult = IOUtils.populateBuffer(input, bank);
-                if (Long.compare(inputResult, (long) width * height * numComponents) != 0)
+                int inputResult = input.readNBytes(bank, 0, bank.length);
+                if (inputResult != (long) width * height * numComponents)
                 {
                     LOG.debug("Tried reading " + (long) width * height * numComponents + " bytes but only " + inputResult + " bytes read");
                 }
@@ -515,7 +514,7 @@ final class SampledImageReader
             int i = 0;
             for (int y = 0; y < starty + scanHeight; ++y)
             {
-                long inputResult = IOUtils.populateBuffer(input, tempBytes);
+                int inputResult = input.readNBytes(tempBytes, 0, tempBytes.length);
 
                 if (Long.compare(inputResult, tempBytes.length) != 0)
                 {
