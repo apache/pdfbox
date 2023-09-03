@@ -183,7 +183,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
                     if (names != null && names.size() > 0)
                     {
                         Set<String> strings = names.keySet();
-                        String[] keys = strings.toArray(new String[strings.size()]);
+                        String[] keys = strings.toArray(String[]::new);
                         String lowerLimit = keys[0];
                         setLowerLimit(lowerLimit);
                         String upperLimit = keys[keys.length-1];

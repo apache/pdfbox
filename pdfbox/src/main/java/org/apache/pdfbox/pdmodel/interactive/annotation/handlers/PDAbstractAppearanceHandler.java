@@ -435,36 +435,36 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
     private static Set<String> createShortStyles()
     {
-        Set<String> shortStyles = new HashSet<>();
-        shortStyles.add(PDAnnotationLine.LE_OPEN_ARROW);
-        shortStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
-        shortStyles.add(PDAnnotationLine.LE_SQUARE);
-        shortStyles.add(PDAnnotationLine.LE_CIRCLE);
-        shortStyles.add(PDAnnotationLine.LE_DIAMOND);
-        return Collections.unmodifiableSet(shortStyles);
+        return Set.of(
+            PDAnnotationLine.LE_OPEN_ARROW,
+            PDAnnotationLine.LE_CLOSED_ARROW,
+            PDAnnotationLine.LE_SQUARE,
+            PDAnnotationLine.LE_CIRCLE,
+            PDAnnotationLine.LE_DIAMOND
+        );
     }
 
     private static Set<String> createInteriorColorStyles()
     {
-        Set<String> interiorColorStyles = new HashSet<>();
-        interiorColorStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
-        interiorColorStyles.add(PDAnnotationLine.LE_CIRCLE);
-        interiorColorStyles.add(PDAnnotationLine.LE_DIAMOND);
-        interiorColorStyles.add(PDAnnotationLine.LE_R_CLOSED_ARROW);
-        interiorColorStyles.add(PDAnnotationLine.LE_SQUARE);
-        return Collections.unmodifiableSet(interiorColorStyles);
+        return Set.of(
+            PDAnnotationLine.LE_CLOSED_ARROW,
+            PDAnnotationLine.LE_CIRCLE,
+            PDAnnotationLine.LE_DIAMOND,
+            PDAnnotationLine.LE_R_CLOSED_ARROW,
+            PDAnnotationLine.LE_SQUARE
+        );
     }
 
     private static Set<String> createAngledStyles()
     {
-        Set<String> angledStyles = new HashSet<>();
-        angledStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
-        angledStyles.add(PDAnnotationLine.LE_OPEN_ARROW);
-        angledStyles.add(PDAnnotationLine.LE_R_CLOSED_ARROW);
-        angledStyles.add(PDAnnotationLine.LE_R_OPEN_ARROW);
-        angledStyles.add(PDAnnotationLine.LE_BUTT);
-        angledStyles.add(PDAnnotationLine.LE_SLASH);
-        return Collections.unmodifiableSet(angledStyles);
+        return Set.of(
+            PDAnnotationLine.LE_CLOSED_ARROW,
+            PDAnnotationLine.LE_OPEN_ARROW,
+            PDAnnotationLine.LE_R_CLOSED_ARROW,
+            PDAnnotationLine.LE_R_OPEN_ARROW,
+            PDAnnotationLine.LE_BUTT,
+            PDAnnotationLine.LE_SLASH
+        );
     }
 
     /**

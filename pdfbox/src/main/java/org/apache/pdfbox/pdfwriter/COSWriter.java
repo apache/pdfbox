@@ -1059,7 +1059,7 @@ public class COSWriter implements ICOSVisitor
             list.add(last - count + 1);
             list.add(count);
         }
-        return list.toArray(new Long[list.size()]);
+        return list.toArray(Long[]::new);
     }
     
     /**

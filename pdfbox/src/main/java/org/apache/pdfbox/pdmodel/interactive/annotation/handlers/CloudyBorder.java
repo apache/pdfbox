@@ -466,7 +466,7 @@ class CloudyBorder
         getArcSegment(a + ANGLE_90_DEG, a + ANGLE_180_DEG - ANGLE_34_DEG,
             0, 0, r, r, points, false);
 
-        return points.toArray(new Point2D.Double[points.size()]);
+        return points.toArray(Point2D.Double[]::new);
     }
 
     /**
@@ -734,7 +734,7 @@ class CloudyBorder
         {
             points.add(points.get(points.size() - 1));
         }
-        return points.toArray(new Point2D.Double[points.size()]);
+        return points.toArray(Point2D.Double[]::new);
     }
 
     /**

@@ -502,7 +502,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 // a custom mergesort implementation (which is slower, unfortunately).
                 try
                 {
-                    Collections.sort(textList, comparator);
+                    textList.sort(comparator);
                 }
                 catch (IllegalArgumentException e)
                 {
