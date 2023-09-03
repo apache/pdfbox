@@ -564,7 +564,11 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         {
             return;
         }
-        byte[] rawData = IOUtils.toByteArray(stream.createRawInputStream());
+        byte[] rawData;
+        try (InputStream is = stream.createRawInputStream())
+        {
+            rawData = IOUtils.toByteArray(is);
+        }
         ByteArrayInputStream encryptedStream = new ByteArrayInputStream(rawData);
         try (OutputStream output = stream.createRawOutputStream())
         {
