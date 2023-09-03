@@ -80,7 +80,7 @@ public final class IOUtils
      * @throws IOException if an I/O error occurs
      * @deprecated use {@link InputStream#readAllBytes()} instead
      */
-    @Deprecated
+    @Deprecated(since="4.0.0", forRemoval=true)
     public static byte[] toByteArray(InputStream in) throws IOException
     {
         return in.readAllBytes();
@@ -94,7 +94,7 @@ public final class IOUtils
      * @throws IOException if an I/O error occurs
      * @deprecated use {@link InputStream#transferTo(OutputStream)} instead
      */
-    @Deprecated
+    @Deprecated(since="4.0.0", forRemoval=true)
     public static long copy(InputStream input, OutputStream output) throws IOException
     {
         return input.transferTo(output);
@@ -110,7 +110,7 @@ public final class IOUtils
      * @throws IOException if an I/O error occurs
      * @deprecated use {@link InputStream#readNBytes(byte[], int, int)} or {@link InputStream#readNBytes(int)} instead
      */
-    @Deprecated
+    @Deprecated(since="4.0.0", forRemoval=true)
     public static long populateBuffer(InputStream in, byte[] buffer) throws IOException
     {
         return in.readNBytes(buffer, 0, buffer.length);
