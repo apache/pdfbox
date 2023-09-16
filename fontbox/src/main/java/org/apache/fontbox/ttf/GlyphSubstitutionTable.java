@@ -369,7 +369,8 @@ public class GlyphSubstitutionTable extends TTFTable
             return new LookupTypeSingleSubstFormat2(substFormat, coverageTable, substituteGlyphIDs);
         }
         default:
-            throw new IOException("Unknown substFormat: " + substFormat);
+            LOG.warn("Unknown substFormat: " + substFormat);
+            return null;
         }
     }
 
