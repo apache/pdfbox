@@ -97,10 +97,7 @@ public class RecentFiles
      */
     public void removeFile(String path)
     {
-        if (filePaths.contains(path))
-        {
-            filePaths.remove(path);
-        }
+        filePaths.remove(path);
     }
 
     /**

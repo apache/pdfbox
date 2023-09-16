@@ -525,7 +525,7 @@ public class PDFMergerUtility
 
         PDDocumentInformation destInfo = destination.getDocumentInformation();
         PDDocumentInformation srcInfo = source.getDocumentInformation();
-        mergeInto(srcInfo.getCOSObject(), destInfo.getCOSObject(), Collections.<COSName>emptySet());
+        mergeInto(srcInfo.getCOSObject(), destInfo.getCOSObject(), Collections.emptySet());
 
         // use the highest version number for the resulting pdf
         float destVersion = destination.getVersion();
@@ -910,7 +910,7 @@ public class PDFMergerUtility
             destCatalog.setViewerPreferences(destViewerPreferences);
         }
         mergeInto(srcViewerPreferences.getCOSObject(), destViewerPreferences.getCOSObject(),
-                  Collections.<COSName>emptySet());
+                  Collections.emptySet());
 
         // check the booleans - set to true if one is set and true
         if (srcViewerPreferences.hideToolbar() || destViewerPreferences.hideToolbar())

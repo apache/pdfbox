@@ -269,7 +269,7 @@ public class Type2CharString extends Type1CharString
                 : null;
         if (command != null && command.getType1KeyWord() != Type1KeyWord.CLOSEPATH)
         {
-            addCommand(Collections.<Number> emptyList(), CharStringCommand.COMMAND_CLOSEPATH);
+            addCommand(Collections.emptyList(), CharStringCommand.COMMAND_CLOSEPATH);
         }
     }
 
