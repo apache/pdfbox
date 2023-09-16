@@ -21,6 +21,8 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -296,10 +298,12 @@ public final class PDFToImage
      */
     private static void usage()
     {
+        String writerFormatNames = Arrays.toString(ImageIO.getWriterFormatNames());
+        writerFormatNames = writerFormatNames.substring(1, writerFormatNames.length() - 2);
         String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFToImage [options] <inputfile>\n"
             + "\nOptions:\n"
             + "  -password  <password>            : Password to decrypt document\n"
-            + "  -format <string>                 : Available image formats: " + getImageFormats() + "\n"
+            + "  -format <string>                 : Available image formats: " + writerFormatNames + "\n"
             + "  -prefix <string>                 : Filename prefix for image files\n"
             + "  -page <int>                      : The only page to extract (1-based)\n"
             + "  -startPage <int>                 : The first page to start extraction (1-based)\n"
@@ -315,24 +319,6 @@ public final class PDFToImage
         
         System.err.println(message);
         System.exit( 1 );
-    }
-
-    private static String getImageFormats()
-    {
-        StringBuilder retval = new StringBuilder();
-        String[] formats = ImageIO.getWriterFormatNames();
-        for( int i = 0; i < formats.length; i++ )
-        {
-           if (formats[i].equalsIgnoreCase(formats[i]))
-           {
-               retval.append( formats[i] );
-               if( i + 1 < formats.length )
-               {
-                   retval.append( ", " );
-               }
-           }
-        }
-        return retval.toString();
     }
 
     private static void changeCropBox(PDDocument document, float a, float b, float c, float d)
