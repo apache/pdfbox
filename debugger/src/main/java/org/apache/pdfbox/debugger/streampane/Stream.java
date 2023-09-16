@@ -123,7 +123,7 @@ public class Stream
                 sb.append(((COSName) filterArray.get(i)).getName());
             }
         }
-        return "Encoded (" + sb.toString() + ")";
+        return "Encoded (" + sb + ")";
     }
 
     /**
@@ -218,7 +218,7 @@ public class Stream
         }
         nameListBuilder.delete(nameListBuilder.lastIndexOf("&"), nameListBuilder.length());
 
-        return "Keep " + nameListBuilder.toString() + "...";
+        return "Keep " + nameListBuilder + "...";
     }
 
     private List<String> getStopFilterList(final int stopFilterIndex)

@@ -64,7 +64,7 @@ class SearchEngine
         {
             highlighter.removeAllHighlights();
 
-            if ("".equals(searchKey))
+            if (searchKey.isEmpty())
             {
                 return highlights;
             }

@@ -470,7 +470,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 // code->Unicode maps. See sample_fonts_solidconvertor.pdf for an example.
                 // PDFBOX-3123: do this only if the /ToUnicode entry is a name
                 // PDFBOX-4322: identity streams are OK too
-                return new String(new char[] { (char) code });
+                return String.valueOf((char) code);
             }
             else
             {

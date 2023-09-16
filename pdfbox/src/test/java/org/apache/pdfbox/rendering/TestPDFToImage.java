@@ -246,7 +246,7 @@ public class TestPDFToImage
                 public boolean accept(File dir, String name)
                 {
                     return (name.endsWith(".png")
-                            && name.startsWith(file.getName(), 0))
+                            && name.startsWith(file.getName()))
                             && !name.endsWith(".png-diff.png");
                 }
             });

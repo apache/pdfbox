@@ -233,7 +233,7 @@ class TestCOSString extends TestCOSBase
         // Test the writePDF method to ensure that the Strings are correct when written into PDF.
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         COSWriter.writeString(stringAscii, out);
-        assertEquals("(" + textAscii + ")", new String(out.toByteArray(), "ASCII"));
+        assertEquals("(" + textAscii + ")", out.toString("ASCII"));
         
         out.reset();
         COSWriter.writeString(string8Bit, out);
@@ -242,7 +242,7 @@ class TestCOSString extends TestCOSBase
         {
            hex.append( Integer.toHexString(c).toUpperCase() );
         }
-        assertEquals("<"+hex.toString()+">", new String(out.toByteArray(), "ASCII"));
+        assertEquals("<"+ hex +">", out.toString("ASCII"));
         
         out.reset();
         COSWriter.writeString(stringHighBits, out);
@@ -252,7 +252,7 @@ class TestCOSString extends TestCOSBase
         {
            hex.append( Integer.toHexString(c).toUpperCase() );
         }
-        assertEquals("<"+hex.toString()+">", new String(out.toByteArray(), "ASCII")); 
+        assertEquals("<"+ hex +">", out.toString("ASCII"));
     }
 
     @Override

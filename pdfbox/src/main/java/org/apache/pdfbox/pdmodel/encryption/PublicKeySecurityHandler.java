@@ -212,7 +212,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyPro
             if (!foundRecipient || envelopedData == null)
             {
                 throw new IOException("The certificate matches none of " + array.size()
-                        + " recipient entries" + extraInfo.toString());
+                        + " recipient entries" + extraInfo);
             }
             if (envelopedData.length != 24)
             {
@@ -304,11 +304,11 @@ public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyPro
             extraInfo.append(ridSerialNumber.toString(16));
             extraInfo.append(" vs. cert ");
             extraInfo.append(certSerial);
-            extraInfo.append(" issuer: rid \'");
+            extraInfo.append(" issuer: rid '");
             extraInfo.append(ktRid.getIssuer());
-            extraInfo.append("\' vs. cert \'");
+            extraInfo.append("' vs. cert '");
             extraInfo.append(materialCert == null ? "null" : materialCert.getIssuer());
-            extraInfo.append("\' ");
+            extraInfo.append("' ");
         }
     }
     

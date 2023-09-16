@@ -294,7 +294,7 @@ public class MockHttpServer extends Thread {
             while ((line = readLine(is)) != null) {
                 String lineStr = new String(line);
                 // if there are no more headers
-                if ("".equals(lineStr.trim())) {
+                if (lineStr.trim().isEmpty()) {
                     break;
                 }
                 addRequestHeader(lineStr);

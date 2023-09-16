@@ -230,7 +230,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         String daString = field.getDefaultAppearance();
         if (daString.startsWith("/") && daString.length() > 1)
         {
-            COSName fontName = COSName.getPDFName(daString.substring(1, daString.indexOf(" ")));
+            COSName fontName = COSName.getPDFName(daString.substring(1, daString.indexOf(' ')));
             try
             {
                 if (defaultResources.getFont(fontName) == null)

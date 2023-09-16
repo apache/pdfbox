@@ -283,7 +283,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
             if (font instanceof PDSimpleFont)
             {
                 char c = (char) code;
-                unicode = new String(new char[] { c });
+                unicode = String.valueOf(c);
             }
             else
             {
