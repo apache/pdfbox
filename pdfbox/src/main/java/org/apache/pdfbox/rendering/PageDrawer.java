@@ -2033,7 +2033,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // visible if any of the entries in OCGs are OFF
         if (COSName.ANY_OFF.equals(visibilityPolicy))
         {
-            return visibles.stream().noneMatch(v -> !v);
+            return visibles.stream().allMatch(v -> v);
         }
 
         // visible only if all of the entries in OCGs are ON
