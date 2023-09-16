@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -617,7 +616,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public List<String> toCOSNameStringList()
     {
-        return StreamSupport.stream(objects.spliterator(), false) //
+        return objects.stream() //
                 .map(o -> ((COSName) o).getName()) //
                 .collect(Collectors.toList());
     }
@@ -629,7 +628,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public List<String> toCOSStringStringList()
     {
-        return StreamSupport.stream(objects.spliterator(), false) //
+        return objects.stream() //
                 .map(o -> ((COSString) o).getString()) //
                 .collect(Collectors.toList());
     }
