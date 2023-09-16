@@ -26,7 +26,6 @@ import java.io.Writer;
 import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;

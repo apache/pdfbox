@@ -19,8 +19,6 @@ package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.pdfbox.cos.COSStream;
