@@ -24,6 +24,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,10 +101,7 @@ public class PDDeviceN extends PDSpecialColorSpace
         // set initial color space
         int n = getNumberOfComponents();
         float[] initial = new float[n];
-        for (int i = 0; i < n; i++)
-        {
-            initial[i] = 1;
-        }
+        Arrays.fill(initial, 1);
         initialColor = new PDColor(initial, this);
     }
 

@@ -67,7 +67,7 @@ public final class COSInputStream extends FilterInputStream
     {
         if (filters.isEmpty())
         {
-            return new COSInputStream(in, Collections.<DecodeResult>emptyList());
+            return new COSInputStream(in, Collections.emptyList());
         }
         List<DecodeResult> results = new ArrayList<>(filters.size());
         RandomAccessRead decoded = Filter.decode(in, filters, parameters, options, results);

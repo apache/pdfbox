@@ -515,12 +515,12 @@ public class CFFParser
         font.addValueToTopDict("UnderlineThickness", topDict.getNumber("UnderlineThickness", 50));
         font.addValueToTopDict("PaintType", topDict.getNumber("PaintType", 0));
         font.addValueToTopDict("CharstringType", topDict.getNumber("CharstringType", 2));
-        font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix", Arrays.<Number>asList(
-                                                      0.001, (double) 0, (double) 0, 0.001,
-                                                      (double) 0, (double) 0)));
+        font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix", List.of(
+                                                      0.001, 0.0, 0.0, 0.001,
+                                                      0.0, 0.0)));
         font.addValueToTopDict("UniqueID", topDict.getNumber("UniqueID", null));
         font.addValueToTopDict("FontBBox", topDict.getArray("FontBBox",
-                                                    Arrays.<Number> asList(0, 0, 0, 0)));
+                                                    List.of(0, 0, 0, 0)));
         font.addValueToTopDict("StrokeWidth", topDict.getNumber("StrokeWidth", 0));
         font.addValueToTopDict("XUID", topDict.getArray("XUID", null));
 
@@ -616,7 +616,7 @@ public class CFFParser
                 {
                     // default
                     font.addValueToTopDict("FontMatrix", topDict.getArray("FontMatrix",
-                            Arrays.<Number> asList(0.001, 0.0, 0.0, 0.001, 0.0, 0.0)));
+                            List.of(0.001, 0.0, 0.0, 0.001, 0.0, 0.0)));
                 }
             }
             else if (privMatrix != null)
