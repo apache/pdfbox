@@ -629,7 +629,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public List<String> toCOSStringStringList()
     {
-        return StreamSupport.stream(objects.spliterator(), false) //
+        return objects.stream() //
                 .map(o -> ((COSString) o).getString()) //
                 .collect(Collectors.toList());
     }
