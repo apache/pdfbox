@@ -195,6 +195,7 @@ public class COSDocument extends COSBase implements Closeable
         COSStream stream = new COSStream(streamCache,
                 parser.createRandomAccessReadView(startPosition, streamLength));
         dictionary.forEach(stream::setItem);
+        stream.setKey(dictionary.getKey());
         return stream;
     }
 
