@@ -22,7 +22,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -113,9 +116,12 @@ public final class PDFToImage implements Callable<Integer>
             outputPrefix = FilenameUtils.removeExtension(infile.getAbsolutePath());
         }
 
-        if (getImageFormats().indexOf(imageFormat) == -1)
+        List<String> writerFormatNames = Arrays.asList(ImageIO.getWriterFormatNames());
+        if (!writerFormatNames.contains(imageFormat))
         {
-            SYSERR.println( "Error: Invalid image format " + imageFormat + " - supported are: " + getImageFormats());
+            String wfn = writerFormatNames.stream().collect(Collectors.joining(", "));
+            SYSERR.println("Error: Invalid image format " + imageFormat + " - supported formats: " +
+                    wfn);
             return 2;
         }
 
@@ -185,24 +191,6 @@ public final class PDFToImage implements Callable<Integer>
             return 4;
         }
         return 0;
-    }
-
-    private static String getImageFormats()
-    {
-        StringBuilder retval = new StringBuilder();
-        String[] formats = ImageIO.getWriterFormatNames();
-        for( int i = 0; i < formats.length; i++ )
-        {
-           if (formats[i].equalsIgnoreCase(formats[i]))
-           {
-               retval.append( formats[i] );
-               if( i + 1 < formats.length )
-               {
-                   retval.append( ", " );
-               }
-           }
-        }
-        return retval.toString();
     }
 
     private static void changeCropBox(PDDocument document, float a, float b, float c, float d)
