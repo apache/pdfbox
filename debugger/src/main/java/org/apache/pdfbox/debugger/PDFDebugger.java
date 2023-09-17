@@ -1675,7 +1675,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                     String name = url.toString();
                     name = name.substring(name.lastIndexOf('/') + 1);
 
-                    JDialog dialog = new JDialog(this, "Apache PDFBox: " + name);
+                    JDialog dialog = new JDialog(this, "Apache PDFBox: " + name, true);
                     dialog.add(new JScrollPane(editor));
                     dialog.pack();
                     dialog.setVisible(true);
