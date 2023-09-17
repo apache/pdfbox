@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * An implementation of the RandomAccessRead interface to store data in memory. The data will be stored in chunks
@@ -46,6 +48,9 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     private int bufferListIndex = 0;
     // maximum chunk list index
     private int bufferListMaxIndex = 0;
+
+    // map holding all copies of the current buffer
+    private final ConcurrentMap<Long, RandomAccessReadBuffer> rarbCopies = new ConcurrentHashMap<>();
 
     /**
      * Default constructor.
@@ -145,6 +150,8 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     @Override
     public void close() throws IOException
     {
+        rarbCopies.values().forEach(IOUtils::closeQuietly);
+        rarbCopies.clear();
         currentBuffer = null;
         bufferList.clear();
     }
@@ -362,8 +369,14 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     @Override
     public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
     {
-        return new RandomAccessReadView(new RandomAccessReadBuffer(this), startPosition,
-                streamLength, true);
+        Long currentThreadID = Thread.currentThread().getId();
+        RandomAccessReadBuffer randomAccessReadBuffer = rarbCopies.get(currentThreadID);
+        if (randomAccessReadBuffer == null || randomAccessReadBuffer.isClosed())
+        {
+            randomAccessReadBuffer = new RandomAccessReadBuffer(this);
+            rarbCopies.put(currentThreadID, randomAccessReadBuffer);
+        }
+        return new RandomAccessReadView(randomAccessReadBuffer, startPosition, streamLength);
     }
 
     /**
