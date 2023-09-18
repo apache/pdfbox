@@ -87,6 +87,16 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
     }
 
     /**
+     * Return the internal hash value which is based on the number and the generation.
+     * 
+     * @return the internal hash value
+     */
+    public long getInternalHash()
+    {
+        return numberAndGeneration;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
