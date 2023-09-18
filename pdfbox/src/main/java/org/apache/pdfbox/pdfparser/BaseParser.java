@@ -57,7 +57,7 @@ public abstract class BaseParser
 
     private final CharsetDecoder utf8Decoder = StandardCharsets.UTF_8.newDecoder();
 
-    private final Map<Integer, COSObjectKey> keyCache = new HashMap<>();
+    private final Map<Long, COSObjectKey> keyCache = new HashMap<>();
 
     /**
      * Log instance.
@@ -166,11 +166,11 @@ public abstract class BaseParser
         {
             for (COSObjectKey key : xrefTable.keySet())
             {
-                keyCache.putIfAbsent(key.hashCode(), key);
+                keyCache.putIfAbsent(key.getInternalHash(), key);
             }
         }
-        int hashCode = Long.hashCode(COSObjectKey.computeInternalHash(num, gen));
-        COSObjectKey foundKey = keyCache.get(hashCode);
+        long internalHashCode = COSObjectKey.computeInternalHash(num, gen);
+        COSObjectKey foundKey = keyCache.get(internalHashCode);
         return foundKey != null ? foundKey : new COSObjectKey(num, gen);
     }
 
