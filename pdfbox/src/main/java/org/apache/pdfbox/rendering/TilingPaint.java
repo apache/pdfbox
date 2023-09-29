@@ -30,6 +30,7 @@ import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -49,20 +50,26 @@ class TilingPaint implements Paint
     private final Paint paint;
     private final Matrix patternMatrix;
     private static final int MAXEDGE;
-    private static final String DEFAULTMAXEDGE = "3000";
+    private static final String DEFAULTMAXEDGE_64 = "3000";
+    private static final String DEFAULTMAXEDGE_32 = "500";
 
     static 
     {
-        String s = System.getProperty("pdfbox.rendering.tilingpaint.maxedge", DEFAULTMAXEDGE);
+    	String defaultMaxEdge = DEFAULTMAXEDGE_64;
+    	if ("32".equals(System.getProperty("sun.arch.data.model"))) {
+    		defaultMaxEdge = DEFAULTMAXEDGE_32;
+    	}
+    	
+        String s = System.getProperty("pdfbox.rendering.tilingpaint.maxedge", defaultMaxEdge);
         int val;
         try
         {
-            val = Integer.parseInt(s);
+        	val = Integer.parseInt(s);
         }
         catch (NumberFormatException ex)
         {
             LOG.error("Default will be used", ex);
-            val = Integer.parseInt(DEFAULTMAXEDGE);
+            val = Integer.parseInt(defaultMaxEdge);
         }
         MAXEDGE = val;
     }
@@ -233,8 +240,11 @@ class TilingPaint implements Paint
             LOG.info("bbox: " + bbox);
             LOG.info("pattern matrix: " + pattern.getMatrix());
             LOG.info("concatenated matrix: " + patternMatrix);
-            width = Math.min(MAXEDGE, Math.abs(width)) * Math.signum(width);
-            height = Math.min(MAXEDGE, Math.abs(height)) * Math.signum(height);
+            
+            float scale = (float)Math.sqrt( (MAXEDGE * MAXEDGE) / (width * height) );
+            width = width * scale;
+            height = height * scale;
+            
             //TODO better solution needed
         }
 

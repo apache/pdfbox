@@ -24,8 +24,12 @@ import java.awt.GraphicsDevice;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
@@ -71,6 +75,11 @@ public class PDFRenderer
     private float imageDownscalingOptimizationThreshold = 0.5f;
 
     private final PDPageTree pageTree;
+    
+    private final Map<Integer, PageDrawer> pageDrawerCache = new ReferenceMap<>(ReferenceStrength.HARD, ReferenceStrength.WEAK);
+
+    
+
 
     /**
      * Creates a new PDFRenderer.
@@ -434,6 +443,7 @@ public class PDFRenderer
      * @param destination controlling visibility of optional content groups
      * @throws IOException if the PDF cannot be read
      */
+    
     public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scaleX, float scaleY, RenderDestination destination)
             throws IOException
     {
@@ -450,7 +460,12 @@ public class PDFRenderer
         PageDrawerParameters parameters =
                 new PageDrawerParameters(this, page, subsamplingAllowed, destination,
                         actualRenderingHints, imageDownscalingOptimizationThreshold);
-        PageDrawer drawer = createPageDrawer(parameters);
+        PageDrawer drawer = pageDrawerCache.get(pageIndex);
+        if (drawer == null) {
+        	drawer = new PageDrawer(parameters);
+        	pageDrawerCache.put(pageIndex, drawer);
+        }
+        
         drawer.drawPage(graphics, cropBox);
     }
 

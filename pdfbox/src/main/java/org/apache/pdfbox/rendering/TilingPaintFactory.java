@@ -20,11 +20,11 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Map;
-import java.util.WeakHashMap;
 
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -41,8 +41,8 @@ class TilingPaintFactory
     private static final Log LOG = LogFactory.getLog(TilingPaintFactory.class);
 
     private final PageDrawer drawer;
-    private final Map<TilingPaintParameter, WeakReference<Paint>> weakCache
-            = new WeakHashMap<>();
+    private final Map<TilingPaintParameter, Paint> weakCache
+            = new ReferenceMap<>(ReferenceStrength.HARD, ReferenceStrength.WEAK);
 
     TilingPaintFactory(PageDrawer drawer)
     {
@@ -55,16 +55,13 @@ class TilingPaintFactory
         Paint paint = null;
         TilingPaintParameter tilingPaintParameter
                 = new TilingPaintParameter(drawer.getInitialMatrix(), pattern.getCOSObject(), colorSpace, color, xform);
-        WeakReference<Paint> weakRef = weakCache.get(tilingPaintParameter);
-        if (weakRef != null)
-        {
-            // PDFBOX-4058: additional WeakReference makes gc work better
-            paint = weakRef.get();
-        }
+
+        paint = weakCache.get(tilingPaintParameter);
+
         if (paint == null)
         {
             paint = new TilingPaint(drawer, pattern, colorSpace, color, xform);
-            weakCache.put(tilingPaintParameter, new WeakReference<>(paint));
+            weakCache.put(tilingPaintParameter, paint);
         }
         return paint;
     }
@@ -140,7 +137,8 @@ class TilingPaintFactory
                 LOG.debug("Couldn't convert color to RGB - treating as not equal", ex);
                 return false;
             }
-            return !(this.xform != other.xform && (this.xform == null || !this.xform.equals(other.xform)));
+            
+            return !(this.xform != other.xform && (this.xform == null || !( this.xform.getScaleX() == other.xform.getScaleX() && this.xform.getScaleY() == other.xform.getScaleY() )));
         }
 
         @Override
@@ -151,7 +149,8 @@ class TilingPaintFactory
             hash = 23 * hash + (this.patternDict != null ? this.patternDict.hashCode() : 0);
             hash = 23 * hash + (this.colorSpace != null ? this.colorSpace.hashCode() : 0);
             hash = 23 * hash + (this.color != null ? this.color.hashCode() : 0);
-            hash = 23 * hash + (this.xform != null ? this.xform.hashCode() : 0);
+            hash = 23 * hash + (this.xform != null ? Double.hashCode(this.xform.getScaleX()) : 0);
+            hash = 23 * hash + (this.xform != null ? Double.hashCode(this.xform.getScaleY()) : 0);
             return hash;
         }
 
