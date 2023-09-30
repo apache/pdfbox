@@ -53,7 +53,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <bouncycastle.version>1.75</bouncycastle.version>
+        <bouncycastle.version>1.76</bouncycastle.version>
         
         <!-- PDFBOX-4479 to build on jdk6 on newer Jenkins -->
         <jdk.path>${env.JAVA_HOME}</jdk.path>
@@ -75,7 +75,7 @@
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.13.0</version>
+                <version>2.14.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
