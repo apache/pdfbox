@@ -72,9 +72,9 @@ public final class ExtractImages implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSOUT = System.out;
+    private final PrintStream SYSOUT = System.out;
     @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR = System.err;
 
     private static final List<String> JPEG = Arrays.asList(
             COSName.DCT_DECODE.getName(),

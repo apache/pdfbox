@@ -41,7 +41,7 @@ public final class ImageToPDF implements Callable<Integer>
 
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR = System.err;
 
     @Option(names = "-autoOrientation", description = "set orientation depending of image proportion")
     private boolean autoOrientation = false;

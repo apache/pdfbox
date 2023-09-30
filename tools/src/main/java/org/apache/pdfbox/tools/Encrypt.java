@@ -59,7 +59,7 @@ public final class Encrypt implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR = System.err;
 
     @Option(names = "-O", description = "set the owner password (ignored if certFile is set)", arity = "0..1", interactive = true)
     private String ownerPassword;

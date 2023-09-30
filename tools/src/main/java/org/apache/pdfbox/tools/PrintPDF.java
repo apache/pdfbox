@@ -85,7 +85,7 @@ public final class PrintPDF implements Callable<Integer>
 
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR = System.err;
 
     @Option(names = "-password", description = "the password to decrypt the document.", arity = "0..1", interactive = true)    
     private String password;
@@ -312,7 +312,7 @@ public final class PrintPDF implements Callable<Integer>
     }
 
     @Command(name = "listPrinters", description = "list available printers", helpCommand = true)
-    private static void showAvailablePrinters()
+    private void showAvailablePrinters()
     {
         SYSERR.println("Available printer names:");
         PrintService[] printServices = PrinterJob.lookupPrintServices();

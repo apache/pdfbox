@@ -48,7 +48,7 @@ public final class Decrypt implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR = System.err;
 
     @Option(names = "-alias", description = "the alias to the certificate in the keystore.")
     private String alias;
