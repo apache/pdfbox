@@ -67,27 +67,6 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     // reasons with LittleCMS (LCMS), see PDFBOX-4309
     // WARNING: do not activate this in a conforming reader
     private boolean useOnlyAlternateColorSpace = false;
-    private static final boolean IS_KCMS;
-
-    static
-    {
-        String cmmProperty = System.getProperty("sun.java2d.cmm");
-        boolean result = false;
-        if ("sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty))
-        {
-            try
-            {
-                Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
-                result = true;
-            }
-            catch (ClassNotFoundException e)
-            {
-                // KCMS not available
-            }
-        }
-        // else maybe KCMS was available, but not wished
-        IS_KCMS = result;
-    }
 
     /**
      * Creates a new ICC color space with an empty stream.
@@ -229,17 +208,12 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 // do things that trigger a ProfileDataException
                 // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740 (ü-file)
                 // or ArrayIndexOutOfBoundsException, see PDFBOX-3610
-                // also triggers a ProfileDataException for PDFBOX-3549 with KCMS
-                /// also triggers a ProfileDataException for PDFBOX-3549 with KCMS
                 // also triggers "CMMException: LCMS error 13" for PDFBOX-5563 with LCMS, but
                 // calling "new ComponentColorModel" doesn't
                 awtColorSpace.toRGB(new float[numOfComponents]);
-                if (!IS_KCMS)
-                {
-                    // PDFBOX-4015: this one triggers "CMMException: LCMS error 13" with LCMS
-                    new ComponentColorModel(awtColorSpace, false, false,
-                            Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-                }
+                // PDFBOX-4015: this one triggers "CMMException: LCMS error 13" with LCMS
+                new ComponentColorModel(awtColorSpace, false, false, Transparency.OPAQUE,
+                        DataBuffer.TYPE_BYTE);
             }
         }
         catch (ProfileDataException | CMMException | IllegalArgumentException |
