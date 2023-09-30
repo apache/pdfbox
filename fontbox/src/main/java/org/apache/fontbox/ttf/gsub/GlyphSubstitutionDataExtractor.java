@@ -303,7 +303,7 @@ public class GlyphSubstitutionDataExtractor
         {
             String message = "For the newGlyph: " + newGlyph + ", newValue: "
                     + glyphsToBeSubstituted + " is trying to override the oldValue: " + oldValue;
-            LOG.warn(message);
+            LOG.debug(message);
         }
     }
 
