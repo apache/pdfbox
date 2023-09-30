@@ -41,9 +41,9 @@ public class ExtractXMP implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSOUT = System.out;
+    private final PrintStream SYSOUT = System.out;
     @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR = System.err;
 
     @CommandLine.Option(names = "-page", description = "extract the XMP information from a specific page (1 based)")
     private int page = 0;

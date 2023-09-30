@@ -35,7 +35,7 @@ final class Version implements Callable<Integer>, IVersionProvider
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSOUT = System.out;
+    private final PrintStream SYSOUT = System.out;
 
     @Spec CommandSpec spec;
 

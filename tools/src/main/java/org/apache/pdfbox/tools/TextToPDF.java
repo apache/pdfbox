@@ -70,7 +70,7 @@ public class TextToPDF implements Callable<Integer>
 
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private static final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR = System.err;
 
     @Option(names = "-fontSize", description = "the size of the font to use (default: ${DEFAULT-VALUE}")
     private int fontSize = DEFAULT_FONT_SIZE;
