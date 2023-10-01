@@ -38,7 +38,7 @@
   <inceptionYear>2002</inceptionYear>
 
   <properties>
-    <lucene.version>9.7.0</lucene.version>
+    <lucene.version>9.8.0</lucene.version>
   </properties>
 
   <dependencies>
