@@ -44,12 +44,12 @@ public class ContentStreamWriter
     /**
      * space character.
      */
-    public static final byte[] SPACE = new byte[] { 32 };
+    public static final byte[] SPACE = { 32 };
 
     /**
      * standard line separator
      */
-    public static final byte[] EOL = new byte[] { 0x0A };
+    public static final byte[] EOL = { 0x0A };
 
     /**
      * This will create a new content stream writer.

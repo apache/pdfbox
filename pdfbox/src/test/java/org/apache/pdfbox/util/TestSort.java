@@ -46,38 +46,38 @@ class TestSort
     {
 
         {
-            Integer[] input = new Integer[] { 9, 8, 7, 6, 5, 4, 3, 2, 1 };
-            Integer[] expected = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            Integer[] input = { 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+            Integer[] expected = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             doTest(input, expected);
         }
 
         {
-            Integer[] input = new Integer[] { 4, 3, 2, 1, 9, 8, 7, 6, 5 };
-            Integer[] expected = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            Integer[] input = { 4, 3, 2, 1, 9, 8, 7, 6, 5 };
+            Integer[] expected = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             doTest(input, expected);
         }
 
         {
-            Integer[] input = new Integer[] {};
-            Integer[] expected = new Integer[] {};
+            Integer[] input = {};
+            Integer[] expected = {};
             doTest(input, expected);
         }
 
         {
-            Integer[] input = new Integer[] { 5 };
-            Integer[] expected = new Integer[] { 5 };
+            Integer[] input = { 5 };
+            Integer[] expected = { 5 };
             doTest(input, expected);
         }
 
         {
-            Integer[] input = new Integer[] { 5, 6 };
-            Integer[] expected = new Integer[] { 5, 6 };
+            Integer[] input = { 5, 6 };
+            Integer[] expected = { 5, 6 };
             doTest(input, expected);
         }
 
         {
-            Integer[] input = new Integer[] { 6, 5 };
-            Integer[] expected = new Integer[] { 5, 6 };
+            Integer[] input = { 6, 5 };
+            Integer[] expected = { 5, 6 };
             doTest(input, expected);
         }
 

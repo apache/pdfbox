@@ -169,7 +169,7 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
             ColorSpace destCS = dest.getColorModel().getColorSpace();
             WritableRaster destRaster = dest.getRaster();
             float[] srcValues = new float[4];
-            float[] lastValues = new float[] { -1.0f, -1.0f, -1.0f, -1.0f };
+            float[] lastValues = { -1.0f, -1.0f, -1.0f, -1.0f };
             float[] destValues = new float[3];
             int startX = raster.getMinX();
             int startY = raster.getMinY();

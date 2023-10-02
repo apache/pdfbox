@@ -29,7 +29,7 @@ public final class COSNull extends COSBase
     /**
      * The null token.
      */
-    public static final byte[] NULL_BYTES = new byte[] {110, 117, 108, 108}; //"null".getBytes( "ISO-8859-1" );
+    public static final byte[] NULL_BYTES = {110, 117, 108, 108}; //"null".getBytes( "ISO-8859-1" );
 
     /**
      * The one null object in the system.

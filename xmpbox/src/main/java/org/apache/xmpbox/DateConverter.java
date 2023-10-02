@@ -55,7 +55,7 @@ public final class DateConverter
     // documents
     // will use that date, so I have added a couple other potential formats
     // to try if the original one does not work.
-    private static final SimpleDateFormat[] POTENTIAL_FORMATS = new SimpleDateFormat[] {
+    private static final SimpleDateFormat[] POTENTIAL_FORMATS = {
             new SimpleDateFormat("EEEE, dd MMM yyyy hh:mm:ss a"),
             new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a"),
             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),

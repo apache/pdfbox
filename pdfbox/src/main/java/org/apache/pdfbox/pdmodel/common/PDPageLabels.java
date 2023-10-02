@@ -367,7 +367,7 @@ public class PDPageLabels implements COSObjectable
         /**
          * Lookup table used by the {@link #makeRomanLabel(int)} method.
          */
-        private static final String[][] ROMANS = new String[][] {
+        private static final String[][] ROMANS = {
             { "", "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" },
             { "", "x", "xx", "xxx", "xl", "l", "lx", "lxx", "lxxx", "xc" },
             { "", "c", "cc", "ccc", "cd", "d", "dc", "dcc", "dccc", "cm" }

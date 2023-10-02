@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,7 +65,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     private static final Log LOG = LogFactory.getLog(PDPage.class);
 
-    private static final byte[] DELIMITER = new byte[] { '\n' };
+    private static final byte[] DELIMITER = { '\n' };
 
     private final COSDictionary page;
     private PDResources pageResources;

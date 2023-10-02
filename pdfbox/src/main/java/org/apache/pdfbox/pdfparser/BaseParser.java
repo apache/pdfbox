@@ -97,15 +97,15 @@ public abstract class BaseParser
     /**
      * This is a string constant that will be used for comparisons.
      */
-    private static final char[] TRUE = new char[] { 't', 'r', 'u', 'e' };
+    private static final char[] TRUE = { 't', 'r', 'u', 'e' };
     /**
      * This is a string constant that will be used for comparisons.
      */
-    private static final char[] FALSE = new char[] { 'f', 'a', 'l', 's', 'e' };
+    private static final char[] FALSE = { 'f', 'a', 'l', 's', 'e' };
     /**
      * This is a string constant that will be used for comparisons.
      */
-    private static final char[] NULL = new char[] { 'n', 'u', 'l', 'l' };
+    private static final char[] NULL = { 'n', 'u', 'l', 'l' };
 
     /**
      * ASCII code for line feed.

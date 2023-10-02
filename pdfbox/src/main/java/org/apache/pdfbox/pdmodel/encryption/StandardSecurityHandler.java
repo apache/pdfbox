@@ -78,7 +78,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
     };
 
     // hashes used for Algorithm 2.B, depending on remainder from E modulo 3
-    private static final String[] HASHES_2B = new String[] {"SHA-256", "SHA-384", "SHA-512"};
+    private static final String[] HASHES_2B = {"SHA-256", "SHA-384", "SHA-512"};
 
     /**
      * Constructor.

@@ -75,18 +75,18 @@ class TestCMapParser
         assertEquals(str6, cMap.toUnicode(bytes6), "bytes 01 0A from bfchar <010A> <002B>");
 
         // CID mappings
-        byte[] cid1 = new byte[] { 0, 65 };
+        byte[] cid1 = { 0, 65 };
         assertEquals(65, cMap.toCID(cid1), "CID 65 from cidrange <0000> <00ff> 0 ");
 
-        byte[] cid2 = new byte[] { 1, 24 };
+        byte[] cid2 = { 1, 24 };
         int strCID2 = 0x0118;
         assertEquals(strCID2, cMap.toCID(cid2), "CID 280 from cidrange <0100> <01ff> 256");
 
-        byte[] cid3 = new byte[] { 2, 8 };
+        byte[] cid3 = { 2, 8 };
         int strCID3 = 0x0208;
         assertEquals(strCID3, cMap.toCID(cid3), "CID 520 from cidchar <0208> 520");
 
-        byte[] cid4 = new byte[] { 1, 0x2c };
+        byte[] cid4 = { 1, 0x2c };
         int strCID4 = 0x12C;
         assertEquals(strCID4, cMap.toCID(cid4), "CID 300 from cidrange <0300> <0300> 300");
     }
@@ -226,7 +226,7 @@ class TestCMapParser
                         new File("src/test/resources/cmap", "Identitybfrange")));
         assertEquals("Adobe-Identity-UCS", cMap.getName(), "wrong CMap name");
 
-        byte[] bytes = new byte[] { 0, 65 };
+        byte[] bytes = { 0, 65 };
         assertEquals(new String(bytes, StandardCharsets.UTF_16BE), cMap.toUnicode(bytes),
                 "Indentity 0x0048");
         bytes = new byte[] { 0x30, 0x39 };

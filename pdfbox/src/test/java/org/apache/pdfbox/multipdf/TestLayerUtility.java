@@ -124,7 +124,7 @@ class TestLayerUtility
                 page.setResources( resources );
             }
 
-            final String[] text = new String[] {
+            final String[] text = {
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum lacus in eros",
                     "condimentum eget tristique risus viverra. Sed ac sem et lectus ultrices placerat. Nam",
                     "fringilla tincidunt nulla id euismod. Vivamus eget mauris dui. Mauris luctus ullamcorper",

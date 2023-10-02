@@ -112,7 +112,7 @@ class TestCOSArray
     @Test
     void testConvertFloat2COSStringAndBack()
     {
-        float[] floatArrayStart = new float[] { 1.0f, 0.1f, 0.02f };
+        float[] floatArrayStart = { 1.0f, 0.1f, 0.02f };
         COSArray cosArray = new COSArray();
         cosArray.setFloatArray(floatArrayStart);
 

@@ -52,7 +52,7 @@ public final class Hex
      */
     public static String getString(byte b)
     {
-        char[] chars = new char[]{HEX_CHARS[getHighNibble(b)], HEX_CHARS[getLowNibble(b)]};
+        char[] chars = {HEX_CHARS[getHighNibble(b)], HEX_CHARS[getLowNibble(b)]};
         return new String(chars);
     }
 

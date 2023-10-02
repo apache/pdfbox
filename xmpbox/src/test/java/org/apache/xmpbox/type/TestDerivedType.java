@@ -77,7 +77,7 @@ class TestDerivedType
     protected TextType instanciate(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
             Object value) throws Exception
     {
-        Object[] initargs = new Object[] { metadata, namespaceURI, prefix, propertyName, value };
+        Object[] initargs = { metadata, namespaceURI, prefix, propertyName, value };
         return constructor.newInstance(initargs);
     }
 

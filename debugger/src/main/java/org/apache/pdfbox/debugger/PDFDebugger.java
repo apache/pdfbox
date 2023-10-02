@@ -1533,8 +1533,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                     JPasswordField pass = new JPasswordField(10);
                     panel.add(label);
                     panel.add(pass);
-                    String[] options = new String[]
-                    {
+                    String[] options = {
                         "OK", "Cancel"
                     };
                     int option = JOptionPane.showOptionDialog(null, panel, "Enter password",

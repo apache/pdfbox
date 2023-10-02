@@ -45,7 +45,7 @@ public final class ZoomMenu extends MenuBase
 
     private float pageZoomScale = 1;
     private float imageZoomScale = 1;
-    private static final int[] ZOOMS = new int[] { 25, 50, 100, 150, 200, 400, 1000, 2000 };
+    private static final int[] ZOOMS = { 25, 50, 100, 150, 200, 400, 1000, 2000 };
 
     private static ZoomMenu instance;
     private final JMenu menu;

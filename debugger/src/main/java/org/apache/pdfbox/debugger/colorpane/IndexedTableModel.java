@@ -30,7 +30,7 @@ import javax.swing.table.AbstractTableModel;
 public class IndexedTableModel extends AbstractTableModel
 {
 
-    private static final String[] COLUMNSNAMES = new String[] {"Index", "RGB value", "Color"};
+    private static final String[] COLUMNSNAMES = {"Index", "RGB value", "Color"};
     private final IndexedColorant[] data;
 
     /**

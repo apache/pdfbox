@@ -155,7 +155,7 @@ public final class TypeMapping
             Types type)
     {
         // constructor parameters
-        Object[] params = new Object[] { metadata, nsuri, prefix, name, value };
+        Object[] params = { metadata, nsuri, prefix, name, value };
         // type
         Class<? extends AbstractSimpleProperty> clz =
                 type.getImplementingClass().asSubclass(AbstractSimpleProperty.class);

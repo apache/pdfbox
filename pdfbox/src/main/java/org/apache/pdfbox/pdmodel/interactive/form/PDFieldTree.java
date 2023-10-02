@@ -71,7 +71,7 @@ public class PDFieldTree implements Iterable<PDField>
         // PDFBOX-5044: to prevent recursion
         // must be COSDictionary and not PDField, because PDField is newly created each time
         private final Set<COSDictionary> set =
-                Collections.newSetFromMap(new IdentityHashMap<COSDictionary, Boolean>());
+                Collections.newSetFromMap(new IdentityHashMap<>());
 
         private FieldIterator(PDAcroForm form)
         {

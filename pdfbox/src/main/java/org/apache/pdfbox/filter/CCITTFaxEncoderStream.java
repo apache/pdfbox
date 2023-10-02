@@ -132,7 +132,7 @@ final class CCITTFaxEncoderStream extends OutputStream {
     }
 
     private int[] getNextChanges(int pos, boolean white) {
-        int[] result = new int[] {columns, columns};
+        int[] result = {columns, columns};
         for (int i = 0; i < changesCurrentRowLength; i++) {
             if (pos < changesCurrentRow[i] || (pos == 0 && white)) {
                 result[0] = changesCurrentRow[i];
@@ -220,7 +220,7 @@ final class CCITTFaxEncoderStream extends OutputStream {
     }
 
     private int[] getNextRefChanges(int a0, boolean white) {
-        int[] result = new int[] {columns, columns};
+        int[] result = {columns, columns};
         for (int i = (white ? 0 : 1); i < changesReferenceRowLength; i += 2) {
             if (changesReferenceRow[i] > a0 || (a0 == 0 && i == 0)) {
                 result[0] = changesReferenceRow[i];

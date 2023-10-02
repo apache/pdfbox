@@ -358,7 +358,7 @@ public class PDDeviceN extends PDSpecialColorSpace
 
     private float[] toRGBWithAttributes(float[] value) throws IOException
     {
-        float[] rgbValue = new float[] { 1, 1, 1 };
+        float[] rgbValue = { 1, 1, 1 };
 
         // look up each colorant
         for (int c = 0; c < numColorants; c++)

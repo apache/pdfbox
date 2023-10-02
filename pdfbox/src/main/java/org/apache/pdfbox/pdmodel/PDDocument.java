@@ -90,7 +90,7 @@ public class PDDocument implements Closeable
      * {@link #saveIncrementalForExternalSigning(java.io.OutputStream) saveIncrementalForExternalSigning()}
      * twice.
      */
-    private static final int[] RESERVE_BYTE_RANGE = new int[] { 0, 1000000000, 1000000000, 1000000000 };
+    private static final int[] RESERVE_BYTE_RANGE = { 0, 1000000000, 1000000000, 1000000000 };
 
     private static final Log LOG = LogFactory.getLog(PDDocument.class);
 

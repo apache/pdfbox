@@ -41,7 +41,7 @@ public final class PrintDpiMenu extends MenuBase
         }
     }
 
-    private static final int[] DPIS = new int[] { 0, 100, 200, 300, 600, 1200 };
+    private static final int[] DPIS = { 0, 100, 200, 300, 600, 1200 };
 
     private static PrintDpiMenu instance;
     private final JMenu menu;

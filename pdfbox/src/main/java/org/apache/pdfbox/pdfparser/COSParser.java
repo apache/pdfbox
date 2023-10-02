@@ -68,12 +68,12 @@ public class COSParser extends BaseParser implements ICOSParser
     private static final String PDF_DEFAULT_VERSION = "1.4";
     private static final String FDF_DEFAULT_VERSION = "1.0";
 
-    private static final char[] XREF_TABLE = new char[] { 'x', 'r', 'e', 'f' };
-    private static final char[] STARTXREF = new char[] { 's','t','a','r','t','x','r','e','f' };
+    private static final char[] XREF_TABLE = { 'x', 'r', 'e', 'f' };
+    private static final char[] STARTXREF = { 's','t','a','r','t','x','r','e','f' };
 
-    private static final byte[] ENDSTREAM = new byte[] { E, N, D, S, T, R, E, A, M };
+    private static final byte[] ENDSTREAM = { E, N, D, S, T, R, E, A, M };
 
-    private static final byte[] ENDOBJ = new byte[] { E, N, D, O, B, J };
+    private static final byte[] ENDOBJ = { E, N, D, O, B, J };
 
     private static final long MINIMUM_SEARCH_OFFSET = 6;
     
@@ -102,11 +102,11 @@ public class COSParser extends BaseParser implements ICOSParser
     /**
      * EOF-marker.
      */
-    protected static final char[] EOF_MARKER = new char[] { '%', '%', 'E', 'O', 'F' };
+    protected static final char[] EOF_MARKER = { '%', '%', 'E', 'O', 'F' };
     /**
      * obj-marker.
      */
-    protected static final char[] OBJ_MARKER = new char[] { 'o', 'b', 'j' };
+    protected static final char[] OBJ_MARKER = { 'o', 'b', 'j' };
 
     /**
      * file length.

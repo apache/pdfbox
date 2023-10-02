@@ -52,7 +52,7 @@ public final class TTFSubsetter
 {
     private static final Log LOG = LogFactory.getLog(TTFSubsetter.class);
     
-    private static final byte[] PAD_BUF = new byte[] { 0, 0, 0 };
+    private static final byte[] PAD_BUF = { 0, 0, 0 };
 
     private static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC"); // clone before using
 

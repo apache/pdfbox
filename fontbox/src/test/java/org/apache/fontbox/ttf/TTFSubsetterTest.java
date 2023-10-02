@@ -222,7 +222,7 @@ class TTFSubsetterTest
             assertEquals(1, subset.nameToGID("space"));
             assertEquals(2, subset.nameToGID("A"));
             assertEquals(3, subset.nameToGID("B"));
-            String [] names = new String[]{"A","B","space"};
+            String [] names = {"A","B","space"};
             for (String name : names)
             {
                 assertEquals(full.getAdvanceWidth(full.nameToGID(name)),

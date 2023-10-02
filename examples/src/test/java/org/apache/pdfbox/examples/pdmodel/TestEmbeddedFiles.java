@@ -44,7 +44,7 @@ class TestEmbeddedFiles
         new File("target/test-output").mkdirs();
         new File(outputFile).delete();
         new File(embeddedFile).delete();
-        String[] args = new String[] { outputFile };
+        String[] args = { outputFile };
         EmbeddedFiles.main(args);
         ExtractEmbeddedFiles.main(args);
         byte[] bytes = Files.readAllBytes(Paths.get(embeddedFile));

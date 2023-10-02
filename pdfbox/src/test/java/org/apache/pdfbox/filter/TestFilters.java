@@ -159,7 +159,7 @@ class TestFilters
         Filter rleFilter = FilterFactory.INSTANCE.getFilter(COSName.RUN_LENGTH_DECODE);
         byte[] input0 = new byte[0];
         checkEncodeDecode(rleFilter, input0);
-        byte[] input1 = new byte[] { 1, 2, 3, 4, 5, (byte) 128, (byte) 140, (byte) 180, (byte) 0xFF};
+        byte[] input1 = { 1, 2, 3, 4, 5, (byte) 128, (byte) 140, (byte) 180, (byte) 0xFF};
         checkEncodeDecode(rleFilter, input1);
         byte[] input2 = new byte[10];
         checkEncodeDecode(rleFilter, input2);
@@ -171,7 +171,7 @@ class TestFilters
         checkEncodeDecode(rleFilter, input5);
         byte[] input6 = new byte[1];
         checkEncodeDecode(rleFilter, input6);
-        byte[] input7 = new byte[] {1, 2};
+        byte[] input7 = {1, 2};
         checkEncodeDecode(rleFilter, input7);
         byte[] input8 = new byte[2];
         checkEncodeDecode(rleFilter, input8);

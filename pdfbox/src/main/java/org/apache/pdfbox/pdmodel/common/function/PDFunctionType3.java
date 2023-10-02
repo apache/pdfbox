@@ -118,7 +118,7 @@ public class PDFunctionType3 extends PDFunction
         {
             throw new IOException("partition not found in type 3 function");
         }
-        float[] functionValues = new float[]{x};
+        float[] functionValues = {x};
         // calculate the output values using the chosen function
         float[] functionResult = function.eval(functionValues);
         // clip to range if available

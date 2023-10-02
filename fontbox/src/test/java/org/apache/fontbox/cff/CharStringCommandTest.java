@@ -51,7 +51,7 @@ class CharStringCommandTest
         assertNull(charStringCommand12_0.getType2KeyWord());
         assertEquals("DOTSECTION|", charStringCommand12_0.toString());
 
-        int[] values12_3 = new int[] { 12, 3 };
+        int[] values12_3 = { 12, 3 };
         CharStringCommand charStringCommand12_3 = CharStringCommand.getInstance(values12_3);
         assertNull(charStringCommand12_3.getType1KeyWord());
         assertEquals(Type2KeyWord.AND, charStringCommand12_3.getType2KeyWord());

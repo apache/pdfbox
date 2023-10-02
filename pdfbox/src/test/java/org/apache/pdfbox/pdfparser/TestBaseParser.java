@@ -31,7 +31,7 @@ class TestBaseParser
     void testCheckForEndOfString() throws IOException
     {
         // (Test)
-        byte[] inputBytes = new byte[] { 40, 84, 101, 115, 116, 41 };
+        byte[] inputBytes = { 40, 84, 101, 115, 116, 41 };
 
         RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(inputBytes);
         BaseParser baseParser = new COSParser(buffer);

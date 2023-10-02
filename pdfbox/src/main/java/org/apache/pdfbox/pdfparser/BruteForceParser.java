@@ -44,29 +44,29 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
  */
 public class BruteForceParser extends COSParser
 {
-    private static final char[] XREF_TABLE = new char[] { 'x', 'r', 'e', 'f' };
-    private static final char[] XREF_STREAM = new char[] { '/', 'X', 'R', 'e', 'f' };
+    private static final char[] XREF_TABLE = { 'x', 'r', 'e', 'f' };
+    private static final char[] XREF_STREAM = { '/', 'X', 'R', 'e', 'f' };
 
     private static final long MINIMUM_SEARCH_OFFSET = 6;
 
     /**
      * EOF-marker.
      */
-    private static final char[] EOF_MARKER = new char[] { '%', '%', 'E', 'O', 'F' };
+    private static final char[] EOF_MARKER = { '%', '%', 'E', 'O', 'F' };
     /**
      * obj-marker.
      */
-    private static final char[] OBJ_MARKER = new char[] { 'o', 'b', 'j' };
+    private static final char[] OBJ_MARKER = { 'o', 'b', 'j' };
 
     /**
      * trailer-marker.
      */
-    private static final char[] TRAILER_MARKER = new char[] { 't', 'r', 'a', 'i', 'l', 'e', 'r' };
+    private static final char[] TRAILER_MARKER = { 't', 'r', 'a', 'i', 'l', 'e', 'r' };
 
     /**
      * ObjStream-marker.
      */
-    private static final char[] OBJ_STREAM = new char[] { '/', 'O', 'b', 'j', 'S', 't', 'm' };
+    private static final char[] OBJ_STREAM = { '/', 'O', 'b', 'j', 'S', 't', 'm' };
 
     private static final Log LOG = LogFactory.getLog(BruteForceParser.class);
 

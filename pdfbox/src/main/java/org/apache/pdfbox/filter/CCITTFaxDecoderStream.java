@@ -735,17 +735,17 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
               }
     };
 
-    final static Node EOL;
-    final static Node FILL;
-    final static Tree blackRunTree;
-    final static Tree whiteRunTree;
-    final static Tree eolOnlyTree;
-    final static Tree codeTree;
+    static final Node EOL;
+    static final Node FILL;
+    static final Tree blackRunTree;
+    static final Tree whiteRunTree;
+    static final Tree eolOnlyTree;
+    static final Tree codeTree;
 
-    final static int VALUE_EOL = -2000;
-    final static int VALUE_FILL = -1000;
-    final static int VALUE_PASSMODE = -3000;
-    final static int VALUE_HMODE = -4000;
+    static final int VALUE_EOL = -2000;
+    static final int VALUE_FILL = -1000;
+    static final int VALUE_PASSMODE = -3000;
+    static final int VALUE_HMODE = -4000;
 
     static {
         EOL = new Node();

@@ -279,7 +279,7 @@ public class KerningSubtable
         @Override
         public int getKerning(int l, int r)
         {
-            int[] key = new int[] { l, r, 0 };
+            int[] key = { l, r, 0 };
             int index = Arrays.binarySearch(pairs, key, this);
             if (index >= 0)
             {

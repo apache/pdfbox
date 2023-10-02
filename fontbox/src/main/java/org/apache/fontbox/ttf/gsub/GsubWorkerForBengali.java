@@ -53,8 +53,8 @@ public class GsubWorkerForBengali implements GsubWorker
             "rphf", "blwf", "pstf", "half", "vatu", "cjct", INIT_FEATURE, "pres", "abvs", "blws",
             "psts", "haln", "calt");
 
-    private static final char[] BEFORE_HALF_CHARS = new char[] { '\u09BF', '\u09C7', '\u09C8' };
-    private static final BeforeAndAfterSpanComponent[] BEFORE_AND_AFTER_SPAN_CHARS = new BeforeAndAfterSpanComponent[] {
+    private static final char[] BEFORE_HALF_CHARS = { '\u09BF', '\u09C7', '\u09C8' };
+    private static final BeforeAndAfterSpanComponent[] BEFORE_AND_AFTER_SPAN_CHARS = {
             new BeforeAndAfterSpanComponent('\u09CB', '\u09C7', '\u09BE'),
             new BeforeAndAfterSpanComponent('\u09CC', '\u09C7', '\u09D7') };
 

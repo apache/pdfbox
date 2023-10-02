@@ -66,7 +66,7 @@ class TestPDFunctionType4
                 new float[] {-1.0f, 1.0f, -1.0f, 1.0f},
                 new float[] {-1.0f, 1.0f});
 
-        float[] input = new float[] {0.8f, 0.1f};
+        float[] input = {0.8f, 0.1f};
         float[] output = function.eval(input);
 
         assertEquals(1, output.length);
@@ -99,7 +99,7 @@ class TestPDFunctionType4
                 new float[] {-1.0f, 1.0f, -1.0f, 1.0f},
                 new float[] {-1.0f, 1.0f});
 
-        float[] input = new float[] {-0.7f, 0.0f };
+        float[] input = {-0.7f, 0.0f };
         float[] output = function.eval(input);
 
         assertEquals(1, output.length);

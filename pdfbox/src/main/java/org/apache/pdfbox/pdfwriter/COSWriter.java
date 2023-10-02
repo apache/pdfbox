@@ -108,7 +108,7 @@ public class COSWriter implements ICOSVisitor
     /**
      * Garbage bytes used to create the PDF header.
      */
-    public static final byte[] GARBAGE = new byte[] {(byte)0xf6, (byte)0xe4, (byte)0xfc, (byte)0xdf};
+    public static final byte[] GARBAGE = {(byte)0xf6, (byte)0xe4, (byte)0xfc, (byte)0xdf};
     /**
      * The EOF constant.
      */
