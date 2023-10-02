@@ -438,9 +438,9 @@ public final class DateConverter
         sign = (!hadGMT) ? sign : skipOptionals(text, where, "+- ");
         
         tzHours = parseTimeField(text, where, 2, -999);
-        skipOptionals(text, where, "\': ");
+        skipOptionals(text, where, "': ");
         tzMin = parseTimeField(text, where, 2, 0);
-        skipOptionals(text, where, "\' "); 
+        skipOptionals(text, where, "' ");
         
         if (tzHours != -999) 
         {

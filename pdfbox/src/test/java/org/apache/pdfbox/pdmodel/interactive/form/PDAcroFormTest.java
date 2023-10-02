@@ -210,7 +210,6 @@ class PDAcroFormTest
         catch (IOException e)
         {
             System.err.println("Couldn't create test document, test skipped");
-            return;
         }
     }
     
@@ -250,7 +249,6 @@ class PDAcroFormTest
         catch (IOException e)
         {
             System.err.println("Couldn't create test document, test skipped");
-            return;
         }
     }
 

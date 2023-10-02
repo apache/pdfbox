@@ -708,7 +708,7 @@ public class DomXmpParser
         while (tokens.hasMoreTokens())
         {
             String token = tokens.nextToken();
-            if (!token.endsWith("\"") && !token.endsWith("\'"))
+            if (!token.endsWith("\"") && !token.endsWith("'"))
             {
                 throw new XmpParsingException(ErrorType.XpacketBadStart, "Cannot understand PI data part : '" + token
                         + "' in '" + data + "'");

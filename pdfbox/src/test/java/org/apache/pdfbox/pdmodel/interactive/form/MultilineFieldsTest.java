@@ -172,7 +172,7 @@ class MultilineFieldsTest
             if (token instanceof COSName && ((COSName) token).getName().equals("Helv"))
     		{
                 token = parser.parseNextToken();
-                if (token != null && token instanceof COSNumber)
+                if (token instanceof COSNumber)
                 {
                     return ((COSNumber) token).floatValue();
                 }

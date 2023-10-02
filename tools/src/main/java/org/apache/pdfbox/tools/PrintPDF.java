@@ -58,28 +58,18 @@ public final class PrintPDF implements Callable<Integer>
     // We need this helper class because the Sides class isn't a real enum class.
     enum Duplex
     {
-        SIMPLEX(0), DUPLEX(1), TUMBLE(2), DOCUMENT(3);
+        SIMPLEX(Sides.ONE_SIDED), DUPLEX(Sides.DUPLEX), TUMBLE(Sides.TUMBLE), DOCUMENT(null);
 
-        int num;
+        private final Sides sides;
 
-        Duplex(int p)
+        Duplex(Sides sides)
         {
-            num = p;
+            this.sides = sides;
         }
-        
+
         Sides toSides()
         {
-            switch (num)
-            {
-                case 0:
-                    return Sides.ONE_SIDED;
-                case 1:
-                    return Sides.DUPLEX;
-                case 2:
-                    return Sides.TUMBLE;
-                default:
-                    return null;
-            }
+            return sides;
         }
     }
 
