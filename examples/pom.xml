@@ -65,8 +65,11 @@
   <dependencies>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcmail-jdk15to18</artifactId>
-      <optional>true</optional>
+      <artifactId>bcprov-jdk15to18</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk15to18</artifactId>
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>

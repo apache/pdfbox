@@ -17,8 +17,9 @@
 package org.apache.pdfbox.pdmodel.encryption;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.security.Provider;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * Singleton which provides a security provider.
@@ -44,32 +45,7 @@ public class SecurityProvider
         // TODO synchronize access
         if (provider == null)
         {
-            try
-            {
-                Class<Provider> providerClass = (Class<Provider>) Class
-                        .forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
-                provider = providerClass.getDeclaredConstructor().newInstance();
-            }
-            catch (ClassNotFoundException ex)
-            {
-                throw new IOException(ex);
-            }
-            catch (InstantiationException ex)
-            {
-                throw new IOException(ex);
-            }
-            catch (IllegalAccessException ex)
-            {
-                throw new IOException(ex);
-            }
-            catch (NoSuchMethodException ex)
-            {
-                throw new IOException(ex);
-            }
-            catch (InvocationTargetException ex)
-            {
-                throw new IOException(ex);
-            }
+            provider = new BouncyCastleProvider();
         }
         return provider;
     }

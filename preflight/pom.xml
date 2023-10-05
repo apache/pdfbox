@@ -184,21 +184,11 @@
 		<!-- TODO find a suitable place to store the isator test pdfs <dependency> 
 			<groupId>org.pdfa</groupId> <artifactId>isartor</artifactId> <version>1.0-20080813</version> 
 			<scope>test</scope> </dependency> -->
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcmail-jdk15to18</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk15to18</artifactId>
-			<optional>true</optional>
-		</dependency>
-                <dependency>
-                    <groupId>org.apache.pdfbox</groupId>
-                    <artifactId>jbig2-imageio</artifactId>
-                    <scope>test</scope>
-                </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>jbig2-imageio</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 </project>
