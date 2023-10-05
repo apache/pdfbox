@@ -275,7 +275,7 @@ public final class CertificateVerifier
             cert.verify(key, SecurityProvider.getProvider());
             return true;
         }
-        catch (SignatureException | InvalidKeyException | IOException ex)
+        catch (SignatureException | InvalidKeyException ex)
         {
             // Invalid signature --> not self-signed
             LOG.debug("Couldn't get signature information - returning false", ex);
