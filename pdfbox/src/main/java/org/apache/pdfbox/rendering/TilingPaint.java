@@ -227,12 +227,13 @@ class TilingPaint implements Paint
         if (Math.abs(width * height) > MAXEDGE * MAXEDGE)
         {
             // PDFBOX-3653: prevent huge sizes
-            LOG.info("Pattern surface is too large, will be clipped");
-            LOG.info("width: " + width + ", height: " + height);
-            LOG.info("XStep: " + xStep + ", YStep: " + yStep);
-            LOG.info("bbox: " + bbox);
-            LOG.info("pattern matrix: " + pattern.getMatrix());
-            LOG.info("concatenated matrix: " + patternMatrix);
+            LOG.warn("Pattern surface larger than " + MAXEDGE + " x " + MAXEDGE + ", will be clipped");
+            LOG.warn("width: " + width + ", height: " + height);
+            LOG.warn("XStep: " + xStep + ", YStep: " + yStep);
+            LOG.warn("bbox: " + bbox);
+            LOG.warn("pattern matrix: " + pattern.getMatrix());
+            LOG.warn("concatenated matrix: " + patternMatrix);
+            LOG.warn("increase the property 'pdfbox.rendering.tilingpaint.maxedge'");
             width = Math.min(MAXEDGE, Math.abs(width)) * Math.signum(width);
             height = Math.min(MAXEDGE, Math.abs(height)) * Math.signum(height);
             //TODO better solution needed
