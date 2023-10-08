@@ -25,8 +25,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNull;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
@@ -218,7 +216,14 @@ public class PDFParser extends COSParser
             // PDFBOX-1922 read the version header and rewind
             if (!parsePDFHeader() && !parseFDFHeader())
             {
-                throw new IOException( "Error: Header doesn't contain versioninfo" );
+                if (isLenient())
+                {
+                    LOG.warn("Error: Header doesn't contain versioninfo");
+                }
+                else
+                {
+                    throw new IOException("Error: Header doesn't contain versioninfo");
+                }
             }
     
             if (!initialParseDone)
