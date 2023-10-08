@@ -43,7 +43,7 @@ public class ImportXFDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = {"-i", "--input"}, description = "the PDF file to import to", required = true)
     private File infile;
@@ -72,8 +72,15 @@ public class ImportXFDF implements Callable<Integer>
     }
 
     /**
-     * This will import an fdf document and write out another pdf.
-     * <br>
+     * Constructor.
+     */
+    public ImportXFDF()
+    {
+        SYSERR = System.err;
+    }
+
+    /**
+     * This will import an fdf document and write out another pdf. <br>
      * see usage() for commandline
      *
      * @param args command line arguments
@@ -89,7 +96,7 @@ public class ImportXFDF implements Callable<Integer>
 
     public Integer call()
     {
-        ImportFDF importer = new ImportFDF();
+        ImportXFDF importer = new ImportXFDF();
         try (PDDocument pdf = Loader.loadPDF(infile);
                 FDFDocument fdf = Loader.loadXFDF(xfdffile))
         {

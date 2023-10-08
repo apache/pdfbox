@@ -48,7 +48,7 @@ public final class Decrypt implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = "-alias", description = "the alias to the certificate in the keystore.")
     private String alias;
@@ -66,6 +66,14 @@ public final class Decrypt implements Callable<Integer>
     @Option(names = {"-o", "--output"}, description = "the decrypted PDF file. If omitted the original file is overwritten.")
     private File outfile;
    
+    /**
+     * Constructor.
+     */
+    public Decrypt()
+    {
+        SYSERR = System.err;
+    }
+
     /**
      * This is the entry point for the application.
      *

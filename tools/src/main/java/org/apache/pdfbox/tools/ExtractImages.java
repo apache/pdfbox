@@ -72,9 +72,9 @@ public final class ExtractImages implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSOUT = System.out;
+    private final PrintStream SYSOUT;
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     private static final List<String> JPEG = Arrays.asList(
             COSName.DCT_DECODE.getName(),
@@ -99,6 +99,15 @@ public final class ExtractImages implements Callable<Integer>
 
     private final Set<COSStream> seen = new HashSet<>();
     private int imageCounter = 1;
+
+    /**
+     * Constructor.
+     */
+    public ExtractImages()
+    {
+        SYSOUT = System.out;
+        SYSERR = System.err;
+    }
 
     /**
      * Entry point for the application.

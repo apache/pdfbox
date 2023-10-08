@@ -208,7 +208,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     // cli options
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = { "-h", "--help" }, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
@@ -236,6 +236,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         {
             currentTreeViewMode = TreeViewMenu.VIEW_STRUCTURE;
         }
+        SYSERR = System.err;
     }
 
     /**
@@ -246,13 +247,14 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
      */
     public PDFDebugger(String initialViewMode)
     {
+        SYSERR = System.err;
         if (TreeViewMenu.isValidViewMode(initialViewMode))
         {
             currentTreeViewMode = initialViewMode;
         }
         else
         {
-            SYSERR.println("Onknown view mode " + initialViewMode);
+            SYSERR.println("Unknown view mode " + initialViewMode);
         }
     }
 

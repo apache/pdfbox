@@ -43,7 +43,7 @@ public final class OverlayPDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = "-odd", description = "overlay file used for odd pages")
     private File oddPageOverlay;
@@ -74,6 +74,14 @@ public final class OverlayPDF implements Callable<Integer>
 
     @Option(names = {"-o", "--output"}, description = "the PDF output file", required = true)
     private File outfile;
+
+    /**
+     * Constructor.
+     */
+    public OverlayPDF()
+    {
+        SYSERR = System.err;
+    }
 
     /**
      * This will overlay a document and write out the results.

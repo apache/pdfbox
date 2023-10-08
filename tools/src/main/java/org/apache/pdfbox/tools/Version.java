@@ -35,7 +35,7 @@ final class Version implements Callable<Integer>, IVersionProvider
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSOUT = System.out;
+    private final PrintStream SYSOUT;
 
     @Spec CommandSpec spec;
 
@@ -55,6 +55,14 @@ final class Version implements Callable<Integer>, IVersionProvider
         {
             return new String[] { "unknown" };
         }
+    }
+
+    /**
+     * Constructor.
+     */
+    public Version()
+    {
+        SYSOUT = System.out;
     }
 
     /**

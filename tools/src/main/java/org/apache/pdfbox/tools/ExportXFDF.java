@@ -42,7 +42,7 @@ public final class ExportXFDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = {"-i", "--input"}, description = "the PDF file to export", required = true)
     private File infile;
@@ -50,6 +50,14 @@ public final class ExportXFDF implements Callable<Integer>
     @Option(names = {"-o", "--output"}, description = "the XFDF data file", required = true)
     private File outfile;
     
+    /**
+     * Constructor.
+     */
+    public ExportXFDF()
+    {
+        SYSERR = System.err;
+    }
+
     /**
      * This is the entry point for the application.
      *
