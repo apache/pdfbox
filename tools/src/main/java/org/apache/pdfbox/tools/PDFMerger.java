@@ -39,13 +39,21 @@ public final class PDFMerger implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = {"-i", "--input"}, description = "the PDF files to merge.", paramLabel = "<infile>", required = true)
     private File[] infiles;
 
     @Option(names = {"-o", "--output"}, description = "the merged PDF file.", required = true)
     private File outfile;
+
+    /**
+     * Constructor.
+     */
+    public PDFMerger()
+    {
+        SYSERR = System.err;
+    }
 
     /**
      * Infamous main method.

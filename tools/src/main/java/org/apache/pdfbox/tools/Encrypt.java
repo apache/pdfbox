@@ -59,7 +59,7 @@ public final class Encrypt implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = "-O", description = "set the owner password (ignored if certFile is set)", arity = "0..1", interactive = true)
     private String ownerPassword;
@@ -102,6 +102,14 @@ public final class Encrypt implements Callable<Integer>
 
     @Option(names = {"-o", "--output"}, description = "the encrypted PDF file. If omitted the original file is overwritten.")
     private File outfile;
+
+    /**
+     * Constructor.
+     */
+    public Encrypt()
+    {
+        SYSERR = System.err;
+    }
 
     /**
      * This is the entry point for the application.

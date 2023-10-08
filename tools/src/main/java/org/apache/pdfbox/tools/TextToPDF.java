@@ -70,7 +70,7 @@ public class TextToPDF implements Callable<Integer>
 
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = "-fontSize", description = "the size of the font to use (default: ${DEFAULT-VALUE}")
     private int fontSize = DEFAULT_FONT_SIZE;
@@ -124,8 +124,15 @@ public class TextToPDF implements Callable<Integer>
     }
 
     /**
-     * This will create a PDF document with some text in it.
-     * <br>
+     * Constructor.
+     */
+    public TextToPDF()
+    {
+        SYSERR = System.err;
+    }
+
+    /**
+     * This will create a PDF document with some text in it. <br>
      * see usage() for commandline
      *
      * @param args Command line arguments.

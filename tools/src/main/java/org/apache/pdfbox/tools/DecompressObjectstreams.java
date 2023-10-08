@@ -41,7 +41,7 @@ public final class DecompressObjectstreams implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
@@ -53,10 +53,11 @@ public final class DecompressObjectstreams implements Callable<Integer>
     private File outfile;
     
     /**
-     * private constructor.
+     * Constructor.
      */
-    private DecompressObjectstreams()
+    public DecompressObjectstreams()
     {
+        SYSERR = System.err;
     }
 
     /**

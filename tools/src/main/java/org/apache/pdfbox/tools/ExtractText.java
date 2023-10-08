@@ -67,9 +67,9 @@ public final class ExtractText  implements Callable<Integer>
 
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSOUT = System.out;
+    private final PrintStream SYSOUT;
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = "-alwaysNext", description = "Process next page (if applicable) despite IOException " + 
         "(ignored when -html)")
@@ -111,6 +111,15 @@ public final class ExtractText  implements Callable<Integer>
 
     @Option(names = {"-o", "--output"}, description = "the exported text file")
     private File outfile;
+
+    /**
+     * Constructor.
+     */
+    public ExtractText()
+    {
+        SYSOUT = System.out;
+        SYSERR = System.err;
+    }
 
     /**
      * Infamous main method.

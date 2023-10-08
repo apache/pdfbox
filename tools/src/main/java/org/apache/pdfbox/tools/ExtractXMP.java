@@ -41,9 +41,9 @@ public class ExtractXMP implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSOUT = System.out;
+    private final PrintStream SYSOUT;
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @CommandLine.Option(names = "-page", description = "extract the XMP information from a specific page (1 based)")
     private int page = 0;
@@ -61,6 +61,15 @@ public class ExtractXMP implements Callable<Integer>
     private File outfile;
 
     /**
+     * Constructor.
+     */
+    private ExtractXMP()
+    {
+        SYSOUT = System.out;
+        SYSERR = System.err;
+    }
+
+    /**
      * Infamous main method.
      *
      * @param args Command line arguments, should be one and a reference to a file.
@@ -70,7 +79,7 @@ public class ExtractXMP implements Callable<Integer>
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        int exitCode = new CommandLine(new ExtractText()).execute(args);
+        int exitCode = new CommandLine(new ExtractXMP()).execute(args);
         System.exit(exitCode);
     }
 

@@ -85,7 +85,7 @@ public final class PrintPDF implements Callable<Integer>
 
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = "-password", description = "the password to decrypt the document.", arity = "0..1", interactive = true)    
     private String password;
@@ -119,6 +119,14 @@ public final class PrintPDF implements Callable<Integer>
 
     @Option(names = {"-i", "--input"}, description = "the PDF files to print.", required = true)
     private File infile;
+
+    /**
+     * Constructor.
+     */
+    public PrintPDF()
+    {
+        SYSERR = System.err;
+    }
 
     /**
      * Infamous main method.

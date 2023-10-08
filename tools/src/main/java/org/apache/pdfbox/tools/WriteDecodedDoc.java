@@ -47,7 +47,7 @@ public class WriteDecodedDoc implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
     @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR = System.err;
+    private final PrintStream SYSERR;
 
     @Option(names = "-password", description = "the password to decrypt the document", arity = "0..1", interactive = true)
     private String password;
@@ -66,7 +66,7 @@ public class WriteDecodedDoc implements Callable<Integer>
      */
     public WriteDecodedDoc()
     {
-        super();
+        SYSERR = System.err;
     }
 
     /**
