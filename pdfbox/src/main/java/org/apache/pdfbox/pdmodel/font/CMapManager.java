@@ -69,8 +69,7 @@ final class CMapManager
         CMap targetCmap = null;
         if (randomAccessRead != null)
         {
-            // parse CMap using strict mode
-            targetCmap = new CMapParser(true).parse(randomAccessRead);
+            targetCmap = new CMapParser().parse(randomAccessRead);
         }
         return targetCmap;
     }
