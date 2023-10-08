@@ -69,8 +69,7 @@ final class CMapManager
         CMap targetCmap = null;
         if (cMapStream != null)
         {
-            // parse CMap using strict mode
-            targetCmap = new CMapParser(true).parse(cMapStream);
+            targetCmap = new CMapParser().parse(cMapStream);
         }
         return targetCmap;
     }
