@@ -160,6 +160,15 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
             }
             else
             {
+                if (base == null)
+                {
+                    LOG.warn("replaced null entry with an empty page");
+                    COSDictionary emptyPage = new COSDictionary();
+                    emptyPage.setItem(COSName.TYPE, COSName.PAGE);
+                    kids.set(i, emptyPage);
+                    result.add(emptyPage);
+                }
+                else
                 LOG.warn("COSDictionary expected, but got " +
                         (base == null ? "null" : base.getClass().getSimpleName()));
             }
