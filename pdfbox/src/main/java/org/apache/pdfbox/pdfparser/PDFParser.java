@@ -176,7 +176,14 @@ public class PDFParser extends COSParser
             // PDFBOX-1922 read the version header and rewind
             if (!parsePDFHeader() && !parseFDFHeader())
             {
-                throw new IOException( "Error: Header doesn't contain versioninfo" );
+                if (lenient)
+                {
+                    LOG.warn("Error: Header doesn't contain versioninfo");
+                }
+                else
+                {
+                    throw new IOException("Error: Header doesn't contain versioninfo");
+                }
             }
     
             if (!initialParseDone)
