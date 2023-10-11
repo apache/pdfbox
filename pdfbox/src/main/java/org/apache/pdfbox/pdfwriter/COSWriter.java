@@ -1566,6 +1566,7 @@ public class COSWriter implements ICOSVisitor
             trailer.setItem(COSName.ID, idArray);
         }
         cosDoc.accept(this);
+        cosDoc.setHighestXRefObjectNumber(number);
     }
 
     /**
