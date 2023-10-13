@@ -236,6 +236,7 @@ public class PDDocument implements Closeable
     public void addPage(PDPage page)
     {
         getPages().add(page);
+        setHighestImportedObjectNumber(page);
     }
 
     /**
@@ -689,7 +690,6 @@ public class PDDocument implements Closeable
         PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
         importedPage.setContents(dest);
         addPage(importedPage);
-        setHighestImportedObjectNumber(importedPage);
         importedPage.setCropBox(new PDRectangle(page.getCropBox().getCOSArray()));
         importedPage.setMediaBox(new PDRectangle(page.getMediaBox().getCOSArray()));
         importedPage.setRotation(page.getRotation());
