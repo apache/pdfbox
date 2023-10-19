@@ -535,8 +535,9 @@
     </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/branches/2.0/pdfbox-parent</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/branches/2.0/pdfbox-parent</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/pom/branches/2.0/pdfbox-parent</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0</developerConnection>
+    <url>https://svn.apache.org/viewvc/pdfbox/branches/2.0</url>
   </scm>
+
 </project>
