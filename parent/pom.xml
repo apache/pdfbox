@@ -45,6 +45,12 @@
         <url>https://issues.apache.org/jira/browse/PDFBOX</url>
     </issueManagement>
 
+    <scm>
+        <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk</developerConnection>
+        <url>https://svn.apache.org/viewvc/pdfbox/trunk</url>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -480,9 +486,4 @@
         </developer>
     </developers>
 
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/pdfbox/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/pdfbox/trunk</url>
-  </scm>
 </project>
