@@ -188,8 +188,8 @@ public class KerningSubtable
         int length = data.readUnsignedShort();
         if (length < 6)
         {
-            throw new IOException("Kerning sub-table too short, got " + length
-                    + " bytes, expect 6 or more.");
+            LOG.warn("Kerning sub-table too short, got " + length + " bytes, expect 6 or more.");
+            return;
         }
         int coverage = data.readUnsignedShort();
         if (isBitsSet(coverage, COVERAGE_HORIZONTAL, COVERAGE_HORIZONTAL_SHIFT))
