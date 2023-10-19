@@ -32,12 +32,6 @@
 
   <name>Apache PDFBox</name>
 
-  <scm>
-    <connection>cm:svn:http://svn.apache.org/repos/asf/pdfbox/branches/3.0</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0</developerConnection>
-    <url>http://svn.apache.org/viewvc/pdfbox/branches/3.0</url>
-  </scm>
-
   <modules>
     <module>parent</module>
     <module>io</module>
