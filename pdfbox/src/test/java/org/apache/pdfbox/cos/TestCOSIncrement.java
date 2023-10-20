@@ -326,10 +326,10 @@ class TestCOSIncrement
             pages.setNeedToBeUpdated(true);
             page.getCOSObject().setNeedToBeUpdated(true);
 
-            document.saveIncremental(new FileOutputStream("target/PDFBOX-5627.pdf"));
+            document.saveIncremental(new FileOutputStream("target/test-output/PDFBOX-5627.pdf"));
         }
 
-        try (PDDocument document = Loader.loadPDF(new File("target/PDFBOX-5627.pdf")))
+        try (PDDocument document = Loader.loadPDF(new File("target/test-output/PDFBOX-5627.pdf")))
         {
             PDPage page = document.getPage(0);
             COSName fontName = page.getResources().getFontNames().iterator().next();
