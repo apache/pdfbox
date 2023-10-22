@@ -18,8 +18,8 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A 'kern' table in a true type font.
@@ -28,8 +28,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class KerningTable extends TTFTable
 {
-
-    private static final Log LOG = LogFactory.getLog(KerningTable.class);
+    private static final Logger LOG = LogManager.getLogger(KerningTable.class);
 
     /**
      * Tag to identify this table.
@@ -40,7 +39,6 @@ public class KerningTable extends TTFTable
 
     KerningTable()
     {
-        super();
     }
 
     /**
@@ -59,17 +57,18 @@ public class KerningTable extends TTFTable
             version = (version << 16) | data.readUnsignedShort();
         }
         int numSubtables = 0;
-        if (version == 0)
+        switch (version)
         {
-            numSubtables = data.readUnsignedShort();
-        }
-        else if (version == 1)
-        {
-            numSubtables = (int) data.readUnsignedInt();
-        }
-        else
-        {
-            LOG.debug("Skipped kerning table due to an unsupported kerning table version: " + version);
+            case 0:
+                numSubtables = data.readUnsignedShort();
+                break;
+            case 1:
+                numSubtables = (int) data.readUnsignedInt();
+                break;
+            default:
+                LOG.debug("Skipped kerning table due to an unsupported kerning table version: {}",
+                        version);
+                break;
         }
         if (numSubtables > 0)
         {

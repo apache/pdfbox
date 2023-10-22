@@ -17,8 +17,9 @@
 package org.apache.fontbox.ttf;
 
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A table in a true type font.
@@ -27,7 +28,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PostScriptTable extends TTFTable
 {
-    private static final Log LOG = LogFactory.getLog(PostScriptTable.class);
+    private static final Logger LOG = LogManager.getLogger(PostScriptTable.class);
+
     private float formatType;
     private float italicAngle;
     private short underlinePosition;
@@ -46,7 +48,6 @@ public class PostScriptTable extends TTFTable
 
     PostScriptTable()
     {
-        super();
     }
 
     /**
@@ -105,8 +106,9 @@ public class PostScriptTable extends TTFTable
                     catch (IOException ex)
                     {
                         // PDFBOX-4851: EOF
-                        LOG.warn("Error reading names in PostScript table at entry " + i + " of " + 
-                                 nameArray.length + ", setting remaining entries to .notdef", ex);
+                        LOG.warn(
+                                "Error reading names in PostScript table at entry {} of {}, setting remaining entries to .notdef",
+                                i, nameArray.length, ex);
                         for (int j = i; j < nameArray.length; ++j)
                         {
                             nameArray[j] = ".notdef";
@@ -156,15 +158,15 @@ public class PostScriptTable extends TTFTable
                 }
                 else
                 {
-                    LOG.debug("incorrect glyph name index " + index +
-                              ", valid numbers 0.." + WGL4Names.NUMBER_OF_MAC_GLYPHS);
+                    LOG.debug("incorrect glyph name index {}, valid numbers 0..{}",
+                            index, WGL4Names.NUMBER_OF_MAC_GLYPHS);
                 }
             }
         }
         else if (Float.compare(formatType, 3.0f) == 0)
         {
             // no postscript information is provided.
-            LOG.debug("No PostScript name information is provided for the font " + ttf.getName());
+            LOG.debug("No PostScript name information is provided for the font {}", ttf.getName());
         }
         initialized = true;
     }

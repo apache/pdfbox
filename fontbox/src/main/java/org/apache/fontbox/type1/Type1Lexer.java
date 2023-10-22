@@ -22,9 +22,8 @@ package org.apache.fontbox.type1;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 /**
  * Lexer for the ASCII portions of an Adobe Type 1 font.
  *
@@ -48,7 +47,7 @@ class Type1Lexer
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(Type1Lexer.class);
+    private static final Logger LOG = LogManager.getLogger(Type1Lexer.class);
     
     private final ByteBuffer buffer;
     private Token aheadToken;

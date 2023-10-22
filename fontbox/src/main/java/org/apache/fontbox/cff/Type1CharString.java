@@ -25,8 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.fontbox.cff.CharStringCommand.Type1KeyWord;
 import org.apache.fontbox.encoding.StandardEncoding;
 import org.apache.fontbox.type1.Type1CharStringReader;
@@ -39,7 +40,7 @@ import org.apache.fontbox.type1.Type1CharStringReader;
  */
 public class Type1CharString
 {
-    private static final Log LOG = LogFactory.getLog(Type1CharString.class);
+    private static final Logger LOG = LogManager.getLogger(Type1CharString.class);
 
     private final Type1CharStringReader font;
     private final String fontName;
@@ -167,7 +168,7 @@ public class Type1CharString
         if (type1KeyWord == null)
         {
             // indicates an invalid charstring
-            LOG.warn("Unknown charstring command in glyph " + glyphName + " of font " + fontName);
+            LOG.warn("Unknown charstring command in glyph {} of font {}", glyphName, fontName);
             return Collections.emptyList();
         }
         switch(type1KeyWord)
@@ -317,8 +318,8 @@ public class Type1CharString
         case RET:
         case CALLSUBR:
             // indicates an invalid charstring
-            LOG.warn("Unexpected charstring command: " + type1KeyWord + " in glyph " + glyphName + " of font "
-                    + fontName);
+            LOG.warn("Unexpected charstring command: {} in glyph {} of font {}", type1KeyWord,
+                    glyphName, fontName);
             break;
         default:
             // indicates a PDFBox bug
@@ -349,8 +350,8 @@ public class Type1CharString
 
             if (flexPoints.size() < 7)
             {
-                LOG.warn("flex without moveTo in font " + fontName + ", glyph " + glyphName +
-                         ", command " + commandCount);
+                LOG.warn("flex without moveTo in font {}, glyph {}, command {}", fontName,
+                        glyphName, commandCount);
                 return;
             }
 
@@ -385,7 +386,7 @@ public class Type1CharString
         }
         else
         {
-            LOG.warn("Invalid callothersubr parameter: " + num);
+            LOG.warn("Invalid callothersubr parameter: {}", num);
         }
     }
 
@@ -409,7 +410,7 @@ public class Type1CharString
         float y = (float)current.getY() + dy.floatValue();
         if (path.getCurrentPoint() == null)
         {
-            LOG.warn("rlineTo without initial moveTo in font " + fontName + ", glyph " + glyphName);
+            LOG.warn("rlineTo without initial moveTo in font {}, glyph {}", fontName, glyphName);
             path.moveTo(x, y);
         }
         else
@@ -433,7 +434,7 @@ public class Type1CharString
         float y3 = y2 + dy3.floatValue();
         if (path.getCurrentPoint() == null)
         {
-            LOG.warn("rrcurveTo without initial moveTo in font " + fontName + ", glyph " + glyphName);
+            LOG.warn("rrcurveTo without initial moveTo in font {}, glyph {}", fontName, glyphName);
             path.moveTo(x3, y3);
         }
         else
@@ -450,7 +451,7 @@ public class Type1CharString
     {
         if (path.getCurrentPoint() == null)
         {
-            LOG.warn("closepath without initial moveTo in font " + fontName + ", glyph " + glyphName);
+            LOG.warn("closepath without initial moveTo in font {}, glyph {}", fontName, glyphName);
         }
         else
         {
@@ -476,7 +477,7 @@ public class Type1CharString
         }
         catch (IOException e)
         {
-            LOG.warn("invalid seac character in glyph " + glyphName + " of font " + fontName, e);
+            LOG.warn("invalid seac character in glyph {} of font {}", glyphName, fontName, e);
         }
         // accent character
         String accentName = StandardEncoding.INSTANCE.getName(achar.intValue());
@@ -488,7 +489,7 @@ public class Type1CharString
             {
                 // PDFBOX-5339: avoid ArrayIndexOutOfBoundsException 
                 // reproducable with poc file crash-4698e0dc7833a3f959d06707e01d03cda52a83f4
-                LOG.warn("Path for " + baseName + " and for accent " + accentName + " are same, ignored");
+                LOG.warn("Path for {} and for accent {} are same, ignored", baseName, accentName);
                 return;
             }
             AffineTransform at = AffineTransform.getTranslateInstance(
@@ -498,7 +499,7 @@ public class Type1CharString
         }
         catch (IOException e)
         {
-            LOG.warn("invalid seac character in glyph " + glyphName + " of font " + fontName, e);
+            LOG.warn("invalid seac character in glyph {} of font {}", glyphName, fontName, e);
         }
     }
 

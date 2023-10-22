@@ -29,8 +29,8 @@ import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A class for mapping Unicode codepoints to OpenType script tags
@@ -43,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class OpenTypeScript
 {
-    private static final Log LOG = LogFactory.getLog(OpenTypeScript.class);
+    private static final Logger LOG = LogManager.getLogger(OpenTypeScript.class);
 
     public static final String INHERITED = "Inherited";
     public static final String UNKNOWN = "Unknown";
@@ -227,8 +227,8 @@ public final class OpenTypeScript
         }
         catch (IOException e)
         {
-            LOG.warn("Could not parse Scripts.txt, mirroring char map will be empty: "
-                    + e.getMessage(), e);
+            LOG.warn("Could not parse Scripts.txt, mirroring char map will be empty: {}",
+                    e.getMessage(), e);
         }
     }
 

@@ -24,9 +24,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * FontFinder for native Windows platforms. This class is based on a class provided by Apache FOP. see
@@ -35,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 public class WindowsFontDirFinder implements FontDirFinder
 {
 
-    private static final Log LOG = LogFactory.getLog(WindowsFontDirFinder.class);
+    private static final Logger LOG = LogManager.getLogger(WindowsFontDirFinder.class);
 
     /**
      * Attempts to read windir environment variable on windows (disclaimer: This is a bit dirty but seems to work

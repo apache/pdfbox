@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A 'kern' table in a true type font.
@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class KerningSubtable
 {
-    private static final Log LOG = LogFactory.getLog(KerningSubtable.class);
+    private static final Logger LOG = LogManager.getLogger(KerningSubtable.class);
 
     // coverage field bit masks and values
     private static final int COVERAGE_HORIZONTAL = 0x0001;
@@ -182,13 +182,13 @@ public class KerningSubtable
         int version = data.readUnsignedShort();
         if (version != 0)
         {
-            LOG.info("Unsupported kerning sub-table version: " + version);
+            LOG.info("Unsupported kerning sub-table version: {}", version);
             return;
         }
         int length = data.readUnsignedShort();
         if (length < 6)
         {
-            LOG.warn("Kerning sub-table too short, got " + length + " bytes, expect 6 or more.");
+            LOG.warn("Kerning sub-table too short, got {} bytes, expect 6 or more.", length);
             return;
         }
         int coverage = data.readUnsignedShort();
@@ -205,17 +205,18 @@ public class KerningSubtable
             this.crossStream = true;
         }
         int format = getBits(coverage, COVERAGE_FORMAT, COVERAGE_FORMAT_SHIFT);
-        if (format == 0)
+        switch (format)
         {
-            readSubtable0Format0(data);
-        }
-        else if (format == 2)
-        {
-            readSubtable0Format2(data);
-        }
-        else
-        {
-            LOG.debug("Skipped kerning subtable due to an unsupported kerning subtable version: " + format);
+            case 0:
+                readSubtable0Format0(data);
+                break;
+            case 2:
+                readSubtable0Format2(data);
+                break;
+            default:
+                LOG.debug("Skipped kerning subtable due to an unsupported kerning subtable version: {}",
+                        format);
+                break;
         }
     }
 

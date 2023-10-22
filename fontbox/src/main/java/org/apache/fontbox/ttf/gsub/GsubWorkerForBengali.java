@@ -25,11 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.ttf.model.ScriptFeature;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 
@@ -40,8 +41,7 @@ import org.apache.fontbox.ttf.model.ScriptFeature;
  */
 public class GsubWorkerForBengali implements GsubWorker
 {
-
-    private static final Log LOG = LogFactory.getLog(GsubWorkerForBengali.class);
+    private static final Logger LOG = LogManager.getLogger(GsubWorkerForBengali.class);
 
     private static final String INIT_FEATURE = "init";
 
@@ -82,11 +82,11 @@ public class GsubWorkerForBengali implements GsubWorker
         {
             if (!gsubData.isFeatureSupported(feature))
             {
-                LOG.debug("the feature " + feature + " was not found");
+                LOG.debug("the feature {} was not found", feature);
                 continue;
             }
 
-            LOG.debug("applying the feature " + feature);
+            LOG.debug("applying the feature {}", feature);
 
             ScriptFeature scriptFeature = gsubData.getFeature(feature);
 
@@ -150,7 +150,8 @@ public class GsubWorkerForBengali implements GsubWorker
         if (allGlyphIdsForSubstitution.isEmpty())
         {
             // not stopping here results in really weird output, the regex goes wild
-            LOG.debug("getAllGlyphIdsForSubstitution() for " + scriptFeature.getName() + " is empty");
+            LOG.debug("getAllGlyphIdsForSubstitution() for {} is empty",
+                        scriptFeature.getName());
             return originalGlyphs;
         }
 
@@ -175,8 +176,8 @@ public class GsubWorkerForBengali implements GsubWorker
             }
         });
 
-        LOG.debug("originalGlyphs: " + originalGlyphs + ", gsubProcessedGlyphs: "
-                + gsubProcessedGlyphs);
+        LOG.debug("originalGlyphs: {}, gsubProcessedGlyphs: {}", 
+                originalGlyphs, gsubProcessedGlyphs);
 
         return gsubProcessedGlyphs;
     }

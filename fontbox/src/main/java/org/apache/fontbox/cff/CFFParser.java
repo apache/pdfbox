@@ -26,8 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.pdfbox.io.RandomAccessRead;
 
 
@@ -40,7 +41,7 @@ public class CFFParser
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(CFFParser.class);
+    private static final Logger LOG = LogManager.getLogger(CFFParser.class);
 
     private static final String TAG_OTTO = "OTTO";
     private static final String TAG_TTCF = "ttcf";
@@ -411,7 +412,7 @@ public class CFFParser
                 case 0xb:
                     if (hasExponent)
                     {
-                        LOG.warn("duplicate 'E' ignored after " + sb);
+                        LOG.warn("duplicate 'E' ignored after {}", sb);
                         break;
                     }
                     sb.append('E');
@@ -421,7 +422,7 @@ public class CFFParser
                 case 0xc:
                     if (hasExponent)
                     {
-                        LOG.warn("duplicate 'E-' ignored after " + sb);
+                        LOG.warn("duplicate 'E-' ignored after {}", sb);
                         break;
                     }
                     sb.append("E-");
@@ -1302,7 +1303,7 @@ public class CFFParser
                             break;
                     }
                 }
-                LOG.warn("Expected boolean, got " + operand + ", returning default " + defaultValue);
+                LOG.warn("Expected boolean, got {}, returning default {}", operand, defaultValue);
                 return defaultValue;
             }
 

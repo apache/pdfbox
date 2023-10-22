@@ -18,8 +18,10 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
@@ -29,7 +31,7 @@ import org.apache.pdfbox.io.RandomAccessRead;
  */
 public class TTFParser
 {
-    private static final Log LOG = LogFactory.getLog(TTFParser.class);
+    private static final Logger LOG = LogManager.getLogger(TTFParser.class);
 
     private boolean isEmbedded = false;
 
@@ -129,10 +131,10 @@ public class TTFParser
                 if (table.getOffset() + table.getLength() > font.getOriginalDataSize())
                 {
                     // PDFBOX-5285 if we're lucky, this is an "unimportant" table, e.g. vmtx
-                    LOG.warn("Skip table '" + table.getTag() + 
-                            "' which goes past the file size; offset: " + table.getOffset() + 
-                            ", size: " + table.getLength() + 
-                            ", font size: " + font.getOriginalDataSize());
+                    LOG.warn(
+                            "Skip table '{}' which goes past the file size; offset: {}, size: {}, font size: {}",
+                            table.getTag(), table.getOffset(), table.getLength(),
+                            font.getOriginalDataSize());
                 }
                 else
                 {

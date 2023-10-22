@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.ttf.gsub.GlyphSubstitutionDataExtractor;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.ttf.table.common.CoverageTable;
@@ -59,7 +59,7 @@ import org.apache.fontbox.ttf.table.gsub.SequenceTable;
  */
 public class GlyphSubstitutionTable extends TTFTable
 {
-    private static final Log LOG = LogFactory.getLog(GlyphSubstitutionTable.class);
+    private static final Logger LOG = LogManager.getLogger(GlyphSubstitutionTable.class);
 
     public static final String TAG = "GSUB";
 
@@ -144,8 +144,8 @@ public class GlyphSubstitutionTable extends TTFTable
             {
                 // PDFBOX-4489: catch corrupt file
                 // https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#slTbl_sRec
-                LOG.error("LangSysRecords not alphabetically sorted by LangSys tag: " +
-                          langSysTags[i] + " <= " + langSysTags[i - 1]);
+                LOG.error("LangSysRecords not alphabetically sorted by LangSys tag: {} <= {}",
+                        langSysTags[i], langSysTags[i - 1]);
                 return new ScriptTable(null, new LinkedHashMap<>());
             }
             langSysOffsets[i] = data.readUnsignedShort();
@@ -199,13 +199,14 @@ public class GlyphSubstitutionTable extends TTFTable
                 {
                     // ArialUni.ttf has many warnings but isn't corrupt, so we assume that only
                     // strings with trash characters indicate real corruption
-                    LOG.debug("FeatureRecord array not alphabetically sorted by FeatureTag: " +
-                              featureTags[i] + " < " + featureTags[i - 1]);
+                    LOG.debug(
+                            "FeatureRecord array not alphabetically sorted by FeatureTag: {} < {}",
+                            featureTags[i], featureTags[i - 1]);
                 }
                 else
                 {
-                    LOG.warn("FeatureRecord array not alphabetically sorted by FeatureTag: " +
-                              featureTags[i] + " < " + featureTags[i - 1]);
+                    LOG.warn("FeatureRecord array not alphabetically sorted by FeatureTag: {} < {}",
+                            featureTags[i], featureTags[i - 1]);
                     return new FeatureListTable(0, new FeatureRecord[0]);
                 }
             }
@@ -271,8 +272,8 @@ public class GlyphSubstitutionTable extends TTFTable
 
             default:
                 // Other lookup types are not supported
-                LOG.debug("Type " + lookupType
-                        + " GSUB lookup table is not supported and will be ignored");
+                LOG.debug("Type {} GSUB lookup table is not supported and will be ignored",
+                            lookupType);
                 return null;
                 //TODO next: implement type 6
                 // https://learn.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-6-chained-contexts-substitution-subtable
@@ -322,8 +323,9 @@ public class GlyphSubstitutionTable extends TTFTable
                 int substFormat = data.readUnsignedShort(); // always 1
                 if (substFormat != 1)
                 {
-                    LOG.error("The expected SubstFormat for ExtensionSubstFormat1 subtable is " +
-                            substFormat + " but should be 1");
+                    LOG.error(
+                            "The expected SubstFormat for ExtensionSubstFormat1 subtable is {} but should be 1",
+                            substFormat);
                     continue;
                 }
                 int extensionLookupType = data.readUnsignedShort();
@@ -333,8 +335,7 @@ public class GlyphSubstitutionTable extends TTFTable
             break;
         default:
             // Other lookup types are not supported
-            LOG.debug("Type " + lookupType
-                    + " GSUB lookup table is not supported and will be ignored");
+            LOG.debug("Type {} GSUB lookup table is not supported and will be ignored", lookupType);
         }
         return new LookupTable(lookupType, lookupFlag, markFilteringSet, subTables);
     }
@@ -369,7 +370,7 @@ public class GlyphSubstitutionTable extends TTFTable
             return new LookupTypeSingleSubstFormat2(substFormat, coverageTable, substituteGlyphIDs);
         }
         default:
-            LOG.warn("Unknown substFormat: " + substFormat);
+            LOG.warn("Unknown substFormat: {}", substFormat);
             return null;
         }
     }
@@ -679,9 +680,9 @@ public class GlyphSubstitutionTable extends TTFTable
             LookupTable lookupTable = lookupListTable.getLookups()[lookupListIndex];
             if (lookupTable.getLookupType() != 1)
             {
-                LOG.warn("Skipping GSUB feature '" + featureRecord.getFeatureTag()
-                        + "' because it requires unsupported lookup table type "
-                        + lookupTable.getLookupType());
+                LOG.warn(
+                        "Skipping GSUB feature '{}' because it requires unsupported lookup table type {}",
+                        featureRecord.getFeatureTag(), lookupTable.getLookupType());
                 continue;
             }
             lookupResult = doLookup(lookupTable, lookupResult);
@@ -757,7 +758,7 @@ public class GlyphSubstitutionTable extends TTFTable
         Integer gid = reverseLookup.get(sgid);
         if (gid == null)
         {
-            LOG.warn("Trying to un-substitute a never-before-seen gid: " + sgid);
+            LOG.warn("Trying to un-substitute a never-before-seen gid: {}", sgid);
             return sgid;
         }
         return gid;

@@ -37,8 +37,8 @@ import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Subsetter for TrueType (TTF) fonts.
@@ -50,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class TTFSubsetter
 {
-    private static final Log LOG = LogFactory.getLog(TTFSubsetter.class);
+    private static final Logger LOG = LogManager.getLogger(TTFSubsetter.class);
     
     private static final byte[] PAD_BUF = { 0, 0, 0 };
 
@@ -491,7 +491,8 @@ public final class TTFSubsetter
 
                 if (Long.compare(isResult, g.getOffset()) != 0)
                 {
-                    LOG.debug("Tried skipping " + g.getOffset() + " bytes but skipped only " + isResult + " bytes");
+                    LOG.debug("Tried skipping {} bytes but skipped only {} bytes", g.getOffset(),
+                            isResult);
                 }
 
                 long lastOff = 0L;
@@ -503,7 +504,8 @@ public final class TTFSubsetter
                     
                     if (Long.compare(isResult, offset - lastOff) != 0)
                     {
-                        LOG.debug("Tried skipping " + (offset - lastOff) + " bytes but skipped only " + isResult + " bytes");
+                        LOG.debug("Tried skipping {} bytes but skipped only {} bytes",
+                                offset - lastOff, isResult);
                     }
 
                     byte[] buf = new byte[(int)len];
@@ -511,7 +513,7 @@ public final class TTFSubsetter
 
                     if (Long.compare(isResult, len) != 0)
                     {
-                        LOG.debug("Tried reading " + len + " bytes but only " + isResult + " bytes read");
+                        LOG.debug("Tried reading {} bytes but only {} bytes read", len, isResult);
                     }
                     
                     // rewrite glyphIds for compound glyphs
@@ -586,7 +588,8 @@ public final class TTFSubsetter
 
             if (Long.compare(isResult, g.getOffset()) != 0)
             {
-                LOG.debug("Tried skipping " + g.getOffset() + " bytes but skipped only " + isResult + " bytes");
+                LOG.debug("Tried skipping {} bytes but skipped only {} bytes", g.getOffset(),
+                        isResult);
             }
 
             long prevEnd = 0;    // previously read glyph offset
@@ -604,7 +607,8 @@ public final class TTFSubsetter
 
                 if (Long.compare(isResult, offset - prevEnd) != 0)
                 {
-                    LOG.debug("Tried skipping " + (offset - prevEnd) + " bytes but skipped only " + isResult + " bytes");
+                    LOG.debug("Tried skipping {} bytes but skipped only {} bytes", offset - prevEnd,
+                            isResult);
                 }
 
                 byte[] buf = new byte[(int)length];
@@ -612,7 +616,7 @@ public final class TTFSubsetter
 
                 if (Long.compare(isResult, length) != 0)
                 {
-                    LOG.debug("Tried reading " + length + " bytes but only " + isResult + " bytes read");
+                    LOG.debug("Tried reading {} bytes but only {} bytes read", length, isResult);
                 }
 
                 // detect glyph type

@@ -19,9 +19,8 @@
 package org.apache.fontbox.ttf;
 
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 /**
  * This class is based on code from Apache Batik a subproject of Apache XMLGraphics. see
  * http://xmlgraphics.apache.org/batik/ for further details.
@@ -32,7 +31,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(GlyfSimpleDescript.class);
+    private static final Logger LOG = LogManager.getLogger(GlyfSimpleDescript.class);
 
     private int[] endPtsOfContours;
     private byte[] flags;

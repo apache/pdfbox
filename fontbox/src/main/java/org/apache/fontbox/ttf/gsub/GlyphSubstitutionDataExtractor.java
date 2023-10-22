@@ -23,8 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.ttf.model.Language;
 import org.apache.fontbox.ttf.model.MapBackedGsubData;
@@ -44,6 +42,9 @@ import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat2;
 import org.apache.fontbox.ttf.table.gsub.SequenceTable;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * This class has utility methods to extract meaningful GsubData from the highly obfuscated GSUB
  * Tables. This GsubData is then used to determine which combination of glyphs or words have to be
@@ -54,8 +55,7 @@ import org.apache.fontbox.ttf.table.gsub.SequenceTable;
  */
 public class GlyphSubstitutionDataExtractor
 {
-
-    private static final Log LOG = LogFactory.getLog(GlyphSubstitutionDataExtractor.class);
+    private static final Logger LOG = LogManager.getLogger(GlyphSubstitutionDataExtractor.class);
 
     public GsubData getGsubData(Map<String, ScriptTable> scriptList,
             FeatureListTable featureListTable, LookupListTable lookupListTable)
@@ -154,9 +154,8 @@ public class GlyphSubstitutionDataExtractor
             }
         }
 
-        LOG.debug("*********** extracting GSUB data for the feature: "
-                + featureRecord.getFeatureTag() + ", glyphSubstitutionMap: "
-                + glyphSubstitutionMap);
+        LOG.debug("*********** extracting GSUB data for the feature: {}, glyphSubstitutionMap: {}",
+                featureRecord.getFeatureTag(), glyphSubstitutionMap);
 
         gsubData.put(featureRecord.getFeatureTag(),
                 Collections.unmodifiableMap(glyphSubstitutionMap));
@@ -191,7 +190,7 @@ public class GlyphSubstitutionDataExtractor
             else
             {
                 // usually null, due to being skipped in GlyphSubstitutionTable.readLookupTable()
-                LOG.debug("The type " + lookupSubTable + " is not yet supported, will be ignored");
+                LOG.debug("The type {} is not yet supported, will be ignored", lookupSubTable);
             }
         }
 
@@ -220,9 +219,10 @@ public class GlyphSubstitutionDataExtractor
 
         if (coverageTable.getSize() != singleSubstTableFormat2.getSubstituteGlyphIDs().length)
         {
-            LOG.warn("The coverage table size (" + coverageTable.getSize() +
-                    ") should be the same as the count of the substituteGlyphIDs tables (" +
-                    singleSubstTableFormat2.getSubstituteGlyphIDs().length + ")");
+            LOG.warn(
+                    "The coverage table size ({}) should be the same as the count of the substituteGlyphIDs tables ({})",
+                    coverageTable.getSize(),
+                    singleSubstTableFormat2.getSubstituteGlyphIDs().length);
             return;
         }
 
@@ -244,9 +244,10 @@ public class GlyphSubstitutionDataExtractor
 
         if (coverageTable.getSize() != multipleSubstFormat1Subtable.getSequenceTables().length)
         {
-            LOG.warn("The coverage table size (" + coverageTable.getSize() +
-                    ") should be the same as the count of the sequence tables (" +
-                    multipleSubstFormat1Subtable.getSequenceTables().length + ")");
+            LOG.warn(
+                    "The coverage table size ({}) should be the same as the count of the sequence tables ({})",
+                    coverageTable.getSize(),
+                    multipleSubstFormat1Subtable.getSequenceTables().length);
             return;
         }
 
@@ -287,7 +288,7 @@ public class GlyphSubstitutionDataExtractor
             glyphsToBeSubstituted.add(componentGlyphID);
         }
 
-        LOG.debug("glyphsToBeSubstituted: " + glyphsToBeSubstituted);
+        LOG.debug("glyphsToBeSubstituted: {}", glyphsToBeSubstituted);
 
         putNewSubstitutionEntry(glyphSubstitutionMap, ligatureTable.getLigatureGlyph(),
                 glyphsToBeSubstituted);

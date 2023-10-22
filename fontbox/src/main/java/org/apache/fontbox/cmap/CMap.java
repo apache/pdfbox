@@ -23,9 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 /**
  * This class represents a CMap file.
  *
@@ -33,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CMap
 {
-    private static final Log LOG = LogFactory.getLog(CMap.class);
+    private static final Logger LOG = LogManager.getLogger(CMap.class);
 
     private int wmode = 0;
     private String cmapName = null;
@@ -184,7 +183,7 @@ public class CMap
             {
                 sb.append(String.format("0x%02X (%04o) ", bytes[i], bytes[i]));
             }
-            LOG.warn("Invalid character code sequence " + sb + "in CMap " + cmapName);
+            LOG.warn("Invalid character code sequence {} in CMap {}", sb, cmapName);
         }
         // PDFBOX-4811 reposition to where we were after initial read
         if (in.markSupported())
@@ -193,8 +192,8 @@ public class CMap
         }
         else
         {
-            LOG.warn("mark() and reset() not supported, " + (maxCodeLength - 1) +
-                     " bytes have been skipped");
+            LOG.warn("mark() and reset() not supported, {} bytes have been skipped",
+                    maxCodeLength - 1);
         }
         return toInt(bytes, minCodeLength); // Adobe Reader behavior
     }

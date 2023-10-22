@@ -27,8 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.util.BoundingBox;
@@ -41,7 +42,7 @@ import org.apache.fontbox.util.BoundingBox;
 public class TrueTypeFont implements FontBoxFont, Closeable
 {
 
-    private static final Log LOG = LogFactory.getLog(TrueTypeFont.class);
+    private static final Logger LOG = LogManager.getLogger(TrueTypeFont.class);
 
     private float version;
     private int numberOfGlyphs = -1;

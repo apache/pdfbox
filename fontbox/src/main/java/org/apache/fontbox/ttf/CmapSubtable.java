@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 /**
  * A "cmap" subtable.
  * 
@@ -34,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CmapSubtable implements CmapLookup
 {
-    private static final Log LOG = LogFactory.getLog(CmapSubtable.class);
+    private static final Logger LOG = LogManager.getLogger(CmapSubtable.class);
 
     private static final long LEAD_OFFSET = 0xD800l - (0x10000 >> 10);
     private static final long SURROGATE_OFFSET = 0x10000l - (0xD800 << 10) - 0xDC00;
@@ -548,7 +547,8 @@ public class CmapSubtable implements CmapLookup
                 
                 if (p >= numGlyphs)
                 {
-                    LOG.warn("glyphId " + p + " for charcode " + charCode + " ignored, numGlyphs is " + numGlyphs);
+                    LOG.warn("glyphId {} for charcode {} ignored, numGlyphs is {}", p, charCode,
+                            numGlyphs);
                     continue;
                 }
                 
