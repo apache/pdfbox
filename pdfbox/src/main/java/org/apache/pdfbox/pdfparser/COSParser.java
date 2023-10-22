@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
@@ -44,6 +45,7 @@ import org.apache.pdfbox.cos.ICOSParser;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadView;
+import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
@@ -158,8 +160,7 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     public COSParser(RandomAccessRead source) throws IOException
     {
-        super(source);
-        fileLen = source.length();
+        this(source, null, null, null);
     }
 
     /**
@@ -175,11 +176,47 @@ public class COSParser extends BaseParser implements ICOSParser
     public COSParser(RandomAccessRead source, String password, InputStream keyStore,
             String keyAlias) throws IOException
     {
+        this(source, password, keyStore, keyAlias, null);
+    }
+
+    /**
+     * Constructor for encrypted pdfs.
+     * 
+     * @param source input representing the pdf.
+     * @param password password to be used for decryption.
+     * @param keyStore key store to be used for decryption when using public key security
+     * @param keyAlias alias to be used for decryption when using public key security
+     * @param streamCacheCreateFunction a function to create an instance of the stream cache
+     *
+     * @throws IOException if the source data could not be read
+     */
+    public COSParser(RandomAccessRead source, String password, InputStream keyStore,
+            String keyAlias, StreamCacheCreateFunction streamCacheCreateFunction) throws IOException
+    {
         super(source);
         this.password = password;
         this.keyAlias = keyAlias;
         fileLen = source.length();
         keyStoreInputStream = keyStore;
+        init(streamCacheCreateFunction);
+    }
+
+    private void init(StreamCacheCreateFunction streamCacheCreateFunction)
+    {
+        String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
+        if (eofLookupRangeStr != null)
+        {
+            try
+            {
+                setEOFLookupRange(Integer.parseInt(eofLookupRangeStr));
+            }
+            catch (NumberFormatException nfe)
+            {
+                LOG.warn("System property " + SYSPROP_EOFLOOKUPRANGE
+                        + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
+            }
+        }
+        document = new COSDocument(streamCacheCreateFunction, this);
     }
 
     /**
