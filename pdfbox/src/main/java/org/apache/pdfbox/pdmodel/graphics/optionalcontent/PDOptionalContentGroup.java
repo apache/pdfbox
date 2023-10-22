@@ -123,12 +123,12 @@ public class PDOptionalContentGroup extends PDPropertyList
         COSDictionary usage = dict.getCOSDictionary(COSName.USAGE);
         if (usage != null)
         {
-            if (RenderDestination.PRINT.equals(destination))
+            if (RenderDestination.PRINT == destination)
             {
                 COSDictionary print = usage.getCOSDictionary(COSName.PRINT);
                 state = print == null ? null : print.getCOSName(COSName.PRINT_STATE);
             }
-            else if (RenderDestination.VIEW.equals(destination))
+            else if (RenderDestination.VIEW == destination)
             {
                 COSDictionary view = usage.getCOSDictionary(COSName.VIEW);
                 state = view == null ? null : view.getCOSName(COSName.VIEW_STATE);

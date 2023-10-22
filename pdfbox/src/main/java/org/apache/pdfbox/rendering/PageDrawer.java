@@ -574,7 +574,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
-        if (!RenderingMode.NEITHER.equals(renderingMode))
+        if (RenderingMode.NEITHER != renderingMode)
         {
             super.showType3Glyph(textRenderingMatrix, font, code, displacement);
         }
@@ -1829,7 +1829,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         private BufferedImage create2ByteGrayAlphaImage(int width, int height) 
         {
             // gray + alpha
-            int[] bandOffsets = new int[] {1, 0};
+            int[] bandOffsets = {1, 0};
             int bands = bandOffsets.length;
 
             // Color Model used for raw GRAY + ALPHA
@@ -2002,7 +2002,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     return true;
                 }
             }
-            else if (RenderState.OFF.equals(printState))
+            else if (RenderState.OFF == printState)
             {
                 return true;
             }
