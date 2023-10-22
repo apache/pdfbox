@@ -30,11 +30,18 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 import static org.junit.Assert.assertTrue;
+import org.junit.BeforeClass;
 
 import org.junit.Test;
 
 public class TestCOSIncrement
 {
+    @BeforeClass
+    public static void init() throws Exception
+    {
+        new File("target/test-output").mkdirs();
+    }
+
     /**
      * Check that subsetting takes place in incremental saving.
      *
