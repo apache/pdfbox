@@ -289,14 +289,14 @@ public final class PDImageXObject extends PDXObject implements PDImage
             throw new IllegalArgumentException("Image type not supported: " + file.getName());
         }
 
-        if (fileType.equals(FileType.JPEG))
+        if (fileType == FileType.JPEG)
         {
             try (FileInputStream fis = new FileInputStream(file))
             {
                 return JPEGFactory.createFromStream(doc, fis);
             }
         }
-        if (fileType.equals(FileType.TIFF))
+        if (fileType == FileType.TIFF)
         {
             try
             {
@@ -311,7 +311,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 fileType = FileType.PNG;
             }
         }
-        if (fileType.equals(FileType.BMP) || fileType.equals(FileType.GIF) || fileType.equals(FileType.PNG))
+        if (fileType == FileType.BMP || fileType == FileType.GIF || fileType == FileType.PNG)
         {
             BufferedImage bim = ImageIO.read(file);
             return LosslessFactory.createFromImage(doc, bim);
@@ -349,11 +349,11 @@ public final class PDImageXObject extends PDXObject implements PDImage
             throw new IllegalArgumentException("Image type not supported: " + name);
         }
 
-        if (fileType.equals(FileType.JPEG))
+        if (fileType == FileType.JPEG)
         {
             return JPEGFactory.createFromByteArray(document, byteArray);
         }
-        if (fileType.equals(FileType.PNG))
+        if (fileType == FileType.PNG)
         {
             // Try to directly convert the image without recoding it.
             PDImageXObject image = PNGConverter.convertPNGImage(document, byteArray);
@@ -362,7 +362,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 return image;
             }
         }
-        if (fileType.equals(FileType.TIFF))
+        if (fileType == FileType.TIFF)
         {
             try
             {
@@ -377,7 +377,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 fileType = FileType.PNG;
             }
         }
-        if (fileType.equals(FileType.BMP) || fileType.equals(FileType.GIF) || fileType.equals(FileType.PNG))
+        if (fileType == FileType.BMP || fileType == FileType.GIF || fileType == FileType.PNG)
         {
             ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
             BufferedImage bim = ImageIO.read(bais);

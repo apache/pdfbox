@@ -272,11 +272,11 @@ public class CharStringCommand
         if (object instanceof CharStringCommand)
         {
             CharStringCommand that = (CharStringCommand) object;
-            if (type1KeyWord != null && type1KeyWord.equals(that.getType1KeyWord()))
+            if (type1KeyWord != null && type1KeyWord == that.getType1KeyWord())
             {
                 return true;
             }
-            if (type2KeyWord != null && type2KeyWord.equals(that.getType2KeyWord()))
+            if (type2KeyWord != null && type2KeyWord == that.getType2KeyWord())
             {
                 return true;
             }

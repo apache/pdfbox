@@ -288,7 +288,7 @@ public class PDOptionalContentProperties implements COSObjectable
         //i.e. OCProperties/Configs
 
         PDOptionalContentProperties.BaseState baseState = getBaseState();
-        boolean enabled = !baseState.equals(BaseState.OFF);
+        boolean enabled = baseState != BaseState.OFF;
         //TODO What to do with BaseState.Unchanged?
 
         if (group == null)
