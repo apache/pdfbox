@@ -54,8 +54,15 @@ import java.util.ConcurrentModificationException;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
+import org.junit.jupiter.api.BeforeAll;
+
 class TestCOSIncrement
 {
+    @BeforeAll
+    static void init()
+    {
+        new File("target/test-output").mkdirs();
+    }
 
     // TODO Very basic and primitive test - add in depth testing for all this.
     /**
