@@ -909,7 +909,8 @@ public final class TTFSubsetter
 
             if (Long.compare(isResult, hm.getOffset()) != 0)
             {
-                LOG.debug("Tried skipping " + hm.getOffset() + " bytes but only " + isResult + " bytes skipped");
+                LOG.debug("Tried skipping {} bytes but only {} bytes skipped", hm.getOffset(),
+                        isResult);
             }
 
             long lastOffset = 0;
