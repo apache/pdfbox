@@ -193,10 +193,18 @@ final class DCTFilter extends Filter
         Element tree = (Element)metadata.getAsTree("javax_imageio_jpeg_image_1.0");
         Element markerSequence = (Element)tree.getElementsByTagName("markerSequence").item(0);
         NodeList app14AdobeNodeList = markerSequence.getElementsByTagName("app14Adobe");
-        if (app14AdobeNodeList != null && app14AdobeNodeList.getLength() > 0)
+        if (app14AdobeNodeList != null)
         {
-            Element adobe = (Element) app14AdobeNodeList.item(0);
-            return Integer.parseInt(adobe.getAttribute("transform"));
+            int app14AdobeNodeListLength = app14AdobeNodeList.getLength();
+            if (app14AdobeNodeListLength > 0)
+            {
+                if (app14AdobeNodeListLength > 1)
+                {
+                    LOG.warn("app14Adobe entry appears several times, using the last one");
+                }
+                Element adobe = (Element) app14AdobeNodeList.item(app14AdobeNodeListLength - 1);
+                return Integer.valueOf(adobe.getAttribute("transform"));
+            }
         }
 
         // PDFBOX-5488: plan B: use ColorSpaceType from the other metadata tree.
