@@ -399,7 +399,7 @@ public class OcspHelper
      * @throws IOException if the default security provider can't be instantiated
      */
     private void checkOcspSignature(X509Certificate certificate, BasicOCSPResp basicResponse)
-            throws OCSPException, IOException
+            throws OCSPException
     {
         try
         {

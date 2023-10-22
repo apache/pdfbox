@@ -314,7 +314,7 @@ public class SigUtils
     }
 
     public static void validateTimestampToken(TimeStampToken timeStampToken)
-            throws TSPException, CertificateException, OperatorCreationException, IOException
+            throws TSPException, CertificateException, OperatorCreationException
     {
         // https://stackoverflow.com/questions/42114742/
         @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
