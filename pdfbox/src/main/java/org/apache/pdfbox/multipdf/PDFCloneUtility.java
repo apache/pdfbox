@@ -55,7 +55,7 @@ public class PDFCloneUtility
      * 
      * @param dest the destination PDF document that will receive the clones
      */
-    PDFCloneUtility(PDDocument dest)
+    protected PDFCloneUtility(PDDocument dest)
     {
         this.destination = dest;
     }
@@ -103,7 +103,7 @@ public class PDFCloneUtility
         return (TCOSBase) retval;
     }
 
-    COSBase cloneCOSBaseForNewDocument(COSBase base) throws IOException
+    private COSBase cloneCOSBaseForNewDocument(COSBase base) throws IOException
     {
         if (base instanceof COSObject)
         {
