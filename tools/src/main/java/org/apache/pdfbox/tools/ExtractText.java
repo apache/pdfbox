@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Map;
 import java.util.Set;
@@ -112,6 +113,12 @@ public final class ExtractText  implements Callable<Integer>
     @Option(names = {"-o", "--output"}, description = "the exported text file")
     private File outfile;
 
+    @Option(names = "-addFileName", description = "Print PDF file name to the output text")
+    private boolean addFileName = false;
+
+    @Option(names = "-append", description = "Use append mode for output file")
+    private boolean append = false;
+
     /**
      * Constructor.
      */
@@ -150,8 +157,19 @@ public final class ExtractText  implements Callable<Integer>
             outfile = new File(outPath);
         }
 
+        if (toHTML && !STD_ENCODING.equals(encoding))
+        {
+            encoding = STD_ENCODING;
+            SYSOUT.println("The encoding parameter is ignored when writing html output.");
+        }
+
+        if (toConsole && encoding != null)
+        {
+            SYSOUT.println("The encoding parameter is ignored when writing to the console.");
+        }
+
         try (PDDocument document = Loader.loadPDF(infile, password);
-             Writer output = toConsole ? new OutputStreamWriter( SYSOUT, encoding ) : new OutputStreamWriter( new FileOutputStream( outfile ), encoding ))
+                Writer output = createOutputWriter())
         {
             long startTime = startProcessing("Loading PDF " + infile);
 
@@ -164,13 +182,13 @@ public final class ExtractText  implements Callable<Integer>
             
             stopProcessing("Time for loading: ", startTime);
 
-            if (toHTML && !STD_ENCODING.equals(encoding))
-            {
-                encoding = STD_ENCODING;
-                SYSOUT.println("The encoding parameter is ignored when writing html output.");
-            }
-
             startTime = startProcessing("Starting text extraction");
+
+            if (addFileName)
+            {
+                output.write("PDF file: " + infile);
+                output.write(System.getProperty("line.separator"));
+            }
 
             if (debug)
             {
@@ -252,6 +270,7 @@ public final class ExtractText  implements Callable<Integer>
                     }
                 }
             }
+            output.flush();
             stopProcessing("Time for extraction: ", startTime);
         }
         catch (IOException ioe)
@@ -261,6 +280,25 @@ public final class ExtractText  implements Callable<Integer>
         }
 
         return 0;
+    }
+
+    private Writer createOutputWriter() throws IOException
+    {
+        if (toConsole)
+        {
+            return new PrintWriter(SYSOUT)
+            {
+                @Override
+                public void close()
+                {
+                    // don't close the console
+                };
+            };
+        }
+        else
+        {
+            return new OutputStreamWriter(new FileOutputStream(outfile, append), encoding);
+        }
     }
 
     private void extractPages(int startPage, int endPage,
