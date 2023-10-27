@@ -45,8 +45,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -72,7 +72,7 @@ import org.bouncycastle.cert.ocsp.OCSPResp;
  */
 public final class CertificateVerifier
 {
-    private static final Log LOG = LogFactory.getLog(CertificateVerifier.class);
+    private static final Logger LOG = LogManager.getLogger(CertificateVerifier.class);
 
     private CertificateVerifier()
     {
@@ -144,7 +144,7 @@ public final class CertificateVerifier
             }
             if (downloadSize > 0)
             {
-                LOG.info("CA issuers: " + downloadSize + " downloaded certificate(s) are new");
+                LOG.info("CA issuers: {} downloaded certificate(s) are new", downloadSize);
             }
 
             // Prepare a set of trust anchors (set of root CA certificates)
@@ -172,7 +172,7 @@ public final class CertificateVerifier
             PKIXCertPathBuilderResult verifiedCertChain = verifyCertificate(
                     cert, trustAnchors, intermediateCerts, signDate);
 
-            LOG.info("Certification chain verified successfully up to this root: " +
+            LOG.info("Certification chain verified successfully up to this root: {}",
                     verifiedCertChain.getTrustAnchor().getTrustedCert().getSubjectX500Principal());
 
             checkRevocations(cert, certSet, signDate);
@@ -243,7 +243,7 @@ public final class CertificateVerifier
                 // IOException happens with 021496.pdf because OCSP responder no longer exists
                 // OCSPException happens with QV_RCA1_RCA3_CPCPS_V4_11.pdf
                 LOG.warn("Exception trying OCSP, will try CRL", ex);
-                LOG.warn("Certificate# to check: " + cert.getSerialNumber().toString(16));
+                LOG.warn("Certificate# to check: {}", cert.getSerialNumber().toString(16));
                 CRLVerifier.verifyCertificateCRLs(cert, signDate, additionalCerts);
             }
         }
@@ -314,7 +314,7 @@ public final class CertificateVerifier
         }
         if (!(asn1Prim instanceof ASN1Sequence))
         {
-            LOG.warn("ASN1Sequence expected, got " + asn1Prim.getClass().getSimpleName());
+            LOG.warn("ASN1Sequence expected, got {}", asn1Prim.getClass().getSimpleName());
             return resultSet;
         }
         ASN1Sequence asn1Seq = (ASN1Sequence) asn1Prim;
@@ -331,24 +331,24 @@ public final class CertificateVerifier
             ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
             ASN1OctetString uri = (ASN1OctetString) location.getBaseObject();
             String urlString = new String(uri.getOctets());
-            LOG.info("CA issuers URL: " + urlString);
+            LOG.info("CA issuers URL: {}", urlString);
             try (InputStream in = SigUtils.openURL(urlString))
             {
                 CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
                 Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
                 altCerts.forEach(altCert -> resultSet.add((X509Certificate) altCert));
-                LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) downloaded");
+                LOG.info("CA issuers URL: {} certificate(s) downloaded", altCerts.size());
             }
             catch (IOException | URISyntaxException ex)
             {
-                LOG.warn(urlString + " failure: " + ex.getMessage(), ex);
+                LOG.warn("{} failure: {}", urlString, ex.getMessage(), ex);
             }
             catch (CertificateException ex)
             {
                 LOG.warn(ex.getMessage(), ex);
             }
         }
-        LOG.info("CA issuers: Downloaded " + resultSet.size() + " certificate(s) total");
+        LOG.info("CA issuers: Downloaded {} certificate(s) total", resultSet.size());
         return resultSet;
     }
 
@@ -436,7 +436,7 @@ public final class CertificateVerifier
                 {
                     ASN1OctetString url = (ASN1OctetString) location.getBaseObject();
                     String ocspURL = new String(url.getOctets());
-                    LOG.info("OCSP URL: " + ocspURL);
+                    LOG.info("OCSP URL: {}", ocspURL);
                     return ocspURL;
                 }
             }

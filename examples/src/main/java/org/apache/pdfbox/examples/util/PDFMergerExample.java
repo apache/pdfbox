@@ -35,8 +35,8 @@ import org.apache.xmpbox.xml.XmpSerializer;
 import java.util.Calendar;
 import java.util.List;
 import javax.xml.transform.TransformerException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.io.IOUtils;
 
 /**
@@ -50,7 +50,7 @@ import org.apache.pdfbox.io.IOUtils;
  */
 public class PDFMergerExample
 {
-    private static final Log LOG = LogFactory.getLog(PDFMergerExample.class);
+    private static final Logger LOG = LogManager.getLogger(PDFMergerExample.class);
 
     /**
      * Creates a compound PDF document from a list of input documents.
@@ -82,9 +82,9 @@ public class PDFMergerExample
             pdfMerger.setDestinationDocumentInformation(pdfDocumentInfo);
             pdfMerger.setDestinationMetadata(xmpMetadata);
 
-            LOG.info("Merging " + sources.size() + " source documents into one PDF");
+            LOG.info("Merging {} source documents into one PDF", sources.size());
             pdfMerger.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
-            LOG.info("PDF merge successful, size = {" + mergedPDFOutputStream.size() + "} bytes");
+            LOG.info("PDF merge successful, size = {{}} bytes", mergedPDFOutputStream.size());
 
             return new ByteArrayInputStream(mergedPDFOutputStream.toByteArray());
         }

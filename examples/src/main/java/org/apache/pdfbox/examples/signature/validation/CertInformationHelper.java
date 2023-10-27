@@ -21,8 +21,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.CertSignatureInformation;
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -35,7 +35,7 @@ import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 
 public class CertInformationHelper
 {
-    private static final Log LOG = LogFactory.getLog(CertInformationHelper.class);
+    private static final Logger LOG = LogManager.getLogger(CertInformationHelper.class);
 
     private CertInformationHelper()
     {

@@ -29,8 +29,8 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DigestAlgorithmIdentifierFinder;
@@ -47,7 +47,7 @@ import org.bouncycastle.tsp.TimeStampToken;
  */
 public class TSAClient
 {
-    private static final Log LOG = LogFactory.getLog(TSAClient.class);
+    private static final Logger LOG = LogManager.getLogger(TSAClient.class);
 
     private static final DigestAlgorithmIdentifierFinder ALGORITHM_OID_FINDER =
             new DefaultDigestAlgorithmIdentifierFinder();
@@ -160,7 +160,7 @@ public class TSAClient
         }
         catch (IOException ex)
         {
-            LOG.error("Exception when writing to " + this.url, ex);
+            LOG.error("Exception when writing to {}", this.url, ex);
             throw ex;
         }
 
@@ -173,7 +173,7 @@ public class TSAClient
         }
         catch (IOException ex)
         {
-            LOG.error("Exception when reading from " + this.url, ex);
+            LOG.error("Exception when reading from {}", this.url, ex);
             throw ex;
         }
 

@@ -44,8 +44,8 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.examples.signature.SigUtils;
 
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
@@ -68,7 +68,7 @@ import org.bouncycastle.asn1.x509.GeneralNames;
  */
 public final class CRLVerifier
 {
-    private static final Log LOG = LogFactory.getLog(CRLVerifier.class);
+    private static final Logger LOG = LogManager.getLogger(CRLVerifier.class);
 
     private CRLVerifier()
     {
@@ -99,7 +99,7 @@ public final class CRLVerifier
             List<String> crlDistributionPointsURLs = getCrlDistributionPoints(cert);
             for (String crlDistributionPointsURL : crlDistributionPointsURLs)
             {
-                LOG.info("Checking distribution point URL: " + crlDistributionPointsURL);
+                LOG.info("Checking distribution point URL: {}", crlDistributionPointsURL);
 
                 X509CRL crl;
                 try
@@ -110,7 +110,9 @@ public final class CRLVerifier
                 {
                     // e.g. LDAP behind corporate proxy
                     // but couldn't get LDAP to work at all, see e.g. file from PDFBOX-1452
-                    LOG.warn("Caught " + ex.getClass().getSimpleName() + " downloading CRL, will try next distribution point if available");
+                    LOG.warn(
+                            "Caught {} downloading CRL, will try next distribution point if available",
+                            ex.getClass().getSimpleName());
                     if (firstException == null)
                     {
                         firstException = ex;
@@ -150,11 +152,11 @@ public final class CRLVerifier
                 // a PDF has a broken OCSP and a working CRL
                 if (crl.getThisUpdate().after(now))
                 {
-                    LOG.error("CRL not yet valid, thisUpdate is " + crl.getThisUpdate());
+                    LOG.error("CRL not yet valid, thisUpdate is {}", crl.getThisUpdate());
                 }
                 if (crl.getNextUpdate().before(now))
                 {
-                    LOG.error("CRL no longer valid, nextUpdate is " + crl.getNextUpdate());
+                    LOG.error("CRL no longer valid, nextUpdate is {}", crl.getNextUpdate());
                 }
 
                 if (!crl.getIssuerX500Principal().equals(cert.getIssuerX500Principal()))
@@ -221,12 +223,12 @@ public final class CRLVerifier
         }
         else if (revokedCRLEntry != null)
         {
-            LOG.info("The certificate was revoked after signing by CRL " +
-                    crlDistributionPointsURL + " on " + revokedCRLEntry.getRevocationDate());
+            LOG.info("The certificate was revoked after signing by CRL {} on {}",
+                    crlDistributionPointsURL, revokedCRLEntry.getRevocationDate());
         }
         else
         {
-            LOG.info("The certificate was not revoked by CRL " + crlDistributionPointsURL);
+            LOG.info("The certificate was not revoked by CRL {}", crlDistributionPointsURL);
         }
     }
 
@@ -323,9 +325,9 @@ public final class CRLVerifier
         }
         if (!(derObjCrlDP instanceof ASN1OctetString))
         {
-            LOG.warn("CRL distribution points for certificate subject " +
-                    cert.getSubjectX500Principal().getName() +
-                    " should be an octet string, but is " + derObjCrlDP);
+            LOG.warn(
+                    "CRL distribution points for certificate subject {} should be an octet string, but is {}",
+                    cert.getSubjectX500Principal().getName(), derObjCrlDP);
             return new ArrayList<>();
         }
         ASN1OctetString dosCrlDP = (ASN1OctetString) derObjCrlDP;

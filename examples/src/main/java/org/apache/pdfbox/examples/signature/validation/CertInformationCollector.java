@@ -33,8 +33,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
@@ -63,7 +63,7 @@ import org.bouncycastle.util.Store;
  */
 public class CertInformationCollector
 {
-    private static final Log LOG = LogFactory.getLog(CertInformationCollector.class);
+    private static final Logger LOG = LogManager.getLogger(CertInformationCollector.class);
 
     private static final int MAX_CERTIFICATE_CHAIN_DEPTH = 5;
 
@@ -248,8 +248,8 @@ public class CertInformationCollector
             try
             {
                 certificate.verify(issuer.getPublicKey(), SecurityProvider.getProvider());
-                LOG.info("Found the right Issuer Cert! for Cert: " + certificate.getSubjectX500Principal()
-                    + "\n" + issuer.getSubjectX500Principal());
+                LOG.info("Found the right Issuer Cert! for Cert: {}\n{}",
+                        certificate.getSubjectX500Principal(), issuer.getSubjectX500Principal());
                 certInfo.issuerCertificate = issuer;
                 certInfo.certChain = new CertSignatureInformation();
                 traverseChain(issuer, certInfo.certChain, maxDepth - 1);
@@ -287,7 +287,7 @@ public class CertInformationCollector
             return;
         }
         urlSet.add(certInfo.issuerUrl);
-        LOG.info("Get alternative issuer certificate from: " + certInfo.issuerUrl);
+        LOG.info("Get alternative issuer certificate from: {}", certInfo.issuerUrl);
         try
         {
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
@@ -303,7 +303,8 @@ public class CertInformationCollector
         }
         catch (IOException | URISyntaxException | CertificateException e)
         {
-            LOG.error("Error getting alternative issuer certificate from " + certInfo.issuerUrl, e);
+            LOG.error("Error getting alternative issuer certificate from {}", certInfo.issuerUrl,
+                    e);
         }
     }
 

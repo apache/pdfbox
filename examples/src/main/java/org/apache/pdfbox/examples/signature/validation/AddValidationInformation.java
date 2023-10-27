@@ -36,8 +36,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -79,7 +79,7 @@ import org.bouncycastle.tsp.TimeStampTokenInfo;
  */
 public class AddValidationInformation
 {
-    private static final Log LOG = LogFactory.getLog(AddValidationInformation.class);
+    private static final Logger LOG = LogManager.getLogger(AddValidationInformation.class);
 
     private CertInformationCollector certInformationHelper;
     private COSArray correspondingOCSPs;
@@ -291,7 +291,8 @@ public class AddValidationInformation
 
             if (certInfo.getOcspUrl() == null && certInfo.getCrlUrl() == null)
             {
-                LOG.info("No revocation information for cert " + certInfo.getCertificate().getSubjectX500Principal());
+                LOG.info("No revocation information for cert {}",
+                        certInfo.getCertificate().getSubjectX500Principal());
             }
             else if (!isRevocationInfoFound)
             {
@@ -327,7 +328,7 @@ public class AddValidationInformation
         }
         catch (OCSPException | CertificateProccessingException | IOException | URISyntaxException e)
         {
-            LOG.error("Failed fetching OCSP at " + certInfo.getOcspUrl(), e);
+            LOG.error("Failed fetching OCSP at {}", certInfo.getOcspUrl(), e);
             return false;
         }
         catch (RevokedCertificateException e)

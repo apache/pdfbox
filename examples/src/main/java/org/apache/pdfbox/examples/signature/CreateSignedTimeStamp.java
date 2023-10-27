@@ -25,8 +25,8 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -45,7 +45,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface
  */
 public class CreateSignedTimeStamp implements SignatureInterface
 {
-    private static final Log LOG = LogFactory.getLog(CreateSignedTimeStamp.class);
+    private static final Logger LOG = LogManager.getLogger(CreateSignedTimeStamp.class);
     
     private final String tsaUrl;
 

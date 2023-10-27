@@ -24,8 +24,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import javax.print.PrintServiceLookup;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
@@ -118,7 +118,7 @@ public class OpaquePDFRenderer extends PDFRenderer
             super(context);
         }
 
-        private static final Log LOG = LogFactory.getLog(OpaqueDrawObject.class);
+        private static final Logger LOG = LogManager.getLogger(OpaqueDrawObject.class);
 
         @Override
         public void process(Operator operator, List<COSBase> operands) throws IOException
@@ -175,7 +175,7 @@ public class OpaquePDFRenderer extends PDFRenderer
     // but resets ca and CA
     private static class OpaqueSetGraphicsStateParameters extends OperatorProcessor
     {
-        private static final Log LOG = LogFactory.getLog(OpaqueSetGraphicsStateParameters.class);
+        private static final Logger LOG = LogManager.getLogger(OpaqueSetGraphicsStateParameters.class);
 
         public OpaqueSetGraphicsStateParameters(PDFStreamEngine context)
         {
@@ -201,7 +201,8 @@ public class OpaquePDFRenderer extends PDFRenderer
             PDExtendedGraphicsState gs = context.getResources().getExtGState(graphicsName);
             if (gs == null)
             {
-                LOG.error("name for 'gs' operator not found in resources: /" + graphicsName.getName());
+                LOG.error("name for 'gs' operator not found in resources: /{}",
+                        graphicsName.getName());
                 return;
             }
             gs.setNonStrokingAlphaConstant(1f);

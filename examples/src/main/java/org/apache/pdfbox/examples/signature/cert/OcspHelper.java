@@ -38,8 +38,8 @@ import java.util.Date;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.bouncycastle.asn1.DEROctetString;
@@ -77,7 +77,7 @@ import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
  */
 public class OcspHelper
 {
-    private static final Log LOG = LogFactory.getLog(OcspHelper.class);
+    private static final Logger LOG = LogManager.getLogger(OcspHelper.class);
 
     private final X509Certificate issuerCertificate;
     private final Date signDate;
@@ -240,8 +240,8 @@ public class OcspHelper
                                 revokedStatus.getRevocationTime(),
                                 revokedStatus.getRevocationTime());
                 }
-                LOG.info("The certificate was revoked after signing by OCSP " + ocspUrl + 
-                         " on " + revokedStatus.getRevocationTime());
+                LOG.info("The certificate was revoked after signing by OCSP {} on {}", ocspUrl,
+                        revokedStatus.getRevocationTime());
             }
             else if (status != CertificateStatus.GOOD)
             {
@@ -379,12 +379,12 @@ public class OcspHelper
         }
         if (curDate.compareTo(thisUpdate) < 0)
         {
-            LOG.error(curDate + " < " + thisUpdate);
+            LOG.error("{} < {}", curDate, thisUpdate);
             throw new OCSPException("OCSP: current date < thisUpdate field (RFC 5019 2.2.4.)");
         }
         if (curDate.compareTo(nextUpdate) > 0)
         {
-            LOG.error(curDate + " > " + nextUpdate);
+            LOG.error("{} > {}", curDate, nextUpdate);
             throw new OCSPException("OCSP: current date > nextUpdate field (RFC 5019 2.2.4.)");
         }
         LOG.info("OCSP response is fresh");
@@ -486,12 +486,12 @@ public class OcspHelper
                 {
                     // redirection from http:// to https://
                     // change this code if you want to be more flexible (but think about security!)
-                    LOG.info("redirection to " + location + " followed");
+                    LOG.info("redirection to {} followed", location);
                     return performRequest(location);
                 }
                 else
                 {
-                    LOG.info("redirection to " + location + " ignored");
+                    LOG.info("redirection to {} ignored", location);
                 }
             }
             if (responseCode != HttpURLConnection.HTTP_OK)
@@ -552,7 +552,7 @@ public class OcspHelper
                 break;
             default:
                 statusInfo = "UNKNOWN";
-                LOG.error("Unknown OCSPResponse status code! " + status);
+                LOG.error("Unknown OCSPResponse status code! {}", status);
             }
         }
         if (resp == null || resp.getStatus() != OCSPResponseStatus.SUCCESSFUL)
