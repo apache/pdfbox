@@ -24,8 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -42,7 +42,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  */
 public class Stream
 {
-    private static final Log LOG = LogFactory.getLog(Stream.class);
+    private static final Logger LOG = LogManager.getLogger(Stream.class);
 
     public static final String DECODED = "Decoded (Plain Text)";
     public static final String IMAGE = "Image";

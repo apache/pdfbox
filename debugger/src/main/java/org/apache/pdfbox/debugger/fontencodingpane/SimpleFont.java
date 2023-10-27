@@ -22,8 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 
@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.font.PDVectorFont;
  */
 class SimpleFont extends FontPane
 {
-    private static final Log LOG = LogFactory.getLog(SimpleFont.class);
+    private static final Logger LOG = LogManager.getLogger(SimpleFont.class);
 
     public static final String NO_GLYPH = "None";
     private final FontEncodingView view;
@@ -80,7 +80,7 @@ class SimpleFont extends FontPane
                 }
                 catch (IOException ex)
                 {
-                    LOG.error("Couldn't render code " + index + " ('" + glyphName + "') of font " +
+                    LOG.error("Couldn't render code {} ('{}') of font {}", index, glyphName,
                             font.getName(), ex);
                     glyphs[index][3] = new GeneralPath();
                 }

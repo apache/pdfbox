@@ -19,8 +19,8 @@ package org.apache.pdfbox.debugger.streampane.tooltip;
 
 import java.awt.Color;
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
  */
 final class SCNToolTip extends ColorToolTip
 {
-    private static final Log LOG = LogFactory.getLog(SCNToolTip.class);
+    private static final Logger LOG = LogManager.getLogger(SCNToolTip.class);
 
     /**
      * Constructor.

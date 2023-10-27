@@ -52,8 +52,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
@@ -80,7 +80,7 @@ import org.w3c.dom.Document;
  */
 public class StreamPane implements ActionListener
 {
-    private static final Log LOG = LogFactory.getLog(StreamPane.class);
+    private static final Logger LOG = LogManager.getLogger(StreamPane.class);
 
     private static final StyleContext CONTEXT = StyleContext.getDefaultStyleContext();
     private static final Style OPERATOR_STYLE = CONTEXT.addStyle("operator", null);

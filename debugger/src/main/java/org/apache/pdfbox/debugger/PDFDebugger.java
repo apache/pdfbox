@@ -84,8 +84,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.TreePath;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -111,6 +111,7 @@ import org.apache.pdfbox.debugger.stringpane.StringPane;
 import org.apache.pdfbox.debugger.treestatus.TreeStatus;
 import org.apache.pdfbox.debugger.treestatus.TreeStatusPane;
 import org.apache.pdfbox.debugger.ui.ArrayEntry;
+import org.apache.pdfbox.debugger.ui.DebugLogAppender;
 import org.apache.pdfbox.debugger.ui.DocumentEntry;
 import org.apache.pdfbox.debugger.ui.ErrorDialog;
 import org.apache.pdfbox.debugger.ui.FileOpenSaveDialog;
@@ -164,7 +165,7 @@ import picocli.CommandLine.Model.CommandSpec;
 @Command(name = "pdfdebugger", description = "Analyzes and inspects the internal structure of a PDF document")
 public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkListener
 {
-    private static Log LOG; // needs late initialization
+    private static Logger LOG; // needs late initialization
 
     private static final Set<COSName> SPECIALCOLORSPACES = new HashSet<>(
             Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
@@ -299,8 +300,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
             // and if there are no methods that call logging, even invisible
             // use reduced file from PDFBOX-3653 to see logging
             LogDialog.init(this,statusBar.getLogLabel());
-            System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
-            LOG = LogFactory.getLog(PDFDebugger.class);
+            DebugLogAppender.setupCustomLogger();
+            LOG = LogManager.getLogger(PDFDebugger.class);
 
             TextDialog.init(this);
 
@@ -1343,7 +1344,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                     job.print(pras);
                     long t1 = System.nanoTime();
                     long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
-                    LOG.info("Printed in " + ms + " ms");
+                    LOG.info("Printed in {} ms", ms);
                 }
                 finally
                 {
@@ -1387,7 +1388,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                 PDDocument doc = Loader.loadPDF(file, password);
                 long t1 = System.nanoTime();
                 long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
-                LOG.info("Parsed in " + ms + " ms");
+                LOG.info("Parsed in {} ms", ms);
                 return doc;
             }
         };
@@ -1436,7 +1437,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                         .createBufferFromStream(new URI(urlString).toURL().openStream()), password);
                 long t1 = System.nanoTime();
                 long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
-                LOG.info("Parsed in " + ms + " ms");
+                LOG.info("Parsed in {} ms", ms);
                 return doc;
             }
         };

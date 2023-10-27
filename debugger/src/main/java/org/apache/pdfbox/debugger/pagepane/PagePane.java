@@ -17,6 +17,9 @@
 package org.apache.pdfbox.debugger.pagepane;
 
 import java.awt.Graphics2D;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.debugger.PDFDebugger;
 import org.apache.pdfbox.debugger.ui.ImageUtil;
@@ -61,8 +64,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.debugger.ui.ErrorDialog;
 import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
 import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
@@ -92,7 +95,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
  */
 public class PagePane implements ActionListener, AncestorListener, MouseMotionListener, MouseListener
 {
-    private static final Log LOG = LogFactory.getLog(PagePane.class);
+    private static final Logger LOG = LogManager.getLogger(PagePane.class);
     private final PDDocument document;
     private final JLabel statuslabel;
     private final PDPage page;

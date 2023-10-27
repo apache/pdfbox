@@ -20,8 +20,8 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.swing.JPanel;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -69,7 +69,7 @@ abstract class FontPane
  */
 public class FontEncodingPaneController
 {
-    private static final Log LOG = LogFactory.getLog(FontEncodingPaneController.class);
+    private static final Logger LOG = LogManager.getLogger(FontEncodingPaneController.class);
 
     private FontPane fontPane;
 

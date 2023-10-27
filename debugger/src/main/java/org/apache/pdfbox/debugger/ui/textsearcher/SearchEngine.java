@@ -23,8 +23,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * @author Khyrul Bashar
@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  */
 class SearchEngine
 {
-    private static final Log LOG = LogFactory.getLog(SearchEngine.class);
+    private static final Logger LOG = LogManager.getLogger(SearchEngine.class);
 
     private final Document document;
     private final Highlighter highlighter;
