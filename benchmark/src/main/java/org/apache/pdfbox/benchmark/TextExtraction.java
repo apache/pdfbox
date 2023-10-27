@@ -34,8 +34,7 @@ public class TextExtraction {
     static final String PDF32000_2008 = "target/pdfs/PDF32000_2008.pdf";
 
     static {
-        System.setProperty("org.apache.commons.logging.Log",
-                     "org.apache.commons.logging.impl.NoOpLog");
+        Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.OFF);
         java.util.logging.Logger.getLogger("org.apache").setLevel(java.util.logging.Level.OFF);
     }
     

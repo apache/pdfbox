@@ -45,8 +45,7 @@ public class Rendering {
     static final String RENDER_OUTPUT_DIR = "target/renditions";
 
     static {
-        System.setProperty("org.apache.commons.logging.Log",
-                     "org.apache.commons.logging.impl.NoOpLog");
+        Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.OFF);
         java.util.logging.Logger.getLogger("org.apache").setLevel(java.util.logging.Level.OFF);
         Path path = Paths.get(RENDER_OUTPUT_DIR);
         try {

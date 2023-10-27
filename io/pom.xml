@@ -39,11 +39,6 @@
 
     <dependencies>
         <dependency>
-            <!-- TODO remove when transition to Log4J is complete -->
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4j2.version}</version>

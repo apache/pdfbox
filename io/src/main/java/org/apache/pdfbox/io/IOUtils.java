@@ -43,7 +43,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.apache.commons.logging.Log;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
@@ -136,37 +135,6 @@ public final class IOUtils
             LOG.debug("An exception occurred while trying to close - ignoring", ioe);
             // ignore
         }
-    }
-
-    /**
-     * Try to close an IO resource and log and return if there was an exception.
-     *  
-     * <p>An exception is only returned if the IOException passed in is null.
-     * 
-     * @param closeable to be closed
-     * @param logger the logger to be used so that logging appears under that log instance
-     * @param resourceName the name to appear in the log output
-     * @param initialException if set, this exception will be returned even where there is another
-     * exception while closing the IO resource
-     * @return the IOException is there was any but only if initialException is null
-     * @deprecated use {@link Logger} instead
-     */
-    @Deprecated
-    public static IOException closeAndLogException(Closeable closeable, Log logger, String resourceName, IOException initialException)
-    {
-        try
-        {
-            closeable.close();
-        }
-        catch (IOException ioe)
-        {
-            logger.warn("Error closing " + resourceName, ioe);
-            if (initialException == null)
-            {
-                return ioe;
-            }
-        }
-        return initialException;
     }
 
     /**
