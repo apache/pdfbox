@@ -35,8 +35,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -49,7 +49,7 @@ import org.w3c.dom.NodeList;
  */
 final class DCTFilter extends Filter
 {
-    private static final Log LOG = LogFactory.getLog(DCTFilter.class);
+    private static final Logger LOG = LogManager.getLogger(DCTFilter.class);
 
     private static final int POS_TRANSFORM = 11;
     private static final String ADOBE = "Adobe";

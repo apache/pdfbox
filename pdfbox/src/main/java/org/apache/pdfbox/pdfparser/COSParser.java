@@ -29,8 +29,8 @@ import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -143,7 +143,7 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     private int readTrailBytes = DEFAULT_TRAIL_BYTECOUNT; 
 
-    private static final Log LOG = LogFactory.getLog(COSParser.class);
+    private static final Logger LOG = LogManager.getLogger(COSParser.class);
 
     /** 
      * Collects all Xref/trailer objects and resolves them into single
@@ -212,8 +212,9 @@ public class COSParser extends BaseParser implements ICOSParser
             }
             catch (NumberFormatException nfe)
             {
-                LOG.warn("System property " + SYSPROP_EOFLOOKUPRANGE
-                        + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
+                LOG.warn(
+                        "System property " + SYSPROP_EOFLOOKUPRANGE + " does not contain an integer value, but: '{}'",
+                        eofLookupRangeStr);
             }
         }
         document = new COSDocument(streamCacheCreateFunction, this);
@@ -374,7 +375,8 @@ public class COSParser extends BaseParser implements ICOSParser
                     fixedOffset = checkXRefOffset(streamOffset);
                     if (fixedOffset > -1 && fixedOffset != streamOffset)
                     {
-                        LOG.warn("/XRefStm offset " + streamOffset + " is incorrect, corrected to " + fixedOffset);
+                        LOG.warn("/XRefStm offset {} is incorrect, corrected to {}", streamOffset,
+                                fixedOffset);
                         streamOffset = (int)fixedOffset;
                         trailer.setInt(COSName.XREF_STM, streamOffset);
                     }
@@ -391,7 +393,8 @@ public class COSParser extends BaseParser implements ICOSParser
                         {
                             if (isLenient)
                             {
-                                LOG.error("Failed to parse /XRefStm at offset " + streamOffset, ex);
+                                LOG.error("Failed to parse /XRefStm at offset {}", streamOffset,
+                                        ex);
                             }
                             else
                             {
@@ -403,7 +406,8 @@ public class COSParser extends BaseParser implements ICOSParser
                     {
                         if(isLenient)
                         {
-                            LOG.error("Skipped XRef stream due to a corrupt offset:"+streamOffset);
+                            LOG.error("Skipped XRef stream due to a corrupt offset:{}",
+                                    streamOffset);
                         }
                         else
                         {
@@ -531,7 +535,7 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 // in lenient mode the '%%EOF' isn't needed
                 bufOff = buf.length;
-                LOG.debug("Missing end of file marker '" + new String(EOF_MARKER) + "'");
+                LOG.debug("Missing end of file marker '{}'", new String(EOF_MARKER));
             } 
             else 
             {
@@ -696,7 +700,7 @@ public class COSParser extends BaseParser implements ICOSParser
             offsetOrObjstmObNr =  getBruteForceParser().getBFCOSObjectOffsets().get(objKey);
             if (offsetOrObjstmObNr != null)
             {
-                LOG.debug("Set missing offset " + offsetOrObjstmObNr + " for object " + objKey);
+                LOG.debug("Set missing offset {} for object {}", offsetOrObjstmObNr, objKey);
                 document.getXrefTable().put(objKey, offsetOrObjstmObNr);
             }
         }
@@ -784,9 +788,8 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             if (isLenient)
             {
-                LOG.warn("Object (" + readObjNr + ":" + readObjGen + ") at offset "
-                        + objOffset + " does not end with 'endobj' but with '"
-                        + endObjectKey + "'");
+                LOG.warn("Object ({}:{}) at offset {} does not end with 'endobj' but with '{}'",
+                        readObjNr, readObjGen, objOffset, endObjectKey);
             }
             else
             {
@@ -833,8 +836,8 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 if (isLenient)
                 {
-                    LOG.error("object stream " + objstmObjNr
-                            + " could not be parsed due to an exception", ex);
+                    LOG.error("object stream {} could not be parsed due to an exception",
+                            objstmObjNr, ex);
                 }
                 else
                 {
@@ -870,8 +873,8 @@ public class COSParser extends BaseParser implements ICOSParser
             }
             if (COSNull.NULL == length)
             {
-                LOG.warn("Length object (" + lengthObj.getObjectNumber() + " "
-                        + lengthObj.getGenerationNumber() + ") not found");
+                LOG.warn("Length object ({} {}) not found", lengthObj.getObjectNumber(),
+                        lengthObj.getGenerationNumber());
                 return null;
             }
             if (length instanceof COSNumber)
@@ -914,8 +917,9 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             if (isLenient)
             {
-               LOG.warn("The stream doesn't provide any stream length, using fallback readUntilEnd, at offset "
-                    + source.getPosition());
+                LOG.warn(
+                        "The stream doesn't provide any stream length, using fallback readUntilEnd, at offset {}",
+                        source.getPosition());
             }
             else
             {
@@ -939,15 +943,15 @@ public class COSParser extends BaseParser implements ICOSParser
         String endStream = readString();
         if (endStream.equals("endobj") && isLenient)
         {
-            LOG.warn("stream ends with 'endobj' instead of 'endstream' at offset "
-                    + source.getPosition());
+            LOG.warn("stream ends with 'endobj' instead of 'endstream' at offset {}",
+                    source.getPosition());
             // avoid follow-up warning about missing endobj
             source.rewind(ENDOBJ.length);
         }
         else if (endStream.length() > 9 && isLenient && endStream.startsWith(ENDSTREAM_STRING))
         {
-            LOG.warn("stream ends with '" + endStream + "' instead of 'endstream' at offset "
-                    + source.getPosition());
+            LOG.warn("stream ends with '{}' instead of 'endstream' at offset {}", endStream,
+                    source.getPosition());
             // unread the "extra" bytes
             source.rewind(endStream.substring(9).getBytes(StandardCharsets.ISO_8859_1).length);
         }
@@ -1076,9 +1080,9 @@ public class COSParser extends BaseParser implements ICOSParser
         if (expectedEndOfStream > fileLen)
         {
             streamLengthIsValid = false;
-            LOG.warn("The end of the stream is out of range, using workaround to read the stream, "
-                    + "stream start position: " + originOffset + ", length: " + streamLength
-                    + ", expected end position: " + expectedEndOfStream);
+            LOG.warn(
+                    "The end of the stream is out of range, using workaround to read the stream, stream start position: {}, length: {}, expected end position: {}",
+                    originOffset, streamLength, expectedEndOfStream);
         }
         else
         {
@@ -1087,9 +1091,9 @@ public class COSParser extends BaseParser implements ICOSParser
             if (!isString(ENDSTREAM))
             {
                 streamLengthIsValid = false;
-                LOG.warn("The end of the stream doesn't point to the correct offset, using workaround to read the stream, "
-                        + "stream start position: " + originOffset + ", length: " + streamLength
-                        + ", expected end position: " + expectedEndOfStream);
+                LOG.warn(
+                        "The end of the stream doesn't point to the correct offset, using workaround to read the stream, stream start position: {}, length: {}, expected end position: {}",
+                        originOffset, streamLength, expectedEndOfStream);
             }
             source.seek(originOffset);
         }
@@ -1171,7 +1175,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 catch (IOException exception)
                 {
                     // there wasn't an object of a xref stream
-                    LOG.debug("No Xref stream at given location " + startXRefOffset, exception);
+                    LOG.debug("No Xref stream at given location {}", startXRefOffset, exception);
                     source.seek(startXRefOffset);
                 }
             }
@@ -1191,17 +1195,18 @@ public class COSParser extends BaseParser implements ICOSParser
     {
         if (objectOffset < 0)
         {
-            LOG.error("Invalid object offset " + objectOffset + " when searching for a xref table/stream");
+            LOG.error("Invalid object offset {} when searching for a xref table/stream",
+                    objectOffset);
             return 0;
         }
         // search for the offset of the given xref table/stream among those found by a brute force search.
         long newOffset = getBruteForceParser().bfSearchForXRef(objectOffset);
         if (newOffset > -1)
         {
-            LOG.debug("Fixed reference for xref table/stream " + objectOffset + " -> " + newOffset);
+            LOG.debug("Fixed reference for xref table/stream {} -> {}", objectOffset, newOffset);
             return newOffset;
         }
-        LOG.error("Can't find the object xref table/stream at offset " + objectOffset);
+        LOG.error("Can't find the object xref table/stream at offset {}", objectOffset);
         return 0;
     }
 
@@ -1224,8 +1229,9 @@ public class COSParser extends BaseParser implements ICOSParser
                 COSObjectKey foundObjectKey = findObjectKey(objectKey, objectOffset, xrefOffset);
                 if (foundObjectKey == null)
                 {
-                    LOG.debug("Stop checking xref offsets as at least one (" + objectKey
-                            + ") couldn't be dereferenced");
+                    LOG.debug(
+                            "Stop checking xref offsets as at least one ({}) couldn't be dereferenced",
+                            objectKey);
                     return false;
                 }
                 else if (foundObjectKey != objectKey)
@@ -1325,9 +1331,8 @@ public class COSParser extends BaseParser implements ICOSParser
 	                    if (existingOffset != null && existingOffset > 0
 	                            && Math.abs(offset - existingOffset) < 10)
 	                    {
-	                        LOG.debug("Found the object " + newObjKey + " instead of " //
-	                                + objectKey + " at offset " + offset //
-	                                + " - ignoring");
+                            LOG.debug("Found the object {} instead of {} at offset {} - ignoring",
+                                    newObjKey, objectKey, offset);
 	                        return null;
 	                    }
 	                    // something seems to be wrong but it's hard to determine what exactly -> simply continue
@@ -1339,7 +1344,8 @@ public class COSParser extends BaseParser implements ICOSParser
             long foundObjectNumber = readObjectNumber();
             if (objectKey.getNumber() != foundObjectNumber)
             {
-                LOG.warn("found wrong object number. expected [" + objectKey.getNumber() + "] found [" + foundObjectNumber + "]");
+                LOG.warn("found wrong object number. expected [{}] found [{}]",
+                        objectKey.getNumber(), foundObjectNumber);
                 if (!isLenient)
                 {
                     return null;
@@ -1365,7 +1371,7 @@ public class COSParser extends BaseParser implements ICOSParser
         catch (IOException exception)
         {
             // Swallow the exception, obviously there isn't any valid object number
-            LOG.debug("No valid object at given location " + offset + " - ignoring", exception);
+            LOG.debug("No valid object at given location {} - ignoring", offset, exception);
         }
         return null;
     }
@@ -1422,7 +1428,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 // object wasn't dereferenced -> remove it
                 if (kidBaseobject == null || kidBaseobject.equals(COSNull.NULL))
                 {
-                    LOG.warn("Removed null object " + kid + " from pages dictionary");
+                    LOG.warn("Removed null object {} from pages dictionary", kid);
                     kidsArray.remove(kid);
                 }
                 else if (kidBaseobject instanceof COSDictionary)
@@ -1532,8 +1538,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 if (source.getPosition() == trailerOffset)
                 {
                     // warn only the first time
-                    LOG.warn("Expected trailer object at offset " + trailerOffset
-                            + ", keep trying");
+                    LOG.warn("Expected trailer object at offset {}, keep trying", trailerOffset);
                 }
                 readLine();
                 nextCharacter = source.peek();
@@ -1643,7 +1648,7 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 // No version number at all, set to 1.4 as default
                 header = headerMarker + defaultVersion;
-                LOG.debug("No version found, set to " + defaultVersion + " as default.");
+                LOG.debug("No version found, set to {} as default.", defaultVersion);
             }
             else
             {
@@ -1722,7 +1727,7 @@ public class COSParser extends BaseParser implements ICOSParser
             String[] splitString = currentLine.split("\\s");
             if (splitString.length != 2)
             {
-                LOG.warn("Unexpected XRefTable Entry: " + currentLine);
+                LOG.warn("Unexpected XRefTable Entry: {}", currentLine);
                 return false;
             }
             // first obj id
@@ -1733,7 +1738,7 @@ public class COSParser extends BaseParser implements ICOSParser
             }
             catch (NumberFormatException exception)
             {
-                LOG.warn("XRefTable: invalid ID for the first object: " + currentLine);
+                LOG.warn("XRefTable: invalid ID for the first object: {}", currentLine);
                 return false;
             }
 
@@ -1745,7 +1750,7 @@ public class COSParser extends BaseParser implements ICOSParser
             }
             catch (NumberFormatException exception)
             {
-                LOG.warn("XRefTable: invalid number of objects: " + currentLine);
+                LOG.warn("XRefTable: invalid number of objects: {}", currentLine);
                 return false;
             }
             
@@ -1765,7 +1770,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 splitString = currentLine.split("\\s");
                 if (splitString.length < 3)
                 {
-                    LOG.warn("invalid xref line: " + currentLine);
+                    LOG.warn("invalid xref line: {}", currentLine);
                     break;
                 }
                 /* This supports the corrupt table as reported in

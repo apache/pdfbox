@@ -49,8 +49,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -116,7 +116,7 @@ class TestTextStripper
     /**
      * Logger instance.
      */
-    private static final Log log = LogFactory.getLog(TestTextStripper.class);
+    private static final Logger LOG = LogManager.getLogger(TestTextStripper.class);
 
     private boolean bFail = false;
     private static PDFTextStripper stripper;
@@ -166,7 +166,7 @@ class TestTextStripper
                 if( expectedArray[expectedIndex] != actualArray[actualIndex] )
                 {
                     equals = false;
-                    log.warn("Lines differ at index"
+                    LOG.warn("Lines differ at index"
                      + " expected:" + expectedIndex + "-" + (int)expectedArray[expectedIndex]
                      + " actual:" + actualIndex + "-" + (int)actualArray[actualIndex] );
                     break;
@@ -181,17 +181,17 @@ class TestTextStripper
                 if( expectedIndex != expectedArray.length )
                 {
                     equals = false;
-                    log.warn("Expected line is longer at:" + expectedIndex );
+                    LOG.warn("Expected line is longer at:" + expectedIndex );
                 }
                 if( actualIndex != actualArray.length )
                 {
                     equals = false;
-                    log.warn("Actual line is longer at:" + actualIndex );
+                    LOG.warn("Actual line is longer at:" + actualIndex );
                 }
                 if (expectedArray.length != actualArray.length)
                 {
                     equals = false;
-                    log.warn("Expected lines: " + expectedArray.length + ", actual lines: " + actualArray.length);
+                    LOG.warn("Expected lines: " + expectedArray.length + ", actual lines: " + actualArray.length);
                 }
             }
         }
@@ -236,11 +236,11 @@ class TestTextStripper
     {
         if(bSort)
         {
-            log.info("Preparing to parse " + inFile.getName() + " for sorted test");
+            LOG.info("Preparing to parse " + inFile.getName() + " for sorted test");
         }
         else
         {
-            log.info("Preparing to parse " + inFile.getName() + " for standard test");
+            LOG.info("Preparing to parse " + inFile.getName() + " for standard test");
         }
 
         Files.createDirectories(outDir.toPath());
@@ -284,14 +284,14 @@ class TestTextStripper
 
             if (bLogResult)
             {
-                log.info("Text for " + inFile.getName() + ":");
-                log.info(stripper.getText(document));
+                LOG.info("Text for " + inFile.getName() + ":");
+                LOG.info(stripper.getText(document));
             }
 
             if (!expectedFile.exists())
             {
                 this.bFail = true;
-                log.error("FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
+                LOG.error("FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
                         " did not exist");
                 return;
             }
@@ -326,7 +326,7 @@ class TestTextStripper
                 {
                     this.bFail = true;
                     localFail = true;
-                    log.error("FAILURE: Line mismatch for file " + inFile.getName() +
+                    LOG.error("FAILURE: Line mismatch for file " + inFile.getName() +
                             " (sort = "+bSort+")" +
                                     " at expected line: " + expectedReader.getLineNumber() +
                             " at actual line: " + actualReader.getLineNumber() +

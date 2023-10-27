@@ -25,8 +25,8 @@ import java.util.Queue;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDictionary;
 
 /**
@@ -34,7 +34,7 @@ import org.apache.pdfbox.cos.COSDictionary;
  */
 public class PDFieldTree implements Iterable<PDField>
 {
-    private static final Log LOG = LogFactory.getLog(PDFieldTree.class);
+    private static final Logger LOG = LogManager.getLogger(PDFieldTree.class);
 
     private final PDAcroForm acroForm;
 
@@ -116,8 +116,9 @@ public class PDFieldTree implements Iterable<PDField>
                 {
                     if (set.contains(kid.getCOSObject()))
                     {
-                        LOG.error("Child of field '" + node.getFullyQualifiedName() +
-                                "' already exists elsewhere, ignored to avoid recursion");
+                        LOG.error(
+                                "Child of field '{}' already exists elsewhere, ignored to avoid recursion",
+                                node.getFullyQualifiedName());
                     }
                     else
                     {

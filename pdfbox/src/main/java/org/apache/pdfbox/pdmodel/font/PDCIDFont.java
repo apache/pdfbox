@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -43,7 +43,7 @@ import org.apache.pdfbox.util.Vector;
  */
 public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFont
 {
-    private static final Log LOG = LogFactory.getLog(PDCIDFont.class);
+    private static final Logger LOG = LogManager.getLogger(PDCIDFont.class);
 
     protected final PDType0Font parent;
 
@@ -85,7 +85,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                 COSBase firstCodeBase = wArray.getObject(counter++);
                 if (!(firstCodeBase instanceof COSNumber))
                 {
-                    LOG.warn("Expected a number array member, got " + firstCodeBase);
+                    LOG.warn("Expected a number array member, got {}", firstCodeBase);
                     continue;
                 }
                 COSNumber firstCode = (COSNumber) firstCodeBase;
@@ -105,7 +105,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                         }
                         else
                         {
-                            LOG.warn("Expected a number array member, got " + widthBase);
+                            LOG.warn("Expected a number array member, got {}", widthBase);
                         }
                     }
                 }
@@ -120,7 +120,8 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                     COSBase rangeWidthBase = wArray.getObject(counter++);
                     if (!(secondCodeBase instanceof COSNumber) || !(rangeWidthBase instanceof COSNumber))
                     {
-                        LOG.warn("Expected two numbers, got " + secondCodeBase + " and " + rangeWidthBase);
+                        LOG.warn("Expected two numbers, got {} and {}", secondCodeBase,
+                                rangeWidthBase);
                         continue;
                     }
                     COSNumber secondCode = (COSNumber) secondCodeBase;

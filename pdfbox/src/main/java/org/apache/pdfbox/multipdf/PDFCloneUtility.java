@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -40,7 +40,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDFCloneUtility
 {
-    private static final Log LOG = LogFactory.getLog(PDFCloneUtility.class);
+    private static final Logger LOG = LogManager.getLogger(PDFCloneUtility.class);
 
     private final PDDocument destination;
     private final Map<COSBase, COSBase> clonedVersion = new HashMap<>();
@@ -249,8 +249,9 @@ public class PDFCloneUtility
             if (actual == parent)
             {
                 COSObject cosObj = ((COSObject) value);
-                LOG.warn(parent.getClass().getSimpleName() + " object has a reference to itself: "
-                        + cosObj.getObjectNumber() + " " + cosObj.getGenerationNumber() + " R");
+                LOG.warn("{} object has a reference to itself: {} {} R",
+                        parent.getClass().getSimpleName(), cosObj.getObjectNumber(),
+                        cosObj.getGenerationNumber());
                 return true;
             }
         }

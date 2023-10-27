@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -49,7 +49,7 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
  */
 public class PDStream implements COSObjectable
 {
-    private static final Log LOG = LogFactory.getLog(PDStream.class);
+    private static final Logger LOG = LogManager.getLogger(PDStream.class);
 
     private final COSStream stream;
     
@@ -311,7 +311,7 @@ public class PDStream implements COSObjectable
                 }
                 else
                 {
-                    LOG.warn("Expected COSDictionary, got " + base + ", ignored");
+                    LOG.warn("Expected COSDictionary, got {}, ignored", base);
                 }
             }
             return new COSArrayList<>(actuals, array);

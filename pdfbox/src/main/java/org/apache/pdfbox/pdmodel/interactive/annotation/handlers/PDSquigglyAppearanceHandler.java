@@ -18,8 +18,8 @@ package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -42,7 +42,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
 {
-    private static final Log LOG = LogFactory.getLog(PDSquigglyAppearanceHandler.class);
+    private static final Logger LOG = LogManager.getLogger(PDSquigglyAppearanceHandler.class);
 
     public PDSquigglyAppearanceHandler(PDAnnotation annotation)
     {

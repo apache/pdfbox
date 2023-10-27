@@ -22,8 +22,8 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -38,7 +38,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 class TilingPaintFactory
 {
-    private static final Log LOG = LogFactory.getLog(TilingPaintFactory.class);
+    private static final Logger LOG = LogManager.getLogger(TilingPaintFactory.class);
 
     private final PageDrawer drawer;
     private final Map<TilingPaintParameter, WeakReference<Paint>> weakCache

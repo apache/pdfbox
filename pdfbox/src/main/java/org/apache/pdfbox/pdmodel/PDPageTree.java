@@ -32,8 +32,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The page tree, which defines the ordering of pages in the document in an efficient manner.
@@ -42,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PDPageTree implements COSObjectable, Iterable<PDPage>
 {
-    private static final Log LOG = LogFactory.getLog(PDPageTree.class);
+    private static final Logger LOG = LogManager.getLogger(PDPageTree.class);
     private final COSDictionary root;
     private final PDDocument document; // optional
 
@@ -165,7 +165,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                 }
                 else
                 {
-                    LOG.warn("COSDictionary expected, but got " + base.getClass().getSimpleName());
+                    LOG.warn("COSDictionary expected, but got {}", base.getClass().getSimpleName());
                 }
             }
         }
@@ -215,8 +215,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                 }
                 else
                 {
-                    LOG.error("Page skipped due to an invalid or missing type "
-                            + node.getCOSName(COSName.TYPE));
+                    LOG.error("Page skipped due to an invalid or missing type {}",
+                            node.getCOSName(COSName.TYPE));
                 }
             }
         }

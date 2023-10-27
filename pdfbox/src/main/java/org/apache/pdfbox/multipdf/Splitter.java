@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -44,7 +44,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
  */
 public class Splitter
 {
-    private static final Log LOG = LogFactory.getLog(Splitter.class);
+    private static final Logger LOG = LogManager.getLogger(Splitter.class);
 
     private PDDocument sourceDocument;
     private PDDocument currentDestinationDocument;
@@ -231,8 +231,8 @@ public class Splitter
                 COSBase value = sourceDocumentInformationDictionary.getDictionaryObject(key);
                 if (value instanceof COSDictionary)
                 {
-                    LOG.warn("Nested entry for key '" + key.getName()
-                            + "' skipped in document information dictionary");
+                    LOG.warn("Nested entry for key '{}' skipped in document information dictionary",
+                            key.getName());
                     if (sourceDocument.getDocumentCatalog().getCOSObject() ==
                             sourceDocument.getDocumentInformation().getCOSObject())
                     {

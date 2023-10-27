@@ -17,8 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationInk;
@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  */
 public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
 {
-    private static final Log LOG = LogFactory.getLog(PDInkAppearanceHandler.class);
+    private static final Logger LOG = LogManager.getLogger(PDInkAppearanceHandler.class);
 
     public PDInkAppearanceHandler(PDAnnotation annotation)
     {

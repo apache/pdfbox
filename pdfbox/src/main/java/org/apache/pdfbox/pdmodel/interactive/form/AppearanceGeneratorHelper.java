@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -61,7 +61,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 class AppearanceGeneratorHelper
 {
-    private static final Log LOG = LogFactory.getLog(AppearanceGeneratorHelper.class);
+    private static final Logger LOG = LogManager.getLogger(AppearanceGeneratorHelper.class);
 
     private static final Operator BMC = Operator.getOperator("BMC");
     private static final Operator EMC = Operator.getOperator("EMC");
@@ -161,7 +161,8 @@ class AppearanceGeneratorHelper
                 {
                     if (acroFormResources.getFont(fontResourceName) == null)
                     {
-                        LOG.debug("Adding font resource " + fontResourceName + " from widget to AcroForm");
+                        LOG.debug("Adding font resource {} from widget to AcroForm",
+                                fontResourceName);
                         // use the COS-object to preserve a possible indirect object reference
                         acroFormFontDict.setItem(fontResourceName,
                                 widgetFontDict.getItem(fontResourceName));
@@ -200,7 +201,9 @@ class AppearanceGeneratorHelper
         {
             if (widget.getCOSObject().containsKey("PMD"))
             {
-                LOG.warn("widget of field " + field.getFullyQualifiedName() + " is a PaperMetaData widget, no appearance stream created");
+                LOG.warn(
+                        "widget of field {} is a PaperMetaData widget, no appearance stream created",
+                        field.getFullyQualifiedName());
                 continue;
             }
 
@@ -217,7 +220,8 @@ class AppearanceGeneratorHelper
             if (rect == null)
             {
                 widget.getCOSObject().removeItem(COSName.AP);
-                LOG.warn("widget of field " + field.getFullyQualifiedName() + " has no rectangle, no appearance stream created");
+                LOG.warn("widget of field {} has no rectangle, no appearance stream created",
+                        field.getFullyQualifiedName());
                 continue;
             }
 
@@ -495,15 +499,15 @@ class AppearanceGeneratorHelper
             }
             if (font.getName().contains("+"))
             {
-                LOG.warn("Font '" + defaultAppearance.getFontName().getName() +
-                         "' of field '" + field.getFullyQualifiedName() + 
-                         "' contains subsetted font '" + font.getName() + "'");
+                LOG.warn("Font '{}' of field '{}' contains subsetted font '{}'",
+                        defaultAppearance.getFontName().getName(), field.getFullyQualifiedName(),
+                        font.getName());
                 LOG.warn("This may bring trouble with PDField.setValue(), PDAcroForm.flatten() or " +
                          "PDAcroForm.refreshAppearances()");
                 LOG.warn("You should replace this font with a non-subsetted font:");
                 LOG.warn("PDFont font = PDType0Font.load(doc, new FileInputStream(fontfile), false);");
-                LOG.warn("acroForm.getDefaultResources().put(COSName.getPDFName(\"" +
-                         defaultAppearance.getFontName().getName() + "\", font);");
+                LOG.warn("acroForm.getDefaultResources().put(COSName.getPDFName(\"{}\", font);",
+                        defaultAppearance.getFontName().getName());
             }
             // calculate the fontSize (because 0 = autosize)
             float fontSize = defaultAppearance.getFontSize();
@@ -542,7 +546,8 @@ class AppearanceGeneratorHelper
             } else {
                 float fontCapHeight = resolveCapHeight(font);
                 float fontDescent = resolveDescent(font);
-                LOG.debug("missing font descriptor - resolved Cap/Descent to " + fontCapHeight + "/" + fontDescent);
+                LOG.debug("missing font descriptor - resolved Cap/Descent to {}/{}", fontCapHeight,
+                        fontDescent);
                 fontCapAtSize = fontCapHeight * fontScaleY;
                 fontDescentAtSize = fontDescent * fontScaleY;
             }
@@ -969,7 +974,7 @@ class AppearanceGeneratorHelper
             path = simpleFont.getPath(name);
         } else {
             // shouldn't happen, please open issue in JIRA
-            LOG.warn("Unknown font class: " + font.getClass());
+            LOG.warn("Unknown font class: {}", font.getClass());
         }
         if (path == null) {
             return -1;

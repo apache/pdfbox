@@ -20,8 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -43,7 +43,7 @@ public class PDFStreamParser extends BaseParser
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(PDFStreamParser.class);
+    private static final Logger LOG = LogManager.getLogger(PDFStreamParser.class);
 
     private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
@@ -126,8 +126,8 @@ public class PDFStreamParser extends BaseParser
                     }
                     catch (IOException exception)
                     {
-                        LOG.warn("Stop reading invalid dictionary from content stream at offset "
-                                + source.getPosition());
+                        LOG.warn("Stop reading invalid dictionary from content stream at offset {}",
+                                source.getPosition());
                         close();
                         return null;
                     }
@@ -144,8 +144,8 @@ public class PDFStreamParser extends BaseParser
                 }
                 catch (IOException exception)
                 {
-                    LOG.warn("Stop reading invalid array from content stream at offset "
-                            + source.getPosition());
+                    LOG.warn("Stop reading invalid array from content stream at offset {}",
+                            source.getPosition());
                     close();
                     return null;
                 }
@@ -236,8 +236,8 @@ public class PDFStreamParser extends BaseParser
                         Object value = parseNextToken();
                         if (!(value instanceof COSBase))
                         {
-                            LOG.warn("Unexpected token in inline image dictionary at offset " +
-                                    (source.isClosed() ? "EOF" : source.getPosition()));
+                            LOG.warn("Unexpected token in inline image dictionary at offset {}",
+                                    source.isClosed() ? "EOF" : source.getPosition());
                             break;
                         }
                         imageParams.setItem( (COSName)nextToken, (COSBase)value );
@@ -248,7 +248,8 @@ public class PDFStreamParser extends BaseParser
                         Operator imageData = (Operator) nextToken;
                         if (imageData.getImageData() == null || imageData.getImageData().length == 0)
                         {
-                            LOG.warn("empty inline image at stream offset " + source.getPosition());
+                            LOG.warn("empty inline image at stream offset {}",
+                                    source.getPosition());
                         }
                         beginImageOP.setImageData(imageData.getImageData());
                     }
@@ -377,7 +378,8 @@ public class PDFStreamParser extends BaseParser
         }
         if (!noBinData)
         {
-            LOG.warn("ignoring 'EI' assumed to be in the middle of inline image at stream offset " + 
+            LOG.warn(
+                    "ignoring 'EI' assumed to be in the middle of inline image at stream offset {}",
                     source.getPosition());
         }
         return noBinData;

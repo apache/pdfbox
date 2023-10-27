@@ -28,8 +28,8 @@ import java.util.List;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDRange;
@@ -41,7 +41,7 @@ import org.apache.pdfbox.util.Matrix;
 abstract class PDMeshBasedShadingType extends PDShadingType4
 {
 
-    private static final Log LOG = LogFactory.getLog(PDMeshBasedShadingType.class);
+    private static final Logger LOG = LogManager.getLogger(PDMeshBasedShadingType.class);
 
     PDMeshBasedShadingType(COSDictionary shadingDictionary)
     {
@@ -138,7 +138,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
                         implicitCornerColor = current.getFlag3Color();
                         break;
                     default:
-                        LOG.warn("bad flag: " + flag);
+                        LOG.warn("bad flag: {}", flag);
                         break;
                     }
                 }

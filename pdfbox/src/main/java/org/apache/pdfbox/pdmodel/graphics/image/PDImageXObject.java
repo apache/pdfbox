@@ -38,8 +38,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -71,7 +71,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(PDImageXObject.class);
+    private static final Logger LOG = LogManager.getLogger(PDImageXObject.class);
 
     private SoftReference<BufferedImage> cachedImage;
     private PDColorSpace colorSpace;
@@ -977,7 +977,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         else
         {
-            LOG.warn("getSuffix() returns null, filters: " + filters);
+            LOG.warn("getSuffix() returns null, filters: {}", filters);
             return null;
         }
     }

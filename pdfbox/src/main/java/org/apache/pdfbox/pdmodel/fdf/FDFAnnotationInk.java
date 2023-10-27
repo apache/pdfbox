@@ -25,8 +25,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -42,7 +42,7 @@ import org.w3c.dom.NodeList;
  */
 public class FDFAnnotationInk extends FDFAnnotation
 {
-    private static final Log LOG = LogFactory.getLog(FDFAnnotationInk.class);
+    private static final Logger LOG = LogManager.getLogger(FDFAnnotationInk.class);
     /**
      * COS Model value for SubType entry.
      */

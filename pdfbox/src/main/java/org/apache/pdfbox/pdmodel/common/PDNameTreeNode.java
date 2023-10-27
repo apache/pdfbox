@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import java.util.Set;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -41,7 +41,7 @@ import org.apache.pdfbox.cos.COSString;
  */
 public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObjectable
 {
-    private static final Log LOG = LogFactory.getLog(PDNameTreeNode.class);
+    private static final Logger LOG = LogManager.getLogger(PDNameTreeNode.class);
     
     private final COSDictionary node;
     private PDNameTreeNode<T> parent;
@@ -258,7 +258,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
             Map<String, T> names = new LinkedHashMap<>();
             if (namesArray.size() % 2 != 0)
             {
-                LOG.warn("Names array has odd size: " + namesArray.size());
+                LOG.warn("Names array has odd size: {}", namesArray.size());
             }
             for (int i = 0; i + 1 < namesArray.size(); i += 2)
             {

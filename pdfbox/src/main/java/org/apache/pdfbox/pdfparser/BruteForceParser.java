@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -68,7 +68,7 @@ public class BruteForceParser extends COSParser
      */
     private static final char[] OBJ_STREAM = { '/', 'O', 'b', 'j', 'S', 't', 'm' };
 
-    private static final Log LOG = LogFactory.getLog(BruteForceParser.class);
+    private static final Logger LOG = LogManager.getLogger(BruteForceParser.class);
 
     /**
      * Contains all found objects of a brute force search.
@@ -308,8 +308,8 @@ public class BruteForceParser extends COSParser
         // log warning about skipped stream
         bfSearchForObjStreamOffsets.entrySet().stream() //
                 .filter(o -> bfCOSObjectOffsets.get(o.getValue()) == null) //
-                .forEach(o -> LOG.warn(
-                        "Skipped incomplete object stream:" + o.getValue() + " at " + o.getKey()));
+                .forEach(o -> LOG.warn("Skipped incomplete object stream:{} at {}", o.getValue(),
+                        o.getKey()));
 
         // collect all stream offsets
         List<Long> objStreamOffsets = bfSearchForObjStreamOffsets.entrySet().stream() //
@@ -355,7 +355,7 @@ public class BruteForceParser extends COSParser
             }
             catch (IOException exception)
             {
-                LOG.debug("Skipped corrupt stream: (" + stmObjNumber + " 0 at offset " + offset,
+                LOG.debug("Skipped corrupt stream: ({} 0 at offset {}", stmObjNumber, offset,
                         exception);
             }
             finally
@@ -614,7 +614,7 @@ public class BruteForceParser extends COSParser
                                     }
                                 }
                             }
-                            LOG.debug("Dictionary start for object stream -> " + newOffset);
+                            LOG.debug("Dictionary start for object stream -> {}", newOffset);
                             objFound = true;
                             break;
                         }
@@ -711,8 +711,8 @@ public class BruteForceParser extends COSParser
                                     }
                                 }
                             }
-                            LOG.debug("Fixed reference for xref stream " + xrefOffset + " -> "
-                                    + newOffset);
+                            LOG.debug("Fixed reference for xref stream {} -> {}", xrefOffset,
+                                    newOffset);
                             objFound = true;
                             break;
                         }

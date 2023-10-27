@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
@@ -49,7 +49,7 @@ import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
  */
 public class PDCIDFontType0 extends PDCIDFont
 {
-    private static final Log LOG = LogFactory.getLog(PDCIDFontType0.class);
+    private static final Logger LOG = LogManager.getLogger(PDCIDFontType0.class);
 
     private final CFFCIDFont cidFont;  // Top DICT that uses CIDFont operators
     private final FontBoxFont t1Font; // Top DICT that does not use CIDFont operators
@@ -88,7 +88,7 @@ public class PDCIDFontType0 extends PDCIDFont
                     if (randomAccessRead.length() > 0 && randomAccessRead.peek() == '%')
                     {
                         // PDFBOX-2642 contains a corrupt PFB font instead of a CFF
-                        LOG.warn("Found PFB but expected embedded CFF font " + fd.getFontName());
+                        LOG.warn("Found PFB but expected embedded CFF font {}", fd.getFontName());
                         fontIsDamaged = true;
                     }
                     else
@@ -99,7 +99,7 @@ public class PDCIDFontType0 extends PDCIDFont
                 }
                 catch (IOException e)
                 {
-                    LOG.error("Can't read the embedded CFF font " + fd.getFontName(), e);
+                    LOG.error("Can't read the embedded CFF font {}", fd.getFontName(), e);
                     fontIsDamaged = true;
                 }
             }
@@ -156,8 +156,7 @@ public class PDCIDFontType0 extends PDCIDFont
 
             if (mapping.isFallback())
             {
-                LOG.warn("Using fallback " + font.getName() + " for CID-keyed font " +
-                         getBaseFont());
+                LOG.warn("Using fallback {} for CID-keyed font {}", font.getName(), getBaseFont());
             }
             isEmbedded = false;
             isDamaged = fontIsDamaged;

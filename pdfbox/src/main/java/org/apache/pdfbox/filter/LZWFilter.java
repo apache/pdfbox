@@ -26,8 +26,8 @@ import java.util.List;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -43,7 +43,7 @@ public class LZWFilter extends Filter
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(LZWFilter.class);
+    private static final Logger LOG = LogManager.getLogger(LZWFilter.class);
 
     /**
      * The LZW clear table code.

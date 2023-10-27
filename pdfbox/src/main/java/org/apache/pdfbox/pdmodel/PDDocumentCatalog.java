@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -58,7 +58,7 @@ import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferenc
  */
 public class PDDocumentCatalog implements COSObjectable
 {
-    private static final Log LOG = LogFactory.getLog(PDDocumentCatalog.class);
+    private static final Logger LOG = LogManager.getLogger(PDDocumentCatalog.class);
     
     private final COSDictionary root;
     private final PDDocument document;
@@ -476,7 +476,7 @@ public class PDDocumentCatalog implements COSObjectable
             }
             catch (IllegalArgumentException e)
             {
-                LOG.debug("Invalid PageMode used '" + mode + "' - setting to PageMode.USE_NONE", e);
+                LOG.debug("Invalid PageMode used '{}' - setting to PageMode.USE_NONE", mode, e);
                 return PageMode.USE_NONE;
             }
         }
@@ -512,7 +512,8 @@ public class PDDocumentCatalog implements COSObjectable
             }
             catch (IllegalArgumentException e)
             {
-                LOG.warn("Invalid PageLayout used '" + mode + "' - returning PageLayout.SINGLE_PAGE", e);
+                LOG.warn("Invalid PageLayout used '{}' - returning PageLayout.SINGLE_PAGE", mode,
+                        e);
             }
         }
         return PageLayout.SINGLE_PAGE;

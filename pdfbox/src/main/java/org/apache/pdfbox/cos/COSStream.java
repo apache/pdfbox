@@ -24,8 +24,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
@@ -56,7 +56,7 @@ public class COSStream extends COSDictionary implements Closeable
     // random access view to be read from
     private RandomAccessReadView randomAccessReadView;
     
-    private static final Log LOG = LogFactory.getLog(COSStream.class);
+    private static final Logger LOG = LogManager.getLogger(COSStream.class);
     
     /**
      * Creates a new stream with an empty dictionary.

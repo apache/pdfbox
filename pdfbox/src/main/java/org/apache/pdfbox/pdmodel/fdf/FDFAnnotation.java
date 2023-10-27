@@ -23,8 +23,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -53,7 +53,7 @@ import org.w3c.dom.Text;
  * */
 public abstract class FDFAnnotation implements COSObjectable
 {
-    private static final Log LOG = LogFactory.getLog(FDFAnnotation.class);
+    private static final Logger LOG = LogManager.getLogger(FDFAnnotation.class);
 
     /**
      * An annotation flag.
@@ -398,7 +398,7 @@ public abstract class FDFAnnotation implements COSObjectable
             }
             else
             {
-                LOG.warn("Unknown or unsupported annotation type '" + fdfDicName + "'");
+                LOG.warn("Unknown or unsupported annotation type '{}'", fdfDicName);
             }
         }
         return retval;

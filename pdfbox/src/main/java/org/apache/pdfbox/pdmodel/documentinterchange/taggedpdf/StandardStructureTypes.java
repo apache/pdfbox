@@ -21,8 +21,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The standard structure types.
@@ -35,7 +35,7 @@ public class StandardStructureTypes
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(StandardStructureTypes.class);
+    private static final Logger LOG = LogManager.getLogger(StandardStructureTypes.class);
     
     // Grouping Elements
     /**

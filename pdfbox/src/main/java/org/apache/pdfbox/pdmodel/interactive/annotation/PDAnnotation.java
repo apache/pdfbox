@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -49,7 +49,7 @@ public abstract class PDAnnotation implements COSObjectable
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(PDAnnotation.class);
+    private static final Logger LOG = LogManager.getLogger(PDAnnotation.class);
 
     /**
      * An annotation flag.
@@ -191,7 +191,7 @@ public abstract class PDAnnotation implements COSObjectable
                 // TODO not yet implemented:
                 // Movie, Screen, PrinterMark, TrapNet, Watermark, 3D, Redact
                 annot = new PDAnnotationUnknown(annotDic);
-                LOG.debug("Unknown or unsupported annotation subtype " + subtype);
+                LOG.debug("Unknown or unsupported annotation subtype {}", subtype);
             }
         }
         else
@@ -226,7 +226,7 @@ public abstract class PDAnnotation implements COSObjectable
         }
         else if (!COSName.ANNOT.equals(type))
         {
-            LOG.warn("Annotation has type " + type + ", further mayhem may follow");
+            LOG.warn("Annotation has type {}, further mayhem may follow", type);
         }
     }
 
@@ -302,7 +302,7 @@ public abstract class PDAnnotation implements COSObjectable
             }
             else
             {
-                LOG.warn(rectArray + " is not a rectangle array, returning null");
+                LOG.warn("{} is not a rectangle array, returning null", rectArray);
             }
         }
         return rectangle;

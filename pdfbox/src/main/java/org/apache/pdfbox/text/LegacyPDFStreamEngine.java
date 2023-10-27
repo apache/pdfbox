@@ -21,8 +21,8 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
@@ -77,7 +77,7 @@ import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
  */
 class LegacyPDFStreamEngine extends PDFStreamEngine
 {
-    private static final Log LOG = LogFactory.getLog(LegacyPDFStreamEngine.class);
+    private static final Logger LOG = LogManager.getLogger(LegacyPDFStreamEngine.class);
 
     private int pageRotation;
     private PDRectangle pageSize;

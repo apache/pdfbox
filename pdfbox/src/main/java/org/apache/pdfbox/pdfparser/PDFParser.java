@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
 public class PDFParser extends COSParser
 {
-    private static final Log LOG = LogFactory.getLog(PDFParser.class);
+    private static final Logger LOG = LogManager.getLogger(PDFParser.class);
 
     /**
      * Constructor.

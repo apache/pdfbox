@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -87,7 +87,7 @@ public class PDFMergerUtility
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(PDFMergerUtility.class);
+    private static final Logger LOG = LogManager.getLogger(PDFMergerUtility.class);
 
     private final List<Object> sources;
     private String destinationFileName;
@@ -697,7 +697,8 @@ public class PDFMergerUtility
                     COSBase base = srcNums.getObject(i);
                     if (!(base instanceof COSNumber))
                     {
-                        LOG.error("page labels ignored, index " + i + " should be a number, but is " + base);
+                        LOG.error("page labels ignored, index {} should be a number, but is {}", i,
+                                base);
                         // remove what we added
                         while (destNums.size() > startSize)
                         {
@@ -1105,7 +1106,7 @@ public class PDFMergerUtility
         {
             if (destNames.containsKey(entry.getKey()))
             {
-                LOG.warn("key " + entry.getKey() + " already exists in destination IDTree");
+                LOG.warn("key {} already exists in destination IDTree", entry.getKey());
             }
             else
             {
@@ -1197,7 +1198,7 @@ public class PDFMergerUtility
             }
             if (destDict.containsKey(entry.getKey()))
             {
-                LOG.warn("key " + entry.getKey() + " already exists in destination RoleMap");
+                LOG.warn("key {} already exists in destination RoleMap", entry.getKey());
             }
             else
             {
@@ -1436,18 +1437,20 @@ public class PDFMergerUtility
                 COSBase item = parentTreeEntry.getItem(COSName.OBJ);
                 if (item instanceof COSObject)
                 {
-                    LOG.debug("clone potential orphan object in structure tree: " + item +
-                            ", Type: " + objDict.getNameAsString(COSName.TYPE) +
-                            ", Subtype: " + objDict.getNameAsString(COSName.SUBTYPE) +
-                            ", T: " + objDict.getNameAsString(COSName.T));
+                    LOG.debug(
+                            "clone potential orphan object in structure tree: {}, Type: {}, Subtype: {}, T: {}",
+                            item, objDict.getNameAsString(COSName.TYPE),
+                            objDict.getNameAsString(COSName.SUBTYPE),
+                            objDict.getNameAsString(COSName.T));
                 }
                 else
                 {
                     // don't display in full because of stack overflow
-                    LOG.debug("clone potential orphan object in structure tree" +
-                            ", Type: " + objDict.getNameAsString(COSName.TYPE) +
-                            ", Subtype: " + objDict.getNameAsString(COSName.SUBTYPE) +
-                            ", T: " + objDict.getNameAsString(COSName.T));
+                    LOG.debug(
+                            "clone potential orphan object in structure tree, Type: {}, Subtype: {}, T: {}",
+                            objDict.getNameAsString(COSName.TYPE),
+                            objDict.getNameAsString(COSName.SUBTYPE),
+                            objDict.getNameAsString(COSName.T));
                 }
                 parentTreeEntry.setItem(COSName.OBJ, cloner.cloneForNewDocument(objDict));
             }

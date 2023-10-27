@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -92,7 +92,7 @@ public class PDDocument implements Closeable
      */
     private static final int[] RESERVE_BYTE_RANGE = { 0, 1000000000, 1000000000, 1000000000 };
 
-    private static final Log LOG = LogFactory.getLog(PDDocument.class);
+    private static final Logger LOG = LogManager.getLogger(PDDocument.class);
 
     /**
      * avoid concurrency issues with PDDeviceRGB
@@ -975,8 +975,8 @@ public class PDDocument implements Closeable
         if (file.exists())
         {
             LOG.warn(
-                    "You are overwriting the existing file " + file.getName()
-                            + ", this will produce a corrupted file if you're also reading from it");
+                    "You are overwriting the existing file {}, this will produce a corrupted file if you're also reading from it",
+                    file.getName());
         }
         try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
                 new FileOutputStream(file)))

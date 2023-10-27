@@ -30,8 +30,8 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.common.function.PDFunctionTypeIdentity;
@@ -48,7 +48,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 class SoftMask implements Paint
 {
 
-    private static final Log LOG = LogFactory.getLog(SoftMask.class);
+    private static final Logger LOG = LogManager.getLogger(SoftMask.class);
 
     private static final ColorModel ARGB_COLOR_MODEL =
             new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).getColorModel();

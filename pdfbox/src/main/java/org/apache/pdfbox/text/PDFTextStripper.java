@@ -38,8 +38,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -63,7 +63,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     private static float defaultIndentThreshold = 2.0f;
     private static float defaultDropThreshold = 2.5f;
 
-    private static final Log LOG = LogFactory.getLog(PDFTextStripper.class);
+    private static final Logger LOG = LogManager.getLogger(PDFTextStripper.class);
 
     // enable the ability to set the default indent/drop thresholds
     // with -D system properties:
@@ -1819,8 +1819,8 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         }
         catch (IOException e)
         {
-            LOG.warn("Could not parse BidiMirroring.txt, mirroring char map will be empty: "
-                    + e.getMessage(), e);
+            LOG.warn("Could not parse BidiMirroring.txt, mirroring char map will be empty: {}",
+                    e.getMessage(), e);
         }
     }
 

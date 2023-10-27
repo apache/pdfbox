@@ -17,8 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  */
 public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
 {
-    private static final Log LOG = LogFactory.getLog(PDStrikeoutAppearanceHandler.class);
+    private static final Logger LOG = LogManager.getLogger(PDStrikeoutAppearanceHandler.class);
 
     public PDStrikeoutAppearanceHandler(PDAnnotation annotation)
     {

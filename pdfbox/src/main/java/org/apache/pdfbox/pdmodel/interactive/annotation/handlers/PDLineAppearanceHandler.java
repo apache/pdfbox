@@ -17,8 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -34,7 +34,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 {
-    private static final Log LOG = LogFactory.getLog(PDLineAppearanceHandler.class);
+    private static final Logger LOG = LogManager.getLogger(PDLineAppearanceHandler.class);
 
     static final int FONT_SIZE = 9;
 
@@ -178,7 +178,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 catch (IllegalArgumentException ex)
                 {
                     // Adobe Reader displays placeholders instead
-                    LOG.error("line text '" + annotation.getContents() + "' can't be shown", ex);
+                    LOG.error("line text '{}' can't be shown", annotation.getContents(), ex);
                 }
                 float xOffset = (lineLength - contentLength) / 2;
                 float yOffset;

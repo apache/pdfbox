@@ -26,8 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -62,7 +62,7 @@ public abstract class BaseParser
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(BaseParser.class);
+    private static final Logger LOG = LogManager.getLogger(BaseParser.class);
 
     protected static final int E = 'e';
     protected static final int N = 'n';
@@ -198,24 +198,24 @@ public abstract class BaseParser
         readExpectedChar('R');
         if (!(value instanceof COSInteger))
         {
-            LOG.error("expected number, actual=" + value + " at offset " + numOffset);
+            LOG.error("expected number, actual={} at offset {}", value, numOffset);
             return COSNull.NULL;
         }
         if (!(generationNumber instanceof COSInteger))
         {
-            LOG.error("expected number, actual=" + generationNumber + " at offset " + genOffset);
+            LOG.error("expected number, actual={} at offset {}", generationNumber, genOffset);
             return COSNull.NULL;
         }
         long objNumber = ((COSInteger) value).longValue();
         if (objNumber <= 0)
         {
-            LOG.warn("invalid object number value =" + objNumber + " at offset " + numOffset);
+            LOG.warn("invalid object number value ={} at offset {}", objNumber, numOffset);
             return COSNull.NULL;
         }
         int genNumber = ((COSInteger) generationNumber).intValue();
         if (genNumber < 0)
         {
-            LOG.error("invalid generation number value =" + genNumber + " at offset " + numOffset);
+            LOG.error("invalid generation number value ={} at offset {}", genNumber, numOffset);
             return COSNull.NULL;
         }
         // dereference the object
@@ -268,8 +268,8 @@ public abstract class BaseParser
             else
             {
                 // invalid dictionary, we were expecting a /Name, read until the end or until we can recover
-                LOG.warn("Invalid dictionary, found: '" + c + "' but expected: '/' at offset "
-                        + source.getPosition());
+                LOG.warn("Invalid dictionary, found: '{}' but expected: '/' at offset {}", c,
+                        source.getPosition());
                 if (readUntilEndOfCOSDictionary())
                 {
                     // we couldn't recover
@@ -284,8 +284,8 @@ public abstract class BaseParser
         }
         catch (IOException exception)
         {
-            LOG.warn("Invalid dictionary, can't find end of dictionary at offset "
-                    + source.getPosition());
+            LOG.warn("Invalid dictionary, can't find end of dictionary at offset {}",
+                    source.getPosition());
         }
         return obj;
     }
@@ -342,18 +342,18 @@ public abstract class BaseParser
         COSName key = parseCOSName();
         if (key == null || key.getName().isEmpty())
         {
-            LOG.warn("Empty COSName at offset " + source.getPosition());
+            LOG.warn("Empty COSName at offset {}", source.getPosition());
         }
         COSBase value = parseCOSDictionaryValue();
         skipSpaces();
         if (value == null)
         {
-            LOG.warn("Bad dictionary declaration at offset " + source.getPosition());
+            LOG.warn("Bad dictionary declaration at offset {}", source.getPosition());
             return false;
         }
         else if (value instanceof COSInteger && !((COSInteger) value).isValid())
         {
-            LOG.warn("Skipped out of range number value at offset " + source.getPosition());
+            LOG.warn("Skipped out of range number value at offset {}", source.getPosition());
         }
         else
         {
@@ -711,8 +711,8 @@ public abstract class BaseParser
                         }
                         else
                         {
-                            LOG.warn("Invalid value(s) for an object key " + number.longValue()
-                                    + " " + genNumber.intValue());
+                            LOG.warn("Invalid value(s) for an object key {} {}", number.longValue(),
+                                    genNumber.intValue());
                         }
                     }
                 }
@@ -721,8 +721,8 @@ public abstract class BaseParser
             if (pbo == null)
             {
                 //it could be a bad object in the array which is just skipped
-                LOG.warn("Corrupt array element at offset " + source.getPosition()
-                        + ", start offset: " + startPosition);
+                LOG.warn("Corrupt array element at offset {}, start offset: {}",
+                        source.getPosition(), startPosition);
                 String isThisTheEnd = readString();
                 // return immediately if a corrupt element is followed by another array
                 // to avoid a possible infinite recursion as most likely the whole array is corrupted
@@ -929,8 +929,8 @@ public abstract class BaseParser
             }
             else
             {
-                LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
-                        + source.getPosition() + " (start offset: " + startOffset + ")");
+                LOG.warn("Skipped unexpected dir object = '{}' at offset {} (start offset: {})",
+                        badString, source.getPosition(), startOffset);
                 return this instanceof PDFStreamParser ? null : COSNull.NULL;
             }
         }

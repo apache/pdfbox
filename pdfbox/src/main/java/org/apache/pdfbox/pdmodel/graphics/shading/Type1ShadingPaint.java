@@ -24,8 +24,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -33,7 +33,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 class Type1ShadingPaint extends ShadingPaint<PDShadingType1>
 {
-    private static final Log LOG = LogFactory.getLog(Type1ShadingPaint.class);
+    private static final Logger LOG = LogManager.getLogger(Type1ShadingPaint.class);
 
     /**
      * Constructor.

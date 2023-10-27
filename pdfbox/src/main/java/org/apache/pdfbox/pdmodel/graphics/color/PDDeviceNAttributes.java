@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Contains additional information about the components of colour space.
@@ -40,7 +40,7 @@ public final class PDDeviceNAttributes
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(PDDeviceNAttributes.class);
+    private static final Logger LOG = LogManager.getLogger(PDDeviceNAttributes.class);
 
     private final COSDictionary dictionary;
 

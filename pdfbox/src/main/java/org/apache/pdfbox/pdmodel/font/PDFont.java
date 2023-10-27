@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.pdfbox.cos.COSArray;
@@ -49,7 +49,7 @@ import org.apache.pdfbox.util.Vector;
  */
 public abstract class PDFont implements COSObjectable, PDFontLike
 {
-    private static final Log LOG = LogFactory.getLog(PDFont.class);
+    private static final Logger LOG = LogManager.getLogger(PDFont.class);
     protected static final Matrix DEFAULT_FONT_MATRIX = new Matrix(0.001f, 0, 0, 0.001f, 0, 0);
 
     protected final COSDictionary dict;
@@ -144,7 +144,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             cmap = readCMap(toUnicode);
             if (cmap != null && !cmap.hasUnicodeMappings())
             {
-                LOG.warn("Invalid ToUnicode CMap in font " + getName());
+                LOG.warn("Invalid ToUnicode CMap in font {}", getName());
                 String cmapName = cmap.getName() != null ? cmap.getName() : "";
                 String ordering = cmap.getOrdering() != null ? cmap.getOrdering() : "";
                 COSName encoding = dict.getCOSName(COSName.ENCODING);
@@ -165,7 +165,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         }
         catch (IOException ex)
         {
-            LOG.error("Could not read ToUnicode CMap in font " + getName(), ex);
+            LOG.error("Could not read ToUnicode CMap in font {}", getName(), ex);
         }
         return cmap;
     }

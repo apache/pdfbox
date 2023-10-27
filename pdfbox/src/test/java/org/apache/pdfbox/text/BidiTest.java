@@ -30,8 +30,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.AfterEach;
@@ -47,7 +47,7 @@ class BidiTest
     /**
      * Logger instance.
      */
-    private static final Log LOG = LogFactory.getLog(BidiTest.class);
+    private static final Logger LOG = LogManager.getLogger(BidiTest.class);
     
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/text/");
     private static final File OUT_DIR = new File("target/test-output");

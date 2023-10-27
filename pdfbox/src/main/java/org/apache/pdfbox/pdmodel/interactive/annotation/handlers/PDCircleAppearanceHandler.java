@@ -18,8 +18,8 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
@@ -39,7 +39,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary
  */
 public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
 {
-    private static final Log LOG = LogFactory.getLog(PDCircleAppearanceHandler.class);
+    private static final Logger LOG = LogManager.getLogger(PDCircleAppearanceHandler.class);
     
     public PDCircleAppearanceHandler(PDAnnotation annotation)
     {

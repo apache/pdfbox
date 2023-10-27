@@ -22,8 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -44,7 +44,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 public class PDFTemplateCreator
 {
     private final PDFTemplateBuilder pdfBuilder;
-    private static final Log LOG = LogFactory.getLog(PDFTemplateCreator.class);
+    private static final Logger LOG = LogManager.getLogger(PDFTemplateCreator.class);
 
     /**
      * Constructor.
@@ -148,7 +148,7 @@ public class PDFTemplateCreator
             pdfBuilder.createVisualSignature(template);
             pdfBuilder.createWidgetDictionary(pdSignatureField, holderFormResources);
             InputStream in = getVisualSignatureAsStream(pdfStructure.getVisualSignature());
-            LOG.info("stream returning started, size= " + in.available());
+            LOG.info("stream returning started, size= {}", in.available());
             // return result of the stream 
             return in;
         }

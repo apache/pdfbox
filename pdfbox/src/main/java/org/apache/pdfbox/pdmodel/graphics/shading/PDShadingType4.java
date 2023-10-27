@@ -28,8 +28,8 @@ import java.util.List;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -41,7 +41,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDShadingType4 extends PDTriangleBasedShadingType
 {
-    private static final Log LOG = LogFactory.getLog(PDShadingType4.class);
+    private static final Logger LOG = LogManager.getLogger(PDShadingType4.class);
 
     /**
      * Constructor using the given shading dictionary.
@@ -150,14 +150,14 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
                             flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
                             if (flag != 0)
                             {
-                                LOG.error("bad triangle: " + flag);
+                                LOG.error("bad triangle: {}", flag);
                             }
                             p1 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange,
                                             matrix, xform);
                             mciis.readBits(bitsPerFlag);
                             if (flag != 0)
                             {
-                                LOG.error("bad triangle: " + flag);
+                                LOG.error("bad triangle: {}", flag);
                             }
                             p2 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange,
                                             matrix, xform);
@@ -171,7 +171,7 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
                             lastIndex = list.size() - 1;
                             if (lastIndex < 0)
                             {
-                                LOG.error("broken data stream: " + list.size());
+                                LOG.error("broken data stream: {}", list.size());
                             }
                             else
                             {
@@ -189,7 +189,7 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
                             }
                             break;
                         default:
-                            LOG.warn("bad flag: " + flag);
+                            LOG.warn("bad flag: {}", flag);
                             break;
                     }
                 }

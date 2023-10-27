@@ -28,8 +28,8 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -45,7 +45,7 @@ import org.apache.pdfbox.cos.COSStream;
  */
 final class JBIG2Filter extends Filter
 {
-    private static final Log LOG = LogFactory.getLog(JBIG2Filter.class);
+    private static final Logger LOG = LogManager.getLogger(JBIG2Filter.class);
 
     private static boolean levigoLogged = false;
 

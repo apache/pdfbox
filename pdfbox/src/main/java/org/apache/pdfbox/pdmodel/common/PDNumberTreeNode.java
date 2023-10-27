@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -41,7 +41,7 @@ import org.apache.pdfbox.cos.COSNull;
  */
 public class PDNumberTreeNode implements COSObjectable
 {
-    private static final Log LOG = LogFactory.getLog( PDNumberTreeNode.class );
+    private static final Logger LOG = LogManager.getLogger(PDNumberTreeNode.class );
 
     private final COSDictionary node;
     private Class<? extends COSObjectable> valueType = null;
@@ -183,14 +183,15 @@ public class PDNumberTreeNode implements COSObjectable
             indices = new HashMap<>();
             if (numbersArray.size() % 2 != 0)
             {
-                LOG.warn("Numbers array has odd size: " + numbersArray.size());
+                LOG.warn("Numbers array has odd size: {}", numbersArray.size());
             }
             for (int i = 0; i + 1 < numbersArray.size(); i += 2)
             {
                 COSBase base = numbersArray.getObject(i);
                 if (!(base instanceof COSInteger))
                 {
-                    LOG.error("page labels ignored, index " + i + " should be a number, but is " + base);
+                    LOG.error("page labels ignored, index {} should be a number, but is {}", i,
+                            base);
                     return null;
                 }
                 COSInteger key = (COSInteger) base;

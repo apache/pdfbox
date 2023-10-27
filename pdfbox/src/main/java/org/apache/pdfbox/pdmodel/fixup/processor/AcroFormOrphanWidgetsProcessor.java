@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -50,7 +50,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
 public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 {
     
-    private static final Log LOG = LogFactory.getLog(AcroFormOrphanWidgetsProcessor.class);
+    private static final Logger LOG = LogManager.getLogger(AcroFormOrphanWidgetsProcessor.class);
 
     public AcroFormOrphanWidgetsProcessor(PDDocument document)
     { 
@@ -97,7 +97,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             }
             catch (IOException ioe)
             {
-                LOG.debug("couldn't read annotations for page " + ioe.getMessage());
+                LOG.debug("couldn't read annotations for page {}", ioe.getMessage());
             }
         }
 
@@ -171,17 +171,20 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                     if (acroFormResources.getFont(fontName) == null)
                     {
                         acroFormResources.put(fontName, widgetResources.getFont(fontName));
-                        LOG.debug("added font resource to AcroForm from widget for font name " + fontName.getName());
+                        LOG.debug("added font resource to AcroForm from widget for font name {}",
+                                fontName.getName());
                     }
                 }
                 catch (IOException ioe)
                 {
-                    LOG.debug("unable to add font to AcroForm for font name " + fontName.getName());
+                    LOG.debug("unable to add font to AcroForm for font name {}",
+                            fontName.getName());
                 }
             }
             else
             {
-                LOG.debug("font resource for widget was a subsetted font - ignored: " + fontName.getName());
+                LOG.debug("font resource for widget was a subsetted font - ignored: {}",
+                        fontName.getName());
             }
         });
     }
@@ -235,24 +238,28 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             {
                 if (defaultResources.getFont(fontName) == null)
                 {
-                    LOG.debug("trying to add missing font resource for field " + field.getFullyQualifiedName());
+                    LOG.debug("trying to add missing font resource for field {}",
+                            field.getFullyQualifiedName());
                     FontMapper mapper = FontMappers.instance();
                     FontMapping<TrueTypeFont> fontMapping = mapper.getTrueTypeFont(fontName.getName() , null);
                     if (fontMapping != null)
                     {
                         PDType0Font pdFont = PDType0Font.load(document, fontMapping.getFont(), false);
-                        LOG.debug("looked up font for " + fontName.getName() + " - found " + fontMapping.getFont().getName());
+                        LOG.debug("looked up font for {} - found {}", fontName.getName(),
+                                fontMapping.getFont().getName());
                         defaultResources.put(fontName, pdFont);
                     }
                     else
                     {
-                        LOG.debug("no suitable font found for field " + field.getFullyQualifiedName() + " for font name " + fontName.getName());
+                        LOG.debug("no suitable font found for field {} for font name {}",
+                                field.getFullyQualifiedName(), fontName.getName());
                     }
                 }
             }
             catch (IOException ioe)
             {
-                LOG.debug("unable to handle font resources for field " + field.getFullyQualifiedName() + ": " + ioe.getMessage());
+                LOG.debug("unable to handle font resources for field {}: {}",
+                        field.getFullyQualifiedName(), ioe.getMessage());
             }
         }
     }

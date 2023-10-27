@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.Map;
 import javax.crypto.Cipher;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -78,7 +78,7 @@ class TestSymmetricKeyEncryption
     /**
      * Logger instance.
      */
-    private static final Log LOG = LogFactory.getLog(TestSymmetricKeyEncryption.class);
+    private static final Logger LOG = LogManager.getLogger(TestSymmetricKeyEncryption.class);
 
     private static final File testResultsDir = new File("target/test-output/crypto");
 

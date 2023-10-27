@@ -19,8 +19,8 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Point class with faster hashCode() to speed up the rendering of Gouraud shadings. Should only be
@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  */
 class IntPoint extends Point
 {
-    private static final Log LOG = LogFactory.getLog(IntPoint.class);
+    private static final Logger LOG = LogManager.getLogger(IntPoint.class);
 
     IntPoint(int x, int y)
     {

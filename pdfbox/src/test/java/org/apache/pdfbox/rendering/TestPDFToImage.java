@@ -25,8 +25,8 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
@@ -60,7 +60,7 @@ public class TestPDFToImage
     /**
      * Logger instance.
      */
-    private static final Log LOG = LogFactory.getLog(TestPDFToImage.class);
+    private static final Logger LOG = LogManager.getLogger(TestPDFToImage.class);
 
     /**
      * Constructor.

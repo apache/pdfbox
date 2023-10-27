@@ -18,15 +18,15 @@ package org.apache.pdfbox.pdmodel.fixup.processor;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 
 public class AcroFormGenerateAppearancesProcessor extends AbstractProcessor
 {
     
-    private static final Log LOG = LogFactory.getLog(AcroFormGenerateAppearancesProcessor.class);
+    private static final Logger LOG = LogManager.getLogger(AcroFormGenerateAppearancesProcessor.class);
 
     public AcroFormGenerateAppearancesProcessor(PDDocument document)
     { 

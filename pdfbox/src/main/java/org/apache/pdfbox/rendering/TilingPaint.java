@@ -30,8 +30,8 @@ import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -45,7 +45,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 class TilingPaint implements Paint
 {
-    private static final Log LOG = LogFactory.getLog(TilingPaint.class);
+    private static final Logger LOG = LogManager.getLogger(TilingPaint.class);
     private final Paint paint;
     private final Matrix patternMatrix;
     private static final int MAXEDGE;
@@ -227,12 +227,12 @@ class TilingPaint implements Paint
         if (Math.abs(width * height) > MAXEDGE * MAXEDGE)
         {
             // PDFBOX-3653: prevent huge sizes
-            LOG.warn("Pattern surface larger than " + MAXEDGE + " x " + MAXEDGE + ", will be clipped");
-            LOG.warn("width: " + width + ", height: " + height);
-            LOG.warn("XStep: " + xStep + ", YStep: " + yStep);
-            LOG.warn("bbox: " + bbox);
-            LOG.warn("pattern matrix: " + pattern.getMatrix());
-            LOG.warn("concatenated matrix: " + patternMatrix);
+            LOG.warn("Pattern surface larger than {} x {}, will be clipped", MAXEDGE, MAXEDGE);
+            LOG.warn("width: {}, height: {}", width, height);
+            LOG.warn("XStep: {}, YStep: {}", xStep, yStep);
+            LOG.warn("bbox: {}", bbox);
+            LOG.warn("pattern matrix: {}", pattern.getMatrix());
+            LOG.warn("concatenated matrix: {}", patternMatrix);
             LOG.warn("increase the property 'pdfbox.rendering.tilingpaint.maxedge'");
             width = Math.min(MAXEDGE, Math.abs(width)) * Math.signum(width);
             height = Math.min(MAXEDGE, Math.abs(height)) * Math.signum(height);

@@ -18,8 +18,8 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class represents a PDF object.
@@ -36,7 +36,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     private boolean isDereferenced = false;
     private final COSUpdateState updateState;
     
-    private static final Log LOG = LogFactory.getLog(COSObject.class);
+    private static final Logger LOG = LogManager.getLogger(COSObject.class);
 
     /**
      * Constructor.
@@ -123,7 +123,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
             }
             catch (IOException e)
             {
-                LOG.error("Can't dereference " + this, e);
+                LOG.error("Can't dereference {}", this, e);
             }
             finally
             {

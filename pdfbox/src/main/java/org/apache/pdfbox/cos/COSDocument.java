@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessStreamCache;
 import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
@@ -44,7 +44,7 @@ public class COSDocument extends COSBase implements Closeable
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(COSDocument.class);
+    private static final Logger LOG = LogManager.getLogger(COSDocument.class);
     
     private float version = 1.4f;
 

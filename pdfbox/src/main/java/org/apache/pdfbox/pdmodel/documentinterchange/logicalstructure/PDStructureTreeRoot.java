@@ -19,8 +19,8 @@ package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -42,7 +42,7 @@ public class PDStructureTreeRoot extends PDStructureNode
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(PDStructureTreeRoot.class);
+    private static final Logger LOG = LogManager.getLogger(PDStructureTreeRoot.class);
 
     private static final String TYPE = "StructTreeRoot";
 

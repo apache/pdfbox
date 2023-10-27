@@ -20,8 +20,8 @@ import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.util.Matrix;
 
@@ -32,7 +32,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public final class TextPosition
 {
-    private static final Log LOG = LogFactory.getLog(TextPosition.class);
+    private static final Logger LOG = LogManager.getLogger(TextPosition.class);
 
     private static final Map<Integer, String> DIACRITICS = createDiacritics();
 
@@ -628,8 +628,9 @@ public final class TextPosition
         {
             if (i >= widths.length)
             {
-                LOG.info("diacritic " + diacritic.getUnicode() + " on ligature " + unicode + 
-                        " is not supported yet and is ignored (PDFBOX-2831)");
+                LOG.info(
+                        "diacritic {} on ligature {} is not supported yet and is ignored (PDFBOX-2831)",
+                        diacritic.getUnicode(), unicode);
                 break;
             }
             float currCharXEnd = currCharXStart + widths[i];

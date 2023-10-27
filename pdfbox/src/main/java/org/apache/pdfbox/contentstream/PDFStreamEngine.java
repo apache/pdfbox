@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.state.EmptyGraphicsStackException;
 import org.apache.pdfbox.cos.COSArray;
@@ -74,7 +74,7 @@ import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
  */
 public abstract class PDFStreamEngine
 {
-    private static final Log LOG = LogFactory.getLog(PDFStreamEngine.class);
+    private static final Logger LOG = LogManager.getLogger(PDFStreamEngine.class);
 
     private final Map<String, OperatorProcessor> operators = new HashMap<>(80);
 
@@ -671,12 +671,12 @@ public abstract class PDFStreamEngine
             }
             else if (obj instanceof COSArray)
             {
-                LOG.error("Nested arrays are not allowed in an array for TJ operation: " + obj);
+                LOG.error("Nested arrays are not allowed in an array for TJ operation: {}", obj);
             }
             else
             {
-                LOG.error("Unknown type " + obj.getClass().getSimpleName() +
-                        " in array for TJ operation: " + obj);
+                LOG.error("Unknown type {} in array for TJ operation: {}",
+                        obj.getClass().getSimpleName(), obj);
             }
         }
     }
@@ -1045,7 +1045,7 @@ public abstract class PDFStreamEngine
     {
         if (phase < 0)
         {
-            LOG.warn("Dash phase has negative value " + phase + ", set to 0");
+            LOG.warn("Dash phase has negative value {}, set to 0", phase);
             phase = 0;
         }
         PDLineDashPattern lineDash = new PDLineDashPattern(array, phase);
@@ -1141,7 +1141,7 @@ public abstract class PDFStreamEngine
         --level;
         if (level < 0)
         {
-            LOG.error("level is " + level);
+            LOG.error("level is {}", level);
         }
     }
 }

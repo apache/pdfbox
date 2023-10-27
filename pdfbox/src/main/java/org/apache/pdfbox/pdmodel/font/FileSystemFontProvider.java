@@ -35,8 +35,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
@@ -59,7 +59,7 @@ import org.apache.pdfbox.util.Hex;
  */
 final class FileSystemFontProvider extends FontProvider
 {
-    private static final Log LOG = LogFactory.getLog(FileSystemFontProvider.class);
+    private static final Logger LOG = LogManager.getLogger(FileSystemFontProvider.class);
     
     private final List<FSFontInfo> fontInfoList = new ArrayList<>();
     private final FontCache cache;
@@ -200,16 +200,12 @@ final class FileSystemFontProvider extends FontProvider
             try
             {
                 TrueTypeFont ttf = readTrueTypeFont(postScriptName, file);
-
-                if (LOG.isDebugEnabled())
-                {
-                    LOG.debug("Loaded " + postScriptName + " from " + file);
-                }
+                LOG.debug("Loaded {} from {}", postScriptName, file);
                 return ttf;
             }
             catch (IOException e)
             {
-                LOG.warn("Could not load font file: " + file, e);
+                LOG.warn("Could not load font file: {}", file, e);
             }
             return null;
         }
@@ -278,15 +274,12 @@ final class FileSystemFontProvider extends FontProvider
                 OTFParser parser = new OTFParser(false);
                 OpenTypeFont otf = parser.parse(new RandomAccessReadBufferedFile(file));
 
-                if (LOG.isDebugEnabled())
-                {
-                    LOG.debug("Loaded " + postScriptName + " from " + file);
-                }
+                LOG.debug("Loaded {} from {}", postScriptName, file);
                 return otf;
             }
             catch (IOException e)
             {
-                LOG.warn("Could not load font file: " + file, e);
+                LOG.warn("Could not load font file: {}", file, e);
             }
             return null;
         }
@@ -296,16 +289,12 @@ final class FileSystemFontProvider extends FontProvider
             try (InputStream input = new FileInputStream(file))
             {
                 Type1Font type1 = Type1Font.createWithPFB(input);
-
-                if (LOG.isDebugEnabled())
-                {
-                    LOG.debug("Loaded " + postScriptName + " from " + file);
-                }
+                LOG.debug("Loaded {} from {}", postScriptName, file);
                 return type1;
             }
             catch (IOException e)
             {
-                LOG.warn("Could not load font file: " + file, e);
+                LOG.warn("Could not load font file: {}", file, e);
             }
             return null;
         }
@@ -333,10 +322,7 @@ final class FileSystemFontProvider extends FontProvider
         this.cache = cache;
         try
         {
-            if (LOG.isTraceEnabled())
-            {
-                LOG.trace("Will search the local system for fonts");
-            }
+            LOG.trace("Will search the local system for fonts");
 
             // scan the local system for font files
             FontFileFinder fontFileFinder = new FontFileFinder();
@@ -347,10 +333,7 @@ final class FileSystemFontProvider extends FontProvider
                 files.add(new File(font));
             }
 
-            if (LOG.isTraceEnabled())
-            {
-                LOG.trace("Found " + files.size() + " fonts on the local system");
-            }
+            LOG.trace("Found {} fonts on the local system", files.size());
 
             if (!files.isEmpty())
             {
@@ -365,8 +348,8 @@ final class FileSystemFontProvider extends FontProvider
                     LOG.warn("Building on-disk font cache, this may take a while");
                     scanFonts(files);
                     saveDiskCache();
-                    LOG.warn("Finished building on-disk font cache, found " + fontInfoList.size()
-                            + " fonts");
+                    LOG.warn("Finished building on-disk font cache, found {} fonts",
+                            fontInfoList.size());
                 }
             }
         }
@@ -401,7 +384,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.warn("Error parsing font " + file.getPath(), e);
+                LOG.warn("Error parsing font {}", file.getPath(), e);
             }
         }
     }
@@ -544,7 +527,7 @@ final class FileSystemFontProvider extends FontProvider
                     String[] parts = line.split("\\|", 12);
                     if (parts.length < 10)
                     {
-                        LOG.warn("Incorrect line '" + line + "' in font disk cache is skipped");
+                        LOG.warn("Incorrect line '{}' in font disk cache is skipped", line);
                         continue;
                     }
 
@@ -626,13 +609,13 @@ final class FileSystemFontProvider extends FontProvider
                         }
                         else
                         {
-                            LOG.debug("Font file " + fontFile.getAbsolutePath() + " is different");
+                            LOG.debug("Font file {} is different", fontFile.getAbsolutePath());
                             continue; // don't remove from "pending"
                         }
                     }
                     else
                     {
-                        LOG.debug("Font file " + fontFile.getAbsolutePath() + " not found, skipped");
+                        LOG.debug("Font file {} not found, skipped", fontFile.getAbsolutePath());
                     }
                     pending.remove(fontFile.getAbsolutePath());
                 }
@@ -647,7 +630,7 @@ final class FileSystemFontProvider extends FontProvider
         if (!pending.isEmpty())
         {
             // re-build the entire cache if we encounter un-cached fonts (could be optimised)
-            LOG.warn(pending.size() + " new fonts found, font cache will be re-built");
+            LOG.warn("{} new fonts found, font cache will be re-built", pending.size());
             return null;
         }
         
@@ -665,7 +648,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.warn("Could not load font file: " + ttcFile, e);
+            LOG.warn("Could not load font file: {}", ttcFile, e);
         }
     }
 
@@ -694,7 +677,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.warn("Could not load font file: " + ttfFile, e);
+            LOG.warn("Could not load font file: {}", ttfFile, e);
             fontInfoList.add(createFSIgnored(ttfFile, fontFormat, "*skipexception*"));
         }
     }
@@ -710,7 +693,7 @@ final class FileSystemFontProvider extends FontProvider
             if (ttf.getName() != null && ttf.getName().contains("|"))
             {
                 fontInfoList.add(createFSIgnored(file, FontFormat.TTF, "*skippipeinname*"));
-                LOG.warn("Skipping font with '|' in name " + ttf.getName() + " in file " + file);
+                LOG.warn("Skipping font with '|' in name {} in file {}", ttf.getName(), file);
             }
             else if (ttf.getName() != null)
             {
@@ -788,22 +771,21 @@ final class FileSystemFontProvider extends FontProvider
                     NamingTable name = ttf.getNaming();
                     if (name != null)
                     {
-                        LOG.trace(format +": '" + name.getPostScriptName() + "' / '" +
-                                  name.getFontFamily() + "' / '" +
-                                  name.getFontSubFamily() + "'");
+                        LOG.trace("{}: '{}' / '{}' / '{}'", format, name.getPostScriptName(),
+                                name.getFontFamily(), name.getFontSubFamily());
                     }
                 }
             }
             else
             {
                 fontInfoList.add(createFSIgnored(file, FontFormat.TTF, "*skipnoname*"));
-                LOG.warn("Missing 'name' entry for PostScript name in font " + file);
+                LOG.warn("Missing 'name' entry for PostScript name in font {}", file);
             }
         }
         catch (IOException e)
         {
             fontInfoList.add(createFSIgnored(file, FontFormat.TTF, "*skipexception*"));
-            LOG.warn("Could not load font file: " + file, e);
+            LOG.warn("Could not load font file: {}", file, e);
         }
         finally
         {
@@ -822,28 +804,25 @@ final class FileSystemFontProvider extends FontProvider
             if (type1.getName() == null)
             {
                 fontInfoList.add(createFSIgnored(pfbFile, FontFormat.PFB, "*skipnoname*"));
-                LOG.warn("Missing 'name' entry for PostScript name in font " + pfbFile);
+                LOG.warn("Missing 'name' entry for PostScript name in font {}", pfbFile);
                 return;
             }
             if (type1.getName().contains("|"))
             {
                 fontInfoList.add(createFSIgnored(pfbFile, FontFormat.PFB, "*skippipeinname*"));
-                LOG.warn("Skipping font with '|' in name " + type1.getName() + " in file " + pfbFile);
+                LOG.warn("Skipping font with '|' in name {} in file {}", type1.getName(), pfbFile);
                 return;
             }
             String hash = computeHash(Files.readAllBytes(pfbFile.toPath()));
             fontInfoList.add(new FSFontInfo(pfbFile, FontFormat.PFB, type1.getName(),
                                             null, -1, -1, 0, 0, -1, null, this, hash, pfbFile.lastModified()));
 
-            if (LOG.isTraceEnabled())
-            {
-                LOG.trace("PFB: '" + type1.getName() + "' / '" + type1.getFamilyName() + "' / '" +
-                        type1.getWeight() + "'");
-            }
+            LOG.trace("PFB: '{}' / '{}' / '{}'", type1.getName(), type1.getFamilyName(),
+                    type1.getWeight());
         }
         catch (IOException e)
         {
-            LOG.warn("Could not load font file: " + pfbFile, e);
+            LOG.warn("Could not load font file: {}", pfbFile, e);
         }
     }
 

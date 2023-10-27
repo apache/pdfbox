@@ -31,8 +31,8 @@ import java.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
@@ -51,7 +51,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(StandardSecurityHandler.class);
+    private static final Logger LOG = LogManager.getLogger(StandardSecurityHandler.class);
 
     private static final int REVISION_2 = 2;
     private static final int REVISION_3 = 3;
@@ -189,8 +189,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                         int newLength = encryption.getLength() / 8;
                         if (newLength < dicLength)
                         {
-                            LOG.warn("Using " + newLength + " bytes key length instead of " +
-                                    dicLength + " in AESV2 encryption?!");
+                            LOG.warn(
+                                    "Using {} bytes key length instead of {} in AESV2 encryption?!",
+                                    newLength, dicLength);
                             dicLength = newLength;
                         }
                     }
@@ -205,8 +206,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                         int newLength = encryption.getLength() / 8;
                         if (newLength < dicLength)
                         {
-                            LOG.warn("Using " + newLength + " bytes key length instead of " +
-                                    dicLength + " in AESV3 encryption?!");
+                            LOG.warn(
+                                    "Using {} bytes key length instead of {} in AESV3 encryption?!",
+                                    newLength, dicLength);
                             dicLength = newLength;
                         }
                     }
@@ -338,8 +340,8 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             
             if (permsP != dicPermissions)
             {
-                LOG.warn("Verification of permissions failed (" + String.format("%08X",permsP) +
-                        " != " + String.format("%08X",dicPermissions) + ")");
+                LOG.warn("Verification of permissions failed ({} != {})",
+                        String.format("%08X", permsP), String.format("%08X", dicPermissions));
             }
             
             if (encryptMetadata && perms[8] != 'T' || !encryptMetadata && perms[8] != 'F')

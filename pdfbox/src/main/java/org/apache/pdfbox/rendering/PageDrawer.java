@@ -59,8 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -120,7 +120,7 @@ import org.apache.pdfbox.util.Vector;
  */
 public class PageDrawer extends PDFGraphicsStreamEngine
 {
-    private static final Log LOG = LogFactory.getLog(PageDrawer.class);
+    private static final Logger LOG = LogManager.getLogger(PageDrawer.class);
 
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     private static final boolean IS_WINDOWS = OS_NAME.startsWith("windows");
@@ -725,7 +725,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         float miterLimit = state.getMiterLimit();
         if (miterLimit < 1)
         {
-            LOG.warn("Miter limit must be >= 1, value " + miterLimit + " is ignored");
+            LOG.warn("Miter limit must be >= 1, value {} is ignored", miterLimit);
             miterLimit = 10;
         }
         return new BasicStroke(lineWidth, lineCap, lineJoin,
@@ -1414,7 +1414,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         PDShading shading = getResources().getShading(shadingName);
         if (shading == null)
         {
-            LOG.error("shading " + shadingName + " does not exist in resources dictionary");
+            LOG.error("shading {} does not exist in resources dictionary", shadingName);
             return;
         }
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();

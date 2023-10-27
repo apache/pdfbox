@@ -35,8 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
 import org.apache.fontbox.ttf.gsub.GsubWorker;
@@ -76,7 +76,7 @@ import org.apache.pdfbox.util.NumberFormatUtil;
  */
 abstract class PDAbstractContentStream implements Closeable
 {
-    private static final Log LOG = LogFactory.getLog(PDAbstractContentStream.class);
+    private static final Logger LOG = LogManager.getLogger(PDAbstractContentStream.class);
 
     protected final PDDocument document; // may be null
 
@@ -186,13 +186,14 @@ abstract class PDAbstractContentStream implements Closeable
             }
             else
             {
-                LOG.warn("Using the subsetted font '" + font.getName() +
-                        "' without a PDDocument context; call subset() before saving");
+                LOG.warn(
+                        "Using the subsetted font '{}' without a PDDocument context; call subset() before saving",
+                        font.getName());
             }
         }
         else if (!font.isEmbedded() && !font.isStandard14())
         {
-            LOG.warn("attempting to use font '" + font.getName() + "' that isn't embedded");
+            LOG.warn("attempting to use font '{}' that isn't embedded", font.getName());
         }
 
         // complex text layout

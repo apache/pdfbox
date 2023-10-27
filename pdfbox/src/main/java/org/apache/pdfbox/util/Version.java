@@ -22,15 +22,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Exposes PDFBox version.
  */
 public final class Version
 {
-    private static final Log LOG = LogFactory.getLog(Version.class);
+    private static final Logger LOG = LogManager.getLogger(Version.class);
 
     private static final String PDFBOX_VERSION_PROPERTIES =
             "/org/apache/pdfbox/resources/version.properties";

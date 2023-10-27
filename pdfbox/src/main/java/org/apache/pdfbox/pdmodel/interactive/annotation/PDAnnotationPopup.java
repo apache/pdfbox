@@ -18,8 +18,8 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -31,7 +31,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class PDAnnotationPopup extends PDAnnotation
 {
-    private static final Log LOG = LogFactory.getLog(PDAnnotationPopup.class);
+    private static final Logger LOG = LogManager.getLogger(PDAnnotationPopup.class);
 
     /**
      * The type of annotation.

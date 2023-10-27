@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -36,7 +36,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
  */
 public class PDSignatureField extends PDTerminalField
 {
-	private static final Log LOG = LogFactory.getLog(PDSignatureField.class);
+	private static final Logger LOG = LogManager.getLogger(PDSignatureField.class);
 	
     /**
      * @see PDTerminalField#PDTerminalField(PDAcroForm)

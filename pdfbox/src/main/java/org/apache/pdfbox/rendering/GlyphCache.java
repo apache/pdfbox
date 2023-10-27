@@ -20,8 +20,8 @@ import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.font.PDFontLike;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -34,7 +34,7 @@ import org.apache.pdfbox.pdmodel.font.PDVectorFont;
  */
 final class GlyphCache
 {
-    private static final Log LOG = LogFactory.getLog(GlyphCache.class);
+    private static final Logger LOG = LogManager.getLogger(GlyphCache.class);
     
     private final PDVectorFont font;
     private final Map<Integer, GeneralPath> cache = new HashMap<>();
@@ -61,14 +61,14 @@ final class GlyphCache
                 {
                     int cid = ((PDType0Font) font).codeToCID(code);
                     String cidHex = String.format("%04x", cid);
-                    LOG.warn("No glyph for code " + code + " (CID " + cidHex + ") in font " + fontName);
+                    LOG.warn("No glyph for code {} (CID {}) in font {}", code, cidHex, fontName);
                 }
                 else if (font instanceof PDSimpleFont)
                 {
                     PDSimpleFont simpleFont = (PDSimpleFont) font;
-                    LOG.warn("No glyph for code " + code + " in " + font.getClass().getSimpleName()
-                            + " " + fontName + " (embedded or system font used: "
-                            + simpleFont.getFontBoxFont().getName() + ")");
+                    LOG.warn("No glyph for code {} in {} {} (embedded or system font used: {})",
+                            code, font.getClass().getSimpleName(), fontName,
+                            simpleFont.getFontBoxFont().getName());
                     if (code == 10 && simpleFont.isStandard14())
                     {
                         // PDFBOX-4001 return empty path for line feed on std14
@@ -79,7 +79,7 @@ final class GlyphCache
                 }
                 else
                 {
-                    LOG.warn("No glyph for code " + code + " in font " + fontName);
+                    LOG.warn("No glyph for code {} in font {}", code, fontName);
                 }
             }
 
@@ -91,7 +91,7 @@ final class GlyphCache
         {
             // todo: escalate this error?
             String fontName = ((PDFontLike) font).getName();
-            LOG.error("Glyph rendering failed for code " + code + " in font " + fontName, e);
+            LOG.error("Glyph rendering failed for code {} in font {}", code, fontName, e);
             return new GeneralPath();
         }
     }

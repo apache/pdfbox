@@ -21,8 +21,8 @@ import java.io.IOException;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -40,7 +40,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  */
 public class SetFontAndSize extends OperatorProcessor
 {
-    private static final Log LOG = LogFactory.getLog(SetFontAndSize.class);
+    private static final Logger LOG = LogManager.getLogger(SetFontAndSize.class);
 
     public SetFontAndSize(PDFStreamEngine context)
     {
@@ -72,7 +72,7 @@ public class SetFontAndSize extends OperatorProcessor
         PDFont font = context.getResources().getFont(fontName);
         if (font == null)
         {
-            LOG.warn("font '" + fontName.getName() + "' not found in resources");
+            LOG.warn("font '{}' not found in resources", fontName.getName());
         }
         context.getGraphicsState().getTextState().setFont(font);
     }

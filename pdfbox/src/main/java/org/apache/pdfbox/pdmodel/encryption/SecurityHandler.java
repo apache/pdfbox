@@ -38,8 +38,8 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -60,7 +60,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  */
 public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
 {
-    private static final Log LOG = LogFactory.getLog(SecurityHandler.class);
+    private static final Logger LOG = LogManager.getLogger(SecurityHandler.class);
 
     private static final short DEFAULT_KEY_LENGTH = 40;
 
@@ -520,7 +520,8 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
 
                 if (buf.length != nBytes)
                 {
-                    LOG.debug("Tried reading " + buf.length + " bytes but only " + isResult + " bytes read");
+                    LOG.debug("Tried reading {} bytes but only {} bytes read", buf.length,
+                            isResult);
                 }
             }
             if (Arrays.equals(buf, "<?xpacket ".getBytes(StandardCharsets.ISO_8859_1)))
@@ -540,8 +541,8 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         }
         catch (IOException ex)
         {
-            LOG.error(ex.getClass().getSimpleName() + " thrown when decrypting object " +
-                    objNum + " " + genNum + " obj");
+            LOG.error("{} thrown when decrypting object {} {} obj", ex.getClass().getSimpleName(),
+                    objNum, genNum);
             throw ex;
         }
     }
@@ -639,8 +640,8 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         }
         catch (IOException ex)
         {
-            LOG.error("Failed to decrypt COSString of length " + string.getBytes().length + 
-                    " in object " + objNum + ": " + ex.getMessage(), ex);
+            LOG.error("Failed to decrypt COSString of length {} in object {}: {}",
+                    string.getBytes().length, objNum, ex.getMessage(), ex);
         }
     }
 

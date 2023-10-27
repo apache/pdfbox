@@ -23,8 +23,8 @@ import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
@@ -39,7 +39,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class RadialShadingContext extends ShadingContext
 {
-    private static final Log LOG = LogFactory.getLog(RadialShadingContext.class);
+    private static final Logger LOG = LogManager.getLogger(RadialShadingContext.class);
 
     private PDShadingType3 radialShadingType;
 
@@ -117,7 +117,7 @@ public class RadialShadingContext extends ShadingContext
         }
         catch (NoninvertibleTransformException ex)
         {
-            LOG.error(ex.getMessage() + ", matrix: " + matrix, ex);
+            LOG.error("{}, matrix: {}", ex.getMessage(), matrix, ex);
             rat = new AffineTransform();
         }
 

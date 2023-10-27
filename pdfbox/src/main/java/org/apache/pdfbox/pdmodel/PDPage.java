@@ -24,8 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -62,7 +62,7 @@ public class PDPage implements COSObjectable, PDContentStream
     /**
      * Log instance
      */
-    private static final Log LOG = LogFactory.getLog(PDPage.class);
+    private static final Logger LOG = LogManager.getLogger(PDPage.class);
 
     private static final byte[] DELIMITER = { '\n' };
 
@@ -756,7 +756,7 @@ public class PDPage implements COSObjectable, PDContentStream
             }
             else
             {
-                LOG.warn("Array element " + base2 + " is skipped, must be a (viewport) dictionary");
+                LOG.warn("Array element {} is skipped, must be a (viewport) dictionary", base2);
             }
         }
         return viewports;

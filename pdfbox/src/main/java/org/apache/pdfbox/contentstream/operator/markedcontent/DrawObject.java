@@ -19,8 +19,8 @@ package org.apache.pdfbox.contentstream.operator.markedcontent;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -41,7 +41,7 @@ import org.apache.pdfbox.text.PDFMarkedContentExtractor;
  */
 public class DrawObject extends OperatorProcessor
 {
-    private static final Log LOG = LogFactory.getLog(DrawObject.class);
+    private static final Logger LOG = LogManager.getLogger(DrawObject.class);
 
     public DrawObject(PDFStreamEngine context)
     {

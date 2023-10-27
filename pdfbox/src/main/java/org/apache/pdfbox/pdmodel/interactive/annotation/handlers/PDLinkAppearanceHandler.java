@@ -18,8 +18,8 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -39,7 +39,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
  */
 public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
 {
-    private static final Log LOG = LogFactory.getLog(PDLinkAppearanceHandler.class);
+    private static final Logger LOG = LogManager.getLogger(PDLinkAppearanceHandler.class);
     
     public PDLinkAppearanceHandler(PDAnnotation annotation)
     {
@@ -90,10 +90,9 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                 {
                     if (!rect.contains(pathsArray[i * 2], pathsArray[i * 2 + 1]))
                     {
-                        LOG.warn("At least one /QuadPoints entry (" + 
-                                pathsArray[i * 2] + ";" + pathsArray[i * 2 + 1] + 
-                                ") is outside of rectangle, " + rect + 
-                                ", /QuadPoints are ignored and /Rect is used instead");
+                        LOG.warn(
+                                "At least one /QuadPoints entry ({};{}) is outside of rectangle, {}, /QuadPoints are ignored and /Rect is used instead",
+                                pathsArray[i * 2], pathsArray[i * 2 + 1], rect);
                         pathsArray = null;
                         break;
                     }

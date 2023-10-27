@@ -21,8 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Utility functions for hex encoding.
@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class Hex
 {
-    private static final Log LOG = LogFactory.getLog(Hex.class);
+    private static final Logger LOG = LogManager.getLogger(Hex.class);
 
     /**
      * for hex conversion.
@@ -234,7 +234,7 @@ public final class Hex
                 }
                 catch (NumberFormatException ex)
                 {
-                    LOG.error("Can't parse " + hexByte + ", aborting decode", ex);
+                    LOG.error("Can't parse {}, aborting decode", hexByte, ex);
                     break;
                 }
                 i += 2;

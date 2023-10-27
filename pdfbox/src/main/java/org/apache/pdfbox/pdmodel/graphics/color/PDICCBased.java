@@ -31,8 +31,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
@@ -54,7 +54,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 public final class PDICCBased extends PDCIEBasedColorSpace
 {
-    private static final Log LOG = LogFactory.getLog(PDICCBased.class);
+    private static final Logger LOG = LogManager.getLogger(PDICCBased.class);
 
     private final PDStream stream;
     private int numberOfComponents = -1;
@@ -172,7 +172,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             }
             catch (IOException e)
             {
-              LOG.warn("Error initializing alternate color space: " + e.getLocalizedMessage());
+                LOG.warn("Error initializing alternate color space: {}", e.getLocalizedMessage());
             }
         }
         try (InputStream input = this.stream.createInputStream())
@@ -233,8 +233,8 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         }
         if (e != null)
         {
-            LOG.warn("Can't read embedded ICC profile (" + e.getLocalizedMessage() +
-                     "), using alternate color space: " + alternateColorSpace.getName());
+            LOG.warn("Can't read embedded ICC profile ({}), using alternate color space: {}",
+                    e.getLocalizedMessage(), alternateColorSpace.getName());
         }
         initialColor = alternateColorSpace.getInitialColor();
     }
@@ -344,8 +344,9 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 int numIccComponents = iccProfile.getNumComponents();
                 if (numIccComponents != numberOfComponents)
                 {
-                    LOG.warn("Using " + numIccComponents + " components from ICC profile info instead of " +
-                            numberOfComponents + " components from /N entry");
+                    LOG.warn(
+                            "Using {} components from ICC profile info instead of {} components from /N entry",
+                            numIccComponents, numberOfComponents);
                     numberOfComponents = numIccComponents;
                 }
             }

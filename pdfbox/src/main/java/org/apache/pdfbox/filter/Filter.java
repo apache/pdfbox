@@ -28,8 +28,8 @@ import java.util.zip.Deflater;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -49,7 +49,7 @@ import org.apache.pdfbox.io.RandomAccessReadWriteBuffer;
  */
 public abstract class Filter
 {
-    private static final Log LOG = LogFactory.getLog(Filter.class);
+    private static final Logger LOG = LogManager.getLogger(Filter.class);
 
     /**
      * Compression Level System Property. Set this to a value from 0 to 9 to change the zlib deflate
@@ -141,8 +141,8 @@ public abstract class Filter
         }
         else if (obj != null && !(filter instanceof COSArray || obj instanceof COSArray))
         {
-            LOG.error("Expected DecodeParams to be an Array or Dictionary but found " +
-                      obj.getClass().getName());
+            LOG.error("Expected DecodeParams to be an Array or Dictionary but found {}",
+                    obj.getClass().getName());
         }
         return new COSDictionary();
     }

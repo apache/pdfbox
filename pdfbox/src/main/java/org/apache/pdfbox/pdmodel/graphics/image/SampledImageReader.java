@@ -30,8 +30,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.filter.DecodeOptions;
@@ -45,7 +45,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
  */
 final class SampledImageReader
 {
-    private static final Log LOG = LogFactory.getLog(SampledImageReader.class);
+    private static final Logger LOG = LogManager.getLogger(SampledImageReader.class);
     
     private SampledImageReader()
     {
@@ -500,7 +500,8 @@ final class SampledImageReader
                 int inputResult = input.readNBytes(bank, 0, bank.length);
                 if (inputResult != (long) width * height * numComponents)
                 {
-                    LOG.debug("Tried reading " + (long) width * height * numComponents + " bytes but only " + inputResult + " bytes read");
+                    LOG.debug("Tried reading {} bytes but only {} bytes read",
+                            (long) width * height * numComponents, inputResult);
                 }
                 return pdImage.getColorSpace().toRGBImage(raster);
             }
@@ -518,7 +519,8 @@ final class SampledImageReader
 
                 if (Long.compare(inputResult, tempBytes.length) != 0)
                 {
-                    LOG.debug("Tried reading " + tempBytes.length + " bytes but only " + inputResult + " bytes read");
+                    LOG.debug("Tried reading {} bytes but only {} bytes read", tempBytes.length,
+                            inputResult);
                 }
 
                 if (y < starty || y % currentSubsampling > 0)
@@ -604,8 +606,8 @@ final class SampledImageReader
                 }
                 else
                 {
-                    LOG.warn("colorKey mask size is " + colorKey.size() +
-                             ", should be " + (numComponents * 2) + ", ignored");
+                    LOG.warn("colorKey mask size is {}, should be {}, ignored", colorKey.size(),
+                            numComponents * 2);
                 }
             }
 
@@ -745,16 +747,17 @@ final class SampledImageReader
                     float decode1 = ((COSNumber) cosDecode.get(1)).floatValue();
                     if (decode0 >= 0 && decode0 <= 1 && decode1 >= 0 && decode1 <= 1)
                     {
-                        LOG.warn("decode array " + cosDecode
-                                + " not compatible with color space, using the first two entries");
+                        LOG.warn(
+                                "decode array {} not compatible with color space, using the first two entries",
+                                cosDecode);
                         return new float[]
                         {
                             decode0, decode1
                         };
                     }
                 }
-                LOG.error("decode array " + cosDecode
-                        + " not compatible with color space, using default");
+                LOG.error("decode array {} not compatible with color space, using default",
+                        cosDecode);
             }
             else
             {

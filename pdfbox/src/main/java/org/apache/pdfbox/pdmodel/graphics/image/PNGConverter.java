@@ -29,8 +29,8 @@ import java.util.List;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
@@ -61,7 +61,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
  */
 final class PNGConverter
 {
-    private static final Log LOG = LogFactory.getLog(PNGConverter.class);
+    private static final Logger LOG = LogManager.getLogger(PNGConverter.class);
 
     // Chunk Type definitions. The bytes in the comments are the bytes in the spec.
     private static final int CHUNK_IHDR = 0x49484452; // IHDR: 73 72 68 82
@@ -200,7 +200,7 @@ final class PNGConverter
                     "Can't handle truecolor with alpha, would need to separate alpha from image data");
             return null;
         default:
-            LOG.error("Unknown PNG color type " + colorType);
+            LOG.error("Unknown PNG color type {}", colorType);
             return null;
         }
     }
@@ -348,7 +348,7 @@ final class PNGConverter
         {
             if (state.gAMA.length != 4)
             {
-                LOG.error("Invalid gAMA chunk length " + state.gAMA.length);
+                LOG.error("Invalid gAMA chunk length {}", state.gAMA.length);
                 return null;
             }
             float gamma = readPNGFloat(state.gAMA.bytes, state.gAMA.start);
@@ -380,7 +380,7 @@ final class PNGConverter
         {
             if (state.cHRM.length != 32)
             {
-                LOG.error("Invalid cHRM chunk length " + state.cHRM.length);
+                LOG.error("Invalid cHRM chunk length {}", state.cHRM.length);
                 return null;
             }
             LOG.debug("We can not handle cHRM chunks yet.");
@@ -766,7 +766,7 @@ final class PNGConverter
     {
         if (imageData.length < 20)
         {
-            LOG.error("ByteArray way to small: " + imageData.length);
+            LOG.error("ByteArray way to small: {}", imageData.length);
             return null;
         }
 
@@ -788,8 +788,9 @@ final class PNGConverter
 
             if (ptr + chunkLength + 4 > imageData.length)
             {
-                LOG.error("Not enough bytes. At offset " + ptr + " are " + chunkLength
-                        + " bytes expected. Overall length is " + imageData.length);
+                LOG.error(
+                        "Not enough bytes. At offset {} are {} bytes expected. Overall length is {}",
+                        ptr, chunkLength, imageData.length);
                 return null;
             }
 

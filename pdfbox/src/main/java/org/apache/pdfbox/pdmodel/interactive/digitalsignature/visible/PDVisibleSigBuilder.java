@@ -23,8 +23,8 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -53,7 +53,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 public class PDVisibleSigBuilder implements PDFTemplateBuilder
 {
     private final PDFTemplateStructure pdfStructure;
-    private static final Log LOG = LogFactory.getLog(PDVisibleSigBuilder.class);
+    private static final Logger LOG = LogManager.getLogger(PDVisibleSigBuilder.class);
 
     /**
      * Constructor, creates PDF template structure.

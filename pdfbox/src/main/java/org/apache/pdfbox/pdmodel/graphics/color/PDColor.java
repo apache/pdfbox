@@ -22,8 +22,8 @@ import org.apache.pdfbox.cos.COSNumber;
 
 import java.io.IOException;
 import java.util.Arrays;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSBase;
 
 /**
@@ -37,7 +37,7 @@ import org.apache.pdfbox.cos.COSBase;
  */
 public final class PDColor
 {
-    private static final Log LOG = LogFactory.getLog(PDColor.class);
+    private static final Logger LOG = LogManager.getLogger(PDColor.class);
 
     private final float[] components;
     private final COSName patternName;
@@ -64,7 +64,7 @@ public final class PDColor
             }
             else
             {
-                LOG.warn("pattern name in " + array + " isn't a name, ignored");
+                LOG.warn("pattern name in {} isn't a name, ignored", array);
                 patternName = COSName.getPDFName("Unknown");
             }
         }
@@ -89,7 +89,7 @@ public final class PDColor
             }
             else
             {
-                LOG.warn("color component " + i + " in " + array + " isn't a number, ignored");
+                LOG.warn("color component {} in {} isn't a number, ignored", i, array);
             }
         }
     }
