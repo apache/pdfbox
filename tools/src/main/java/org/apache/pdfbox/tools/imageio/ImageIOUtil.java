@@ -41,8 +41,8 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -55,7 +55,7 @@ public final class ImageIOUtil
     /**
      * Log instance
      */
-    private static final Log LOG = LogFactory.getLog(ImageIOUtil.class);
+    private static final Logger LOG = LogManager.getLogger(ImageIOUtil.class);
 
     private ImageIOUtil()
     {
@@ -236,8 +236,8 @@ public final class ImageIOUtil
             }
             if (writer == null)
             {
-                LOG.error("No ImageWriter found for '" + formatName + "' format");
-                LOG.error("Supported formats: " + Arrays.toString(ImageIO.getWriterFormatNames()));
+                LOG.error("No ImageWriter found for '{}' format", formatName);
+                LOG.error("Supported formats: {}", Arrays.toString(ImageIO.getWriterFormatNames()));
                 return false;
             }
             

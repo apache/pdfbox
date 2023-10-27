@@ -26,8 +26,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class MetaUtil
 {
-    private static final Log LOG = LogFactory.getLog(MetaUtil.class);
+    private static final Logger LOG = LogManager.getLogger(MetaUtil.class);
 
     static final String SUN_TIFF_FORMAT = "com_sun_media_imageio_plugins_tiff_image_1.0";
     static final String JPEG_NATIVE_FORMAT = "javax_imageio_jpeg_image_1.0";
@@ -70,7 +70,7 @@ public final class MetaUtil
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             DOMSource domSource = new DOMSource(root);
             transformer.transform(domSource, streamResult);
-            LOG.debug("\n" + xmlStringWriter);
+            LOG.debug("\n{}", xmlStringWriter);
         }
         catch (IllegalArgumentException | TransformerException ex)
         {

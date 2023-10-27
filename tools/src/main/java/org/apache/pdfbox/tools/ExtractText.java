@@ -29,8 +29,8 @@ import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
@@ -62,7 +62,7 @@ import picocli.CommandLine.Option;
 @Command(name = "extracttext", header = "Extracts the text from a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class ExtractText  implements Callable<Integer>
 {
-    private static final Log LOG = LogFactory.getLog(ExtractText.class);
+    private static final Logger LOG = LogManager.getLogger(ExtractText.class);
 
     private static final String STD_ENCODING = "UTF-8";
 
@@ -349,7 +349,7 @@ public final class ExtractText  implements Callable<Integer>
                 {
                     throw ex;
                 }
-                LOG.error("Failed to process page " + p, ex);
+                LOG.error("Failed to process page {}", p, ex);
             }
         }
     }

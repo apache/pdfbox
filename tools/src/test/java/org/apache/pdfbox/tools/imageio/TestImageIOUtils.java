@@ -47,8 +47,8 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -74,7 +74,7 @@ import org.w3c.dom.NodeList;
  */
 class TestImageIOUtils
 {
-    private static final Log LOG = LogFactory.getLog(TestImageIOUtils.class);
+    private static final Logger LOG = LogManager.getLogger(TestImageIOUtils.class);
     
     /**
      * Check whether the resource images can be saved.
@@ -128,7 +128,7 @@ class TestImageIOUtils
     private void doTestFile(File file, String outDir) throws IOException
     {
         PDDocument document = null;
-        LOG.info("Preparing to convert " + file.getName());
+        LOG.info("Preparing to convert {}", file.getName());
         try
         {
             float dpi = 36; // low DPI so that rendering is FAST
@@ -269,7 +269,7 @@ class TestImageIOUtils
         PDFRenderer renderer = new PDFRenderer(document);
         BufferedImage image = renderer.renderImageWithDPI(0, dpi, imageType);
         String fileName = outputPrefix + 1;
-        LOG.info("Writing: " + fileName + "." + imageFormat);
+        LOG.info("Writing: {}.{}", fileName, imageFormat);
         System.out.println("  " + fileName + "." + imageFormat); // for Maven (keep me!)
         try (OutputStream os = new FileOutputStream(fileName + "." + imageFormat))
         {

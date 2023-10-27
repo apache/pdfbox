@@ -16,8 +16,8 @@
  */
 package org.apache.pdfbox.tools.imageio;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.imageio.ImageWriteParam;
 import javax.imageio.metadata.IIOInvalidTreeException;
@@ -33,7 +33,7 @@ import org.w3c.dom.NodeList;
  */
 final class TIFFUtil
 {
-    private static final Log LOG = LogFactory.getLog(TIFFUtil.class);
+    private static final Logger LOG = LogManager.getLogger(TIFFUtil.class);
 
     private TIFFUtil()
     {
