@@ -1452,7 +1452,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         for (Entry<COSName, COSBase> entry : items.entrySet())
         {
             COSBase cosBase = entry.getValue();
-            COSObjectKey cosBaseKey = cosBase.getKey();
+            COSObjectKey cosBaseKey = cosBase != null ? cosBase.getKey() : null;
             // avoid endless recursions
             if (COSName.PARENT.equals(entry.getKey())
                     || (cosBaseKey != null && indirectObjects.contains(cosBaseKey)))

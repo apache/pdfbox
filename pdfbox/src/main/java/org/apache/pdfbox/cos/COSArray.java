@@ -79,8 +79,13 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void add( COSObjectable object )
     {
-        objects.add( object.getCOSObject() );
-        getUpdateState().update(object.getCOSObject());
+        COSBase base = null;
+        if (object != null)
+        {
+            base = object.getCOSObject();
+        }
+        objects.add(base);
+        getUpdateState().update(base);
     }
 
     /**
@@ -764,6 +769,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
 
         for (COSBase cosBase : objects)
         {
+            if (cosBase == null)
+            {
+                continue;
+            }
             COSObjectKey cosBaseKey = cosBase.getKey();
             if (cosBaseKey != null && indirectObjects.contains(cosBaseKey))
             {
