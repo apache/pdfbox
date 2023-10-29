@@ -30,6 +30,7 @@ import java.nio.file.InvalidPathException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -45,6 +46,18 @@ class TestExtractText
     final PrintStream originalOut = System.out;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintStream printStream = null;
+    static final String testfile1 = "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf";
+    static final String testfile2 = "src/test/resources/org/apache/pdfbox/hello3.pdf";
+    static String filename1 = null;
+    static String filename2 = null;
+
+    @BeforeAll
+    public static void setupFilenames()
+    {
+        // the filename representation is platform dependent
+        filename1 = Paths.get(testfile1).toString();
+        filename2 = Paths.get(testfile2).toString();
+    }
 
     @BeforeEach
     public void setUpStreams()
@@ -82,18 +95,16 @@ class TestExtractText
     {
         ExtractText app = new ExtractText();
         CommandLine cmd = new CommandLine(app);
-        int exitCode = cmd.execute("-i", "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf",
-                "-console");
+        int exitCode = cmd.execute("-i", testfile1, "-console");
         assertEquals(0, exitCode);
 
         String result = out.toString("UTF-8");
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
-        assertFalse(result
-                .contains("PDF file: src/test/resources/org/apache/pdfbox/testPDFPackage.pdf"));
+        assertFalse(result.contains("PDF file: " + filename1));
         assertFalse(result.contains("Hello"));
         assertFalse(result.contains("World."));
-        assertFalse(result.contains("PDF file: src/test/resources/org/apache/pdfbox/hello3.pdf"));
+        assertFalse(result.contains("PDF file: " + filename2));
     }
 
     /**
@@ -106,18 +117,16 @@ class TestExtractText
     {
         ExtractText app = new ExtractText();
         CommandLine cmd = new CommandLine(app);
-        int exitCode = cmd.execute("-i", "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf",
-                "-console", "-addFileName");
+        int exitCode = cmd.execute("-i", testfile1, "-console", "-addFileName");
         assertEquals(0, exitCode);
 
         String result = out.toString("UTF-8");
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
-        assertTrue(result
-                .contains("PDF file: src/test/resources/org/apache/pdfbox/testPDFPackage.pdf"));
+        assertTrue(result.contains("PDF file: " + filename1));
         assertFalse(result.contains("Hello"));
         assertFalse(result.contains("World."));
-        assertFalse(result.contains("PDF file: src/test/resources/org/apache/pdfbox/hello3.pdf"));
+        assertFalse(result.contains("PDF file: " + filename2));
     }
 
     /**
@@ -128,22 +137,16 @@ class TestExtractText
     @Test
     void testPDFBoxRepeatableSubcommand() throws Exception
     {
-        // Please, copy from pdfbox/src/test/resources/input/hello3.pdf
-        assertTrue(Files.exists(Paths.get("src/test/resources/org/apache/pdfbox/hello3.pdf")));
-
-        PDFBox.main(new String[] { "export:text", "-i",
-                "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf", "-console",
-                "export:text", "-i", "src/test/resources/org/apache/pdfbox/hello3.pdf",
-                "-console" });
+        PDFBox.main(new String[] { "export:text", "-i", testfile1, "-console", //
+                "export:text", "-i", testfile2, "-console" });
 
         String result = out.toString("UTF-8");
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
-        assertFalse(result
-                .contains("PDF file: src/test/resources/org/apache/pdfbox/testPDFPackage.pdf"));
+        assertFalse(result.contains("PDF file: " + filename1));
         assertTrue(result.contains("Hello"));
         assertTrue(result.contains("World."));
-        assertFalse(result.contains("PDF file: src/test/resources/org/apache/pdfbox/hello3.pdf"));
+        assertFalse(result.contains("PDF file: " + filename2));
     }
 
     /**
@@ -154,21 +157,16 @@ class TestExtractText
     @Test
     void testPDFBoxRepeatableSubcommandAddFileName() throws Exception
     {
-        assertTrue(Files.exists(Paths.get("src/test/resources/org/apache/pdfbox/hello3.pdf")));
-
-        PDFBox.main(new String[] { "export:text", "-i",
-                "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf", "-console",
-                "-addFileName", "export:text", "-i",
-                "src/test/resources/org/apache/pdfbox/hello3.pdf", "-console", "-addFileName" });
+        PDFBox.main(new String[] { "export:text", "-i", testfile1, "-console", "-addFileName",
+                "export:text", "-i", testfile2, "-console", "-addFileName" });
 
         String result = out.toString("UTF-8");
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
-        assertTrue(result
-                .contains("PDF file: src/test/resources/org/apache/pdfbox/testPDFPackage.pdf"));
+        assertTrue(result.contains("PDF file: " + filename1));
         assertTrue(result.contains("Hello"));
         assertTrue(result.contains("World."));
-        assertTrue(result.contains("PDF file: src/test/resources/org/apache/pdfbox/hello3.pdf"));
+        assertTrue(result.contains("PDF file: " + filename2));
     }
 
     /**
@@ -180,10 +178,7 @@ class TestExtractText
     @Test
     void testPDFBoxRepeatableSubcommandAddFileNameOutfile(@TempDir Path tempDir) throws Exception
     {
-        assertTrue(Files.exists(Paths.get("src/test/resources/org/apache/pdfbox/hello3.pdf")));
-
         Path path = null;
-
         try
         {
             path = tempDir.resolve("outfile.txt");
@@ -196,19 +191,18 @@ class TestExtractText
         }
         assertFalse(path == null);
 
-        PDFBox.main(new String[] { "export:text", "-i",
-                "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf", "-encoding", "UTF-8",
-                "-addFileName", "-o", path.toString(), "export:text", "-o", path.toString(), "-i",
-                "src/test/resources/org/apache/pdfbox/hello3.pdf", "-addFileName" });
+        PDFBox.main(new String[] { "export:text", "-i", testfile1, "-encoding", "UTF-8",
+                "-addFileName", "-o", path.toString(), //
+                "export:text", "-i", testfile2, "-encoding", "UTF-8", //
+                "-addFileName", "-o", path.toString() });
 
         String result = new String(Files.readAllBytes(path), "UTF-8");
         assertFalse(result.contains("PDF1"));
         assertFalse(result.contains("PDF2"));
-        assertFalse(result
-                .contains("PDF file: src/test/resources/org/apache/pdfbox/testPDFPackage.pdf"));
+        assertFalse(result.contains("PDF file: " + filename1));
         assertTrue(result.contains("Hello"));
         assertTrue(result.contains("World."));
-        assertTrue(result.contains("PDF file: src/test/resources/org/apache/pdfbox/hello3.pdf"));
+        assertTrue(result.contains("PDF file: " + filename2));
     }
 
     /**
@@ -220,8 +214,6 @@ class TestExtractText
     void testPDFBoxRepeatableSubcommandAddFileNameOutfileAppend(@TempDir Path tempDir)
             throws Exception
     {
-        assertTrue(Files.exists(Paths.get("src/test/resources/org/apache/pdfbox/hello3.pdf")));
-
         Path path = null;
 
         try 
@@ -236,20 +228,18 @@ class TestExtractText
         }
         assertFalse(path == null);
 
-        PDFBox.main(new String[] { "export:text", "-i",
-                "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf", "-encoding", "UTF-8",
-                "-addFileName", "-o", path.toString(), "export:text", "-i",
-                "src/test/resources/org/apache/pdfbox/hello3.pdf", "-encoding", "UTF-8",
+        PDFBox.main(new String[] { "export:text", "-i", testfile1, "-encoding", "UTF-8",
+                "-addFileName", "-o", path.toString(), //
+                "export:text", "-i", testfile2, "-encoding", "UTF-8",
                 "-addFileName", "-o", path.toString(), "-append" });
 
         String result = new String(Files.readAllBytes(path), "UTF-8");
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
-        assertTrue(result
-                .contains("PDF file: src/test/resources/org/apache/pdfbox/testPDFPackage.pdf"));
+        assertTrue(result.contains("PDF file: " + filename1));
         assertTrue(result.contains("Hello"));
         assertTrue(result.contains("World."));
-        assertTrue(result.contains("PDF file: src/test/resources/org/apache/pdfbox/hello3.pdf"));
+        assertTrue(result.contains("PDF file: " + filename2));
     }
 
 }
