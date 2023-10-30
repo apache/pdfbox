@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.29
+Release Notes -- Apache PDFBox -- Version 2.0.30
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.28 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.29 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,33 +14,45 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-4010] - A (rotated) barcode is missing from a pdf when printed
-[PDFBOX-5587] - NullPointerException in PDTrueTypeFont.java getPath( )
-[PDFBOX-5591] - Parsing of XMP metadata without optional xmpmeta element
-[PDFBOX-5593] - Avoid division by 0 in shading function interpolation
-[PDFBOX-5596] - MyPageDrawer#getPaint may produce UnsupportedOperationException
-[PDFBOX-5601] - Barcode corrupted when printing document
-[PDFBOX-5604] - The text in some fonts is lost when converting pdf to image
-[PDFBOX-5606] - PDFTextStripper runs out of memory in 2.0.28 but not in 2.0.27 same code
-[PDFBOX-5609] - all values in the signature dictionary shall be direct objects
-[PDFBOX-5611] - Glyphs not rendered
-[PDFBOX-5612] - PDF with mangled font rendering in some environments
-[PDFBOX-5614] - RadioButtons disappear when printing PDF
-[PDFBOX-5620] - BitsPerComponent 16 not allowed in PDF/A-1b
-[PDFBOX-5621] - NullPointerException in PDFStreamEngine.showText
-[PDFBOX-5624] - Infinte loop when parsing Type1 font
+[PDFBOX-5350] - Regression unicode mapping in Korean document
+[PDFBOX-5359] - Operators "q" and "Q" should also preserve text matrices
+[PDFBOX-5623] - Signature Image not Rendered starting with PDFBox 2.0.23 + patch provided
+[PDFBOX-5627] - Fonts are not subsetted when saving incrementally
+[PDFBOX-5628] - Bug in PDFMergerUtility#mergeFields
+[PDFBOX-5639] - Password protected PDF opens in GUI apps but PDFbox says invalid password
+[PDFBOX-5642] - Wrong error message "2.4.1 : Invalid Color space, The operator "rg" can't be used with CMYK Profile"
+[PDFBOX-5644] - Make FDF annotations more compliant with the specification
+[PDFBOX-5649] - NPE in DomXmpParser.parseLiDescription
+[PDFBOX-5651] - Regression: NoSuchElementException in PDFXrefStreamParser
+[PDFBOX-5653] - The PageDrawer.strokePath method is blocked, and cpu100%
+[PDFBOX-5654] - Avoid NPE when processing CFF2 based fonts
+[PDFBOX-5658] - IllegalArgumentException: Dimensions (width=458477041 height=26) are too large
+[PDFBOX-5662] - Can not see checkbox check
+[PDFBOX-5665] - NPE when converting pdf to image.
+[PDFBOX-5668] - NullPointerException in XMPMetadata.getSchema()
+[PDFBOX-5672] - PDFToImage might not correctly detect unsupported image formats
+[PDFBOX-5684] - Font cache isn't effective on my machine, always rebuilds
+[PDFBOX-5694] - PDF to Image conversion results in different converted image
+[PDFBOX-5702] - Text in a certain font is lost when converting pdf to image
+[PDFBOX-5706] - Incorrect colors in image from PDFs (DCTDecode)
+
+New Feature
+
+[PDFBOX-5683] - Inconsistent/incomplete PDF rendering
 
 Improvement
 
-[PDFBOX-5571] - Add duplex and tray parameters to PrintPDF
-[PDFBOX-5598] - Create command line utility to extract XMP data
-[PDFBOX-5605] - Improve Opaque PDFRenderer example
-
-Task
-
-[PDFBOX-4932] - Implement /RunLengthDecode encoder
-[PDFBOX-5595] - Slight regression on corrupt bug tracker file
-[PDFBOX-5625] - move and update bc from jdk15on to jdk15to18
+[PDFBOX-4892] - Improve code quality (4)
+[PDFBOX-5630] - Add PDRectangle#TABLOID paper size
+[PDFBOX-5631] - Support version 0.5 of MaximumProfileTable
+[PDFBOX-5632] - loca-table isn't mandatory for TTF/OTF-fonts using CFF outlines
+[PDFBOX-5636] - Implement PDF 2.0 dash phase clarification
+[PDFBOX-5637] - Add getter and setter for the CO array under PDAcroForm
+[PDFBOX-5645] - Make UTC timezone static
+[PDFBOX-5650] - Facilitate migration to PDFBox 3.0
+[PDFBOX-5693] - Consolidate bouncycastle configuration
+[PDFBOX-5699] - Consistent scm.url values for pom.xml
+[PDFBOX-5703] - use comparison operators for enums
 
 Release Contents
 ----------------
