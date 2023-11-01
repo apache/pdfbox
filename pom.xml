@@ -345,6 +345,7 @@
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
             <version>2.6</version>
+            <inherited>false</inherited>
             <executions>
               <execution>
                 <goals>
@@ -363,8 +364,10 @@
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
             <version>3.1.0</version>
+            <inherited>false</inherited>
             <executions>
               <execution>
+                <id>apache-release</id>
                 <goals>
                   <goal>run</goal>
                 </goals>

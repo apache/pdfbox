@@ -26,10 +26,6 @@
       <excludes>
         <exclude>**/target/**</exclude>
         <exclude>**/.*/**</exclude>
-        <exclude>pdfbox/bin/**</exclude>
-        <exclude>pdfbox/download/**</exclude>
-        <exclude>pdfbox/external/**</exclude>
-        <exclude>pdfbox/tools/**</exclude>
       </excludes>
     </fileSet>
   </fileSets>
