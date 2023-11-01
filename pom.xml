@@ -31,7 +31,7 @@
 
   <groupId>org.apache.pdfbox</groupId>
   <artifactId>pdfbox-parent</artifactId>
-  <version>2.0.31-SNAPSHOT</version>
+  <version>2.0.30-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Apache PDFBox parent</name>
