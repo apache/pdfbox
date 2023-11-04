@@ -75,7 +75,7 @@ public class DebugLogAppender extends AbstractAppender
                 "%d [%t] %-5level: %msg%n%throwable"));
         builder.add(appenderBuilder);
 
-        builder.add(builder.newRootLogger(Level.ERROR).add(builder.newAppenderRef("Stdout"))
+        builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Stdout"))
                 .add(builder.newAppenderRef("Custom")));
         Configurator.initialize(builder.build());
     }
