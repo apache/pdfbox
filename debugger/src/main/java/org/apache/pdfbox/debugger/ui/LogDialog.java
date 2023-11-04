@@ -79,37 +79,37 @@ public class LogDialog extends JDialog
         SimpleAttributeSet levelStyle = new SimpleAttributeSet();
         switch (level)
         {
-            case "fatal":
+            case "FATAL":
                 levelText = "Fatal";
                 StyleConstants.setForeground(levelStyle, Color.WHITE);
                 StyleConstants.setBackground(levelStyle, Color.BLACK);
                 fatalCount++;
                 break;
-            case "error":
+            case "ERROR":
                 levelText = "Error";
                 StyleConstants.setForeground(levelStyle, new Color(0xFF291F));
                 StyleConstants.setBackground(levelStyle, new Color(0xFFF0F0));
                 errorCount++;
                 break;
-            case "warn":
+            case "WARN":
                 levelText = "Warning";
                 StyleConstants.setForeground(levelStyle, new Color(0x614201));
                 StyleConstants.setBackground(levelStyle, new Color(0xFFFCE5));
                 warnCount++;
                 break;
-            case "info":
+            case "INFO":
                 levelText = "Info";
                 StyleConstants.setForeground(levelStyle, new Color(0x203261));
                 StyleConstants.setBackground(levelStyle, new Color(0xE2E8FF));
                 otherCount++;
                 break;
-            case "debug":
+            case "DEBUG":
                 levelText = "Debug";
                 StyleConstants.setForeground(levelStyle, new Color(0x32612E));
                 StyleConstants.setBackground(levelStyle, new Color(0xF4FFEC));
                 otherCount++;
                 break;
-            case "trace":
+            case "TRACE":
                 levelText = "Trace";
                 StyleConstants.setForeground(levelStyle, new Color(0x64438D));
                 StyleConstants.setBackground(levelStyle, new Color(0xFEF3FF));

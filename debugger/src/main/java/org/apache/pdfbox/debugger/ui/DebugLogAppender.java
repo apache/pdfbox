@@ -23,15 +23,28 @@ import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.*;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
+import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
+import org.apache.logging.log4j.core.config.plugins.PluginElement;
+import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 import java.io.Serializable;
 
+@Plugin(name = "DebugLogAppender", category = "Core", elementType = "appender", printObject = true)
 public class DebugLogAppender extends AbstractAppender
 {
     protected DebugLogAppender(String name, Filter filter, Layout<? extends Serializable> layout,
             final boolean ignoreExceptions)
     {
         super(name, filter, layout, ignoreExceptions);
+    }
+
+    @PluginFactory
+    public static DebugLogAppender createAppender(@PluginAttribute("name") String name,
+            @PluginElement("Filter") Filter filter,
+            @PluginElement("Layout") Layout<? extends Serializable> layout,
+            @PluginAttribute("ignoreExceptions") boolean ignoreExceptions) {
+        return new DebugLogAppender(name, filter, layout, ignoreExceptions);
     }
 
     @Override
@@ -53,7 +66,7 @@ public class DebugLogAppender extends AbstractAppender
                 "%d [%t] %-5level: %msg%n%throwable"));
         builder.add(appenderBuilder);
 
-        appenderBuilder = builder.newAppender("Custom", "org.package.CustomAppender");
+        appenderBuilder = builder.newAppender("Custom", "DebugLogAppender");
         appenderBuilder.add(builder.newLayout("PatternLayout").addAttribute("pattern",
                 "%d [%t] %-5level: %msg%n%throwable"));
         builder.add(appenderBuilder);
