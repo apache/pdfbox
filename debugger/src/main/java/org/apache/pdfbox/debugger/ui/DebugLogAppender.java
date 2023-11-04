@@ -16,19 +16,23 @@
  */
 package org.apache.pdfbox.debugger.ui;
 
-import org.apache.logging.log4j.*;
-import org.apache.logging.log4j.core.*;
+import java.io.Serializable;
+
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.builder.api.*;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
-
-import java.io.Serializable;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
 
 @Plugin(name = "DebugLogAppender", category = "Core", elementType = "appender", printObject = true)
 public class DebugLogAppender extends AbstractAppender
