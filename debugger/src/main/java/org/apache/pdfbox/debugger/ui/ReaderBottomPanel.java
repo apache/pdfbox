@@ -28,6 +28,12 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * A panel to display at the bottom of the window for status and other stuff.
+ * 
+ * The WEST (left) status label is passed to PagePane to display timing information.
+ *
+ * The EAST (right) log label is passed to LogDialog when initialized. This class then updates the
+ * label with a count when log messages are produced. When the user clicks on this text a new window
+ * with the log messages will appear.
  *
  * @author Ben Litchfield
  */
