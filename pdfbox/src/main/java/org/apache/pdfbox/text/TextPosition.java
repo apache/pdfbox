@@ -20,6 +20,7 @@ import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -891,7 +892,7 @@ public final class TextPosition
         {
             return false;
         }
-        if (textMatrix != null ? !textMatrix.equals(that.textMatrix) : that.textMatrix != null)
+        if (!Objects.equals(textMatrix, that.textMatrix))
         {
             return false;
         }
@@ -899,7 +900,7 @@ public final class TextPosition
         {
             return false;
         }
-        return font != null ? font.equals(that.font) : that.font == null;
+        return Objects.equals(font, that.font);
         
         // If changing this method, do not compare mutable fields (PDFBOX-4701)        
     }
