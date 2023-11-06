@@ -182,7 +182,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
 
     private COSStream parseStreamElement(Element streamEl) throws IOException
     {
-        LOG.debug("Parse {} Stream", streamEl.getAttribute("KEY"));
+        LOG.debug("Parse {} Stream", () -> streamEl.getAttribute("KEY"));
         COSStream stream = new COSStream();
 
         NodeList nodeList = streamEl.getChildNodes();
