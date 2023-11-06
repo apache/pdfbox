@@ -19,6 +19,7 @@ package org.apache.pdfbox.tools;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -189,7 +190,7 @@ class TestExtractText
             System.err.println(
                     "Error creating temporary test file in " + this.getClass().getSimpleName());
         }
-        assertFalse(path == null);
+        assertNotNull(path);
 
         PDFBox.main(new String[] { "export:text", "-i", testfile1, "-encoding", "UTF-8",
                 "-addFileName", "-o", path.toString(), //
@@ -226,7 +227,7 @@ class TestExtractText
             System.err.println(
                     "Error creating temporary test file in " + this.getClass().getSimpleName());
         }
-        assertFalse(path == null);
+        assertNotNull(path);
 
         PDFBox.main(new String[] { "export:text", "-i", testfile1, "-encoding", "UTF-8",
                 "-addFileName", "-o", path.toString(), //
