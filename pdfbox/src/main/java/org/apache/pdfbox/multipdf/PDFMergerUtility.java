@@ -1439,18 +1439,19 @@ public class PDFMergerUtility
                 {
                     LOG.debug(
                             "clone potential orphan object in structure tree: {}, Type: {}, Subtype: {}, T: {}",
-                            item, objDict.getNameAsString(COSName.TYPE),
-                            objDict.getNameAsString(COSName.SUBTYPE),
-                            objDict.getNameAsString(COSName.T));
+                            () -> item,
+                            () -> objDict.getNameAsString(COSName.TYPE),
+                            () -> objDict.getNameAsString(COSName.SUBTYPE),
+                            () -> objDict.getNameAsString(COSName.T));
                 }
                 else
                 {
                     // don't display in full because of stack overflow
                     LOG.debug(
                             "clone potential orphan object in structure tree, Type: {}, Subtype: {}, T: {}",
-                            objDict.getNameAsString(COSName.TYPE),
-                            objDict.getNameAsString(COSName.SUBTYPE),
-                            objDict.getNameAsString(COSName.T));
+                            () -> objDict.getNameAsString(COSName.TYPE),
+                            () -> objDict.getNameAsString(COSName.SUBTYPE),
+                            () -> objDict.getNameAsString(COSName.T));
                 }
                 parentTreeEntry.setItem(COSName.OBJ, cloner.cloneForNewDocument(objDict));
             }
