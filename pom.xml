@@ -77,6 +77,7 @@
     <module>app</module>
     <module>debugger-app</module>
     <module>examples</module>
+    <module>release</module>
   </modules>
 
   <build>
@@ -139,7 +140,7 @@
               <execution>
                 <id>attach-sources</id>
                 <goals>
-                  <goal>jar</goal>
+                  <goal>jar-no-fork</goal>
                 </goals>
               </execution>
           </executions>
@@ -338,107 +339,13 @@
         <plugins>
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.6</version>
-            <inherited>false</inherited>
             <executions>
               <execution>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <phase>package</phase>
                 <configuration>
-                  <finalName>pdfbox-${project.version}</finalName>
-                  <descriptors>
-                    <descriptor>assembly.xml</descriptor>
-                  </descriptors>
+                   <skipAssembly>true</skipAssembly>
                 </configuration>
               </execution>
             </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>3.1.0</version>
-            <inherited>false</inherited>
-            <executions>
-              <execution>
-                <id>apache-release</id>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <phase>deploy</phase>
-                <configuration>
-                  <target>
-                    <mkdir dir="${basedir}/target/${project.version}" />
-                    <copy todir="${basedir}/target/${project.version}" flatten="true">
-                      <fileset dir="${basedir}">
-                        <include name="RELEASE-NOTES.txt" />
-                        <include name="target/*-src.zip*" />
-                        <include name="fontbox/target/*-${project.version}.jar*" />
-                        <include name="pdfbox/target/*-${project.version}.jar*" />
-                        <include name="xmpbox/target/*-${project.version}.jar*" />
-                        <include name="preflight/target/*-${project.version}.jar*" />
-                        <include name="debugger/target/*-${project.version}.jar*" />
-                        <include name="tools/target/*-${project.version}.jar*" />
-                        <include name="app/target/*-${project.version}.jar*" />
-                        <include name="preflight-app/target/*-${project.version}.jar*" />
-                        <include name="debugger-app/target/*-${project.version}.jar*" />
-                      </fileset>
-                    </copy>
-                    <checksum algorithm="SHA-512" fileext=".sha512">
-                      <fileset dir="${basedir}/target/${project.version}">
-                        <include name="*.zip" />
-                        <include name="*.jar" />
-                      </fileset>
-                    </checksum>
-                    <checksum file="${basedir}/target/${project.version}/pdfbox-${project.version}-src.zip" algorithm="SHA-512" property="checksum" />
-                    <echo file="${basedir}/target/vote.txt">
-From: ${username}@apache.org
-To: dev@pdfbox.apache.org
-Subject: [VOTE] Release Apache PDFBox ${project.version}
-
-A candidate for the PDFBox ${project.version} release is available at:
-
-    https://dist.apache.org/repos/dist/dev/pdfbox/${project.version}/
-
-The release candidate is a zip archive of the sources in:
-
-    https://svn.apache.org/repos/asf/pdfbox/tags/${project.version}/
-
-The SHA-512 checksum of the archive is ${checksum}.
-
-Please vote on releasing this package as Apache PDFBox ${project.version}.
-The vote is open for the next 72 hours and passes if a majority of at
-least three +1 PDFBox PMC votes are cast.
-
-    [ ] +1 Release this package as Apache PDFBox ${project.version}
-    [ ] -1 Do not release this package because...${line.separator}
-                    </echo>
-                    <echo />
-                    <echo>
-The release candidate has been prepared in:
-
-    ${basedir}/target/${project.version}
-
-Please commit it to
-
-    https://dist.apache.org/repos/dist/dev/pdfbox/${project.version}/
-
-A release vote template has been generated for you:
-
-    file://${basedir}/target/vote.txt
-                    </echo>
-                    <echo />
-                  </target>
-                </configuration>
-              </execution>
-            </executions>
-            <dependencies>
-              <dependency>
-                 <groupId>org.apache.ant</groupId>
-                 <artifactId>ant-nodeps</artifactId>
-                 <version>1.8.1</version>
-               </dependency>
-            </dependencies>
           </plugin>
         </plugins>
       </build>
