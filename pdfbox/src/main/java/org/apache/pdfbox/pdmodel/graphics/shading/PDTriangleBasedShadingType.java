@@ -202,7 +202,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
         long y = input.readBits(bitsPerCoordinate);
         float dstX = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
         float dstY = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
-        LOG.debug("coord: {}", String.format("[%06X,%06X] -> [%f,%f]", x, y, dstX, dstY));
+        LOG.debug("coord: {}", () -> String.format("[%06X,%06X] -> [%f,%f]", x, y, dstX, dstY));
         Point2D p = matrix.transformPoint(dstX, dstY);
         xform.transform(p, p);
 
@@ -211,8 +211,12 @@ abstract class PDTriangleBasedShadingType extends PDShading
             int color = (int) input.readBits(bitsPerColorComponent);
             colorComponentTab[n] = interpolate(color, maxSrcColor, colRangeTab[n].getMin(),
                     colRangeTab[n].getMax());
-            LOG.debug("color[{}]: {}/{}-> color[{}]: {}", n, color, String.format("%02x", color), n,
-                    colorComponentTab[n]);
+            if (LOG.isDebugEnabled())
+            {
+                LOG.debug("color[{}]: {}/{}-> color[{}]: {}", n, color,
+                        String.format("%02x", color), n,
+                        colorComponentTab[n]);
+            }
         }
 
         // "Each set of vertex data shall occupy a whole number of bytes.
