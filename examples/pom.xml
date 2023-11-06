@@ -24,7 +24,7 @@
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
     <version>3.0.1-SNAPSHOT</version>
-    <relativePath>../parent/pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>pdfbox-examples</artifactId>
@@ -46,10 +46,12 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpkix-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
@@ -85,6 +87,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

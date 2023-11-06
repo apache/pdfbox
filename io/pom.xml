@@ -24,7 +24,7 @@
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>pdfbox-parent</artifactId>
         <version>3.0.1-SNAPSHOT</version>
-        <relativePath>../parent/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>pdfbox-io</artifactId>
@@ -41,10 +41,12 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+            <version>${commons-logging.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
         </dependency>
     </dependencies>
 

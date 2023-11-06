@@ -24,7 +24,7 @@
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
     <version>3.0.1-SNAPSHOT</version>
-    <relativePath>../parent/pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>pdfbox-debugger</artifactId>
@@ -46,10 +46,12 @@
     <dependency>
       <groupId>info.picocli</groupId>
       <artifactId>picocli</artifactId>
+      <version>${picocli.version}</version>
     </dependency>
     <dependency>
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>jbig2-imageio</artifactId>
+        <version>${jbig2.version}</version>
         <scope>test</scope>
     </dependency>
     <!-- For legal reasons (incompatible license), these two dependencies 
@@ -58,11 +60,13 @@
     <dependency>
         <groupId>com.github.jai-imageio</groupId>
         <artifactId>jai-imageio-core</artifactId>
+        <version>${jai.version}</version>
         <scope>test</scope>
     </dependency>    
     <dependency>
         <groupId>com.github.jai-imageio</groupId>
         <artifactId>jai-imageio-jpeg2000</artifactId>
+        <version>${jai.version}</version>
         <scope>test</scope>
     </dependency>
   </dependencies>
