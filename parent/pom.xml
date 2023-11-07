@@ -128,6 +128,12 @@
                 <artifactId>picocli</artifactId>
                 <version>4.7.5</version>
             </dependency>
+            <!-- not used directly, updated to have less output from versions plugin -->
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-annotations</artifactId>
+                <version>3.10.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
