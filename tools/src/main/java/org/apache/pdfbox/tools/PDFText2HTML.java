@@ -88,7 +88,7 @@ public class PDFText2HTML extends PDFTextStripper
     protected String getTitle()
     {
         String titleGuess = document.getDocumentInformation().getTitle();
-        if(titleGuess != null && titleGuess.length() > 0)
+        if(titleGuess != null && !titleGuess.isEmpty())
         {
             return titleGuess;
         }

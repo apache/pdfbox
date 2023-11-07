@@ -109,7 +109,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
             }
             
             String stringResult = key;
-            if (object instanceof String && ((String)object).length() > 0)
+            if (object instanceof String && !((String) object).isEmpty())
             {
                 stringResult += ":  " + object;
                 if (item instanceof COSObject)

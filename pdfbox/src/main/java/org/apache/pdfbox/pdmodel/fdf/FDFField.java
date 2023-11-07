@@ -100,7 +100,7 @@ public class FDFField implements COSObjectable
                 }
             }
         }
-        if (kids.size() > 0)
+        if (!kids.isEmpty())
         {
             setKids(kids);
         }

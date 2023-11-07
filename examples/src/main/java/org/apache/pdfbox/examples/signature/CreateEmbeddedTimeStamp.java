@@ -152,7 +152,7 @@ public class CreateEmbeddedTimeStamp
 
         System.out.println("INFO: Byte Range: " + Arrays.toString(signature.getByteRange()));
 
-        if (tsaUrl != null && tsaUrl.length() > 0)
+        if (tsaUrl != null && !tsaUrl.isEmpty())
         {
             ValidationTimeStamp validation = new ValidationTimeStamp(tsaUrl);
             signedData = validation.addSignedTimeStamp(signedData);

@@ -303,7 +303,7 @@ public class PDFStreamParser extends BaseParser
             default:
                 // we must be an operator
                 String operator = readOperator().trim();
-                if (operator.length() > 0)
+                if (!operator.isEmpty())
                 {
                     return Operator.getOperator(operator);
                 }

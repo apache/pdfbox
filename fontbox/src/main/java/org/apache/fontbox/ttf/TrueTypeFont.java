@@ -674,7 +674,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
                     }
                 }
                 String unicode = uniStr.toString();
-                if (unicode.length() == 0)
+                if (unicode.isEmpty())
                 {
                     return -1;
                 }

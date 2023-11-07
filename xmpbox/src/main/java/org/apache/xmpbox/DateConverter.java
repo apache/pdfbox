@@ -85,7 +85,7 @@ public final class DateConverter
     public static Calendar toCalendar(String date) throws IOException
     {
         Calendar retval = null;
-        if ((date != null) && (date.trim().length() > 0))
+        if ((date != null) && (!date.trim().isEmpty()))
         {
             date = date.trim();
 

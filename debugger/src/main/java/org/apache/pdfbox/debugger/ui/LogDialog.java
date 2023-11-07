@@ -181,7 +181,7 @@ public class LogDialog extends JDialog
         String info = "";
         for (String str : infos)
         {
-            if (info.length() > 0)
+            if (!info.isEmpty())
             {
                 info += ", ";
             }

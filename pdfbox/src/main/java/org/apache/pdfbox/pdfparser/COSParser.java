@@ -771,7 +771,7 @@ public class COSParser extends BaseParser implements ICOSParser
             if (!endObjectKey.startsWith(ENDOBJ_STRING) && endObjectKey.startsWith(ENDSTREAM_STRING))
             {
                 endObjectKey = endObjectKey.substring(9).trim();
-                if (endObjectKey.length() == 0)
+                if (endObjectKey.isEmpty())
                 {
                     // no other characters in extra endstream line
                     // read next line
@@ -1615,7 +1615,7 @@ public class COSParser extends BaseParser implements ICOSParser
             while (!header.contains(headerMarker))
             {
                 // if a line starts with a digit, it has to be the first one with data in it
-                if ((header.length() > 0) && (Character.isDigit(header.charAt(0))))
+                if ((!header.isEmpty()) && (Character.isDigit(header.charAt(0))))
                 {
                     break;
                 }

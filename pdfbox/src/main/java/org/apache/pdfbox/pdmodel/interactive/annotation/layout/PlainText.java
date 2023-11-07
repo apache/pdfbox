@@ -55,7 +55,7 @@ public class PlainText
         for (String part : parts)
         {
             // Acrobat prints a space for an empty paragraph
-            if (part.length() == 0)
+            if (part.isEmpty())
             {
                 part = " ";
             }

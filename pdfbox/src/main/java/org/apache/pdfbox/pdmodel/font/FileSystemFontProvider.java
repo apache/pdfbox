@@ -546,26 +546,26 @@ final class FileSystemFontProvider extends FontProvider
                     
                     postScriptName = parts[0];
                     format = FontFormat.valueOf(parts[1]);
-                    if (parts[2].length() > 0)
+                    if (!parts[2].isEmpty())
                     {
                         String[] ros = parts[2].split("-");
                         cidSystemInfo = new CIDSystemInfo(ros[0], ros[1], Integer.parseInt(ros[2]));
                     }
-                    if (parts[3].length() > 0)
+                    if (!parts[3].isEmpty())
                     {
                         usWeightClass = (int)Long.parseLong(parts[3], 16);
                     }
-                    if (parts[4].length() > 0)
+                    if (!parts[4].isEmpty())
                     {
                         sFamilyClass = (int)Long.parseLong(parts[4], 16);
                     }
                     ulCodePageRange1 = (int)Long.parseLong(parts[5], 16);
                     ulCodePageRange2 = (int)Long.parseLong(parts[6], 16);
-                    if (parts[7].length() > 0)
+                    if (!parts[7].isEmpty())
                     {
                         macStyle = (int)Long.parseLong(parts[7], 16);
                     }
-                    if (parts[8].length() > 0)
+                    if (!parts[8].isEmpty())
                     {
                         panose = new byte[10];
                         for (int i = 0; i < 10; i ++)

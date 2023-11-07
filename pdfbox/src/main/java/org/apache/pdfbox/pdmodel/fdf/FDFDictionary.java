@@ -248,7 +248,7 @@ public class FDFDictionary implements COSObjectable
             output.write("modified=\"" + modified.toHexString() + "\" />\n");
         }
         List<FDFField> fields = getFields();
-        if (fields != null && fields.size() > 0)
+        if (fields != null && !fields.isEmpty())
         {
             output.write("<fields>\n");
             for (FDFField field : fields)

@@ -67,7 +67,7 @@ public class CompoundCharacterTokenizer
 
             String prevToken = text.substring(lastIndexOfPrevMatch, beginIndexOfNextMatch);
 
-            if (prevToken.length() > 0)
+            if (!prevToken.isEmpty())
             {
                 tokens.add(prevToken);
             }
@@ -82,7 +82,7 @@ public class CompoundCharacterTokenizer
 
         String tail = text.substring(lastIndexOfPrevMatch);
 
-        if (tail.length() > 0)
+        if (!tail.isEmpty())
         {
             tokens.add(tail);
         }

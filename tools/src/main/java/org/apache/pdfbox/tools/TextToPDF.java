@@ -289,7 +289,7 @@ public class TextToPDF implements Callable<Integer>
                     // word1 is the part before ff, word2 after
                     // both can be empty
                     // word1 can also be empty without ff, if a line has many spaces
-                    if (word1.length() > 0 || !ff)
+                    if (!word1.isEmpty() || !ff)
                     {
                         if (addSpace)
                         {
@@ -301,7 +301,7 @@ public class TextToPDF implements Callable<Integer>
                         }
                         nextLineToDraw.append(word1);
                     }
-                    if (!ff || word2.length() == 0)
+                    if (!ff || word2.isEmpty())
                     {
                         lineIndex++;
                     }

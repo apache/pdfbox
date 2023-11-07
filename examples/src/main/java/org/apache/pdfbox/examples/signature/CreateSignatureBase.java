@@ -143,7 +143,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
             gen.addCertificates(new JcaCertStore(Arrays.asList(certificateChain)));
             CMSProcessableInputStream msg = new CMSProcessableInputStream(content);
             CMSSignedData signedData = gen.generate(msg, false);
-            if (tsaUrl != null && tsaUrl.length() > 0)
+            if (tsaUrl != null && !tsaUrl.isEmpty())
             {
                 ValidationTimeStamp validation = new ValidationTimeStamp(tsaUrl);
                 signedData = validation.addSignedTimeStamp(signedData);

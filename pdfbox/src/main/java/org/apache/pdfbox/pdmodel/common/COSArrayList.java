@@ -257,7 +257,7 @@ public class COSArrayList<E> implements List<E>
 
         //when adding if there is a parentDict then change the item
         //in the dictionary from a single item to an array.
-        if( parentDict != null && c.size() > 0)
+        if( parentDict != null && !c.isEmpty())
         {
             parentDict.setItem( dictKey, array );
             //clear the parent dict so it doesn't happen again, there might be
@@ -280,7 +280,7 @@ public class COSArrayList<E> implements List<E>
 
         //when adding if there is a parentDict then change the item
         //in the dictionary from a single item to an array.
-        if( parentDict != null && c.size() > 0)
+        if( parentDict != null && !c.isEmpty())
         {
             parentDict.setItem( dictKey, array );
             //clear the parent dict so it doesn't happen again, there might be

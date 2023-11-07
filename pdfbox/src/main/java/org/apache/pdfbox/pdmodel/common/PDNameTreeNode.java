@@ -180,7 +180,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
                 try 
                 {
                     Map<String, T> names = getNames();
-                    if (names != null && names.size() > 0)
+                    if (names != null && !names.isEmpty())
                     {
                         Set<String> strings = names.keySet();
                         String[] keys = strings.toArray(String[]::new);

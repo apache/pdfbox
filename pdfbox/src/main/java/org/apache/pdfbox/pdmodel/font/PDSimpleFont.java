@@ -375,7 +375,7 @@ public abstract class PDSimpleFont extends PDFont
         if (getEncoding() instanceof DictionaryEncoding)
         {
             DictionaryEncoding dictionary = (DictionaryEncoding)getEncoding();
-            if (dictionary.getDifferences().size() > 0)
+            if (!dictionary.getDifferences().isEmpty())
             {
                 // we also require that the differences are actually different, see PDFBOX-1900 with
                 // the file from PDFBOX-2192 on Windows

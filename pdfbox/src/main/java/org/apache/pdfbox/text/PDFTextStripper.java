@@ -86,7 +86,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             // ignore and use default
             LOG.debug("Couldn't read system properties - using defaults", e);
         }
-        if (strIndent != null && strIndent.length() > 0)
+        if (strIndent != null && !strIndent.isEmpty())
         {
             try
             {
@@ -97,7 +97,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 // ignore and use default
             }
         }
-        if (strDrop != null && strDrop.length() > 0)
+        if (strDrop != null && !strDrop.isEmpty())
         {
             try
             {
@@ -485,7 +485,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
         boolean startOfPage = true; // flag to indicate start of page
         boolean startOfArticle;
-        if (charactersByArticle.size() > 0)
+        if (!charactersByArticle.isEmpty())
         {
             writePageStart();
         }
@@ -692,7 +692,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 previousAveCharWidth = averageCharWidth;
             }
             // print the final line
-            if (line.size() > 0)
+            if (!line.isEmpty())
             {
                 writeLine(normalize(line));
                 writeParagraphEnd();
