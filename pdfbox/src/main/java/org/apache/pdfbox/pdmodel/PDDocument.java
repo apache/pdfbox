@@ -1060,6 +1060,17 @@ public class PDDocument implements Closeable
      * <a href="https://stackoverflow.com/questions/74836898/">can cause trouble when PDFs get
      * signed</a>. (PDFBox already does this for signature widget annotations)
      * <p>
+     * Another problem with page-based modifications can occur if the page tree isn't flat: there
+     * won't be an closed update path from the catalog to the page. To fix this, add code like this:
+     * <pre>{@code
+     * COSDictionary parent = page.getCOSObject().getCOSDictionary(COSName.PARENT);
+     * while (parent != null)
+     * {
+     *     parent.setNeedToBeUpdated(true);
+     *     parent = parent.getCOSDictionary(COSName.PARENT);
+     * }
+     * }</pre>
+     * <p>
      * Don't use the input file as target as this will produce a corrupted file.
      *
      * @param output stream to write to. It will be closed when done. It <i><b>must never</b></i> point to the source
