@@ -291,7 +291,7 @@ public final class ExtractText  implements Callable<Integer>
                 public void close()
                 {
                     // don't close the console
-                };
+                }
             };
         }
         else

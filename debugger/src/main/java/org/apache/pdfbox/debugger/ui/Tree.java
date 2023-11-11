@@ -343,7 +343,7 @@ public class Tree extends JTree
             nameListBuilder.append(filters.get(i).getName()).append(" & ");
         }
         nameListBuilder.delete(nameListBuilder.lastIndexOf("&"), nameListBuilder.length());
-        JMenuItem menuItem = new JMenuItem("Keep " + nameListBuilder.toString() + "...");
+        JMenuItem menuItem = new JMenuItem("Keep " + nameListBuilder + "...");
 
         menuItem.addActionListener(actionEvent ->
         {

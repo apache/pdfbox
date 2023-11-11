@@ -1001,7 +1001,6 @@ public abstract class FDFAnnotation implements COSObjectable
             builder.append(String.format(" %s=\"%s\"", attribute.getNodeName(),
                     attributeNodeValue));
         }
-        return String.format("<%s%s>%s</%s>", node.getNodeName(), builder.toString(),
-                sb.toString(), node.getNodeName());
+        return String.format("<%s%s>%s</%s>", node.getNodeName(), builder, sb, node.getNodeName());
     }
 }
