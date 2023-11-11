@@ -129,7 +129,7 @@ public class LogDialog extends JDialog
         {
             StringWriter sw = new StringWriter();
             throwable.printStackTrace(new PrintWriter(sw));
-            message += "\n    " + sw.toString();
+            message += "\n    " + sw;
             exceptionCount++;
         }
         

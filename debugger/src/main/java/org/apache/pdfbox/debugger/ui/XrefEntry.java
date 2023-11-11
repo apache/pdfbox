@@ -73,7 +73,7 @@ public class XrefEntry
             return "(null)";
         }
         return offset >= 0 ? //
-                "Offset: " + offset + " [" + key.toString() + "]" : //
-                "Compressed object stream: " + (-offset) + " [" + key.toString() + "]";
+                "Offset: " + offset + " [" + key + "]" : //
+                "Compressed object stream: " + (-offset) + " [" + key + "]";
     }
 }
