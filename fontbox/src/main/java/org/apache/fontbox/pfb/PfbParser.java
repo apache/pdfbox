@@ -17,7 +17,6 @@
 package org.apache.fontbox.pfb;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -98,7 +97,7 @@ public class PfbParser
      */
     public PfbParser(final InputStream in) throws IOException 
     {
-        byte[] pfb = readFully(in);
+        byte[] pfb = in.readAllBytes();
         parsePfb(pfb);
     }
 
@@ -161,25 +160,6 @@ public class PfbParser
             }
             pointer += got;
         }
-    }
-
-    /**
-     * Read the pfb input.
-     * @param in    The input.
-     * @return Returns the pfb-array.
-     * @throws IOException if an IO-error occurs.
-     */
-    private byte[] readFully(final InputStream in) throws IOException 
-    {
-        // copy into an array
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] tmpbuf = new byte[BUFFER_SIZE];
-        int amountRead;
-        while ((amountRead = in.read(tmpbuf)) != -1) 
-        {
-            out.write(tmpbuf, 0, amountRead);
-        }
-        return out.toByteArray();
     }
 
     /**
