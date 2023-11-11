@@ -187,7 +187,7 @@ public final class ExtractText  implements Callable<Integer>
             if (addFileName)
             {
                 output.write("PDF file: " + infile);
-                output.write(System.getProperty("line.separator"));
+                output.write(System.lineSeparator());
             }
 
             if (debug)
