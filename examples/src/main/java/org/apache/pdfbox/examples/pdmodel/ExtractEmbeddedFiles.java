@@ -19,6 +19,7 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,7 +62,7 @@ public final class ExtractEmbeddedFiles
         }
 
         File pdfFile = new File(args[0]);
-        String filePath = pdfFile.getParent() + System.getProperty("file.separator");
+        String filePath = pdfFile.getParent() + FileSystems.getDefault().getSeparator();
         try (PDDocument document = Loader.loadPDF(pdfFile))
         {
             PDDocumentNameDictionary namesDictionary =

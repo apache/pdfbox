@@ -113,7 +113,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     /**
      * The platform's line separator.
      */
-    protected final String LINE_SEPARATOR = System.getProperty("line.separator");
+    protected final String LINE_SEPARATOR = System.lineSeparator();
 
     private String lineSeparator = LINE_SEPARATOR;
     private String wordSeparator = " ";

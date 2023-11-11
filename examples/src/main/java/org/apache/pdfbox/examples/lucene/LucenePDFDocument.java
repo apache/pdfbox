@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.FileSystems;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -110,7 +111,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
  */
 public class LucenePDFDocument
 {
-    private static final char FILE_SEPARATOR = System.getProperty("file.separator").charAt(0);
+    private static final char FILE_SEPARATOR = FileSystems.getDefault().getSeparator().charAt(0);
 
     // given caveat of increased search times when using
     // MICROSECOND, only use SECOND by default
