@@ -57,13 +57,7 @@ public class PfbParser
     /**
      * The record types in the pfb-file.
      */
-    private static final int[] PFB_RECORDS = {ASCII_MARKER, BINARY_MARKER,
-            ASCII_MARKER};
-    
-    /**
-     * buffersize.
-     */
-    private static final int BUFFER_SIZE = 0xffff;
+    private static final int[] PFB_RECORDS = {ASCII_MARKER, BINARY_MARKER, ASCII_MARKER};
 
     /**
      * the parsed pfb-data.
