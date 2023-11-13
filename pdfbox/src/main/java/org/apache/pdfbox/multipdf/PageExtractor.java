@@ -18,12 +18,9 @@
 package org.apache.pdfbox.multipdf;
 
 import java.io.IOException;
+import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 
 /**
  * This class will extract one or more sequential pages and create a new document.
@@ -31,8 +28,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
  */
 public class PageExtractor
 {
-    private static final Log LOG = LogFactory.getLog(PageExtractor.class);
-    
     private final PDDocument sourceDocument;
     
     // first page to extract is page 1 (by default)
@@ -77,23 +72,16 @@ public class PageExtractor
      */
     public PDDocument extract() throws IOException
     {
-        PDDocument extractedDocument = new PDDocument();
-        extractedDocument.setDocumentInformation(sourceDocument.getDocumentInformation());
-        extractedDocument.getDocumentCatalog().setViewerPreferences(
-                sourceDocument.getDocumentCatalog().getViewerPreferences());
-        
-        for (int i = startPage; i <= endPage; i++)
+        if (endPage - startPage + 1 <= 0)
         {
-            PDPage page = sourceDocument.getPage(i - 1);
-            PDPage imported = extractedDocument.importPage(page);
-            if (page.getResources() != null && !page.getCOSObject().containsKey(COSName.RESOURCES))
-            {
-                imported.setResources(page.getResources());
-                LOG.info("Done in PageExtractor"); // follow-up to warning in importPage
-            }
+            return new PDDocument();
         }
-
-        return extractedDocument;
+        Splitter splitter = new Splitter();
+        splitter.setStartPage(Math.max(startPage, 1));
+        splitter.setEndPage(Math.min(endPage, sourceDocument.getNumberOfPages()));
+        splitter.setSplitAtPage(getEndPage() - getStartPage() + 1);
+        List<PDDocument> splitted = splitter.split(sourceDocument);
+        return splitted.get(0);
     }
 
     /**
