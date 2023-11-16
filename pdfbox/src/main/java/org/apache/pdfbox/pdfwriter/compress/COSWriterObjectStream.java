@@ -175,18 +175,16 @@ public class COSWriterObjectStream
         COSBase base;
         if (object instanceof COSObject)
         {
-            base = ((COSObject) object).getObject();
             if (!topLevel)
             {
                 COSObjectKey actualKey = object.getKey();
-                // the object reference can't be dereferenced be lenient and write the reference nevertheless
-                // or the object is part of a compressed object stream and shouldn't be written directly
-                if (base == null || (actualKey != null && preparedKeys.contains(actualKey)))
+                if (actualKey != null)
                 {
                     writeObjectReference(output, actualKey);
                     return;
                 }
             }
+            base = ((COSObject) object).getObject();
         }
         else
         {
