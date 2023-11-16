@@ -1462,6 +1462,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             }
             if (cosBase instanceof COSObject)
             {
+                indirectObjects.add(cosBaseKey);
                 // dereference object
                 COSBase referencedObject = ((COSObject) cosBase).getObject();
                 if (referencedObject instanceof COSDictionary)
