@@ -56,7 +56,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <bouncycastle.version>1.76</bouncycastle.version>
+    <bouncycastle.version>1.77</bouncycastle.version>
     <junit.version>4.13.2</junit.version>
     <jbig2.version>3.0.4</jbig2.version>
     <jai.version>1.4.0</jai.version>
@@ -316,7 +316,7 @@
               <plugin>
                   <groupId>org.owasp</groupId>
                   <artifactId>dependency-check-maven</artifactId>
-                  <version>8.4.2</version>
+                  <version>8.4.3</version>
                   <configuration>
                       <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                       <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
