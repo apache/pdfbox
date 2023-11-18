@@ -85,8 +85,8 @@ public final class MemoryUsageSetting
             }
         }
         
-        if (locUseMainMemory && (locMaxStorageBytes > -1) &&
-            ((locMaxMainMemoryBytes == -1) || (locMaxMainMemoryBytes > locMaxStorageBytes)))
+        if (shouldUpdateStorageConsideringMainMemory(locUseMainMemory, locMaxStorageBytes) &&
+                shouldUpdateStorageBasedOnMainMemory(locMaxMainMemoryBytes, locMaxStorageBytes))
         {
             locMaxStorageBytes = locMaxMainMemoryBytes;
         }
@@ -96,6 +96,14 @@ public final class MemoryUsageSetting
         this.useTempFile = useTempFile;
         this.maxMainMemoryBytes = locMaxMainMemoryBytes;
         this.maxStorageBytes = locMaxStorageBytes;
+    }
+
+    private boolean shouldUpdateStorageBasedOnMainMemory(long locMaxMainMemoryBytes, long locMaxStorageBytes) {
+        return (locMaxMainMemoryBytes == -1) || (locMaxMainMemoryBytes > locMaxStorageBytes);
+    }
+
+    private boolean shouldUpdateStorageConsideringMainMemory(boolean locUseMainMemory, long locMaxStorageBytes) {
+        return locUseMainMemory && (locMaxStorageBytes > -1);
     }
     
     /**

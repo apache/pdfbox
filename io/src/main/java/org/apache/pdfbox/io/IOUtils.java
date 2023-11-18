@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -237,15 +238,24 @@ public final class IOUtils
                  */
                 final MethodHandle cleanMethod = lookup.findVirtual(cleanerClass, "clean",
                         methodType(void.class));
-                final MethodHandle nonNullTest = lookup
-                        .findStatic(Objects.class, "nonNull",
-                                methodType(boolean.class, Object.class))
-                        .asType(methodType(boolean.class, cleanerClass));
+
+                final MethodType objectToBooleanMethodType = methodType(boolean.class, Object.class);
+                final MethodType booleanToCleanerMethodType = methodType(boolean.class, cleanerClass);
+                final MethodHandle nonNullMethodHandle = lookup.findStatic(
+                        Objects.class,
+                        "nonNull",
+                        objectToBooleanMethodType
+                );
+                final MethodHandle nonNullTest = nonNullMethodHandle.asType(booleanToCleanerMethodType);
+
                 final MethodHandle noop = dropArguments(
                         constant(Void.class, null).asType(methodType(void.class)), 0, cleanerClass);
-                final MethodHandle unmapper = filterReturnValue(directBufferCleanerMethod,
-                        guardWithTest(nonNullTest, cleanMethod, noop))
-                                .asType(methodType(void.class, ByteBuffer.class));
+
+                final MethodHandle guardTest = guardWithTest(nonNullTest, cleanMethod, noop);
+                final MethodHandle filteredUnmapper = filterReturnValue(directBufferCleanerMethod, guardTest);
+                final MethodType voidToByteBufferMethodType = methodType(void.class, ByteBuffer.class);
+                final MethodHandle unmapper = filteredUnmapper.asType(voidToByteBufferMethodType);
+
                 return newBufferCleaner(directBufferClass, unmapper);
             }
         }
