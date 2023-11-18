@@ -22,7 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Parser for a pfb-file.
@@ -32,6 +36,8 @@ import java.util.Arrays;
  */
 public class PfbParser 
 {
+    private static final Logger LOG = LogManager.getLogger(PfbParser.class);
+    
     /**
      * the pfb header length.
      * (start-marker (1 byte), ascii-/binary-marker (1 byte), size (4 byte))
@@ -55,9 +61,9 @@ public class PfbParser
     private static final int BINARY_MARKER = 0x02;
 
     /**
-     * The record types in the pfb-file.
+     * the EOF marker.
      */
-    private static final int[] PFB_RECORDS = {ASCII_MARKER, BINARY_MARKER, ASCII_MARKER};
+    private static final int EOF_MARKER = 0x03;
 
     /**
      * the parsed pfb-data.
@@ -65,9 +71,9 @@ public class PfbParser
     private byte[] pfbdata;
 
     /**
-     * the lengths of the records.
+     * the lengths of the records (ASCII, BINARY, ASCII)
      */
-    private int[] lengths;
+    private final int[] lengths = new int[3];
 
     // sample (pfb-file)
     // 00000000 80 01 8b 15  00 00 25 21  50 53 2d 41  64 6f 62 65  
@@ -116,43 +122,87 @@ public class PfbParser
         {
             throw new IOException("PFB header missing");
         }
+        // read into segments and keep them
+        List<Integer> typeList = new ArrayList<>(3);
+        List<byte[]> barrList = new ArrayList<>();
         ByteArrayInputStream in = new ByteArrayInputStream(pfb);
-        pfbdata = new byte[pfb.length - PFB_HEADER_LENGTH];
-        lengths = new int[PFB_RECORDS.length];
-        int pointer = 0;
-        for (int records = 0; records < PFB_RECORDS.length; records++) 
+        int total = 0;
+        do
         {
             if (in.read() != START_MARKER) 
             {
                 throw new IOException("Start marker missing");
             }
-
-            if (in.read() != PFB_RECORDS[records]) 
+            int recordType = in.read();
+            if (recordType == EOF_MARKER)
             {
-                throw new IOException("Incorrect record type");
+                break;
+            }
+            if (recordType != ASCII_MARKER && recordType != BINARY_MARKER)
+            {
+                throw new IOException("Incorrect record type: " + recordType);
             }
 
             int size = in.read();
             size += in.read() << 8;
             size += in.read() << 16;
             size += in.read() << 24;
-            lengths[records] = size;
-            if (pointer >= pfbdata.length)
+            LOG.debug("record type: " + recordType + ", segment size: " + size);
+            byte ar[] = new byte[size];
+            int got = in.read(ar);
+            if (got != size)
             {
-                throw new EOFException("attempted to read past EOF");
+                throw new EOFException("EOF while reading PFB font");
             }
-            if (size > pfbdata.length - pointer)
+            total += size;
+            typeList.add(recordType);
+            barrList.add(ar);
+        }
+        while (true);
+        
+        // We now have ASCII and binary segments. Lets arrange these so that the ASCII segments
+        // come first, then the binary segments, then the last ASCII segment if it is
+        // 0000... cleartomark
+        
+        pfbdata = new byte[total];
+        byte[] cleartomarkSegment = null;
+        int dstPos = 0;
+        
+        // copy the ASCII segments
+        for (int i = 0; i < typeList.size(); ++i)
+        {
+            if (typeList.get(i) != ASCII_MARKER)
             {
-                throw new EOFException("attempted to read " + size + " bytes at position " + pointer +
-                        " into array of size " + pfbdata.length + ", but only space for " + 
-                        (pfbdata.length - pointer) + " bytes left");
+                continue;
             }
-            int got = in.read(pfbdata, pointer, size);
-            if (got < 0) 
+            byte[] ar = barrList.get(i);
+            if (i == typeList.size() - 1 && ar.length < 600 && new String(ar).contains("cleartomark"))
             {
-                throw new EOFException();
+                cleartomarkSegment = ar;
+                continue;
             }
-            pointer += got;
+            System.arraycopy(ar, 0, pfbdata, dstPos, ar.length);
+            dstPos += ar.length;
+        }
+        lengths[0] = dstPos;
+
+        // copy the binary segments
+        for (int i = 0; i < typeList.size(); ++i)
+        {
+            if (typeList.get(i) != BINARY_MARKER)
+            {
+                continue;
+            }
+            byte[] ar = barrList.get(i);
+            System.arraycopy(ar, 0, pfbdata, dstPos, ar.length);
+            dstPos += ar.length;
+        }
+        lengths[1] = dstPos - lengths[0];
+        
+        if (cleartomarkSegment != null)
+        {
+            System.arraycopy(cleartomarkSegment, 0, pfbdata, dstPos, cleartomarkSegment.length);
+            lengths[2] = cleartomarkSegment.length;
         }
     }
 

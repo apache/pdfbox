@@ -55,7 +55,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <bouncycastle.version>1.76</bouncycastle.version>
+        <bouncycastle.version>1.77</bouncycastle.version>
         <log4j2.version>2.21.1</log4j2.version>
 
         <!-- This is a default value to avoid problems when running single tests
@@ -180,7 +180,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>8.4.2</version>
+                        <version>8.4.3</version>
                         <configuration>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                             <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
