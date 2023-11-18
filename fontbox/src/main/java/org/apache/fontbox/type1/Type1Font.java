@@ -85,6 +85,137 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
         return parser.parse(segment1, segment2);
     }
 
+    /**
+     * Reads font attributes and assigns values to respective fields of a font object.
+     * @param key The attribute key indicating the specific font attribute.
+     * @param value  list of tokens representing the value(s) associated with the attribute.
+     * @throws IOException If an input/output exception occurs during the process.
+     */
+    public void readFontAttributes(String key, List<Token> value) throws IOException
+    {
+        switch (key)
+        {
+            case "version":
+                this.version = value.get(0).getText();
+                break;
+            case "Notice":
+                this.notice = value.get(0).getText();
+                break;
+            case "FullName":
+                this.fullName = value.get(0).getText();
+                break;
+            case "FamilyName":
+                this.familyName = value.get(0).getText();
+                break;
+            case "Weight":
+                this.weight = value.get(0).getText();
+                break;
+            case "ItalicAngle":
+                this.italicAngle = value.get(0).floatValue();
+                break;
+            case "isFixedPitch":
+                this.isFixedPitch = value.get(0).booleanValue();
+                break;
+            case "UnderlinePosition":
+                this.underlinePosition = value.get(0).floatValue();
+                break;
+            case "UnderlineThickness":
+                this.underlineThickness = value.get(0).floatValue();
+                break;
+            case "FontName":
+                this.fontName = value.get(0).getText();
+                break;
+            case "PaintType":
+                this.paintType = value.get(0).intValue();
+                break;
+            case "FontType":
+                this.fontType = value.get(0).intValue();
+                break;
+            case "FontMatrix":
+                this.fontMatrix = arrayToNumbers(value);
+                break;
+            case "FontBBox":
+                this.fontBBox = arrayToNumbers(value);
+                break;
+            case "UniqueID":
+                this.uniqueID = value.get(0).intValue();
+                break;
+            case "StrokeWidth":
+                this.strokeWidth = value.get(0).floatValue();
+                break;
+            case "FID":
+                this.fontID = value.get(0).getText();
+                break;
+            case "BlueValues":
+                this.blueValues = arrayToNumbers(value);
+                break;
+            case "OtherBlues":
+                this.otherBlues = arrayToNumbers(value);
+                break;
+            case "FamilyBlues":
+                this.familyBlues = arrayToNumbers(value);
+                break;
+            case "FamilyOtherBlues":
+                this.familyOtherBlues = arrayToNumbers(value);
+                break;
+            case "BlueScale":
+                this.blueScale = value.get(0).floatValue();
+                break;
+            case "BlueShift":
+                this.blueShift = value.get(0).intValue();
+                break;
+            case "BlueFuzz":
+                this.blueFuzz = value.get(0).intValue();
+                break;
+            case "StdHW":
+                this.stdHW = arrayToNumbers(value);
+                break;
+            case "StdVW":
+                this.stdVW = arrayToNumbers(value);
+                break;
+            case "StemSnapH":
+                this.stemSnapH = arrayToNumbers(value);
+                break;
+            case "StemSnapV":
+                this.stemSnapV = arrayToNumbers(value);
+                break;
+            case "ForceBold":
+                this.forceBold = value.get(0).booleanValue();
+                break;
+            case "LanguageGroup":
+                this.languageGroup = value.get(0).intValue();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Extracts values from an array as numbers.
+     */
+    private List<Number> arrayToNumbers(List<Token> value) throws IOException
+    {
+        List<Number> numbers = new ArrayList<>();
+        for (int i = 1, size = value.size() - 1; i < size; i++)
+        {
+            Token token = value.get(i);
+            if (token.getKind() == Token.REAL)
+            {
+                numbers.add(token.floatValue());
+            }
+            else if (token.getKind() == Token.INTEGER)
+            {
+                numbers.add(token.intValue());
+            }
+            else
+            {
+                throw new IOException("Expected INTEGER or REAL but got " + token +
+                        " at array position " + i);
+            }
+        }
+        return numbers;
+    }
+
     // font dictionary
     String fontName = "";
     Encoding encoding = null;
