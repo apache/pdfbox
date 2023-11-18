@@ -241,7 +241,7 @@ public class ScratchFile implements RandomAccessStreamCache
         synchronized (ioLock)
         {
             checkClosed();
-     
+
             if (pageCount >= maxPageCount)
             {
                 return;
@@ -249,59 +249,75 @@ public class ScratchFile implements RandomAccessStreamCache
 
             if (useScratchFile)
             {
-                // create scratch file is needed
-                if ( raf == null )
-                {
-                    file = File.createTempFile("PDFBox", ".tmp", scratchFileDirectory);
-                    try
-                    {
-                        raf = new java.io.RandomAccessFile(file, "rw");
-                    }
-                    catch (IOException e)
-                    {
-                        if (!file.delete())
-                        {
-                            LOG.warn("Error deleting scratch file: {}", file.getAbsolutePath());
-                        }
-                        throw e;
-                    }
-                }
-                
-                long fileLen = raf.length();
-                long expectedFileLen = ((long)pageCount - inMemoryMaxPageCount) * PAGE_SIZE;
-                
-                if (expectedFileLen != fileLen)
-                {
-                    throw new IOException("Expected scratch file size of " + expectedFileLen + " but found " + fileLen);
-                }
-                    
-                // enlarge if we do not overflow
-                if (pageCount + ENLARGE_PAGE_COUNT > pageCount)
-                {
-                    fileLen += ENLARGE_PAGE_COUNT * PAGE_SIZE;
-        
-                    raf.setLength(fileLen);
-        
-                    freePages.set(pageCount, pageCount + ENLARGE_PAGE_COUNT);
-                }
+                handleScratchFile();
             }
             else if (!maxMainMemoryIsRestricted)
             {
-                // increase number of in-memory pages
-                int oldSize = inMemoryPages.length;
-                int newSize = (int) Math.min( ((long)oldSize) * 2, Integer.MAX_VALUE);  // this handles integer overflow
-                if (newSize > oldSize)
-                {
-                    byte[][] newInMemoryPages = new byte[newSize][];
-                    System.arraycopy(inMemoryPages, 0, newInMemoryPages, 0, oldSize);
-                    inMemoryPages = newInMemoryPages;
-                    
-                    freePages.set(oldSize, newSize);
-                }
+                increaseInMemoryPages();
             }
         }
     }
-    
+
+    private void handleScratchFile() throws IOException
+    {
+        // create scratch file is needed
+        if ( raf == null )
+        {
+            file = File.createTempFile("PDFBox", ".tmp", scratchFileDirectory);
+            try
+            {
+                raf = new java.io.RandomAccessFile(file, "rw");
+            }
+            catch (IOException e)
+            {
+                if (!file.delete())
+                {
+                    LOG.warn("Error deleting scratch file: {}", file.getAbsolutePath());
+                }
+                throw e;
+            }
+        }
+
+        long fileLen = raf.length();
+        long expectedFileLen = ((long)pageCount - inMemoryMaxPageCount) * PAGE_SIZE;
+
+        if (expectedFileLen != fileLen)
+        {
+            throw new IOException("Expected scratch file size of " + expectedFileLen + " but found " + fileLen);
+        }
+
+        enlargeScratchFileIfPossible(fileLen);
+    }
+
+    private void enlargeScratchFileIfPossible(long fileLen) throws IOException
+    {
+        // enlarge if we do not overflow
+        if (pageCount + ENLARGE_PAGE_COUNT > pageCount)
+        {
+            fileLen += ENLARGE_PAGE_COUNT * PAGE_SIZE;
+
+            raf.setLength(fileLen);
+
+            freePages.set(pageCount, pageCount + ENLARGE_PAGE_COUNT);
+        }
+    }
+
+    private void increaseInMemoryPages()
+    {
+        // increase number of in-memory pages
+        int oldSize = inMemoryPages.length;
+        int newSize = (int) Math.min( ((long)oldSize) * 2, Integer.MAX_VALUE);  // this handles integer overflow
+        if (newSize > oldSize)
+        {
+            byte[][] newInMemoryPages = new byte[newSize][];
+            System.arraycopy(inMemoryPages, 0, newInMemoryPages, 0, oldSize);
+            inMemoryPages = newInMemoryPages;
+
+            freePages.set(oldSize, newSize);
+        }
+    }
+
+
     /**
      * Returns byte size of a page.
      * 
