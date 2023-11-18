@@ -146,6 +146,18 @@
                       <sha512>2787fcecc0feb1c9e6ff0d8de6193658413863e44eaab572751ca7e6c3b369c0a9731f4952cb0821f307760f0422f77c5f0d3fe7df6b054643fb39423e8d70ee</sha512>
                   </configuration>
               </execution>
+              <execution>
+                  <id>PDFBOX-5713</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://issues.apache.org/jira/secure/attachment/13064282/DejaVuSerifCondensed.pfb</url>
+                      <outputDirectory>${project.build.directory}/fonts</outputDirectory>
+                      <sha512>2787fcecc0feb1c9e6ff0d8de6193658413863e44eaab572751ca7e6c3b369c0a9731f4952cb0821f307760f0422f77c5f0d3fe7df6b054643fb39423e8d70ee</sha512>
+                  </configuration>
+              </execution>
           </executions>
       </plugin>
     </plugins>
