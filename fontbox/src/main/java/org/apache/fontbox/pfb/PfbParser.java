@@ -129,7 +129,12 @@ public class PfbParser
         int total = 0;
         do
         {
-            if (in.read() != START_MARKER) 
+            int r = in.read();
+            if (r == -1 && total > 0)
+            {
+                break; // EOF
+            }
+            if (r != START_MARKER) 
             {
                 throw new IOException("Start marker missing");
             }
