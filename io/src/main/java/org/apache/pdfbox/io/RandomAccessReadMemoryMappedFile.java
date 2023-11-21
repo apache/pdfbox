@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.EnumSet;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     private final Consumer<? super ByteBuffer> unmapper;
 
     /**
-     * Default constructor.
+     * Create a random access memory mapped file instance for the file with the given name.
      * 
      * @param filename the filename of the file to be read
      * 
@@ -57,7 +58,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     }
 
     /**
-     * Default constructor.
+     * Create a random access memory mapped file instance for the given file.
      * 
      * @param file the file to be read
      * 
@@ -65,13 +66,24 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
      */
     public RandomAccessReadMemoryMappedFile(File file) throws IOException
     {
-        fileChannel = FileChannel.open(file.toPath(), EnumSet.of(StandardOpenOption.READ));
+        this(file.toPath());
+    }
+
+    /**
+     * Create a random access memory mapped file instance using the given path.
+     * 
+     * @param path path of the file to be read.
+     * 
+     * @throws IOException If there is an IO error opening the file.
+     */
+    public RandomAccessReadMemoryMappedFile(Path path) throws IOException
+    {
+        fileChannel = FileChannel.open(path, EnumSet.of(StandardOpenOption.READ));
         size = fileChannel.size();
         // TODO only ints are allowed -> implement paging
         if (size > Integer.MAX_VALUE)
         {
-            throw new IOException(getClass().getName()
-                    + " doesn't yet support files bigger than "
+            throw new IOException(getClass().getName() + " doesn't yet support files bigger than "
                     + Integer.MAX_VALUE);
         }
         // map the whole file to memory

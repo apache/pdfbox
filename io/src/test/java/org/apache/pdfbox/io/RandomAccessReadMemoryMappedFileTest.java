@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import org.junit.jupiter.api.Assertions;
@@ -46,6 +47,16 @@ class RandomAccessReadMemoryMappedFileTest
             randomAccessSource.skip(5);
             assertEquals('5', randomAccessSource.read());
             assertEquals(6, randomAccessSource.getPosition());
+        }
+    }
+
+    @Test
+    void testPathConstructor() throws IOException, URISyntaxException
+    {
+        try (RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+                Paths.get(getClass().getResource("RandomAccessReadFile1.txt").toURI())))
+        {
+            assertEquals(130, randomAccessSource.length());
         }
     }
 

@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     private int offsetWithinPage = 0;
 
     private final FileChannel fileChannel;
-    private final File file;
+    private final Path path;
     private final long fileLength;
     private long fileOffset = 0;
     private boolean isClosed;
@@ -94,9 +95,20 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
      */
     public RandomAccessReadBufferedFile( File file ) throws IOException 
     {
-        this.file = file;
-        fileChannel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
-        fileLength = file.length();
+        this(file.toPath());
+    }
+
+    /**
+     * Create a random access buffered file instance using the given path.
+     *
+     * @param path path of the file to be read.
+     * @throws IOException if something went wrong while accessing the given file.
+     */
+    public RandomAccessReadBufferedFile(Path path) throws IOException
+    {
+        this.path = path;
+        fileChannel = FileChannel.open(path, StandardOpenOption.READ);
+        fileLength = fileChannel.size();
         seek(0);
     }
 
@@ -269,7 +281,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
         RandomAccessReadBufferedFile randomAccessReadBufferedFile = rafCopies.get(currentThreadID);
         if (randomAccessReadBufferedFile == null || randomAccessReadBufferedFile.isClosed())
         {
-            randomAccessReadBufferedFile = new RandomAccessReadBufferedFile(file);
+            randomAccessReadBufferedFile = new RandomAccessReadBufferedFile(path);
             rafCopies.put(currentThreadID, randomAccessReadBufferedFile);
         }
         return new RandomAccessReadView(randomAccessReadBufferedFile, startPosition, streamLength);
