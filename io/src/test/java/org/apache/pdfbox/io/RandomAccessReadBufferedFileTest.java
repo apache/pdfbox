@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -119,6 +120,16 @@ class RandomAccessReadBufferedFileTest
             
             assertEquals('6', randomAccessSource.peek());
             assertEquals(6, randomAccessSource.getPosition());
+        }
+    }
+
+    @Test
+    void testPathConstructor() throws IOException, URISyntaxException
+    {
+        try (RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
+                Paths.get(getClass().getResource("RandomAccessReadFile1.txt").toURI())))
+        {
+            assertEquals(130, randomAccessSource.length());
         }
     }
 
