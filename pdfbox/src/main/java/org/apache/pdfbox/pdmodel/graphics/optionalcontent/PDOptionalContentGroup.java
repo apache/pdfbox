@@ -43,7 +43,7 @@ public class PDOptionalContentGroup extends PDPropertyList
     public PDOptionalContentGroup(COSDictionary dict)
     {
         super(dict);
-        if (!dict.getItem(COSName.TYPE).equals(COSName.OCG))
+        if (!dict.getDictionaryItem(COSName.TYPE).equals(COSName.OCG))
         {
             throw new IllegalArgumentException(
                     "Provided dictionary is not of type '" + COSName.OCG + "'");
