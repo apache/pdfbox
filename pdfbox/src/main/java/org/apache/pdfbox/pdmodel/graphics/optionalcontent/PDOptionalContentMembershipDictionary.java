@@ -47,7 +47,7 @@ public class PDOptionalContentMembershipDictionary extends PDPropertyList
     public PDOptionalContentMembershipDictionary(COSDictionary dict)
     {
         super(dict);
-        if (!dict.getItem(COSName.TYPE).equals(COSName.OCMD))
+        if (!dict.getDictionaryObject(COSName.TYPE).equals(COSName.OCMD))
         {
             throw new IllegalArgumentException(
                     "Provided dictionary is not of type '" + COSName.OCMD + "'");
