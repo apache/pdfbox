@@ -64,6 +64,32 @@ public class PfbParserTest
     }
 
     /**
+     * PDFBOX-5713: font with several binary segments.
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void testPfbPDFBox5713() throws IOException
+    {
+        InputStream is = new FileInputStream("target/fonts/DejaVuSerifCondensed.pfb");
+        Type1Font font = Type1Font.createWithPFB(is);
+        is.close();
+        Assert.assertEquals("Version 2.33", font.getVersion());
+        Assert.assertEquals("DejaVuSerifCondensed", font.getFontName());
+        Assert.assertEquals("DejaVu Serif Condensed", font.getFullName());
+        Assert.assertEquals("DejaVu Serif Condensed", font.getFamilyName());
+        Assert.assertEquals("Copyright [c] 2003 by Bitstream, Inc. All Rights Reserved.", font.getNotice());
+        Assert.assertEquals(false, font.isFixedPitch());
+        Assert.assertEquals(false, font.isForceBold());
+        Assert.assertEquals(0f, font.getItalicAngle(), 0);
+        Assert.assertEquals("Book", font.getWeight());
+        Assert.assertTrue(font.getEncoding() instanceof BuiltInEncoding);
+        Assert.assertEquals(5959, font.getASCIISegment().length);
+        Assert.assertEquals(1056090, font.getBinarySegment().length);
+        Assert.assertEquals(3399, font.getCharStringsDict().size());
+    }
+
+    /**
      * Test 0 length font.
      */
     @Test(expected=IOException.class)
