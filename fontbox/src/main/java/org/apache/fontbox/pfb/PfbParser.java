@@ -143,7 +143,7 @@ public class PfbParser
         }
         // read into segments and keep them
         List<Integer> typeList = new ArrayList<Integer>(3);
-        List<byte[]> barrList = new ArrayList<byte[]>();
+        List<byte[]> barrList = new ArrayList<byte[]>(3);
         ByteArrayInputStream in = new ByteArrayInputStream(pfb);
         int total = 0;
         do
@@ -171,8 +171,11 @@ public class PfbParser
             size += in.read() << 8;
             size += in.read() << 16;
             size += in.read() << 24;
-            LOG.debug("record type: " + recordType + ", segment size: " + size);
-            byte ar[] = new byte[size];
+            if (LOG.isDebugEnabled())
+            {
+                LOG.debug("record type: " + recordType + ", segment size: " + size);
+            }
+            byte[] ar = new byte[size];
             int got = in.read(ar);
             if (got != size)
             {
