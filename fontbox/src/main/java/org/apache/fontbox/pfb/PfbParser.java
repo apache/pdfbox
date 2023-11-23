@@ -124,7 +124,7 @@ public class PfbParser
         }
         // read into segments and keep them
         List<Integer> typeList = new ArrayList<>(3);
-        List<byte[]> barrList = new ArrayList<>();
+        List<byte[]> barrList = new ArrayList<>(3);
         ByteArrayInputStream in = new ByteArrayInputStream(pfb);
         int total = 0;
         do
