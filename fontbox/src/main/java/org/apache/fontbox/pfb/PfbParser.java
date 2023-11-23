@@ -152,8 +152,8 @@ public class PfbParser
             size += in.read() << 8;
             size += in.read() << 16;
             size += in.read() << 24;
-            LOG.debug("record type: " + recordType + ", segment size: " + size);
-            byte ar[] = new byte[size];
+            LOG.debug("record type: {}, segment size: {}", recordType, size);
+            byte[] ar = new byte[size];
             int got = in.read(ar);
             if (got != size)
             {
