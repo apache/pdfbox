@@ -63,86 +63,92 @@ public class Rendering {
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void renderGhentCMYKNoOutput(Blackhole blackhole) throws IOException {
-        PDDocument pdf = Loader.loadPDF(new File(GHENT_CMYK_X4));
-        PDFRenderer renderer = new PDFRenderer(pdf);
-        int numPages = pdf.getNumberOfPages();
-        for (int i = 0; i< numPages; i++)
+        try (PDDocument pdf = Loader.loadPDF(new File(GHENT_CMYK_X4)))
         {
-            blackhole.consume(renderer.renderImageWithDPI(i, 600));
+            PDFRenderer renderer = new PDFRenderer(pdf);
+            int numPages = pdf.getNumberOfPages();
+            for (int i = 0; i< numPages; i++)
+            {
+                blackhole.consume(renderer.renderImageWithDPI(i, 600));
+            }
         }
-        pdf.close();
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void renderGhentCMYK(Blackhole blackhole) throws IOException {
-        PDDocument pdf = Loader.loadPDF(new File(GHENT_CMYK_X4));
-        PDFRenderer renderer = new PDFRenderer(pdf);
-        int numPages = pdf.getNumberOfPages();
-        for (int i = 0; i< numPages; i++)
+        try (PDDocument pdf = Loader.loadPDF(new File(GHENT_CMYK_X4)))
         {
-            BufferedImage bi = renderer.renderImageWithDPI(i, 600);
-            ImageIO.write(bi, "PNG", new File(RENDER_OUTPUT_DIR, "ghent-" + i + ".png"));
+            PDFRenderer renderer = new PDFRenderer(pdf);
+            int numPages = pdf.getNumberOfPages();
+            for (int i = 0; i< numPages; i++)
+            {
+                BufferedImage bi = renderer.renderImageWithDPI(i, 600);
+                ImageIO.write(bi, "PNG", new File(RENDER_OUTPUT_DIR, "ghent-" + i + ".png"));
+            }
         }
-        pdf.close();
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void renderAltonaNoOutput(Blackhole blackhole) throws IOException {
-        PDDocument pdf = Loader.loadPDF(new File(ALTONA_TEST_SUITE));
-        PDFRenderer renderer = new PDFRenderer(pdf);
-        int numPages = pdf.getNumberOfPages();
-        for (int i = 0; i< numPages; i++)
+        try (PDDocument pdf = Loader.loadPDF(new File(ALTONA_TEST_SUITE)))
         {
-            blackhole.consume(renderer.renderImageWithDPI(i, 600));
+            PDFRenderer renderer = new PDFRenderer(pdf);
+            int numPages = pdf.getNumberOfPages();
+            for (int i = 0; i< numPages; i++)
+            {
+                blackhole.consume(renderer.renderImageWithDPI(i, 600));
+            }
         }
-        pdf.close();
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void renderAltona(Blackhole blackhole) throws IOException {
-        PDDocument pdf = Loader.loadPDF(new File(ALTONA_TEST_SUITE));
-        PDFRenderer renderer = new PDFRenderer(pdf);
-        int numPages = pdf.getNumberOfPages();
-        for (int i = 0; i< numPages; i++)
+        try (PDDocument pdf = Loader.loadPDF(new File(ALTONA_TEST_SUITE)))
         {
-            BufferedImage bi = renderer.renderImageWithDPI(i, 600);
-            ImageIO.write(bi, "PNG", new File(RENDER_OUTPUT_DIR, "altona-" + i + ".png"));
+            PDFRenderer renderer = new PDFRenderer(pdf);
+            int numPages = pdf.getNumberOfPages();
+            for (int i = 0; i< numPages; i++)
+            {
+                BufferedImage bi = renderer.renderImageWithDPI(i, 600);
+                ImageIO.write(bi, "PNG", new File(RENDER_OUTPUT_DIR, "altona-" + i + ".png"));
+            }
         }
-        pdf.close();
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void renderPDFSpecNoOutput(Blackhole blackhole) throws IOException {
-        PDDocument pdf = Loader.loadPDF(new File(PDF32000_2008));
-        PDFRenderer renderer = new PDFRenderer(pdf);
-        int numPages = pdf.getNumberOfPages();
-        for (int i = 0; i< numPages; i++)
+        try (PDDocument pdf = Loader.loadPDF(new File(PDF32000_2008)))
         {
-            blackhole.consume(renderer.renderImageWithDPI(i, 150));
+            PDFRenderer renderer = new PDFRenderer(pdf);
+            int numPages = pdf.getNumberOfPages();
+            for (int i = 0; i< numPages; i++)
+            {
+                blackhole.consume(renderer.renderImageWithDPI(i, 150));
+            }
         }
-        pdf.close();
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void renderPDFSpec(Blackhole blackhole) throws IOException {
-        PDDocument pdf = Loader.loadPDF(new File(PDF32000_2008));
-        PDFRenderer renderer = new PDFRenderer(pdf);
-        int numPages = pdf.getNumberOfPages();
-        for (int i = 0; i< numPages; i++)
+        try (PDDocument pdf = Loader.loadPDF(new File(PDF32000_2008)))
         {
-            BufferedImage bi = renderer.renderImageWithDPI(i, 150);
-            ImageIO.write(bi, "PNG", new BufferedOutputStream(new FileOutputStream(new File (RENDER_OUTPUT_DIR, "pdf32000_2008-" + i + ".png"))));
+            PDFRenderer renderer = new PDFRenderer(pdf);
+            int numPages = pdf.getNumberOfPages();
+            for (int i = 0; i< numPages; i++)
+            {
+                BufferedImage bi = renderer.renderImageWithDPI(i, 150);
+                ImageIO.write(bi, "PNG", new BufferedOutputStream(new FileOutputStream(new File (RENDER_OUTPUT_DIR, "pdf32000_2008-" + i + ".png"))));
+            }
         }
-        pdf.close();
     }
 }

@@ -46,23 +46,25 @@ public class TextExtraction {
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void extractPDFSpecUnsorted(Blackhole blackhole) throws IOException {
-        PDDocument pdf = Loader.loadPDF(new File(PDF32000_2008));
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        pdfStripper.setSortByPosition(false);
-        String parsedText = pdfStripper.getText(pdf);
-        blackhole.consume(parsedText);
-        pdf.close();
+        try (PDDocument pdf = Loader.loadPDF(new File(PDF32000_2008)))
+        {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            pdfStripper.setSortByPosition(false);
+            String parsedText = pdfStripper.getText(pdf);
+            blackhole.consume(parsedText);
+        }
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void extractPDFSpecSorted(Blackhole blackhole) throws IOException {
-        PDDocument pdf = Loader.loadPDF(new File(PDF32000_2008));
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        pdfStripper.setSortByPosition(true);
-        String parsedText = pdfStripper.getText(pdf);
-        blackhole.consume(parsedText);
-        pdf.close();
+        try (PDDocument pdf = Loader.loadPDF(new File(PDF32000_2008)))
+        {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            pdfStripper.setSortByPosition(true);
+            String parsedText = pdfStripper.getText(pdf);
+            blackhole.consume(parsedText);
+        }
     }
 }
