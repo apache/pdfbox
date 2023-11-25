@@ -56,7 +56,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <bouncycastle.version>1.77</bouncycastle.version>
-        <log4j2.version>2.21.1</log4j2.version>
+        <log4j2.version>2.22.0</log4j2.version>
 
         <!-- This is a default value to avoid problems when running single tests
              see also https://stackoverflow.com/a/28695766/535646 
