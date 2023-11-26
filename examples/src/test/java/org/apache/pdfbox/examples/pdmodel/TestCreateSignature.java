@@ -56,6 +56,7 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -194,7 +195,7 @@ class TestCreateSignature
         // https://stackoverflow.com/questions/4442192/
         NTPUDPClient timeClient = new NTPUDPClient();
         InetAddress inetAddress = InetAddress.getByName("time.nist.gov");
-        timeClient.setDefaultTimeout(5000);
+        timeClient.setDefaultTimeout(Duration.ofMillis(5000));
         TimeInfo timeInfo;
         long returnTime;
         try
