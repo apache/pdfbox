@@ -302,9 +302,8 @@ public class GlyphSubstitutionDataExtractor
 
         if (oldValue != null)
         {
-            String message = "For the newGlyph: " + newGlyph + ", newValue: "
-                    + glyphsToBeSubstituted + " is trying to override the oldValue: " + oldValue;
-            LOG.debug(message);
+            LOG.debug("For the newGlyph: {}, newValue: {} is trying to override the oldValue {}",
+                    newGlyph, glyphsToBeSubstituted, oldValue);
         }
     }
 
