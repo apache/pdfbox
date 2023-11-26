@@ -154,9 +154,12 @@ public class GlyphSubstitutionDataExtractor
             }
         }
 
-        LOG.debug("*********** extracting GSUB data for the feature: "
-                + featureRecord.getFeatureTag() + ", glyphSubstitutionMap: "
-                + glyphSubstitutionMap);
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("*********** extracting GSUB data for the feature: "
+                    + featureRecord.getFeatureTag() + ", glyphSubstitutionMap: "
+                    + glyphSubstitutionMap);
+        }
 
         gsubData.put(featureRecord.getFeatureTag(),
                 Collections.unmodifiableMap(glyphSubstitutionMap));
@@ -188,7 +191,7 @@ public class GlyphSubstitutionDataExtractor
                 extractDataFromMultipleSubstitutionFormat1Table(glyphSubstitutionMap,
                         (LookupTypeMultipleSubstitutionFormat1) lookupSubTable);
             }
-            else
+            else if (LOG.isDebugEnabled())
             {
                 // usually null, due to being skipped in GlyphSubstitutionTable.readLookupTable()
                 LOG.debug("The type " + lookupSubTable + " is not yet supported, will be ignored");
@@ -287,7 +290,10 @@ public class GlyphSubstitutionDataExtractor
             glyphsToBeSubstituted.add(componentGlyphID);
         }
 
-        LOG.debug("glyphsToBeSubstituted: " + glyphsToBeSubstituted);
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("glyphsToBeSubstituted: " + glyphsToBeSubstituted);
+        }
 
         putNewSubstitutionEntry(glyphSubstitutionMap, ligatureTable.getLigatureGlyph(),
                 glyphsToBeSubstituted);
