@@ -299,7 +299,7 @@ public class GlyphSubstitutionDataExtractor
     {
         Integer oldValue = glyphSubstitutionMap.put(glyphsToBeSubstituted, newGlyph);
 
-        if (oldValue != null)
+        if (oldValue != null && LOG.isDebugEnabled())
         {
             String message = "For the newGlyph: " + newGlyph + ", newValue: "
                     + glyphsToBeSubstituted + " is trying to override the oldValue: " + oldValue;
