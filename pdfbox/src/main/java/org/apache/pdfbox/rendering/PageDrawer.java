@@ -52,6 +52,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -103,6 +104,11 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnknown;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
+
+import static java.awt.geom.AffineTransform.TYPE_IDENTITY;
+import static java.awt.geom.AffineTransform.TYPE_TRANSLATION;
+import static java.awt.geom.AffineTransform.TYPE_FLIP;
+import static java.awt.geom.AffineTransform.TYPE_MASK_SCALE;
 
 /**
  * Paints a page in a PDF document to a Graphics context. May be subclassed to provide custom
@@ -995,7 +1001,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             if (!linePath.getPathIterator(null).isDone())
             {
                 // PDFBOX-4949 / PDF.js 12306: don't clip if "W n" only
-                getGraphicsState().intersectClippingPath(linePath);
+                getGraphicsState().intersectClippingPath(adjustClip(linePath));
             }
 
             // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same 
@@ -1006,7 +1012,52 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         linePath.reset();
     }
-    
+
+    private GeneralPath adjustClip(GeneralPath linePath)
+    {
+
+        AffineTransform tx = graphics.getTransform();
+        int type = tx.getType();
+
+        if ((type & ~(TYPE_IDENTITY | TYPE_TRANSLATION | TYPE_FLIP)) == 0)
+        {
+            return linePath;
+        }
+        else if ((type & ~(TYPE_IDENTITY | TYPE_TRANSLATION | TYPE_FLIP | TYPE_MASK_SCALE)) == 0)
+        {
+            double sx = Math.abs(tx.getScaleX());
+            double sy = Math.abs(tx.getScaleY());
+            if (sx >= 1.0 && sy >= 1.0)
+            {
+                return linePath;
+            }
+
+            Rectangle2D bounds = linePath.getBounds();
+            double w = bounds.getWidth();
+            double h = bounds.getHeight();
+            double sw = sx * w;
+            double sh = sy * h;
+            final double minSize = 2.0;
+            if (sw < minSize || sh < minSize)
+            {
+                double x = bounds.getX();
+                double y = bounds.getY();
+                if (sw < minSize)
+                {
+                    w = minSize / sx;
+                    x = bounds.getCenterX() - w / 2;
+                }
+                if (sh < minSize)
+                {
+                    h = minSize / sy;
+                    y = bounds.getCenterY() - h / 2;
+                }
+                return new GeneralPath(new Rectangle2D.Double(x, y, w, h));
+            }
+        }
+        return linePath;
+    }
+
     @Override
     public void drawImage(PDImage pdImage) throws IOException
     {
