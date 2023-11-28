@@ -57,7 +57,11 @@
 
         <bouncycastle.version>1.77</bouncycastle.version>
         <log4j2.version>2.22.0</log4j2.version>
-
+        <junit.version>5.10.1</junit.version>
+        <jbig2.version>3.0.4</jbig2.version>
+        <jai.version>1.4.0</jai.version>
+        <commons-io.version>2.15.0</commons-io.version>
+        <picocli.version>4.7.5</picocli.version>
         <!-- This is a default value to avoid problems when running single tests
              see also https://stackoverflow.com/a/28695766/535646 
              https://maven.apache.org/surefire/maven-surefire-plugin/faq.html#late-property-evaluation
@@ -68,12 +72,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-	            <groupId>org.junit.jupiter</groupId>
-	            <artifactId>junit-jupiter</artifactId>
-	            <version>5.10.1</version>
-	            <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
                 <version>${log4j2.version}</version>
@@ -83,50 +81,6 @@
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j2.version}</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.15.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk18on</artifactId>
-                <version>${bouncycastle.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk18on</artifactId>
-                <version>${bouncycastle.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.pdfbox</groupId>
-                <artifactId>jbig2-imageio</artifactId>
-                <version>3.0.4</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- For legal reasons (incompatible license), these two dependencies
-            are to be used only in the tests and may not be distributed.
-            See also LEGAL-195 -->
-            <dependency>
-                <groupId>com.github.jai-imageio</groupId>
-                <artifactId>jai-imageio-core</artifactId>
-                <version>1.4.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.github.jai-imageio</groupId>
-                <artifactId>jai-imageio-jpeg2000</artifactId>
-                <version>1.4.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>info.picocli</groupId>
-                <artifactId>picocli</artifactId>
-                <version>4.7.5</version>
             </dependency>
             <!-- not used directly, updated to have less output from versions plugin -->
             <dependency>
@@ -279,7 +233,7 @@
 				   <execution>
 				      <id>attach-sources</id>
 				      <goals>
-				        <goal>jar</goal>
+				        <goal>jar-no-fork</goal>
 				      </goals>
 				   </execution>
 				</executions>

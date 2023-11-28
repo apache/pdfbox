@@ -42,21 +42,25 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpkix-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
       <scope>provided</scope>
     </dependency>
      <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>jbig2-imageio</artifactId>
+      <version>${jbig2.version}</version>
       <scope>provided</scope>
     </dependency> 
   </dependencies>
@@ -75,7 +79,7 @@
             <Bundle-DocURL>${project.url}</Bundle-DocURL>
             <Import-Package>!org.junit.jupiter,javax.*;resolution:=optional,org.apache.avalon.framework.logger;resolution:=optional,org.apache.log;resolution:=optional,*</Import-Package>
             <Main-Class>org.apache.pdfbox.tools.PDFBox</Main-Class>
-          </instructions>
+            </instructions>
         </configuration>
       </plugin>
     </plugins>
