@@ -77,7 +77,7 @@
             <Embed-Transitive>true</Embed-Transitive>
             <Embed-Dependency>*;scope=provided;inline=org/apache/**|org/bouncycastle/**|picocli/**|META-INF/services/**</Embed-Dependency>
             <Bundle-DocURL>${project.url}</Bundle-DocURL>
-            <Import-Package>!org.junit.jupiter,javax.*;resolution:=optional,org.apache.avalon.framework.logger;resolution:=optional,org.apache.log;resolution:=optional,*</Import-Package>
+            <Import-Package>!org.junit.jupiter,javax.*;resolution:=optional</Import-Package>
             <Main-Class>org.apache.pdfbox.tools.PDFBox</Main-Class>
             </instructions>
         </configuration>
