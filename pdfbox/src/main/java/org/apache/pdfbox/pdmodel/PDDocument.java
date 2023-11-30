@@ -319,9 +319,15 @@ public class PDDocument implements Closeable {
         if (signatureAdded) {
             throw new IllegalStateException("Only one signature may be added in a document");
         }
-        signatureAdded = true;
+        // Reserve space for signature
+        getPreferredSignatureSize(sigObject, signatureInterface, options);
 
-        // Reserve content
+        // Create SignatureForm for signature and append it to the document
+        createSignatureForm(sigObject, options);
+    }
+
+    private void getPreferredSignatureSize(PDSignature sigObject, SignatureInterface signatureInterface,
+            SignatureOptions options) {
         // We need to reserve some space for the signature. Some signatures including
         // big certificate chain and we need enough space to store it.
         int preferredSignatureSize = options.getPreferredSignatureSize();
@@ -335,9 +341,9 @@ public class PDDocument implements Closeable {
         sigObject.setByteRange(RESERVE_BYTE_RANGE);
 
         signInterface = signatureInterface;
+    }
 
-        // Create SignatureForm for signature and append it to the document
-
+    private void createSignatureForm(PDSignature sigObject, SignatureOptions options) throws IOException {
         // Get the first valid page
         PDPageTree pageTree = getPages();
         int pageCount = pageTree.getCount();
@@ -408,44 +414,6 @@ public class PDDocument implements Closeable {
         } else {
             acroFormFields.add(signatureField);
         }
-
-        // Get the object from the visual signature
-        COSDocument visualSignature = options.getVisualSignature();
-
-        // Distinction of case for visual and non-visual signature
-        if (visualSignature == null) {
-            prepareNonVisibleSignature(firstWidget);
-        } else {
-            prepareVisibleSignature(firstWidget, acroForm, visualSignature);
-        }
-
-        // Create Annotation / Field for signature
-        List<PDAnnotation> annotations = page.getAnnotations();
-
-        // Get the annotations of the page and append the signature-annotation to it
-        // take care that page and acroforms do not share the same array (if so, we
-        // don't need to add it twice)
-        if (!(checkFields &&
-                annotations instanceof COSArrayList &&
-                acroFormFields instanceof COSArrayList &&
-                ((COSArrayList) annotations).toList().equals(((COSArrayList) acroFormFields).toList()))) {
-            // use check to prevent the annotation widget from appearing twice
-            if (checkSignatureAnnotation(annotations, firstWidget)) {
-                firstWidget.getCOSObject().setNeedToBeUpdated(true);
-            } else {
-                annotations.add(firstWidget);
-            }
-        }
-
-        // Make /Annots a direct object by reassigning it,
-        // to avoid problem if it is an existing indirect object:
-        // it would not be updated in incremental save, and if we'd set the /Annots
-        // array "to be updated"
-        // while keeping it indirect, Adobe Reader would claim that the document had
-        // been modified.
-        page.setAnnotations(annotations);
-
-        page.getCOSObject().setNeedToBeUpdated(true);
     }
 
     /**
