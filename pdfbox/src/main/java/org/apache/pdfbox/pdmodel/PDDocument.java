@@ -414,6 +414,44 @@ public class PDDocument implements Closeable {
         } else {
             acroFormFields.add(signatureField);
         }
+
+        // Get the object from the visual signature
+        COSDocument visualSignature = options.getVisualSignature();
+
+        // Distinction of case for visual and non-visual signature
+        if (visualSignature == null) {
+            prepareNonVisibleSignature(firstWidget);
+        } else {
+            prepareVisibleSignature(firstWidget, acroForm, visualSignature);
+        }
+
+        // Create Annotation / Field for signature
+        List<PDAnnotation> annotations = page.getAnnotations();
+
+        // Get the annotations of the page and append the signature-annotation to it
+        // take care that page and acroforms do not share the same array (if so, we
+        // don't need to add it twice)
+        if (!(checkFields &&
+                annotations instanceof COSArrayList &&
+                acroFormFields instanceof COSArrayList &&
+                ((COSArrayList) annotations).toList().equals(((COSArrayList) acroFormFields).toList()))) {
+            // use check to prevent the annotation widget from appearing twice
+            if (checkSignatureAnnotation(annotations, firstWidget)) {
+                firstWidget.getCOSObject().setNeedToBeUpdated(true);
+            } else {
+                annotations.add(firstWidget);
+            }
+        }
+
+        // Make /Annots a direct object by reassigning it,
+        // to avoid problem if it is an existing indirect object:
+        // it would not be updated in incremental save, and if we'd set the /Annots
+        // array "to be updated"
+        // while keeping it indirect, Adobe Reader would claim that the document had
+        // been modified.
+        page.setAnnotations(annotations);
+
+        page.getCOSObject().setNeedToBeUpdated(true);
     }
 
     /**
