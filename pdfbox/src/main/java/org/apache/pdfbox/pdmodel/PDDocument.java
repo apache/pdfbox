@@ -426,6 +426,14 @@ public class PDDocument implements Closeable {
         }
 
         // Create Annotation / Field for signature
+        createSignatureAnnotation(firstWidget, page, checkFields, acroFormFields);
+    }
+
+    private void createSignatureAnnotation(
+            PDAnnotationWidget firstWidget,
+            PDPage page,
+            boolean checkFields,
+            List<PDField> acroFormFields) throws IOException {
         List<PDAnnotation> annotations = page.getAnnotations();
 
         // Get the annotations of the page and append the signature-annotation to it
