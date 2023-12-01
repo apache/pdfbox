@@ -33,6 +33,9 @@ import java.awt.TexturePaint;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
+import static java.awt.geom.AffineTransform.TYPE_FLIP;
+import static java.awt.geom.AffineTransform.TYPE_MASK_SCALE;
+import static java.awt.geom.AffineTransform.TYPE_TRANSLATION;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
@@ -995,7 +998,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             if (!linePath.getPathIterator(null).isDone())
             {
                 // PDFBOX-4949 / PDF.js 12306: don't clip if "W n" only
-                getGraphicsState().intersectClippingPath(linePath);
+                getGraphicsState().intersectClippingPath(adjustClip(linePath));
             }
 
             // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same 
@@ -1007,6 +1010,63 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         linePath.reset();
     }
     
+    /**
+     * PDFBOX-5715 / PR#73: This was added to fix a problem with missing fine lines when printing
+     * on MacOS. Lines vanish because CPrinterJob sets graphics scale to 1 for Printable so after
+     * scaling lines often have a width smaller than 1 after scaling and clipping. This change
+     * enlarges the clip bounds to cover at least 1 point plus 0.5 on one and another side in the
+     * device space to allow to draw the linePath inside the clip. The linePath can consists from
+     * different lines but when its bounds width or height is less than 1.0 it seems safe to use a
+     * rectangle as a clip instead of the real path. A more detailed explanation can be read
+     * <a href="https://github.com/apache/pdfbox/pull/173">here</a>.
+     *
+     * @param linePath
+     * @return 
+     */
+    private GeneralPath adjustClip(GeneralPath linePath)
+    {
+        AffineTransform tx = graphics.getTransform();
+        int type = tx.getType();
+
+        if ((type & ~(TYPE_TRANSLATION | TYPE_FLIP)) == 0)
+        {
+            return linePath;
+        }
+        else if ((type & ~(TYPE_TRANSLATION | TYPE_FLIP | TYPE_MASK_SCALE)) == 0)
+        {
+            double sx = Math.abs(tx.getScaleX());
+            double sy = Math.abs(tx.getScaleY());
+            if (sx > 1.0 && sy > 1.0)
+            {
+                return linePath;
+            }
+
+            Rectangle2D bounds = linePath.getBounds();
+            double w = bounds.getWidth();
+            double h = bounds.getHeight();
+            double sw = sx * w;
+            double sh = sy * h;
+            final double minSize = 2.0;
+            if (sw < minSize || sh < minSize)
+            {
+                double x = bounds.getX();
+                double y = bounds.getY();
+                if (sw < minSize)
+                {
+                    w = minSize / sx;
+                    x = bounds.getCenterX() - w / 2;
+                }
+                if (sh < minSize)
+                {
+                    h = minSize / sy;
+                    y = bounds.getCenterY() - h / 2;
+                }
+                return new GeneralPath(new Rectangle2D.Double(x, y, w, h));
+            }
+        }
+        return linePath;
+    }
+
     @Override
     public void drawImage(PDImage pdImage) throws IOException
     {
