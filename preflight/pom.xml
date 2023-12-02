@@ -162,6 +162,7 @@
 	      <groupId>org.junit.jupiter</groupId>
 	      <artifactId>junit-jupiter</artifactId>
           <version>${junit.version}</version>
+	      <scope>test</scope>
 	    </dependency>
 		<!-- TODO find a suitable place to store the isator test pdfs <dependency> 
 			<groupId>org.pdfa</groupId> <artifactId>isartor</artifactId> <version>1.0-20080813</version> 
