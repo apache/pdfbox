@@ -656,7 +656,6 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     // fields
     private final String name;
-    private final int hashCode;
 
     /**
      * This will get a COSName object with that name.
@@ -696,7 +695,6 @@ public final class COSName extends COSBase implements Comparable<COSName>
     private COSName(String aName, boolean staticValue)
     {
         name = aName;
-        hashCode = name.hashCode();
         if (staticValue)
         {
             commonNameMap.put(aName, this);
@@ -742,7 +740,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     @Override
     public int hashCode()
     {
-        return hashCode;
+        return name.hashCode();
     }
 
     @Override
