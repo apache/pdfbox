@@ -90,7 +90,7 @@ public class Type1CharStringParser
                             + glyphName + "' of font " + fontName);
                     continue;
                 }
-                int operand = (int) obj;
+                int operand = (int) (Integer) obj;
 
                 if (operand >= 0 && operand < subrs.size())
                 {
