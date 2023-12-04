@@ -117,7 +117,7 @@ public class Type1CharStringParser
                     obj, currentGlyph, fontName);
             return;
         }
-        Integer operand = (Integer) obj;
+        int operand = (int) obj;
 
         if (operand >= 0 && operand < subrs.size())
         {
