@@ -19,6 +19,7 @@ package org.apache.fontbox.cff;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class represents a CharStringCommand.
@@ -252,15 +253,7 @@ public class CharStringCommand
     @Override
     public int hashCode()
     {
-        if (type1KeyWord != null)
-        {
-            return type1KeyWord.key.hashCode();
-        }
-        if (type2KeyWord != null)
-        {
-            return type2KeyWord.key.hashCode();
-        }
-        return 0;
+        return Objects.hash(type1KeyWord, type2KeyWord);
     }
 
     /**
@@ -269,23 +262,13 @@ public class CharStringCommand
     @Override
     public boolean equals(Object object)
     {
-        if (object instanceof CharStringCommand)
+        if (object == null || object.getClass() != this.getClass())
         {
-            CharStringCommand that = (CharStringCommand) object;
-            if (type1KeyWord != null && type1KeyWord == that.getType1KeyWord())
-            {
-                return true;
-            }
-            if (type2KeyWord != null && type2KeyWord == that.getType2KeyWord())
-            {
-                return true;
-            }
-            if (type1KeyWord == null && type2KeyWord == null)
-            {
-                return true;
-            }
+            return false;
         }
-        return false;
+
+        CharStringCommand that = (CharStringCommand) object;
+        return that.type1KeyWord == type1KeyWord && that.type2KeyWord == type2KeyWord;
     }
 
     /**
