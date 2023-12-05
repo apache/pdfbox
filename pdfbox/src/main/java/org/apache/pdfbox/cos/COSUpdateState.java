@@ -308,9 +308,8 @@ public class COSUpdateState
     }
     
     /**
-     * This shall {@link #setOriginDocumentState(COSDocumentState, boolean)}  for the dereferenced child,
-     * initializing it´s {@link #originDocumentState}.
-     * </p>
+     * This shall {@link #setOriginDocumentState(COSDocumentState, boolean)} for the dereferenced child,
+     * initializing its {@link #originDocumentState}.
      * <p>
      * This shall have no effect for a child, that is not an instance of {@link COSUpdateInfo} and will never change
      * the child´s {@link #updated} state.
