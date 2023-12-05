@@ -49,7 +49,6 @@ import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.util.Charsets;
-import sun.font.Type1Font;
 
 /**
  * A FontProvider which searches for fonts on the local filesystem.
