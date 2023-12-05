@@ -28,12 +28,11 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.AccessControlException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.CRC32;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,7 +50,6 @@ import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
-import org.apache.pdfbox.util.Hex;
 
 /**
  * A FontProvider which searches for fonts on the local filesystem.
@@ -877,17 +875,9 @@ final class FileSystemFontProvider extends FontProvider
 
     private static String computeHash(byte[] ba)
     {
-        MessageDigest md;
-        try
-        {
-            md = MessageDigest.getInstance("CRC32");
-            byte[] dig = md.digest(ba);
-            return Hex.getString(dig);
-        }
-        catch (NoSuchAlgorithmException ex)
-        {
-            // never happens
-            return "";
-        }
+        CRC32 crc = new CRC32();
+        crc.update(ba);
+        long l = crc.getValue();
+        return Long.toHexString(l);
     }
 }
