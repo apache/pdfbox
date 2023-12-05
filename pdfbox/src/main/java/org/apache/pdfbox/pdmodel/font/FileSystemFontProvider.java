@@ -649,6 +649,7 @@ final class FileSystemFontProvider extends FontProvider
         catch (IOException e)
         {
             LOG.warn("Could not load font file: {}", ttcFile, e);
+            fontInfoList.add(createFSIgnored(ttcFile, FontFormat.TTF, "*skipexception*"));
         }
     }
 
@@ -853,9 +854,9 @@ final class FileSystemFontProvider extends FontProvider
         MessageDigest md;
         try
         {
-            md = MessageDigest.getInstance("SHA512");
-            byte[] md5 = md.digest(ba);
-            return Hex.getString(md5);
+            md = MessageDigest.getInstance("CRC32");
+            byte[] dig = md.digest(ba);
+            return Hex.getString(dig);
         }
         catch (NoSuchAlgorithmException ex)
         {
