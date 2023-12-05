@@ -38,7 +38,7 @@
   <inceptionYear>2002</inceptionYear>
 
   <properties>
-    <lucene.version>9.8.0</lucene.version>
+    <lucene.version>9.9.0</lucene.version>
   </properties>
 
   <dependencies>
@@ -69,8 +69,8 @@
     </dependency>
     <dependency>
         <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers-common</artifactId>
-        <version>8.11.2</version>
+        <artifactId>lucene-analysis-common</artifactId>
+        <version>${lucene.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>
