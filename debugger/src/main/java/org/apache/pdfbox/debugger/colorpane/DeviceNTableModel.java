@@ -20,11 +20,8 @@ import java.awt.Color;
 import javax.swing.table.AbstractTableModel;
 
 /**
- * @author Khyrul Bashar.
- */
-
-/**
  * This the table model for showing DeviceN color space which extends AbstractTableModel.
+ * @author Khyrul Bashar.
  */
 @SuppressWarnings({"serial","squid:S1948"})
 public class DeviceNTableModel extends AbstractTableModel

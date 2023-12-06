@@ -23,11 +23,8 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 /**
- * @author Khyrul Bashar.
- */
-
-/**
  * ColorBarCellRenderer class that says how to render color bar columns
+ * @author Khyrul Bashar.
  */
 public class ColorBarCellRenderer implements TableCellRenderer
 {

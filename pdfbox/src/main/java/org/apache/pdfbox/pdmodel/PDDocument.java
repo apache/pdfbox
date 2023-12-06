@@ -94,7 +94,7 @@ public class PDDocument implements Closeable
 
     private static final Logger LOG = LogManager.getLogger(PDDocument.class);
 
-    /**
+    /*
      * avoid concurrency issues with PDDeviceRGB
      */
     static
