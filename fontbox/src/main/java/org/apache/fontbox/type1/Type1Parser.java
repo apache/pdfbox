@@ -897,8 +897,6 @@ final class Type1Parser
     /**
      * Reads the next token and throws an exception if it is not of the given kind
      * and does not have the given value.
-     * 
-     * @return token, never null
      */
     private void read(Token.Kind kind, String name) throws IOException
     {

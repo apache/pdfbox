@@ -19,11 +19,8 @@ package org.apache.pdfbox.debugger.colorpane;
 import java.awt.Color;
 
 /**
- * @author Khyrul Bashar.
- */
-
-/**
  * Class to represent Colorant in Indexed color.
+ * @author Khyrul Bashar.
  */
 public class IndexedColorant
 {

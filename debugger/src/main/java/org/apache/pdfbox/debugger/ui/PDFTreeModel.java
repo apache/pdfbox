@@ -16,13 +16,6 @@
  */
 package org.apache.pdfbox.debugger.ui;
 
-/**
- * A tree model that uses a cos document.
- *
- *
- * @author wurtz
- * @author Ben Litchfield
- */
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +33,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 /**
  * A class to model a PDF document as a tree structure.
  *
+ * @author wurtz
  * @author Ben Litchfield
  */
 public class PDFTreeModel implements TreeModel
