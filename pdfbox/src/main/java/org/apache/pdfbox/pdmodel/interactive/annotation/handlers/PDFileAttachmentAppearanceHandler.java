@@ -75,7 +75,7 @@ public class PDFileAttachmentAppearanceHandler extends PDAbstractAppearanceHandl
 
     /**
      * Draw a paperclip. Shape is from
-     * <a href="https://raw.githubusercontent.com/Iconscout/unicons/master/svg/line/paperclip.svg>Iconscout</a>
+     * <a href="https://raw.githubusercontent.com/Iconscout/unicons/master/svg/line/paperclip.svg">Iconscout</a>
      * (Apache licensed).
      *
      * @param contentStream

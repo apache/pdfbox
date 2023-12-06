@@ -47,7 +47,6 @@ import org.apache.pdfbox.text.PDFTextStripper;
  * This class is used to create a document for the lucene search engine. This should easily plug into the IndexPDFFiles
  * that comes with the lucene project. This class will populate the following fields.
  * <table>
- * <caption></caption>
  * <tr>
  * <th>Lucene Field Name</th>
  * <th>Description</th>

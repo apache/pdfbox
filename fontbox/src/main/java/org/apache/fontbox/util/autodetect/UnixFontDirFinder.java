@@ -27,7 +27,7 @@ public class UnixFontDirFinder extends NativeFontDirFinder
     /**
      * Some guesses at possible unix font directory locations.
      * 
-     * @return a list of possible font locations
+     * @return an array of possible font locations
      */
     @Override
     protected String[] getSearchableDirectories()

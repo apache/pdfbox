@@ -42,8 +42,6 @@ public class GlyfSimpleDescript extends GlyfDescript
 
     /**
      * Constructor for an empty description.
-     * 
-     * @throws IOException is thrown if something went wrong
      */
     GlyfSimpleDescript()
     {
