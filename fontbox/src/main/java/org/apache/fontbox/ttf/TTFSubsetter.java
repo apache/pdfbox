@@ -832,7 +832,8 @@ public final class TTFSubsetter
     private byte[] buildPostTable() throws IOException
     {
         PostScriptTable post = ttf.getPostScript();
-        if (post == null || keepTables != null && !keepTables.contains(PostScriptTable.TAG))
+        if (post == null || post.getGlyphNames() == null || 
+                keepTables != null && !keepTables.contains(PostScriptTable.TAG))
         {
             return null;
         }
