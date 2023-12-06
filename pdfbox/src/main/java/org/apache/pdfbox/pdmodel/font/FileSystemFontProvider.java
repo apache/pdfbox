@@ -686,7 +686,7 @@ final class FileSystemFontProvider extends FontProvider
      */
     private void addTrueTypeFontImpl(TrueTypeFont ttf, File file) throws IOException
     {
-        try
+        try (ttf)
         {
             // read PostScript name, if any
             if (ttf.getName() != null && ttf.getName().contains("|"))
@@ -785,10 +785,6 @@ final class FileSystemFontProvider extends FontProvider
         {
             fontInfoList.add(createFSIgnored(file, FontFormat.TTF, "*skipexception*"));
             LOG.warn("Could not load font file: {}", file, e);
-        }
-        finally
-        {
-            ttf.close();
         }
     }
 

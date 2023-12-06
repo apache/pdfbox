@@ -391,13 +391,9 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     public static RandomAccessReadBuffer createBufferFromStream(InputStream inputStream) throws IOException
     {
         RandomAccessReadBuffer randomAccessRead = null;
-        try
+        try (inputStream)
         {
             randomAccessRead = new RandomAccessReadBuffer(inputStream);
-        }
-        finally
-        {
-            inputStream.close();
         }
         return randomAccessRead;
     }

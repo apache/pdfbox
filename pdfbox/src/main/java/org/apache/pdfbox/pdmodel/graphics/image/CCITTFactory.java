@@ -236,7 +236,7 @@ public final class CCITTFactory
             OutputStream os,
             COSDictionary params, int number) throws IOException
     {
-        try
+        try (os)
         {
             // First check the basic tiff header
             reader.seek(0);
@@ -451,10 +451,6 @@ public final class CCITTFactory
                 os.write(buf, 0, amountRead);
             }
 
-        }
-        finally
-        {
-            os.close();
         }
     }
 
