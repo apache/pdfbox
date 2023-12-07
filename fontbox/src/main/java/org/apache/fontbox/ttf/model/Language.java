@@ -33,6 +33,8 @@ public enum Language
 {
 
     BENGALI(new String[] { "bng2", "beng" }),
+    DEVANAGARI(new String[] { "dev2", "deva" }),
+    GUJARATI(new String[] { "gjr2", "gujr" }),
     LATIN(new String[] { "latn" }),
 
     /**
