@@ -28,7 +28,7 @@
   </parent>
 
   <artifactId>debugger-app</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>Apache PDFBox Debugger application</name>
   <url>http://pdfbox.apache.org/</url>
 
@@ -37,7 +37,7 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>pdfbox-debugger</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -49,37 +49,63 @@
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpkix-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>jbig2-imageio</artifactId>
       <version>${jbig2.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency> 
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-transform-maven-shade-plugin-extensions</artifactId>
+            <version>0.1.0</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
-          <instructions>
-            <Export-Package>org.apache.pdfbox.*</Export-Package>
-            <Embed-Transitive>true</Embed-Transitive>
-            <Embed-Dependency>*;scope=provided;inline=org/apache/**|org/bouncycastle/**|picocli/**|META-INF/services/**</Embed-Dependency>
-            <Bundle-DocURL>${project.url}</Bundle-DocURL>
-            <Import-Package>!org.junit.jupiter,javax.*;resolution:=optional;</Import-Package>
-            <Main-Class>org.apache.pdfbox.debugger.PDFDebugger</Main-Class>
-          </instructions>
+          <transformers>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+              <mainClass>org.apache.pdfbox.debugger.PDFDebugger</mainClass>
+              <manifestEntries>
+                <Multi-Release>true</Multi-Release>
+              </manifestEntries>
+            </transformer>
+            <transformer implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
+          </transformers>
+          <filters>
+            <filter>
+              <!-- Exclude META-INF directories that might conflict -->
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
         </configuration>
       </plugin>
     </plugins>
