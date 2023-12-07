@@ -207,6 +207,10 @@ abstract class PDAbstractContentStream implements Closeable
                         gsubData);
                 gsubWorkers.put((PDType0Font) font, gsubWorker);
             }
+            else
+            {
+                LOG.debug("No GSUB data found in font {}", font.getName());
+            }
         }
 
         writeOperand(resources.add(font));
