@@ -22,7 +22,9 @@ import java.util.Locale;
  * This class contains some helper methods handling Type1-Fonts.
  *
  * @author Villu Ruusmann
+ * @deprecated This class isn't used and will be removed in 4.0.0.
  */
+@Deprecated
 public final class Type1FontUtil
 {
 
