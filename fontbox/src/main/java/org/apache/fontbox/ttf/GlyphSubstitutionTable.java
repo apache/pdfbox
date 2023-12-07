@@ -281,6 +281,8 @@ public class GlyphSubstitutionTable extends TTFTable
         }
     }
 
+    // https://learn.microsoft.com/en-us/typography/opentype/spec/chapter2#lookup-table
+    // scroll down to "Lookup table"
     private LookupTable readLookupTable(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
@@ -320,15 +322,18 @@ public class GlyphSubstitutionTable extends TTFTable
             {
                 long baseOffset = data.getCurrentPosition();
                 int substFormat = data.readUnsignedShort(); // always 1
+                int extensionLookupType = data.readUnsignedShort();
+                long extensionOffset = data.readUnsignedInt();
                 if (substFormat != 1)
                 {
                     LOG.error("The expected SubstFormat for ExtensionSubstFormat1 subtable is " +
                             substFormat + " but should be 1");
-                    continue;
                 }
-                int extensionLookupType = data.readUnsignedShort();
-                long extensionOffset = data.readUnsignedInt();
-                subTables[i] = readLookupSubtable(data, baseOffset + extensionOffset, extensionLookupType);
+                else
+                {
+                    subTables[i] = readLookupSubtable(data, baseOffset + extensionOffset, extensionLookupType);
+                }
+                data.seek(baseOffset + 8);
             }
             break;
         default:
