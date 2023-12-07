@@ -101,6 +101,28 @@ public class GlyphSubstitutionTable extends TTFTable
         featureListTable = readFeatureList(data, start + featureListOffset);
         lookupListTable = readLookupList(data, start + lookupListOffset);
 
+        LookupTable[] lookupTable = lookupListTable.getLookups();
+        for (FeatureRecord rec : featureListTable.getFeatureRecords())
+        {
+            FeatureTable tab = rec.getFeatureTable();
+            String tag = rec.getFeatureTag();
+            int[] indices = tab.getLookupListIndices();
+            for (int i = 0; i < indices.length; ++i)
+            {
+                int lookupType = lookupTable[indices[i]].getLookupType();
+
+                LookupSubTable[] lst = lookupTable[indices[i]].getSubTables();
+                if (lst.length == 0 || lst[0] == null)
+                {
+                    for (int j = 0; j < lst.length; ++j)
+                    {
+                        LOG.debug("Type {} GSUB feature '{}' at index {} unavailable",
+                                lookupType, tag, indices[i]);
+                    }
+                }
+            }
+        }
+
         GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
 
         gsubData = glyphSubstitutionDataExtractor
