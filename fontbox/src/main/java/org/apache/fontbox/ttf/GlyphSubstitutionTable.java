@@ -114,11 +114,8 @@ public class GlyphSubstitutionTable extends TTFTable
                 LookupSubTable[] lst = lookupTable[indices[i]].getSubTables();
                 if (lst.length == 0 || lst[0] == null)
                 {
-                    for (int j = 0; j < lst.length; ++j)
-                    {
-                        LOG.debug("Type {} GSUB feature '{}' at index {} unavailable",
-                                lookupType, tag, indices[i]);
-                    }
+                    LOG.debug("Type {} GSUB feature '{}' at index {} unavailable",
+                            lookupType, tag, indices[i]);
                 }
             }
         }
