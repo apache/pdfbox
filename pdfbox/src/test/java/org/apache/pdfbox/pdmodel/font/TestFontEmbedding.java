@@ -251,9 +251,13 @@ class TestFontEmbedding
     @Test
     void testDevanagari() throws IOException
     {
-        String DEVANAGARI_TEXT = "प्रदेश ग्रामीण व्यवसायिक, लक्ष्मिपति, लक्षित, मक्खि उपलब्धि, प्रसिद्धि";
+        String DEVANAGARI_TEXT_0 = "प्रदेश ग्रामीण व्यवसायिक, लक्ष्मिपति, लक्षित, मक्खि उपलब्धि, प्रसिद्धि";
+        String DEVANAGARI_TEXT_1 = "क्षत्रिय ज्ञानी का शृंगार";
+        String DEVANAGARI_TEXT_2 = "खुर्रम खर्चें ट्रक उद्गम लक्ष्मिपति ग्रह शृंगार हृदय लाड़ु विट्ठल टट्टू बुद्धू ढर्रा भ़ुर्ता कम्प्युटर";
+        String DEVANAGARI_TEXT_3 = "लक्ष्मिपति रविवार को कम्प्यूटर पर कविता साँईं का नाम लेकर पढ़ता है";
 
-        String expectedExtractedtext = DEVANAGARI_TEXT;
+        String expectedExtractedtext = DEVANAGARI_TEXT_0 + "\n" + DEVANAGARI_TEXT_1 + "\n" + 
+                DEVANAGARI_TEXT_2 + "\n" + DEVANAGARI_TEXT_3;
         File pdf = new File(OUT_DIR, "Devanagari.pdf");
 
         try (PDDocument document = new PDDocument())
@@ -266,9 +270,15 @@ class TestFontEmbedding
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
                 contentStream.beginText();
-                contentStream.setFont(font, 20);
-                contentStream.newLineAtOffset(50, 700);
-                contentStream.showText(DEVANAGARI_TEXT);
+                contentStream.setFont(font, 18);
+                contentStream.newLineAtOffset(10, 750);
+                contentStream.showText(DEVANAGARI_TEXT_0);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(DEVANAGARI_TEXT_1);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(DEVANAGARI_TEXT_2);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(DEVANAGARI_TEXT_3);
                 contentStream.endText();
             }
 
@@ -286,12 +296,7 @@ class TestFontEmbedding
 
         // Check text extraction
         String extracted = getUnicodeText(pdf);
-        
-        try (OutputStream os = new FileOutputStream(new File(OUT_DIR, "Devanagari.txt")))
-        {
-            os.write(extracted.getBytes(StandardCharsets.UTF_8));
-            //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
-        }
+        //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
 
     /**
