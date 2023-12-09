@@ -19,8 +19,11 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -243,6 +247,52 @@ class TestFontEmbedding
         // Check text extraction
         String extracted = getUnicodeText(pdf);
         //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
+    }
+
+    @Test
+    void testDevanagari() throws IOException
+    {
+        String DEVANAGARI_TEXT = "प्रदेश ग्रामीण व्यवसायिक, लक्ष्मिपति, लक्षित, मक्खि उपलब्धि, प्रसिद्धि";
+
+        String expectedExtractedtext = DEVANAGARI_TEXT;
+        File pdf = new File(OUT_DIR, "Devanagari.pdf");
+
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            PDFont font = PDType0Font.load(document, 
+                    this.getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Devanagari.ttf"));
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
+            {
+                contentStream.beginText();
+                contentStream.setFont(font, 20);
+                contentStream.newLineAtOffset(50, 700);
+                contentStream.showText(DEVANAGARI_TEXT);
+                contentStream.endText();
+            }
+
+            document.save(pdf);
+        }
+
+        File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
+ 
+        // compare rendering
+        if (!TestPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            // don't fail, rendering is different on different systems, result must be viewed manually
+            fail("Rendering of " + pdf + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }
+
+        // Check text extraction
+        String extracted = getUnicodeText(pdf);
+        
+        try (OutputStream os = new FileOutputStream(new File(OUT_DIR, "Devanagari.txt")))
+        {
+            os.write(extracted.getBytes(StandardCharsets.UTF_8));
+            //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
+        }
     }
 
     /**
