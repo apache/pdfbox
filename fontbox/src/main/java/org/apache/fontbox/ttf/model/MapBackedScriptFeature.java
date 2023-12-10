@@ -88,6 +88,6 @@ public class MapBackedScriptFeature implements ScriptFeature
             return false;
         }
         MapBackedScriptFeature other = (MapBackedScriptFeature) obj;
-        return Objects.equals(name, this.name) && Objects.equals(featureMap, this.featureMap);
+        return Objects.equals(other.name, this.name) && Objects.equals(other.featureMap, this.featureMap);
     }
 }
