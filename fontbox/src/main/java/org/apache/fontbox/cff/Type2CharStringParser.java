@@ -83,12 +83,12 @@ public class Type2CharStringParser
             int b0 = input.readUnsignedByte();
             if (b0 == CALLSUBR && localSubroutineIndexProvided)
             {
-                processCallSubr(globalSubrIndex, localSubrIndex);
-            } 
+                processCallSubr(globalSubrIndex, localSubrIndex, localSubrIndex);
+            }
             else if (b0 == CALLGSUBR && globalSubroutineIndexProvided)
             {
-                processCallGSubr(globalSubrIndex, localSubrIndex);
-            } 
+                processCallSubr(globalSubrIndex, localSubrIndex, globalSubrIndex);
+            }
             else if ( (b0 >= 0 && b0 <= 27) || (b0 >= 29 && b0 <= 31))
             {
                 sequence.add(readCommand(b0, input));
@@ -105,33 +105,14 @@ public class Type2CharStringParser
         return sequence;
     }
 
-    private void processCallSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex)
+    private void processCallSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex, byte[][] subrIndex)
             throws IOException
     {
         int subrNumber = calculateSubrNumber((Integer) sequence.remove(sequence.size() - 1),
-                localSubrIndex.length);
-        if (subrNumber < localSubrIndex.length)
+                subrIndex.length);
+        if (subrNumber < subrIndex.length)
         {
-            byte[] subrBytes = localSubrIndex[subrNumber];
-            parseSequence(subrBytes, globalSubrIndex, localSubrIndex);
-            Object lastItem = sequence.get(sequence.size() - 1);
-            if (lastItem instanceof CharStringCommand
-                    && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
-            {
-                // remove "return" command
-                sequence.remove(sequence.size() - 1);
-            }
-        }
-    }
-
-    private void processCallGSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex)
-            throws IOException
-    {
-        int subrNumber = calculateSubrNumber((Integer) sequence.remove(sequence.size() - 1),
-                globalSubrIndex.length);
-        if (subrNumber < globalSubrIndex.length)
-        {
-            byte[] subrBytes = globalSubrIndex[subrNumber];
+            byte[] subrBytes = subrIndex[subrNumber];
             parseSequence(subrBytes, globalSubrIndex, localSubrIndex);
             Object lastItem = sequence.get(sequence.size() - 1);
             if (lastItem instanceof CharStringCommand
