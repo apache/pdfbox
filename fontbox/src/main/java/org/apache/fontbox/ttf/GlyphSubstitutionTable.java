@@ -323,6 +323,16 @@ public class GlyphSubstitutionTable extends TTFTable
                 long baseOffset = data.getCurrentPosition();
                 int substFormat = data.readUnsignedShort(); // always 1
                 int extensionLookupType = data.readUnsignedShort();
+                if (lookupType != 7 && lookupType != extensionLookupType)
+                {
+                    // "If a lookup table uses extension subtables, then all of the extension
+                    //  subtables must have the same extensionLookupType"
+                    LOG.error("extensionLookupType changed from " +
+                            lookupType + " to " + extensionLookupType);
+                    data.seek(baseOffset + 8);
+                    continue;
+                }
+                lookupType = extensionLookupType;
                 long extensionOffset = data.readUnsignedInt();
                 if (substFormat != 1)
                 {
