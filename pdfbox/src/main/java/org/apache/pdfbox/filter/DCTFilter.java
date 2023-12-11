@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.filter;
 
+import java.awt.color.CMMException;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
@@ -168,6 +169,11 @@ final class DCTFilter extends Filter
 
             DataBufferByte dataBuffer = (DataBufferByte)raster.getDataBuffer();
             decoded.write(dataBuffer.getData());
+        }
+        catch (CMMException ex)
+        {
+            // PDFBOX-5732
+            throw new IOException(ex);
         }
         finally
         {
