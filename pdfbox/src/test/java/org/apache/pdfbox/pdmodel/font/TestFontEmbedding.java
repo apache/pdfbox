@@ -299,6 +299,52 @@ class TestFontEmbedding
         //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
 
+    @Test
+    void testGujarati() throws IOException
+    {
+        String GUJARATI_TEXT = "દરેક વ્યક્તિને શિક્ષણનો અધિકાર છે";
+
+        String expectedExtractedtext = GUJARATI_TEXT;
+        File pdf = new File(OUT_DIR, "Gujarati.pdf");
+
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            PDFont font = PDType0Font.load(document, 
+                    this.getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Gujarati.ttf"));
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
+            {
+                contentStream.beginText();
+                contentStream.setFont(font, 35);
+                contentStream.newLineAtOffset(50, 700);
+                contentStream.showText(GUJARATI_TEXT);
+                contentStream.endText();
+            }
+
+            document.save(pdf);
+        }
+
+        File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
+ 
+        // compare rendering
+        if (!TestPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            // don't fail, rendering is different on different systems, result must be viewed manually
+            System.err.println("Rendering of " + pdf + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }
+
+        // Check text extraction
+        String extracted = getUnicodeText(pdf);
+        
+        try (OutputStream os = new FileOutputStream(new File(OUT_DIR, "Gujarati.txt")))
+        {
+            os.write(extracted.getBytes(StandardCharsets.UTF_8));
+            //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
+        }
+    }
+
     /**
      * Test corner case of PDFBOX-4302.
      *
