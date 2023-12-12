@@ -57,13 +57,11 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
       <version>${log4j2.version}</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>jbig2-imageio</artifactId>
         <version>${jbig2.version}</version>
-        <scope>test</scope>
     </dependency>
     <!-- For legal reasons (incompatible license), these two dependencies 
         are to be used only in the tests and may not be distributed. 
