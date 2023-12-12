@@ -257,7 +257,7 @@ public class PDNonTerminalField extends PDField
      */
     public void setDefaultValue(COSBase value)
     {
-        getCOSObject().setItem(COSName.V, value);
+        getCOSObject().setItem(COSName.DV, value);
     }
     
     @Override
