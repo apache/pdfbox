@@ -26,11 +26,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.ttf.gsub.GsubWorker;
 import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
 import org.apache.fontbox.ttf.gsub.GsubWorkerForDevanagari;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -47,8 +48,8 @@ import org.junit.jupiter.api.Test;
  */
 class GsubWorkerForDevanagariTest
 {
-
-    private static final String LOHIT_DEVANAGARI_TTF = "/org/apache/pdfbox/ttf/Lohit-Devanagari.ttf";
+    private static final String LOHIT_DEVANAGARI_TTF =
+            "src/test/resources/org/apache/pdfbox/ttf/Lohit-Devanagari.ttf";
 
     private CmapLookup cmapLookup;
     private GsubWorker gsubWorkerForDevanagari;
@@ -56,14 +57,10 @@ class GsubWorkerForDevanagariTest
     @BeforeEach
     public void init() throws IOException
     {
-        try (PDDocument doc = new PDDocument())
+        try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(LOHIT_DEVANAGARI_TTF)))
         {
-            PDType0Font font = PDType0Font.load(doc,
-                    GsubWorkerForDevanagariTest.class.getResourceAsStream(LOHIT_DEVANAGARI_TTF), true);
-
-            cmapLookup = font.getCmapLookup();
-            gsubWorkerForDevanagari = new GsubWorkerFactory().getGsubWorker(cmapLookup, font.getGsubData());
-            System.out.println("worker: " + gsubWorkerForDevanagari);
+            cmapLookup = ttf.getUnicodeCmapLookup();
+            gsubWorkerForDevanagari = new GsubWorkerFactory().getGsubWorker(cmapLookup, ttf.getGsubData());
         }
     }
 

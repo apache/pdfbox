@@ -26,11 +26,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.ttf.gsub.GsubWorker;
 import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
 import org.apache.fontbox.ttf.gsub.GsubWorkerForBengali;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -44,8 +45,8 @@ import org.junit.jupiter.api.Test;
  */
 class GsubWorkerForBengaliTest
 {
-
-    private static final String LOHIT_BENGALI_TTF = "/org/apache/pdfbox/ttf/Lohit-Bengali.ttf";
+    private static final String LOHIT_BENGALI_TTF =
+            "src/test/resources/org/apache/pdfbox/ttf/Lohit-Bengali.ttf";
 
     private CmapLookup cmapLookup;
     private GsubWorker gsubWorkerForBengali;
@@ -53,13 +54,10 @@ class GsubWorkerForBengaliTest
     @BeforeEach
     public void init() throws IOException
     {
-        try (PDDocument doc = new PDDocument())
+        try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(LOHIT_BENGALI_TTF)))
         {
-            PDType0Font font = PDType0Font.load(doc,
-                    GsubWorkerForBengaliTest.class.getResourceAsStream(LOHIT_BENGALI_TTF), true);
-
-            cmapLookup = font.getCmapLookup();
-            gsubWorkerForBengali = new GsubWorkerFactory().getGsubWorker(cmapLookup, font.getGsubData());
+            cmapLookup = ttf.getUnicodeCmapLookup();
+            gsubWorkerForBengali = new GsubWorkerFactory().getGsubWorker(cmapLookup, ttf.getGsubData());
         }
     }
 
