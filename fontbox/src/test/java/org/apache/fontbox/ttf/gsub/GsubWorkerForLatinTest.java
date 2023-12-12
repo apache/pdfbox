@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.it.gsub;
+package org.apache.fontbox.ttf.gsub;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +27,6 @@ import java.util.List;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.fontbox.ttf.gsub.GsubWorker;
-import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.it.gsub;
+package org.apache.fontbox.ttf.gsub;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,9 +28,6 @@ import java.util.List;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.fontbox.ttf.gsub.GsubWorker;
-import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
-import org.apache.fontbox.ttf.gsub.GsubWorkerForGujarati;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -47,7 +44,7 @@ class GsubWorkerForGujaratiTest
 {
 
     private static final String LOHIT_GUJARATI_TTF =
-            "src/test/resources/org/apache/pdfbox/ttf/Lohit-Gujarati.ttf";
+            "src/test/resources/ttf/Lohit-Gujarati.ttf";
 
     private CmapLookup cmapLookup;
     private GsubWorker gsubWorkerForGujarati;
