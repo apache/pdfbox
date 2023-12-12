@@ -273,4 +273,25 @@ class TTFSubsetterTest
                     "UC dieresis path should not be empty");
         }
     }
+
+    /**
+     * Test font with v3 PostScript table format and no glyph names.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPDFBox5728() throws IOException
+    {
+        try (TrueTypeFont ttf = new TTFParser().parse(
+                new RandomAccessReadBufferedFile("target/fonts/NotoMono-Regular.ttf")))
+        {
+            PostScriptTable postScript = ttf.getPostScript();
+            assertEquals(3.0, postScript.getFormatType());
+            assertNull(postScript.getGlyphNames());
+            TTFSubsetter subsetter = new TTFSubsetter(ttf);
+            subsetter.add('a');
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            subsetter.writeToStream(output);
+        }
+    }
 }
