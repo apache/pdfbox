@@ -209,7 +209,7 @@ public final class ExtractTTFFonts
                 try
                 {
                     System.out.println("Writing font:" + name);
-                    fos = new FileOutputStream(new File(name + ".ttf"));
+                    fos = new FileOutputStream(name + ".ttf");
                     IOUtils.copy(ff2Stream.createInputStream(), fos);
                 }
                 finally
