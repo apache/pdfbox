@@ -162,6 +162,18 @@
                       <sha512>6ef13c3497862dc8e4c2a4261bc3a7ef3e2dd75e00ae2af4912b236b387225541db76c72854fbb2323d1064311ffdda9e64ed7065afc3a7d13f5b71b7df2f2ef</sha512>
                   </configuration>
               </execution>
+              <execution>
+                  <id>PDFBOX-5728</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://issues.apache.org/jira/secure/attachment/13065025/NotoMono-Regular.ttf</url>
+                      <outputDirectory>${project.build.directory}/fonts</outputDirectory>
+                      <sha512>a5f3a12a02d096337cefd82a352a9d4f43555283873211c4ed0ac63eb1e722514dbd97dc959208e38643784b007ef27a96280f57ef01355fdbd8884b84d13d4c</sha512>
+                  </configuration>
+              </execution>
           </executions>
       </plugin>
     </plugins>
