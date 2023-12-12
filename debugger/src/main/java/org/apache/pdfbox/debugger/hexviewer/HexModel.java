@@ -65,7 +65,7 @@ class HexModel implements HexChangeListener
     public char[] getLineChars(int lineNumber)
     {
         int start = (lineNumber-1) * 16;
-        int length = data.size() - start < 16 ? data.size() - start:16;
+        int length = Math.min(data.size() - start, 16);
         char[] chars = new char[length];
 
         for (int i = 0; i < chars.length; i++)

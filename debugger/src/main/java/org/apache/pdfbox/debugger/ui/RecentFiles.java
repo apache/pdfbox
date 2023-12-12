@@ -150,7 +150,7 @@ public class RecentFiles
         int endIndex = 0;
         while (remainingLength > 0)
         {
-            endIndex += remainingLength >= allowedStringLength ? allowedStringLength : remainingLength;
+            endIndex += Math.min(remainingLength, allowedStringLength);
             pieces.add(fullPath.substring(beginIndex, endIndex));
             beginIndex = endIndex;
             remainingLength = fullPath.length() - endIndex;
