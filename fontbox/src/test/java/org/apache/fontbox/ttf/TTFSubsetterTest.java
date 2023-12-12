@@ -255,4 +255,23 @@ public class TTFSubsetterTest
 
         subset.close();
     }
+
+    /**
+     * Test font with v3 PostScript table format and no glyph names.
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox5728() throws IOException
+    {
+        TrueTypeFont ttf = new TTFParser().parse("target/fonts/NotoMono-Regular.ttf");
+        PostScriptTable postScript = ttf.getPostScript();
+        assertEquals(3.0, postScript.getFormatType(), 0);
+        assertNull(postScript.getGlyphNames());
+        TTFSubsetter subsetter = new TTFSubsetter(ttf);
+        subsetter.add('a');
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        subsetter.writeToStream(output);
+        ttf.close();
+    }
 }
