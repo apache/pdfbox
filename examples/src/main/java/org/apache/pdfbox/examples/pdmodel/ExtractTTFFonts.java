@@ -198,7 +198,7 @@ public final class ExtractTTFFonts
             if (ff2Stream != null)
             {
                 System.out.println("Writing font: " + name);
-                try (OutputStream os = new FileOutputStream(new File(name + ".ttf"));
+                try (OutputStream os = new FileOutputStream(name + ".ttf");
                      InputStream is = ff2Stream.createInputStream())
                 {
                     is.transferTo(os);
