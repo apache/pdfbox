@@ -107,7 +107,7 @@ public class PDFHighlighter extends PDFTextStripper
     {
         textWriter.flush();
 
-        String page = new String( textOS.toByteArray(), ENCODING );
+        String page = textOS.toString(ENCODING);
         textOS.reset();
 
         // Traitement des listes à puces (caractères spéciaux)
