@@ -19,11 +19,8 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -302,9 +299,12 @@ class TestFontEmbedding
     @Test
     void testGujarati() throws IOException
     {
-        String GUJARATI_TEXT = "દરેક વ્યક્તિને શિક્ષણનો અધિકાર છે";
+        String GUJARATI_TEXT_0 = "દરેક વ્યક્તિને શિક્ષણનો અધિકાર છે";
+        String GUJARATI_TEXT_1 = "શિક્ષિત માણસ વિવિધ પ્રકારના કાર્ય પરિલક્ષિત કરી શકે";
+        String GUJARATI_TEXT_2 = "ટ્રક ગૃહ પ્રસિદ્ધિ શ્રમિક અગ્નિ ઠક્કર ઉત્પલ કર્યે";
+        String GUJARATI_TEXT_3 = "જ્ઞાની બુદ્ધિમાન ક્રમ ગ્રામ કુર્સી ટ્રુ";
 
-        String expectedExtractedtext = GUJARATI_TEXT;
+        String expectedExtractedtext = GUJARATI_TEXT_0 + "\n" + GUJARATI_TEXT_1 + "\n" + GUJARATI_TEXT_2 + "\n" + GUJARATI_TEXT_3;
         File pdf = new File(OUT_DIR, "Gujarati.pdf");
 
         try (PDDocument document = new PDDocument())
@@ -317,9 +317,15 @@ class TestFontEmbedding
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
                 contentStream.beginText();
-                contentStream.setFont(font, 35);
-                contentStream.newLineAtOffset(50, 700);
-                contentStream.showText(GUJARATI_TEXT);
+                contentStream.setFont(font, 25);
+                contentStream.newLineAtOffset(10, 750);
+                contentStream.showText(GUJARATI_TEXT_0);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(GUJARATI_TEXT_1);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(GUJARATI_TEXT_2);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(GUJARATI_TEXT_3);
                 contentStream.endText();
             }
 
@@ -337,12 +343,7 @@ class TestFontEmbedding
 
         // Check text extraction
         String extracted = getUnicodeText(pdf);
-        
-        try (OutputStream os = new FileOutputStream(new File(OUT_DIR, "Gujarati.txt")))
-        {
-            os.write(extracted.getBytes(StandardCharsets.UTF_8));
-            //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
-        }
+        //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
 
     /**
