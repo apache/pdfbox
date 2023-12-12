@@ -278,9 +278,7 @@ public class SigUtils
         // if a signature is assigned to a pre-defined empty signature field that isn't the last.
         // we get the last in time by looking at the offset in the PDF file.
         Optional<PDSignature> optLastSignature =
-                document.getSignatureDictionaries().stream().
-                sorted(comparatorByOffset.reversed()).
-                findFirst();
+                document.getSignatureDictionaries().stream().max(comparatorByOffset);
         if (optLastSignature.isPresent())
         {
             PDSignature lastSignature = optLastSignature.get();
