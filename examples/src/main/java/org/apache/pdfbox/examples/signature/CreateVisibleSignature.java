@@ -469,7 +469,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
     private static void usage()
     {
         System.err.println("Usage: java " + CreateVisibleSignature.class.getName()
-                + " <pkcs12-keystore-file> <pin> <input-pdf> <sign-image>\n" + "" +
+                + " <pkcs12-keystore-file> <pin> <input-pdf> <sign-image>\n" +
                            "options:\n" +
                            "  -tsa <url>    sign timestamp using the given TSA server\n"+
                            "  -e            sign using external signature creation scenario");

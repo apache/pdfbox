@@ -68,7 +68,7 @@ public class StringPane
                 break;
             }
         }
-        return  "" + text;
+        return text;
     }
 
     public JTabbedPane getPane()
