@@ -234,9 +234,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
 
     private List<Integer> getBeforeHalfGlyphIds()
     {
-        List<Integer> glyphIds = new ArrayList<>();
-        glyphIds.add(getGlyphId(BEFORE_HALF_CHAR));
-        return Collections.unmodifiableList(glyphIds);
+        return List.of(getGlyphId(BEFORE_HALF_CHAR));
     }
 
     private List<Integer> getRephGlyphIds()

@@ -220,15 +220,9 @@ final class FontMapperImpl implements FontMapper
      */
     private List<String> getSubstitutes(String postScriptName)
     {
-        List<String> subs = substitutes.get(postScriptName.replace(" ", "").toLowerCase(Locale.ENGLISH));
-        if (subs != null)
-        {
-            return subs;
-        }
-        else
-        {
-            return Collections.emptyList();
-        }
+        return substitutes.getOrDefault(
+                postScriptName.replace(" ", "").toLowerCase(Locale.ENGLISH), 
+                Collections.emptyList());
     }
 
     /**
