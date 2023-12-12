@@ -219,7 +219,7 @@ public class CreateSignature extends CreateSignatureBase
     private static void usage()
     {
         System.err.println("usage: java " + CreateSignature.class.getName() + " " +
-                           "<pkcs12_keystore> <password> <pdf_to_sign>\n" + "" +
+                           "<pkcs12_keystore> <password> <pdf_to_sign>\n" +
                            "options:\n" +
                            "  -tsa <url>    sign timestamp using the given TSA server\n" +
                            "  -e            sign using external signature creation scenario");

@@ -251,13 +251,13 @@ public class COSDocument extends COSBase implements Closeable
      */
     public List<COSObject> getObjectsByType(COSName type1, COSName type2)
     {
-        List<COSObjectKey> originKeys = new ArrayList<COSObjectKey>(xrefTable.keySet());
+        List<COSObjectKey> originKeys = new ArrayList<>(xrefTable.keySet());
         List<COSObject> retval = getObjectsByType(originKeys, type1, type2);
         // there might be some additional objects if the brute force parser was triggered
         // due to a broken cross reference table/stream
         if (originKeys.size() < xrefTable.size())
         {
-            List<COSObjectKey> additionalKeys = new ArrayList<COSObjectKey>(xrefTable.keySet());
+            List<COSObjectKey> additionalKeys = new ArrayList<>(xrefTable.keySet());
             additionalKeys.removeAll(originKeys);
             retval.addAll(getObjectsByType(additionalKeys, type1, type2));
         }

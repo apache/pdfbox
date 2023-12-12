@@ -1208,7 +1208,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         }
         if (selectedNode instanceof COSName)
         {
-            return "" + ((COSName) selectedNode).getName();
+            return ((COSName) selectedNode).getName();
         }
         if (selectedNode instanceof COSString)
         {
@@ -1259,7 +1259,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         }
         if (selectedNode instanceof XrefEntry)
         {
-            return ((XrefEntry) selectedNode).toString();
+            return selectedNode.toString();
         }
         return null;
     }
