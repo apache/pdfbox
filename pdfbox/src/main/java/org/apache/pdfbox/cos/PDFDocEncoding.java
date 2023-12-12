@@ -120,7 +120,7 @@ final class PDFDocEncoding
      */
     public static String toString(byte[] bytes)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(bytes.length);
         for (byte b : bytes)
         {
             if ((b & 0xff) >= CODE_TO_UNI.length)
@@ -140,18 +140,10 @@ final class PDFDocEncoding
      */
     public static byte[] getBytes(String text)
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream(text.length());
         for (char c : text.toCharArray())
         {
-            Integer code = UNI_TO_CODE.get(c);
-            if (code == null)
-            {
-                out.write(0);
-            }
-            else
-            {
-                out.write(code);
-            }
+            out.write(UNI_TO_CODE.getOrDefault(c, 0));
         }
         return out.toByteArray();
     }
