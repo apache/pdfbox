@@ -17,6 +17,8 @@
 
 package org.apache.fontbox.ttf.gsub;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.ttf.model.Language;
@@ -29,19 +31,29 @@ import org.apache.fontbox.ttf.model.Language;
  */
 public class GsubWorkerFactory
 {
+    private static final Log LOG = LogFactory.getLog(GsubWorkerFactory.class);
 
     public GsubWorker getGsubWorker(CmapLookup cmapLookup, GsubData gsubData)
     {
+        //TODO this needs to be redesigned / improved because if a font supports several languages,
+        // it will choose one of them and maybe not the one expected.
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("Language: " + gsubData.getLanguage());
+        }
         switch (gsubData.getLanguage())
         {
         case BENGALI:
             return new GsubWorkerForBengali(cmapLookup, gsubData);
+        case DEVANAGARI:
+            return new GsubWorkerForDevanagari(cmapLookup, gsubData);
+        case GUJARATI:
+            return new GsubWorkerForGujarati(cmapLookup, gsubData);
         case LATIN:
             return new GsubWorkerForLatin(cmapLookup, gsubData);
         default:
             return new DefaultGsubWorker();
         }
-
     }
 
 }
