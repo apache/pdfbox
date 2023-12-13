@@ -65,19 +65,12 @@ public class DebugLogAppender extends AbstractAppender
         ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory
                 .newConfigurationBuilder();
 
-        AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE")
-                .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
+        AppenderComponentBuilder appenderBuilder = builder.newAppender("Custom", "DebugLogAppender");
         appenderBuilder.add(builder.newLayout("PatternLayout").addAttribute("pattern",
                 "%d [%t] %-5level: %msg%n%throwable"));
         builder.add(appenderBuilder);
 
-        appenderBuilder = builder.newAppender("Custom", "DebugLogAppender");
-        appenderBuilder.add(builder.newLayout("PatternLayout").addAttribute("pattern",
-                "%d [%t] %-5level: %msg%n%throwable"));
-        builder.add(appenderBuilder);
-
-        builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Stdout"))
-                .add(builder.newAppenderRef("Custom")));
+        builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Custom")));
         Configurator.initialize(builder.build());
     }
 }
