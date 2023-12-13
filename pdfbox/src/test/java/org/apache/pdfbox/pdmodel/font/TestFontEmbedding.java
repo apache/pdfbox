@@ -245,6 +245,107 @@ class TestFontEmbedding
         //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
 
+    @Test
+    void testDevanagari() throws IOException
+    {
+        String DEVANAGARI_TEXT_0 = "प्रदेश ग्रामीण व्यवसायिक, लक्ष्मिपति, लक्षित, मक्खि उपलब्धि, प्रसिद्धि";
+        String DEVANAGARI_TEXT_1 = "क्षत्रिय ज्ञानी का शृंगार";
+        String DEVANAGARI_TEXT_2 = "खुर्रम खर्चें ट्रक उद्गम लक्ष्मिपति ग्रह शृंगार हृदय लाड़ु विट्ठल टट्टू बुद्धू ढर्रा भ़ुर्ता कम्प्युटर";
+        String DEVANAGARI_TEXT_3 = "लक्ष्मिपति रविवार को कम्प्यूटर पर कविता साँईं का नाम लेकर पढ़ता है";
+
+        String expectedExtractedtext = DEVANAGARI_TEXT_0 + "\n" + DEVANAGARI_TEXT_1 + "\n" + 
+                DEVANAGARI_TEXT_2 + "\n" + DEVANAGARI_TEXT_3;
+        File pdf = new File(OUT_DIR, "Devanagari.pdf");
+
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            PDFont font = PDType0Font.load(document, 
+                    this.getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Devanagari.ttf"));
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
+            {
+                contentStream.beginText();
+                contentStream.setFont(font, 18);
+                contentStream.newLineAtOffset(10, 750);
+                contentStream.showText(DEVANAGARI_TEXT_0);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(DEVANAGARI_TEXT_1);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(DEVANAGARI_TEXT_2);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(DEVANAGARI_TEXT_3);
+                contentStream.endText();
+            }
+
+            document.save(pdf);
+        }
+
+        File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
+ 
+        // compare rendering
+        if (!TestPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            // don't fail, rendering is different on different systems, result must be viewed manually
+            System.err.println("Rendering of " + pdf + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }
+
+        // Check text extraction
+        String extracted = getUnicodeText(pdf);
+        //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
+    }
+
+    @Test
+    void testGujarati() throws IOException
+    {
+        String GUJARATI_TEXT_0 = "દરેક વ્યક્તિને શિક્ષણનો અધિકાર છે";
+        String GUJARATI_TEXT_1 = "શિક્ષિત માણસ વિવિધ પ્રકારના કાર્ય પરિલક્ષિત કરી શકે";
+        String GUJARATI_TEXT_2 = "ટ્રક ગૃહ પ્રસિદ્ધિ શ્રમિક અગ્નિ ઠક્કર ઉત્પલ કર્યે";
+        String GUJARATI_TEXT_3 = "જ્ઞાની બુદ્ધિમાન ક્રમ ગ્રામ કુર્સી ટ્રુ";
+
+        String expectedExtractedtext = GUJARATI_TEXT_0 + "\n" + GUJARATI_TEXT_1 + "\n" + GUJARATI_TEXT_2 + "\n" + GUJARATI_TEXT_3;
+        File pdf = new File(OUT_DIR, "Gujarati.pdf");
+
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            PDFont font = PDType0Font.load(document, 
+                    this.getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Gujarati.ttf"));
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
+            {
+                contentStream.beginText();
+                contentStream.setFont(font, 25);
+                contentStream.newLineAtOffset(10, 750);
+                contentStream.showText(GUJARATI_TEXT_0);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(GUJARATI_TEXT_1);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(GUJARATI_TEXT_2);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(GUJARATI_TEXT_3);
+                contentStream.endText();
+            }
+
+            document.save(pdf);
+        }
+
+        File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
+ 
+        // compare rendering
+        if (!TestPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            // don't fail, rendering is different on different systems, result must be viewed manually
+            System.err.println("Rendering of " + pdf + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }
+
+        // Check text extraction
+        String extracted = getUnicodeText(pdf);
+        //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
+    }
+
     /**
      * Test corner case of PDFBOX-4302.
      *
